@@ -1,0 +1,131 @@
+.
+|-- Services
+|   |-- __pycache__
+|   |   |-- network_scanner.cpython-313.pyc
+|   |   |-- ssl_scanner.cpython-313.pyc
+|   |   `-- zap_scanner.cpython-313.pyc
+|   |-- network_scanner.py
+|   |-- results
+|   |   |-- network_scanner
+|   |   |   |-- scan_result_aggressive.txt
+|   |   |   |-- scan_result_fragmented.txt
+|   |   |   |-- scan_result_os.txt
+|   |   |   |-- scan_result_tcp.txt
+|   |   |   |-- scan_result_tcp_syn.txt
+|   |   |   `-- whitelisted_ports.json
+|   |   |-- sql_scanner
+|   |   |   `-- sqlmap_output
+|   |   |-- ssl_scanner
+|   |   |   `-- ssl_report.xml
+|   |   `-- zap_scanner
+|   |       |-- zap.yaml
+|   |       |-- zap_baseline_report.html
+|   |       `-- zap_baseline_report.json
+|   |-- ssl_scanner.py
+|   `-- zap_scanner.py
+|-- __init__.py
+|-- __pycache__
+|   |-- agent_logic.cpython-313.pyc
+|   `-- app.cpython-313.pyc
+|-- app.py
+|-- logs
+|   |-- chatbot_logs.txt
+|   |-- network_agent_log.txt
+|   |-- sql_agent_log.txt
+|   |-- ssl_agent_log.txt
+|   `-- zap_agent_log.txt
+|-- project_structure.txt
+|-- routes
+|   |-- __init__.py
+|   |-- __pycache__
+|   |   |-- __init__.cpython-313.pyc
+|   |   |-- chatbot_bp.cpython-313.pyc
+|   |   |-- network_scanner_bp.cpython-313.pyc
+|   |   |-- ssl_scanner_bp.cpython-313.pyc
+|   |   `-- zap_scanner_bp.cpython-313.pyc
+|   |-- chatbot_bp.py
+|   |-- network_scanner_bp.py
+|   |-- ssl_scanner_bp.py
+|   `-- zap_scanner_bp.py
+|-- static
+|   |-- css
+|   |   `-- style.css
+|   `-- js
+|       |-- chatbot.js
+|       |-- network_scanner.js
+|       |-- script.js
+|       |-- ssl_scanner.js
+|       `-- zap_scanner.js
+|-- templates
+|   |-- chatbot.html
+|   |-- home.html
+|   |-- network_scanner.html
+|   |-- ssl_scanner.html
+|   `-- zap_scanner.html
+`-- uploads
+
+
+
+pyinstaller app.spec
+
+Action: Run these commands from your project root (~/Desktop/NetShield/):
+# 1. Create the main staging directories
+mkdir -p pkg_root/opt/vulnscanai
+mkdir -p pkg_root/etc/systemd/system
+mkdir -p pkg_root/etc/sudoers.d
+
+# 2. Copy your PyInstaller executable into the application directory
+cp dist/app pkg_root/opt/vulnscanai/
+
+# 3. Copy your web application assets
+cp -r templates pkg_root/opt/vulnscanai/
+cp -r static pkg_root/opt/vulnscanai/
+cp -r logs pkg_root/opt/vulnscanai/
+cp -r uploads pkg_root/opt/vulnscanai/
+cp -r routes pkg_root/opt/vulnscanai/
+cp -r Services pkg_root/opt/vulnscanai/
+
+
+
+# 5. Copy the Systemd service file into its correct Systemd location within the staging area
+cp vulnscanai.service pkg_root/etc/systemd/system/
+
+
+fpm -s dir -t deb \
+  -n vulnscanai-app \
+  -v 1.0.0 \
+  --iteration 1 \
+  --description "VulnScanAI: A Flask-based Port Scanner and Blocker" \
+  --url "https://github.com/DivyViradiya07/NetShield" \
+  --license "MIT" \
+  --vendor "Your Name/Organization" \
+  --maintainer "Divya Viradiya <divya.viradiya.7@gmail.com>" \
+  --deb-systemd vulnscanai.service \
+  --deb-user vulnscanai \
+  --deb-group vulnscanai \
+  -d 'docker.io' \
+  -d 'nmap' \
+  -d 'ufw' \
+  -d 'lsof' \
+  -d 'net-tools' \
+  --before-install preinst.sh \
+  --after-install postinst.sh \
+  --after-remove postrm.sh \
+  -C pkg_root .
+
+
+sudo dpkg -i vulnscanai-app_1.0.0-1_amd64.deb || sudo apt --fix-broken install
+
+systemctl status vulnscanai.service
+journalctl -u vulnscanai.service -f
+
+id vulnscanai
+ls -l /opt/vulnscanai/
+ls -l /var/log/vulnscanai/
+ls -l /var/lib/vulnscanai/
+cat /etc/sudoers.d/vulnscanai
+
+sudo apt purge vulnscanai-app
+
+
+

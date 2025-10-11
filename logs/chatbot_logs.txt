@@ -1,0 +1,460 @@
+2025-08-07 11:38:36 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-07 11:38:37 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-07 16:54:40 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-07 16:54:42 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-07 17:55:29 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-07 17:55:32 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-07 18:15:12 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-07 18:15:18 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 13:50:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 13:50:39 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 14:07:28 - chatbot - INFO - New local chat session started: 76881b2a-e23b-4e80-b545-14dc5e5abc32
+2025-08-08 14:49:15 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 14:49:39 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 14:50:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:18:52 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:18:55 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:20:22 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:20:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:20:32 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:26:19 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:26:23 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:26:26 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:34:53 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:34:57 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 17:35:01 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 18:41:03 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 18:41:07 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 18:41:12 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 19:00:31 - chatbot - INFO - New local chat session started: 932a0d41-f490-401a-ae73-c41cbe571bef
+2025-08-08 20:32:00 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 20:32:05 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 20:32:12 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-08 20:40:25 - chatbot - INFO - New local chat session started: 9408cea2-728e-4bb3-84d9-32f3261c2cea
+2025-08-09 16:34:32 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:34:39 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:34:44 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:43:04 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:43:11 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:43:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:47:13 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:47:18 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:47:21 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:47:53 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:48:32 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:48:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:52:23 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 16:54:29 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-09 17:18:08 - chatbot - INFO - New local chat session started: e561f180-5271-4823-b62f-eac601196b86
+2025-08-10 12:56:43 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-10 12:56:48 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-10 12:56:52 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-10 12:57:58 - chatbot - INFO - New local chat session started: aa130f04-02c6-403b-85d2-3f119d3676c1
+2025-08-10 13:49:25 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-10 13:49:30 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-10 13:49:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-10 14:07:17 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 12:01:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 12:01:32 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 12:01:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 14:08:21 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 14:08:25 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 14:08:29 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 14:44:06 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 14:44:11 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 14:44:15 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-11 14:58:38 - chatbot - INFO - New local chat session started: d92800f8-313e-4f00-90b8-37658f47eb85
+2025-08-13 14:15:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-13 14:15:43 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-13 14:15:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-13 14:52:08 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-13 15:14:01 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-13 15:14:05 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-13 15:14:09 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-25 13:30:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-25 13:30:54 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-25 13:30:59 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-26 11:03:07 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-26 11:03:12 - chatbot - INFO - Chatbot Blueprint initialized
+2025-08-26 11:03:15 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-12 22:20:49 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-12 22:20:53 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-12 22:20:57 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-12 22:23:42 - chatbot - INFO - New local chat session started: e6384b93-76a1-4824-a73f-ddd933f88a86
+2025-09-19 14:43:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-19 14:43:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-19 14:43:41 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:14:06 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:14:12 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:14:17 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:20:55 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:20:59 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:21:04 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:26:03 - chatbot - INFO - New local chat session started: f61ef992-a6ec-404e-a049-2c8d867797f0
+2025-09-22 18:27:59 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:32:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:32:37 - chatbot - INFO - Sending file to server proxy (gemini mode): localhost:5000/upload_report
+2025-09-22 18:32:37 - chatbot - ERROR - Error communicating with server proxy during upload: No connection adapters were found for 'localhost:5000/upload_report'
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 85, in upload_report
+    response = requests.post(proxy_upload_url, files=files_to_send, data=form_data)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 697, in send
+    adapter = self.get_adapter(url=request.url)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 792, in get_adapter
+    raise InvalidSchema(f"No connection adapters were found for {url!r}")
+requests.exceptions.InvalidSchema: No connection adapters were found for 'localhost:5000/upload_report'
+2025-09-22 18:34:21 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:34:24 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-22 18:34:26 - chatbot - ERROR - Error communicating with server proxy during upload: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 86, in upload_report
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report
+2025-09-22 18:36:00 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-22 18:36:02 - chatbot - ERROR - Error communicating with server proxy during upload: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 86, in upload_report
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report
+2025-09-22 18:44:06 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-22 18:44:08 - chatbot - ERROR - Error communicating with server proxy during upload: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 86, in upload_report
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report
+2025-09-22 18:50:31 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:50:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:51:19 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-22 18:51:21 - chatbot - ERROR - Error communicating with server proxy during upload: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report?llm_mode=gemini
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 86, in upload_report
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report?llm_mode=gemini
+2025-09-22 18:55:10 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 18:55:23 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-22 19:00:51 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-22 19:00:53 - chatbot - ERROR - Error communicating with server proxy during upload: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 86, in upload_report
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report
+2025-09-24 14:18:53 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-24 14:19:00 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-24 14:19:04 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-24 14:19:43 - chatbot - INFO - New local chat session started: c75d8469-1114-4abc-ad80-f3a3a59ac98d
+2025-09-24 14:28:36 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-24 14:28:59 - chatbot - INFO - Stored session ID from server: 5b4c4264-fbda-4e19-aa47-c7b93575fe3f
+2025-09-24 14:32:42 - chatbot - INFO - New local chat session started: 8e2babd4-74c1-4b2a-bd8d-700daba65faf
+2025-09-24 14:32:51 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-24 14:33:10 - chatbot - INFO - Stored session ID from server: e83d9309-50b8-43c6-9721-b5f78f5fedfc
+2025-09-24 14:35:49 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-24 14:36:09 - chatbot - INFO - Stored session ID from server: 9771583c-81e1-428d-bd19-ebd634a0154d
+2025-09-24 14:39:37 - chatbot - INFO - New local chat session started: 5cfa5fee-285f-455f-95f1-c4ead302019c
+2025-09-24 14:39:43 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-24 14:40:01 - chatbot - INFO - Stored session ID from server: 0345e2db-960b-4c80-90d6-0c6efbe7bc3f
+2025-09-24 15:02:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-24 15:02:31 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-24 15:02:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-24 15:03:20 - chatbot - INFO - New local chat session started: 3a1abefd-e0c5-45d8-886b-e1f56e445b75
+2025-09-24 15:09:33 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-24 15:09:57 - chatbot - INFO - Stored session ID from server: ce8ab6bf-edec-4294-9351-428634419d56
+2025-09-25 10:58:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-25 10:58:39 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-25 10:58:43 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-25 11:00:07 - chatbot - INFO - New local chat session started: dc4d6462-7e0e-416f-b84f-300b005e55b7
+2025-09-25 11:01:24 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-25 11:01:46 - chatbot - INFO - Stored session ID from server: c8f2670a-5bbf-4a60-861c-b24e65c389c4
+2025-09-25 17:12:29 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-25 17:12:33 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-25 17:12:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-25 17:16:28 - chatbot - INFO - New local chat session started: 84e58180-ea22-4f2b-91d9-40ddc38c2470
+2025-09-30 10:18:14 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-30 10:18:19 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-30 10:18:24 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-30 10:18:55 - chatbot - INFO - New local chat session started: fe728096-54b3-4c69-aec8-76f20a12e777
+2025-09-30 14:05:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-30 14:05:46 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-30 14:05:55 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-30 14:07:19 - chatbot - INFO - New local chat session started: e4d7ac20-bf72-4512-86ec-59f1ee8cf6e5
+2025-09-30 15:04:19 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-30 15:04:24 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-30 15:04:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-09-30 15:13:37 - chatbot - INFO - New local chat session started: 0db2aa25-40c4-4aea-9b21-1d016cf31d90
+2025-09-30 15:14:10 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-30 15:14:13 - chatbot - INFO - Stored session ID from server: None
+2025-09-30 15:15:32 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-30 15:15:53 - chatbot - INFO - Stored session ID from server: add27700-d267-4ec3-bed2-e0e540cc9693
+2025-09-30 15:26:30 - chatbot - INFO - New local chat session started: bead5f78-0360-4247-bd09-2b9af17cf9ee
+2025-09-30 16:09:45 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-30 16:10:04 - chatbot - INFO - Stored session ID from server: 89922ffb-1b15-4d9e-b193-c6eef8e33796
+2025-09-30 16:31:04 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-30 16:31:22 - chatbot - INFO - Stored session ID from server: 7f1f3db7-d69d-4aae-b230-8848ae177a6d
+2025-09-30 17:06:25 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-30 17:06:41 - chatbot - INFO - Stored session ID from server: 123d783f-c526-42ea-8462-0b1833a89900
+2025-09-30 17:06:58 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-30 17:07:13 - chatbot - INFO - Stored session ID from server: 0b70933e-fbde-466f-a022-35b26913a16c
+2025-09-30 17:13:25 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-09-30 17:13:44 - chatbot - INFO - Stored session ID from server: bd1ab1ad-bd6a-4b8c-919e-6c8e770d7f49
+2025-10-07 14:12:50 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-07 14:12:54 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-07 14:12:57 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-07 14:31:04 - chatbot - INFO - New local chat session started: 8e1e9708-7271-4502-a006-61c9ceff1af1
+2025-10-07 16:47:11 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-07 16:47:29 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-07 16:47:36 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-07 16:49:18 - chatbot - INFO - New local chat session started: 590e11a9-adae-4a6a-996c-8d7ff6d4ad53
+2025-10-07 16:49:35 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-07 16:49:55 - chatbot - INFO - Stored session ID from server: 0a7dfc39-1d00-4130-a36a-7c0a37b3b682
+2025-10-07 16:53:44 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-07 16:54:22 - chatbot - INFO - Stored session ID from server: 5a9c44f9-d866-4cb6-afaf-03f2013bd533
+2025-10-07 20:36:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-07 20:37:03 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-07 20:37:20 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-07 21:13:35 - chatbot - INFO - New local chat session started: 4b3bffe1-4139-4f87-902e-f4dbd633d887
+2025-10-08 09:17:19 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-08 09:18:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-08 09:18:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-08 09:53:37 - chatbot - INFO - New local chat session started: cbf1313d-5fdd-4e4c-adb6-266e5c58aaff
+2025-10-08 09:56:25 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-08 09:56:46 - chatbot - INFO - Stored session ID from server: 92f82710-d393-4e92-aacb-e054d413b70c
+2025-10-09 16:43:20 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-09 16:43:30 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-09 16:43:46 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-09 16:59:08 - chatbot - INFO - New local chat session started: 662e7cf2-f772-4e35-afb2-47c7ec5d9426
+2025-10-09 17:21:31 - chatbot - INFO - New local chat session started: c2c37512-b0e2-4159-9f35-1f7c78211475
+2025-10-09 17:22:47 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-09 17:23:10 - chatbot - INFO - Stored session ID from server: 7c794152-37bf-45c0-a059-14bb5bce9cc8
+2025-10-09 17:37:30 - chatbot - INFO - New local chat session started: 559861e0-05c0-4994-a239-2a2c2748a2a8
+2025-10-10 21:37:41 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-10 21:37:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-10 21:37:56 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-10 21:37:59 - chatbot - INFO - New local chat session started: af283b79-50a9-4238-8aa3-3a0c55d74470
+2025-10-10 21:40:11 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 21:40:34 - chatbot - INFO - Stored session ID from server: 36a91fa6-e644-4fa5-a997-38196a07d4a5
+2025-10-10 21:42:29 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 21:42:46 - chatbot - INFO - Stored session ID from server: 8049b118-6ba6-4e7e-81da-48a79a90d722
+2025-10-10 21:43:54 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 21:50:09 - chatbot - ERROR - Error communicating with server proxy during upload: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 716, in urlopen
+    httplib_response = self._make_request(
+        conn,
+    ...<5 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 468, in _make_request
+    six.raise_from(e, None)
+    ~~~~~~~~~~~~~~^^^^^^^^^
+  File "<string>", line 3, in raise_from
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 463, in _make_request
+    httplib_response = conn.getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 802, in urlopen
+    retries = retries.increment(
+        method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 552, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+          ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\packages\six.py", line 769, in reraise
+    raise value.with_traceback(tb)
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 716, in urlopen
+    httplib_response = self._make_request(
+        conn,
+    ...<5 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 468, in _make_request
+    six.raise_from(e, None)
+    ~~~~~~~~~~~~~~^^^^^^^^^
+  File "<string>", line 3, in raise_from
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 463, in _make_request
+    httplib_response = conn.getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 85, in upload_report
+    response = requests.post(proxy_upload_url, files=files_to_send, data=form_data)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 682, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2025-10-10 21:51:39 - chatbot - INFO - Sending file to server proxy (local mode): http://localhost:5000/upload_report
+2025-10-10 21:51:43 - chatbot - ERROR - Error communicating with server proxy during upload: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /upload_report (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000021A7783E9C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 174, in _new_conn
+    conn = connection.create_connection(
+        (self._dns_host, self.port), self.timeout, **extra_kw
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 95, in create_connection
+    raise err
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 716, in urlopen
+    httplib_response = self._make_request(
+        conn,
+    ...<5 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 416, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 244, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1338, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1384, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1037, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 205, in connect
+    conn = self._new_conn()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 186, in _new_conn
+    raise NewConnectionError(
+        self, "Failed to establish a new connection: %s" % e
+    )
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000021A7783E9C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 802, in urlopen
+    retries = retries.increment(
+        method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 594, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /upload_report (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000021A7783E9C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 85, in upload_report
+    response = requests.post(proxy_upload_url, files=files_to_send, data=form_data)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /upload_report (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000021A7783E9C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-10-10 21:55:46 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 21:56:13 - chatbot - INFO - Stored session ID from server: f342b3de-9d75-4ecd-bdcc-f42c576e0509
+2025-10-10 22:14:19 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 22:14:21 - chatbot - INFO - Stored session ID from server: None
+2025-10-10 22:18:03 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 22:18:16 - chatbot - INFO - Stored session ID from server: 30bc18e2-0437-46a9-8f2d-cd9959935601
+2025-10-10 22:18:43 - chatbot - ERROR - Error communicating with server proxy chat service: 500 Server Error: Internal Server Error for url: http://localhost:5000/chat
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 131, in chat_with_ai
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: http://localhost:5000/chat
+2025-10-10 22:19:42 - chatbot - ERROR - Error clearing chat via server proxy for session 30bc18e2-0437-46a9-8f2d-cd9959935601: HTTPConnectionPool(host='localhost', port=5000): Read timed out. (read timeout=10)
+2025-10-10 22:20:20 - chatbot - ERROR - Error clearing chat via server proxy for session 30bc18e2-0437-46a9-8f2d-cd9959935601: 404 Client Error: Not Found for url: http://localhost:5000/clear_chat
+2025-10-10 22:20:32 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 22:20:46 - chatbot - INFO - Stored session ID from server: 12ff07ad-3f4e-4bcd-9ae6-fad958e1e1a2
+2025-10-10 22:23:07 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 22:23:21 - chatbot - INFO - Stored session ID from server: 5accb626-51c3-4910-bd30-129b3c2b09e2
+2025-10-10 22:24:56 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 22:25:20 - chatbot - INFO - Stored session ID from server: 0a59cbbd-3726-4784-a3c6-7069cb6a66c5
+2025-10-10 22:27:24 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 22:27:40 - chatbot - INFO - Stored session ID from server: 3cadb889-1469-43be-a385-6fe433f92812
+2025-10-10 22:30:48 - chatbot - ERROR - Error clearing chat via server proxy for session 3cadb889-1469-43be-a385-6fe433f92812: HTTPConnectionPool(host='localhost', port=5000): Read timed out. (read timeout=10)
+2025-10-10 22:32:18 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-10 22:32:34 - chatbot - INFO - Stored session ID from server: 1e1b3279-d9ce-4f6a-b5c7-1de04f62170c

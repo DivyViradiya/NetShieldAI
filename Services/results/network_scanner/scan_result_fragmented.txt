@@ -1,0 +1,4 @@
+# Nmap 7.97 scan initiated Fri Aug  8 17:39:59 2025 as: nmap -f -sS -T4 -oG D:\\VulnScanAI\\Services\\results\\network_scanner\\scan_result_fragmented.txt 192.168.29.48
+Host: 192.168.29.48 ()	Status: Up
+Host: 192.168.29.48 ()	Ports: 	Ignored State: filtered (1000)
+# Nmap done at Fri Aug  8 17:41:44 2025 -- 1 IP address (1 host up) scanned in 104.30 seconds

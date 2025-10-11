@@ -1,0 +1,296 @@
+[2025-10-08 09:22:56] [*] SSL log file cleared.
+[2025-10-08 09:23:04] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-08 09:23:24] [✓] sslscan.exe found.
+[2025-10-08 09:23:24] [*] Starting SSL scan for google.com...
+[2025-10-08 09:23:24] [+] Running local SSL scan on google.com...
+[2025-10-08 09:23:24] [✓] sslscan.exe found.
+[2025-10-08 09:23:24] [*] Executing command: C:\Program Files\sslscan\sslscan.exe --xml=D:\NetShieldAI\Services\results\ssl_scanner\ssl_report.xml --show-client-cas --show-cipher-ids --show-signatures google.com
+[2025-10-08 09:23:29] [SSLScan STDOUT]
+Version: [92m2.2.0 Windows 64-bit (Mingw)[0m
+OpenSSL 3.5.0 8 Apr 2025
+[0m
+[92mConnected to 172.217.174.238[0m
+
+Testing SSL server [92mgoogle.com[0m on port [92m443[0m using SNI name [92mgoogle.com[0m
+
+  [1;36mSSL/TLS Protocols:[0m
+SSLv2     [92mdisabled[0m
+SSLv3     [92mdisabled[0m
+TLSv1.0   [93menabled[0m
+TLSv1.1   [93menabled[0m
+TLSv1.2   enabled
+TLSv1.3   [92menabled[0m
+
+  [1;36mTLS Fallback SCSV:[0m
+Server [92msupports[0m TLS Fallback SCSV
+
+  [1;36mTLS renegotiation:[0m
+[92mSecure[0m session renegotiation supported
+
+  [1;36mTLS Compression:[0m
+Compression [92mdisabled[0m
+
+  [1;36mHeartbleed:[0m
+TLSv1.3 [92mnot vulnerable[0m to heartbleed
+TLSv1.2 [92mnot vulnerable[0m to heartbleed
+TLSv1.1 [92mnot vulnerable[0m to heartbleed
+TLSv1.0 [92mnot vulnerable[0m to heartbleed
+
+  [1;36mSupported Server Cipher(s):[0m
+[92mPreferred[0m [92mTLSv1.3[0m  [92m128[0m bits    0x1301 [92mTLS_AES_128_GCM_SHA256       [0m
+Accepted  [92mTLSv1.3[0m  [92m256[0m bits    0x1302 [92mTLS_AES_256_GCM_SHA384       [0m
+Accepted  [92mTLSv1.3[0m  [92m256[0m bits    0x1303 [92mTLS_CHACHA20_POLY1305_SHA256 [0m
+[92mPreferred[0m TLSv1.2  [92m256[0m bits    0xCCA9 [92mECDHE-ECDSA-CHACHA20-POLY1305[0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC02B [92mECDHE-ECDSA-AES128-GCM-SHA256[0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC02C [92mECDHE-ECDSA-AES256-GCM-SHA384[0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xCCA8 [92mECDHE-RSA-CHACHA20-POLY1305  [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC02F [92mECDHE-RSA-AES128-GCM-SHA256  [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC030 [92mECDHE-RSA-AES256-GCM-SHA384  [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0x009C AES128-GCM-SHA256            
+Accepted  TLSv1.2  [92m256[0m bits    0x009D AES256-GCM-SHA384            
+Accepted  TLSv1.2  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+Accepted  TLSv1.2  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+Accepted  TLSv1.2  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+[92mPreferred[0m [93mTLSv1.1[0m  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+Accepted  [93mTLSv1.1[0m  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+[92mPreferred[0m [93mTLSv1.0[0m  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+Accepted  [93mTLSv1.0[0m  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+
+  [1;36mServer Key Exchange Group(s):[0m
+TLSv1.3  [92m128[0m bits  secp256r1 (NIST P-256)[0m
+TLSv1.3  [92m128[0m bits  [92mx25519[0m
+TLSv1.3  [92m192[0m bits  [92mX25519MLKEM768[0m
+TLSv1.2  [92m128[0m bits  secp256r1 (NIST P-256)[0m
+TLSv1.2  [92m128[0m bits  [92mx25519[0m
+
+  [1;36mSSL Certificate:[0m
+Signature Algorithm: [92msha256WithRSAEncryption[0m
+ECC Curve Name:      prime256v1
+ECC Key Strength:    128[0m
+
+Subject:  *.google.com
+Altnames: DNS:*.google.com, DNS:*.appengine.google.com, DNS:*.bdn.dev, DNS:*.origin-test.bdn.dev, DNS:*.cloud.google.com, DNS:*.crowdsource.google.com, DNS:*.datacompute.google.com, DNS:*.google.ca, DNS:*.google.cl, DNS:*.google.co.in, DNS:*.google.co.jp, DNS:*.google.co.uk, DNS:*.google.com.ar, DNS:*.google.com.au, DNS:*.google.com.br, DNS:*.google.com.co, DNS:*.google.com.mx, DNS:*.google.com.tr, DNS:*.google.com.vn, DNS:*.google.de, DNS:*.google.es, DNS:*.google.fr, DNS:*.google.hu, DNS:*.google.it, DNS:*.google.nl, DNS:*.google.pl, DNS:*.google.pt, DNS:*.googleapis.cn, DNS:*.googlevideo.com, DNS:*.gstatic.cn, DNS:*.gstatic-cn.com, DNS:googlecnapps.cn, DNS:*.googlecnapps.cn, DNS:googleapps-cn.com, DNS:*.googleapps-cn.com, DNS:gkecnapps.cn, DNS:*.gkecnapps.cn, DNS:googledownloads.cn, DNS:*.googledownloads.cn, DNS:recaptcha.net.cn, DNS:*.recaptcha.net.cn, DNS:recaptcha-cn.net, DNS:*.recaptcha-cn.net, DNS:widevine.cn, DNS:*.widevine.cn, DNS:ampproject.org.cn, DNS:*.ampproject.org.cn, DNS:ampproject.net.cn, DNS:*.ampproject.net.cn, DNS:google-analytics-cn.com, DNS:*.google-analytics-cn.com, DNS:googleadservices-cn.com, DNS:*.googleadservices-cn.com, DNS:googlevads-cn.com, DNS:*.googlevads-cn.com, DNS:googleapis-cn.com, DNS:*.googleapis-cn.com, DNS:googleoptimize-cn.com, DNS:*.googleoptimize-cn.com, DNS:doubleclick-cn.net, DNS:*.doubleclick-cn.net, DNS:*.fls.doubleclick-cn.net, DNS:*.g.doubleclick-cn.net, DNS:doubleclick.cn, DNS:*.doubleclick.cn, DNS:*.fls.doubleclick.cn, DNS:*.g.doubleclick.cn, DNS:dartsearch-cn.net, DNS:*.dartsearch-cn.net, DNS:googletraveladservices-cn.com, DNS:*.googletraveladservices-cn.com, DNS:googletagservices-cn.com, DNS:*.googletagservices-cn.com, DNS:googletagmanager-cn.com, DNS:*.googletagmanager-cn.com, DNS:googlesyndication-cn.com, DNS:*.googlesyndication-cn.com, DNS:*.safeframe.googlesyndication-cn.com, DNS:app-measurement-cn.com, DNS:*.app-measurement-cn.com, DNS:gvt1-cn.com, DNS:*.gvt1-cn.com, DNS:gvt2-cn.com, DNS:*.gvt2-cn.com, DNS:2mdn-cn.net, DNS:*.2mdn-cn.net, DNS:googleflights-cn.net, DNS:*.googleflights-cn.net, DNS:admob-cn.com, DNS:*.admob-cn.com, DNS:*.gemini.cloud.google.com, DNS:googlesandbox-cn.com, DNS:*.googlesandbox-cn.com, DNS:*.safenup.googlesandbox-cn.com, DNS:*.gstatic.com, DNS:*.metric.gstatic.com, DNS:*.gvt1.com, DNS:*.gcpcdn.gvt1.com, DNS:*.gvt2.com, DNS:*.gcp.gvt2.com, DNS:*.url.google.com, DNS:*.youtube-nocookie.com, DNS:*.ytimg.com, DNS:ai.android, DNS:android.com, DNS:*.android.com, DNS:*.flash.android.com, DNS:g.cn, DNS:*.g.cn, DNS:g.co, DNS:*.g.co, DNS:goo.gl, DNS:www.goo.gl, DNS:google-analytics.com, DNS:*.google-analytics.com, DNS:google.com, DNS:googlecommerce.com, DNS:*.googlecommerce.com, DNS:ggpht.cn, DNS:*.ggpht.cn, DNS:urchin.com, DNS:*.urchin.com, DNS:youtu.be, DNS:youtube.com, DNS:*.youtube.com, DNS:music.youtube.com, DNS:*.music.youtube.com, DNS:youtubeeducation.com, DNS:*.youtubeeducation.com, DNS:youtubekids.com, DNS:*.youtubekids.com, DNS:yt.be, DNS:*.yt.be, DNS:android.clients.google.com, DNS:*.android.google.cn, DNS:*.chrome.google.cn, DNS:*.developers.google.cn, DNS:*.aistudio.google.com
+Issuer:   WR2
+
+Not valid before: [92mSep 15 08:34:18 2025 GMT[0m
+Not valid after:  [92mDec  8 08:34:17 2025 GMT[0m
+
+  [1;36mAcceptable client certificate CA names:[0m
+[93mNone defined (any)[0m
+
+[2025-10-08 09:23:29] [+] SSL scan complete. Report saved to D:\NetShieldAI\Services\results\ssl_scanner\ssl_report.xml
+[2025-10-08 09:23:29] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-08 09:23:29] [+] SSL scan and report parsing complete for google.com.
+[2025-10-08 09:23:29] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-08 09:26:32] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-08 09:26:45] [✓] sslscan.exe found.
+[2025-10-08 09:26:45] [*] Starting SSL scan for google.com...
+[2025-10-08 09:26:45] [+] Running local SSL scan on google.com...
+[2025-10-08 09:26:45] [✓] sslscan.exe found.
+[2025-10-08 09:26:45] [*] Executing command: C:\Program Files\sslscan\sslscan.exe --xml=D:\NetShieldAI\Services\results\ssl_scanner\ssl_report.xml --show-client-cas --show-cipher-ids --show-signatures google.com
+[2025-10-08 09:26:58] [SSLScan STDOUT]
+Version: [92m2.2.0 Windows 64-bit (Mingw)[0m
+OpenSSL 3.5.0 8 Apr 2025
+[0m
+[92mConnected to 142.250.183.238[0m
+
+Testing SSL server [92mgoogle.com[0m on port [92m443[0m using SNI name [92mgoogle.com[0m
+
+  [1;36mSSL/TLS Protocols:[0m
+SSLv2     [92mdisabled[0m
+SSLv3     [92mdisabled[0m
+TLSv1.0   [93menabled[0m
+TLSv1.1   [93menabled[0m
+TLSv1.2   enabled
+TLSv1.3   [92menabled[0m
+
+  [1;36mTLS Fallback SCSV:[0m
+Server [92msupports[0m TLS Fallback SCSV
+
+  [1;36mTLS renegotiation:[0m
+[92mSecure[0m session renegotiation supported
+
+  [1;36mTLS Compression:[0m
+Compression [92mdisabled[0m
+
+  [1;36mHeartbleed:[0m
+TLSv1.3 [92mnot vulnerable[0m to heartbleed
+TLSv1.2 [92mnot vulnerable[0m to heartbleed
+TLSv1.1 [92mnot vulnerable[0m to heartbleed
+TLSv1.0 [92mnot vulnerable[0m to heartbleed
+
+  [1;36mSupported Server Cipher(s):[0m
+[92mPreferred[0m [92mTLSv1.3[0m  [92m128[0m bits    0x1301 [92mTLS_AES_128_GCM_SHA256       [0m
+Accepted  [92mTLSv1.3[0m  [92m256[0m bits    0x1302 [92mTLS_AES_256_GCM_SHA384       [0m
+Accepted  [92mTLSv1.3[0m  [92m256[0m bits    0x1303 [92mTLS_CHACHA20_POLY1305_SHA256 [0m
+[92mPreferred[0m TLSv1.2  [92m256[0m bits    0xCCA9 [92mECDHE-ECDSA-CHACHA20-POLY1305[0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC02B [92mECDHE-ECDSA-AES128-GCM-SHA256[0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC02C [92mECDHE-ECDSA-AES256-GCM-SHA384[0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xCCA8 [92mECDHE-RSA-CHACHA20-POLY1305  [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC02F [92mECDHE-RSA-AES128-GCM-SHA256  [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC030 [92mECDHE-RSA-AES256-GCM-SHA384  [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0x009C AES128-GCM-SHA256            
+Accepted  TLSv1.2  [92m256[0m bits    0x009D AES256-GCM-SHA384            
+Accepted  TLSv1.2  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+Accepted  TLSv1.2  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+Accepted  TLSv1.2  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+[92mPreferred[0m [93mTLSv1.1[0m  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+Accepted  [93mTLSv1.1[0m  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+[92mPreferred[0m [93mTLSv1.0[0m  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+Accepted  [93mTLSv1.0[0m  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+
+  [1;36mServer Key Exchange Group(s):[0m
+TLSv1.3  [92m128[0m bits  secp256r1 (NIST P-256)[0m
+TLSv1.3  [92m128[0m bits  [92mx25519[0m
+TLSv1.3  [92m192[0m bits  [92mX25519MLKEM768[0m
+TLSv1.2  [92m128[0m bits  secp256r1 (NIST P-256)[0m
+TLSv1.2  [92m128[0m bits  [92mx25519[0m
+
+  [1;36mSSL Certificate:[0m
+Signature Algorithm: [92msha256WithRSAEncryption[0m
+ECC Curve Name:      prime256v1
+ECC Key Strength:    128[0m
+
+Subject:  *.google.com
+Altnames: DNS:*.google.com, DNS:*.appengine.google.com, DNS:*.bdn.dev, DNS:*.origin-test.bdn.dev, DNS:*.cloud.google.com, DNS:*.crowdsource.google.com, DNS:*.datacompute.google.com, DNS:*.google.ca, DNS:*.google.cl, DNS:*.google.co.in, DNS:*.google.co.jp, DNS:*.google.co.uk, DNS:*.google.com.ar, DNS:*.google.com.au, DNS:*.google.com.br, DNS:*.google.com.co, DNS:*.google.com.mx, DNS:*.google.com.tr, DNS:*.google.com.vn, DNS:*.google.de, DNS:*.google.es, DNS:*.google.fr, DNS:*.google.hu, DNS:*.google.it, DNS:*.google.nl, DNS:*.google.pl, DNS:*.google.pt, DNS:*.googleapis.cn, DNS:*.googlevideo.com, DNS:*.gstatic.cn, DNS:*.gstatic-cn.com, DNS:googlecnapps.cn, DNS:*.googlecnapps.cn, DNS:googleapps-cn.com, DNS:*.googleapps-cn.com, DNS:gkecnapps.cn, DNS:*.gkecnapps.cn, DNS:googledownloads.cn, DNS:*.googledownloads.cn, DNS:recaptcha.net.cn, DNS:*.recaptcha.net.cn, DNS:recaptcha-cn.net, DNS:*.recaptcha-cn.net, DNS:widevine.cn, DNS:*.widevine.cn, DNS:ampproject.org.cn, DNS:*.ampproject.org.cn, DNS:ampproject.net.cn, DNS:*.ampproject.net.cn, DNS:google-analytics-cn.com, DNS:*.google-analytics-cn.com, DNS:googleadservices-cn.com, DNS:*.googleadservices-cn.com, DNS:googlevads-cn.com, DNS:*.googlevads-cn.com, DNS:googleapis-cn.com, DNS:*.googleapis-cn.com, DNS:googleoptimize-cn.com, DNS:*.googleoptimize-cn.com, DNS:doubleclick-cn.net, DNS:*.doubleclick-cn.net, DNS:*.fls.doubleclick-cn.net, DNS:*.g.doubleclick-cn.net, DNS:doubleclick.cn, DNS:*.doubleclick.cn, DNS:*.fls.doubleclick.cn, DNS:*.g.doubleclick.cn, DNS:dartsearch-cn.net, DNS:*.dartsearch-cn.net, DNS:googletraveladservices-cn.com, DNS:*.googletraveladservices-cn.com, DNS:googletagservices-cn.com, DNS:*.googletagservices-cn.com, DNS:googletagmanager-cn.com, DNS:*.googletagmanager-cn.com, DNS:googlesyndication-cn.com, DNS:*.googlesyndication-cn.com, DNS:*.safeframe.googlesyndication-cn.com, DNS:app-measurement-cn.com, DNS:*.app-measurement-cn.com, DNS:gvt1-cn.com, DNS:*.gvt1-cn.com, DNS:gvt2-cn.com, DNS:*.gvt2-cn.com, DNS:2mdn-cn.net, DNS:*.2mdn-cn.net, DNS:googleflights-cn.net, DNS:*.googleflights-cn.net, DNS:admob-cn.com, DNS:*.admob-cn.com, DNS:*.gemini.cloud.google.com, DNS:googlesandbox-cn.com, DNS:*.googlesandbox-cn.com, DNS:*.safenup.googlesandbox-cn.com, DNS:*.gstatic.com, DNS:*.metric.gstatic.com, DNS:*.gvt1.com, DNS:*.gcpcdn.gvt1.com, DNS:*.gvt2.com, DNS:*.gcp.gvt2.com, DNS:*.url.google.com, DNS:*.youtube-nocookie.com, DNS:*.ytimg.com, DNS:ai.android, DNS:android.com, DNS:*.android.com, DNS:*.flash.android.com, DNS:g.cn, DNS:*.g.cn, DNS:g.co, DNS:*.g.co, DNS:goo.gl, DNS:www.goo.gl, DNS:google-analytics.com, DNS:*.google-analytics.com, DNS:google.com, DNS:googlecommerce.com, DNS:*.googlecommerce.com, DNS:ggpht.cn, DNS:*.ggpht.cn, DNS:urchin.com, DNS:*.urchin.com, DNS:youtu.be, DNS:youtube.com, DNS:*.youtube.com, DNS:music.youtube.com, DNS:*.music.youtube.com, DNS:youtubeeducation.com, DNS:*.youtubeeducation.com, DNS:youtubekids.com, DNS:*.youtubekids.com, DNS:yt.be, DNS:*.yt.be, DNS:android.clients.google.com, DNS:*.android.google.cn, DNS:*.chrome.google.cn, DNS:*.developers.google.cn, DNS:*.aistudio.google.com
+Issuer:   WR2
+
+Not valid before: [92mSep 15 08:34:18 2025 GMT[0m
+Not valid after:  [92mDec  8 08:34:17 2025 GMT[0m
+
+  [1;36mAcceptable client certificate CA names:[0m
+[93mNone defined (any)[0m
+
+[2025-10-08 09:26:58] [+] SSL scan complete. Report saved to D:\NetShieldAI\Services\results\ssl_scanner\ssl_report.xml
+[2025-10-08 09:26:58] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-08 09:26:58] [+] SSL scan and report parsing complete for google.com.
+[2025-10-08 09:26:58] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-08 09:27:28] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-08 09:27:43] [✓] sslscan.exe found.
+[2025-10-08 09:27:43] [*] Starting SSL scan for google.com...
+[2025-10-08 09:27:43] [+] Running local SSL scan on google.com...
+[2025-10-08 09:27:43] [✓] sslscan.exe found.
+[2025-10-08 09:27:43] [*] Executing command: C:\Program Files\sslscan\sslscan.exe --xml=D:\NetShieldAI\Services\results\ssl_scanner\ssl_report.xml --show-client-cas --show-cipher-ids --show-signatures google.com
+[2025-10-08 09:27:48] [SSLScan STDOUT]
+Version: [92m2.2.0 Windows 64-bit (Mingw)[0m
+OpenSSL 3.5.0 8 Apr 2025
+[0m
+[92mConnected to 142.251.221.238[0m
+
+Testing SSL server [92mgoogle.com[0m on port [92m443[0m using SNI name [92mgoogle.com[0m
+
+  [1;36mSSL/TLS Protocols:[0m
+SSLv2     [92mdisabled[0m
+SSLv3     [92mdisabled[0m
+TLSv1.0   [93menabled[0m
+TLSv1.1   [93menabled[0m
+TLSv1.2   enabled
+TLSv1.3   [92menabled[0m
+
+  [1;36mTLS Fallback SCSV:[0m
+Server [92msupports[0m TLS Fallback SCSV
+
+  [1;36mTLS renegotiation:[0m
+[92mSecure[0m session renegotiation supported
+
+  [1;36mTLS Compression:[0m
+Compression [92mdisabled[0m
+
+  [1;36mHeartbleed:[0m
+TLSv1.3 [92mnot vulnerable[0m to heartbleed
+TLSv1.2 [92mnot vulnerable[0m to heartbleed
+TLSv1.1 [92mnot vulnerable[0m to heartbleed
+TLSv1.0 [92mnot vulnerable[0m to heartbleed
+
+  [1;36mSupported Server Cipher(s):[0m
+[92mPreferred[0m [92mTLSv1.3[0m  [92m128[0m bits    0x1301 [92mTLS_AES_128_GCM_SHA256       [0m
+Accepted  [92mTLSv1.3[0m  [92m256[0m bits    0x1302 [92mTLS_AES_256_GCM_SHA384       [0m
+Accepted  [92mTLSv1.3[0m  [92m256[0m bits    0x1303 [92mTLS_CHACHA20_POLY1305_SHA256 [0m
+[92mPreferred[0m TLSv1.2  [92m256[0m bits    0xCCA9 [92mECDHE-ECDSA-CHACHA20-POLY1305[0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC02B [92mECDHE-ECDSA-AES128-GCM-SHA256[0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC02C [92mECDHE-ECDSA-AES256-GCM-SHA384[0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xCCA8 [92mECDHE-RSA-CHACHA20-POLY1305  [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC02F [92mECDHE-RSA-AES128-GCM-SHA256  [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC030 [92mECDHE-RSA-AES256-GCM-SHA384  [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  TLSv1.2  [92m128[0m bits    0x009C AES128-GCM-SHA256            
+Accepted  TLSv1.2  [92m256[0m bits    0x009D AES256-GCM-SHA384            
+Accepted  TLSv1.2  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+Accepted  TLSv1.2  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+Accepted  TLSv1.2  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+[92mPreferred[0m [93mTLSv1.1[0m  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.1[0m  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+Accepted  [93mTLSv1.1[0m  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+[92mPreferred[0m [93mTLSv1.0[0m  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+Accepted  [93mTLSv1.0[0m  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+Accepted  [93mTLSv1.0[0m  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+
+  [1;36mServer Key Exchange Group(s):[0m
+TLSv1.3  [92m128[0m bits  secp256r1 (NIST P-256)[0m
+TLSv1.3  [92m128[0m bits  [92mx25519[0m
+TLSv1.3  [92m192[0m bits  [92mX25519MLKEM768[0m
+TLSv1.2  [92m128[0m bits  secp256r1 (NIST P-256)[0m
+TLSv1.2  [92m128[0m bits  [92mx25519[0m
+
+  [1;36mSSL Certificate:[0m
+Signature Algorithm: [92msha256WithRSAEncryption[0m
+ECC Curve Name:      prime256v1
+ECC Key Strength:    128[0m
+
+Subject:  *.google.com
+Altnames: DNS:*.google.com, DNS:*.appengine.google.com, DNS:*.bdn.dev, DNS:*.origin-test.bdn.dev, DNS:*.cloud.google.com, DNS:*.crowdsource.google.com, DNS:*.datacompute.google.com, DNS:*.google.ca, DNS:*.google.cl, DNS:*.google.co.in, DNS:*.google.co.jp, DNS:*.google.co.uk, DNS:*.google.com.ar, DNS:*.google.com.au, DNS:*.google.com.br, DNS:*.google.com.co, DNS:*.google.com.mx, DNS:*.google.com.tr, DNS:*.google.com.vn, DNS:*.google.de, DNS:*.google.es, DNS:*.google.fr, DNS:*.google.hu, DNS:*.google.it, DNS:*.google.nl, DNS:*.google.pl, DNS:*.google.pt, DNS:*.googleapis.cn, DNS:*.googlevideo.com, DNS:*.gstatic.cn, DNS:*.gstatic-cn.com, DNS:googlecnapps.cn, DNS:*.googlecnapps.cn, DNS:googleapps-cn.com, DNS:*.googleapps-cn.com, DNS:gkecnapps.cn, DNS:*.gkecnapps.cn, DNS:googledownloads.cn, DNS:*.googledownloads.cn, DNS:recaptcha.net.cn, DNS:*.recaptcha.net.cn, DNS:recaptcha-cn.net, DNS:*.recaptcha-cn.net, DNS:widevine.cn, DNS:*.widevine.cn, DNS:ampproject.org.cn, DNS:*.ampproject.org.cn, DNS:ampproject.net.cn, DNS:*.ampproject.net.cn, DNS:google-analytics-cn.com, DNS:*.google-analytics-cn.com, DNS:googleadservices-cn.com, DNS:*.googleadservices-cn.com, DNS:googlevads-cn.com, DNS:*.googlevads-cn.com, DNS:googleapis-cn.com, DNS:*.googleapis-cn.com, DNS:googleoptimize-cn.com, DNS:*.googleoptimize-cn.com, DNS:doubleclick-cn.net, DNS:*.doubleclick-cn.net, DNS:*.fls.doubleclick-cn.net, DNS:*.g.doubleclick-cn.net, DNS:doubleclick.cn, DNS:*.doubleclick.cn, DNS:*.fls.doubleclick.cn, DNS:*.g.doubleclick.cn, DNS:dartsearch-cn.net, DNS:*.dartsearch-cn.net, DNS:googletraveladservices-cn.com, DNS:*.googletraveladservices-cn.com, DNS:googletagservices-cn.com, DNS:*.googletagservices-cn.com, DNS:googletagmanager-cn.com, DNS:*.googletagmanager-cn.com, DNS:googlesyndication-cn.com, DNS:*.googlesyndication-cn.com, DNS:*.safeframe.googlesyndication-cn.com, DNS:app-measurement-cn.com, DNS:*.app-measurement-cn.com, DNS:gvt1-cn.com, DNS:*.gvt1-cn.com, DNS:gvt2-cn.com, DNS:*.gvt2-cn.com, DNS:2mdn-cn.net, DNS:*.2mdn-cn.net, DNS:googleflights-cn.net, DNS:*.googleflights-cn.net, DNS:admob-cn.com, DNS:*.admob-cn.com, DNS:*.gemini.cloud.google.com, DNS:googlesandbox-cn.com, DNS:*.googlesandbox-cn.com, DNS:*.safenup.googlesandbox-cn.com, DNS:*.gstatic.com, DNS:*.metric.gstatic.com, DNS:*.gvt1.com, DNS:*.gcpcdn.gvt1.com, DNS:*.gvt2.com, DNS:*.gcp.gvt2.com, DNS:*.url.google.com, DNS:*.youtube-nocookie.com, DNS:*.ytimg.com, DNS:ai.android, DNS:android.com, DNS:*.android.com, DNS:*.flash.android.com, DNS:g.cn, DNS:*.g.cn, DNS:g.co, DNS:*.g.co, DNS:goo.gl, DNS:www.goo.gl, DNS:google-analytics.com, DNS:*.google-analytics.com, DNS:google.com, DNS:googlecommerce.com, DNS:*.googlecommerce.com, DNS:ggpht.cn, DNS:*.ggpht.cn, DNS:urchin.com, DNS:*.urchin.com, DNS:youtu.be, DNS:youtube.com, DNS:*.youtube.com, DNS:music.youtube.com, DNS:*.music.youtube.com, DNS:youtubeeducation.com, DNS:*.youtubeeducation.com, DNS:youtubekids.com, DNS:*.youtubekids.com, DNS:yt.be, DNS:*.yt.be, DNS:android.clients.google.com, DNS:*.android.google.cn, DNS:*.chrome.google.cn, DNS:*.developers.google.cn, DNS:*.aistudio.google.com
+Issuer:   WR2
+
+Not valid before: [92mSep 15 08:34:18 2025 GMT[0m
+Not valid after:  [92mDec  8 08:34:17 2025 GMT[0m
+
+  [1;36mAcceptable client certificate CA names:[0m
+[93mNone defined (any)[0m
+
+[2025-10-08 09:27:48] [+] SSL scan complete. Report saved to D:\NetShieldAI\Services\results\ssl_scanner\ssl_report.xml
+[2025-10-08 09:27:48] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-08 09:27:48] [+] SSL scan and report parsing complete for google.com.
+[2025-10-08 09:27:48] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-09 16:59:07] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-09 17:15:32] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-09 17:19:51] [+] SSLScan report 'ssl_report.xml' parsed successfully.
+[2025-10-10 22:25:40] [+] SSLScan report 'ssl_report.xml' parsed successfully.

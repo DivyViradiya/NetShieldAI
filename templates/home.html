@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetShieldAI - Secure Your Digital Assets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        /*******************************************/
+        /* --- ORIGINAL NAVBAR/DROPDOWN STYLES --- */
+        /* --- UNCHANGED AS PER REQUEST --- */
+        /*******************************************/
+        .navbar {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.75rem;
+            color: #1a202c;
+            letter-spacing: -0.025em;
+        }
+
+        .navbar-brand a {
+            text-decoration: none;
+            color: #1a202c;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-brand a:hover {
+            color: #0d121c;
+        }
+
+        .navbar-brand .ai-text {
+            color: #4299e1;
+        }
+
+        .navbar-links {
+            list-style: none;
+            display: flex;
+            gap: 2.5rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-links li a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 600;
+            transition: color 0.3s ease, transform 0.2s ease;
+            position: relative;
+        }
+
+        .navbar-links li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #4299e1;
+            transition: width 0.3s ease-out;
+        }
+
+        .navbar-links li a:hover {
+            color: #2b6cb0;
+            transform: translateY(-2px);
+        }
+
+        .navbar-links li a:hover::after {
+            width: 100%;
+        }
+
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-button-text {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0;
+        }
+
+        .profile-button-text .arrow-down {
+            font-size: 0.6rem;
+            margin-top: 2px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .profile-button-text.open .arrow-down {
+            transform: rotate(180deg);
+        }
+
+        .profile-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 1rem;
+            background-color: #ffffff;
+            min-width: 260px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+            z-index: 1;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        
+        .profile-dropdown-content .user-info {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .profile-dropdown-content .user-info .username {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1rem;
+        }
+
+        .profile-dropdown-content .user-info .email {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .profile-dropdown-content .details {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: #475569;
+        }
+        
+        .profile-dropdown-content .details p {
+            margin: 0.5rem 0;
+        }
+
+        .profile-dropdown-content a.logout-link {
+            color: #ef4444;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .profile-dropdown-content a.logout-link:hover {
+            background-color: #fef2f2;
+        }
+        
+        /*********************************/
+        /* --- NEW REVAMPED STYLES --- */
+        /*********************************/
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 5rem;
+            color: #334155;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* ADJUSTED Animated Background Shapes for more visibility */
+        @keyframes move-shape {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(10vw, 20vh) rotate(90deg) scale(1.1); }
+            50% { transform: translate(-15vw, 40vh) rotate(180deg) scale(1); }
+            75% { transform: translate(5vw, -10vh) rotate(270deg) scale(1.1); }
+            100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+        }
+
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            z-index: -1;
+            border-radius: 50%;
+            background-color: #dbeafe; /* Slightly more saturated light blue */
+            opacity: 0.6; /* Increased opacity */
+            filter: blur(35px); /* Reduced blur */
+        }
+
+        body::before {
+            width: 350px; /* Increased size */
+            height: 350px;
+            top: 10vh;
+            left: 5vw;
+            animation: move-shape 40s infinite linear alternate;
+        }
+
+        body::after {
+            width: 450px; /* Increased size */
+            height: 450px;
+            bottom: 5vh;
+            right: 10vw;
+            animation: move-shape 55s infinite linear alternate-reverse;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hero-section {
+            background-color: transparent;
+            text-align: center;
+            padding: 5rem 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .hero-section h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.25;
+            color: #1e293b;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .hero-section p {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto 2.5rem auto;
+            color: #4a5568;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: #3b82f6;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s, box-shadow 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 2rem;
+            max-width: 1200px;
+            margin: 0 auto 4rem auto;
+            gap: 3rem;
+        }
+        
+        .section-card {
+            background-color: rgba(255, 255, 255, 0.8); /* a bit less transparent */
+            backdrop-filter: blur(10px); /* slightly more blur for effect */
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+            border: 1px solid #eef2f7;
+            padding: 3rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .section-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2.5rem;
+            position: relative;
+            padding-bottom: 1rem;
+            text-align: center;
+        }
+
+        .section-card h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: #4299e1;
+            border-radius: 1.5px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .tool-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-icon {
+            font-size: 3.5rem;
+            color: #3b82f6;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .tool-card:hover .tool-icon {
+            transform: scale(1.1);
+        }
+
+        .tool-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-content p {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        
+        .chatbot-card {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+            border: 1px solid #eef2f7;
+            padding: 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 3rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .chatbot-text-content {
+            text-align: left;
+        }
+        
+        .chatbot-card h2 {
+            font-size: 2rem;
+            text-align: left;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .chatbot-card h2::after {
+            display: none;
+        }
+
+        .chatbot-card p {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            color: #4a5568;
+            text-align: left;
+        }
+
+        .chat-demo-window {
+            background: #f1f5f9;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        @keyframes slideUpFadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            margin-bottom: 0.75rem;
+            max-width: 80%;
+            line-height: 1.4;
+            opacity: 0;
+            animation: slideUpFadeIn 0.5s ease-out forwards;
+        }
+
+        .chat-bubble.user {
+            background-color: #3b82f6;
+            color: white;
+            border-bottom-right-radius: 0.25rem;
+            align-self: flex-end;
+            animation-delay: 0.5s;
+        }
+
+        .chat-bubble.ai {
+            background-color: #e2e8f0;
+            color: #1e293b;
+            border-bottom-left-radius: 0.25rem;
+            align-self: flex-start;
+            animation-delay: 1.5s;
+        }
+        
+        .chat-bubble.typing {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 1rem 1rem;
+            animation-delay: 2.5s;
+        }
+
+        @keyframes dot-bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+        
+        .chat-bubble.typing span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #94a3b8;
+            animation: dot-bounce 1.2s infinite;
+        }
+        .chat-bubble.typing span:nth-child(2) { animation-delay: 0.2s; }
+        .chat-bubble.typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        .fade-in-element.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /*********************************/
+        /* --- ORIGINAL FOOTER STYLES -- */
+        /* --- UNCHANGED AS PER REQUEST -- */
+        /*********************************/
+        footer {
+            background-color: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            width: 100%;
+            margin-top: auto;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+            color: #cbd5e1;
+        }
+        
+        /******************************/
+        /* --- RESPONSIVE STYLES --- */
+        /******************************/
+        @media (max-width: 1024px) {
+            .main-content {
+                max-width: 700px;
+                padding: 0 1.5rem;
+            }
+            .tools-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+            .chatbot-card {
+                grid-template-columns: 1fr;
+            }
+            .chat-demo-window {
+                margin-top: 2rem;
+            }
+            .chatbot-text-content {
+                text-align: center;
+            }
+            .chatbot-card h2, .chatbot-card p {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 1rem;
+            }
+            .navbar-brand {
+                font-size: 1.4rem;
+            }
+            .navbar-links {
+                display: none;
+            }
+            body {
+                padding-top: 4rem;
+            }
+            .hero-section {
+                padding: 4rem 1rem;
+            }
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+            .hero-section p {
+                font-size: 1rem;
+            }
+            .section-card, .chatbot-card {
+                padding: 2rem 1.5rem;
+            }
+            .section-card h2, .chatbot-card h2 {
+                font-size: 1.8rem;
+            }
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a href="/">NetShield<span class="ai-text">AI</span></a>
+        </div>
+        <ul class="navbar-links">
+            <li><a href="/network_scanner">Network Scanning</a></li>
+            <li><a href="/zap_scanner">Web Application Scanning</a></li>
+            <li><a href="/ssl_scanner">SSL Scans</a></li>
+            <li><a href="/chatbot">AI Chatbot</a></li>
+            
+            <!--
+            {% if session.username %}
+                <li class="profile-dropdown">
+                    <button id="profile-button" class="profile-button-text">
+                        <span>{{ session.username }}</span>
+                        <span class="arrow-down">&#9662;</span>
+                    </button>
+                    <div id="profile-dropdown-content" class="profile-dropdown-content">
+                        <div class="user-info">
+                            <p class="username">{{ session.username }}</p>
+                            <p class="email">{{ session.email }}</p>
+                        </div>
+                        <div class="details">
+                            <p><strong>Plan:</strong> {{ session.subscription_plan }}</p>
+                            <p><strong>Phone:</strong> {{ session.phone_number or 'N/A' }}</p>
+                            {% if session.subscription_expiry %}
+                                <p><strong>Expires:</strong> {{ session.subscription_expiry.split('T')[0] }}</p>
+                            {% endif %}
+                        </div>
+                        <a href="{{ url_for('auth.logout_route') }}" class="logout-link">Logout</a>
+                    </div>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ url_for('auth.login') }}">Login</a>
+                </li>
+            {% endif %}
+            -->
+        </ul>
+    </nav>
+
+    <div class="hero-section">
+        <h1 class="fade-in-element">Detect, Protect and Prevent with NetShieldAI</h1>
+        <p class="fade-in-element">
+            Harness the power of AI-driven vulnerability scanning and proactive security insights to protect your digital assets.
+        </p>
+        <a href="/network_scanner" class="btn-primary fade-in-element">
+            Get Started
+            <span class="material-symbols-outlined">chevron_right</span>
+        </a>
+    </div>
+
+    <main class="main-content">
+        <div class="panel-wrapper">
+            <div class="section-card fade-in-element">
+                <h2>Our Powerful Scanning Tools</h2>
+                <div class="tools-grid">
+                    <a href="/network_scanner" class="tool-card">
+                        <span class="material-symbols-outlined tool-icon">router</span>
+                        <div class="tool-content">
+                            <h3>Network Scanning</h3>
+                            <p>
+                                Identify open ports, services, and potential vulnerabilities across your network infrastructure.
+                            </p>
+                        </div>
+                    </a>
+                    <a href="/zap_scanner" class="tool-card">
+                        <span class="material-symbols-outlined tool-icon">web_asset</span>
+                        <div class="tool-content">
+                            <h3>Web Application Scanning</h3>
+                            <p>
+                                Detect critical web vulnerabilities such as SQL Injection, XSS, and more in your web applications and APIs.
+                            </p>
+                        </div>
+                    </a>
+                    <a href="/ssl_scanner" class="tool-card">
+                        <span class="material-symbols-outlined tool-icon">lock</span>
+                        <div class="tool-content">
+                            <h3>SSL/TLS Security Scans</h3>
+                            <p>
+                                Assess the strength and configuration of your SSL/TLS certificates and protocols to ensure robust encryption.
+                            </p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-wrapper">
+            <div class="chatbot-card fade-in-element">
+                <div class="chatbot-text-content">
+                    <h2>NetShieldAI Chatbot</h2>
+                    <p>
+                        Go beyond raw data. Our intelligent AI chatbot helps you understand scan reports, explains vulnerabilities, and provides actionable remediation advice.
+                    </p>
+                    <a href="/chatbot" class="btn-primary">
+                        Chat with AI Now
+                        <span class="material-symbols-outlined">chat_bubble</span>
+                    </a>
+                </div>
+                <div class="chat-demo-window">
+                    <div class="chat-bubble user">Can you explain CVE-2024-1234?</div>
+                    <div class="chat-bubble ai">Of course. CVE-2024-1234 is a critical remote code execution vulnerability...</div>
+                    <div class="chat-bubble ai typing">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 NetShieldAI. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Original dropdown script
+            const profileButton = document.getElementById('profile-button');
+            const dropdownContent = document.getElementById('profile-dropdown-content');
+
+            if (profileButton) {
+                profileButton.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    const isVisible = dropdownContent.style.display === 'block';
+                    dropdownContent.style.display = isVisible ? 'none' : 'block';
+                    profileButton.classList.toggle('open', !isVisible);
+                });
+            }
+
+            window.addEventListener('click', function(event) {
+                if (dropdownContent && !dropdownContent.contains(event.target) && (!profileButton || !profileButton.contains(event.target))) {
+                    dropdownContent.style.display = 'none';
+                    if (profileButton) {
+                        profileButton.classList.remove('open');
+                    }
+                }
+            });
+
+            // Scroll animation script
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            const elementsToAnimate = document.querySelectorAll('.fade-in-element');
+            elementsToAnimate.forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# Nmap 7.97 scan initiated Fri Aug  8 17:39:40 2025 as: nmap -O --osscan-limit -T4 -oG D:\\VulnScanAI\\Services\\results\\network_scanner\\scan_result_os.txt 192.168.29.48
+Host: 192.168.29.48 ()	Status: Up
+Host: 192.168.29.48 ()	Ports: 135/open/tcp//msrpc///, 139/open/tcp//netbios-ssn///, 445/open/tcp//microsoft-ds///, 5100/open/tcp//admd///	Ignored State: closed (996)	Seq Index: 256	IP ID Seq: Incremental
+# Nmap done at Fri Aug  8 17:39:51 2025 -- 1 IP address (1 host up) scanned in 10.95 seconds

@@ -1,0 +1,206 @@
+[2025-08-08 17:52:50] [*] Log file cleared.
+[2025-08-08 17:55:58] [*] Local IP requested: 192.168.29.48
+[2025-08-08 17:56:00] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-08-08 17:56:00] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-08-08 17:56:00] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-08-08 17:56:07] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-08-08 17:56:44] [*] Local IP requested: 192.168.29.48
+[2025-08-08 17:56:46] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-08-08 17:56:46] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-08-08 17:56:46] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-08-08 17:56:53] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-08-08 17:57:02] [*] Local IP requested: 192.168.29.48
+[2025-08-08 17:57:04] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-08-08 17:57:04] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-08-08 17:57:04] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-08-08 17:57:11] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-08-08 18:00:21] [*] Local IP requested: 192.168.29.48
+[2025-08-08 18:00:23] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-08-08 18:00:23] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-08-08 18:00:23] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-08-08 18:00:31] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-08-08 18:00:49] [*] Local IP requested: 192.168.29.48
+[2025-08-08 18:01:56] [*] Local IP requested: 192.168.29.48
+[2025-08-08 18:01:57] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-08-08 18:01:57] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-08-08 18:01:57] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-08-08 18:02:04] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-08-08 18:02:12] [*] Local IP requested: 192.168.29.48
+[2025-08-08 18:41:20] [*] Local IP requested: 192.168.29.48
+[2025-08-08 18:50:13] [*] Local IP requested: 192.168.29.48
+[2025-08-08 18:55:25] [*] Local IP requested: 192.168.29.48
+[2025-08-08 18:57:25] [*] Local IP requested: 192.168.29.48
+[2025-08-08 18:57:30] [*] Local IP requested: 192.168.29.48
+[2025-08-08 19:00:16] [*] Local IP requested: 192.168.29.48
+[2025-08-08 19:00:21] [*] Local IP requested: 192.168.29.48
+[2025-08-08 19:00:29] [*] Local IP requested: 192.168.29.48
+[2025-08-08 19:01:26] [*] Local IP requested: 192.168.29.48
+[2025-08-08 20:32:19] [*] Local IP requested: 192.168.29.48
+[2025-08-08 20:32:23] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-08-08 20:32:23] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-08-08 20:32:23] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-08-08 20:32:30] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-08-08 20:32:33] [*] Local IP requested: 192.168.29.48
+[2025-08-08 20:34:00] [*] Local IP requested: 192.168.29.48
+[2025-08-08 20:40:27] [*] Local IP requested: 192.168.29.48
+[2025-08-08 20:55:26] [*] Local IP requested: 192.168.29.48
+[2025-08-09 16:35:00] [*] Local IP requested: 192.168.29.48
+[2025-08-09 16:35:49] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:05:49] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:05:50] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-08-09 17:05:50] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-08-09 17:05:51] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-08-09 17:05:58] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-08-09 17:06:01] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:14:53] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:14:58] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:15:01] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:15:30] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:17:33] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:38:16] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:38:22] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:38:36] [*] Local IP requested: 192.168.29.48
+[2025-08-09 17:39:17] [*] Local IP requested: 192.168.29.48
+[2025-08-10 12:56:59] [*] Local IP requested: 192.168.29.48
+[2025-08-10 12:57:05] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-08-10 12:57:05] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-08-10 12:57:05] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-08-10 12:57:15] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-08-10 12:57:40] [*] Local IP requested: 192.168.29.48
+[2025-08-11 12:02:11] [*] Local IP requested: 127.0.0.1
+[2025-08-11 12:02:22] [*] Local IP requested: 127.0.0.1
+[2025-08-11 12:02:25] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:08:39] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:08:45] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:08:55] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:44:25] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:45:44] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:47:58] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:48:01] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:48:36] [*] Starting DEFAULT TCP scan for 10.110.10.169...
+[2025-08-11 14:48:36] [+] Running TCP (Top 1000 Ports) scan on 10.110.10.169...
+[2025-08-11 14:48:36] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 10.110.10.169
+[2025-08-11 14:48:47] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-08-11 14:48:55] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:57:03] [*] Local IP requested: 127.0.0.1
+[2025-08-11 14:57:08] [*] Local IP requested: 127.0.0.1
+[2025-08-13 14:40:11] [*] Local IP requested: 127.0.0.1
+[2025-08-13 15:14:28] [*] Local IP requested: 127.0.0.1
+[2025-08-25 13:31:43] [*] Local IP requested: 127.0.0.1
+[2025-08-25 13:31:53] [*] Local IP requested: 127.0.0.1
+[2025-08-26 11:04:12] [*] Local IP requested: 127.0.0.1
+[2025-08-26 11:04:16] [*] Local IP requested: 127.0.0.1
+[2025-08-26 11:04:16] [*] Local IP requested: 127.0.0.1
+[2025-08-26 11:04:16] [*] Local IP requested: 127.0.0.1
+[2025-08-26 11:04:37] [*] Starting DEFAULT TCP scan for 192.168.0.191...
+[2025-08-26 11:04:37] [+] Running TCP (Top 1000 Ports) scan on 192.168.0.191...
+[2025-08-26 11:04:37] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.0.191
+[2025-08-26 11:05:08] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\VulnScanAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-09-12 22:21:17] [*] Local IP requested: 192.168.0.124
+[2025-09-19 14:45:21] [*] Local IP requested: 127.0.0.1
+[2025-09-19 14:45:25] [*] Local IP requested: 127.0.0.1
+[2025-09-19 14:48:23] [*] Local IP requested: 192.168.62.11
+[2025-09-22 18:21:15] [*] Local IP requested: 192.168.29.48
+[2025-09-22 18:21:17] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-09-22 18:21:17] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-09-22 18:21:17] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-09-22 18:21:24] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-09-22 18:21:30] [*] Local IP requested: 192.168.29.48
+[2025-09-24 14:20:06] [*] Local IP requested: 192.168.29.48
+[2025-09-24 14:20:11] [*] Local IP requested: 192.168.29.48
+[2025-09-25 10:58:52] [*] Local IP requested: 127.0.0.1
+[2025-09-25 11:00:06] [*] Local IP requested: 127.0.0.1
+[2025-09-25 11:02:53] [*] Local IP requested: 127.0.0.1
+[2025-09-25 11:02:56] [*] Local IP requested: 127.0.0.1
+[2025-09-25 11:03:12] [*] Local IP requested: 127.0.0.1
+[2025-09-25 17:13:22] [*] Local IP requested: 127.0.0.1
+[2025-09-25 17:16:33] [*] Local IP requested: 127.0.0.1
+[2025-09-30 14:07:06] [*] Local IP requested: 127.0.0.1
+[2025-09-30 14:07:58] [*] Local IP requested: 127.0.0.1
+[2025-09-30 14:17:46] [*] Local IP requested: 127.0.0.1
+[2025-09-30 14:18:25] [*] Starting DEFAULT TCP scan for 10.120.100.183...
+[2025-09-30 14:18:25] [+] Running TCP (Top 1000 Ports) scan on 10.120.100.183...
+[2025-09-30 14:18:25] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.120.100.183
+[2025-09-30 14:18:41] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-09-30 14:18:49] [*] Local IP requested: 127.0.0.1
+[2025-09-30 14:25:30] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:06:59] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:07:28] [*] Starting DEFAULT TCP scan for 10.120.100.183...
+[2025-09-30 15:07:28] [+] Running TCP (Top 1000 Ports) scan on 10.120.100.183...
+[2025-09-30 15:07:28] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.120.100.183
+[2025-09-30 15:07:40] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-09-30 15:07:50] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:09:47] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:10:05] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:10:27] [*] Starting DEFAULT TCP scan for 10.120.100.183...
+[2025-09-30 15:10:27] [+] Running TCP (Top 1000 Ports) scan on 10.120.100.183...
+[2025-09-30 15:10:27] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.120.100.183
+[2025-09-30 15:10:39] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-09-30 15:16:23] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:18:47] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:23:55] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:26:57] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:27:39] [*] Local IP requested: 127.0.0.1
+[2025-09-30 15:30:02] [*] Local IP requested: 127.0.0.1
+[2025-09-30 16:08:42] [*] Local IP requested: 127.0.0.1
+[2025-09-30 16:09:02] [*] Local IP requested: 127.0.0.1
+[2025-09-30 16:15:49] [*] Local IP requested: 127.0.0.1
+[2025-09-30 16:15:54] [*] Attempting to block 5 detected ports...
+[2025-09-30 16:16:00] [+] Firewall rule 'Block_VulnScanAI_TCP_Port_135' created to block TCP port 135.
+[2025-09-30 16:16:04] [✓] TCP Port 135 successfully blocked and verified.
+[2025-09-30 16:16:06] [+] Firewall rule 'Block_VulnScanAI_TCP_Port_139' created to block TCP port 139.
+[2025-09-30 16:16:09] [✓] TCP Port 139 successfully blocked and verified.
+[2025-09-30 16:16:11] [+] Firewall rule 'Block_VulnScanAI_TCP_Port_445' created to block TCP port 445.
+[2025-09-30 16:16:14] [✓] TCP Port 445 successfully blocked and verified.
+[2025-09-30 16:16:16] [+] Firewall rule 'Block_VulnScanAI_TCP_Port_5000' created to block TCP port 5000.
+[2025-09-30 16:16:19] [✓] TCP Port 5000 successfully blocked and verified.
+[2025-09-30 16:16:21] [+] Firewall rule 'Block_VulnScanAI_TCP_Port_5100' created to block TCP port 5100.
+[2025-09-30 16:16:24] [✓] TCP Port 5100 successfully blocked and verified.
+[2025-09-30 16:16:24] [+] Port blocking process completed.
+[2025-09-30 16:16:46] [*] Local IP requested: 127.0.0.1
+[2025-09-30 16:17:55] [*] Local IP requested: 127.0.0.1
+[2025-09-30 16:37:23] [*] Local IP requested: 127.0.0.1
+[2025-10-07 14:18:29] [*] Local IP requested: 127.0.0.1
+[2025-10-07 14:19:50] [*] Starting DEFAULT TCP scan for 10.120.106.112...
+[2025-10-07 14:19:50] [+] Running TCP (Top 1000 Ports) scan on 10.120.106.112...
+[2025-10-07 14:19:50] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.120.106.112
+[2025-10-07 14:20:02] [*] Starting DEFAULT TCP scan for 10.120.106.112...
+[2025-10-07 14:20:02] [+] Running TCP (Top 1000 Ports) scan on 10.120.106.112...
+[2025-10-07 14:20:02] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.120.106.112
+[2025-10-07 14:20:06] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-10-07 14:20:15] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-10-07 14:20:29] [*] Local IP requested: 127.0.0.1
+[2025-10-07 14:21:05] [*] Local IP requested: 127.0.0.1
+[2025-10-07 14:29:55] [*] Local IP requested: 127.0.0.1
+[2025-10-07 14:32:23] [*] Local IP requested: 127.0.0.1
+[2025-10-07 14:36:27] [*] Local IP requested: 127.0.0.1
+[2025-10-07 21:12:23] [*] Local IP requested: 192.168.29.48
+[2025-10-07 21:12:29] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-10-07 21:12:29] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-10-07 21:12:29] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-10-07 21:12:41] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-10-07 21:12:43] [*] Local IP requested: 192.168.29.48
+[2025-10-07 21:19:37] [*] Local IP requested: 192.168.29.48
+[2025-10-07 21:20:04] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-10-07 21:20:04] [+] Running TCP (Top 1000 Ports) scan on 192.168.29.48...
+[2025-10-07 21:20:04] [*] Executing: nmap --exclude-ports 5000 -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-10-07 21:20:13] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-10-09 16:46:00] [*] Local IP requested: 127.0.0.1
+[2025-10-09 16:58:54] [*] Local IP requested: 127.0.0.1
+[2025-10-09 16:58:59] [*] Local IP requested: 127.0.0.1
+[2025-10-09 16:59:03] [*] Local IP requested: 127.0.0.1
+[2025-10-09 17:00:09] [*] Local IP requested: 127.0.0.1
+[2025-10-09 17:00:12] [*] Local IP requested: 127.0.0.1
+[2025-10-09 17:15:30] [*] Local IP requested: 127.0.0.1
+[2025-10-09 17:15:33] [*] Local IP requested: 127.0.0.1
+[2025-10-09 17:15:50] [*] Local IP requested: 127.0.0.1
+[2025-10-09 17:16:01] [*] Starting DEFAULT TCP scan for 10.120.108.240...
+[2025-10-09 17:16:01] [+] Running TCP (Top 1000 Ports) scan on 10.120.108.240...
+[2025-10-09 17:16:02] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.120.108.240
+[2025-10-09 17:16:19] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-10-09 17:17:14] [*] Local IP requested: 127.0.0.1
+[2025-10-09 17:37:10] [*] Local IP requested: 127.0.0.1
+[2025-10-09 17:37:16] [*] Starting DEFAULT TCP scan for 10.120.108.240...
+[2025-10-09 17:37:16] [+] Running TCP (Top 1000 Ports) scan on 10.120.108.240...
+[2025-10-09 17:37:17] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.120.108.240
+[2025-10-09 17:37:30] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt

@@ -1,0 +1,20 @@
+/* static/css/style.css */
+
+/* This file can be used for any custom CSS not easily handled by Tailwind. */
+
+/* Ensure Inter font is applied globally if not already by Tailwind or browser defaults */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Add any other specific custom styles here if needed */
+/* For example, if you want to override a Tailwind default or add a unique effect */
+
+/* Example: A subtle hover effect for table rows */
+#openPortsTableBody tr:hover {
+    background-color: #374151; /* gray-700 */
+}
+
+/* Style for the scrollbar, already included in index.html for simplicity,
+   but could be moved here if more complex styling is needed across elements. */
+
