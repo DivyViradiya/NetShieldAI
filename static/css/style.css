@@ -12,7 +12,7 @@ body {
 
 /* Example: A subtle hover effect for table rows */
 #openPortsTableBody tr:hover {
-    background-color: #374151; /* gray-700 */
+    background-color: #000000; /* gray-700 */
 }
 
 /* Style for the scrollbar, already included in index.html for simplicity,

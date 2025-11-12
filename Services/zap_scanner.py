@@ -356,7 +356,7 @@ def parse_zap_xml_report(report_file):
     
     report_data = {
         "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "summary": {"High": 0, "Medium": 0, "Low": 0, "Informational": 0, "Total": 0},
+        "summary": {"High": 0, "Medium": 0, "Low": 0, "Info": 0, "Total": 0},
         "findings": []
     }
     
@@ -368,7 +368,7 @@ def parse_zap_xml_report(report_file):
             riskdesc = alertitem.find('riskdesc').text
             risk = riskdesc.split(' ')[0]
             
-            if risk == "Informational":
+            if risk == "Info":
                 risk = "Info"
 
             finding_name = alertitem.find('alert').text

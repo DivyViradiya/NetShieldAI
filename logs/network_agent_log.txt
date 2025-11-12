@@ -204,3 +204,28 @@
 [2025-10-09 17:37:16] [+] Running TCP (Top 1000 Ports) scan on 10.120.108.240...
 [2025-10-09 17:37:17] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.120.108.240
 [2025-10-09 17:37:30] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-10-11 09:30:52] [*] Local IP requested: 127.0.0.1
+[2025-10-11 09:30:57] [*] Starting DEFAULT TCP scan for 10.110.12.171...
+[2025-10-11 09:30:57] [+] Running TCP (Top 1000 Ports) scan on 10.110.12.171...
+[2025-10-11 09:30:57] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.110.12.171
+[2025-10-11 09:31:13] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-10-11 09:31:26] [*] Local IP requested: 127.0.0.1
+[2025-10-11 09:33:29] [*] Local IP requested: 127.0.0.1
+[2025-10-11 09:33:48] [*] Local IP requested: 127.0.0.1
+[2025-10-11 09:49:44] [*] Local IP requested: 127.0.0.1
+[2025-10-11 09:56:23] [*] Local IP requested: 127.0.0.1
+[2025-10-11 09:56:53] [*] Starting DEFAULT TCP scan for 10.110.12.171...
+[2025-10-11 09:56:53] [+] Running TCP (Top 1000 Ports) scan on 10.110.12.171...
+[2025-10-11 09:56:53] [*] Executing: nmap -sS -sV -Pn -T4 --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 10.110.12.171
+[2025-10-11 09:57:07] [+] TCP (Top 1000 Ports) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-10-11 09:57:10] [*] Local IP requested: 127.0.0.1
+[2025-10-11 09:57:11] [*] Local IP requested: 127.0.0.1
+[2025-11-11 17:17:39] [*] Local IP requested: 192.168.29.48
+[2025-11-12 16:14:31] [*] Local IP requested: 192.168.29.48
+[2025-11-12 16:18:58] [*] Local IP requested: 192.168.29.48
+[2025-11-12 16:29:52] [*] Local IP requested: 192.168.29.48
+[2025-11-12 16:32:35] [*] Local IP requested: 192.168.29.48
+[2025-11-12 16:44:13] [*] Local IP requested: 192.168.29.48
+[2025-11-12 16:44:16] [*] Local IP requested: 192.168.29.48
+[2025-11-12 16:44:26] [*] Local IP requested: 192.168.29.48
+[2025-11-12 16:49:15] [*] Local IP requested: 192.168.29.48

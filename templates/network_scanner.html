@@ -17,8 +17,10 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #f8fafc; /* Lighter background */
-            color: #1a202c;
+            /* background: #f8fafc; */ /* OLD */
+            background: #000000; /* NEW: Pure black */
+            /* color: #1a202c; */ /* OLD */
+            color: #e2e8f0; /* NEW: Default light text */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -34,9 +36,12 @@
 
         /* Navbar Styles */
         .navbar {
-            background-color: #ffffff;
+            /* background-color: #ffffff; */ /* OLD */
+            background-color: #0d121c; /* NEW: Dark surface */
             padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); */ /* OLD */
+            box-shadow: none; /* NEW */
+            border-bottom: 1px solid #1e293b; /* NEW: Dark border */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -50,18 +55,21 @@
         .navbar-brand {
             font-weight: 800;
             font-size: 1.75rem;
-            color: #1a202c;
+            /* color: #1a202c; */ /* OLD */
+            color: #f8fafc; /* NEW: Bright text */
             letter-spacing: -0.025em;
         }
 
         .navbar-brand a {
             text-decoration: none;
-            color: #1a202c;
+            /* color: #1a202c; */ /* OLD */
+            color: #f8fafc; /* NEW */
             transition: color 0.3s ease;
         }
 
         .navbar-brand a:hover {
-            color: #0d121c;
+            /* color: #0d121c; */ /* OLD */
+            color: #4299e1; /* NEW: Accent hover */
         }
 
         .navbar-brand .ai-text {
@@ -78,7 +86,8 @@
 
         .navbar-links li a {
             text-decoration: none;
-            color: #4a5568;
+            /* color: #4a5568; */ /* OLD */
+            color: #94a3b8; /* NEW: Muted text */
             font-weight: 600;
             transition: color 0.3s ease, transform 0.2s ease;
             position: relative;
@@ -96,12 +105,21 @@
         }
 
         .navbar-links li a:hover {
-            color: #2b6cb0;
+            /* color: #2b6cb0; */ /* OLD */
+            color: #f8fafc; /* NEW: Bright hover */
             transform: translateY(-2px);
         }
 
         .navbar-links li a:hover::after {
             width: 100%;
+        }
+
+        /* --- ADDED: Active Nav Link Style --- */
+        .navbar-links li a.active {
+            color: #f8fafc; /* Bright text, same as hover */
+        }
+        .navbar-links li a.active::after {
+            width: 100%; /* Show underline */
         }
 
         /* Main Container */
@@ -110,10 +128,13 @@
             width: 95%;
             margin: 2rem auto;
             padding: 0; /* No padding on container itself */
-            background-color: #ffffff;
+            /* background-color: #ffffff; */ /* OLD */
+            background-color: #0d121c; /* NEW: Dark surface */
             border-radius: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2e8f0;
+            /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05); */ /* OLD */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2); /* NEW: Darker shadow */
+            /* border: 1px solid #e2e8f0; */ /* OLD */
+            border: 1px solid #1e293b; /* NEW: Dark border */
             display: flex;
         }
 
@@ -121,7 +142,8 @@
         .left-panel {
             flex-basis: 30%;
             padding: 1.5rem;
-            border-right: 1px solid #e2e8f0;
+            /* border-right: 1px solid #e2e8f0; */ /* OLD */
+            border-right: 1px solid #1e293b; /* NEW: Dark border */
             display: flex;
             flex-direction: column;
         }
@@ -134,14 +156,17 @@
         }
 
         /* Headings and Icons */
-        h1, h2, h3 { color: #1a202c; }
+        /* h1, h2, h3 { color: #1a202c; } */ /* OLD */
+        h1, h2, h3 { color: #f8fafc; } /* NEW: Light text */
         .netshield-icon { color: #3b82f6; } /* A friendly blue */
 
-        /* --- Button Styles --- */
+        /* --- Button Styles (REFINED FOR DARK MODE) --- */
         .primary-action-button {
-            background-color: #2c3e50;
+            /* background-color: #2c3e50; */ /* OLD */
+            background-color: #3b82f6; /* NEW: Main accent blue */
             color: #ffffff;
-            border: 1px solid #2c3e50;
+            /* border: 1px solid #2c3e50; */ /* OLD */
+            border: 1px solid #3b82f6; /* NEW */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transition: all 0.2s ease-in-out;
             font-weight: 600;
@@ -149,30 +174,40 @@
             border-radius: 0.5rem;
         }
         .primary-action-button:hover {
-            background-color: #3b506b;
+            /* background-color: #3b506b; */ /* OLD */
+            background-color: #2563eb; /* NEW: Darker accent blue */
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .primary-action-button:disabled {
-            background-color: #4a5568;
+            /* background-color: #4a5568; */ /* OLD */
+            background-color: #334155; /* NEW: Darker disabled */
+            border-color: #334155; /* NEW */
             cursor: not-allowed;
             transform: none;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         .secondary-button {
-            background-color: #f1f5f9;
-            color: #4a5568;
-            border: 1px solid #cbd5e1;
+            /* background-color: #f1f5f9; */ /* OLD */
+            background-color: #1e293b; /* NEW: Dark secondary */
+            /* color: #4a5568; */ /* OLD */
+            color: #94a3b8; /* NEW: Muted text */
+            /* border: 1px solid #cbd5e1; */ /* OLD */
+            border: 1px solid #334155; /* NEW: Dark border */
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             transition: all 0.2s ease;
         }
         .secondary-button:hover {
-            background-color: #e2e8f0;
-            color: #1a202c;
+            /* background-color: #e2e8f0; */ /* OLD */
+            background-color: #334155; /* NEW: Lighter dark */
+            /* color: #1a202c; */ /* OLD */
+            color: #f8fafc; /* NEW: Bright text */
         }
         .secondary-button:disabled {
-            background-color: #e2e8f0;
+            /* background-color: #e2e8f0; */ /* OLD */
+            background-color: #1e293b; /* NEW */
+            color: #4a5568; /* NEW: Darker muted text */
             cursor: not-allowed;
         }
 
@@ -185,14 +220,25 @@
             animation: spin 1s linear infinite;
         }
         .primary-action-button .spinner { border-top-color: #fff; }
-        .secondary-button .spinner { border: 2px solid rgba(74, 85, 104, 0.3); border-top-color: #4a5568; }
+        .secondary-button .spinner {
+            /* border: 2px solid rgba(74, 85, 104, 0.3); */ /* OLD */
+            border: 2px solid rgba(148, 163, 184, 0.3); /* NEW */
+            /* border-top-color: #4a5568; */ /* OLD */
+            border-top-color: #94a3b8; /* NEW */
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Input and Status Fields */
         input[type="text"] {
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            color: #1a202c;
+            /* background-color: #f8fafc; */ /* OLD */
+            background-color: #1e293b; /* NEW: Dark inset */
+            /* border: 1px solid #cbd5e1; */ /* OLD */
+            border: 1px solid #334155; /* NEW: Dark border */
+            /* color: #1a202c; */ /* OLD */
+            color: #e2e8f0; /* NEW: Light text */
+        }
+        input[type="text"]::placeholder {
+            color: #64748b; /* NEW: Lighter placeholder for dark bg */
         }
         input:focus {
             outline: 2px solid #3b82f6;
@@ -204,11 +250,16 @@
         }
         
         /* Results Table */
-        .results-table-container { border: 1px solid #e2e8f0; }
-        .results-table thead { background-color: #f1f5f9; }
-        .results-table th { color: #4a5568; }
-        .results-table tbody tr:hover { background-color: #eff6ff; } /* Light blue hover */
-        .results-table-tbody td { color: #334155; }
+        /* .results-table-container { border: 1px solid #e2e8f0; } */ /* OLD */
+        .results-table-container { border: 1px solid #334155; } /* NEW: Dark border */
+        /* .results-table thead { background-color: #f1f5f9; } */ /* OLD */
+        .results-table thead { background-color: #1e293b; } /* NEW: Dark header */
+        /* .results-table th { color: #4a5568; } */ /* OLD */
+        .results-table th { color: #94a3b8; } /* NEW: Muted text */
+        /* .results-table tbody tr:hover { background-color: #eff6ff; } */ /* OLD */
+        .results-table tbody tr:hover { background-color: #1e293b; } /* NEW: Dark hover */
+        /* .results-table-tbody td { color: #334155; } */ /* OLD */
+        .results-table-tbody td { color: #cbd5e1; } /* NEW: Light text */
 
         /* Log and Raw Report Views */
         #logOutput, #resultsContent {
@@ -227,7 +278,8 @@
 
         /* Footer */
         footer {
-            background-color: #1e293b;
+            /* background-color: #1e293b; */ /* OLD */
+            background-color: #0d121c; /* NEW: Match navbar */
             color: #cbd5e1;
             text-align: center;
             padding: 1.5rem 0;
@@ -239,7 +291,8 @@
         /* Responsive Adjustments */
         @media (max-width: 1024px) {
             .container { flex-direction: column; }
-            .left-panel { border-right: none; border-bottom: 1px solid #e2e8f0; }
+            /* .left-panel { border-right: none; border-bottom: 1px solid #e2e8f0; } */ /* OLD */
+            .left-panel { border-right: none; border-bottom: 1px solid #1e293b; } /* NEW: Dark border */
         }
     </style>
 </head>
@@ -249,7 +302,7 @@
             <a href="/">NetShield<span class="ai-text">AI</span></a>
         </div>
         <ul class="navbar-links">
-            <li><a href="/network_scanner">Network Scanning</a></li>
+            <li><a href="/network_scanner" class="active">Network Scanning</a></li>
             <li><a href="/zap_scanner">Web Application Scanning</a></li>
             <li><a href="/ssl_scanner">SSL Scans</a></li>
             <li><a href="/chatbot">AI Chatbot</a></li>
@@ -264,13 +317,13 @@
                         <span class="text-4xl mr-3 netshield-icon">🛡️</span>
                         <div>
                             <h1 class="text-2xl font-bold">Network Port Scanner</h1>
-                            <p class="text-sm text-gray-500">Discover and manage open ports</p>
+                            <p class="text-sm text-slate-400">Discover and manage open ports</p>
                         </div>
                     </div>
 
                     <div class="space-y-4">
                         <div>
-                            <label for="targetIp" class="block text-sm font-medium text-gray-600 mb-1">Target IP / Range</label>
+                            <label for="targetIp" class="block text-sm font-medium text-slate-400 mb-1">Target IP / Range</label>
                             <div class="flex space-x-2">
                                 <input type="text" id="targetIp" placeholder="e.g., 192.168.1.0/24" class="w-full p-2 rounded-md border">
                                 <button id="detectIpBtn" class="px-3 py-1.5 rounded-lg secondary-button flex items-center" title="Detect Local IP">
@@ -295,24 +348,24 @@
                                 <span>Advanced Scan Options</span>
                                 <i class="fas fa-chevron-down ml-2 transition-transform duration-200" id="advancedScanArrow"></i>
                             </button>
-                            <div id="advancedScanOptions" class="hidden mt-2 space-y-1 p-2 bg-gray-50 rounded-md border border-gray-200">
-                                <button data-scan-type="os" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-200 flex items-center">
+                            <div id="advancedScanOptions" class="hidden mt-2 space-y-1 p-2 bg-slate-800 rounded-md border border-slate-700">
+                                <button data-scan-type="os" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 flex items-center">
                                     <i class="fas fa-fingerprint w-6 text-center mr-2"></i>OS Detection
                                 </button>
-                                <button data-scan-type="fragmented" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-200 flex items-center">
+                                <button data-scan-type="fragmented" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 flex items-center">
                                     <i class="fas fa-puzzle-piece w-6 text-center mr-2"></i>Fragmented Packet
                                 </button>
-                                <button data-scan-type="aggressive" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-200 flex items-center">
+                                <button data-scan-type="aggressive" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 flex items-center">
                                     <i class="fas fa-bolt w-6 text-center mr-2"></i>Aggressive
                                 </button>
-                                <button data-scan-type="tcp_syn" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-200 flex items-center">
+                                <button data-scan-type="tcp_syn" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 flex items-center">
                                     <i class="fas fa-shield-alt w-6 text-center mr-2"></i>TCP SYN Stealth
                                 </button>
                             </div>
                         </div>
                         
                         <div>
-                            <label for="whitelistPorts" class="block text-sm font-medium text-gray-600 mb-1">Whitelist Ports</label>
+                            <label for="whitelistPorts" class="block text-sm font-medium text-slate-400 mb-1">Whitelist Ports</label>
                             <div class="flex space-x-2">
                                 <input type="text" id="whitelistPorts" placeholder="e.g., 80, 443" class="w-full p-2 rounded-md border">
                                 <button id="updateWhitelistBtn" class="px-3 py-1.5 rounded-lg secondary-button" title="Update Whitelist"><i class="fas fa-save"></i></button>
@@ -345,12 +398,12 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-gray-50 p-3 rounded-lg border">
-                        <p class="text-sm font-medium text-gray-500">Local IP Address</p>
-                        <span id="localIpDisplay" class="font-semibold text-gray-700 text-lg">Not Detected</span>
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-sm font-medium text-slate-400">Local IP Address</p>
+                        <span id="localIpDisplay" class="font-semibold text-slate-200 text-lg">Not Detected</span>
                     </div>
-                    <div class="bg-gray-50 p-3 rounded-lg border">
-                        <p class="text-sm font-medium text-gray-500">Whitelisted Ports</p>
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                        <p class="text-sm font-medium text-slate-400">Whitelisted Ports</p>
                         <span id="whitelistedPortsDisplay" class="font-semibold text-green-600 text-lg">None</span>
                     </div>
                 </div>
@@ -367,7 +420,7 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto rounded-lg results-table-container mb-6 flex-grow max-h-96 overflow-y-auto">
-                    <table class="min-w-full divide-y divide-gray-200 results-table">
+                    <table class="min-w-full divide-y divide-slate-700 results-table">
                         <thead class="results-table-thead sticky top-0">
                             <tr>
                                 <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Port</th>
@@ -376,9 +429,9 @@
                                 <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Version</th>
                             </tr>
                         </thead>
-                        <tbody id="openPortsTableBody" class="divide-y divide-gray-200 results-table-tbody">
+                        <tbody id="openPortsTableBody" class="divide-y divide-slate-700 results-table-tbody">
                             <tr>
-                                <td colspan="4" class="p-4 text-center text-gray-500">No results available. Run a scan to begin.</td>
+                                <td colspan="4" class="p-4 text-center text-slate-500">No results available. Run a scan to begin.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -399,6 +452,7 @@
 
     <footer>
         <p>&copy; 2025 NetShieldAI. All rights reserved.</p>
+        <p>A Product of NetShield Pvt. Ltd. | Empowering Digital Trust.</p>
     </footer>
 
     <script src="/static/js/network_scanner.js"></script>

@@ -458,3 +458,23 @@ requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: 
 2025-10-10 22:30:48 - chatbot - ERROR - Error clearing chat via server proxy for session 3cadb889-1469-43be-a385-6fe433f92812: HTTPConnectionPool(host='localhost', port=5000): Read timed out. (read timeout=10)
 2025-10-10 22:32:18 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
 2025-10-10 22:32:34 - chatbot - INFO - Stored session ID from server: 1e1b3279-d9ce-4f6a-b5c7-1de04f62170c
+2025-10-11 09:29:03 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-11 09:29:11 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-11 09:29:19 - chatbot - INFO - Chatbot Blueprint initialized
+2025-10-11 09:33:44 - chatbot - INFO - New local chat session started: 23f63891-2688-4e12-8579-516bef6458bd
+2025-10-11 10:01:34 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-10-11 10:01:49 - chatbot - INFO - Stored session ID from server: 58e6a29e-9662-4149-abac-f3c8424629a9
+2025-11-11 17:17:17 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-11 17:17:22 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-11 17:17:25 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-11 17:24:16 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-11 17:47:45 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-11 17:48:53 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-11 17:48:56 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-11 17:48:59 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 15:48:00 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 15:48:07 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 15:48:16 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 16:03:15 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 16:35:22 - chatbot - INFO - New local chat session started: b6f15738-5583-47aa-92bf-6da42a7210a2
+2025-11-12 16:53:07 - chatbot - INFO - Chatbot Blueprint initialized

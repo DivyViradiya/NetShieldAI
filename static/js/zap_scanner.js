@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         highAlertsDisplay.textContent = summary.High || '0';
         mediumAlertsDisplay.textContent = summary.Medium || '0';
         lowAlertsDisplay.textContent = summary.Low || '0';
-        infoAlertsDisplay.textContent = summary.Informational || '0';
+        infoAlertsDisplay.textContent = summary.Info || '0';
     }
 
     /**
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'High': return 'text-red-500';
             case 'Medium': return 'text-orange-400';
             case 'Low': return 'text-yellow-400';
-            case 'Informational': return 'text-blue-400';
+            case 'Info': return 'text-blue-400';
             default: return 'text-gray-300';
         }
     }

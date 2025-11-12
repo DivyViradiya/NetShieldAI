@@ -18,8 +18,10 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #f8fafc; /* Lighter background */
-            color: #1a202c;
+            /* background: #f8fafc; */ /* OLD */
+            background: #000000; /* NEW: Pure black */
+            /* color: #1a202c; */ /* OLD */
+            color: #e2e8f0; /* NEW: Default light text */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -35,9 +37,11 @@
 
         /* Navbar Styles */
         .navbar {
-            background-color: #ffffff;
+            /* background-color: #ffffff; */ /* OLD */
+            background-color: #0d121c; /* NEW: Dark surface */
             padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); */ /* OLD */
+            box-shadow: none; /* NEW */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -46,13 +50,15 @@
             top: 0;
             left: 0;
             z-index: 1000;
-            border-bottom: 1px solid #e2e8f0;
+            /* border-bottom: 1px solid #e2e8f0; */ /* OLD */
+            border-bottom: 1px solid #1e293b; /* NEW: Dark border */
         }
 
         .navbar-brand a {
             font-weight: 800;
             font-size: 1.75rem;
-            color: #1a202c;
+            /* color: #1a202c; */ /* OLD */
+            color: #f8fafc; /* NEW: Bright text */
             text-decoration: none;
         }
 
@@ -70,13 +76,35 @@
 
         .navbar-links li a {
             text-decoration: none;
-            color: #4a5568;
+            /* color: #4a5568; */ /* OLD */
+            color: #94a3b8; /* NEW: Muted text */
             font-weight: 600;
             transition: color 0.3s ease;
+            position: relative; /* Added for active state underline */
         }
         .navbar-links li a:hover {
-            color: #2b6cb0;
+            /* color: #2b6cb0; */ /* OLD */
+            color: #f8fafc; /* NEW: Bright text */
         }
+
+        /* --- ADDED: Active Nav Link Style --- */
+        .navbar-links li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #4299e1;
+            transition: width 0.3s ease-out;
+        }
+        .navbar-links li a.active {
+            color: #f8fafc; /* Bright text */
+        }
+        .navbar-links li a.active::after {
+            width: 100%; /* Show underline */
+        }
+
 
         /* Main Container */
         .container {
@@ -84,10 +112,13 @@
             width: 95%;
             margin: 2rem auto;
             padding: 0; /* No padding on container itself */
-            background-color: #ffffff;
+            /* background-color: #ffffff; */ /* OLD */
+            background-color: #0d121c; /* NEW: Dark surface */
             border-radius: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2e8f0;
+            /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05); */ /* OLD */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2); /* NEW: Darker shadow */
+            /* border: 1px solid #e2e8f0; */ /* OLD */
+            border: 1px solid #1e293b; /* NEW: Dark border */
             display: flex;
             flex-grow: 1; /* Allow container to fill page height */
             min-height: 0; /* IMPORTANT: Prevents container from growing with content */
@@ -97,7 +128,8 @@
         .left-panel {
             flex-basis: 35%;
             padding: 1.5rem;
-            border-right: 1px solid #e2e8f0;
+            /* border-right: 1px solid #e2e8f0; */ /* OLD */
+            border-right: 1px solid #1e293b; /* NEW: Dark border */
             display: flex;
             flex-direction: column;
         }
@@ -108,21 +140,24 @@
             display: flex;
             flex-direction: column;
             overflow: hidden; /* IMPORTANT: Constrains the panel's height */
-        }  
+        } 
 
-        /* Custom Scrollbar for Webkit browsers */
+        /* Custom Scrollbar for Webkit browsers (DARK) */
         .scrollbar-thin::-webkit-scrollbar {
             width: 8px;
         }
 
         .scrollbar-thin::-webkit-scrollbar-track {
-            background: #e2e8f0; 
+            /* background: #e2e8f0; */ /* OLD */
+            background: #334155; /* NEW */
         }
 
         .scrollbar-thin::-webkit-scrollbar-thumb {
-            background-color: #94a3b8; 
+            /* background-color: #94a3b8; */ /* OLD */
+            background-color: #475569; /* NEW */
             border-radius: 10px;
-            border: 2px solid #e2e8f0; 
+            /* border: 2px solid #e2e8f0; */ /* OLD */
+            border: 2px solid #334155; /* NEW */
         }
 
         /* Keyframe animations */
@@ -147,7 +182,7 @@
         }
         .animate-bounce-subtle { animation: bounceSubtle 1.5s infinite ease-in-out; }
 
-        /* Dot Flashing (Typing Indicator) */
+        /* Dot Flashing (Typing Indicator) - Colors are fine */
         .dot-flashing {
             position: relative; width: 10px; height: 10px; border-radius: 5px; background-color: #3b82f6; color: #3b82f6; animation: dotFlashing 1s infinite linear alternate; margin: 0 auto;
         }
@@ -158,12 +193,13 @@
         .dot-flashing::after { left: 15px; animation-delay: .4s; }
         @keyframes dotFlashing {
             0% { background-color: #3b82f6; }
-            50%, 100% { background-color: #e0e7ff; }
+            50%, 100% { background-color: #1e293b; } /* NEW: Darker inactive dot */
         }
 
         /* Footer */
         footer {
-            background-color: #1e293b;
+            /* background-color: #1e293b; */ /* OLD */
+            background-color: #0d121c; /* NEW: Match navbar */
             color: #cbd5e1;
             text-align: center;
             padding: 1.5rem 0;
@@ -175,11 +211,12 @@
         /* Responsive Adjustments */
         @media (max-width: 1024px) {
             .container { flex-direction: column; }
-            .left-panel { border-right: none; border-bottom: 1px solid #e2e8f0; }
+            /* .left-panel { border-right: none; border-bottom: 1px solid #e2e8f0; } */ /* OLD */
+            .left-panel { border-right: none; border-bottom: 1px solid #1e293b; } /* NEW: Dark border */
         }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class=""> 
 
     <nav class="navbar">
         <div class="navbar-brand">
@@ -189,35 +226,34 @@
             <li><a href="/network_scanner">Network Scanning</a></li>
             <li><a href="/zap_scanner">Web Application Scanning</a></li>
             <li><a href="/ssl_scanner">SSL Scans</a></li>
-            <li><a href="/chatbot">AI Chatbot</a></li>
+            <li><a href="/chatbot" class="active">AI Chatbot</a></li>
             
         </ul>
     </nav>
 
     <div id="page-wrapper">
         <div class="container mx-auto">
-            <!-- Left Panel: Controls and Info -->
             <div class="left-panel">
-                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-5">Upload New Report</h2>
+                <div class="bg-[#1e293b] p-6 rounded-xl shadow-md border border-[#334155] mb-6">
+                    <h2 class="text-2xl font-bold text-white mb-5">Upload New Report</h2>
                     <form id="upload-form" enctype="multipart/form-data">
                         <div class="mb-5">
-                            <label for="report_file" class="block text-gray-700 text-base font-semibold mb-2">Upload Report (PDF, Max 100MB)</label>
-                            <input type="file" id="report_file" name="report_file" accept=".pdf" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" required>
-                            <p class="text-gray-600 text-xs italic mt-2">Only PDF files under 100MB are supported.</p>
+                            <label for="report_file" class="block text-slate-300 text-base font-semibold mb-2">Upload Report (PDF, Max 100MB)</label>
+                            <input type="file" id="report_file" name="report_file" accept=".pdf" class="block w-full text-sm text-slate-100 border border-slate-600 rounded-lg cursor-pointer bg-slate-700 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800" required>
+                            <p class="text-slate-400 text-xs italic mt-2">Only PDF files under 100MB are supported.</p>
                         </div>
                         <div class="mb-6">
-                            <label for="llm_mode_selector" class="block text-gray-700 text-base font-semibold mb-2">Choose AI Model:</label>
+                            <label for="llm_mode_selector" class="block text-slate-300 text-base font-semibold mb-2">Choose AI Model:</label>
                             <div class="relative">
-                                <select id="llm_mode_selector" name="llm_mode" class="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <select id="llm_mode_selector" name="llm_mode" class="block appearance-none w-full bg-slate-700 border border-slate-600 text-slate-100 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                     <option value="local" selected>iSec AI Model (Secure)</option>
                                     <option value="gemini">Google Gemini (Faster)</option>
                                 </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-100">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                 </div>
                             </div>
-                            <p class="text-gray-600 text-xs italic mt-2">Select iSec AI Model for Secure Analysis, Google Gemini for faster response.</p>
+                            <p class="text-slate-400 text-xs italic mt-2">Select iSec AI Model for Secure Analysis, Google Gemini for faster response.</p>
                         </div>
                         <div class="flex justify-end">
                             <button type="button" id="upload-button" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
@@ -227,8 +263,8 @@
                         <div id="upload-error" class="text-red-600 text-sm mt-3 hidden text-center"></div>
                     </form>
                 </div>
-                <div class="bg-white rounded-xl shadow-md p-6 text-gray-700 flex-grow border border-gray-200">
-                    <h2 class="text-2xl font-bold mb-4 text-gray-800">How to Use:</h2>
+                <div class="bg-[#1e293b] rounded-xl shadow-md p-6 text-slate-300 flex-grow border border-[#334155]">
+                    <h2 class="text-2xl font-bold mb-4 text-white">How to Use:</h2>
                     <ol class="list-decimal list-inside space-y-3 text-base">
                         <li><strong>Upload Report:</strong> Use the form above to upload a PDF security report.</li>
                         <li><strong>Choose AI Model:</strong> Select your preferred AI for analysis.</li>
@@ -238,43 +274,42 @@
                 </div>
             </div>
 
-            <!-- Right Panel: Chat Interface -->
             <div class="right-panel">
-                <div class="mb-4 pb-2 border-b border-gray-200 flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                <div class="mb-4 pb-2 border-b border-slate-700 flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-white flex items-center">
                         <span class="material-symbols-outlined mr-2 text-blue-600">forum</span>
                         AI Chat Assistant
                     </h2>
                     <div class="flex items-center gap-3">
-                        <span id="llm-mode-display" class="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                        <span id="llm-mode-display" class="text-sm font-medium text-slate-300 bg-slate-700 px-3 py-1 rounded-full">
                             Model: iSec AI
                         </span>
-                        <button id="clear-chat-button" title="Clear Chat" class="text-gray-500 hover:text-red-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <button id="clear-chat-button" title="Clear Chat" class="text-slate-400 hover:text-red-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                             <span class="material-symbols-outlined">delete_sweep</span>
                         </button>
                     </div>
                 </div>
                 <div id="welcome-message" class="flex flex-col items-center justify-center flex-grow text-center px-5 py-8">
                     <span class="material-symbols-outlined text-blue-500 text-7xl mb-4 animate-bounce-subtle">smart_toy</span>
-                    <h2 class="text-4xl font-extrabold text-gray-800 mb-4 animate-fade-in-down">Ready to Analyze?</h2>
-                    <p class="text-lg text-gray-600 max-w-xl mb-6 leading-relaxed animate-fade-in-up">
+                    <h2 class="text-4xl font-extrabold text-white mb-4 animate-fade-in-down">Ready to Analyze?</h2>
+                    <p class="text-lg text-slate-400 max-w-xl mb-6 leading-relaxed animate-fade-in-up">
                         Upload a security report to begin your intelligent analysis with VulnScanAI.
                     </p>
-                    <p class="text-md text-gray-700 max-w-xl animate-fade-in-up">
+                    <p class="text-md text-slate-300 max-w-xl animate-fade-in-up">
                         You can then ask specific questions about vulnerabilities, risks, and remediation.
                     </p>
                 </div>
 
                 <div id="chat-history" class="flex-grow overflow-y-auto pr-2 mb-4 scrollbar-thin hidden">
-                </div>
+                    </div>
 
                 <div id="loading-indicator" class="text-center py-3 hidden">
                     <div class="dot-flashing"></div>
                     <p class="mt-2 text-blue-600 text-sm">AI is thinking...</p>
                 </div>
 
-                <div class="flex items-center border-t border-gray-200 pt-4 mt-auto">
-                    <input type="text" id="user-input" class="flex-grow bg-gray-50 border border-gray-300 text-gray-900 text-base rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-3.5 pr-12 shadow-sm transition-all duration-200" placeholder="Ask a question about the report..." disabled>
+                <div class="flex items-center border-t border-slate-700 pt-4 mt-auto">
+                    <input type="text" id="user-input" class="flex-grow bg-slate-800 border border-slate-700 text-slate-100 text-base rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-3.5 pr-12 shadow-sm transition-all duration-200" placeholder="Ask a question about the report..." disabled>
                     <button id="send-button" class="ml-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" disabled>
                         <span class="material-symbols-outlined align-middle">send</span>
                     </button>
@@ -282,7 +317,7 @@
                 <div id="chat-error" class="text-red-600 text-sm mt-3 hidden text-center"></div>
             </div>
         </div>
-        <div id="copy-flash" class="fixed top-20 right-4 bg-green-100 text-green-700 p-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50 border border-green-300 flex items-center">
+        <div id="copy-flash" class="fixed top-20 right-4 bg-green-900 text-green-200 p-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50 border border-green-700 flex items-center">
             <span class="material-symbols-outlined mr-2">content_copy</span>Copied to clipboard!
         </div>
     </div>
@@ -487,9 +522,11 @@
                     messageBubble.textContent = message;
                 } else { // AI
                     messageWrapper.classList.add('justify-start');
-                    avatar.classList.add('bg-gray-700', 'order-1', 'mr-3');
+                    // REFINED: AI avatar style
+                    avatar.classList.add('bg-slate-700', 'order-1', 'mr-3'); 
                     avatar.innerHTML = '<span class="material-symbols-outlined text-lg">psychology</span>';
-                    messageBubble.classList.add('bg-gray-100', 'text-gray-800', 'rounded-bl-none');
+                    // REFINED: AI bubble styles
+                    messageBubble.classList.add('bg-slate-800', 'text-slate-100', 'rounded-bl-none'); 
                     messageBubble.innerHTML = marked.parse(message);
                     addCopyButton(messageBubble, message);
                 }
@@ -502,9 +539,10 @@
     
             function addCopyButton(bubble, textToCopy) {
                 const copyButton = document.createElement('button');
-                copyButton.innerHTML = '<span class="material-symbols-outlined text-gray-500 text-lg">content_copy</span>';
+                // REFINED: Copy button styles
+                copyButton.innerHTML = '<span class="material-symbols-outlined text-slate-400 text-lg">content_copy</span>'; 
                 copyButton.title = 'Copy to clipboard';
-                copyButton.className = 'absolute -top-2 right-0 bg-gray-100 hover:bg-gray-200 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300 z-10';
+                copyButton.className = 'absolute -top-2 right-0 bg-slate-800 hover:bg-slate-700 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 z-10';
     
                 copyButton.addEventListener('click', () => {
                     navigator.clipboard.writeText(textToCopy).then(() => {

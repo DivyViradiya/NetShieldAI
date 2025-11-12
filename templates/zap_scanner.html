@@ -7,258 +7,318 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* Base and Layout Styles */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+    /* Base and Layout Styles */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f8fafc; /* Lighter background */
-            color: #1a202c;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding-top: 5rem; /* Adjusted for navbar height */
-        }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #000000; /* Pure black background */
+        color: #e2e8f0; /* Default light text */
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-top: 5rem; /* Adjusted for navbar height */
+    }
 
-        #page-wrapper {
-            flex: 1 0 auto;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
+    #page-wrapper {
+        flex: 1 0 auto;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 
-        /* Navbar Styles */
-        .navbar {
-            background-color: #ffffff;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
+    /* Navbar Styles */
+    .navbar {
+        background-color: #0d121c; /* Dark surface */
+        padding: 1rem 2rem;
+        box-shadow: none;
+        border-bottom: 1px solid #1e293b; /* Dark border */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
 
-        .navbar-brand {
-            font-weight: 800;
-            font-size: 1.75rem;
-            color: #1a202c;
-            letter-spacing: -0.025em;
-        }
+    .navbar-brand {
+        font-weight: 800;
+        font-size: 1.75rem;
+        color: #f8fafc; /* Bright text */
+        letter-spacing: -0.025em;
+    }
 
-        .navbar-brand a {
-            text-decoration: none;
-            color: #1a202c;
-            transition: color 0.3s ease;
-        }
+    .navbar-brand a {
+        text-decoration: none;
+        color: #f8fafc;
+        transition: color 0.3s ease;
+    }
 
-        .navbar-brand a:hover {
-            color: #0d121c;
-        }
+    .navbar-brand a:hover {
+        color: #4299e1; /* Accent hover */
+    }
 
-        .navbar-brand .ai-text {
-            color: #4299e1;
-        }
+    .navbar-brand .ai-text {
+        color: #4299e1; /* Stays same */
+    }
 
-        .navbar-links {
-            list-style: none;
-            display: flex;
-            gap: 2.5rem;
-            margin: 0;
-            padding: 0;
-        }
+    .navbar-links {
+        list-style: none;
+        display: flex;
+        gap: 2.5rem;
+        margin: 0;
+        padding: 0;
+    }
 
-        .navbar-links li a {
-            text-decoration: none;
-            color: #4a5568;
-            font-weight: 600;
-            transition: color 0.3s ease, transform 0.2s ease;
-            position: relative;
-        }
+    .navbar-links li a {
+        text-decoration: none;
+        color: #94a3b8; /* Muted text */
+        font-weight: 600;
+        transition: color 0.3s ease, transform 0.2s ease;
+        position: relative;
+    }
 
-        .navbar-links li a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background-color: #4299e1;
-            transition: width 0.3s ease-out;
-        }
+    .navbar-links li a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: #4299e1; /* Stays same */
+        transition: width 0.3s ease-out;
+    }
 
-        .navbar-links li a:hover {
-            color: #2b6cb0;
-            transform: translateY(-2px);
-        }
+    .navbar-links li a:hover {
+        color: #f8fafc; /* Bright hover */
+        transform: translateY(-2px);
+    }
 
-        .navbar-links li a:hover::after {
-            width: 100%;
-        }
+    .navbar-links li a:hover::after {
+        width: 100%;
+    }
 
-        /* Main Container */
-        .container {
-            max-width: 1400px; /* Wider container */
-            width: 95%;
-            margin: 2rem auto;
-            padding: 0; /* No padding on container itself */
-            background-color: #ffffff;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2e8f0;
-            display: flex;
-        }
+    /* --- ADDED: Active Nav Link Style --- */
+    .navbar-links li a.active {
+        color: #f8fafc; /* Bright text, same as hover */
+    }
 
-        /* Left and Right Panels */
+    .navbar-links li a.active::after {
+        width: 100%; /* Show underline */
+    }
+
+    /* Main Container */
+    .container {
+        max-width: 1400px;
+        width: 95%;
+        margin: 2rem auto;
+        padding: 0;
+        background-color: #0d121c; /* Dark surface */
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2); /* Darker shadow */
+        border: 1px solid #1e293b; /* Dark border */
+        display: flex;
+    }
+
+    /* Left and Right Panels */
+    .left-panel {
+        flex-basis: 30%;
+        flex-shrink: 0;
+        padding: 1.5rem;
+        border-right: 1px solid #1e293b; /* Dark border */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .right-panel {
+        flex-basis: 70%;
+        min-width: 0;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Headings and Icons */
+    h1, h2, h3 { color: #f8fafc; } /* Light text */
+    .netshield-icon { color: #3b82f6; } /* Stays same */
+
+    /* --- Button Styles (REFINED) --- */
+    .primary-scan-button {
+        /* background-color: #2c3e50; */ /* OLD */
+        background-color: #3b82f6; /* NEW: Main accent blue */
+        color: #ffffff;
+        /* border: 1px solid #2c3e50; */ /* OLD */
+        border: 1px solid #3b82f6; /* NEW */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.2s ease-in-out;
+        font-weight: 600;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+    }
+    .primary-scan-button:hover {
+        /* background-color: #3b506b; */ /* OLD */
+        background-color: #2563eb; /* NEW: Darker accent blue */
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    .primary-scan-button:disabled {
+        background-color: #334155; /* Darker disabled */
+        border-color: #334155;
+        cursor: not-allowed;
+    }
+
+    .secondary-button {
+        background-color: #1e293b; /* Dark secondary */
+        color: #94a3b8; /* Muted text */
+        border: 1px solid #334155; /* Dark border */
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+    .secondary-button:hover {
+        background-color: #334155; /* Lighter dark */
+        color: #f8fafc; /* Bright text */
+    }
+    .secondary-button:disabled {
+        background-color: #1e293b;
+        color: #4a5568; /* Darker muted text */
+        cursor: not-allowed;
+    }
+
+    /* Spinner Animations */
+    .spinner {
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+    }
+    .primary-scan-button .spinner { border-top-color: #fff; }
+    .secondary-button .spinner {
+        border: 2px solid rgba(148, 163, 184, 0.3); /* Based on new text color */
+        border-top-color: #94a3b8;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Input and Status Fields */
+    input[type="url"] {
+        background-color: #1e293b; /* Dark inset */
+        border: 1px solid #334155; /* Dark border */
+        color: #e2e8f0; /* Light text */
+    }
+    input[type="url"]::placeholder {
+        color: #64748b; /* Lighter placeholder for dark bg */
+    }
+    input:focus {
+        outline: 2px solid #3b82f6;
+        border-color: #3b82f6; /* Stays same */
+    }
+    #scanStatus {
+        border: 1px solid transparent;
+        font-weight: 500;
+    }
+
+    /* Summary Cards */
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
+    .summary-card {
+        background-color: #1e293b; /* Dark inset */
+        border: 1px solid #334155; /* Dark border */
+        padding: 1rem;
+        border-radius: 0.5rem;
+        text-align: center;
+    }
+    .summary-card .value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        /* color: #f8fafc; */ /* Colors now set by Tailwind classes in HTML */
+    }
+    .summary-card .label {
+        font-size: 0.875rem;
+        color: #94a3b8; /* Muted text */
+    }
+
+    /* Alerts Table */
+    .alerts-table-container {
+        border: 1px solid #334155; /* Dark border */
+    }
+    .alerts-table {
+        table-layout: fixed;
+        width: 100%;
+    }
+    .alerts-table thead {
+        background-color: #1e293b; /* Dark header */
+    }
+    .alerts-table th {
+        color: #94a3b8; /* Muted text */
+    }
+    .alerts-table tbody tr:hover {
+        background-color: #1e293b; /* Dark hover */
+    }
+    .alerts-table-tbody td {
+        color: #cbd5e1; /* Light text */
+        word-break: break-word;
+        vertical-align: top;
+        padding: 0.75rem 1rem;
+        line-height: 1.6 !important;
+    }
+    
+    /* --- ADDED: Risk Color Classes --- */
+    .risk-high { color: #dc2626; } /* text-red-600 */
+    .risk-medium { color: #f97316; } /* text-orange-500 */
+    .risk-low { color: #eab308; } /* text-yellow-500 */
+    .risk-info { color: #2563eb; } /* text-blue-600 */
+
+    /* Added for dark mode clarity */
+    .alerts-table-tbody td a {
+        color: #4299e1;
+        text-decoration: none;
+    }
+    .alerts-table-tbody tr:hover td a {
+        color: #60a5fa; /* Lighter blue on hover */
+        text-decoration: underline;
+    }
+
+    /* Log and Raw Report Views */
+    #logOutput, #resultsContent {
+        background-color: #1e293b; /* Already dark, looks good */
+        border: 1px solid #334155; /* Already dark, looks good */
+        color: #e2e8f0; /* Already light, looks good */
+        font-family: 'Fira Code', 'Courier New', monospace;
+    }
+    #resultsContent { white-space: pre-wrap; }
+
+    /* Custom Scrollbars */
+    #logOutput::-webkit-scrollbar, #resultsContent::-webkit-scrollbar, .overflow-y-auto::-webkit-scrollbar { width: 8px; }
+    #logOutput::-webkit-scrollbar-track, #resultsContent::-webkit-scrollbar-track, .overflow-y-auto::-webkit-scrollbar-track { background: #334155; }
+    #logOutput::-webkit-scrollbar-thumb, #resultsContent::-webkit-scrollbar-thumb, .overflow-y-auto::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+    #logOutput::-webkit-scrollbar-thumb:hover, #resultsContent::-webkit-scrollbar-thumb:hover, .overflow-y-auto::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+    /* Footer */
+    footer {
+        background-color: #0d121c; /* Match navbar */
+        color: #cbd5e1;
+        text-align: center;
+        padding: 1.5rem 0;
+        width: 100%;
+        margin-top: auto;
+        flex-shrink: 0;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 1024px) {
+        .container { flex-direction: column; }
         .left-panel {
-            flex-basis: 30%;
-            flex-shrink: 0; /* CRITICAL FIX: Prevents this panel from shrinking */
-            padding: 1.5rem;
-            border-right: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
+            border-right: none;
+            border-bottom: 1px solid #1e293b; /* Dark border */
         }
-
-        .right-panel {
-            flex-basis: 70%;
-            min-width: 0; /* CRITICAL FIX: Allows this panel's content to wrap/scroll */
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Headings and Icons */
-        h1, h2, h3 { color: #1a202c; }
-        .netshield-icon { color: #3b82f6; } /* A friendly blue */
-
-        /* --- Button Styles --- */
-        .primary-scan-button {
-            background-color: #2c3e50;
-            color: #ffffff;
-            border: 1px solid #2c3e50;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: all 0.2s ease-in-out;
-            font-weight: 600;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-        }
-        .primary-scan-button:hover {
-            background-color: #3b506b;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .primary-scan-button:disabled {
-            background-color: #4a5568;
-            cursor: not-allowed;
-        }
-
-        .secondary-button {
-            background-color: #f1f5f9;
-            color: #4a5568;
-            border: 1px solid #cbd5e1;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease;
-        }
-        .secondary-button:hover {
-            background-color: #e2e8f0;
-            color: #1a202c;
-        }
-        .secondary-button:disabled {
-            background-color: #e2e8f0;
-            cursor: not-allowed;
-        }
-
-        /* Spinner Animations */
-        .spinner {
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-        }
-        .primary-scan-button .spinner { border-top-color: #fff; }
-        .secondary-button .spinner { border: 2px solid rgba(74, 85, 104, 0.3); border-top-color: #4a5568; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Input and Status Fields */
-        input[type="url"] {
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            color: #1a202c;
-        }
-        input:focus {
-            outline: 2px solid #3b82f6;
-            border-color: #3b82f6;
-        }
-        #scanStatus {
-            border: 1px solid transparent;
-            font-weight: 500;
-        }
-
-        /* Summary Cards */
-        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
-        .summary-card { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 1rem; border-radius: 0.5rem; text-align: center; }
-        .summary-card .value { font-size: 1.75rem; font-weight: 700; }
-        .summary-card .label { font-size: 0.875rem; color: #4a5568; }
-
-        /* Alerts Table */
-        .alerts-table-container { border: 1px solid #e2e8f0; }
-        .alerts-table {
-            table-layout: fixed; /* CRITICAL FIX: Prevents table from expanding its container */
-            width: 100%;
-        }
-        .alerts-table thead { background-color: #f1f5f9; }
-        .alerts-table th { color: #4a5568; }
-        .alerts-table tbody tr:hover { background-color: #eff6ff; } /* Light blue hover */
-        .alerts-table-tbody td {
-            color: #334155;
-            word-break: break-word;
-            vertical-align: top;
-            padding: 0.75rem 1rem;
-            line-height: 1.6 !important; /* Forcefully apply proper line spacing */
-        }
-        .alerts-table-tbody tr:hover td a { color: #1d4ed8; }
-
-        /* Log and Raw Report Views */
-        #logOutput, #resultsContent {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            color: #e2e8f0;
-            font-family: 'Fira Code', 'Courier New', monospace;
-        }
-        #resultsContent { white-space: pre-wrap; }
-
-        /* Custom Scrollbars */
-        #logOutput::-webkit-scrollbar, #resultsContent::-webkit-scrollbar, .overflow-y-auto::-webkit-scrollbar { width: 8px; }
-        #logOutput::-webkit-scrollbar-track, #resultsContent::-webkit-scrollbar-track, .overflow-y-auto::-webkit-scrollbar-track { background: #334155; }
-        #logOutput::-webkit-scrollbar-thumb, #resultsContent::-webkit-scrollbar-thumb, .overflow-y-auto::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-        #logOutput::-webkit-scrollbar-thumb:hover, #resultsContent::-webkit-scrollbar-thumb:hover, .overflow-y-auto::-webkit-scrollbar-thumb:hover { background: #64748b; }
-
-        /* Footer */
-        footer {
-            background-color: #1e293b;
-            color: #cbd5e1;
-            text-align: center;
-            padding: 1.5rem 0;
-            width: 100%;
-            margin-top: auto;
-            flex-shrink: 0;
-        }
-        
-        /* Responsive Adjustments */
-        @media (max-width: 1024px) {
-            .container { flex-direction: column; }
-            .left-panel { border-right: none; border-bottom: 1px solid #e2e8f0; }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <nav class="navbar">
@@ -267,7 +327,7 @@
         </div>
         <ul class="navbar-links">
             <li><a href="/network_scanner">Network Scanning</a></li>
-            <li><a href="/zap_scanner">Web Application Scanning</a></li>
+            <li><a href="/zap_scanner" class="active">Web Application Scanning</a></li>
             <li><a href="/ssl_scanner">SSL Scans</a></li>
             <li><a href="/chatbot">AI Chatbot</a></li>
         </ul>
@@ -281,12 +341,12 @@
                         <span class="text-4xl mr-3 netshield-icon">🌐</span>
                         <div>
                             <h1 class="text-2xl font-bold">ZAP Web Scanner</h1>
-                            <p class="text-sm text-gray-500">AI-Powered Vulnerability Prioritization</p>
+                            <p class="text-sm text-slate-400">AI-Powered Vulnerability Prioritization</p>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label for="targetUrl" class="block text-sm font-medium text-gray-600 mb-1">Target URL</label>
+                        <label for="targetUrl" class="block text-sm font-medium text-slate-400 mb-1">Target URL</label>
                         <input type="url" id="targetUrl" placeholder="https://example.com" class="w-full p-2 rounded-md border focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
@@ -324,7 +384,7 @@
                         <div class="label">Total Alerts</div>
                     </div>
                     <div class="summary-card">
-                        <div id="highAlertsDisplay" class="value text-red-700">0</div>
+                        <div id="highAlertsDisplay" class="value text-red-600">0</div>
                         <div class="label">High Risk</div>
                     </div>
                     <div class="summary-card">
@@ -336,15 +396,15 @@
                         <div class="label">Low Risk</div>
                     </div>
                     <div class="summary-card">
-                        <div id="infoAlertsDisplay" class="value text-blue-500">0</div>
+                        <div id="infoAlertsDisplay" class="value text-blue-600">0</div>
                         <div class="label">Informational</div>
                     </div>
                 </div>
-                 <p class="text-sm text-gray-500 mb-4">Last Scanned URL: <span id="lastScannedUrlDisplay" class="font-semibold text-gray-700">N/A</span></p>
+                <p class="text-sm text-slate-400 mb-4">Last Scanned URL: <span id="lastScannedUrlDisplay" class="font-semibold text-slate-200">N/A</span></p>
 
                 <h3 class="text-lg font-semibold mb-2">Prioritized Findings</h3>
                 <div class="overflow-x-auto rounded-lg alerts-table-container mb-6 flex-grow max-h-96 overflow-y-auto">
-                    <table class="min-w-full divide-y divide-gray-200 alerts-table">
+                    <table class="min-w-full divide-y divide-slate-700 alerts-table">
                         <thead class="alerts-table-thead sticky top-0">
                             <tr>
                                 <th scope="col" class="w-[8%] px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Risk</th>
@@ -355,9 +415,9 @@
                                 <th scope="col" class="w-[30%] px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Description</th>
                             </tr>
                         </thead>
-                        <tbody id="zapAlertsTableBody" class="divide-y divide-gray-200 alerts-table-tbody">
+                        <tbody id="zapAlertsTableBody" class="divide-y divide-slate-700 alerts-table-tbody">
                             <tr>
-                                <td>Medium</td>
+                                <td class="font-medium risk-medium">Medium</td>
                                 <td>13.53</td>
                                 <td>XSLT Injection</td>
                                 <td><a href="#" class="hover:underline">http://testphp.vulnweb.com...</a></td>
@@ -365,7 +425,7 @@
                                 <td>Injection using XSL transformations may be possible, and may allow an attacker to read system information or execute arbitrary code.</td>
                             </tr>
                             <tr>
-                                 <td colspan="6" class="p-4 text-center text-gray-500">No results available. Run a scan to begin.</td>
+                                <td colspan="6" class="p-4 text-center text-slate-500">No results available. Run a scan to begin.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -386,6 +446,7 @@
 
     <footer>
         <p>&copy; 2025 NetShieldAI. All rights reserved.</p>
+        <p>A Product of NetShield Pvt. Ltd. | Empowering Digital Trust.</p>
     </footer>
 
     <script src="{{ url_for('static', filename='js/zap_scanner.js') }}"></script>

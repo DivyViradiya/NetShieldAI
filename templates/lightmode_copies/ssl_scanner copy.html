@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetShieldAI - SSL Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base and Layout Styles */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc; /* Lighter background */
+            color: #1a202c;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 5rem; /* Adjusted for navbar height */
+        }
+
+        #page-wrapper {
+            flex: 1 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.75rem;
+            color: #1a202c;
+            letter-spacing: -0.025em;
+        }
+
+        .navbar-brand a {
+            text-decoration: none;
+            color: #1a202c;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-brand a:hover {
+            color: #0d121c;
+        }
+
+        .navbar-brand .ai-text {
+            color: #4299e1;
+        }
+
+        .navbar-links {
+            list-style: none;
+            display: flex;
+            gap: 2.5rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-links li a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 600;
+            transition: color 0.3s ease, transform 0.2s ease;
+            position: relative;
+        }
+
+        .navbar-links li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #4299e1;
+            transition: width 0.3s ease-out;
+        }
+
+        .navbar-links li a:hover {
+            color: #2b6cb0;
+            transform: translateY(-2px);
+        }
+
+        .navbar-links li a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px; /* Wider container */
+            width: 95%;
+            margin: 2rem auto;
+            padding: 0; /* No padding on container itself */
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            min-height: calc(100vh - 10rem);
+        }
+
+        /* Left and Right Panels */
+        .left-panel {
+            flex-basis: 30%;
+            padding: 1.5rem;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-panel {
+            flex-basis: 70%;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Headings and Icons */
+        h1, h2, h3 { color: #1a202c; }
+        .netshield-icon { color: #10b981; } /* Emerald green */
+
+        /* --- Button Styles --- */
+        .primary-scan-button {
+            background-color: #2c3e50;
+            color: #ffffff;
+            border: 1px solid #2c3e50;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease-in-out;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+        }
+        .primary-scan-button:hover {
+            background-color: #3b506b;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .primary-scan-button:disabled {
+            background-color: #4a5568;
+            cursor: not-allowed;
+        }
+
+        .secondary-button {
+            background-color: #f1f5f9;
+            color: #4a5568;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        .secondary-button:hover {
+            background-color: #e2e8f0;
+            color: #1a202c;
+        }
+        .secondary-button:disabled {
+            background-color: #e2e8f0;
+            cursor: not-allowed;
+        }
+        
+        /* Spinner Animations */
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        .primary-scan-button .spinner { border-top-color: #fff; }
+        .secondary-button .spinner { border: 2px solid rgba(74, 85, 104, 0.3); border-top-color: #4a5568; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Input and Status Fields */
+        input[type="text"] {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #1a202c;
+        }
+        input:focus {
+            outline: 2px solid #3b82f6;
+            border-color: #3b82f6;
+        }
+        #scanStatus {
+            border: 1px solid transparent;
+            font-weight: 500;
+        }
+
+        /* Results Tables */
+        .results-table-container { border: 1px solid #e2e8f0; }
+        .results-table thead { background-color: #f1f5f9; }
+        .results-table th { color: #4a5568; }
+        .results-table tbody tr:hover { background-color: #eff6ff; }
+        .results-table-tbody td { color: #334155; }
+
+        /* Log and Raw Report Views */
+        #logOutput, #resultsContent {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            font-family: 'Fira Code', 'Courier New', monospace;
+        }
+        
+        #resultsContent {
+            white-space: pre-wrap; /* Wrap long lines in JSON view */
+        }
+
+        /* Custom Scrollbars */
+        #logOutput::-webkit-scrollbar, #resultsContent::-webkit-scrollbar, .overflow-y-auto::-webkit-scrollbar, .overflow-auto::-webkit-scrollbar { width: 8px; height: 8px; }
+        #logOutput::-webkit-scrollbar-track, #resultsContent::-webkit-scrollbar-track, .overflow-y-auto::-webkit-scrollbar-track, .overflow-auto::-webkit-scrollbar-track { background: #334155; }
+        #logOutput::-webkit-scrollbar-thumb, #resultsContent::-webkit-scrollbar-thumb, .overflow-y-auto::-webkit-scrollbar-thumb, .overflow-auto::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        #logOutput::-webkit-scrollbar-thumb:hover, #resultsContent::-webkit-scrollbar-thumb:hover, .overflow-y-auto::-webkit-scrollbar-thumb:hover, .overflow-auto::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        /* Footer */
+        footer {
+            background-color: #1e293b;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 1.5rem 0;
+            width: 100%;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            .container { flex-direction: column; }
+            .left-panel { border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .right-panel { max-height: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a href="/">NetShield<span class="ai-text">AI</span></a>
+        </div>
+        <ul class="navbar-links">
+            <li><a href="/network_scanner">Network Scanning</a></li>
+            <li><a href="/zap_scanner">Web Application Scanning</a></li>
+            <li><a href="/ssl_scanner">SSL Scans</a></li>
+            <li><a href="/chatbot">AI Chatbot</a></li>
+        </ul>
+    </nav>
+
+    <div id="page-wrapper">
+        <div class="container mx-auto">
+            <!-- Left Panel: Scan Controls & Logs -->
+            <!-- MODIFIED: Added min-w-0 to prevent horizontal expansion -->
+            <div class="left-panel min-w-0">
+                <!-- Top part with fixed height -->
+                <div class="flex-shrink-0">
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl mr-3 netshield-icon">🔒</span>
+                        <div>
+                            <h1 class="text-2xl font-bold">SSL/TLS Scanner</h1>
+                            <p class="text-sm text-gray-500">Analyze certificate and server configuration</p>
+                        </div>
+                    </div>
+
+                    <!-- Scan Input -->
+                    <div class="mb-4">
+                        <label for="targetHost" class="block text-sm font-medium text-gray-600 mb-1">Target Host (domain:port)</label>
+                        <input type="text" id="targetHost" placeholder="e.g., google.com:443" class="w-full p-2 rounded-md border">
+                    </div>
+
+                    <!-- Start Scan Button -->
+                    <button id="initiateScanBtn" class="w-full primary-scan-button flex items-center justify-center">
+                        <span class="button-text">Initiate SSL Scan</span>
+                        <span class="spinner hidden"></span>
+                    </button>
+                    
+                    <!-- Scan Status -->
+                    <div id="scanStatus" class="text-center text-sm mt-4 p-2 rounded-md">Ready</div>
+                </div>
+
+                <!-- Log section that WILL grow -->
+                <div class="flex flex-col flex-grow mt-6 min-h-0">
+                    <div class="flex justify-between items-center mb-2 flex-shrink-0">
+                        <h3 class="text-lg font-semibold">Live Log</h3>
+                        <button id="clearLogBtn" class="text-xs font-semibold py-1.5 px-3 rounded-md secondary-button flex items-center justify-center">
+                            <span class="button-text">Clear</span>
+                            <span class="spinner hidden"></span>
+                        </button>
+                    </div>
+                    <!-- MODIFIED: Changed to whitespace-pre to match reference and ensure proper scrolling -->
+                    <div id="logOutput" class="text-xs p-3 rounded-lg h-96 overflow-auto whitespace-pre"></div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Scan Results -->
+            <div class="right-panel">
+                <div class="flex-grow flex flex-col min-h-0">
+                    <!-- Header (non-scrolling part) -->
+                    <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                        <h2 class="text-xl font-bold">Scan Results</h2>
+                        <button id="refreshReportBtn" class="px-3 py-1.5 rounded-lg secondary-button text-sm flex items-center">
+                            <i class="fas fa-sync-alt mr-2 text-xs"></i> Refresh
+                        </button>
+                    </div>
+                    
+                    <!-- Scrollable content area -->
+                    <div class="flex-grow overflow-y-auto min-h-0 pr-2">
+                        <!-- Vulnerabilities Summary -->
+                        <div id="vulnerabilitiesContainer" class="mb-6">
+                            <h3 class="text-lg font-semibold mb-2 flex items-center"><i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>Vulnerabilities</h3>
+                            <ul id="vulnerabilitiesList" class="list-disc list-inside space-y-2 text-sm">
+                                <li class="text-gray-500">Awaiting scan results...</li>
+                            </ul>
+                        </div>
+
+                        <!-- Summary & Server Config -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div class="bg-gray-50 p-4 rounded-lg border">
+                                <h3 class="text-lg font-semibold mb-2">Scan Summary</h3>
+                                <div class="space-y-1 text-sm">
+                                    <p><strong>Target:</strong> <span id="summaryTarget" class="font-medium text-gray-700">N/A</span></p>
+                                    <p><strong>IP Address:</strong> <span id="summaryIp" class="font-medium text-gray-700">N/A</span></p>
+                                    <p><strong>Port:</strong> <span id="summaryPort" class="font-medium text-gray-700">N/A</span></p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg border">
+                                <h3 class="text-lg font-semibold mb-2">Server Configuration</h3>
+                                <div id="serverConfigDetails" class="space-y-1 text-sm">
+                                    <p class="text-gray-500">Awaiting scan results...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Certificate Chain -->
+                        <h3 class="text-lg font-semibold mb-2">Certificate Chain</h3>
+                        <div id="certificateChainContainer" class="space-y-4 mb-6">
+                            <p class="text-gray-500 text-sm">Awaiting scan results...</p>
+                        </div>
+
+                        <!-- Protocols Table -->
+                        <h3 class="text-lg font-semibold mb-2">Protocols</h3>
+                        <div class="overflow-x-auto rounded-lg results-table-container mb-6 max-h-48 overflow-y-auto">
+                            <table class="min-w-full divide-y divide-gray-200 results-table">
+                                <thead class="results-table-thead sticky top-0">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Protocol</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="protocolsTableBody" class="divide-y divide-gray-200 results-table-tbody">
+                                    <tr><td colspan="2" class="p-4 text-center text-gray-500">Awaiting scan results...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Ciphers Table -->
+                        <h3 class="text-lg font-semibold mb-2">Accepted Ciphers</h3>
+                        <div class="overflow-x-auto rounded-lg results-table-container mb-6 max-h-64 overflow-y-auto">
+                             <table class="min-w-full divide-y divide-gray-200 results-table">
+                                <thead class="results-table-thead sticky top-0">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Protocol</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Key Size</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Cipher Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ciphersTableBody" class="divide-y divide-gray-200 results-table-tbody">
+                                   <tr><td colspan="3" class="p-4 text-center text-gray-500">Awaiting scan results...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Raw JSON Report (now inside the scrollable area) -->
+                        <div class="mt-6">
+                             <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-lg font-semibold">Raw JSON Report</h3>
+                                <button id="copyResultsBtn" class="p-2 rounded-md secondary-button" title="Copy to clipboard">
+                                    <i class="far fa-copy text-sm"></i>
+                                </button>
+                            </div>
+                            <div id="resultsContent" class="text-xs p-3 rounded-lg h-96 overflow-auto">
+                                Awaiting scan results...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 NetShield. All rights reserved.</p>
+    </footer>
+
+    <!-- Custom Message Box -->
+    <div id="customMessageBox" class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-transform transform translate-y-full opacity-0"></div>
+
+    <script src="{{ url_for('static', filename='js/ssl_scanner.js') }}"></script>
+</body>
+</html>
