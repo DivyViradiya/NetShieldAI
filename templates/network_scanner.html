@@ -17,14 +17,14 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            /* background: #f8fafc; */ /* OLD */
-            background: #000000; /* NEW: Pure black */
-            /* color: #1a202c; */ /* OLD */
-            color: #e2e8f0; /* NEW: Default light text */
+            background-color: #050505; /* Deep Black */
+            /* Subtle radial gradient for depth */
+            background-image: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.05), transparent 25%);
+            color: #e2e8f0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            padding-top: 5rem; /* Adjusted for navbar height */
+            padding-top: 5rem;
         }
 
         #page-wrapper {
@@ -34,14 +34,12 @@
             flex-direction: column;
         }
 
-        /* Navbar Styles */
+        /* Navbar Styles (PRESERVED) */
         .navbar {
-            /* background-color: #ffffff; */ /* OLD */
-            background-color: #0d121c; /* NEW: Dark surface */
+            background-color: #0d121c;
             padding: 1rem 2rem;
-            /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); */ /* OLD */
-            box-shadow: none; /* NEW */
-            border-bottom: 1px solid #1e293b; /* NEW: Dark border */
+            box-shadow: none;
+            border-bottom: 1px solid #1e293b;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -53,9 +51,8 @@
         }
 
         .navbar-logo-img {
-            /* Set your desired width here. I've guessed 150px. */
             width: auto; 
-            height: 30px;     /* This keeps the aspect ratio correct */
+            height: 30px;
         }
 
         .navbar-links {
@@ -68,8 +65,7 @@
 
         .navbar-links li a {
             text-decoration: none;
-            /* color: #4a5568; */ /* OLD */
-            color: #94a3b8; /* NEW: Muted text */
+            color: #94a3b8;
             font-weight: 600;
             transition: color 0.3s ease, transform 0.2s ease;
             position: relative;
@@ -87,8 +83,7 @@
         }
 
         .navbar-links li a:hover {
-            /* color: #2b6cb0; */ /* OLD */
-            color: #f8fafc; /* NEW: Bright hover */
+            color: #f8fafc;
             transform: translateY(-2px);
         }
 
@@ -96,172 +91,183 @@
             width: 100%;
         }
 
-        /* --- ADDED: Active Nav Link Style --- */
         .navbar-links li a.active {
-            color: #f8fafc; /* Bright text, same as hover */
+            color: #f8fafc;
         }
         .navbar-links li a.active::after {
-            width: 100%; /* Show underline */
+            width: 100%;
         }
 
-        /* Main Container */
-        .container {
-            max-width: 1400px; /* Wider container */
-            width: 95%;
+        /* --- REDESIGNED CENTRAL AREA CSS --- */
+
+        /* Layout Grid */
+        .main-grid {
+            max-width: 1600px;
+            width: 96%;
             margin: 2rem auto;
-            padding: 0; /* No padding on container itself */
-            /* background-color: #ffffff; */ /* OLD */
-            background-color: #0d121c; /* NEW: Dark surface */
-            border-radius: 0.75rem;
-            /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05); */ /* OLD */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2); /* NEW: Darker shadow */
-            /* border: 1px solid #e2e8f0; */ /* OLD */
-            border: 1px solid #1e293b; /* NEW: Dark border */
-            display: flex;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
         }
 
-        /* Left and Right Panels */
-        .left-panel {
-            flex-basis: 30%;
-            padding: 1.5rem;
-            /* border-right: 1px solid #e2e8f0; */ /* OLD */
-            border-right: 1px solid #1e293b; /* NEW: Dark border */
+        /* Cards */
+        .control-panel, .results-panel {
+            background-color: rgba(13, 18, 28, 0.7); /* Translucent dark */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 1rem;
             display: flex;
             flex-direction: column;
+            overflow: hidden; /* Contains children */
+            transition: border-color 0.3s ease;
+        }
+        
+        .control-panel:hover, .results-panel:hover {
+            border-color: rgba(59, 130, 246, 0.4);
         }
 
-        .right-panel {
-            flex-basis: 70%;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
+        .control-panel { padding: 1.5rem; }
+        .results-panel { padding: 0; } /* Padding handled by children for full-width headers */
+
+        /* Typography tweaks for Main Area */
+        h1 { font-size: 1.5rem; letter-spacing: -0.02em; }
+        h2 { font-size: 1.25rem; font-weight: 600; }
+        h3 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 700; }
+
+        /* Inputs - Minimalist Underline Style */
+        .input-group { position: relative; }
+        
+        input[type="text"] {
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid #334155;
+            color: #f8fafc;
+            padding: 0.75rem 0;
+            width: 100%;
+            transition: border-color 0.3s ease;
+            font-size: 0.95rem;
+        }
+        input[type="text"]::placeholder { color: #475569; }
+        input[type="text"]:focus {
+            outline: none;
+            border-bottom-color: #3b82f6;
         }
 
-        /* Headings and Icons */
-        /* h1, h2, h3 { color: #1a202c; } */ /* OLD */
-        h1, h2, h3 { color: #f8fafc; } /* NEW: Light text */
-        .netshield-icon { color: #3b82f6; } /* A friendly blue */
-
-        /* --- Button Styles (REFINED FOR DARK MODE) --- */
+        /* Buttons */
         .primary-action-button {
-            /* background-color: #2c3e50; */ /* OLD */
-            background-color: #3b82f6; /* NEW: Main accent blue */
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: #ffffff;
-            /* border: 1px solid #2c3e50; */ /* OLD */
-            border: 1px solid #3b82f6; /* NEW */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: none;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
             transition: all 0.2s ease-in-out;
             font-weight: 600;
             padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
         }
         .primary-action-button:hover {
-            /* background-color: #3b506b; */ /* OLD */
-            background-color: #2563eb; /* NEW: Darker accent blue */
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
         }
         .primary-action-button:disabled {
-            /* background-color: #4a5568; */ /* OLD */
-            background-color: #334155; /* NEW: Darker disabled */
-            border-color: #334155; /* NEW */
+            background: #1e293b;
+            color: #475569;
+            box-shadow: none;
             cursor: not-allowed;
             transform: none;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         .secondary-button {
-            /* background-color: #f1f5f9; */ /* OLD */
-            background-color: #1e293b; /* NEW: Dark secondary */
-            /* color: #4a5568; */ /* OLD */
-            color: #94a3b8; /* NEW: Muted text */
-            /* border: 1px solid #cbd5e1; */ /* OLD */
-            border: 1px solid #334155; /* NEW: Dark border */
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            background-color: rgba(30, 41, 59, 0.5);
+            color: #94a3b8;
+            border: 1px solid transparent;
             transition: all 0.2s ease;
         }
         .secondary-button:hover {
-            /* background-color: #e2e8f0; */ /* OLD */
-            background-color: #334155; /* NEW: Lighter dark */
-            /* color: #1a202c; */ /* OLD */
-            color: #f8fafc; /* NEW: Bright text */
+            background-color: rgba(51, 65, 85, 0.8);
+            color: #f8fafc;
         }
         .secondary-button:disabled {
-            /* background-color: #e2e8f0; */ /* OLD */
-            background-color: #1e293b; /* NEW */
-            color: #4a5568; /* NEW: Darker muted text */
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
-        /* Spinner Animations */
+        /* Toggle Button Specifics */
+        #advancedScanToggle {
+            background-color: transparent;
+            border: 1px dashed #334155;
+            color: #64748b;
+        }
+        #advancedScanToggle:hover {
+            border-color: #64748b;
+            color: #94a3b8;
+        }
+
+        /* Spinner */
         .spinner {
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             width: 16px;
             height: 16px;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         .primary-action-button .spinner { border-top-color: #fff; }
-        .secondary-button .spinner {
-            /* border: 2px solid rgba(74, 85, 104, 0.3); */ /* OLD */
-            border: 2px solid rgba(148, 163, 184, 0.3); /* NEW */
-            /* border-top-color: #4a5568; */ /* OLD */
-            border-top-color: #94a3b8; /* NEW */
-        }
+        .secondary-button .spinner { border-top-color: #94a3b8; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Input and Status Fields */
-        input[type="text"] {
-            /* background-color: #f8fafc; */ /* OLD */
-            background-color: #1e293b; /* NEW: Dark inset */
-            /* border: 1px solid #cbd5e1; */ /* OLD */
-            border: 1px solid #334155; /* NEW: Dark border */
-            /* color: #1a202c; */ /* OLD */
-            color: #e2e8f0; /* NEW: Light text */
-        }
-        input[type="text"]::placeholder {
-            color: #64748b; /* NEW: Lighter placeholder for dark bg */
-        }
-        input:focus {
-            outline: 2px solid #3b82f6;
-            border-color: #3b82f6;
-        }
-        #scanStatus {
-            border: 1px solid transparent;
-            font-weight: 500;
+        /* Terminals (Log & Raw) */
+        .terminal-window {
+            background-color: #050505;
+            border: 1px solid #1e293b;
+            border-radius: 0.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #cbd5e1;
         }
         
-        /* Results Table */
-        /* .results-table-container { border: 1px solid #e2e8f0; } */ /* OLD */
-        .results-table-container { border: 1px solid #334155; } /* NEW: Dark border */
-        /* .results-table thead { background-color: #f1f5f9; } */ /* OLD */
-        .results-table thead { background-color: #1e293b; } /* NEW: Dark header */
-        /* .results-table th { color: #4a5568; } */ /* OLD */
-        .results-table th { color: #94a3b8; } /* NEW: Muted text */
-        /* .results-table tbody tr:hover { background-color: #eff6ff; } */ /* OLD */
-        .results-table tbody tr:hover { background-color: #1e293b; } /* NEW: Dark hover */
-        /* .results-table-tbody td { color: #334155; } */ /* OLD */
-        .results-table-tbody td { color: #cbd5e1; } /* NEW: Light text */
-
-        /* Log and Raw Report Views */
-        #logOutput, #resultsContent {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            color: #e2e8f0;
-            font-family: 'Fira Code', 'Courier New', monospace;
+        /* Table Styles */
+        .results-header-bar {
+            background-color: rgba(13, 18, 28, 0.9);
+            border-bottom: 1px solid #1e293b;
+            padding: 1.5rem;
         }
-        #resultsContent { white-space: pre-wrap; }
+        
+        .results-table-container { 
+            border: none; 
+        }
+        .results-table thead { 
+            background-color: rgba(30, 41, 59, 0.3); 
+        }
+        .results-table th { 
+            color: #64748b; 
+            font-weight: 600;
+            border-bottom: 1px solid #1e293b;
+        }
+        .results-table tbody tr {
+            transition: background-color 0.1s;
+        }
+        .results-table tbody tr:hover { 
+            background-color: rgba(59, 130, 246, 0.05); 
+        }
+        .results-table-tbody td { 
+            color: #e2e8f0; 
+            border-bottom: 1px solid #1e293b;
+        }
 
-        /* Custom Scrollbars */
-        #logOutput::-webkit-scrollbar, #resultsContent::-webkit-scrollbar, .overflow-y-auto::-webkit-scrollbar { width: 8px; }
-        #logOutput::-webkit-scrollbar-track, #resultsContent::-webkit-scrollbar-track, .overflow-y-auto::-webkit-scrollbar-track { background: #334155; }
-        #logOutput::-webkit-scrollbar-thumb, #resultsContent::-webkit-scrollbar-thumb, .overflow-y-auto::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-        #logOutput::-webkit-scrollbar-thumb:hover, #resultsContent::-webkit-scrollbar-thumb:hover, .overflow-y-auto::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        /* Status Pills */
+        .status-pill {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-        /* Footer */
+        /* Footer (PRESERVED) */
         footer {
-            /* background-color: #1e293b; */ /* OLD */
-            background-color: #0d121c; /* NEW: Match navbar */
+            background-color: #0d121c;
             color: #cbd5e1;
             text-align: center;
             padding: 1.5rem 0;
@@ -270,11 +276,15 @@
             flex-shrink: 0;
         }
         
-        /* Responsive Adjustments */
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
         @media (max-width: 1024px) {
-            .container { flex-direction: column; }
-            /* .left-panel { border-right: none; border-bottom: 1px solid #e2e8f0; } */ /* OLD */
-            .left-panel { border-right: none; border-bottom: 1px solid #1e293b; } /* NEW: Dark border */
+            .main-grid { grid-template-columns: 1fr; }
+            .control-panel { margin-bottom: 0; }
         }
     </style>
 </head>
@@ -289,153 +299,163 @@
             <li><a href="/network_scanner" class="active">Network Scanning</a></li>
             <li><a href="/zap_scanner">Web Application Scanning</a></li>
             <li><a href="/ssl_scanner">SSL Scans</a></li>
-            <li><a href="/chatbot">AI Chatbot</a></li>
+            <li><a href="/chatbot">AI Analyzer</a></li>
         </ul>
     </nav>
 
     <div id="page-wrapper">
-        <div class="container mx-auto">
-            <div class="left-panel min-w-0">
-                <div>
-                    <div class="flex items-center mb-6">
-                        <span class="text-4xl mr-3 netshield-icon">🛡️</span>
-                        <div>
-                            <h1 class="text-2xl font-bold">Network Port Scanner</h1>
-                            <p class="text-sm text-slate-400">Discover and manage open ports</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div>
-                            <label for="targetIp" class="block text-sm font-medium text-slate-400 mb-1">Target IP / Range</label>
-                            <div class="flex space-x-2">
-                                <input type="text" id="targetIp" placeholder="e.g., 192.168.1.0/24" class="w-full p-2 rounded-md border">
-                                <button id="detectIpBtn" class="px-3 py-1.5 rounded-lg secondary-button flex items-center" title="Detect Local IP">
-                                    <i class="fas fa-crosshairs"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <button id="scanTcpBtn" class="w-full primary-action-button flex items-center justify-center">
-                                <span class="button-text">Scan TCP</span>
-                                <span class="spinner hidden"></span>
-                            </button>
-                            <button id="scanUdpBtn" class="w-full primary-action-button flex items-center justify-center">
-                                <span class="button-text">Scan UDP</span>
-                                <span class="spinner hidden"></span>
-                            </button>
-                        </div>
-
-                        <div class="relative">
-                            <button id="advancedScanToggle" class="w-full font-semibold py-2 px-4 rounded-lg focus:outline-none flex items-center justify-between secondary-button">
-                                <span>Advanced Scan Options</span>
-                                <i class="fas fa-chevron-down ml-2 transition-transform duration-200" id="advancedScanArrow"></i>
-                            </button>
-                            <div id="advancedScanOptions" class="hidden mt-2 space-y-1 p-2 bg-slate-800 rounded-md border border-slate-700">
-                                <button data-scan-type="os" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 flex items-center">
-                                    <i class="fas fa-fingerprint w-6 text-center mr-2"></i>OS Detection
-                                </button>
-                                <button data-scan-type="fragmented" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 flex items-center">
-                                    <i class="fas fa-puzzle-piece w-6 text-center mr-2"></i>Fragmented Packet
-                                </button>
-                                <button data-scan-type="aggressive" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 flex items-center">
-                                    <i class="fas fa-bolt w-6 text-center mr-2"></i>Aggressive
-                                </button>
-                                <button data-scan-type="tcp_syn" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-700 flex items-center">
-                                    <i class="fas fa-shield-alt w-6 text-center mr-2"></i>TCP SYN Stealth
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label for="whitelistPorts" class="block text-sm font-medium text-slate-400 mb-1">Whitelist Ports</label>
-                            <div class="flex space-x-2">
-                                <input type="text" id="whitelistPorts" placeholder="e.g., 80, 443" class="w-full p-2 rounded-md border">
-                                <button id="updateWhitelistBtn" class="px-3 py-1.5 rounded-lg secondary-button" title="Update Whitelist"><i class="fas fa-save"></i></button>
-                                <button id="clearWhitelistBtn" class="px-3 py-1.5 rounded-lg secondary-button" title="Clear Whitelist"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="scanStatus" class="text-center text-sm mt-4 p-2 rounded-md">Ready</div>
-                </div>
+        <div class="main-grid">
+            
+            <div class="control-panel left-panel">
                 
-                <div class="flex flex-col flex-grow mt-6 min-h-0">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-lg font-semibold">Live Log</h3>
-                        <button id="clearLogBtn" class="text-xs font-semibold py-1.5 px-3 rounded-md secondary-button flex items-center justify-center">
-                            <span class="button-text">Clear</span>
-                            <span class="spinner hidden"></span>
+                <div class="flex items-center mb-8">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mr-3">
+                        <i class="fas fa-shield-alt text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-white">Network Scanner</h1>
+                        <p class="text-xs text-slate-400">Configure & Execute</p>
+                    </div>
+                </div>
+
+                <div class="space-y-6 flex-grow">
+                    
+                    <div class="input-group">
+                        <label for="targetIp" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Target</label>
+                        <div class="flex items-end gap-2">
+                            <input type="text" id="targetIp" placeholder="IP Address or CIDR (e.g. 192.168.1.1)">
+                            <button id="detectIpBtn" class="mb-1 p-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-blue-400 transition-colors" title="Detect Local IP">
+                                <i class="fas fa-crosshairs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button id="scanTcpBtn" class="primary-action-button flex items-center justify-center">
+                            <span class="button-text">TCP Scan</span>
+                            <span class="spinner hidden ml-2"></span>
+                        </button>
+                        <button id="scanUdpBtn" class="primary-action-button flex items-center justify-center" style="background: linear-gradient(135deg, #475569, #334155); box-shadow:none;">
+                            <span class="button-text">UDP Scan</span>
+                            <span class="spinner hidden ml-2"></span>
                         </button>
                     </div>
-                    <div id="logOutput" class="text-xs p-3 rounded-lg h-96 overflow-auto whitespace-pre"></div>
+
+                    <div id="scanStatus" class="text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400">
+                        <i class="fas fa-circle text-[8px] mr-2 text-green-500"></i> System Ready
+                    </div>
+
+                    <div class="relative pt-2">
+                        <button id="advancedScanToggle" class="w-full py-2 px-3 rounded text-xs font-semibold flex items-center justify-between">
+                            <span>Advanced Options</span>
+                            <i class="fas fa-chevron-down text-[10px]" id="advancedScanArrow"></i>
+                        </button>
+                        <div id="advancedScanOptions" class="hidden mt-2 space-y-1 p-1 bg-slate-900 rounded border border-slate-800">
+                            <button data-scan-type="os" class="w-full text-left px-3 py-2 rounded text-xs text-slate-400 hover:bg-slate-800 hover:text-white flex items-center transition-colors">
+                                <i class="fas fa-fingerprint w-5 mr-2 text-blue-500"></i>OS Detection
+                            </button>
+                            <button data-scan-type="fragmented" class="w-full text-left px-3 py-2 rounded text-xs text-slate-400 hover:bg-slate-800 hover:text-white flex items-center transition-colors">
+                                <i class="fas fa-puzzle-piece w-5 mr-2 text-purple-500"></i>Fragmented Packet
+                            </button>
+                            <button data-scan-type="aggressive" class="w-full text-left px-3 py-2 rounded text-xs text-slate-400 hover:bg-slate-800 hover:text-white flex items-center transition-colors">
+                                <i class="fas fa-bolt w-5 mr-2 text-yellow-500"></i>Aggressive
+                            </button>
+                            <button data-scan-type="tcp_syn" class="w-full text-left px-3 py-2 rounded text-xs text-slate-400 hover:bg-slate-800 hover:text-white flex items-center transition-colors">
+                                <i class="fas fa-user-secret w-5 mr-2 text-red-500"></i>TCP SYN Stealth
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-group pt-2">
+                        <label for="whitelistPorts" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Whitelist</label>
+                        <div class="flex items-end gap-2">
+                            <input type="text" id="whitelistPorts" placeholder="80, 443, 8080">
+                            <div class="flex gap-1 mb-1">
+                                <button id="updateWhitelistBtn" class="p-2 rounded hover:bg-slate-800 text-slate-400 hover:text-green-400 transition-colors"><i class="fas fa-save"></i></button>
+                                <button id="clearWhitelistBtn" class="p-2 rounded hover:bg-slate-800 text-slate-400 hover:text-red-400 transition-colors"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
+                <div class="mt-8 border-t border-slate-800 pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Live Event Log</span>
+                        <button id="clearLogBtn" class="text-[10px] text-slate-600 hover:text-slate-300">CLEAR</button>
+                    </div>
+                    <div id="logOutput" class="terminal-window p-3 h-32 overflow-auto whitespace-pre leading-snug"></div>
+                </div>
             </div>
 
-            <div class="right-panel">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Scan Results</h2>
-                    <div class="flex space-x-2">
-                        <button id="downloadReportBtn" disabled class="px-3 py-1.5 rounded-lg secondary-button text-sm flex items-center opacity-50 cursor-not-allowed transition-opacity" title="Download Scan Report (PDF)">
-                            <i class="fas fa-file-pdf mr-2 text-xs text-red-500"></i> Report
+            <div class="results-panel right-panel">
+                
+                <div class="results-header-bar flex justify-between items-center">
+                    <div>
+                        <h2 class="text-white">Scan Results</h2>
+                        <div class="flex gap-3 mt-2">
+                            <div class="status-pill">
+                                <span class="text-slate-500">Local IP:</span>
+                                <span id="localIpDisplay" class="font-mono text-blue-400">---</span>
+                            </div>
+                            <div class="status-pill">
+                                <span class="text-slate-500">Whitelist:</span>
+                                <span id="whitelistedPortsDisplay" class="font-mono text-green-400">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                         <button id="blockPortsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium flex items-center">
+                            <i class="fas fa-ban mr-2 text-red-500"></i> Block
                         </button>
-                        
-                        <button id="refreshResultsBtn" class="px-3 py-1.5 rounded-lg secondary-button text-sm flex items-center">
-                            <i class="fas fa-sync-alt mr-2 text-xs"></i> Refresh All
+                        <button id="verifyPortsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium flex items-center">
+                            <i class="fas fa-check-double mr-2 text-blue-500"></i> Verify
+                        </button>
+                        <div class="h-8 w-px bg-slate-700 mx-1"></div>
+                        <button id="refreshResultsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button id="downloadReportBtn" disabled class="px-3 py-2 rounded-lg bg-blue-600 text-white text-xs font-medium opacity-50 disabled:opacity-30 transition-opacity">
+                            <i class="fas fa-download mr-1"></i> Report
                         </button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
-                        <p class="text-sm font-medium text-slate-400">Local IP Address</p>
-                        <span id="localIpDisplay" class="font-semibold text-slate-200 text-lg">Not Detected</span>
-                    </div>
-                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
-                        <p class="text-sm font-medium text-slate-400">Whitelisted Ports</p>
-                        <span id="whitelistedPortsDisplay" class="font-semibold text-green-600 text-lg">None</span>
+                <div class="flex-grow flex flex-col p-6 min-h-0">
+                    <div class="overflow-hidden rounded-lg border border-slate-800 flex-grow relative bg-slate-900/30">
+                        <div class="absolute inset-0 overflow-auto results-table-container">
+                            <table class="min-w-full text-sm results-table">
+                                <thead class="sticky top-0 backdrop-blur-md">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left">Port</th>
+                                        <th scope="col" class="px-6 py-3 text-left">Protocol</th>
+                                        <th scope="col" class="px-6 py-3 text-left">Service</th>
+                                        <th scope="col" class="px-6 py-3 text-left">Version</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="openPortsTableBody" class="divide-y divide-slate-800 results-table-tbody">
+                                    <tr>
+                                        <td colspan="4" class="p-12 text-center">
+                                            <div class="text-slate-600 mb-2"><i class="fas fa-radar text-4xl opacity-20"></i></div>
+                                            <p class="text-slate-500">Initiate a scan to view open ports.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-lg font-semibold">Open Ports Found</h3>
-                    <div class="flex space-x-2">
-                        <button id="blockPortsBtn" class="px-3 py-1.5 rounded-lg secondary-button text-sm flex items-center" title="Block all non-whitelisted ports found">
-                            <i class="fas fa-ban mr-2 text-xs"></i> Block Ports
-                        </button>
-                        <button id="verifyPortsBtn" class="px-3 py-1.5 rounded-lg secondary-button text-sm flex items-center" title="Verify if ports are closed on the target">
-                            <i class="fas fa-check-double mr-2 text-xs"></i> Verify
-                        </button>
+                <div class="p-6 pt-0">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xs font-bold text-slate-600" id="rawReportTitle">RAW OUTPUT (TCP)</h3>
+                        <button id="copyResultsBtn" class="text-xs text-blue-500 hover:text-blue-400">COPY</button>
+                    </div>
+                    <div id="resultsContent" class="terminal-window p-4 h-32 overflow-y-auto">
+                        <span class="text-slate-600">// Awaiting output stream...</span>
                     </div>
                 </div>
-                <div class="overflow-x-auto rounded-lg results-table-container mb-6 flex-grow max-h-96 overflow-y-auto">
-                    <table class="min-w-full divide-y divide-slate-700 results-table">
-                        <thead class="results-table-thead sticky top-0">
-                            <tr>
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Port</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Protocol</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Service</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Version</th>
-                            </tr>
-                        </thead>
-                        <tbody id="openPortsTableBody" class="divide-y divide-slate-700 results-table-tbody">
-                            <tr>
-                                <td colspan="4" class="p-4 text-center text-slate-500">No results available. Run a scan to begin.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
 
-                <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-lg font-semibold" id="rawReportTitle">Raw Report (TCP)</h3>
-                    <button id="copyResultsBtn" class="p-2 rounded-md secondary-button" title="Copy to clipboard">
-                        <i class="far fa-copy text-sm"></i>
-                    </button>
-                </div>
-                <div id="resultsContent" class="text-xs p-3 rounded-lg h-48 overflow-y-auto">
-                    Awaiting scan results...
-                </div>
             </div>
         </div>
     </div>

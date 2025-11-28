@@ -1,5 +1,5 @@
 {
-  "scan_date": "2025-11-28 12:17:15",
+  "scan_date": "2025-11-28 15:25:29",
   "summary": {
     "High": 0,
     "Medium": 3,
@@ -81,7 +81,7 @@
     {
       "name": "Authentication Request Identified",
       "risk": "Informational",
-      "predicted_risk_score": "Unmapped",
+      "predicted_risk_score": "N/A",
       "confidence": "1",
       "url": "http://testphp.vulnweb.com/secured/newuser.php",
       "description": "<p>The given request has been identified as an authentication request. The 'Other Info' field contains a set of key=value lines which identify any relevant fields. If the request is in a context which has an Authentication Method set to \"Auto-Detect\" then this rule will change the authentication to match the request identified.</p>",
@@ -91,7 +91,7 @@
     {
       "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
       "risk": "Informational",
-      "predicted_risk_score": "Unmapped",
+      "predicted_risk_score": "N/A",
       "confidence": "1",
       "url": "http://testphp.vulnweb.com/",
       "description": "<p>This check identifies responses where the HTTP Content-Type header declares a charset different from the charset defined by the body of the HTML or XML. When there's a charset mismatch between the HTTP header and content body Web browsers can be forced into an undesirable content-sniffing mode to determine the content's correct character set.</p><p></p><p>An attacker could manipulate content on the page to be interpreted in an encoding of their choice. For example, if an attacker can control content at the beginning of the page, they could inject script using UTF-7 encoded text and manipulate some browsers into interpreting that text.</p>",
@@ -101,7 +101,7 @@
     {
       "name": "Modern Web Application",
       "risk": "Informational",
-      "predicted_risk_score": "Unmapped",
+      "predicted_risk_score": "N/A",
       "confidence": "2",
       "url": "http://testphp.vulnweb.com/AJAX/index.php",
       "description": "<p>The application appears to be a modern web application. If you need to explore it automatically then the Ajax Spider may well be more effective than the standard one.</p>",

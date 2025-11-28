@@ -3,63 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyze Report - NetShieldAI</title>
+    <title>AI Security Analyst - NetShieldAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-up': 'slideUp 0.3s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        /* Base and Layout Styles */
-        html, body {
-            height: 100%;
+        /* --- CORE LAYOUT RESET --- */
+        body {
+            background-color: #000000;
+            background-image: radial-gradient(circle at 50% 0%, #111827 0%, #000000 60%);
+            color: #e2e8f0;
+            height: 100vh;
             margin: 0;
             padding: 0;
+            overflow: hidden; 
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            /* background: #f8fafc; */ /* OLD */
-            background: #000000; /* NEW: Pure black */
-            /* color: #1a202c; */ /* OLD */
-            color: #e2e8f0; /* NEW: Default light text */
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding-top: 5rem; /* Adjusted for navbar height */
+        /* --- YOUR NAVBAR STYLES APPLIED HERE --- */
+        .navbar-logo-img {
+            width: auto; 
+            height: 30px; 
         }
-
-        #page-wrapper {
-            flex: 1 1 0; /* Changed from '1 0 auto' */
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Navbar Styles */
+        
         .navbar {
-            /* background-color: #ffffff; */ /* OLD */
-            background-color: #0d121c; /* NEW: Dark surface */
-            padding: 1rem 2rem;
-            /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); */ /* OLD */
-            box-shadow: none; /* NEW */
+            background-color: #0d121c; 
+            padding: 1rem 2rem; /* As requested */
+            box-shadow: none;
+            border-bottom: 1px solid #1e293b; 
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            position: fixed;
+            position: fixed; /* Fixed as requested */
             top: 0;
             left: 0;
             z-index: 1000;
-            /* border-bottom: 1px solid #e2e8f0; */ /* OLD */
-            border-bottom: 1px solid #1e293b; /* NEW: Dark border */
         }
-
-        .navbar-logo-img {
-        /* Set your desired width here. I've guessed 150px. */
-        width: auto; 
-        height: 30px;     /* This keeps the aspect ratio correct */
-        }
-        
 
         .navbar-links {
             list-style: none;
@@ -71,18 +80,12 @@
 
         .navbar-links li a {
             text-decoration: none;
-            /* color: #4a5568; */ /* OLD */
-            color: #94a3b8; /* NEW: Muted text */
+            color: #94a3b8; 
             font-weight: 600;
-            transition: color 0.3s ease;
-            position: relative; /* Added for active state underline */
-        }
-        .navbar-links li a:hover {
-            /* color: #2b6cb0; */ /* OLD */
-            color: #f8fafc; /* NEW: Bright text */
+            transition: color 0.3s ease, transform 0.2s ease;
+            position: relative;
         }
 
-        /* --- ADDED: Active Nav Link Style --- */
         .navbar-links li a::after {
             content: '';
             position: absolute;
@@ -90,488 +93,469 @@
             height: 2px;
             bottom: -5px;
             left: 0;
-            background-color: #4299e1;
+            background-color: #4299e1; 
             transition: width 0.3s ease-out;
         }
-        .navbar-links li a.active {
-            color: #f8fafc; /* Bright text */
-        }
-        .navbar-links li a.active::after {
-            width: 100%; /* Show underline */
+
+        .navbar-links li a:hover {
+            color: #f8fafc; 
+            transform: translateY(-2px);
         }
 
-
-        /* Main Container */
-        .container {
-            max-width: 1400px; /* Wider container */
-            width: 95%;
-            margin: 2rem auto;
-            padding: 0; /* No padding on container itself */
-            /* background-color: #ffffff; */ /* OLD */
-            background-color: #0d121c; /* NEW: Dark surface */
-            border-radius: 0.75rem;
-            /* box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05); */ /* OLD */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2); /* NEW: Darker shadow */
-            /* border: 1px solid #e2e8f0; */ /* OLD */
-            border: 1px solid #1e293b; /* NEW: Dark border */
-            display: flex;
-            flex-grow: 1; /* Allow container to fill page height */
-            min-height: 0; /* IMPORTANT: Prevents container from growing with content */
-        }
-
-        /* Left and Right Panels */
-        .left-panel {
-            flex-basis: 35%;
-            padding: 1.5rem;
-            /* border-right: 1px solid #e2e8f0; */ /* OLD */
-            border-right: 1px solid #1e293b; /* NEW: Dark border */
-            display: flex;
-            flex-direction: column;
-        }
-
-        .right-panel {
-            flex-basis: 65%;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* IMPORTANT: Constrains the panel's height */
-        } 
-
-        /* Custom Scrollbar for Webkit browsers (DARK) */
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .scrollbar-thin::-webkit-scrollbar-track {
-            /* background: #e2e8f0; */ /* OLD */
-            background: #334155; /* NEW */
-        }
-
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            /* background-color: #94a3b8; */ /* OLD */
-            background-color: #475569; /* NEW */
-            border-radius: 10px;
-            /* border: 2px solid #e2e8f0; */ /* OLD */
-            border: 2px solid #334155; /* NEW */
-        }
-
-        /* Keyframe animations */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-down { animation: fadeInDown 0.8s ease-out forwards; }
-        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
-        @keyframes messageFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .message-fade-in { animation: messageFadeIn 0.3s ease-out forwards; }
-        @keyframes bounceSubtle {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        .animate-bounce-subtle { animation: bounceSubtle 1.5s infinite ease-in-out; }
-
-        /* Dot Flashing (Typing Indicator) - Colors are fine */
-        .dot-flashing {
-            position: relative; width: 10px; height: 10px; border-radius: 5px; background-color: #3b82f6; color: #3b82f6; animation: dotFlashing 1s infinite linear alternate; margin: 0 auto;
-        }
-        .dot-flashing::before, .dot-flashing::after {
-            content: ''; display: inline-block; position: absolute; top: 0; width: 10px; height: 10px; border-radius: 5px; background-color: #3b82f6; color: #3b82f6; animation: dotFlashing 1s infinite linear alternate;
-        }
-        .dot-flashing::before { left: -15px; animation-delay: .2s; }
-        .dot-flashing::after { left: 15px; animation-delay: .4s; }
-        @keyframes dotFlashing {
-            0% { background-color: #3b82f6; }
-            50%, 100% { background-color: #1e293b; } /* NEW: Darker inactive dot */
-        }
-
-        /* Footer */
-        footer {
-            /* background-color: #1e293b; */ /* OLD */
-            background-color: #0d121c; /* NEW: Match navbar */
-            color: #cbd5e1;
-            text-align: center;
-            padding: 1.5rem 0;
+        .navbar-links li a:hover::after {
             width: 100%;
-            margin-top: auto;
-            flex-shrink: 0;
         }
         
-        /* Responsive Adjustments */
-        @media (max-width: 1024px) {
-            .container { flex-direction: column; }
-            /* .left-panel { border-right: none; border-bottom: 1px solid #e2e8f0; } */ /* OLD */
-            .left-panel { border-right: none; border-bottom: 1px solid #1e293b; } /* NEW: Dark border */
+        /* Active State Override for visual consistency */
+        .navbar-links li a.active { color: #f8fafc; }
+        .navbar-links li a.active::after { width: 100%; }
+
+
+        /* --- CENTRAL AREA ADJUSTMENT --- */
+        /* Calculated: 30px img + 1rem top + 1rem bottom + 1px border ~= 63-65px */
+        .main-wrapper {
+            margin-top: 65px; 
+            height: calc(100vh - 65px);
+            display: flex;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
         }
+
+        /* --- FOOTER STYLES --- */
+        footer {
+            background-color: #0d121c;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            width: 100%;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+            border-top: 1px solid #1e293b;
+            z-index: 1000;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+            color: #cbd5e1;
+        }
+
+        /* --- SIDEBAR & CHAT COMPONENTS --- */
+        .sidebar {
+            background: rgba(13, 18, 28, 0.6);
+            border-right: 1px solid #1e293b;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* --- CHAT BUBBLES (No Icons) --- */
+        .msg-row { display: flex; width: 100%; margin-bottom: 1.5rem; }
+        .msg-row.user { justify-content: flex-end; }
+        .msg-row.ai { justify-content: flex-start; }
+
+        .msg-content {
+            padding: 1rem 1.25rem;
+            max-width: 85%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .msg-row.user .msg-content {
+            background: #2563eb;
+            color: white;
+            border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+        }
+
+        .msg-row.ai .msg-content {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+            border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+        }
+
+        /* --- MARKDOWN FORMATTING --- */
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            color: #f8fafc; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem;
+        }
+        .markdown-body h1 { font-size: 1.5rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
+        .markdown-body p { margin-bottom: 1rem; }
+        .markdown-body strong { color: #ffffff; font-weight: 700; }
+        .markdown-body ul, .markdown-body ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+        .markdown-body ul { list-style-type: disc; }
+        .markdown-body pre {
+            background: #0f172a; border: 1px solid #334155; padding: 1rem;
+            border-radius: 0.5rem; overflow-x: auto; margin: 1rem 0;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+        }
+        .markdown-body code {
+            background: rgba(148, 163, 184, 0.1); padding: 0.2em 0.4em;
+            border-radius: 0.25em; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em; color: #60a5fa;
+        }
+        .markdown-body pre code { background: transparent; padding: 0; color: #e2e8f0; }
+
+        /* --- UPLOAD ZONE --- */
+        .upload-zone {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23334155FF' stroke-width='2' stroke-dasharray='6%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+            transition: all 0.3s ease;
+        }
+        .upload-zone:hover {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%233B82F6FF' stroke-width='2' stroke-dasharray='6%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+        
+        .typing-dot {
+            width: 6px; height: 6px; background: #94a3b8; border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
     </style>
 </head>
-<body class=""> 
+<body>
 
     <nav class="navbar">
-    <div class="navbar-brand">
-        <a href="/">
-            <img src="/static/images/NetShieldAI_logo.png" alt="NetShieldAI Logo" class="navbar-logo-img">
-        </a>
-    </div>
+        <div class="navbar-brand">
+            <a href="/">
+                <img src="/static/images/NetShieldAI_logo.png" alt="NetShieldAI Logo" class="navbar-logo-img">
+            </a>
+        </div>
         <ul class="navbar-links">
             <li><a href="/network_scanner">Network Scanning</a></li>
             <li><a href="/zap_scanner">Web Application Scanning</a></li>
             <li><a href="/ssl_scanner">SSL Scans</a></li>
-            <li><a href="/chatbot" class="active">AI Chatbot</a></li>
-            
+            <li><a href="/chatbot" class="active">AI Analyzer</a></li>
         </ul>
     </nav>
 
-    <div id="page-wrapper">
-        <div class="container mx-auto">
-            <div class="left-panel">
-                <div class="bg-[#1e293b] p-6 rounded-xl shadow-md border border-[#334155] mb-6">
-                    <h2 class="text-2xl font-bold text-white mb-5">Upload New Report</h2>
-                    <form id="upload-form" enctype="multipart/form-data">
-                        <div class="mb-5">
-                            <label for="report_file" class="block text-slate-300 text-base font-semibold mb-2">Upload Report (PDF, Max 100MB)</label>
-                            <input type="file" id="report_file" name="report_file" accept=".pdf" class="block w-full text-sm text-slate-100 border border-slate-600 rounded-lg cursor-pointer bg-slate-700 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-900 file:text-blue-200 hover:file:bg-blue-800" required>
-                            <p class="text-slate-400 text-xs italic mt-2">Only PDF files under 100MB are supported.</p>
-                        </div>
-                        <div class="mb-6">
-                            <label for="llm_mode_selector" class="block text-slate-300 text-base font-semibold mb-2">Choose AI Model:</label>
-                            <div class="relative">
-                                <select id="llm_mode_selector" name="llm_mode" class="block appearance-none w-full bg-slate-700 border border-slate-600 text-slate-100 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <option value="local" selected>iSec AI Model (Secure)</option>
-                                    <option value="gemini">Google Gemini (Faster)</option>
-                                </select>
-                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-100">
-                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                                </div>
-                            </div>
-                            <p class="text-slate-400 text-xs italic mt-2">Select iSec AI Model for Secure Analysis, Google Gemini for faster response.</p>
-                        </div>
-                        <div class="flex justify-end">
-                            <button type="button" id="upload-button" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                Upload & Analyze
-                            </button>
-                        </div>
-                        <div id="upload-error" class="text-red-600 text-sm mt-3 hidden text-center"></div>
-                    </form>
-                </div>
-                <div class="bg-[#1e293b] rounded-xl shadow-md p-6 text-slate-300 flex-grow border border-[#334155]">
-                    <h2 class="text-2xl font-bold mb-4 text-white">How to Use:</h2>
-                    <ol class="list-decimal list-inside space-y-3 text-base">
-                        <li><strong>Upload Report:</strong> Use the form above to upload a PDF security report.</li>
-                        <li><strong>Choose AI Model:</strong> Select your preferred AI for analysis.</li>
-                        <li><strong>AI Analysis:</strong> The AI will provide an initial summary in the chat panel.</li>
-                        <li><strong>Chat with AI:</strong> Ask questions about findings, vulnerabilities, or cybersecurity concepts.</li>
-                    </ol>
+    <div class="main-wrapper">
+        
+        <aside class="sidebar w-80 p-5 flex flex-col gap-6 overflow-y-auto hidden md:flex flex-shrink-0">
+            <div>
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Analysis Context</h3>
+                <div id="context-indicator" class="bg-slate-800/50 border border-slate-700 rounded-xl p-3 flex items-center gap-3 transition-all duration-300">
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                        <span class="material-symbols-outlined text-lg">public</span>
+                    </div>
+                    <div>
+                        <div class="text-sm font-semibold text-slate-200">General Mode</div>
+                        <div class="text-[10px] text-slate-400">External Knowledge Base</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="right-panel">
-                <div class="mb-4 pb-2 border-b border-slate-700 flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-white flex items-center">
-                        <span class="material-symbols-outlined mr-2 text-blue-600">forum</span>
-                        AI Chat Assistant
-                    </h2>
-                    <div class="flex items-center gap-3">
-                        <span id="llm-mode-display" class="text-sm font-medium text-slate-300 bg-slate-700 px-3 py-1 rounded-full">
-                            Model: iSec AI
-                        </span>
-                        <button id="clear-chat-button" title="Clear Chat" class="text-slate-400 hover:text-red-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            <span class="material-symbols-outlined">delete_sweep</span>
+            <div class="flex-1 flex flex-col gap-4">
+                <div class="flex justify-between items-end">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Upload Report</h3>
+                </div>
+                
+                <form id="upload-form" class="flex flex-col gap-4">
+                    <div class="upload-zone rounded-xl h-32 relative cursor-pointer group">
+                        <input type="file" id="report_file" name="report_file" accept=".pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 text-center">
+                            <span class="material-symbols-outlined text-slate-500 text-3xl mb-2 group-hover:text-blue-400 transition-colors">cloud_upload</span>
+                            <p id="file-name-display" class="text-xs text-slate-300 font-medium truncate w-full px-2">Drop PDF here or click</p>
+                            <p class="text-[10px] text-slate-500 mt-1">Max Size: 100MB</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] text-slate-500 uppercase font-bold mb-1.5 block">AI Model</label>
+                        <div class="relative">
+                            <select id="llm_mode_selector" class="w-full bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg p-2.5 pr-8 appearance-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer">
+                                <option value="local">NetShield Local (Privacy Focused)</option>
+                                <option value="gemini">Google Gemini (High Speed)</option>
+                            </select>
+                            <span class="material-symbols-outlined absolute right-2.5 top-2 text-slate-500 text-sm pointer-events-none">expand_more</span>
+                        </div>
+                    </div>
+
+                    <button type="button" id="upload-button" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-medium py-2.5 rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-lg">analytics</span>
+                        Analyze Report
+                    </button>
+                    <p id="upload-status" class="text-center text-[10px] hidden"></p>
+                </form>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800">
+                <button id="reset-session-btn" class="w-full bg-slate-800/50 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white text-xs py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-sm">restart_alt</span>
+                    Start New Session
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col relative bg-transparent h-full">
+            
+            <div id="messages-container" class="flex-1 overflow-y-auto custom-scrollbar p-6 scroll-smooth">
+                
+                <div id="welcome-state" class="h-full flex flex-col items-center justify-center max-w-2xl mx-auto animate-fade-in">
+                    
+                    <div class="relative mb-8">
+                        <div class="absolute inset-0 bg-blue-500 blur-[40px] opacity-20 rounded-full"></div>
+                        <div class="relative bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl">
+                            <span class="material-symbols-outlined text-blue-400 text-5xl">security</span>
+                        </div>
+                    </div>
+
+                    <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 text-center tracking-tight">
+                        NetShield <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Intelligence</span>
+                    </h1>
+                    <p class="text-slate-400 text-center mb-10 text-lg leading-relaxed">
+                        I am your dedicated security analyst. Upload a report for deep vulnerability assessment or ask me anything about cybersecurity.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                        <button class="suggestion-btn group bg-slate-900/50 hover:bg-slate-800 border border-slate-800 hover:border-blue-500/50 p-4 rounded-xl text-left transition-all duration-300">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="material-symbols-outlined text-blue-400 text-sm">psychology</span>
+                                <span class="text-xs font-bold text-blue-400 uppercase">General Query</span>
+                            </div>
+                            <span class="text-slate-300 text-sm group-hover:text-white">What are the top 3 critical vulnerabilities in 2025?</span>
+                        </button>
+
+                        <button class="suggestion-btn group bg-slate-900/50 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 p-4 rounded-xl text-left transition-all duration-300">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="material-symbols-outlined text-emerald-400 text-sm">school</span>
+                                <span class="text-xs font-bold text-emerald-400 uppercase">Concept</span>
+                            </div>
+                            <span class="text-slate-300 text-sm group-hover:text-white">Explain remediation strategies for SQL Injection.</span>
                         </button>
                     </div>
                 </div>
-                <div id="welcome-message" class="flex flex-col items-center justify-center flex-grow text-center px-5 py-8">
-                    <span class="material-symbols-outlined text-blue-500 text-7xl mb-4 animate-bounce-subtle">smart_toy</span>
-                    <h2 class="text-4xl font-extrabold text-white mb-4 animate-fade-in-down">Ready to Analyze?</h2>
-                    <p class="text-lg text-slate-400 max-w-xl mb-6 leading-relaxed animate-fade-in-up">
-                        Upload a security report to begin your intelligent analysis with VulnScanAI.
-                    </p>
-                    <p class="text-md text-slate-300 max-w-xl animate-fade-in-up">
-                        You can then ask specific questions about vulnerabilities, risks, and remediation.
-                    </p>
-                </div>
 
-                <div id="chat-history" class="flex-grow overflow-y-auto pr-2 mb-4 scrollbar-thin hidden">
+                <div id="chat-history" class="space-y-4 max-w-4xl mx-auto pb-4"></div>
+
+                <div id="typing-indicator" class="hidden max-w-4xl mx-auto mt-2">
+                    <div class="msg-row ai">
+                        <div class="msg-content" style="background: transparent; border: none; padding-left: 0;">
+                             <div class="flex gap-1 items-center">
+                                <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                            </div>
+                        </div>
                     </div>
-
-                <div id="loading-indicator" class="text-center py-3 hidden">
-                    <div class="dot-flashing"></div>
-                    <p class="mt-2 text-blue-600 text-sm">AI is thinking...</p>
                 </div>
-
-                <div class="flex items-center border-t border-slate-700 pt-4 mt-auto">
-                    <input type="text" id="user-input" class="flex-grow bg-slate-800 border border-slate-700 text-slate-100 text-base rounded-full focus:ring-blue-500 focus:border-blue-500 block w-full p-3.5 pr-12 shadow-sm transition-all duration-200" placeholder="Ask a question about the report..." disabled>
-                    <button id="send-button" class="ml-3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-md hover:shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" disabled>
-                        <span class="material-symbols-outlined align-middle">send</span>
-                    </button>
-                </div>
-                <div id="chat-error" class="text-red-600 text-sm mt-3 hidden text-center"></div>
             </div>
-        </div>
-        <div id="copy-flash" class="fixed top-20 right-4 bg-green-900 text-green-200 p-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50 border border-green-700 flex items-center">
-            <span class="material-symbols-outlined mr-2">content_copy</span>Copied to clipboard!
-        </div>
+
+            <div class="p-4 border-t border-slate-800 bg-[#0d121c] z-10">
+                <div class="max-w-4xl mx-auto relative group">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl opacity-0 group-focus-within:opacity-20 transition duration-500"></div>
+                    <div class="relative flex items-center bg-[#000000] border border-slate-800 rounded-xl shadow-lg p-1.5 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all">
+                        <input type="text" id="user-input" class="w-full bg-transparent text-white placeholder-slate-500 text-sm px-4 py-3 outline-none" placeholder="Ask a question or describe a security issue..." autocomplete="off">
+                        <button id="send-btn" class="p-2.5 bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white rounded-lg transition-all duration-200 flex-shrink-0">
+                            <span class="material-symbols-outlined text-xl leading-none">arrow_upward</span>
+                        </button>
+                    </div>
+                    <div class="text-center mt-2">
+                        <p class="text-[10px] text-slate-600">AI can generate incorrect info. Verify critical findings.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-    
+
     <footer>
         <p>&copy; 2025 NetShieldAI. All rights reserved.</p>
         <p>A Product of NetShield Pvt. Ltd. | Empowering Digital Trust.</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- DOM Element References ---
-            const uploadButton = document.getElementById('upload-button');
-            const uploadError = document.getElementById('upload-error');
             const fileInput = document.getElementById('report_file');
-            const llmModeSelector = document.getElementById('llm_mode_selector');
-            const llmModeDisplay = document.getElementById('llm-mode-display');
-            const welcomeMessage = document.getElementById('welcome-message');
+            const fileNameDisplay = document.getElementById('file-name-display');
+            const uploadButton = document.getElementById('upload-button');
+            const uploadStatus = document.getElementById('upload-status');
+            const llmSelector = document.getElementById('llm_mode_selector');
             const chatHistory = document.getElementById('chat-history');
+            const messagesContainer = document.getElementById('messages-container');
+            const welcomeState = document.getElementById('welcome-state');
+            const typingIndicator = document.getElementById('typing-indicator');
             const userInput = document.getElementById('user-input');
-            const sendButton = document.getElementById('send-button');
-            const chatError = document.getElementById('chat-error');
-            const loadingIndicator = document.getElementById('loading-indicator');
-            const copyFlash = document.getElementById('copy-flash');
-            const clearChatButton = document.getElementById('clear-chat-button');
-    
-            // --- Constants and State ---
-            const BASE_URL = '/chatbot';
-            let isReportActive = false;
-    
+            const sendBtn = document.getElementById('send-btn');
+            const resetBtn = document.getElementById('reset-session-btn');
+            const contextIndicator = document.getElementById('context-indicator');
+
+            let isProcessing = false;
+
+            function scrollToBottom() {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            // Updated function to create bubbles WITHOUT icons
+            function addMessage(role, text) {
+                if (!welcomeState.classList.contains('hidden')) {
+                    welcomeState.classList.add('hidden');
+                    welcomeState.style.display = 'none';
+                }
+
+                const msgRow = document.createElement('div');
+                msgRow.className = `msg-row ${role} animate-slide-up`;
+                
+                const content = document.createElement('div');
+                content.className = 'msg-content';
+                
+                // Add markdown class if it's AI
+                if (role === 'ai') {
+                    content.classList.add('markdown-body');
+                    content.innerHTML = marked.parse(text);
+                } else {
+                    content.textContent = text;
+                }
+
+                msgRow.appendChild(content);
+                chatHistory.appendChild(msgRow);
+                scrollToBottom();
+            }
+
+            // --- Logic for Context Switching ---
+            function updateContextUI(mode, filename = null) {
+                const iconDiv = contextIndicator.querySelector('div:first-child');
+                const titleDiv = contextIndicator.querySelector('div:last-child div:first-child');
+                const subtitleDiv = contextIndicator.querySelector('div:last-child div:last-child');
+                const iconSpan = iconDiv.querySelector('span');
+
+                if (mode === 'report') {
+                    contextIndicator.className = "bg-emerald-900/20 border border-emerald-800/50 rounded-xl p-3 flex items-center gap-3 transition-all duration-300";
+                    iconDiv.className = "w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400";
+                    iconSpan.textContent = "description";
+                    titleDiv.textContent = "Report Active";
+                    titleDiv.className = "text-sm font-semibold text-emerald-200";
+                    subtitleDiv.textContent = filename || "PDF Analysis";
+                    subtitleDiv.className = "text-[10px] text-emerald-400 truncate max-w-[150px]";
+                } else {
+                    contextIndicator.className = "bg-slate-800/50 border border-slate-700 rounded-xl p-3 flex items-center gap-3 transition-all duration-300";
+                    iconDiv.className = "w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400";
+                    iconSpan.textContent = "public";
+                    titleDiv.textContent = "General Mode";
+                    titleDiv.className = "text-sm font-semibold text-slate-200";
+                    subtitleDiv.textContent = "External Knowledge Base";
+                    subtitleDiv.className = "text-[10px] text-slate-400";
+                }
+            }
+
             // --- Event Listeners ---
-            llmModeSelector.addEventListener('change', () => {
-                const selectedOption = llmModeSelector.options[llmModeSelector.selectedIndex];
-                llmModeDisplay.textContent = `Model: ${selectedOption.textContent.replace(' (Secure)', '').replace(' (Faster)', '')}`;
-            });
-    
-            uploadButton.addEventListener('click', handleUpload);
-    
-            sendButton.addEventListener('click', handleSendMessage);
-            userInput.addEventListener('keypress', (event) => {
-                if (event.key === 'Enter') {
-                    sendButton.click();
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    fileNameDisplay.textContent = file.name;
+                    fileNameDisplay.className = "text-xs text-white font-medium truncate w-full px-2";
+                } else {
+                    fileNameDisplay.textContent = "Drop PDF here or click";
+                    fileNameDisplay.className = "text-xs text-slate-300 font-medium truncate w-full px-2";
                 }
             });
-    
-            clearChatButton.addEventListener('click', handleClearChat);
-    
-            // --- Core Functions ---
-    
-            function handleUpload() {
-                if (isReportActive) {
-                    handleClearChat();
-                    return;
-                }
-    
+
+            uploadButton.addEventListener('click', async () => {
                 const file = fileInput.files[0];
                 if (!file) {
-                    showError(uploadError, 'Please select a PDF report to upload.');
+                    alert("Please select a file first.");
                     return;
                 }
-    
-                uploadError.classList.add('hidden');
-                setLoadingState(true);
-                welcomeMessage.classList.add('hidden');
-                chatHistory.classList.remove('hidden');
-                chatHistory.innerHTML = '';
-                clearChatButton.disabled = true;
-    
+
+                uploadStatus.classList.remove('hidden', 'text-red-400', 'text-green-400');
+                uploadStatus.className = "text-center text-[10px] text-blue-400 mt-2 animate-pulse";
+                uploadStatus.textContent = "Processing PDF...";
+                uploadButton.disabled = true;
+                uploadButton.classList.add('opacity-50', 'cursor-not-allowed');
+
                 const formData = new FormData();
                 formData.append('report_file', file);
-                formData.append('llm_mode', llmModeSelector.value);
-    
-                fetch(`${BASE_URL}/upload_report`, {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw new Error(err.error || 'Upload failed') });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    setLoadingState(false);
-                    if (data.error) {
-                        showError(uploadError, data.error);
-                        resetChatUI();
+                formData.append('llm_mode', llmSelector.value);
+
+                try {
+                    const response = await fetch('/chatbot/upload_report', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    if (response.ok && !data.error) {
+                        uploadStatus.className = "text-center text-[10px] text-green-400 mt-2";
+                        uploadStatus.textContent = "Ready";
+                        updateContextUI('report', file.name);
+                        
+                        chatHistory.innerHTML = ''; 
+                        addMessage('ai', data.message || "I have analyzed your report. Here is the summary:\n\n" + (data.summary || ""));
                     } else {
-                        appendMessage('AI', data.message || 'Report processed. You can now ask questions.');
-                        setChatActive(true);
-                        clearChatButton.disabled = false;
-                        uploadButton.textContent = 'New Report';
-                        isReportActive = true;
+                        throw new Error(data.error || "Upload failed");
                     }
-                })
-                .catch(error => {
-                    console.error('Upload Fetch Error:', error);
-                    setLoadingState(false);
-                    resetChatUI();
-                    showError(uploadError, error.message || 'An error occurred during file upload.');
-                });
-            }
-    
-            function handleSendMessage() {
-                const userMessage = userInput.value.trim();
-                if (userMessage) {
-                    appendMessage('You', userMessage);
-                    userInput.value = '';
-    
-                    setLoadingState(true, true);
-                    chatError.classList.add('hidden');
-    
-                    fetch(`${BASE_URL}/chat`, {
+                } catch (err) {
+                    uploadStatus.className = "text-center text-[10px] text-red-400 mt-2";
+                    uploadStatus.textContent = "Error: " + err.message;
+                } finally {
+                    uploadButton.disabled = false;
+                    uploadButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+
+            async function sendMessage() {
+                const text = userInput.value.trim();
+                if (!text || isProcessing) return;
+
+                userInput.value = '';
+                addMessage('user', text);
+                isProcessing = true;
+                typingIndicator.classList.remove('hidden');
+                scrollToBottom();
+
+                try {
+                    const response = await fetch('/chatbot/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: userMessage }),
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(err => { throw new Error(err.message || 'Chat request failed') });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        setLoadingState(false, true);
-                        if (data.response) {
-                            appendMessage('AI', data.response);
-                        } else {
-                            showError(chatError, data.message || 'Received an empty response from the AI.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Chat Fetch Error:', error);
-                        setLoadingState(false, true);
-                        showError(chatError, error.message || 'An error occurred while communicating with the AI.');
+                        body: JSON.stringify({ message: text })
                     });
-                }
-            }
-    
-            function handleClearChat() {
-                if (!confirm('Are you sure you want to start a new report? The current chat session will be lost.')) {
-                    return;
-                }
-    
-                clearChatButton.disabled = true;
-    
-                fetch(`${BASE_URL}/clear_chat`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw new Error(err.message || 'Failed to clear chat') });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'success') {
-                        resetChatUI();
+                    const data = await response.json();
+
+                    typingIndicator.classList.add('hidden');
+
+                    if (data.response) {
+                        addMessage('ai', data.response);
                     } else {
-                        throw new Error(data.message || 'An unknown error occurred.');
+                        addMessage('ai', "I encountered an error or received an empty response.");
                     }
-                })
-                .catch(error => {
-                    console.error('Clear Chat Error:', error);
-                    showError(chatError, error.message);
-                    clearChatButton.disabled = false;
-                });
-            }
-    
-            // --- UI Helper Functions ---
-    
-            function resetChatUI() {
-                chatHistory.innerHTML = '';
-                chatHistory.classList.add('hidden');
-                welcomeMessage.classList.remove('hidden');
-                chatError.classList.add('hidden');
-                uploadError.classList.add('hidden');
-                setChatActive(false);
-                clearChatButton.disabled = true;
-                fileInput.value = '';
-                uploadButton.textContent = 'Upload & Analyze';
-                isReportActive = false;
-            }
-    
-            function appendMessage(sender, message) {
-                const messageWrapper = document.createElement('div');
-                messageWrapper.className = 'flex mb-6 items-start group message-fade-in';
-    
-                const avatar = document.createElement('div');
-                avatar.className = 'flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm';
-    
-                const messageBubble = document.createElement('div');
-                messageBubble.className = 'p-4 rounded-xl max-w-[85%] relative shadow-sm break-words';
-    
-                if (sender === 'You') {
-                    messageWrapper.classList.add('justify-end');
-                    avatar.classList.add('bg-blue-500', 'order-2', 'ml-3');
-                    avatar.textContent = 'You';
-                    messageBubble.classList.add('bg-blue-500', 'text-white', 'rounded-br-none');
-                    messageBubble.textContent = message;
-                } else { // AI
-                    messageWrapper.classList.add('justify-start');
-                    // REFINED: AI avatar style
-                    avatar.classList.add('bg-slate-700', 'order-1', 'mr-3'); 
-                    avatar.innerHTML = '<span class="material-symbols-outlined text-lg">psychology</span>';
-                    // REFINED: AI bubble styles
-                    messageBubble.classList.add('bg-slate-800', 'text-slate-100', 'rounded-bl-none'); 
-                    messageBubble.innerHTML = marked.parse(message);
-                    addCopyButton(messageBubble, message);
-                }
-    
-                messageWrapper.appendChild(avatar);
-                messageWrapper.appendChild(messageBubble);
-                chatHistory.appendChild(messageWrapper);
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-            }
-    
-            function addCopyButton(bubble, textToCopy) {
-                const copyButton = document.createElement('button');
-                // REFINED: Copy button styles
-                copyButton.innerHTML = '<span class="material-symbols-outlined text-slate-400 text-lg">content_copy</span>'; 
-                copyButton.title = 'Copy to clipboard';
-                copyButton.className = 'absolute -top-2 right-0 bg-slate-800 hover:bg-slate-700 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 z-10';
-    
-                copyButton.addEventListener('click', () => {
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        copyFlash.classList.remove('opacity-0');
-                        setTimeout(() => copyFlash.classList.add('opacity-0'), 1500);
-                    });
-                });
-                bubble.appendChild(copyButton);
-            }
-    
-            function setLoadingState(isLoading, isChat = false) {
-                loadingIndicator.classList.toggle('hidden', !isLoading);
-                if (isChat) {
-                    userInput.disabled = isLoading;
-                    sendButton.disabled = isLoading;
-                } else {
-                    uploadButton.disabled = isLoading;
-                    if (isLoading) {
-                        uploadButton.textContent = isReportActive ? 'Clearing...' : 'Analyzing...';
-                    }
+                } catch (err) {
+                    typingIndicator.classList.add('hidden');
+                    addMessage('ai', "Error connecting to server. Please check your connection.");
+                    console.error(err);
+                } finally {
+                    isProcessing = false;
                 }
             }
-    
-            function setChatActive(isActive) {
-                userInput.disabled = !isActive;
-                sendButton.disabled = !isActive;
-            }
-    
-            function showError(element, message) {
-                element.textContent = message;
-                element.classList.remove('hidden');
-            }
+
+            sendBtn.addEventListener('click', sendMessage);
+            userInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+
+            resetBtn.addEventListener('click', async () => {
+                if(confirm("Are you sure? This will clear the current chat context.")) {
+                    await fetch('/chatbot/clear_chat', { method: 'POST' });
+                    chatHistory.innerHTML = '';
+                    welcomeState.classList.remove('hidden');
+                    welcomeState.style.display = 'flex';
+                    updateContextUI('general');
+                    fileInput.value = '';
+                    fileNameDisplay.textContent = "Drop PDF here or click";
+                    fileNameDisplay.className = "text-xs text-slate-300 font-medium truncate w-full px-2";
+                    uploadStatus.classList.add('hidden');
+                }
+            });
+
+            document.querySelectorAll('.suggestion-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const textSpan = e.currentTarget.querySelector('span.text-slate-300');
+                    if(textSpan) {
+                        userInput.value = textSpan.textContent;
+                        sendMessage();
+                    }
+                });
+            });
         });
     </script>
 </body>

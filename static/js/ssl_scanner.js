@@ -269,33 +269,38 @@ function renderCertificateChain(chain) {
     });
 
     if (copyResultsBtn) {
-        copyResultsBtn.addEventListener('click', () => {
-            const textToCopy = resultsContent.textContent;
+            // Find the text content element inside the button for feedback
+            const copyButtonText = copyResultsBtn.textContent;
             
-            // Prevent copying placeholder text
-            if (!textToCopy || textToCopy.includes('Awaiting scan results')) {
-                return;
-            }
+            copyResultsBtn.addEventListener('click', () => {
+                const textToCopy = resultsContent.textContent;
+                
+                // Prevent copying placeholder text
+                if (!textToCopy || textToCopy.includes('Awaiting scan results')) {
+                    // Optional: Provide quick feedback that there's nothing to copy
+                    console.log('No scan results to copy.');
+                    return;
+                }
 
-            // Use modern Clipboard API
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                // Visual Feedback: Change icon to checkmark
-                const icon = copyResultsBtn.querySelector('i');
-                if (icon) {
-                    const originalClass = icon.className;
-                    icon.className = 'fas fa-check text-green-500'; // Show green check
+                // Use modern Clipboard API
+                // The button's existing text is "COPY". We will temporarily change this.
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    
+                    // --- Visual Feedback: Change button text to indicate success ---
+                    const originalContent = copyResultsBtn.innerHTML;
+                    copyResultsBtn.innerHTML = '<i class="fas fa-check text-green-500 mr-1"></i> COPIED!';
                     
                     // Revert back after 2 seconds
                     setTimeout(() => { 
-                        icon.className = originalClass; 
+                        // This uses the original HTML content of the button, assuming the icon is part of the button element
+                        copyResultsBtn.innerHTML = originalContent; 
                     }, 2000);
-                }
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-                alert('Failed to copy to clipboard. Please select the text and copy manually.');
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Failed to copy to clipboard. Please ensure the page is served over HTTPS and the tab is active. Manual copy may be required.'); // Informative error message
+                });
             });
-        });
-    }
+        }
 
     refreshReportBtn.addEventListener('click', () => {
         fetchAndDisplayReport();

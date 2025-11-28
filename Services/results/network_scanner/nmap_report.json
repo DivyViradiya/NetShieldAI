@@ -1,6 +1,6 @@
 {
-    "scan_date": "2025-11-28 11:50:11",
-    "scan_args": "nmap --exclude-ports 5000 -sS -T4 -oG D:\\\\NetShieldAI\\\\Services\\\\results\\\\network_scanner\\\\scan_result_tcp_syn.txt 192.168.29.48",
+    "scan_date": "2025-11-28 16:21:20",
+    "scan_args": "nmap --exclude-ports 5000 -T4 -sS -sV -Pn --top-ports 1000 -oG D:\\\\NetShieldAI\\\\Services\\\\results\\\\network_scanner\\\\scan_result_tcp.txt 192.168.29.48",
     "target_ip": "192.168.29.48",
     "host_status": "Up",
     "os_guess": "Unknown / Not Detected",
@@ -10,7 +10,7 @@
             "state": "open",
             "protocol": "tcp",
             "service": "msrpc",
-            "version": "",
+            "version": "Microsoft Windows RPC",
             "process_name": "svchost.exe"
         },
         {
@@ -18,14 +18,14 @@
             "state": "open",
             "protocol": "tcp",
             "service": "netbios-ssn",
-            "version": "",
+            "version": "Microsoft Windows netbios-ssn",
             "process_name": "System"
         },
         {
             "port": "445",
             "state": "open",
             "protocol": "tcp",
-            "service": "microsoft-ds",
+            "service": "microsoft-ds?",
             "version": "",
             "process_name": "System"
         }

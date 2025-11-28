@@ -279,7 +279,7 @@ def predict_risk(vulnerability_name: str):
 
     cwe_id = ZAP_TO_CWE_MAP.get(vulnerability_name)
     if not cwe_id:
-        return "Unmapped"
+        return "N/A"
 
     try:
         profile = cwe_profiles.loc[[cwe_id]]

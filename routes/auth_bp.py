@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
-from Services.api_client import api_login, logout, get_user_profile
 
 # Create a new blueprint for authentication
 auth_bp = Blueprint('auth', __name__, template_folder='templates')

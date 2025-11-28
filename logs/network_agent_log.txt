@@ -1,64 +1,57 @@
-[2025-11-28 10:50:31] [*] Log file cleared.
-[2025-11-28 10:52:01] [*] Starting AGGRESSIVE TCP scan for 192.168.29.48...
-[2025-11-28 10:52:01] [+] Running Aggressive scan on 192.168.29.48...
-[2025-11-28 10:52:02] [+] Fragmented Packet scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_fragmented.txt
-[2025-11-28 10:52:18] [*] Local IP requested: 192.168.29.48
-[2025-11-28 10:52:28] [*] Local IP requested: 192.168.29.48
-[2025-11-28 10:52:40] [+] Aggressive scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_aggressive.txt
-[2025-11-28 10:52:45] [*] Local IP requested: 192.168.29.48
-[2025-11-28 10:54:39] [*] Starting TCP_SYN TCP scan for 192.168.29.48...
-[2025-11-28 10:54:39] [+] Running TCP SYN scan on 192.168.29.48...
-[2025-11-28 10:54:41] [+] TCP SYN scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp_syn.txt
-[2025-11-28 10:55:35] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:28:39] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:28:43] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:28:46] [*] Starting DEFAULT TCP scan for 192.168.29.48...
-[2025-11-28 11:28:46] [+] Running TCP (Top 1000) scan on 192.168.29.48...
-[2025-11-28 11:28:46] [*] Executing: nmap --exclude-ports 5000 -T4 -sS -sV -Pn --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
-[2025-11-28 11:28:55] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
-[2025-11-28 11:28:57] [+] Processing results for PDF report...
-[2025-11-28 11:28:58] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\network_scanner\nmap_report.json
-[2025-11-28 11:28:58] [*] Scan complete. Starting PDF report generation...
-[2025-11-28 11:28:58] [!] PDF generation finished but file not found.
-[2025-11-28 11:28:59] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:29:19] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:29:25] [*] Starting DEFAULT TCP scan for 192.168.29.48...
-[2025-11-28 11:29:25] [+] Running TCP (Top 1000) scan on 192.168.29.48...
-[2025-11-28 11:29:25] [*] Executing: nmap --exclude-ports 5000 -T4 -sS -sV -Pn --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
-[2025-11-28 11:29:34] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
-[2025-11-28 11:29:36] [+] Processing results for PDF report...
-[2025-11-28 11:29:37] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\network_scanner\nmap_report.json
-[2025-11-28 11:29:37] [*] Scan complete. Starting PDF report generation...
-[2025-11-28 11:29:37] [!] PDF generation finished but file not found.
-[2025-11-28 11:29:47] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:29:49] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:37:03] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:37:06] [*] Starting DEFAULT TCP scan for 192.168.29.48...
-[2025-11-28 11:37:06] [+] Running TCP (Top 1000) scan on 192.168.29.48...
-[2025-11-28 11:37:07] [*] Executing: nmap --exclude-ports 5000 -T4 -sS -sV -Pn --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
-[2025-11-28 11:37:18] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
-[2025-11-28 11:37:20] [+] Processing results for PDF report...
-[2025-11-28 11:37:21] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:37:22] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\network_scanner\nmap_report.json
-[2025-11-28 11:37:22] [*] Scan complete. Generating PDF report...
-[2025-11-28 11:37:23] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\network_scanner\nmap_report.pdf
-[2025-11-28 11:48:48] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:49:00] [*] Starting AGGRESSIVE TCP scan for 192.168.29.48...
-[2025-11-28 11:49:00] [+] Running AGGRESSIVE scan on 192.168.29.48...
-[2025-11-28 11:49:01] [*] Executing: nmap --exclude-ports 5000 -A -T4 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_aggressive.txt 192.168.29.48
-[2025-11-28 11:49:40] [+] AGGRESSIVE scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_aggressive.txt
-[2025-11-28 11:49:42] [+] Processing results for PDF report...
-[2025-11-28 11:49:43] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\network_scanner\nmap_report.json
-[2025-11-28 11:49:43] [*] Scan complete. Generating PDF report...
-[2025-11-28 11:49:44] [+] PDF report generated successfully: D:\NetShieldAI\Services\PDFs\nmap_report.pdf
-[2025-11-28 11:49:49] [*] Local IP requested: 192.168.29.48
-[2025-11-28 11:50:07] [*] Starting TCP_SYN TCP scan for 192.168.29.48...
-[2025-11-28 11:50:07] [+] Running TCP_SYN scan on 192.168.29.48...
-[2025-11-28 11:50:08] [*] Executing: nmap --exclude-ports 5000 -sS -T4 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp_syn.txt 192.168.29.48
-[2025-11-28 11:50:09] [+] TCP_SYN scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp_syn.txt
-[2025-11-28 11:50:11] [+] Processing results for PDF report...
-[2025-11-28 11:50:12] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\network_scanner\nmap_report.json
-[2025-11-28 11:50:12] [*] Scan complete. Generating PDF report...
-[2025-11-28 11:50:13] [+] PDF report generated successfully: D:\NetShieldAI\Services\PDFs\nmap_report.pdf
-[2025-11-28 11:50:22] [*] Local IP requested: 192.168.29.48
-[2025-11-28 12:14:54] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:51:20] [*] Log file cleared.
+[2025-11-28 15:51:29] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:51:53] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:51:56] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-11-28 15:51:56] [+] Running TCP (Top 1000) scan on 192.168.29.48...
+[2025-11-28 15:51:56] [*] Executing: nmap --exclude-ports 5000 -T4 -sS -sV -Pn --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-11-28 15:52:05] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-11-28 15:52:07] [+] Processing results for PDF report...
+[2025-11-28 15:52:08] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\network_scanner\nmap_report.json
+[2025-11-28 15:52:08] [*] Scan complete. Generating PDF report...
+[2025-11-28 15:52:10] [+] PDF report generated successfully: D:\NetShieldAI\Services\PDFs\nmap_report.pdf
+[2025-11-28 15:52:22] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:52:34] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:53:34] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:53:59] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:55:46] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:55:51] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-11-28 15:55:51] [+] Running TCP (Top 1000) scan on 192.168.29.48...
+[2025-11-28 15:55:51] [*] Executing: nmap --exclude-ports 5000 -T4 -sS -sV -Pn --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-11-28 15:56:00] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-11-28 15:56:02] [+] Processing results for PDF report...
+[2025-11-28 15:56:03] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:56:03] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\network_scanner\nmap_report.json
+[2025-11-28 15:56:03] [*] Scan complete. Generating PDF report...
+[2025-11-28 15:56:04] [+] PDF report generated successfully: D:\NetShieldAI\Services\PDFs\nmap_report.pdf
+[2025-11-28 15:56:09] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:56:10] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:56:10] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:56:24] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:58:25] [*] Local IP requested: 192.168.29.48
+[2025-11-28 15:58:43] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:01:03] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:01:36] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:01:43] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:01:58] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:02:57] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:10:06] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:12:08] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:15:13] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:16:06] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:17:32] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:18:58] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:21:05] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:21:09] [*] Starting DEFAULT TCP scan for 192.168.29.48...
+[2025-11-28 16:21:09] [+] Running TCP (Top 1000) scan on 192.168.29.48...
+[2025-11-28 16:21:10] [*] Executing: nmap --exclude-ports 5000 -T4 -sS -sV -Pn --top-ports 1000 -oG D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2025-11-28 16:21:18] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\network_scanner\scan_result_tcp.txt
+[2025-11-28 16:21:19] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:21:20] [+] Processing results for PDF report...
+[2025-11-28 16:21:21] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\network_scanner\nmap_report.json
+[2025-11-28 16:21:21] [*] Scan complete. Generating PDF report...
+[2025-11-28 16:21:23] [+] PDF report generated successfully: D:\NetShieldAI\Services\PDFs\nmap_report.pdf
+[2025-11-28 16:21:39] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:25:09] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:25:11] [*] Local IP requested: 192.168.29.48
+[2025-11-28 16:27:13] [*] Local IP requested: 192.168.29.48
+[2025-11-28 19:04:38] [*] Local IP requested: 192.168.29.48

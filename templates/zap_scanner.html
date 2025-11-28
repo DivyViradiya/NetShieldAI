@@ -6,304 +6,313 @@
     <title>NetShieldAI - ZAP Scanner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<style>
-    /* Base and Layout Styles */
-    html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    body {
-        font-family: 'Inter', sans-serif;
-        background: #000000; /* Pure black background */
-        color: #e2e8f0; /* Default light text */
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        padding-top: 5rem; /* Adjusted for navbar height */
-    }
-
-    #page-wrapper {
-        flex: 1 0 auto;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Navbar Styles */
-    .navbar {
-        background-color: #0d121c; /* Dark surface */
-        padding: 1rem 2rem;
-        box-shadow: none;
-        border-bottom: 1px solid #1e293b; /* Dark border */
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-    }
-
-    .navbar-logo-img {
-        /* Set your desired width here. I've guessed 150px. */
-        width: auto; 
-        height: 30px;     /* This keeps the aspect ratio correct */
-    }
-
-    .navbar-links {
-        list-style: none;
-        display: flex;
-        gap: 2.5rem;
-        margin: 0;
-        padding: 0;
-    }
-
-    .navbar-links li a {
-        text-decoration: none;
-        color: #94a3b8; /* Muted text */
-        font-weight: 600;
-        transition: color 0.3s ease, transform 0.2s ease;
-        position: relative;
-    }
-
-    .navbar-links li a::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: -5px;
-        left: 0;
-        background-color: #4299e1; /* Stays same */
-        transition: width 0.3s ease-out;
-    }
-
-    .navbar-links li a:hover {
-        color: #f8fafc; /* Bright hover */
-        transform: translateY(-2px);
-    }
-
-    .navbar-links li a:hover::after {
-        width: 100%;
-    }
-
-    /* --- ADDED: Active Nav Link Style --- */
-    .navbar-links li a.active {
-        color: #f8fafc; /* Bright text, same as hover */
-    }
-
-    .navbar-links li a.active::after {
-        width: 100%; /* Show underline */
-    }
-
-    /* Main Container */
-    .container {
-        max-width: 1400px;
-        width: 95%;
-        margin: 2rem auto;
-        padding: 0;
-        background-color: #0d121c; /* Dark surface */
-        border-radius: 0.75rem;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2); /* Darker shadow */
-        border: 1px solid #1e293b; /* Dark border */
-        display: flex;
-    }
-
-    /* Left and Right Panels */
-    .left-panel {
-        flex-basis: 30%;
-        flex-shrink: 0;
-        padding: 1.5rem;
-        border-right: 1px solid #1e293b; /* Dark border */
-        display: flex;
-        flex-direction: column;
-    }
-
-    .right-panel {
-        flex-basis: 70%;
-        min-width: 0;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Headings and Icons */
-    h1, h2, h3 { color: #f8fafc; } /* Light text */
-    .netshield-icon { color: #3b82f6; } /* Stays same */
-
-    /* --- Button Styles (REFINED) --- */
-    .primary-scan-button {
-        /* background-color: #2c3e50; */ /* OLD */
-        background-color: #3b82f6; /* NEW: Main accent blue */
-        color: #ffffff;
-        /* border: 1px solid #2c3e50; */ /* OLD */
-        border: 1px solid #3b82f6; /* NEW */
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        transition: all 0.2s ease-in-out;
-        font-weight: 600;
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
-    }
-    .primary-scan-button:hover {
-        /* background-color: #3b506b; */ /* OLD */
-        background-color: #2563eb; /* NEW: Darker accent blue */
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-    .primary-scan-button:disabled {
-        background-color: #334155; /* Darker disabled */
-        border-color: #334155;
-        cursor: not-allowed;
-    }
-
-    .secondary-button {
-        background-color: #1e293b; /* Dark secondary */
-        color: #94a3b8; /* Muted text */
-        border: 1px solid #334155; /* Dark border */
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        transition: all 0.2s ease;
-    }
-    .secondary-button:hover {
-        background-color: #334155; /* Lighter dark */
-        color: #f8fafc; /* Bright text */
-    }
-    .secondary-button:disabled {
-        background-color: #1e293b;
-        color: #4a5568; /* Darker muted text */
-        cursor: not-allowed;
-    }
-
-    /* Spinner Animations */
-    .spinner {
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        animation: spin 1s linear infinite;
-    }
-    .primary-scan-button .spinner { border-top-color: #fff; }
-    .secondary-button .spinner {
-        border: 2px solid rgba(148, 163, 184, 0.3); /* Based on new text color */
-        border-top-color: #94a3b8;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    /* Input and Status Fields */
-    input[type="url"] {
-        background-color: #1e293b; /* Dark inset */
-        border: 1px solid #334155; /* Dark border */
-        color: #e2e8f0; /* Light text */
-    }
-    input[type="url"]::placeholder {
-        color: #64748b; /* Lighter placeholder for dark bg */
-    }
-    input:focus {
-        outline: 2px solid #3b82f6;
-        border-color: #3b82f6; /* Stays same */
-    }
-    #scanStatus {
-        border: 1px solid transparent;
-        font-weight: 500;
-    }
-
-    /* Summary Cards */
-    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; }
-    .summary-card {
-        background-color: #1e293b; /* Dark inset */
-        border: 1px solid #334155; /* Dark border */
-        padding: 1rem;
-        border-radius: 0.5rem;
-        text-align: center;
-    }
-    .summary-card .value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        /* color: #f8fafc; */ /* Colors now set by Tailwind classes in HTML */
-    }
-    .summary-card .label {
-        font-size: 0.875rem;
-        color: #94a3b8; /* Muted text */
-    }
-
-    /* Alerts Table */
-    .alerts-table-container {
-        border: 1px solid #334155; /* Dark border */
-    }
-    .alerts-table {
-        table-layout: fixed;
-        width: 100%;
-    }
-    .alerts-table thead {
-        background-color: #1e293b; /* Dark header */
-    }
-    .alerts-table th {
-        color: #94a3b8; /* Muted text */
-    }
-    .alerts-table tbody tr:hover {
-        background-color: #1e293b; /* Dark hover */
-    }
-    .alerts-table-tbody td {
-        color: #cbd5e1; /* Light text */
-        word-break: break-word;
-        vertical-align: top;
-        padding: 0.75rem 1rem;
-        line-height: 1.6 !important;
-    }
-    
-    /* --- ADDED: Risk Color Classes --- */
-    .risk-high { color: #dc2626; } /* text-red-600 */
-    .risk-medium { color: #f97316; } /* text-orange-500 */
-    .risk-low { color: #eab308; } /* text-yellow-500 */
-    .risk-info { color: #2563eb; } /* text-blue-600 */
-
-    /* Added for dark mode clarity */
-    .alerts-table-tbody td a {
-        color: #4299e1;
-        text-decoration: none;
-    }
-    .alerts-table-tbody tr:hover td a {
-        color: #60a5fa; /* Lighter blue on hover */
-        text-decoration: underline;
-    }
-
-    /* Log and Raw Report Views */
-    #logOutput, #resultsContent {
-        background-color: #1e293b; /* Already dark, looks good */
-        border: 1px solid #334155; /* Already dark, looks good */
-        color: #e2e8f0; /* Already light, looks good */
-        font-family: 'Fira Code', 'Courier New', monospace;
-    }
-    #resultsContent { white-space: pre-wrap; }
-
-    /* Custom Scrollbars */
-    #logOutput::-webkit-scrollbar, #resultsContent::-webkit-scrollbar, .overflow-y-auto::-webkit-scrollbar { width: 8px; }
-    #logOutput::-webkit-scrollbar-track, #resultsContent::-webkit-scrollbar-track, .overflow-y-auto::-webkit-scrollbar-track { background: #334155; }
-    #logOutput::-webkit-scrollbar-thumb, #resultsContent::-webkit-scrollbar-thumb, .overflow-y-auto::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-    #logOutput::-webkit-scrollbar-thumb:hover, #resultsContent::-webkit-scrollbar-thumb:hover, .overflow-y-auto::-webkit-scrollbar-thumb:hover { background: #64748b; }
-
-    /* Footer */
-    footer {
-        background-color: #0d121c; /* Match navbar */
-        color: #cbd5e1;
-        text-align: center;
-        padding: 1.5rem 0;
-        width: 100%;
-        margin-top: auto;
-        flex-shrink: 0;
-    }
-    
-    /* Responsive Adjustments */
-    @media (max-width: 1024px) {
-        .container { flex-direction: column; }
-        .left-panel {
-            border-right: none;
-            border-bottom: 1px solid #1e293b; /* Dark border */
+    <style>
+        /* --- CORE THEME --- */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
-    }
-</style>
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            /* GLOW EFFECT REMOVED: background-image: radial-gradient(circle at 85% 15%, rgba(220, 38, 38, 0.05), transparent 25%), radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%); */
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 5rem;
+        }
+
+        #page-wrapper {
+            flex: 1 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar Styles (PRESERVED) */
+        .navbar {
+            background-color: #0d121c;
+            padding: 1rem 2rem;
+            box-shadow: none;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .navbar-logo-img { width: auto; height: 30px; }
+
+        .navbar-links {
+            list-style: none;
+            display: flex;
+            gap: 2.5rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-links li a {
+            text-decoration: none;
+            color: #94a3b8;
+            font-weight: 600;
+            transition: color 0.3s ease, transform 0.2s ease;
+            position: relative;
+        }
+
+        .navbar-links li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #4299e1;
+            transition: width 0.3s ease-out;
+        }
+
+        .navbar-links li a:hover { color: #f8fafc; transform: translateY(-2px); }
+        .navbar-links li a:hover::after { width: 100%; }
+        .navbar-links li a.active { color: #f8fafc; }
+        .navbar-links li a.active::after { width: 100%; }
+
+        /* --- LAYOUT (UPDATED FOR SCROLLING) --- */
+        .main-grid {
+            max-width: 1600px;
+            width: 96%;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            /* Fixed height to viewport minus navbar/padding */
+            height: calc(100vh - 9rem); 
+        }
+
+        .control-panel, .results-panel {
+            background-color: rgba(13, 18, 28, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Hide outer scroll */
+            transition: border-color 0.3s ease;
+            height: 100%; /* Fill grid height */
+        }
+        
+        .control-panel:hover, .results-panel:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .control-panel { padding: 1.5rem; }
+        .results-panel { padding: 0; }
+
+        h1 { font-size: 1.5rem; letter-spacing: -0.02em; }
+        h2 { font-size: 1.25rem; font-weight: 600; }
+        h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 700; }
+
+        /* Inputs */
+        .input-group { position: relative; margin-bottom: 1.5rem; }
+        
+        input[type="url"] {
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid #334155;
+            color: #f8fafc;
+            padding: 0.75rem 0;
+            width: 100%;
+            transition: border-color 0.3s ease;
+            font-size: 0.95rem;
+        }
+        input[type="url"]::placeholder { color: #475569; }
+        input[type="url"]:focus {
+            outline: none;
+            border-bottom-color: #3b82f6;
+        }
+
+        /* Buttons */
+        .primary-scan-button {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: all 0.2s ease-in-out;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+        }
+        .primary-scan-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+        .primary-scan-button:disabled {
+            background: #1e293b;
+            color: #475569;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .secondary-button {
+            background-color: rgba(30, 41, 59, 0.5);
+            color: #94a3b8;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        .secondary-button:hover {
+            background-color: rgba(51, 65, 85, 0.8);
+            color: #f8fafc;
+        }
+
+        /* Spinner */
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 0.8s linear infinite;
+        }
+        .primary-scan-button .spinner { border-top-color: #fff; }
+        .secondary-button .spinner { border-top-color: #94a3b8; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Terminals */
+        .terminal-window {
+            background-color: #050505;
+            border: 1px solid #1e293b;
+            border-radius: 0.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            /* Formatting */
+            white-space: pre-wrap; 
+            word-wrap: break-word;
+        }
+
+        #resultsContent {
+            white-space: pre; 
+            overflow-x: auto;
+        }
+
+        /* Results Header */
+        .results-header-bar {
+            background-color: rgba(13, 18, 28, 0.9);
+            border-bottom: 1px solid #1e293b;
+            padding: 1.5rem;
+            flex-shrink: 0; /* Ensures header stays fixed */
+        }
+
+        .risk-dashboard {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-shrink: 0; /* Ensures dashboard stays fixed */
+        }
+        .risk-metric {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            flex: 1;
+            text-align: center;
+            min-width: 80px;
+        }
+        .risk-metric .value { font-size: 1.25rem; font-weight: 700; line-height: 1; margin-bottom: 0.25rem; }
+        .risk-metric .label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; font-weight: 600; }
+
+        /* --- TABLE STYLES --- */
+        .alerts-table-container {
+            border: 1px solid #1e293b;
+            border-radius: 0.75rem;
+            background-color: #0b101a;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .alerts-table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .alerts-table thead {
+            background-color: #111827;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .alerts-table th {
+            color: #94a3b8;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.75rem 0.5rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .alerts-table tbody tr {
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid #1e293b;
+        }
+        
+        .alerts-table tbody tr:hover {
+            background-color: rgba(30, 41, 59, 0.3);
+        }
+
+        .alerts-table td {
+            color: #e2e8f0;
+            padding: 0.75rem 0.5rem;
+            font-size: 0.75rem;
+            vertical-align: top;
+            line-height: 1.4;
+        }
+
+        /* Column Specifics */
+        .col-risk { 
+            font-weight: 700; 
+            white-space: nowrap; 
+            padding-right: 1.5rem !important; 
+        } 
+        
+        .col-score { font-family: 'Fira Code', monospace; color: #cbd5e1; }
+        .col-name { word-wrap: break-word; }
+        .col-url { word-break: break-all; } 
+        
+        .col-url a { color: #3b82f6; text-decoration: none; }
+        .col-url a:hover { text-decoration: underline; color: #60a5fa; }
+
+        .risk-high { color: #f87171; }
+        .risk-medium { color: #fb923c; }
+        .risk-low { color: #facc15; }
+        .risk-info { color: #60a5fa; }
+        
+        footer {
+            background-color: #0d121c;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 1.5rem 0;
+            width: 100%;
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; height: auto; }
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -316,129 +325,131 @@
             <li><a href="/network_scanner">Network Scanning</a></li>
             <li><a href="/zap_scanner" class="active">Web Application Scanning</a></li>
             <li><a href="/ssl_scanner">SSL Scans</a></li>
-            <li><a href="/chatbot">AI Chatbot</a></li>
+            <li><a href="/chatbot">AI Analyzer</a></li>
         </ul>
     </nav>
 
     <div id="page-wrapper">
-        <div class="container mx-auto">
-            <div class="left-panel">
-                <div>
-                    <div class="flex items-center mb-6">
-                        <span class="text-4xl mr-3 netshield-icon">🌐</span>
-                        <div>
-                            <h1 class="text-2xl font-bold">ZAP Web Scanner</h1>
-                            <p class="text-sm text-slate-400">AI-Powered Vulnerability Prioritization</p>
-                        </div>
+        <div class="main-grid">
+            
+            <div class="left-panel control-panel">
+                
+                <div class="flex items-center mb-8 flex-shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-500 mr-3">
+                        <i class="fas fa-spider text-xl"></i>
                     </div>
-
-                    <div class="mb-4">
-                        <label for="targetUrl" class="block text-sm font-medium text-slate-400 mb-1">Target URL</label>
-                        <input type="url" id="targetUrl" placeholder="https://example.com" class="w-full p-2 rounded-md border focus:ring-blue-500 focus:border-blue-500">
+                    <div>
+                        <h1 class="font-bold text-white">Web Application Scanner</h1>
+                        <p class="text-xs text-slate-400">OWASP Vulnerability Check</p>
                     </div>
-
-                    <button id="startScanBtn" class="w-full primary-scan-button flex items-center justify-center">
-                        <span class="button-text">Start Quick Scan</span>
-                        <span class="spinner hidden"></span>
-                    </button>
-                    
-                    <div id="scanStatus" class="text-center text-sm mt-4 p-2 rounded-md">Ready</div>
                 </div>
 
-                <div class="flex flex-col flex-grow mt-6 min-h-0">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-lg font-semibold">Live Log</h3>
-                        <button id="clearLogBtn" class="text-xs font-semibold py-1.5 px-3 rounded-md secondary-button flex items-center justify-center">
-                            <span class="button-text">Clear</span>
+                <div class="mb-4 flex-shrink-0">
+                    <div class="input-group">
+                        <label for="targetUrl" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Target URL</label>
+                        <input type="url" id="targetUrl" placeholder="https://example.com">
+                    </div>
+
+                    <button id="startScanBtn" class="w-full primary-scan-button flex items-center justify-center mb-4">
+                        <span class="button-text">Start Quick Scan</span>
+                        <span class="spinner hidden ml-2"></span>
+                    </button>
+                    
+                    <div id="scanStatus" class="text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400">
+                        <i class="fas fa-circle text-[8px] mr-2 text-green-500"></i> System Ready
+                    </div>
+                </div>
+
+                <div class="flex flex-col flex-grow min-h-0 border-t border-slate-800 pt-4">
+                    <div class="flex justify-between items-center mb-2 flex-shrink-0">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Live Event Log</span>
+                        <button id="clearLogBtn" onclick="document.getElementById('logOutput').innerHTML = '';" class="text-[10px] text-slate-600 hover:text-slate-300 flex items-center gap-1">
+                            <span>CLEAR</span>
                             <span class="spinner hidden"></span>
                         </button>
                     </div>
-                    <div id="logOutput" class="text-xs p-3 rounded-lg h-96 overflow-auto break-all"></div>
+                    <div id="logOutput" class="terminal-window flex-grow overflow-auto p-3 leading-snug"><span class="text-slate-600">// Logs will appear here...</span></div>
                 </div>
             </div>
 
-            <div class="right-panel">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold">Scan Results</h2>
+            <div class="right-panel results-panel">
                 
-                <div class="flex items-center gap-2">
-                    
-                    <button id="refreshResultsBtn" class="px-3 py-1.5 rounded-lg transition-colors duration-200 flex items-center secondary-button text-sm">
-                        <i class="fas fa-sync-alt mr-2 text-xs"></i> Refresh
-                    </button>
-                    
-                    <a id="downloadPdfBtn" 
-                       href="#" 
-                       class="px-3 py-1.5 rounded-lg transition-colors duration-200 flex items-center secondary-button text-sm" 
-                       role="button" 
-                       hidden>
-                        <i class="fas fa-download mr-2 text-xs"></i> Download PDF
-                    </a>
-                </div>
-            </div>
+                <div class="results-header-bar flex-shrink-0">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-white">Scan Results</h2>
+                            <p class="text-xs text-slate-400 mt-1">Target: <span id="lastScannedUrlDisplay" class="font-mono text-blue-400">None</span></p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="refreshResultsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium flex items-center">
+                                <i class="fas fa-sync-alt mr-2"></i> Refresh
+                            </button>
+                            <button id="downloadReportBtn" disabled class="px-3 py-2 rounded-lg bg-red-600/90 text-white text-xs font-medium hover:bg-red-500 transition-colors flex items-center opacity-50 cursor-not-allowed">
+                                <i class="fas fa-file-pdf mr-2"></i> Report
+                            </button>
+                        </div>
+                    </div>
 
-                <div class="summary-grid mb-6">
-                    <div class="summary-card">
-                        <div id="totalAlertsDisplay" class="value text-red-600">0</div>
-                        <div class="label">Total Alerts</div>
+                    <div class="risk-dashboard">
+                        <div class="risk-metric border-l-4 border-l-red-500">
+                            <div id="totalAlertsDisplay" class="value text-white">0</div>
+                            <div class="label">Total</div>
+                        </div>
+                        <div class="risk-metric">
+                            <div id="highAlertsDisplay" class="value risk-high">0</div>
+                            <div class="label text-red-400">High</div>
+                        </div>
+                        <div class="risk-metric">
+                            <div id="mediumAlertsDisplay" class="value risk-medium">0</div>
+                            <div class="label text-orange-400">Med</div>
+                        </div>
+                        <div class="risk-metric">
+                            <div id="lowAlertsDisplay" class="value risk-low">0</div>
+                            <div class="label text-yellow-400">Low</div>
+                        </div>
+                        <div class="risk-metric">
+                            <div id="infoAlertsDisplay" class="value risk-info">0</div>
+                            <div class="label text-blue-400">Info</div>
+                        </div>
                     </div>
-                    <div class="summary-card">
-                        <div id="highAlertsDisplay" class="value text-red-600">0</div>
-                        <div class="label">High Risk</div>
-                    </div>
-                    <div class="summary-card">
-                        <div id="mediumAlertsDisplay" class="value text-orange-500">0</div>
-                        <div class="label">Medium Risk</div>
-                    </div>
-                    <div class="summary-card">
-                        <div id="lowAlertsDisplay" class="value text-yellow-500">0</div>
-                        <div class="label">Low Risk</div>
-                    </div>
-                    <div class="summary-card">
-                        <div id="infoAlertsDisplay" class="value text-blue-600">0</div>
-                        <div class="label">Informational</div>
-                    </div>
-                </div>
-                <p class="text-sm text-slate-400 mb-4">Last Scanned URL: <span id="lastScannedUrlDisplay" class="font-semibold text-slate-200">N/A</span></p>
-
-                <h3 class="text-lg font-semibold mb-2">Prioritized Findings</h3>
-                <div class="overflow-x-auto rounded-lg alerts-table-container mb-6 flex-grow max-h-96 overflow-y-auto">
-                    <table class="min-w-full divide-y divide-slate-700 alerts-table">
-                        <thead class="alerts-table-thead sticky top-0">
-                            <tr>
-                                <th scope="col" class="w-[8%] px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Risk</th>
-                                <th scope="col" class="w-[14%] px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Predicted Score</th>
-                                <th scope="col" class="w-[15%] px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Alert Name</th>
-                                <th scope="col" class="w-[21%] px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">URL</th>
-                                <th scope="col" class="w-[12%] px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Confidence</th>
-                                <th scope="col" class="w-[30%] px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Description</th>
-                            </tr>
-                        </thead>
-                        <tbody id="zapAlertsTableBody" class="divide-y divide-slate-700 alerts-table-tbody">
-                            <tr>
-                                <td class="font-medium risk-medium">Medium</td>
-                                <td>13.53</td>
-                                <td>XSLT Injection</td>
-                                <td><a href="#" class="hover:underline">http://testphp.vulnweb.com...</a></td>
-                                <td>2</td>
-                                <td>Injection using XSL transformations may be possible, and may allow an attacker to read system information or execute arbitrary code.</td>
-                            </tr>
-                            <tr>
-                                <td colspan="6" class="p-4 text-center text-slate-500">No results available. Run a scan to begin.</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
 
-                <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-lg font-semibold">Raw JSON Report</h3>
-                    <button id="copyResultsBtn" class="p-2 rounded-md secondary-button" title="Copy to clipboard">
-                        <i class="far fa-copy text-sm"></i>
-                    </button>
+                <div class="flex-grow flex flex-col p-6 min-h-0 overflow-y-auto">
+                    <h3 class="mb-3 text-slate-400 font-bold tracking-wide text-xs uppercase flex-shrink-0">Prioritized Vulnerabilities</h3>
+                    <div class="overflow-hidden rounded-lg border border-slate-800 flex-shrink-0 bg-slate-900/30 mb-6">
+                        <div class="alerts-table-container max-h-96">
+                            <table class="w-full text-xs alerts-table">
+                                <thead class="sticky top-0 backdrop-blur-md z-10">
+                                    <tr>
+                                        <th scope="col" class="w-[15%]">Risk</th>
+                                        <th scope="col" class="w-[8%]">Score</th>
+                                        <th scope="col" class="w-[27%]">Alert Name</th>
+                                        <th scope="col" class="w-[15%]">URL</th>
+                                        <th scope="col" class="w-[5%]">Conf.</th>
+                                        <th scope="col" class="w-[30%]">Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="zapAlertsTableBody">
+                                    <tr>
+                                        <td colspan="6" class="p-12 text-center">
+                                            <div class="text-slate-600 mb-2"><i class="fas fa-search-location text-4xl opacity-20"></i></div>
+                                            <p class="text-slate-500">Initiate a scan to view vulnerabilities.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="flex-shrink-0">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-xs font-bold text-slate-600" id="rawReportTitle">RAW JSON</h3>
+                            <button id="copyResultsBtn" class="text-xs text-blue-500 hover:text-blue-400">COPY</button>
+                        </div>
+                        <div id="resultsContent" class="terminal-window p-4 h-64 overflow-auto"><span class="text-slate-600">// Awaiting output stream...</span></div>
+                    </div>
                 </div>
-                <div id="resultsContent" class="text-xs p-3 rounded-lg h-48 overflow-y-auto">
-                    Awaiting scan results...
-                </div>
+
             </div>
         </div>
     </div>

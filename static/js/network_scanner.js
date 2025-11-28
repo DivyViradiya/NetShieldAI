@@ -71,20 +71,38 @@ document.addEventListener('DOMContentLoaded', () => {
     function setStatus(text, type = 'ready') {
         if (!elements.scanStatus) return;
         elements.scanStatus.textContent = text;
-        elements.scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md ';
+        elements.scanStatus.className = 'text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400';
+        
+        // Remove Tailwind classes added in HTML: text-[8px] mr-2
+        const currentIcon = elements.scanStatus.querySelector('i');
+        if (currentIcon) currentIcon.remove();
+
+        let iconClass = '';
+
         switch (type) {
             case 'busy':
-                elements.scanStatus.classList.add('bg-yellow-100', 'text-yellow-800');
+                elements.scanStatus.classList.add('bg-yellow-900/50', 'text-yellow-400');
+                iconClass = 'fas fa-cog fa-spin';
                 break;
             case 'error':
-                elements.scanStatus.classList.add('bg-red-100', 'text-red-800');
+                elements.scanStatus.classList.add('bg-red-900/50', 'text-red-400');
+                iconClass = 'fas fa-times-circle';
                 break;
             case 'success':
-                 elements.scanStatus.classList.add('bg-green-100', 'text-green-800');
-                 break;
+                elements.scanStatus.classList.add('bg-green-900/50', 'text-green-400');
+                iconClass = 'fas fa-check-circle';
+                break;
             default: // ready
-                elements.scanStatus.classList.add('bg-blue-100', 'text-blue-800');
+                elements.scanStatus.classList.add('bg-slate-900/50', 'text-green-400');
+                iconClass = 'fas fa-circle';
         }
+        
+        // Add new icon
+        const iconElement = document.createElement('i');
+        iconElement.className = `${iconClass} text-[8px] mr-2`;
+        elements.scanStatus.prepend(iconElement);
+
+        elements.scanStatus.textContent = text;
     }
 
     // --- API & Data Functions ---
@@ -159,16 +177,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateOpenPortsTable(ports) {
         elements.openPortsTableBody.innerHTML = ''; // Clear table
         if (!ports || ports.length === 0) {
-            elements.openPortsTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">No open ports detected.</td></tr>`;
+            elements.openPortsTableBody.innerHTML = `<tr><td colspan="4" class="p-12 text-center">
+                <div class="text-slate-600 mb-2"><i class="fas fa-radar text-4xl opacity-20"></i></div>
+                <p class="text-slate-500">Initiate a scan to view open ports.</p>
+                </td></tr>`;
             return;
         }
         ports.forEach(p => {
             const row = `
                 <tr>
-                    <td class="px-4 py-3 text-sm">${p.port || 'N/A'}</td>
-                    <td class="px-4 py-3 text-sm">${p.protocol || 'N/A'}</td>
-                    <td class="px-4 py-3 text-sm">${p.service || 'N/A'}</td>
-                    <td class="px-4 py-3 text-sm">${p.version || 'N/A'}</td>
+                    <td class="px-6 py-3 text-sm font-mono">${p.port || 'N/A'}</td>
+                    <td class="px-6 py-3 text-sm">${p.protocol || 'N/A'}</td>
+                    <td class="px-6 py-3 text-sm">${p.service || 'N/A'}</td>
+                    <td class="px-6 py-3 text-sm">${p.version || 'N/A'}</td>
                 </tr>`;
             elements.openPortsTableBody.insertAdjacentHTML('beforeend', row);
         });
@@ -193,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function loadScanResults(scanType) {
         elements.resultsContent.textContent = 'Loading...';
-        elements.rawReportTitle.textContent = `Raw Report (${scanType.toUpperCase()})`;
+        elements.rawReportTitle.textContent = `RAW OUTPUT (${scanType.toUpperCase()})`;
         try {
             const response = await fetch(`${API_BASE_URL}/get_scan_results?type=${scanType}`);
             const data = await response.json();
@@ -333,8 +354,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         elements.clearLogBtn.addEventListener('click', async () => {
-            if (await apiPost('/clear_log', {}, elements.clearLogBtn)) {
-                elements.logOutput.innerHTML = '';
+            // Manually manage clearLogBtn's state as it doesn't use toggleSpinner
+            const originalContent = elements.clearLogBtn.innerHTML;
+            elements.clearLogBtn.disabled = true;
+            elements.clearLogBtn.innerHTML = '<span class="spinner ml-1"></span>';
+            
+            try {
+                if (await apiPost('/clear_log', {})) {
+                    elements.logOutput.textContent = '';
+                }
+            } finally {
+                elements.clearLogBtn.disabled = false;
+                elements.clearLogBtn.innerHTML = originalContent;
             }
         });
 
@@ -349,12 +380,32 @@ document.addEventListener('DOMContentLoaded', () => {
             ]).then(() => setStatus('Ready', 'ready'));
         });
 
-        // Copy button
+        // Copy button - CORRECTED LOGIC
         elements.copyResultsBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(elements.resultsContent.textContent).then(() => {
-                const icon = elements.copyResultsBtn.querySelector('i');
-                icon.className = 'fas fa-check text-green-500';
-                setTimeout(() => { icon.className = 'far fa-copy text-sm'; }, 2000);
+            const textToCopy = elements.resultsContent.textContent;
+            const originalContent = elements.copyResultsBtn.innerHTML; // Store original content
+
+            // Check if there are valid results to copy
+            if (!textToCopy || textToCopy.includes('Loading') || textToCopy.includes('Failed to load') || textToCopy.includes('Awaiting output stream')) {
+                appendLog('[!] No valid results to copy.');
+                return;
+            }
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Success feedback: Temporarily change button content
+                elements.copyResultsBtn.innerHTML = '<i class="fas fa-check text-green-500 mr-1"></i> COPIED!';
+                elements.copyResultsBtn.style.pointerEvents = 'none'; // Prevent double-click while copied
+
+                appendLog('[✓] Raw output copied to clipboard.');
+                
+                setTimeout(() => { 
+                    // Revert after 2 seconds
+                    elements.copyResultsBtn.innerHTML = originalContent; 
+                    elements.copyResultsBtn.style.pointerEvents = 'auto'; 
+                }, 2000);
+            }).catch(err => {
+                // Fallback for failed copy
+                appendLog(`[x] Failed to copy: ${err.message}. Please copy manually.`);
             });
         });
 
@@ -386,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadScanResults(lastScanType),
             checkReportAvailability() // Check availability on init
         ]).then(() => {
-            setStatus('Ready', 'ready');
+            setStatus('System Ready', 'ready');
             appendLog('Initialization complete. Ready for commands.');
         });
     }

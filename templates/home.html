@@ -168,8 +168,15 @@
 
     body {
         font-family: 'Inter', sans-serif;
-        /* background-color: #0d121c; */
         background-color: #000000; /* Pure black background */
+        
+        /* --- SUBTLE GRID ADDITION --- */
+        background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        /* --------------------------- */
+
         display: flex;
         flex-direction: column;
         min-height: 100vh;
@@ -371,6 +378,91 @@
         color: #94a3b8; /* Muted light text */
         line-height: 1.6;
     }
+
+    /* --- NEW STYLES FOR "HOW IT WORKS" --- */
+    .workflow-card {
+        background-color: transparent; /* Seamless inside section card */
+        color: #cbd5e1;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+
+    .workflow-card h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid #1e293b;
+        padding-bottom: 0.75rem;
+    }
+    
+    .workflow-card h3 .material-symbols-outlined {
+        color: #3b82f6;
+    }
+
+    .step-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        position: relative;
+    }
+
+    .step-list li {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        position: relative;
+    }
+
+    .step-list li:last-child {
+        margin-bottom: 0;
+    }
+
+    .step-icon {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        background-color: #1e293b;
+        color: #3b82f6;
+        border: 1px solid #3b82f6;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        z-index: 2;
+    }
+
+    /* Vertical line connecting steps */
+    .step-list li:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 24px;
+        left: 11.5px; /* Center of the 24px icon */
+        width: 1px;
+        height: calc(100% - 4px); /* Connect to next icon */
+        background-color: #334155;
+        z-index: 1;
+    }
+
+    .step-content {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #94a3b8;
+    }
+
+    .step-content strong {
+        color: #e2e8f0;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    /* -------------------------------------- */
     
     .chatbot-card {
         /* background-color: rgba(30, 41, 59, 0.8); */
@@ -582,36 +674,7 @@
             <li><a href="/network_scanner">Network Scanning</a></li>
             <li><a href="/zap_scanner">Web Application Scanning</a></li>
             <li><a href="/ssl_scanner">SSL Scans</a></li>
-            <li><a href="/chatbot">AI Chatbot</a></li>
-            
-            <!--
-            {% if session.username %}
-                <li class="profile-dropdown">
-                    <button id="profile-button" class="profile-button-text">
-                        <span>{{ session.username }}</span>
-                        <span class="arrow-down">&#9662;</span>
-                    </button>
-                    <div id="profile-dropdown-content" class="profile-dropdown-content">
-                        <div class="user-info">
-                            <p class="username">{{ session.username }}</p>
-                            <p class="email">{{ session.email }}</p>
-                        </div>
-                        <div class="details">
-                            <p><strong>Plan:</strong> {{ session.subscription_plan }}</p>
-                            <p><strong>Phone:</strong> {{ session.phone_number or 'N/A' }}</p>
-                            {% if session.subscription_expiry %}
-                                <p><strong>Expires:</strong> {{ session.subscription_expiry.split('T')[0] }}</p>
-                            {% endif %}
-                        </div>
-                        <a href="{{ url_for('auth.logout_route') }}" class="logout-link">Logout</a>
-                    </div>
-                </li>
-            {% else %}
-                <li>
-                    <a href="{{ url_for('auth.login') }}">Login</a>
-                </li>
-            {% endif %}
-            -->
+            <li><a href="/chatbot">AI Analyzer</a></li>
         </ul>
     </nav>
 
@@ -662,6 +725,95 @@
             </div>
         </div>
 
+        <div class="panel-wrapper">
+            <div class="section-card fade-in-element">
+                <h2>How It Works</h2>
+                <div class="tools-grid">
+                    
+                    <div class="workflow-card">
+                        <h3><span class="material-symbols-outlined">router</span> Network Scanner</h3>
+                        <ul class="step-list">
+                            <li>
+                                <div class="step-icon">1</div>
+                                <div class="step-content">
+                                    <strong>IP Detection</strong>
+                                    Auto-detects IP. If undefined, manually enter your desired Target IP.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-icon">2</div>
+                                <div class="step-content">
+                                    <strong>Configure Scan</strong>
+                                    Select Scan Type (TCP, OS, Fragmented, Aggressive, SYN, UDP) and Port range.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-icon">3</div>
+                                <div class="step-content">
+                                    <strong>Results</strong>
+                                    View detailed table output and download the full report.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="workflow-card">
+                        <h3><span class="material-symbols-outlined">web_asset</span> ZAP Scanner</h3>
+                        <ul class="step-list">
+                            <li>
+                                <div class="step-icon">1</div>
+                                <div class="step-content">
+                                    <strong>Target Input</strong>
+                                    Enter the website URL you wish to inspect.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-icon">2</div>
+                                <div class="step-content">
+                                    <strong>Run Scan</strong>
+                                    Initiate the scan. Vulnerabilities will populate in the sidebar instantly.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-icon">3</div>
+                                <div class="step-content">
+                                    <strong>Analysis</strong>
+                                    Review specific issues and download the comprehensive report.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="workflow-card">
+                        <h3><span class="material-symbols-outlined">lock</span> SSL Scanner</h3>
+                        <ul class="step-list">
+                            <li>
+                                <div class="step-icon">1</div>
+                                <div class="step-content">
+                                    <strong>Target Input</strong>
+                                    Enter the website URL to check SSL configuration.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-icon">2</div>
+                                <div class="step-content">
+                                    <strong>Deep Scan</strong>
+                                    Tool scans for all supported ciphers, protocols, and certificate validity.
+                                </div>
+                            </li>
+                            <li>
+                                <div class="step-icon">3</div>
+                                <div class="step-content">
+                                    <strong>Output</strong>
+                                    Receive a detailed breakdown of your security posture.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
         <div class="panel-wrapper">
             <div class="chatbot-card fade-in-element">
                 <div class="chatbot-text-content">

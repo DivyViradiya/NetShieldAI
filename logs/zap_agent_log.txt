@@ -501,3 +501,619 @@ Writing results to D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
 [2025-11-28 12:17:15] [+] JSON report saved: D:\NetShieldAI\Services\results\zap_scanner\zap_report.json
 [2025-11-28 12:17:15] [*] Starting PDF report generation...
 [2025-11-28 12:17:17] [+] PDF report generated: D:\NetShieldAI\Services\PDFs\zap_report.pdf
+[2025-11-28 15:06:26] [*] Starting ZAP Quick Scan for http://testphp.vulnweb.com/...
+[2025-11-28 15:06:26] Checking for and terminating existing ZAP processes...
+[2025-11-28 15:06:28] No running ZAP processes found.
+[2025-11-28 15:06:28] 
+--- Starting ZAP Quick Scan ---
+[2025-11-28 15:06:28] Target: http://testphp.vulnweb.com/
+[2025-11-28 15:06:28] Report will be saved to: D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
+[2025-11-28 15:06:28] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -quickurl http://testphp.vulnweb.com/ -quickout D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml -quickprogress
+[2025-11-28 15:06:28] --- ZAP Output ---
+
+C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m ) 
+
+C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.16.1.jar -cmd -quickurl http://testphp.vulnweb.com/ -quickout D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml -quickprogress 
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Users/Divy/ZAP/plugin/network-beta-0.23.0.zap)
+WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Accessing URL
+Using traditional spider
+[========            ] 42% |
+[============        ] 64% /
+[==================  ] 91% -
+[=================== ] 97% \
+[=================== ] 97% |
+[=================== ] 97% /
+[=================== ] 97% -
+[=================== ] 97% \
+[=================== ] 97% |
+[=================== ] 97% /
+[=================== ] 97% -
+[=================== ] 97% \
+[=================== ] 97% |
+[=================== ] 97% /
+[=================== ] 97% -
+[=================== ] 97% \
+[=================== ] 97% |
+[=================== ] 97% /
+[=================== ] 97% -
+[=================== ] 97% \
+[=================== ] 97% |
+[=================== ] 97% /
+[=================== ] 97% -
+[=================== ] 97% \
+[=================== ] 97% |
+[=================== ] 97% /
+[=================== ] 97% -
+[=================== ] 97% \
+[=================== ] 97% |
+[=================== ] 97% /
+[=================== ] 97% -
+[=================== ] 97% \
+[=================== ] 97% |
+[=================== ] 97% /
+[=================== ] 97% -
+[=================== ] 97% \
+[=================== ] 97% |
+[=================== ] 98% /
+[=================== ] 98% -
+[=================== ] 98% \
+[====================] 100% 
+[====================] 100% 
+Active scanning
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[=                   ] 5% /
+[=                   ] 5% -
+[=                   ] 5% \
+[=                   ] 8% |
+[=                   ] 8% /
+[==                  ] 10% -
+[==                  ] 10% \
+[==                  ] 12% |
+[====                ] 20% /
+[=======             ] 37% -
+[=======             ] 37% \
+[========            ] 43% |
+[========            ] 43% /
+[========            ] 43% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[============        ] 64% \
+[===============     ] 76% |
+[===============     ] 79% /
+[================    ] 81% -
+[================    ] 84% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[==================  ] 91% /
+[==================  ] 91% -
+[==================  ] 91% \
+[==================  ] 91% |
+[==================  ] 91% /
+[==================  ] 91% -
+[==================  ] 91% \
+[==================  ] 91% |
+[==================  ] 91% /
+[==================  ] 91% -
+[==================  ] 91% \
+[==================  ] 91% |
+[==================  ] 91% /
+[==================  ] 91% -
+[====================] 100% 
+Attack complete
+Writing results to D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
+[2025-11-28 15:09:18] --- End of ZAP Output ---
+[2025-11-28 15:09:18] Scan completed successfully!
+[2025-11-28 15:09:18] [+] ZAP scan command finished. Now parsing and enriching report...
+[2025-11-28 15:09:18] Parsing ZAP report: D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
+[2025-11-28 15:09:19] Report parsed and enriched successfully.
+[2025-11-28 15:09:19] JSON report saved to: D:\NetShieldAI\Services\results\zap_scanner\zap_report.json
+[2025-11-28 15:09:19] [+] JSON report saved: D:\NetShieldAI\Services\results\zap_scanner\zap_report.json
+[2025-11-28 15:09:19] [*] Starting PDF report generation...
+[2025-11-28 15:09:21] [+] PDF report generated: D:\NetShieldAI\Services\PDFs\zap_report.pdf
+[2025-11-28 15:16:36] [*] Starting ZAP Quick Scan for http://testphp.vulnweb.com/...
+[2025-11-28 15:16:36] Checking for and terminating existing ZAP processes...
+[2025-11-28 15:16:38] No running ZAP processes found.
+[2025-11-28 15:16:38] 
+--- Starting ZAP Quick Scan ---
+[2025-11-28 15:16:38] Target: http://testphp.vulnweb.com/
+[2025-11-28 15:16:38] Report will be saved to: D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
+[2025-11-28 15:16:38] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -quickurl http://testphp.vulnweb.com/ -quickout D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml -quickprogress
+[2025-11-28 15:16:38] --- ZAP Output ---
+
+C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m ) 
+
+C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.16.1.jar -cmd -quickurl http://testphp.vulnweb.com/ -quickout D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml -quickprogress 
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Users/Divy/ZAP/plugin/network-beta-0.23.0.zap)
+WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Accessing URL
+Using traditional spider
+[=========           ] 46% |
+[=============       ] 67% /
+[=================== ] 96% -
+[====================] 100% 
+Active scanning
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[=                   ] 5% /
+[=                   ] 5% -
+[=                   ] 8% \
+[=                   ] 8% |
+[=                   ] 8% /
+[=                   ] 8% -
+[==                  ] 10% \
+[===                 ] 18% |
+[====                ] 20% /
+[=======             ] 37% -
+[=======             ] 37% \
+[========            ] 43% |
+[========            ] 43% /
+[=========           ] 47% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[============        ] 64% \
+[===============     ] 76% |
+[===============     ] 79% /
+[================    ] 83% -
+[================    ] 84% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[==================  ] 91% \
+[==================  ] 91% |
+[==================  ] 91% /
+[==================  ] 91% -
+[==================  ] 91% \
+[==================  ] 91% |
+[==================  ] 91% /
+[==================  ] 91% -
+[==================  ] 91% \
+[==================  ] 91% |
+[==================  ] 91% /
+[==================  ] 91% -
+[==================  ] 91% \
+[==================  ] 91% |
+[====================] 100% 
+Attack complete
+Writing results to D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
+[2025-11-28 15:18:23] --- End of ZAP Output ---
+[2025-11-28 15:18:23] Scan completed successfully!
+[2025-11-28 15:18:23] [+] ZAP scan command finished. Now parsing and enriching report...
+[2025-11-28 15:18:23] Parsing ZAP report: D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
+[2025-11-28 15:18:23] Report parsed and enriched successfully.
+[2025-11-28 15:18:23] JSON report saved to: D:\NetShieldAI\Services\results\zap_scanner\zap_report.json
+[2025-11-28 15:18:23] [+] JSON report saved: D:\NetShieldAI\Services\results\zap_scanner\zap_report.json
+[2025-11-28 15:18:23] [*] Starting PDF report generation...
+[2025-11-28 15:18:26] [+] PDF report generated: D:\NetShieldAI\Services\PDFs\zap_report.pdf
+[2025-11-28 15:23:42] [*] Starting ZAP Quick Scan for http://testphp.vulnweb.com/...
+[2025-11-28 15:23:42] Checking for and terminating existing ZAP processes...
+[2025-11-28 15:23:44] No running ZAP processes found.
+[2025-11-28 15:23:44] 
+--- Starting ZAP Quick Scan ---
+[2025-11-28 15:23:44] Target: http://testphp.vulnweb.com/
+[2025-11-28 15:23:44] Report will be saved to: D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
+[2025-11-28 15:23:44] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -quickurl http://testphp.vulnweb.com/ -quickout D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml -quickprogress
+[2025-11-28 15:23:44] --- ZAP Output ---
+
+C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m ) 
+
+C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.16.1.jar -cmd -quickurl http://testphp.vulnweb.com/ -quickout D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml -quickprogress 
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Users/Divy/ZAP/plugin/network-beta-0.23.0.zap)
+WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Accessing URL
+Using traditional spider
+[=======             ] 36% |
+[=========           ] 45% /
+[=============       ] 67% -
+[=================   ] 88% \
+[=================== ] 98% |
+[====================] 100% 
+Active scanning
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[                    ] 0% |
+[                    ] 0% /
+[                    ] 0% -
+[                    ] 0% \
+[=                   ] 5% |
+[=                   ] 5% /
+[=                   ] 5% -
+[=                   ] 8% \
+[=                   ] 8% |
+[=                   ] 8% /
+[==                  ] 10% -
+[==                  ] 10% \
+[====                ] 20% |
+[=======             ] 37% /
+[=======             ] 37% -
+[========            ] 43% \
+[========            ] 43% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[===========         ] 57% /
+[===========         ] 57% -
+[===========         ] 57% \
+[===========         ] 57% |
+[============        ] 64% /
+[==============      ] 72% -
+[===============     ] 76% \
+[================    ] 81% |
+[================    ] 84% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[=================   ] 87% -
+[=================   ] 87% \
+[=================   ] 87% |
+[=================   ] 87% /
+[==================  ] 91% -
+[==================  ] 91% \
+[==================  ] 91% |
+[==================  ] 91% /
+[==================  ] 91% -
+[==================  ] 91% \
+[==================  ] 91% |
+[==================  ] 91% /
+[==================  ] 91% -
+[==================  ] 91% \
+[==================  ] 91% |
+[==================  ] 91% /
+[==================  ] 91% -
+[==================  ] 91% \
+[====================] 100% 
+Attack complete
+Writing results to D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
+[2025-11-28 15:25:29] --- End of ZAP Output ---
+[2025-11-28 15:25:29] Scan completed successfully!
+[2025-11-28 15:25:29] [+] ZAP scan command finished. Now parsing and enriching report...
+[2025-11-28 15:25:29] Parsing ZAP report: D:\NetShieldAI\Services\results\zap_scanner\zap_report.xml
+[2025-11-28 15:25:29] Report parsed and enriched successfully.
+[2025-11-28 15:25:29] JSON report saved to: D:\NetShieldAI\Services\results\zap_scanner\zap_report.json
+[2025-11-28 15:25:29] [+] JSON report saved: D:\NetShieldAI\Services\results\zap_scanner\zap_report.json
+[2025-11-28 15:25:29] [*] Starting PDF report generation...
+[2025-11-28 15:25:32] [+] PDF report generated: D:\NetShieldAI\Services\PDFs\zap_report.pdf

@@ -6,7 +6,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from Services.api_client import login_required
 from flask import redirect, url_for, flash # Make sure redirect, url_for, and flash are imported
 
 # Initialize the Flask Blueprint for chatbot-related routes
@@ -74,15 +73,24 @@ def upload_report():
             # we can just stream it directly.
             try:
                 files_to_send = {'report_file': (file.filename, file.read(), file.content_type)}
-                # The llm_mode is now sent as form data alongside the file
-                form_data = {'llm_mode': llm_mode_param}
+                
+                # --- CHANGE START ---
+                # We define this dictionary to be passed as URL parameters (Query String)
+                # This matches FastAPI's: llm_mode: str = Query(...)
+                params = {'llm_mode': llm_mode_param}
+                # --- CHANGE END ---
                 
                 # Construct the URL to the server's proxy endpoint
                 proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
                 
                 logger.info(f"Sending file to server proxy ({llm_mode_param} mode): {proxy_upload_url}")
-                # Send the request to the server proxy
-                response = requests.post(proxy_upload_url, files=files_to_send, data=form_data)
+                
+                # --- CHANGE START ---
+                # Use 'params=params' to attach llm_mode to the URL (e.g., .../upload_report?llm_mode=gemini)
+                # 'files=' handles the multipart upload in the body
+                response = requests.post(proxy_upload_url, files=files_to_send, params=params)
+                # --- CHANGE END ---
+                
                 response.raise_for_status()
 
                 analysis_result = response.json()
