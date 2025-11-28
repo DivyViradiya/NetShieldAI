@@ -21,6 +21,9 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)  # Create directory if it doesn't
 
 # Define file paths
 WHITELIST_FILE = RESULTS_DIR / "whitelisted_ports.json"
+JSON_REPORT_FILE = RESULTS_DIR / "nmap_report.json"  # <--- NEW: Final JSON for PDF
+
+# Standard Nmap Output Files
 SCAN_RESULT_TCP = RESULTS_DIR / "scan_result_tcp.txt"
 SCAN_RESULT_UDP = RESULTS_DIR / "scan_result_udp.txt"
 SCAN_RESULT_OS = RESULTS_DIR / "scan_result_os.txt"
@@ -176,24 +179,33 @@ def ensure_admin_privileges():
 # Network Helpers
 def get_local_ip():
     """Detects and returns the local IP address."""
-    interfaces = psutil.net_if_addrs()
-    for iface, addrs in interfaces.items():
-        if platform.system() == "Windows":
-            if any(x in iface for x in ["Virtual", "VMware", "Loopback", "vEthernet", "WSL"]):
-                continue
-            for addr in addrs:
-                if addr.family == socket.AF_INET and addr.address.startswith("192.168."):
-                    return addr.address
-        else:
-            if any(x in iface for x in ["lo", "docker", "virbr", "veth", "br-"]):
-                continue
-            for addr in addrs:
-                if addr.family == socket.AF_INET:
-                    ip = addr.address
-                    if ip.startswith("192.168.") or ip.startswith("10.") or \
-                       (ip.startswith("172.") and 16 <= int(ip.split('.')[1]) <= 31):
-                        return ip
-    return "127.0.0.1" # Fallback
+    try:
+        # Simplified logic to act as a fallback if psutil logic is too complex for context
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        # Fallback to the psutil method provided in original code
+        interfaces = psutil.net_if_addrs()
+        for iface, addrs in interfaces.items():
+            if platform.system() == "Windows":
+                if any(x in iface for x in ["Virtual", "VMware", "Loopback", "vEthernet", "WSL"]):
+                    continue
+                for addr in addrs:
+                    if addr.family == socket.AF_INET and addr.address.startswith("192.168."):
+                        return addr.address
+            else:
+                if any(x in iface for x in ["lo", "docker", "virbr", "veth", "br-"]):
+                    continue
+                for addr in addrs:
+                    if addr.family == socket.AF_INET:
+                        ip = addr.address
+                        if ip.startswith("192.168.") or ip.startswith("10.") or \
+                           (ip.startswith("172.") and 16 <= int(ip.split('.')[1]) <= 31):
+                            return ip
+        return "127.0.0.1"
 
 def is_valid_ip_or_range(target):
     """
@@ -311,137 +323,171 @@ def get_process_info_for_port(port_num, protocol="TCP"):
     
     return process_name
 
-# --- Nmap Scanning ---
-# Note: All scan functions implicitly require admin rights because they call run_nmap_scan,
-# which uses scan types that need elevation. The main guard is at the start of execution.
-def run_os_detection_scan(target_ip):
-    """Runs an Nmap OS detection scan on the target IP."""
-    log(f"[+] Running OS Detection scan on {target_ip}...")
+# --- NEW: JSON REPORT GENERATION FOR PDF ---
+
+def parse_nmap_grepable_output(file_path):
+    """
+    Parses the Nmap -oG (Grepable) text file into a Python Dictionary.
+    This creates the structure required for the PDF generator.
+    """
+    parsed_data = {
+        "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "scan_args": "N/A",
+        "target_ip": "Unknown",
+        "host_status": "Down",
+        "os_guess": "Unknown / Not Detected",
+        "ports": []
+    }
+
+    if not os.path.exists(file_path):
+        return parsed_data
+
     try:
-        nmap_cmd = [
-            'nmap', '-O', '--osscan-limit', '-T4',
-            '-oG', str(SCAN_RESULT_OS), target_ip
-        ]
-        result = subprocess.run(
-            nmap_cmd, capture_output=True, text=True,
-            creationflags=_get_subprocess_creation_flags()
-        )
-        if result.returncode != 0:
-            log(f"[!] OS Detection scan failed: {result.stderr.strip()}")
-            return None
-        log(f"[+] OS Detection scan complete. Results saved to {SCAN_RESULT_OS}")
-        return SCAN_RESULT_OS
+        with open(file_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+
+        for line in lines:
+            line = line.strip()
+            
+            # 1. Parse Metadata (Scan Arguments)
+            if line.startswith("# Nmap") and "scan initiated" in line and "as:" in line:
+                parsed_data["scan_args"] = line.split("as:", 1)[1].strip()
+
+            # 2. Parse Host Line (IP, Status, OS)
+            if line.startswith("Host:"):
+                # Extract IP
+                ip_match = re.search(r"Host: ([\d\.]+)", line)
+                if ip_match: parsed_data["target_ip"] = ip_match.group(1)
+                
+                # Extract Status
+                if "Status: Up" in line: parsed_data["host_status"] = "Up"
+                
+                # Extract OS (Standard -oG format)
+                os_match = re.search(r"OS: ([^;]+)", line)
+                if os_match: parsed_data["os_guess"] = os_match.group(1).strip()
+
+            # 3. Parse Ports
+            if "Ports:" in line:
+                ports_section = line.split("Ports:")[1].strip()
+                # Split by comma to get individual port entries
+                port_entries = ports_section.split(',')
+                
+                for entry in port_entries:
+                    entry = entry.strip()
+                    if not entry or "Ignored State" in entry: continue
+                        
+                    # Format: Port/State/Protocol//Service//Version/
+                    parts = entry.split('/')
+                    if len(parts) >= 3 and 'open' in parts[1]:
+                        port_num = parts[0].strip()
+                        protocol = parts[2].strip()
+                        
+                        # Enrich with local process info (Re-using existing function)
+                        proc_name = get_process_info_for_port(port_num, protocol)
+
+                        port_obj = {
+                            "port": port_num,
+                            "state": parts[1].strip(),
+                            "protocol": protocol,
+                            "service": parts[4].strip() if len(parts) > 4 else "unknown",
+                            "version": parts[6].strip() if len(parts) > 6 else "",
+                            "process_name": proc_name
+                        }
+                        parsed_data["ports"].append(port_obj)
+                        
     except Exception as e:
-        log(f"[!] An unexpected error occurred during OS Detection scan: {e}")
-        return None
+        log(f"[!] Error parsing Nmap output file for JSON report: {e}")
+    
+    return parsed_data
+
+def save_nmap_json(data):
+    """Saves the parsed scan data to the JSON report file for PDF generation."""
+    try:
+        with open(JSON_REPORT_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=4)
+        log(f"[+] JSON Scan report saved to {JSON_REPORT_FILE}")
+    except Exception as e:
+        log(f"[!] Failed to save JSON report: {e}")
+
+# --- Nmap Scanning ---
+# Note: All scan functions implicitly require admin rights because they call run_nmap_scan
+def run_os_detection_scan(target_ip):
+    return run_nmap_scan(target_ip, scan_type="os")
 
 def run_fragmented_scan(target_ip):
-    """Runs a fragmented packet scan on the target IP."""
-    log(f"[+] Running Fragmented Packet scan on {target_ip}...")
-    try:
-        nmap_cmd = [
-            'nmap', '-f', '-sS', '-T4',
-            '-oG', str(SCAN_RESULT_FRAGMENTED), target_ip
-        ]
-        result = subprocess.run(
-            nmap_cmd, capture_output=True, text=True,
-            creationflags=_get_subprocess_creation_flags()
-        )
-        if result.returncode != 0:
-            log(f"[!] Fragmented Packet scan failed: {result.stderr.strip()}")
-            return None
-        log(f"[+] Fragmented Packet scan complete. Results saved to {SCAN_RESULT_FRAGMENTED}")
-        return SCAN_RESULT_FRAGMENTED
-    except Exception as e:
-        log(f"[!] An unexpected error occurred during Fragmented Packet scan: {e}")
-        return None
+    return run_nmap_scan(target_ip, scan_type="fragmented")
 
 def run_aggressive_scan(target_ip):
-    """Runs an aggressive scan on the target IP."""
-    log(f"[+] Running Aggressive scan on {target_ip}...")
-    try:
-        nmap_cmd = [
-            'nmap', '-A', '-T4',
-            '-oG', str(SCAN_RESULT_AGGRESSIVE), target_ip
-        ]
-        result = subprocess.run(
-            nmap_cmd, capture_output=True, text=True,
-            creationflags=_get_subprocess_creation_flags()
-        )
-        if result.returncode != 0:
-            log(f"[!] Aggressive scan failed: {result.stderr.strip()}")
-            return None
-        log(f"[+] Aggressive scan complete. Results saved to {SCAN_RESULT_AGGRESSIVE}")
-        return SCAN_RESULT_AGGRESSIVE
-    except Exception as e:
-        log(f"[!] An unexpected error occurred during Aggressive scan: {e}")
-        return None
+    return run_nmap_scan(target_ip, scan_type="aggressive")
 
 def run_tcp_syn_scan(target_ip):
-    """Runs a TCP SYN scan on the target IP."""
-    log(f"[+] Running TCP SYN scan on {target_ip}...")
-    try:
-        nmap_cmd = [
-            'nmap', '-sS', '-T4',
-            '-oG', str(SCAN_RESULT_TCP_SYN), target_ip
-        ]
-        result = subprocess.run(
-            nmap_cmd, capture_output=True, text=True,
-            creationflags=_get_subprocess_creation_flags()
-        )
-        if result.returncode != 0:
-            log(f"[!] TCP SYN scan failed: {result.stderr.strip()}")
-            return None
-        log(f"[+] TCP SYN scan complete. Results saved to {SCAN_RESULT_TCP_SYN}")
-        return SCAN_RESULT_TCP_SYN
-    except Exception as e:
-        log(f"[!] An unexpected error occurred during TCP SYN scan: {e}")
-        return None
+    return run_nmap_scan(target_ip, scan_type="tcp_syn")
 
 def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
     """
     Runs an Nmap scan with the specified parameters using local Nmap installation.
+    Triggers both SSE updates and JSON file generation.
     """
     if not is_admin():
         log(f"[!] Nmap scans require administrator privileges. This should have been handled on startup.")
         return None
     
-    # Handle special scan types
-    if scan_type == "os": return run_os_detection_scan(target_ip)
-    if scan_type == "fragmented": return run_fragmented_scan(target_ip)
-    if scan_type == "aggressive": return run_aggressive_scan(target_ip)
-    if scan_type == "tcp_syn": return run_tcp_syn_scan(target_ip)
+    # Handle special scan types to determine flags and output file
+    flags = []
+    output_file = SCAN_RESULT_TCP # Default
+    
+    if scan_type == "os":
+        flags = ['-O', '--osscan-limit']
+        output_file = SCAN_RESULT_OS
+    elif scan_type == "fragmented":
+        flags = ['-f', '-sS']
+        output_file = SCAN_RESULT_FRAGMENTED
+    elif scan_type == "aggressive":
+        flags = ['-A']
+        output_file = SCAN_RESULT_AGGRESSIVE
+    elif scan_type == "tcp_syn":
+        flags = ['-sS']
+        output_file = SCAN_RESULT_TCP_SYN
+    elif protocol_type == "UDP":
+        flags = ['-sU', '--top-ports', '1000', '-sV', '-Pn']
+        output_file = SCAN_RESULT_UDP
+    else: # Default TCP
+        flags = ['-sS', '--top-ports', '1000', '-sV', '-Pn']
+        output_file = SCAN_RESULT_TCP
 
-    # Default scan behavior (TCP/UDP)
-    scan_type_display = f"{protocol_type} (Top 1000 Ports)"
+    scan_type_display = scan_type.upper() if scan_type != "default" else f"{protocol_type} (Top 1000)"
     log(f"[+] Running {scan_type_display} scan on {target_ip}...")
-    output_file = SCAN_RESULT_TCP if protocol_type == "TCP" else SCAN_RESULT_UDP
 
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    
+    if not is_nmap_installed():
+        return None
+
+    # Construct Command
+    # If using specific flags, use them. If default, build them.
+    # Note: Logic slightly adjusted to prevent duplication of flags for special scans
+    if scan_type == "default":
+        flags = ['-sU' if protocol_type == "UDP" else '-sS', '-sV', '-Pn', '--top-ports', '1000']
+    else:
+        # Append common flags if not already handled by the special flags
+        if '-T4' not in flags: flags.append('-T4')
+
+    cmd = ['nmap'] + flags + ['-oG', str(output_file), target_ip]
+    
+    # Ensure -T4 is present for speed if not added
+    if '-T4' not in cmd: cmd.insert(1, '-T4')
+
+    # Add exclusion for Flask app port (5000) if scanning local IP
+    local_ips = [get_local_ip(), "127.0.0.1"]
+    if target_ip in local_ips or (is_valid_ip_or_range(target_ip) and target_ip.startswith("127.0.0.1")):
+        cmd.insert(1, '--exclude-ports')
+        cmd.insert(2, '5000')
+
+    log(f"[*] Executing: {' '.join(cmd)}")
+    
     try:
-        RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-        
-        if not is_nmap_installed():
-            return None
-
-        flags = ['-sU'] if protocol_type == "UDP" else ['-sS']
-        
-        nmap_cmd = [
-            'nmap', *flags,
-            '-sV', '-Pn', '-T4',
-            '--top-ports', '1000',
-            '-oG', str(output_file),
-            target_ip
-        ]
-
-        # Add exclusion for Flask app port (5000) if scanning local IP
-        local_ips = [get_local_ip(), "127.0.0.1"]
-        if target_ip in local_ips or (is_valid_ip_or_range(target_ip) and target_ip.startswith("127.0.0.1")):
-            nmap_cmd.insert(1, '--exclude-ports')
-            nmap_cmd.insert(2, '5000')
-
-        log(f"[*] Executing: {' '.join(nmap_cmd)}")
         result = subprocess.run(
-            nmap_cmd, capture_output=True, text=True,
+            cmd, capture_output=True, text=True,
             creationflags=_get_subprocess_creation_flags()
         )
 
@@ -454,11 +500,17 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
             
         log(f"[+] {scan_type_display} scan complete. Results saved to {output_file}")
         
+        # 1. Update UI (SSE) - Retained functionality
         open_ports_list = extract_open_ports(output_file, protocol_type)
         send_sse_event("scan_complete", {
             "target": target_ip, "protocol": protocol_type,
             "scan_type": scan_type, "open_ports": open_ports_list
         })
+
+        # 2. Generate JSON Report (PDF) - NEW functionality
+        log(f"[+] Processing results for PDF report...")
+        scan_data = parse_nmap_grepable_output(output_file)
+        save_nmap_json(scan_data)
         
         return str(output_file)
 
@@ -469,6 +521,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
 def extract_open_ports(filename, protocol_type):
     """
     Parses Nmap greppable output to extract open ports and associated info.
+    (Retained for UI SSE updates)
     """
     open_ports[protocol_type].clear()
 

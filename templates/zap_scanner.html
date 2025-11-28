@@ -48,25 +48,10 @@
         z-index: 1000;
     }
 
-    .navbar-brand {
-        font-weight: 800;
-        font-size: 1.75rem;
-        color: #f8fafc; /* Bright text */
-        letter-spacing: -0.025em;
-    }
-
-    .navbar-brand a {
-        text-decoration: none;
-        color: #f8fafc;
-        transition: color 0.3s ease;
-    }
-
-    .navbar-brand a:hover {
-        color: #4299e1; /* Accent hover */
-    }
-
-    .navbar-brand .ai-text {
-        color: #4299e1; /* Stays same */
+    .navbar-logo-img {
+        /* Set your desired width here. I've guessed 150px. */
+        width: auto; 
+        height: 30px;     /* This keeps the aspect ratio correct */
     }
 
     .navbar-links {
@@ -322,9 +307,11 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand">
-            <a href="/">NetShield<span class="ai-text">AI</span></a>
-        </div>
+    <div class="navbar-brand">
+        <a href="/">
+            <img src="/static/images/NetShieldAI_logo.png" alt="NetShieldAI Logo" class="navbar-logo-img">
+        </a>
+    </div>
         <ul class="navbar-links">
             <li><a href="/network_scanner">Network Scanning</a></li>
             <li><a href="/zap_scanner" class="active">Web Application Scanning</a></li>
@@ -371,12 +358,24 @@
             </div>
 
             <div class="right-panel">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold">Scan Results</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Scan Results</h2>
+                
+                <div class="flex items-center gap-2">
+                    
                     <button id="refreshResultsBtn" class="px-3 py-1.5 rounded-lg transition-colors duration-200 flex items-center secondary-button text-sm">
                         <i class="fas fa-sync-alt mr-2 text-xs"></i> Refresh
                     </button>
+                    
+                    <a id="downloadPdfBtn" 
+                       href="#" 
+                       class="px-3 py-1.5 rounded-lg transition-colors duration-200 flex items-center secondary-button text-sm" 
+                       role="button" 
+                       hidden>
+                        <i class="fas fa-download mr-2 text-xs"></i> Download PDF
+                    </a>
                 </div>
+            </div>
 
                 <div class="summary-grid mb-6">
                     <div class="summary-card">

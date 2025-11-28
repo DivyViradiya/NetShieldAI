@@ -1,16 +1,27 @@
-from flask import Blueprint, render_template, jsonify, request, Response
+from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory
 import threading
 import json
 import time
 import os
-from queue import Empty # <<< ADDED: Import the Empty exception
+from queue import Empty
 
 # Import the ssl_scanner module
-# This now uses the local executable, not Docker
 from Services import ssl_scanner
-
+# Import the PDF generator module
+from Services import pdf_generator
 
 ssl_scanner_bp = Blueprint('ssl_scanner_bp', __name__)
+
+# ==========================================
+# --- ⚙️ CONFIGURATION: PDF OUTPUT PATH ---
+# ==========================================
+PDF_FILENAME = r"D:\NetShieldAI\Services\PDFs\ssl_report.pdf" 
+
+# This constructs the full path automatically
+# We use the RESULTS_DIR from ssl_scanner to ensure consistency
+JSON_REPORT_PATH = ssl_scanner.JSON_REPORT_FILE
+PDF_REPORT_PATH = os.path.join(ssl_scanner.RESULTS_DIR, PDF_FILENAME)
+# ==========================================
 
 @ssl_scanner_bp.route('/')
 def ssl_scanner_page():
@@ -30,7 +41,6 @@ def scan_ssl():
         ssl_scanner.log("[!] Target host cannot be empty for SSL scan.")
         return jsonify({"status": "error", "message": "Target host is required."}), 400
 
-    # MODIFIED: Replaced Docker checks with a check for the local executable.
     if not ssl_scanner.is_sslscan_available():
         ssl_scanner.log("[!] sslscan.exe is not available. Cannot perform scan.")
         return jsonify({
@@ -42,14 +52,31 @@ def scan_ssl():
     def scan_task():
         ssl_scanner.log(f"[*] Starting SSL scan for {target_host}...")
         
-        # This function now calls the local executable with all flags
+        # 1. Run the Scan (Generates XML)
         report_file = ssl_scanner.run_ssl_scan(target_host)
         
         if report_file:
-            # The enhanced parser will now run automatically
+            # 2. Parse XML and Save JSON
+            # This function now automatically saves the JSON to ssl_scanner.JSON_REPORT_FILE
             summary = ssl_scanner.parse_ssl_report(report_file)
+            
             if summary:
-                ssl_scanner.log(f"[+] SSL scan and report parsing complete for {target_host}.")
+                ssl_scanner.log(f"[+] SSL scan complete. Generating PDF report...")
+                
+                # 3. Generate PDF Report
+                try:
+                    # Create the directory for PDFs if it doesn't exist
+                    os.makedirs(os.path.dirname(PDF_REPORT_PATH), exist_ok=True)
+                    
+                    pdf_generator.create_ssl_report_pdf(str(JSON_REPORT_PATH), str(PDF_REPORT_PATH))
+                    
+                    if os.path.exists(PDF_REPORT_PATH):
+                        ssl_scanner.log(f"[+] PDF report generated successfully: {PDF_REPORT_PATH}")
+                    else:
+                        ssl_scanner.log("[!] PDF generation ran but file not found.")
+                
+                except Exception as e:
+                    ssl_scanner.log(f"[!] FAILED to generate PDF: {str(e)}")
             else:
                 ssl_scanner.log(f"[!] Failed to parse SSL report for {target_host}.")
         else:
@@ -58,31 +85,71 @@ def scan_ssl():
     threading.Thread(target=scan_task).start()
     return jsonify({"status": "success", "message": f"SSL scan for {target_host} initiated."})
 
+@ssl_scanner_bp.route('/report_files', methods=['GET'])
+def get_report_files():
+    """Checks availability of reports to enable the download button."""
+    json_exists = os.path.exists(JSON_REPORT_PATH)
+    pdf_exists = os.path.exists(PDF_REPORT_PATH)
+
+    if not json_exists and not pdf_exists:
+        return jsonify({"status": "pending", "message": "No reports found."}), 404
+
+    return jsonify({
+        "status": "success",
+        "json_report": "/ssl_scanner/get_json_report" if json_exists else None,
+        "pdf_report": "/ssl_scanner/download_pdf" if pdf_exists else None
+    })
+
+@ssl_scanner_bp.route('/download_pdf', methods=['GET'])
+def download_pdf_report():
+    """Serves the PDF report dynamically."""
+    if not os.path.exists(PDF_REPORT_PATH):
+        return jsonify({"status": "error", "message": "PDF report file not found."}), 404
+    
+    directory = os.path.dirname(PDF_REPORT_PATH)
+    filename = os.path.basename(PDF_REPORT_PATH)
+
+    return send_from_directory(
+        directory=directory,
+        path=filename,
+        as_attachment=True
+    )
+
+@ssl_scanner_bp.route('/get_json_report', methods=['GET'])
+def get_json_report_file():
+    """Serves the JSON report file."""
+    if not os.path.exists(JSON_REPORT_PATH):
+        return jsonify({"status": "error", "message": "JSON report file not found."}), 404
+    
+    directory = os.path.dirname(JSON_REPORT_PATH)
+    filename = os.path.basename(JSON_REPORT_PATH)
+
+    return send_from_directory(
+        directory=directory,
+        path=filename,
+        as_attachment=True
+    )
+
 @ssl_scanner_bp.route('/report', methods=['GET'])
 def get_ssl_report():
     """
-    API endpoint to get the content of the SSL scan report file.
-    This now returns the parsed JSON summary instead of raw XML.
+    API endpoint to get the content of the parsed SSL scan report (JSON content).
+    This is used by the frontend to render the immediate results view.
     """
-    if not os.path.exists(ssl_scanner.SSL_REPORT_XML):
+    if not os.path.exists(JSON_REPORT_PATH):
         return jsonify({
             "status": "error",
             "message": "No SSL scan report available. Please run a scan first."
         }), 404
     
     try:
-        # We now parse the report and return the structured JSON
-        parsed_summary = ssl_scanner.parse_ssl_report(str(ssl_scanner.SSL_REPORT_XML))
-        if not parsed_summary:
-                return jsonify({
-                    "status": "error",
-                    "message": "Failed to parse the existing XML report."
-                }), 500
+        with open(JSON_REPORT_PATH, 'r', encoding='utf-8') as f:
+            parsed_summary = json.load(f)
 
         return jsonify({
             "status": "success",
-            "content": parsed_summary, # Return the parsed JSON object
-            "report_file": os.path.basename(ssl_scanner.SSL_REPORT_XML)
+            "content": parsed_summary, 
+            "report_file": os.path.basename(JSON_REPORT_PATH)
         })
     except Exception as e:
         ssl_scanner.log(f"[!] Error reading or parsing SSL scan report: {e}")
@@ -99,20 +166,15 @@ def clear_ssl_log_route():
 
 @ssl_scanner_bp.route('/log_stream')
 def ssl_log_stream():
-    """
-    Server-Sent Events (SSE) endpoint to stream SSL scanner log messages to the frontend.
-    """
+    """Server-Sent Events (SSE) endpoint to stream SSL scanner log messages."""
     def generate_logs():
         while True:
             try:
-                # Use a timeout to prevent blocking indefinitely
                 message = ssl_scanner.log_queue.get(timeout=10)
                 yield message
-            except Empty: # <<< MODIFIED: Correctly catch the imported exception
-                # Send a comment to keep the connection alive
+            except Empty:
                 yield ": keep-alive\n\n"
             except GeneratorExit:
-                # The client has disconnected
                 break
 
     return Response(generate_logs(), mimetype='text/event-stream')

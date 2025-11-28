@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-R">
+    <title>ZAP Scan Report</title>
+    <link rel="stylesheet" href="file:///D:/NetShieldAI/static/css/PDF_style/report_style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="Logo" class="logo">
+        </div>
+        <div class="header-right">
+            <h1>Vulnerability Scan Report</h1>
+            <h2>ZAP Scanner</h2>
+        </div>
+    </header>
+
+    <div class="report-info">
+        <div class="info-box">
+            <strong>Target URL:</strong>
+            <span>{{ data.target_url | default('N/A') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Scan Date:</strong>
+            <span>{{ data.scan_date | default('N/A') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Report Generated:</strong>
+            <span>{{ generation_date }}</span>
+        </div>
+    </div>
+
+    <section class="summary">
+        <h3>Scan Summary</h3>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Risk Level</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="risk-high">
+                    <td>High</td>
+                    <td>{{ data.summary.High | default(0) }}</td>
+                </tr>
+                <tr class="risk-medium">
+                    <td>Medium</td>
+                    <td>{{ data.summary.Medium | default(0) }}</td>
+                </tr>
+                <tr class="risk-low">
+                    <td>Low</td>
+                    <td>{{ data.summary.Low | default(0) }}</td>
+                </tr>
+                <tr class="risk-info">
+                    <td>Informational</td>
+                    <td>{{ data.summary.Info | default(0) }}</td>
+                </tr>
+                <tr class="risk-total">
+                    <td><strong>Total</strong></td>
+                    <td><strong>{{ data.summary.Total | default(0) }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="findings">
+        <h3>Detailed Findings</h3>
+        
+        {% if data.findings %}
+            {% for finding in data.findings %}
+            <div class="finding-card">
+                <div class="finding-header">
+                    <h4>{{ finding.name }}</h4>
+                </div>
+                
+                <div class="finding-meta">
+                    <span class="badge risk-{{ finding.risk | lower }}">{{ finding.risk }} Risk</span>
+                    
+                    <span class="badge predicted-score 
+                          {% if finding.predicted_risk_score == 'Unmapped' or finding.predicted_risk_score == 'Unprofiled' or finding.predicted_risk_score == 'N/A (Model not loaded)' %}
+                          predicted-unmapped
+                          {% endif %}
+                    ">
+                        Predicted Score: {{ finding.predicted_risk_score }}
+                    </span>
+                    
+                    {% if finding.confidence == '3' %}
+                        <span class="badge confidence-3">Confidence: High</span>
+                    {% elif finding.confidence == '2' %}
+                        <span class="badge confidence-2">Confidence: Medium</span>
+                    {% elif finding.confidence == '1' %}
+                        <span class="badge confidence-1">Confidence: Low</span>
+                    {% elif finding.confidence == '0' %}
+                        <span class="badge confidence-0">Confidence: False Positive</span>
+                    {% else %}
+                        <span class="badge confidence-other">Confidence: {{ finding.confidence }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="finding-details">
+                    <p><strong>URL:</strong> <span>{{ finding.url }}</span></p>
+
+                    <strong>Description:</strong>
+                    <div class="finding-text">{{ finding.description | safe }}</div>
+                    
+                    <strong>Solution:</strong>
+                    <div class="finding-text">{{ finding.solution | safe }}</div>
+
+                    {% if finding.reference %}
+                    <strong>Reference:</strong>
+                    <div class="finding-text">{{ finding.reference | safe }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No vulnerabilities found.</p>
+        {% endif %}
+    </section>
+</body>
+</html>

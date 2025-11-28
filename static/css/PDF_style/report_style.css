@@ -1,0 +1,175 @@
+/* D:\NetShieldAI\static\css\PDF_style\report_style.css */
+
+/* --- General & Page Setup --- */
+@page {
+    size: A4;
+    margin: 1.5cm;
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+    }
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333;
+    font-size: 11pt;
+}
+h1 { font-size: 24pt; color: #003366; }
+h2 { font-size: 18pt; color: #444; }
+h3 {
+    font-size: 16pt;
+    color: #003366;
+    border-bottom: 2px solid #003366;
+    padding-bottom: 5px;
+    margin-top: 25px;
+}
+h4 {
+    font-size: 13pt;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+/* --- NEW: General link styling --- */
+a, a:visited {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+/* --- Header --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #0056b3;
+    padding-bottom: 5px;
+}
+.header-left { flex: 1; }
+.header-right { flex: 2; text-align: right; }
+.logo { max-width: auto; 
+    max-height: 30px; 
+}
+
+/* --- Report Info Boxes --- */
+.report-info {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 20px 0;
+}
+.info-box {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    flex-basis: 33%;
+}
+.info-box strong {
+    font-size: 10pt;
+    color: #555;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+}
+.info-box span { font-size: 11pt; color: #000; }
+
+/* --- Summary Table --- */
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+.summary-table th,
+.summary-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+.summary-table th { background-color: #003366; color: white; }
+.summary-table .risk-high td { background-color: #fdd; }
+.summary-table .risk-medium td { background-color: #ffedcc; }
+.summary-table .risk-low td { background-color: #fff9c4; }
+.summary-table .risk-info td { background-color: #e3f2fd; }
+.summary-table .risk-total td { background-color: #eee; }
+
+
+/* --- Finding Card --- */
+.finding-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    background: #fdfdfd;
+    page-break-inside: avoid;
+}
+.finding-header {
+    background-color: #f1f1f1;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 15px;
+}
+.finding-meta {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+}
+.finding-details {
+    padding: 15px;
+}
+/* --- UPDATED: Force long URLs to wrap correctly --- */
+.finding-details p {
+    word-wrap: break-word;
+    word-break: break-all;
+}
+.finding-text {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+    font-size: 10pt;
+    line-height: 1.5;
+}
+/* --- NEW: Styles for the <p>, <ul>, <li> tags we preserved --- */
+.finding-text p {
+    margin-bottom: 10px;
+}
+.finding-text ul, .finding-text ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+.finding-text li {
+    margin-bottom: 5px;
+}
+.finding-text a {
+    word-break: break-all;
+}
+
+/* --- Badges --- */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 10pt;
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+    margin-right: 5px;
+    text-transform: capitalize;
+}
+.badge.risk-high { background-color: #dc3545; }
+.badge.risk-medium { background-color: #fd7e14; }
+.badge.risk-low { background-color: #ffc107; color: #333; }
+.badge.risk-info { background-color: #0dcaf0; }
+
+.badge.predicted-score {
+    background-color: #003366;
+}
+/* --- NEW: Special style for 'Unmapped' scores --- */
+.badge.predicted-score.predicted-unmapped {
+    background-color: #6c757d;
+}
+
+.badge.confidence-3 { background-color: #28a745; }
+.badge.confidence-2 { background-color: #ffc107; color: #333; }
+.badge.confidence-1 { background-color: #6c757d; }
+.badge.confidence-0 { background-color: #444; }
+.badge.confidence-other { background-color: #17a2b8; }

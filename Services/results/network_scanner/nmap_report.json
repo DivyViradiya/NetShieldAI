@@ -1,0 +1,33 @@
+{
+    "scan_date": "2025-11-28 11:50:11",
+    "scan_args": "nmap --exclude-ports 5000 -sS -T4 -oG D:\\\\NetShieldAI\\\\Services\\\\results\\\\network_scanner\\\\scan_result_tcp_syn.txt 192.168.29.48",
+    "target_ip": "192.168.29.48",
+    "host_status": "Up",
+    "os_guess": "Unknown / Not Detected",
+    "ports": [
+        {
+            "port": "135",
+            "state": "open",
+            "protocol": "tcp",
+            "service": "msrpc",
+            "version": "",
+            "process_name": "svchost.exe"
+        },
+        {
+            "port": "139",
+            "state": "open",
+            "protocol": "tcp",
+            "service": "netbios-ssn",
+            "version": "",
+            "process_name": "System"
+        },
+        {
+            "port": "445",
+            "state": "open",
+            "protocol": "tcp",
+            "service": "microsoft-ds",
+            "version": "",
+            "process_name": "System"
+        }
+    ]
+}

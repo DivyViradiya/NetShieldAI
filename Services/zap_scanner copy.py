@@ -8,9 +8,7 @@ import json
 # --- NEW: ML Imports ---
 import pandas as pd
 import joblib
-import numpy as np  # <-- NEW
 from pathlib import Path
-from sentence_transformers import SentenceTransformer  # <-- NEW
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
@@ -21,49 +19,28 @@ RESULTS_DIR = r"D:\NetShieldAI\Services\results\zap_scanner"
 LOGS_DIR = r"D:\NetShieldAI\logs"
 LOG_FILE = os.path.join(LOGS_DIR, "zap_agent_log.txt")
 
-# --- NEW: ML Model and Data Paths (UPDATED) ---
+# --- NEW: ML Model and Data Paths ---
 MODELS_DIR = r"D:\NetShieldAI\models"
 DATA_DIR = r"D:\NetShieldAI\Data"
+MODEL_PATH = Path(MODELS_DIR) / 'vulnerability_ranker.joblib'
+PROFILES_PATH = Path(DATA_DIR) / 'cwe_profiles.csv'
+TRAINING_COLUMNS_PATH = Path(MODELS_DIR) / 'training_columns.joblib'
 
-# --- NEW: Paths for "Elite" Hybrid Model ---
-MODEL_PATH = Path(MODELS_DIR) / 'vulnerability_ranker_hybrid_selected.joblib' # <-- UPDATED
-PROFILES_PATH = Path(DATA_DIR) / 'cwe_profiles.csv' # <-- This file MUST have 'description_join'
-SELECTOR_PATH = Path(MODELS_DIR) / 'kbest_selector_hybrid.joblib' # <-- NEW
-
-# --- NEW: Load "Elite" Hybrid Model Artifacts ---
+# --- NEW: Load ML Artifacts on Startup ---
 try:
-    print("Loading ML artifacts...")
-    # 1. Load the "Elite" XGBoost Model
     model = joblib.load(MODEL_PATH)
-    
-    # 2. Load the CWE Profiles (which has the 'description_join' column)
     cwe_profiles = pd.read_csv(PROFILES_PATH, index_col='cwe_id')
-    
-    # 3. Load the "Elite" Feature Selector
-    kbest_selector = joblib.load(SELECTOR_PATH)
-    
-    # 4. Load the Sentence Transformer Model
-    print("Loading Sentence Transformer model 'all-MiniLM-L6-v2'...")
-    embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-    
-    # 5. Define the 7 structured features our model expects
-    structured_features = [
-        'base_score_mean', 'base_score_max', 'base_score_std',
-        'confidentiality_impact_numeric_mean', 'integrity_impact_numeric_mean',
-        'availability_impact_numeric_mean', 'cve_count'
-    ]
+    training_columns = joblib.load(TRAINING_COLUMNS_PATH)
     print("✅ ML Model and data artifacts loaded successfully.")
-
 except FileNotFoundError as e:
     print(f"FATAL: Could not load ML model or data files: {e}")
-    print("Please ensure 'vulnerability_ranker_hybrid_selected.joblib', 'kbest_selector_hybrid.joblib',")
-    print("and 'cwe_profiles.csv' (with descriptions) are in the correct directories.")
+    print("Please ensure the model, profiles, and columns files are in the correct directories.")
     model = None # Set to None to prevent script from running without the model
-except Exception as e:
-    print(f"FATAL: An unexpected error occurred loading ML artifacts: {e}")
-    model = None
 
-# --- ZAP Alert to CWE Mapping ---
+# --- NEW: ZAP Alert to CWE Mapping ---
+# This map translates ZAP finding names to the CWEs the model was trained on.
+# This would typically be in a separate, more extensive configuration file.
+# --- NEW: Comprehensive ZAP Alert to CWE Mapping (Generated from ZAP data) ---
 ZAP_TO_CWE_MAP = {
     'Directory Browsing': 'CWE-548',
     'Private IP Disclosure': 'CWE-497',
@@ -294,66 +271,31 @@ def kill_zap_processes():
         log("Waiting 5 seconds for system resources to be released...")
         time.sleep(5)
 
-# --- NEW: Prediction Function (Hybrid "Elite" Version) ---
+# --- NEW: Prediction Function (adapted from notebook) ---
 def predict_risk(vulnerability_name: str):
-    """
-    Takes a vulnerability name, looks up its profile, generates hybrid features,
-    and predicts its risk score using the "Elite" model.
-    """
+    """Takes a vulnerability name, looks up its profile, and predicts its risk score."""
     if model is None:
-        log("[!] PREDICTION ERROR: Model is not loaded.")
         return "N/A (Model not loaded)"
 
-    # 1. Map ZAP name to CWE ID
     cwe_id = ZAP_TO_CWE_MAP.get(vulnerability_name)
     if not cwe_id:
-        log(f"[!] PREDICTION: No CWE map found for '{vulnerability_name}'.")
         return "Unmapped"
 
-    # 2. Fetch the CWE profile row
     try:
-        # Use .loc[cwe_id] to get a Series, then convert to DataFrame
-        profile = cwe_profiles.loc[cwe_id].to_frame().T
-        profile.index.name = 'cwe_id'
+        profile = cwe_profiles.loc[[cwe_id]]
     except KeyError:
-        log(f"[!] PREDICTION: No profile found for {cwe_id} ('{vulnerability_name}').")
-        return "Unprofiled"
-    except Exception as e:
-        log(f"[!] PREDICTION ERROR: {e} while fetching profile for {cwe_id}.")
-        return "Error"
+        return f"Unprofiled"
 
-    try:
-        # 3. Get Structured Features
-        # Select the 7 structured features
-        X_structured = profile[structured_features]
+    features_to_drop = [
+        'actual_risk_score', 'av_weight', 'pr_weight', 'attack_vector_<lambda>',
+        'privileges_required_<lambda>', 'user_interaction_<lambda>'
+    ]
+    profile_features = profile.drop(columns=features_to_drop, errors='ignore')
+    profile_encoded = pd.get_dummies(profile_features)
+    profile_final = profile_encoded.reindex(columns=training_columns, fill_value=0)
 
-        # 4. Get Text Features & Apply Pipeline
-        # Get the text description
-        description = profile['description_join'].fillna('').tolist()
-        
-        # a. Generate 384 embeddings for this one description
-        text_embedding = embedding_model.encode(description)
-        
-        # Ensure it's 2D for the selector
-        if text_embedding.ndim == 1:
-            text_embedding = text_embedding.reshape(1, -1)
-        
-        # b. Apply the KBest selector to filter it down to 30 features
-        text_embedding_selected = kbest_selector.transform(text_embedding)
-
-        # 5. Combine Features
-        # Combine the 7 structured features with the 30 selected text features
-        X_hybrid_final = np.hstack([X_structured.values, text_embedding_selected])
-
-        # 6. Predict
-        # The model was trained on [7 struct + 30 text], so this will work
-        predicted_score = model.predict(X_hybrid_final)
-        
-        return round(float(predicted_score[0]), 2)
-        
-    except Exception as e:
-        log(f"[!] PREDICTION ERROR: Failed during feature pipeline for {cwe_id}: {e}")
-        return "Error"
+    predicted_score = model.predict(profile_final)
+    return round(float(predicted_score[0]), 2)
 
 
 def run_zap_scan(target_url, report_path):
@@ -414,7 +356,7 @@ def parse_zap_xml_report(report_file):
     
     report_data = {
         "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "summary": {"High": 0, "Medium": 0, "Low": 0, "Informational": 0, "Total": 0},
+        "summary": {"High": 0, "Medium": 0, "Low": 0, "Info": 0, "Total": 0},
         "findings": []
     }
     
@@ -426,23 +368,25 @@ def parse_zap_xml_report(report_file):
             riskdesc = alertitem.find('riskdesc').text
             risk = riskdesc.split(' ')[0]
             
-            if risk == "Informational":
+            if risk == "Info":
                 risk = "Info"
 
             finding_name = alertitem.find('alert').text
-            
-            # --- NEW: Predict risk score ---
             predicted_score = predict_risk(finding_name)
 
             finding = {
                 "name": finding_name,
                 "risk": risk,
-                "predicted_risk_score": predicted_score, # Add the new score
+                "predicted_risk_score": predicted_score,
                 "confidence": alertitem.find('confidence').text,
                 "url": alertitem.find('.//uri').text,
-                "description": alertitem.find('desc').text if alertitem.find('desc') is not None else "",
-                "solution": alertitem.find('solution').text if alertitem.find('solution') is not None else "",
-                "reference": alertitem.find('reference').text if alertitem.find('reference') is not None else ""
+                
+                # --- UPDATED LINES ---
+                # Use get_inner_html to preserve <p>, <ul>, <li> tags
+                "description": get_inner_html(alertitem.find('desc')),
+                "solution": get_inner_html(alertitem.find('solution')),
+                "reference": get_inner_html(alertitem.find('reference'))
+                # --- END OF UPDATES ---
             }
             
             if risk in report_data["summary"]:
@@ -464,6 +408,14 @@ def parse_zap_xml_report(report_file):
         log(f"An error occurred during report parsing: {e}")
         return None
 
+def get_inner_html(element):
+    """
+    Returns the full inner HTML of an ElementTree element as a string.
+    """
+    if element is None:
+        return ""
+    # This captures the element's text AND all child tags (like <p>, <a>, <ul>)
+    return (element.text or '') + ''.join(ET.tostring(e, encoding='unicode') for e in element)
 
 def save_json_report(data, output_dir):
     """Saves the scan results in JSON format with a fixed filename."""
@@ -498,7 +450,7 @@ if __name__ == "__main__":
             # Print summary to console
             summary = scan_results["summary"]
             print("\n" + "="*60)
-            print("                 ZAP Scan Summary & Risk Prediction")
+            print("                ZAP Scan Summary & Risk Prediction")
             print("="*60)
             print(f"  Target: {target_to_scan}")
             if json_report_path:

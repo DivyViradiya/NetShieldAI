@@ -372,19 +372,21 @@ def parse_zap_xml_report(report_file):
                 risk = "Info"
 
             finding_name = alertitem.find('alert').text
-            
-            # --- NEW: Predict risk score ---
             predicted_score = predict_risk(finding_name)
 
             finding = {
                 "name": finding_name,
                 "risk": risk,
-                "predicted_risk_score": predicted_score, # Add the new score
+                "predicted_risk_score": predicted_score,
                 "confidence": alertitem.find('confidence').text,
                 "url": alertitem.find('.//uri').text,
-                "description": alertitem.find('desc').text if alertitem.find('desc') is not None else "",
-                "solution": alertitem.find('solution').text if alertitem.find('solution') is not None else "",
-                "reference": alertitem.find('reference').text if alertitem.find('reference') is not None else ""
+                
+                # --- UPDATED LINES ---
+                # Use get_inner_html to preserve <p>, <ul>, <li> tags
+                "description": get_inner_html(alertitem.find('desc')),
+                "solution": get_inner_html(alertitem.find('solution')),
+                "reference": get_inner_html(alertitem.find('reference'))
+                # --- END OF UPDATES ---
             }
             
             if risk in report_data["summary"]:
@@ -406,6 +408,14 @@ def parse_zap_xml_report(report_file):
         log(f"An error occurred during report parsing: {e}")
         return None
 
+def get_inner_html(element):
+    """
+    Returns the full inner HTML of an ElementTree element as a string.
+    """
+    if element is None:
+        return ""
+    # This captures the element's text AND all child tags (like <p>, <a>, <ul>)
+    return (element.text or '') + ''.join(ET.tostring(e, encoding='unicode') for e in element)
 
 def save_json_report(data, output_dir):
     """Saves the scan results in JSON format with a fixed filename."""

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSL Scan Report</title>
+    <link rel="stylesheet" href="file:///D:/NetShieldAI/static/css/PDF_style/report_style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="Logo" class="logo">
+        </div>
+        <div class="header-right">
+            <h1>SSL/TLS Security Report</h1>
+            <h2>SSLScan Engine</h2>
+        </div>
+    </header>
+
+    <div class="report-info">
+        <div class="info-box">
+            <strong>Target:</strong>
+            <span>{{ data.target | default('Unknown') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Port:</strong>
+            <span>{{ data.port | default('443') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Scan Date:</strong>
+            <span>{{ generation_date }}</span>
+        </div>
+    </div>
+
+    <!-- Vulnerabilities Section -->
+    <section class="summary">
+        <h3>Detected Vulnerabilities</h3>
+        {% if data.vulnerabilities %}
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>Severity</th>
+                        <th>Vulnerability</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vuln in data.vulnerabilities %}
+                    <tr class="risk-{{ vuln.severity | lower }}">
+                        <td><span class="badge risk-{{ vuln.severity | lower }}">{{ vuln.severity }}</span></td>
+                        <td><strong>{{ vuln.name }}</strong></td>
+                        <td>{{ vuln.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="finding-card" style="text-align: center; color: green; padding: 20px;">
+                <h4>✅ No Known SSL Vulnerabilities Detected</h4>
+                <p>The server appears to be configured securely against common SSL/TLS attacks.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- Protocols Section -->
+    <section class="findings">
+        <h3>Supported Protocols</h3>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Protocol</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proto in data.protocols %}
+                <tr>
+                    <td><strong>{{ proto.name }}</strong></td>
+                    <td>
+                        {% if proto.enabled %}
+                            <span class="badge risk-low" style="background-color: #d4edda; color: #155724;">Enabled</span>
+                        {% else %}
+                            <span style="color: #ccc;">Disabled</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Server Configuration -->
+    <section class="findings">
+        <h3>Server Configuration</h3>
+        <div class="finding-card">
+            <div class="finding-details">
+                <p><strong>Heartbleed Vulnerability:</strong> 
+                    {% if data.vulnerabilities|selectattr('name', 'equalto', 'Heartbleed')|list %}
+                        <span style="color:red; font-weight:bold;">VULNERABLE</span>
+                    {% else %}
+                        <span style="color:green;">Safe</span>
+                    {% endif %}
+                </p>
+                <p><strong>TLS Compression (CRIME):</strong> 
+                    {% if data.server_configs.tls_compression.supported %}
+                        <span style="color:orange;">Enabled (Risk)</span>
+                    {% else %}
+                        Disabled
+                    {% endif %}
+                </p>
+                <p><strong>Secure Renegotiation:</strong> 
+                    {% if data.server_configs.renegotiation.secure %}
+                        <span style="color:green;">Supported</span>
+                    {% else %}
+                        <span style="color:red;">Not Supported (Risk)</span>
+                    {% endif %}
+                </p>
+                <p><strong>Fallback SCSV:</strong> {{ 'Supported' if data.server_configs.fallback_scsv_supported else 'Not Supported' }}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certificate Chain -->
+    <section class="findings">
+        <h3>Certificate Chain</h3>
+        {% if data.certificate_chain %}
+            {% for cert in data.certificate_chain %}
+            <div class="finding-card">
+                <div class="finding-header">
+                    <h4>{{ cert.level | title }} Certificate</h4>
+                </div>
+                <div class="finding-details">
+                    <p><strong>Common Name (CN):</strong> {{ cert.common_name }}</p>
+                    <p><strong>Issuer:</strong> {{ cert.issuer }}</p>
+                    <p><strong>Signature Algorithm:</strong> {{ cert.signature_algorithm }}</p>
+                    <p><strong>Key:</strong> {{ cert.key_type }} ({{ cert.key_size }} bits)</p>
+                    <p><strong>Validity:</strong> {{ cert.not_before }} <strong>to</strong> {{ cert.not_after }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No certificate chain information available.</p>
+        {% endif %}
+    </section>
+
+    <!-- Ciphers -->
+    <section class="findings">
+        <h3>Supported Ciphers</h3>
+        <table class="summary-table" style="font-size: 0.8em;">
+            <thead>
+                <tr>
+                    <th>Protocol</th>
+                    <th>Cipher Name</th>
+                    <th>Bits</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cipher in data.ciphers %}
+                <tr>
+                    <td>{{ cipher.protocol }}</td>
+                    <td>{{ cipher.name }}</td>
+                    <td>{{ cipher.bits }}</td>
+                    <td>{{ cipher.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <footer style="margin-top: 50px; text-align: center; font-size: 0.8em; color: #777;">
+        <p>Generated by NetShieldAI Reporting Engine</p>
+    </footer>
+
+</body>
+</html>

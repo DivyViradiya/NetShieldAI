@@ -52,28 +52,10 @@
             z-index: 1000;
         }
 
-        .navbar-brand {
-            font-weight: 800;
-            font-size: 1.75rem;
-            /* color: #1a202c; */ /* OLD */
-            color: #f8fafc; /* NEW: Bright text */
-            letter-spacing: -0.025em;
-        }
-
-        .navbar-brand a {
-            text-decoration: none;
-            /* color: #1a202c; */ /* OLD */
-            color: #f8fafc; /* NEW */
-            transition: color 0.3s ease;
-        }
-
-        .navbar-brand a:hover {
-            /* color: #0d121c; */ /* OLD */
-            color: #4299e1; /* NEW: Accent hover */
-        }
-
-        .navbar-brand .ai-text {
-            color: #4299e1;
+        .navbar-logo-img {
+            /* Set your desired width here. I've guessed 150px. */
+            width: auto; 
+            height: 30px;     /* This keeps the aspect ratio correct */
         }
 
         .navbar-links {
@@ -298,9 +280,11 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand">
-            <a href="/">NetShield<span class="ai-text">AI</span></a>
-        </div>
+    <div class="navbar-brand">
+        <a href="/">
+            <img src="/static/images/NetShieldAI_logo.png" alt="NetShieldAI Logo" class="navbar-logo-img">
+        </a>
+    </div>
         <ul class="navbar-links">
             <li><a href="/network_scanner" class="active">Network Scanning</a></li>
             <li><a href="/zap_scanner">Web Application Scanning</a></li>
@@ -392,9 +376,15 @@
             <div class="right-panel">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold">Scan Results</h2>
-                    <button id="refreshResultsBtn" class="px-3 py-1.5 rounded-lg secondary-button text-sm flex items-center">
-                        <i class="fas fa-sync-alt mr-2 text-xs"></i> Refresh All
-                    </button>
+                    <div class="flex space-x-2">
+                        <button id="downloadReportBtn" disabled class="px-3 py-1.5 rounded-lg secondary-button text-sm flex items-center opacity-50 cursor-not-allowed transition-opacity" title="Download Scan Report (PDF)">
+                            <i class="fas fa-file-pdf mr-2 text-xs text-red-500"></i> Report
+                        </button>
+                        
+                        <button id="refreshResultsBtn" class="px-3 py-1.5 rounded-lg secondary-button text-sm flex items-center">
+                            <i class="fas fa-sync-alt mr-2 text-xs"></i> Refresh All
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mb-6">

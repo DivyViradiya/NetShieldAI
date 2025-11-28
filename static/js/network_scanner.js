@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearLogBtn: document.getElementById('clearLogBtn'),
         refreshResultsBtn: document.getElementById('refreshResultsBtn'),
         copyResultsBtn: document.getElementById('copyResultsBtn'),
+        downloadReportBtn: document.getElementById('downloadReportBtn'),
         targetIpInput: document.getElementById('targetIp'),
         whitelistPortsInput: document.getElementById('whitelistPorts'),
         logOutput: document.getElementById('logOutput'),
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const API_BASE_URL = '/network_scanner';
     let lastScanType = 'tcp'; // Track the last scan type for refreshing results
     let isActionInProgress = false;
+    let reportDownloadUrl = null;
 
     // --- Helper Functions ---
 
@@ -50,13 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     /**
-         * Appends a message to the log display.
-         * @param {string} message The log message.
-         */
+     * Appends a message to the log display.
+     * @param {string} message The log message.
+     */
     function appendLog(message) {
         if (!elements.logOutput) return;
         // Use textContent for better performance and security.
-        // Append a newline character (\n) to ensure proper line breaks.
         elements.logOutput.textContent += message + '\n'; 
         // Automatically scroll to the bottom of the log.
         elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
@@ -203,6 +204,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Checks if a PDF report is available and updates the download button.
+     */
+    async function checkReportAvailability() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/report_files`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.status === 'success' && data.pdf_report) {
+                    reportDownloadUrl = data.pdf_report;
+                    
+                    // Enable the button
+                    if (elements.downloadReportBtn) {
+                        elements.downloadReportBtn.disabled = false;
+                        elements.downloadReportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                    return;
+                }
+            }
+        } catch (error) {
+            console.error('Error checking report availability:', error);
+        }
+
+        // Disable button if check failed or no report found
+        reportDownloadUrl = null;
+        if (elements.downloadReportBtn) {
+            elements.downloadReportBtn.disabled = true;
+            elements.downloadReportBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+
+    /**
      * Initiates a network scan.
      * @param {string} protocolType 'TCP' or 'UDP'.
      * @param {string} scanType The specific type of scan (e.g., 'default', 'os').
@@ -241,6 +273,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 setStatus('Action complete!', 'success');
                 fetchAndDisplayOpenPorts();
                 loadScanResults(lastScanType);
+                checkReportAvailability(); // Check for report when scan finishes
             }
         };
 
@@ -311,10 +344,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchAndDisplayLocalIp(),
                 fetchAndDisplayWhitelist(),
                 fetchAndDisplayOpenPorts(),
-                loadScanResults(lastScanType)
+                loadScanResults(lastScanType),
+                checkReportAvailability() // Check availability on refresh
             ]).then(() => setStatus('Ready', 'ready'));
         });
 
+        // Copy button
         elements.copyResultsBtn.addEventListener('click', () => {
             navigator.clipboard.writeText(elements.resultsContent.textContent).then(() => {
                 const icon = elements.copyResultsBtn.querySelector('i');
@@ -322,6 +357,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { icon.className = 'far fa-copy text-sm'; }, 2000);
             });
         });
+
+        // Download Report button
+        if (elements.downloadReportBtn) {
+            elements.downloadReportBtn.addEventListener('click', () => {
+                if (reportDownloadUrl) {
+                    window.location.href = reportDownloadUrl;
+                    appendLog('[✓] Downloading PDF report...');
+                } else {
+                    appendLog('[!] No report available to download.');
+                }
+            });
+        }
     }
 
     // --- Initialization ---
@@ -336,7 +383,8 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchAndDisplayLocalIp(),
             fetchAndDisplayWhitelist(),
             fetchAndDisplayOpenPorts(),
-            loadScanResults(lastScanType)
+            loadScanResults(lastScanType),
+            checkReportAvailability() // Check availability on init
         ]).then(() => {
             setStatus('Ready', 'ready');
             appendLog('Initialization complete. Ready for commands.');

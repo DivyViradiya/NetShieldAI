@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const RESULTS_ENDPOINT = `${API_BASE_URL}/scan_results`;
     const CLEAR_LOG_ENDPOINT = `${API_BASE_URL}/clear_log`;
     const LOG_STREAM_ENDPOINT = `${API_BASE_URL}/log_stream`;
+    const REPORT_FILES_ENDPOINT = `${API_BASE_URL}/report_files`; // --- NEW ---
 
     // --- DOM Elements ---
     const targetUrlInput = document.getElementById('targetUrl');
@@ -25,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const refreshResultsBtn = document.getElementById('refreshResultsBtn');
     const copyResultsBtn = document.getElementById('copyResultsBtn');
     const resultsContent = document.getElementById('resultsContent'); // For showing raw JSON
+    const downloadPdfBtn = document.getElementById('downloadPdfBtn'); // This line was correct
 
     // --- Utility Functions ---
 
@@ -76,6 +78,41 @@ document.addEventListener('DOMContentLoaded', () => {
         logOutput.scrollTop = logOutput.scrollHeight;
     }
 
+    // --- NEW: Function to check for PDF report ---
+    /**
+     * Checks the server for available report files (JSON and PDF).
+     * Updates the Download PDF button visibility and link.
+     */
+    async function checkReportStatus() {
+        try {
+            const response = await fetch(REPORT_FILES_ENDPOINT);
+            
+            if (!response.ok) {
+                // No reports found (404) or other server error
+                downloadPdfBtn.hidden = true;
+                return;
+            }
+    
+            const data = await response.json();
+    
+            if (data.status === "success" && data.pdf_report) {
+                // PDF is ready! Set the link and show the button.
+                downloadPdfBtn.href = data.pdf_report; // e.g., '/zap_scanner/download_pdf'
+                
+                // This attribute tells the browser to download the file
+                downloadPdfBtn.setAttribute('download', 'zap_report.pdf'); 
+                
+                downloadPdfBtn.hidden = false;
+            } else {
+                // Reports aren't ready or don't exist yet
+                downloadPdfBtn.hidden = true;
+            }
+        } catch (error) {
+            console.error("Error checking report status:", error);
+            downloadPdfBtn.hidden = true;
+        }
+    }
+
     /**
      * Fetches and displays the ZAP scan report.
      */
@@ -112,6 +149,9 @@ document.addEventListener('DOMContentLoaded', () => {
             updateSummaryDisplay({}, 'N/A');
             zapAlertsTableBody.innerHTML = `<tr><td colspan="6" class="px-4 py-2 text-sm text-red-400 text-center">Failed to load results. Check connection to the server.</td></tr>`;
             resultsContent.textContent = 'Failed to load raw report.';
+        } finally {
+            // --- UPDATED: Always check for the PDF file after attempting to refresh results ---
+            await checkReportStatus();
         }
     }
     
@@ -138,14 +178,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (findings && findings.length > 0) {
             findings.forEach(alert => {
                 const row = zapAlertsTableBody.insertRow();
-                row.classList.add('hover:bg-gray-700');
+                // --- UPDATED: Use risk-info class for 'Info' ---
                 row.innerHTML = `
                     <td class="px-4 py-2 whitespace-nowrap text-sm font-medium ${getRiskColorClass(alert.risk)}">${alert.risk}</td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm font-medium ${getPredictedScoreColorClass(alert.predicted_risk_score)}">${alert.predicted_risk_score}</td>
                     <td class="px-4 py-2 text-sm text-gray-200">${alert.name}</td>
                     <td class="px-4 py-2 text-sm text-gray-300 truncate max-w-xs"><a href="${alert.url}" target="_blank" class="text-blue-400 hover:underline">${alert.url}</a></td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">${alert.confidence}</td>
-                    <td class="px-4 py-2 text-sm text-gray-300 max-w-md overflow-hidden text-ellipsis" title="${alert.description}">${alert.description.substring(0, 100)}...</td>
+                    <td class="px-4 py-2 text-sm text-gray-300 max-w-md overflow-hidden text-ellipsis" title="${alert.description.replace(/<[^>]+>/g, '')}">${alert.description.replace(/<[^>]+>/g, '').substring(0, 100)}...</td>
                 `;
             });
         } else {
@@ -158,10 +198,10 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function getRiskColorClass(risk) {
         switch (risk) {
-            case 'High': return 'text-red-500';
-            case 'Medium': return 'text-orange-400';
-            case 'Low': return 'text-yellow-400';
-            case 'Info': return 'text-blue-400';
+            case 'High': return 'risk-high'; // Using CSS classes now
+            case 'Medium': return 'risk-medium';
+            case 'Low': return 'risk-low';
+            case 'Info': return 'risk-info';
             default: return 'text-gray-300';
         }
     }
@@ -171,8 +211,8 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function getPredictedScoreColorClass(score) {
         if (typeof score !== 'number') return 'text-gray-500';
-        if (score >= 7.0) return 'text-red-500 font-bold';
-        if (score >= 4.0) return 'text-orange-400 font-semibold';
+        if (score >= 10.0) return 'text-red-500 font-bold'; // Adjusted threshold
+        if (score >= 5.0) return 'text-orange-400 font-semibold'; // Adjusted threshold
         if (score > 0) return 'text-yellow-400';
         return 'text-gray-300';
     }
@@ -225,9 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
         eventSource.onmessage = function(event) {
             appendLog(event.data);
             // Check for completion message to trigger a results refresh
-            if (event.data.includes("Scan, analysis, and prediction complete")) {
+            if (event.data.includes("Scan, analysis, and prediction complete") || event.data.includes("PDF report generated")) {
                 appendLog("[*] Scan complete. Refreshing results...");
-                fetchAndDisplayResults();
+                fetchAndDisplayResults(); // This will now also check for the PDF
             }
         };
 
@@ -244,24 +284,17 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function copyResultsToClipboard() {
         const textToCopy = resultsContent.textContent;
-        if (!textToCopy || textToCopy.includes('Loading') || textToCopy.includes('No raw report')) {
+        if (!textToCopy || textToCopy.includes('Loading') || textToCopy.includes('Awaiting scan results...')) {
             alert('No results to copy.');
             return;
         }
         
-        const textarea = document.createElement('textarea');
-        textarea.value = textToCopy;
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            document.execCommand('copy');
+        navigator.clipboard.writeText(textToCopy).then(() => {
             alert('Raw JSON report copied to clipboard!');
-        } catch (err) {
+        }).catch(err => {
             console.error('Failed to copy text: ', err);
             alert('Failed to copy results. Please copy manually.');
-        } finally {
-            document.body.removeChild(textarea);
-        }
+        });
     }
 
     // --- Event Listeners ---
@@ -296,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initializer ---
     function initialize() {
-        fetchAndDisplayResults(); // Fetch any existing results on page load
+        fetchAndDisplayResults(); // Fetch any existing results and check for PDF on page load
         setupLogStream();       // Start log streaming
     }
 

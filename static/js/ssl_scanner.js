@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsContent = document.getElementById('resultsContent');
     const copyResultsBtn = document.getElementById('copyResultsBtn');
     const refreshReportBtn = document.getElementById('refreshReportBtn');
+    
+    // --- ADDED: Reference for Download Button ---
+    const downloadReportBtn = document.getElementById('downloadReportBtn');
 
     // Report-specific elements
     const summaryTarget = document.getElementById('summaryTarget');
@@ -20,13 +23,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const vulnerabilitiesList = document.getElementById('vulnerabilitiesList');
 
     let eventSource = null;
+    // --- ADDED: State for download URL ---
+    let reportDownloadUrl = null;
 
     // --- Core Functions ---
 
     /**
      * Toggles the loading state of a button.
-     * @param {HTMLButtonElement} button The button element.
-     * @param {boolean} isLoading True to show spinner, false to show text.
      */
     function updateButtonState(button, isLoading) {
         const buttonText = button.querySelector('.button-text');
@@ -37,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /**
-     * Resets all report sections to their default "awaiting results" state.
+     * Resets all report sections.
      */
     function clearScanResults() {
         summaryTarget.textContent = 'N/A';
@@ -49,10 +52,45 @@ document.addEventListener('DOMContentLoaded', function() {
         ciphersTableBody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-gray-500">Awaiting scan results...</td></tr>';
         vulnerabilitiesList.innerHTML = '<li class="text-gray-500">Awaiting scan results...</li>';
         resultsContent.textContent = 'Raw JSON report will appear here after a scan.';
+        
+        // ADDED: Reset download button on clear
+        if (downloadReportBtn) {
+            downloadReportBtn.disabled = true;
+            downloadReportBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            reportDownloadUrl = null;
+        }
     }
 
-    // --- Report Rendering Functions ---
+    // --- ADDED: Report Availability Check (The Logic from Network Scanner) ---
+    async function checkReportAvailability() {
+        try {
+            const response = await fetch('/ssl_scanner/report_files');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.status === 'success' && data.pdf_report) {
+                    reportDownloadUrl = data.pdf_report;
+                    
+                    // Enable the button
+                    if (downloadReportBtn) {
+                        downloadReportBtn.disabled = false;
+                        downloadReportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                    return;
+                }
+            }
+        } catch (error) {
+            console.error('Error checking report availability:', error);
+        }
 
+        // Disable button if check failed or no report found
+        reportDownloadUrl = null;
+        if (downloadReportBtn) {
+            downloadReportBtn.disabled = true;
+            downloadReportBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    }
+
+    // --- Report Rendering Functions (Unchanged) ---
     function renderVulnerabilities(vulnerabilities) {
         vulnerabilitiesList.innerHTML = '';
         if (!vulnerabilities || vulnerabilities.length === 0) {
@@ -86,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         serverConfigDetails.innerHTML = details.map(d => `<p>${d}</p>`).join('');
     }
 
-    function renderCertificateChain(chain) {
+function renderCertificateChain(chain) {
         certificateChainContainer.innerHTML = '';
         if (!chain || chain.length === 0) {
             certificateChainContainer.innerHTML = '<p class="text-gray-500 text-sm">No certificate information found.</p>';
@@ -95,15 +133,19 @@ document.addEventListener('DOMContentLoaded', function() {
         chain.forEach((cert, index) => {
             const isLeaf = index === 0;
             const card = document.createElement('div');
-            card.className = 'bg-gray-50 p-4 rounded-lg border';
+            
+            // FIX: Changed 'bg-gray-50' to 'bg-slate-800' (Dark Mode Background)
+            // FIX: Added 'border-slate-700' to match other panels
+            card.className = 'bg-slate-800 p-4 rounded-lg border border-slate-700';
+            
             card.innerHTML = `
-                <h4 class="text-md font-semibold mb-2">${isLeaf ? 'Leaf Certificate' : `Intermediate #${index}`}</h4>
-                <div class="space-y-1 text-sm">
-                    <p><strong>Subject:</strong> <span class="font-medium text-gray-700">${cert.common_name}</span></p>
-                    <p><strong>Issuer:</strong> <span class="font-medium text-gray-700">${cert.issuer}</span></p>
-                    <p><strong>Validity:</strong> ${cert.not_before} to ${cert.not_after}</p>
-                    <p><strong>Signature:</strong> ${cert.signature_algorithm} (${cert.key_size}-bit ${cert.key_type})</p>
-                    <p><strong>Alt Names:</strong> ${cert.alt_names.length > 0 ? cert.alt_names.join(', ') : 'N/A'}</p>
+                <h4 class="text-md font-semibold mb-2 text-slate-100">${isLeaf ? 'Leaf Certificate' : `Intermediate #${index}`}</h4>
+                <div class="space-y-1 text-sm text-slate-300">
+                    <p><strong class="text-slate-400">Subject:</strong> <span class="font-medium text-slate-200">${cert.common_name}</span></p>
+                    <p><strong class="text-slate-400">Issuer:</strong> <span class="font-medium text-slate-200">${cert.issuer}</span></p>
+                    <p><strong class="text-slate-400">Validity:</strong> ${cert.not_before} to ${cert.not_after}</p>
+                    <p><strong class="text-slate-400">Signature:</strong> ${cert.signature_algorithm} (${cert.key_size}-bit ${cert.key_type})</p>
+                    <p><strong class="text-slate-400">Alt Names:</strong> ${cert.alt_names.length > 0 ? cert.alt_names.join(', ') : 'N/A'}</p>
                 </div>
             `;
             certificateChainContainer.appendChild(card);
@@ -142,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /**
-     * Fetches the report JSON from the backend and populates the entire UI.
+     * Fetches the report JSON from the backend.
      */
     async function fetchAndDisplayReport() {
         try {
@@ -152,7 +194,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.status === 'success') {
                 const report = data.content;
                 
-                // Populate all sections with the new JSON data
                 summaryTarget.textContent = report.target || 'N/A';
                 summaryIp.textContent = report.ip || 'N/A';
                 summaryPort.textContent = report.port || 'N/A';
@@ -163,10 +204,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderProtocols(report.protocols);
                 renderCiphers(report.ciphers);
 
-                // Display the raw JSON report, pretty-printed
                 resultsContent.textContent = JSON.stringify(report, null, 2);
+                
+                // ADDED: Check for PDF availability after loading JSON
+                checkReportAvailability();
             } else {
-                // Clear results if report loading fails (e.g., no report exists)
                 clearScanResults();
                 resultsContent.textContent = data.message;
             }
@@ -180,12 +222,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initiateScanBtn.addEventListener('click', async () => {
         const targetHost = targetHostInput.value.trim();
         if (!targetHost) {
-            alert('Please enter a target host.'); // Simple alert as popup is removed
+            alert('Please enter a target host.');
             return;
         }
 
         clearScanResults();
-        logOutput.innerHTML = ''; // Use innerHTML to clear child elements
+        logOutput.innerHTML = '';
         updateButtonState(initiateScanBtn, true);
         scanStatus.textContent = 'Scanning...';
         scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-yellow-500 bg-yellow-100';
@@ -203,7 +245,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-red-500 bg-red-100';
                 updateButtonState(initiateScanBtn, false);
             }
-            // On success, the SSE event will update the status
         } catch (error) {
             console.error('Error initiating SSL scan:', error);
             scanStatus.textContent = 'Scan Failed';
@@ -218,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/ssl_scanner/clear_log', { method: 'POST' });
             const data = await response.json();
             if (data.status === 'success') {
-                logOutput.innerHTML = ''; // Use innerHTML to clear child elements
+                logOutput.innerHTML = '';
             }
         } catch (error) {
             console.error('Error clearing log:', error);
@@ -227,25 +268,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    copyResultsBtn.addEventListener('click', () => {
-        const textToCopy = resultsContent.textContent;
-        if (!textToCopy || textToCopy.includes('Awaiting scan results')) {
-            return;
-        }
-        const textarea = document.createElement('textarea');
-        textarea.value = textToCopy;
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            document.execCommand('copy');
-        } catch (err) {
-            console.error('Failed to copy report.', err);
-        } finally {
-            document.body.removeChild(textarea);
-        }
+    if (copyResultsBtn) {
+        copyResultsBtn.addEventListener('click', () => {
+            const textToCopy = resultsContent.textContent;
+            
+            // Prevent copying placeholder text
+            if (!textToCopy || textToCopy.includes('Awaiting scan results')) {
+                return;
+            }
+
+            // Use modern Clipboard API
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Visual Feedback: Change icon to checkmark
+                const icon = copyResultsBtn.querySelector('i');
+                if (icon) {
+                    const originalClass = icon.className;
+                    icon.className = 'fas fa-check text-green-500'; // Show green check
+                    
+                    // Revert back after 2 seconds
+                    setTimeout(() => { 
+                        icon.className = originalClass; 
+                    }, 2000);
+                }
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy to clipboard. Please select the text and copy manually.');
+            });
+        });
+    }
+
+    refreshReportBtn.addEventListener('click', () => {
+        fetchAndDisplayReport();
+        checkReportAvailability(); // ADDED: Re-check on refresh
     });
 
-    refreshReportBtn.addEventListener('click', fetchAndDisplayReport);
+    // ADDED: Download Button Listener
+    if (downloadReportBtn) {
+        downloadReportBtn.addEventListener('click', () => {
+            if (reportDownloadUrl) {
+                // Trigger download
+                window.location.href = reportDownloadUrl;
+            } else {
+                console.log('No report available to download.');
+            }
+        });
+    }
 
     // --- Server-Sent Events (SSE) Setup ---
     function setupLogStream() {
@@ -254,31 +321,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
         eventSource.onmessage = function(event) {
             const message = event.data;
-            if (message) {
+            if (message && message !== ': keep-alive\n\n') {
                 const logLine = document.createElement('div');
                 logLine.textContent = message;
                 logOutput.appendChild(logLine);
-                logOutput.scrollTop = logOutput.scrollHeight; // Auto-scroll to bottom
+                logOutput.scrollTop = logOutput.scrollHeight;
+                
+                // ADDED: Logic to detect completion strings based on ssl_scanner_bp.py logs
+                // We check for "PDF report generated successfully" or "SSL scan complete"
+                if (message.includes("PDF report generated successfully") || message.includes("SSL scan complete")) {
+                    scanStatus.textContent = 'Scan Complete';
+                    scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-green-500 bg-green-100';
+                    updateButtonState(initiateScanBtn, false);
+                    
+                    fetchAndDisplayReport(); // Reload JSON results
+                    checkReportAvailability(); // Enable download button
+                }
             }
         };
-
-        eventSource.addEventListener('ssl_scan_complete', function(event) {
-            const data = JSON.parse(event.data);
-            scanStatus.textContent = 'Scan Complete';
-            scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-green-500 bg-green-100';
-            updateButtonState(initiateScanBtn, false);
-            fetchAndDisplayReport(); // Automatically fetch the new report
-        });
 
         eventSource.onerror = function(err) {
             console.error('EventSource failed:', err);
             eventSource.close();
-            setTimeout(setupLogStream, 5000); // Reconnect after 5 seconds
+            setTimeout(setupLogStream, 5000); 
         };
     }
 
     // --- Initial Page Load ---
     setupLogStream();
-    clearScanResults();
-    fetchAndDisplayReport(); // Load existing report if available
+    fetchAndDisplayReport(); 
+    checkReportAvailability(); // ADDED: Check on load
 });

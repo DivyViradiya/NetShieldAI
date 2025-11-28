@@ -478,3 +478,70 @@ requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: 
 2025-11-12 16:03:15 - chatbot - INFO - Chatbot Blueprint initialized
 2025-11-12 16:35:22 - chatbot - INFO - New local chat session started: b6f15738-5583-47aa-92bf-6da42a7210a2
 2025-11-12 16:53:07 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 16:53:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 16:55:30 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 16:55:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 16:55:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-12 17:08:36 - chatbot - INFO - New local chat session started: b8189e21-f015-4106-8580-93d0985113fa
+2025-11-13 10:21:25 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-13 10:21:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-13 10:21:43 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-13 10:49:20 - chatbot - INFO - New local chat session started: 32c43224-69ae-47e9-8694-609c57604b23
+2025-11-14 12:35:32 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 12:35:40 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 12:35:50 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 12:36:27 - chatbot - INFO - New local chat session started: eabe0a52-6068-4703-9f63-42e427e43c05
+2025-11-14 13:18:27 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-11-14 13:18:30 - chatbot - INFO - Stored session ID from server: None
+2025-11-14 13:19:16 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-11-14 13:19:34 - chatbot - INFO - Stored session ID from server: 5930857f-1e74-4a23-b240-8ca32f84b2df
+2025-11-14 15:59:24 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 15:59:31 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 15:59:39 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 16:18:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 16:31:01 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 16:46:09 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 16:48:19 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 16:48:40 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:32:45 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:33:18 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:34:12 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:43:03 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:43:23 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:45:09 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:45:15 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:45:20 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:53:15 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:54:46 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:54:50 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 17:54:54 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:05:15 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:05:17 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:05:20 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:08:41 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:10:32 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:11:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:11:48 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:11:51 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:11:55 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-14 18:13:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 10:36:08 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 10:36:18 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 10:36:29 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 10:46:06 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 11:04:55 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 11:27:54 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 11:28:02 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 11:28:13 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 11:36:56 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 11:48:33 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 11:48:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 11:48:42 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 12:14:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 12:14:39 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 12:14:43 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 12:26:24 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 12:27:58 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 12:29:58 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 12:32:19 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 12:33:56 - chatbot - INFO - Chatbot Blueprint initialized

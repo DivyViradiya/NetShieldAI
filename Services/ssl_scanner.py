@@ -18,6 +18,7 @@ RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\ssl_scanner")
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)  # Create directory if it doesn't exist
 
 SSL_REPORT_XML = RESULTS_DIR / "ssl_report.xml"
+JSON_REPORT_FILE = RESULTS_DIR / "ssl_report.json" # <--- NEW: Path for JSON report
 LOG_FILE = Path(r"D:\NetShieldAI\logs\ssl_agent_log.txt")
 
 # Ensure logs directory exists
@@ -60,6 +61,15 @@ def is_sslscan_available():
         return False
     log("[✓] sslscan.exe found.")
     return True
+
+def save_ssl_json(data):
+    """Saves the parsed SSL scan data to a JSON file."""
+    try:
+        with open(JSON_REPORT_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=4)
+        log(f"[+] SSL JSON report saved to {JSON_REPORT_FILE}")
+    except Exception as e:
+        log(f"[!] Failed to save SSL JSON report: {e}")
 
 def run_ssl_scan(target_host):
     """Runs an SSL/TLS scan using the local sslscan.exe."""
@@ -240,6 +250,10 @@ def parse_ssl_report(report_file):
         scan_summary["vulnerabilities"] = vulnerabilities
 
         log(f"[+] SSLScan report '{os.path.basename(report_file)}' parsed successfully.")
+        
+        # NEW: Save the parsed data to JSON for PDF generation
+        save_ssl_json(scan_summary)
+        
         send_sse_event("ssl_report_parsed", scan_summary)
         return scan_summary
 

@@ -12,6 +12,12 @@
     /* --- ORIGINAL NAVBAR/DROPDOWN STYLES --- */
     /* --- MODIFIED FOR BLACK THEME --- */
     /*******************************************/
+    .navbar-logo-img {
+        /* Set your desired width here. I've guessed 150px. */
+        width: auto; 
+        height: 30px;     /* This keeps the aspect ratio correct */
+    }
+    
     .navbar {
         /* background-color: #1e293b; */
         background-color: #0d121c; /* Darker surface */
@@ -27,27 +33,6 @@
         top: 0;
         left: 0;
         z-index: 1000;
-    }
-
-    .navbar-brand {
-        font-weight: 800;
-        font-size: 1.75rem;
-        color: #f8fafc; /* Light text */
-        letter-spacing: -0.025em;
-    }
-
-    .navbar-brand a {
-        text-decoration: none;
-        color: #f8fafc; /* Light text */
-        transition: color 0.3s ease;
-    }
-
-    .navbar-brand a:hover {
-        color: #dbeafe; /* Light blue hover */
-    }
-
-    .navbar-brand .ai-text {
-        color: #4299e1; /* Accent blue - stays the same */
     }
 
     .navbar-links {
@@ -588,9 +573,11 @@
 </head>
 <body class="dark-mode">
     <nav class="navbar">
-        <div class="navbar-brand">
-            <a href="/">NetShield<span class="ai-text">AI</span></a>
-        </div>
+    <div class="navbar-brand">
+        <a href="/">
+            <img src="/static/images/NetShieldAI_logo.png" alt="NetShieldAI Logo" class="navbar-logo-img">
+        </a>
+    </div>
         <ul class="navbar-links">
             <li><a href="/network_scanner">Network Scanning</a></li>
             <li><a href="/zap_scanner">Web Application Scanning</a></li>

@@ -1,5 +1,4 @@
-from flask import Flask, render_template, jsonify, request, Response
-from flask import Blueprint
+from flask import Flask, render_template, jsonify, request, Response, send_from_directory, Blueprint
 import threading
 import json
 import time
@@ -8,15 +7,28 @@ import queue
 
 # Import the updated network_scanner module
 from Services import network_scanner
-from Services.api_client import login_required
+# --- Import PDF Generator ---
+from Services import pdf_generator
+# from Services.api_client import login_required
 
 network_scanner_bp = Blueprint('network_scanner_bp', __name__)
 
-# Add this route to handle the /network_scanner URL
+# ==========================================
+# --- ⚙️ CONFIGURATION: PDF OUTPUT PATH ---
+# ==========================================
+# 1. To change the FOLDER, edit 'RESULTS_DIR' in 'Services/network_scanner.py'
+# 2. To change the FILENAME, edit the variable below:
+PDF_FILENAME = r"D:\NetShieldAI\Services\PDFs\nmap_report.pdf" 
+
+# This constructs the full path automatically
+JSON_REPORT_PATH = network_scanner.JSON_REPORT_FILE
+PDF_REPORT_PATH = os.path.join(network_scanner.RESULTS_DIR, PDF_FILENAME)
+# ==========================================
+
 @network_scanner_bp.route('/')
 def network_scanner_page():
     """Renders the network scanner page."""
-    return render_template('network_scanner.html')  # Make sure this template exists
+    return render_template('network_scanner.html')
 
 @network_scanner_bp.route('/local_ip', methods=['GET'])
 def get_local_ip_route():
@@ -28,13 +40,13 @@ def get_local_ip_route():
 @network_scanner_bp.route('/scan', methods=['POST'])
 def scan_ports():
     """
-    API endpoint to initiate all types of port scans (TCP, UDP, OS, Aggressive, etc.).
-    Runs the scan in a separate thread to avoid blocking the Flask app.
+    API endpoint to initiate all types of port scans.
+    Runs the scan in a separate thread and generates a PDF report upon completion.
     """
     data = request.get_json()
     target_ip = data.get('target_ip')
-    protocol_type = data.get('protocol_type', 'TCP').upper()  # Default to TCP
-    scan_type = data.get('scan_type', 'default')  # Default to standard scan
+    protocol_type = data.get('protocol_type', 'TCP').upper()
+    scan_type = data.get('scan_type', 'default')
 
     # Validate scan type
     valid_scan_types = ['default', 'os', 'fragmented', 'aggressive', 'tcp_syn']
@@ -45,7 +57,7 @@ def scan_ports():
     if not target_ip:
         target_ip = network_scanner.get_local_ip()
         if target_ip == "127.0.0.1" and not network_scanner.is_valid_ip_or_range(target_ip):
-            network_scanner.log("[!] No target IP/range entered and local IP not detected. Please detect IP or enter a target.")
+            network_scanner.log("[!] No target IP/range entered and local IP not detected.")
             return jsonify({"status": "error", "message": "No target IP/range provided and local IP not detected."}), 400
         network_scanner.log(f"[*] Target IP/Range not specified, defaulting to local IP: {target_ip}")
 
@@ -53,50 +65,116 @@ def scan_ports():
         network_scanner.log(f"[!] Invalid target input: {target_ip}")
         return jsonify({"status": "error", "message": "Please enter a valid IP address, CIDR range, or IP range."}), 400
 
-    # Check if Nmap is installed locally instead of checking for Docker
     if not network_scanner.is_nmap_installed():
-        network_scanner.log("[!] Nmap is not installed or not in PATH. Cannot perform scan.")
-        return jsonify({"status": "error", "message": "Nmap is not installed. Please check the log for details."}), 500
+        network_scanner.log("[!] Nmap is not installed or not in PATH.")
+        return jsonify({"status": "error", "message": "Nmap is not installed."}), 500
     
-    # Note: Privilege checks (is_admin) are now handled inside the network_scanner module,
-    # which will log errors if scans are attempted without necessary permissions.
-
-    # Function to run in a separate thread
+    # --- Threaded Scan Task ---
     def scan_task():
         network_scanner.log(f"[*] Starting {scan_type.upper()} {protocol_type} scan for {target_ip}...")
-        # The run_nmap_scan function now handles the entire process, including port extraction.
-        # It will also log its own success or failure messages.
-        network_scanner.run_nmap_scan(target_ip, protocol_type=protocol_type, scan_type=scan_type)
+        
+        # 1. Run the Scan (This creates the JSON file via network_scanner.py logic)
+        result_file = network_scanner.run_nmap_scan(target_ip, protocol_type=protocol_type, scan_type=scan_type)
+        
+        if result_file:
+            # 2. Generate PDF Report
+            try:
+                if os.path.exists(JSON_REPORT_PATH):
+                    network_scanner.log("[*] Scan complete. Generating PDF report...")
+                    
+                    # Call the generator with the file path
+                    # We use the globally configured PDF_REPORT_PATH
+                    pdf_generator.create_nmap_report_pdf(str(JSON_REPORT_PATH), str(PDF_REPORT_PATH))
+                    
+                    if os.path.exists(PDF_REPORT_PATH):
+                        network_scanner.log(f"[+] PDF report generated successfully: {PDF_REPORT_PATH}")
+                    else:
+                        network_scanner.log("[!] PDF generation ran but file not found (unknown error).")
+                else:
+                    network_scanner.log("[!] JSON report not found. Cannot generate PDF.")
+            
+            except ImportError:
+                network_scanner.log("[!] Error: GTK3 Runtime missing or WeasyPrint not installed properly.")
+            except Exception as e:
+                # This captures WeasyPrint errors and sends them to the UI Log
+                network_scanner.log(f"[!] FAILED to generate PDF: {str(e)}")
+        else:
+            network_scanner.log("[!] Scan failed to produce a result file.")
 
     threading.Thread(target=scan_task).start()
-    return jsonify({"status": "success", "message": f"{scan_type.upper()} scan for {target_ip} ({protocol_type}) initiated."})
+    return jsonify({"status": "success", "message": f"{scan_type.upper()} scan for {target_ip} initiated."})
 
+@network_scanner_bp.route('/report_files', methods=['GET'])
+def get_report_files():
+    """Checks availability of reports."""
+    json_exists = os.path.exists(JSON_REPORT_PATH)
+    pdf_exists = os.path.exists(PDF_REPORT_PATH)
+
+    if not json_exists and not pdf_exists:
+        return jsonify({"status": "pending", "message": "No reports found."}), 404
+
+    return jsonify({
+        "status": "success",
+        "json_report": "/network_scanner/get_json_report" if json_exists else None,
+        "pdf_report": "/network_scanner/download_pdf" if pdf_exists else None
+    })
+
+@network_scanner_bp.route('/download_pdf', methods=['GET'])
+def download_pdf_report():
+    """Serves the PDF report dynamically based on the configured path."""
+    if not os.path.exists(PDF_REPORT_PATH):
+        return jsonify({"status": "error", "message": "PDF report file not found."}), 404
+    
+    try:
+        # Dynamically determine directory and filename from the global path
+        # This prevents errors if you change the path at the top of the file
+        directory = os.path.dirname(PDF_REPORT_PATH)
+        filename = os.path.basename(PDF_REPORT_PATH)
+
+        return send_from_directory(
+            directory=directory,
+            path=filename,
+            as_attachment=True
+        )
+    except Exception as e:
+        network_scanner.log(f"[!] Error serving PDF file: {e}")
+        return jsonify({"status": "error", "message": "Could not serve PDF file."}), 500
+
+@network_scanner_bp.route('/get_json_report', methods=['GET'])
+def get_json_report_file():
+    if not os.path.exists(JSON_REPORT_PATH):
+        return jsonify({"status": "error", "message": "JSON report file not found."}), 404
+    
+    # Use dynamic pathing for JSON as well for consistency
+    directory = os.path.dirname(JSON_REPORT_PATH)
+    filename = os.path.basename(JSON_REPORT_PATH)
+
+    return send_from_directory(
+        directory=directory,
+        path=filename,
+        as_attachment=True
+    )
+
+# --- Standard Scan Routes (Unchanged) ---
 @network_scanner_bp.route('/open_ports', methods=['GET'])
 def get_open_ports_route():
-    """API endpoint to get the currently detected open ports."""
     ports = network_scanner.get_current_open_ports()
     return jsonify({"open_ports": ports})
 
 @network_scanner_bp.route('/block_ports', methods=['POST'])
 def block_ports_route():
-    """
-    API endpoint to initiate blocking of all detected open ports.
-    Runs the blocking in a separate thread.
-    """
     if not network_scanner.is_admin():
-        network_scanner.log("[!] Insufficient privileges to block ports. Please run the server as administrator/root.")
-        return jsonify({"status": "error", "message": "Insufficient privileges to block ports."}), 403
+        network_scanner.log("[!] Insufficient privileges to block ports.")
+        return jsonify({"status": "error", "message": "Insufficient privileges."}), 403
 
     def block_task():
-        all_ports_to_block_info = network_scanner.open_ports["TCP"] + network_scanner.open_ports["UDP"]
-        
-        if not all_ports_to_block_info:
+        all_ports = network_scanner.open_ports["TCP"] + network_scanner.open_ports["UDP"]
+        if not all_ports:
             network_scanner.log("[*] No open ports detected to block.")
             return
 
-        network_scanner.log(f"[*] Attempting to block {len(all_ports_to_block_info)} detected ports...")
-        for p_info in all_ports_to_block_info:
-            # Note: The whitelisted_ports set in the module is now a set of strings
+        network_scanner.log(f"[*] Attempting to block {len(all_ports)} detected ports...")
+        for p_info in all_ports:
             port_str = str(p_info['port'])
             protocol = p_info['protocol']
             if port_str in network_scanner.whitelisted_ports:
@@ -105,9 +183,9 @@ def block_ports_route():
             
             success = network_scanner.block_port(port_str, protocol=protocol)
             if success and network_scanner.is_port_blocked(port_str, protocol=protocol):
-                network_scanner.log(f"[✓] {protocol} Port {port_str} successfully blocked and verified.")
+                network_scanner.log(f"[✓] {protocol} Port {port_str} blocked.")
             else:
-                network_scanner.log(f"[x] {protocol} Port {port_str} could not be verified as blocked. Manual check may be needed.")
+                network_scanner.log(f"[x] {protocol} Port {port_str} failed to verify as blocked.")
         network_scanner.log("[+] Port blocking process completed.")
 
     threading.Thread(target=block_task).start()
@@ -115,18 +193,10 @@ def block_ports_route():
 
 @network_scanner_bp.route('/verify_ports', methods=['POST'])
 def verify_ports_route():
-    """
-    API endpoint to verify if detected ports are closed.
-    Runs the verification in a separate thread.
-    """
     data = request.get_json()
     target_ip = data.get('target_ip')
-
     if not target_ip:
-        target_ip = network_scanner.get_local_ip()
-        if target_ip == "127.0.0.1" and not network_scanner.is_valid_ip_or_range(target_ip):
-             network_scanner.log("[!] Cannot verify ports without a detected IP address or a target entered.")
-             return jsonify({"status": "error", "message": "No target IP/range provided and local IP not detected for verification."}), 400
+         return jsonify({"status": "error", "message": "No target IP provided."}), 400
 
     def verify_task():
         network_scanner.verify_ports_closed(target_ip)
@@ -137,82 +207,54 @@ def verify_ports_route():
 
 @network_scanner_bp.route('/add_whitelist', methods=['POST'])
 def add_whitelist_route():
-    """API endpoint to add ports to the whitelist."""
     data = request.get_json()
-    ports_str = data.get('ports')
-    if network_scanner.add_to_whitelist(ports_str):
+    if network_scanner.add_to_whitelist(data.get('ports')):
         return jsonify({"status": "success", "message": "Ports added to whitelist."})
-    return jsonify({"status": "error", "message": "Failed to add ports to whitelist. Check log."}), 400
+    return jsonify({"status": "error", "message": "Failed to add ports."}), 400
 
 @network_scanner_bp.route('/clear_whitelist', methods=['POST'])
 def clear_whitelist_route():
-    """API endpoint to clear the whitelist."""
     network_scanner.clear_whitelist()
     return jsonify({"status": "success", "message": "Whitelist cleared."})
 
 @network_scanner_bp.route('/whitelisted_ports', methods=['GET'])
 def get_whitelisted_ports_route():
-    """API endpoint to get the current list of whitelisted ports."""
-    ports = network_scanner.get_whitelisted_ports()
-    return jsonify({"whitelisted_ports": ports})
+    return jsonify({"whitelisted_ports": network_scanner.get_whitelisted_ports()})
 
 @network_scanner_bp.route('/get_scan_results', methods=['GET'])
 def get_scan_results():
-    """
-    API endpoint to get the content of a specific scan result file.
-    """
     scan_type = request.args.get('type', 'tcp')
-    
     result_files = {
         'tcp': network_scanner.SCAN_RESULT_TCP,
-        'udp': network_scanner.SCAN_RESULT_UDP, # Added UDP results
+        'udp': network_scanner.SCAN_RESULT_UDP,
         'tcp_syn': network_scanner.SCAN_RESULT_TCP_SYN,
         'os': network_scanner.SCAN_RESULT_OS,
         'fragmented': network_scanner.SCAN_RESULT_FRAGMENTED,
         'aggressive': network_scanner.SCAN_RESULT_AGGRESSIVE
     }
-    
     file_path = result_files.get(scan_type)
     
     if not file_path or not os.path.exists(file_path):
-        return jsonify({
-            "status": "error",
-            "message": f"No results available for {scan_type} scan."
-        }), 404
+        return jsonify({"status": "error", "message": f"No results for {scan_type}."}), 404
     
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            return jsonify({
-                "status": "success",
-                "content": content,
-                "scan_type": scan_type
-            })
+            return jsonify({"status": "success", "content": f.read(), "scan_type": scan_type})
     except Exception as e:
-        network_scanner.log(f"[!] Error reading {scan_type} scan results: {e}")
-        return jsonify({
-            "status": "error",
-            "message": f"Failed to read {scan_type} scan results: {str(e)}"
-        }), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @network_scanner_bp.route('/clear_log', methods=['POST'])
 def clear_log_route():
-    """API endpoint to clear the log file."""
     network_scanner.clear_log_file()
     return jsonify({"status": "success", "message": "Log cleared."})
 
 @network_scanner_bp.route('/log_stream')
 def log_stream():
-    """
-    Server-Sent Events (SSE) endpoint to stream log messages to the frontend.
-    """
     def generate_logs():
         while True:
             try:
-                message = network_scanner.log_queue.get(timeout=10) # Timeout to prevent endless blocking
+                message = network_scanner.log_queue.get(timeout=10)
                 yield message
             except queue.Empty:
-                # Send a comment to keep the connection alive
                 yield ": keep-alive\n\n"
-
     return Response(generate_logs(), mimetype='text/event-stream')
