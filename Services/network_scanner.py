@@ -21,7 +21,7 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)  # Create directory if it doesn't
 
 # Define file paths
 WHITELIST_FILE = RESULTS_DIR / "whitelisted_ports.json"
-JSON_REPORT_FILE = RESULTS_DIR / "nmap_report.json"  # <--- NEW: Final JSON for PDF
+JSON_REPORT_FILE = RESULTS_DIR / "nmap_report.json"  # <--- Final JSON for PDF
 
 # Standard Nmap Output Files
 SCAN_RESULT_TCP = RESULTS_DIR / "scan_result_tcp.txt"
@@ -30,6 +30,7 @@ SCAN_RESULT_OS = RESULTS_DIR / "scan_result_os.txt"
 SCAN_RESULT_FRAGMENTED = RESULTS_DIR / "scan_result_fragmented.txt"
 SCAN_RESULT_AGGRESSIVE = RESULTS_DIR / "scan_result_aggressive.txt"
 SCAN_RESULT_TCP_SYN = RESULTS_DIR / "scan_result_tcp_syn.txt"
+SCAN_RESULT_VULN = RESULTS_DIR / "scan_result_vuln.txt" # <--- NEW VULNERABILITY OUTPUT FILE
 
 # Ensure logs directory exists
 LOG_DIR = Path(r"D:\NetShieldAI\logs")
@@ -328,7 +329,8 @@ def get_process_info_for_port(port_num, protocol="TCP"):
 def parse_nmap_grepable_output(file_path):
     """
     Parses the Nmap -oG (Grepable) text file into a Python Dictionary.
-    This creates the structure required for the PDF generator.
+    This creates the structure required for the PDF generator, extracting
+    max detail, including vulnerability notes from script output.
     """
     parsed_data = {
         "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -336,65 +338,126 @@ def parse_nmap_grepable_output(file_path):
         "target_ip": "Unknown",
         "host_status": "Down",
         "os_guess": "Unknown / Not Detected",
-        "ports": []
+        "ports": [],
+        "raw_output_summary": "" # New field for general host info/summary
     }
 
     if not os.path.exists(file_path):
         return parsed_data
 
+    # Step 1: Pre-process the file to gather port-specific vulnerability notes
+    # This uses a similar, but more robust parsing method than the one inside
+    # extract_open_ports to ensure we capture all data for the final PDF.
+    port_vuln_notes = {}
+    current_port_key = None
+    general_notes = []
+
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
+        
+        # Determine if it was a VULN scan
+        is_vuln_scan = "vuln" in str(file_path)
 
         for line in lines:
             line = line.strip()
             
-            # 1. Parse Metadata (Scan Arguments)
+            # Capture general Nmap info for report summary
+            if line.startswith("# Nmap") or line.startswith("Host:") or line.startswith("Stats:"):
+                general_notes.append(line)
+
+            # 1. Capture Scan Arguments/Metadata
             if line.startswith("# Nmap") and "scan initiated" in line and "as:" in line:
                 parsed_data["scan_args"] = line.split("as:", 1)[1].strip()
 
-            # 2. Parse Host Line (IP, Status, OS)
+            # 2. Capture Host Info (IP, Status, OS)
             if line.startswith("Host:"):
-                # Extract IP
                 ip_match = re.search(r"Host: ([\d\.]+)", line)
                 if ip_match: parsed_data["target_ip"] = ip_match.group(1)
-                
-                # Extract Status
                 if "Status: Up" in line: parsed_data["host_status"] = "Up"
-                
-                # Extract OS (Standard -oG format)
                 os_match = re.search(r"OS: ([^;]+)", line)
                 if os_match: parsed_data["os_guess"] = os_match.group(1).strip()
-
-            # 3. Parse Ports
+            
+            # 3. Handle Port Lines
             if "Ports:" in line:
+                # Ports line resets the current port context for script output parsing
+                current_port_key = None
+                
                 ports_section = line.split("Ports:")[1].strip()
-                # Split by comma to get individual port entries
                 port_entries = ports_section.split(',')
                 
                 for entry in port_entries:
                     entry = entry.strip()
                     if not entry or "Ignored State" in entry: continue
                         
-                    # Format: Port/State/Protocol//Service//Version/
                     parts = entry.split('/')
                     if len(parts) >= 3 and 'open' in parts[1]:
                         port_num = parts[0].strip()
-                        protocol = parts[2].strip()
+                        protocol = parts[2].strip().upper()
+                        current_port_key = f"{port_num}/{protocol}"
                         
-                        # Enrich with local process info (Re-using existing function)
+                        if current_port_key not in port_vuln_notes:
+                             port_vuln_notes[current_port_key] = []
+
+            # 4. Capture NSE Script Output
+            # NSE output in -oG format often appears immediately after the ports line,
+            # or simply as text that doesn't fit the structured format. We must 
+            # infer its association.
+            # We look for lines containing script-specific keywords (e.g., 'http-title', 'CVE', 'VULNERABLE')
+            # and assume they belong to the last captured current_port_key if they follow.
+            
+            if current_port_key and is_vuln_scan and (
+                'CVE' in line or 'VULNERABLE' in line or 'risk' in line.lower() or 'exploit' in line.lower()
+            ):
+                # Try to clean the note: remove initial markers/whitespace
+                note = line.split("Host:")[0].strip()
+                if note and note not in port_vuln_notes[current_port_key]:
+                    port_vuln_notes[current_port_key].append(note)
+            
+            # Reset current_port_key after processing the block to avoid associating unrelated lines
+            if line.endswith(")") and not line.startswith("Host:") and not line.startswith("# Nmap"):
+                 current_port_key = None
+
+
+        # Step 2: Extract structured port data and merge notes
+        # Re-read the file or process the lines again to find the Ports: line for final structured data
+        for line in lines:
+            line = line.strip()
+            if "Ports:" in line:
+                ports_section = line.split("Ports:")[1].strip()
+                port_entries = ports_section.split(',')
+                
+                for entry in port_entries:
+                    entry = entry.strip()
+                    if not entry or "Ignored State" in entry: continue
+                        
+                    parts = entry.split('/')
+                    if len(parts) >= 3 and 'open' in parts[1]:
+                        port_num = parts[0].strip()
+                        protocol = parts[2].strip().upper()
+                        
+                        # Get comprehensive process info
                         proc_name = get_process_info_for_port(port_num, protocol)
+
+                        # Get collected vulnerability notes, joining them for the report
+                        vuln_key = f"{port_num}/{protocol}"
+                        vulnerability_notes = "\n---\n".join(port_vuln_notes.get(vuln_key, []))
 
                         port_obj = {
                             "port": port_num,
                             "state": parts[1].strip(),
                             "protocol": protocol,
                             "service": parts[4].strip() if len(parts) > 4 else "unknown",
-                            "version": parts[6].strip() if len(parts) > 6 else "",
-                            "process_name": proc_name
+                            # Use full string from parts[6] if available
+                            "version": parts[6].strip() if len(parts) > 6 else "", 
+                            "process_name": proc_name,
+                            "vulnerability_notes": vulnerability_notes, # <--- NEW DETAILED VULN FIELD
+                            "cpe": parts[8].strip() if len(parts) > 8 else "N/A" # Capture CPE if Nmap provides it
                         }
                         parsed_data["ports"].append(port_obj)
-                        
+
+        parsed_data["raw_output_summary"] = "\n".join(general_notes)
+
     except Exception as e:
         log(f"[!] Error parsing Nmap output file for JSON report: {e}")
     
@@ -422,6 +485,10 @@ def run_aggressive_scan(target_ip):
 
 def run_tcp_syn_scan(target_ip):
     return run_nmap_scan(target_ip, scan_type="tcp_syn")
+    
+def run_vulnerability_scan(target_ip):
+    return run_nmap_scan(target_ip, scan_type="vuln")
+
 
 def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
     """
@@ -448,6 +515,11 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
     elif scan_type == "tcp_syn":
         flags = ['-sS']
         output_file = SCAN_RESULT_TCP_SYN
+    elif scan_type == "vuln": # <--- NEW VULNERABILITY SCAN LOGIC
+        # Use -sC to run default scripts, -sV for version detection, and --script vuln
+        # We also add -Pn to skip host discovery if it's slow, and -T4 for speed.
+        flags = ['-sC', '-sV', '--script', 'vuln', '-Pn'] 
+        output_file = SCAN_RESULT_VULN
     elif protocol_type == "UDP":
         flags = ['-sU', '--top-ports', '1000', '-sV', '-Pn']
         output_file = SCAN_RESULT_UDP
@@ -464,24 +536,24 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
         return None
 
     # Construct Command
-    # If using specific flags, use them. If default, build them.
-    # Note: Logic slightly adjusted to prevent duplication of flags for special scans
-    if scan_type == "default":
-        flags = ['-sU' if protocol_type == "UDP" else '-sS', '-sV', '-Pn', '--top-ports', '1000']
-    else:
-        # Append common flags if not already handled by the special flags
-        if '-T4' not in flags: flags.append('-T4')
-
-    cmd = ['nmap'] + flags + ['-oG', str(output_file), target_ip]
+    base_cmd = ['nmap', '-T4'] + flags
     
-    # Ensure -T4 is present for speed if not added
-    if '-T4' not in cmd: cmd.insert(1, '-T4')
+    # For vulnerability scan, we use the explicit set of flags
+    if scan_type == "vuln":
+        cmd = ['nmap', '-T4', '-sC', '-sV', '--script', 'vuln', '-Pn', '-oG', str(output_file), target_ip]
+    else:
+        cmd = base_cmd + ['-oG', str(output_file), target_ip]
 
     # Add exclusion for Flask app port (5000) if scanning local IP
     local_ips = [get_local_ip(), "127.0.0.1"]
     if target_ip in local_ips or (is_valid_ip_or_range(target_ip) and target_ip.startswith("127.0.0.1")):
-        cmd.insert(1, '--exclude-ports')
-        cmd.insert(2, '5000')
+        if '-oG' in cmd:
+            og_index = cmd.index('-oG')
+            cmd.insert(og_index, '--exclude-ports')
+            cmd.insert(og_index + 1, '5000')
+        else: # Should not happen, but for safety
+            cmd.insert(1, '--exclude-ports')
+            cmd.insert(2, '5000')
 
     log(f"[*] Executing: {' '.join(cmd)}")
     
@@ -501,7 +573,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
         log(f"[+] {scan_type_display} scan complete. Results saved to {output_file}")
         
         # 1. Update UI (SSE) - Retained functionality
-        open_ports_list = extract_open_ports(output_file, protocol_type)
+        open_ports_list = extract_open_ports(output_file, protocol_type="TCP" if protocol_type == "TCP" or scan_type == "vuln" else protocol_type)
         send_sse_event("scan_complete", {
             "target": target_ip, "protocol": protocol_type,
             "scan_type": scan_type, "open_ports": open_ports_list
@@ -520,44 +592,106 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
 
 def extract_open_ports(filename, protocol_type):
     """
-    Parses Nmap greppable output to extract open ports and associated info.
-    (Retained for UI SSE updates)
+    Parses Nmap greppable output to extract open ports, process info, and
+    (NEW) associated vulnerability notes for UI update.
     """
-    open_ports[protocol_type].clear()
+    # Note: For Vuln scans, we force TCP protocol update as it's a TCP-based scan
+    target_protocol = "TCP" if "vuln" in str(filename).lower() or protocol_type == "TCP" else "UDP"
 
+    if target_protocol == "UDP":
+        open_ports["UDP"].clear()
+    else:
+        open_ports["TCP"].clear()
+
+    port_vuln_notes = {}
+    current_port_key = None
+    all_ports_list = []
+    
     try:
         with open(filename, 'r', encoding='utf-8') as f:
-            for line in f:
-                if 'Ports:' in line and 'open' in line:
-                    port_details_str = line.split('Ports:')[1].strip()
-                    port_entries = port_details_str.split(',')
-
-                    for p_str in port_entries:
-                        p_str = p_str.strip()
-                        if 'open' in p_str.lower():
-                            parts = p_str.split('/')
+            lines = f.readlines()
+            
+        is_vuln_scan = "vuln" in str(filename).lower()
+        
+        # Step 1: Pre-parse for vulnerability notes (Heuristic for -oG)
+        for line in lines:
+            line = line.strip()
+            
+            if "Ports:" in line and "open" in line:
+                current_port_key = None
+                ports_section = line.split("Ports:")[1].strip()
+                port_entries = ports_section.split(',')
+                for p_str in port_entries:
+                    p_str = p_str.strip()
+                    if 'open' in p_str.lower():
+                        parts = p_str.split('/')
+                        if len(parts) >= 3:
+                            current_port_key = f"{parts[0]}/{parts[2].upper()}"
+                            if current_port_key not in port_vuln_notes:
+                                port_vuln_notes[current_port_key] = []
                             
-                            port_num = parts[0]
-                            protocol = parts[2].upper() 
-                            service = parts[4].strip() if len(parts) > 4 and parts[4].strip() else 'unknown'
-                            version = parts[6].strip() if len(parts) > 6 and parts[6].strip() else ''
-                            
-                            process_name = get_process_info_for_port(port_num, protocol=protocol)
+            if current_port_key and is_vuln_scan and (
+                'CVE' in line or 'VULNERABLE' in line or 'http-title' in line or 'risk' in line.lower()
+            ):
+                # Simple summary of the vulnerability line for UI display
+                note = line.split("Host:")[0].strip()
+                if note and len(port_vuln_notes[current_port_key]) == 0:
+                    # Only take the first note/title for the UI column for brevity
+                    port_vuln_notes[current_port_key].append(note[:50].replace('\t', ' ') + "...") 
+            
+            # Reset port key on new host or end of entry
+            if line.startswith("Host:"):
+                 current_port_key = None
 
-                            if protocol == protocol_type:
-                                open_ports[protocol].append({
-                                    'port': port_num, 'protocol': protocol,
-                                    'service': service, 'version': version,
-                                    'process_name': process_name
-                                })
+        # Step 2: Extract final port list and merge vulnerability data
+        for line in lines:
+            if 'Ports:' in line and 'open' in line:
+                port_details_str = line.split('Ports:')[1].strip()
+                port_entries = port_details_str.split(',')
+
+                for p_str in port_entries:
+                    p_str = p_str.strip()
+                    if 'open' in p_str.lower():
+                        parts = p_str.split('/')
+                        
+                        port_num = parts[0]
+                        protocol = parts[2].upper() 
+                        service = parts[4].strip() if len(parts) > 4 and parts[4].strip() else 'unknown'
+                        version = parts[6].strip() if len(parts) > 6 and parts[6].strip() else ''
+                        
+                        process_name = get_process_info_for_port(port_num, protocol=protocol)
+                        
+                        vuln_key = f"{port_num}/{protocol}"
+                        vulnerability_summary = " | ".join(port_vuln_notes.get(vuln_key, []))
+                        # Default to "N/A" if no summary was found
+                        if not vulnerability_summary and is_vuln_scan:
+                            vulnerability_summary = "No immediate CVE/Risk found."
+                        elif not is_vuln_scan:
+                            vulnerability_summary = "Run VULN Scan for details."
+
+                        port_obj = {
+                            'port': port_num, 'protocol': protocol,
+                            'service': service, 'version': version,
+                            'process_name': process_name,
+                            'vulnerability': vulnerability_summary # <--- NEW FIELD FOR UI
+                        }
+                        
+                        if protocol == target_protocol:
+                            all_ports_list.append(port_obj)
+
+        if target_protocol == "UDP":
+            open_ports["UDP"] = all_ports_list
+        else:
+            open_ports["TCP"] = all_ports_list
         
         send_sse_event("ports_updated", json.dumps(get_current_open_ports()))
 
     except FileNotFoundError:
-        log(f"[!] Scan result file '{filename}' not found. Cannot extract {protocol_type} ports.")
+        log(f"[!] Scan result file '{filename}' not found. Cannot extract {target_protocol} ports.")
     except Exception as e:
-        log(f"[!] Error extracting {protocol_type} open ports from file: {e}")
-    return open_ports[protocol_type]
+        log(f"[!] Error extracting {target_protocol} open ports from file: {e}")
+        
+    return get_current_open_ports()
 
 # --- Firewall Management ---
 def block_port_windows(port, protocol="TCP"):
@@ -737,11 +871,13 @@ def main_test():
     if all_open:
         print(f"Found {len(all_open)} open port(s):")
         for port_info in all_open:
+            # Displaying the new vulnerability field
             print(
                 f"  - Port: {port_info['port']}/{port_info['protocol']}, "
                 f"Service: {port_info.get('service', 'n/a')}, "
                 f"Version: {port_info.get('version', 'n/a')}, "
-                f"Process: {port_info.get('process_name', 'n/a')}"
+                f"Process: {port_info.get('process_name', 'n/a')}, "
+                f"Vulnerability: {port_info.get('vulnerability', 'N/A')}"
             )
     else:
         print("No open ports were found on the target.")

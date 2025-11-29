@@ -572,3 +572,252 @@ requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: 
 2025-11-28 19:04:18 - chatbot - INFO - Chatbot Blueprint initialized
 2025-11-28 19:04:57 - chatbot - INFO - New local chat session started: 5e710346-e857-426a-a4c3-ade5dc90258a
 2025-11-28 20:29:29 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 20:29:37 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 20:29:49 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 20:30:14 - chatbot - INFO - New local chat session started: 9a8bbf79-0272-40fb-a954-72a955224c7d
+2025-11-28 20:30:27 - chatbot - ERROR - Error communicating with server proxy chat service: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000163DBFEE660>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 174, in _new_conn
+    conn = connection.create_connection(
+        (self._dns_host, self.port), self.timeout, **extra_kw
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 95, in create_connection
+    raise err
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 716, in urlopen
+    httplib_response = self._make_request(
+        conn,
+    ...<5 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 416, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 244, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1338, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1384, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1037, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 205, in connect
+    conn = self._new_conn()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 186, in _new_conn
+    raise NewConnectionError(
+        self, "Failed to establish a new connection: %s" % e
+    )
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000163DBFEE660>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 802, in urlopen
+    retries = retries.increment(
+        method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 594, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000163DBFEE660>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 138, in chat_with_ai
+    response = requests.post(proxy_chat_url, json=payload_to_server)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000163DBFEE660>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-11-28 21:57:56 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-11-28 21:57:58 - chatbot - ERROR - Error communicating with server proxy during upload: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report?llm_mode=gemini
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 94, in upload_report
+    response.raise_for_status()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 422 Client Error: Unprocessable Content for url: http://localhost:5000/upload_report?llm_mode=gemini
+2025-11-28 21:59:01 - chatbot - ERROR - Error clearing chat via server proxy for session 9a8bbf79-0272-40fb-a954-72a955224c7d: 404 Client Error: Not Found for url: http://localhost:5000/clear_chat
+2025-11-28 22:03:48 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 22:03:53 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 22:03:57 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 22:05:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 22:05:40 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 22:05:46 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 22:05:50 - chatbot - INFO - New local chat session started: cf39f2f3-6d9d-4182-beb1-0659927aca08
+2025-11-28 22:11:55 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-11-28 22:12:18 - chatbot - INFO - Stored session ID from server: 34a69ca7-48bd-4793-bf9c-1a13c8d88c13
+2025-11-28 23:14:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 23:14:41 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 23:14:44 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 23:14:51 - chatbot - INFO - New local chat session started: f409277e-c012-416d-8a78-356736edbeba
+2025-11-28 23:15:05 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-11-28 23:15:19 - chatbot - INFO - Stored session ID from server: 55dba959-48ce-481b-93e0-18ae8f132b51
+2025-11-28 23:32:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 23:32:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 23:32:42 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-28 23:32:58 - chatbot - INFO - Sending file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-11-28 23:33:08 - chatbot - INFO - Stored session ID from server: 6201c037-e1e5-45fe-a9f8-fb617ae83d53
+2025-11-29 09:19:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 09:19:42 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 09:19:50 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 09:39:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 09:40:12 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 09:40:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 09:42:37 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 09:42:59 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 10:16:48 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 10:16:53 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 10:17:01 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 10:24:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 10:24:57 - chatbot - INFO - New local chat session started: 58a03727-b9e0-4569-b50a-3f19d260851f
+2025-11-29 10:25:00 - chatbot - INFO - New local chat session started: f18403fb-f1dc-4d11-963a-e2b3f29e1b4c
+2025-11-29 10:25:00 - chatbot - INFO - New local chat session started: 65e7f93d-5ad2-41a4-a7ee-690f4409b4de
+2025-11-29 10:25:00 - chatbot - INFO - New local chat session started: 0968541a-882b-4082-a491-cb82a39ab1a5
+2025-11-29 10:25:01 - chatbot - INFO - New local chat session started: eb54b10f-336c-489b-8a83-5b9c771aec15
+2025-11-29 10:25:01 - chatbot - INFO - New local chat session started: 24fd4e35-a92e-4cfc-a776-39fff3047b65
+2025-11-29 10:25:01 - chatbot - INFO - New local chat session started: fe7c8feb-6e7e-475d-b685-bbe77a498c1f
+2025-11-29 12:53:50 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 12:53:55 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 12:54:02 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 12:54:07 - chatbot - INFO - New local chat session started: c72c0499-bf84-4a8d-af7e-f16b221589fd
+2025-11-29 12:54:30 - chatbot - ERROR - Error communicating with server proxy chat service: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CB113BE660>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 174, in _new_conn
+    conn = connection.create_connection(
+        (self._dns_host, self.port), self.timeout, **extra_kw
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 95, in create_connection
+    raise err
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 716, in urlopen
+    httplib_response = self._make_request(
+        conn,
+    ...<5 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 416, in _make_request
+    conn.request(method, url, **httplib_request_kw)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 244, in request
+    super(HTTPConnection, self).request(method, url, body=body, headers=headers)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1338, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1384, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1037, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 205, in connect
+    conn = self._new_conn()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 186, in _new_conn
+    raise NewConnectionError(
+        self, "Failed to establish a new connection: %s" % e
+    )
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x000002CB113BE660>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 802, in urlopen
+    retries = retries.increment(
+        method, url, error=e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 594, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CB113BE660>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 138, in chat_with_ai
+    response = requests.post(proxy_chat_url, json=payload_to_server)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CB113BE660>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-11-29 12:56:22 - chatbot - ERROR - Error clearing chat via server proxy for session c72c0499-bf84-4a8d-af7e-f16b221589fd: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /clear_chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CB11424CD0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-11-29 12:58:34 - chatbot - INFO - Local session ID updated by server to: be33c53a-5692-473e-a3da-78080e5106a2
+2025-11-29 13:22:05 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:22:45 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:23:09 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:24:24 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:24:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:31:21 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:32:01 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:32:40 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:33:23 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:35:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:36:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 13:37:29 - chatbot - INFO - Sending scanner file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-11-29 13:37:48 - chatbot - INFO - Stored session ID from server: 19c1b417-c438-4078-a863-09521d0221a6
+2025-11-29 13:38:02 - chatbot - INFO - Sending scanner file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-11-29 13:38:11 - chatbot - INFO - Stored session ID from server: 671553af-5068-4c54-aa74-a9a724eb81fb
+2025-11-29 13:38:45 - chatbot - INFO - Sending scanner file to server proxy (gemini mode): http://localhost:5000/upload_report
+2025-11-29 13:38:55 - chatbot - INFO - Stored session ID from server: 565fce73-44b0-4cbb-bccc-e54dbe4a0e86
+2025-11-29 14:02:10 - chatbot - ERROR - Error clearing chat via server proxy for session 565fce73-44b0-4cbb-bccc-e54dbe4a0e86: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /clear_chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002168C1CE780>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-11-29 14:02:13 - chatbot - ERROR - Error clearing chat via server proxy for session 565fce73-44b0-4cbb-bccc-e54dbe4a0e86: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /clear_chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002168C1CF490>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-11-29 14:05:35 - chatbot - ERROR - Error clearing chat via server proxy for session 565fce73-44b0-4cbb-bccc-e54dbe4a0e86: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /clear_chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002168C3279B0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-11-29 14:07:52 - chatbot - ERROR - Error clearing chat via server proxy for session 565fce73-44b0-4cbb-bccc-e54dbe4a0e86: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /clear_chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002168BDC3AC0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))

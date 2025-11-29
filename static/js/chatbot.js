@@ -1,294 +1,370 @@
-// Ensure this script is loaded after the HTML elements are available
-document.addEventListener('DOMContentLoaded', function() {
-    // Get references to HTML elements
-    const reportFile = document.getElementById('reportFile');
-    const llmModel = document.getElementById('llmModel');
-    const uploadButton = document.getElementById('uploadButton');
-    const uploadStatus = document.getElementById('uploadStatus');
-    const reportSummary = document.getElementById('reportSummary'); // Still need this for initial empty state
-    const chatBox = document.getElementById('chatBox');
-    const userMessageInput = document.getElementById('userMessage');
-    const sendMessageButton = document.getElementById('sendMessage');
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const clearChatButton = document.getElementById('clearChatButton');
+document.addEventListener('DOMContentLoaded', () => {
+  const fileInput = document.getElementById('file')
+  const fileNameDisplay = document.getElementById('file-name-display')
+  const uploadButton = document.getElementById('upload-button')
+  const uploadStatus = document.getElementById('upload-status')
+  const llmSelector = document.getElementById('llm_mode_selector')
+  const chatHistory = document.getElementById('chat-history')
+  const messagesContainer = document.getElementById('messages-container')
+  const welcomeState = document.getElementById('welcome-state')
+  const typingIndicator = document.getElementById('typing-indicator')
+  const userInput = document.getElementById('user-input')
+  const sendBtn = document.getElementById('send-btn')
+  const resetBtn = document.getElementById('reset-session-btn')
+  const contextIndicator = document.getElementById('context-indicator')
+  const suggestionGrid = document.getElementById('suggestion-grid') // New reference
+  
+  let isProcessing = false
+  let currentSuggestionIndex = 0 // Tracks the current set of suggestions
 
-    // Custom Modal Elements
-    const customModal = document.getElementById('customModal');
-    const modalMessage = document.getElementById('modalMessage');
-    const modalButtons = document.getElementById('modalButtons');
-    const closeButton = document.querySelector('#customModal .close-button');
+  // --- Question Bank for Rotation ---
+  const suggestionGroups = [
+    [
+      // Group 1
+      { type: 'General Query', text: 'What are the top 3 critical vulnerabilities in 2025?', iconColor: 'blue-400', color: 'blue' },
+      { type: 'Concept', text: 'Explain remediation strategies for SQL Injection.', iconColor: 'emerald-400', color: 'emerald' }
+    ],
+    [
+      // Group 2
+      { type: 'General Query', text: 'How does a Man-in-the-Middle attack work?', iconColor: 'blue-400', color: 'blue' },
+      { type: 'Concept', text: 'Outline the steps for a secure password policy.', iconColor: 'emerald-400', color: 'emerald' }
+    ],
+    [
+      // Group 3
+      { type: 'General Query', text: 'What is the purpose of a Security Information and Event Management (SIEM) system?', iconColor: 'blue-400', color: 'blue' },
+      { type: 'Concept', text: 'Summarize the Zero Trust security model.', iconColor: 'emerald-400', color: 'emerald' }
+    ]
+    [
+    // Group 4
+    { type: 'General Query', text: 'What is the difference between encryption and hashing?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Describe a typical incident response plan lifecycle.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 5
+    { type: 'General Query', text: 'What is phishing and how can it be prevented?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Provide a checklist for hardening an Ubuntu server.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 6
+    { type: 'General Query', text: 'How can I secure a web application against Cross-Site Scripting (XSS)?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Explain the principle of least privilege (PoLP) in detail.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 7
+    { type: 'General Query', text: 'What is the typical cost of a ransomware attack in 2024?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Describe the main components of a security awareness training program.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 8
+    { type: 'General Query', text: 'How do you perform a basic port scan using Nmap?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'What is the difference between a vulnerability scan and a penetration test?', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 9
+    { type: 'General Query', text: 'What are the risks associated with using default credentials?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Explain what an API gateway is and how it improves security.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 10
+    { type: 'General Query', text: 'List the primary steps for securing a cloud environment (AWS/Azure).', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Summarize the OWASP Top 10 categories.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 11
+    { type: 'General Query', text: 'What role does AI play in modern threat detection?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Define two-factor authentication (2FA) and its variants.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 12
+    { type: 'General Query', text: 'What is the primary objective of a Denial of Service (DoS) attack?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'How does network segmentation improve overall security?', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 13
+    { type: 'General Query', text: 'Which common programming languages are most prone to buffer overflow attacks?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Describe the function of a Web Application Firewall (WAF).', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 14
+    { type: 'General Query', text: 'What are the common indicators of compromise (IoCs)?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Explain the difference between a stream cipher and a block cipher.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 15
+    { type: 'General Query', text: 'How can certificate pinning prevent Man-in-the-Middle attacks?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Outline the steps for secure code review in the SDLC.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 16
+    { type: 'General Query', text: 'What are the critical risks of third-party software dependencies?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Define the concept of **Data Loss Prevention (DLP)**.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 17
+    { type: 'General Query', text: 'What security challenges are unique to the Internet of Things (IoT)?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Explain how hashing is used to ensure data integrity.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 18
+    { type: 'General Query', text: 'What methods are used for network intrusion detection?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Describe the main sections of a standardized vulnerability report.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 19
+    { type: 'General Query', text: 'What are the current trends in supply chain attacks?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Explain the role of **Transport Layer Security (TLS)** in web communication.', iconColor: 'emerald-400', color: 'emerald' }
+  ],
+  [
+    // Group 20
+    { type: 'General Query', text: 'How often should security patches be applied to critical systems?', iconColor: 'blue-400', color: 'blue' },
+    { type: 'Concept', text: 'Summarize the steps involved in forensic analysis after a breach.', iconColor: 'emerald-400', color: 'emerald' }
+  ]
+];
+  
+  function scrollToBottom() {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
+  }
 
-    // Base URL for Flask chatbot blueprint (as defined in app.py)
-    const FLASK_CHATBOT_BASE_URL = '/chatbot'; 
+  // Function to create and inject new suggestion buttons (using DOM for linter-friendliness)
+  function updateSuggestions() {
+    const suggestions = suggestionGroups[currentSuggestionIndex % suggestionGroups.length]
+    suggestionGrid.innerHTML = '' // Clear existing buttons
 
-    // Function to show the custom modal
-    function showModal(message, type = 'alert', onConfirm = null) {
-        modalMessage.textContent = message;
-        modalButtons.innerHTML = ''; // Clear previous buttons
+    suggestions.forEach(suggestion => {
+      const button = document.createElement('button')
+      button.className = `suggestion-btn group bg-slate-900/50 hover:bg-slate-800 border border-slate-800 hover:border-${suggestion.color}-500/50 p-4 rounded-xl text-left transition-all duration-300`
+      
+      const headerDiv = document.createElement('div')
+      headerDiv.className = 'flex items-center gap-2 mb-1'
 
-        if (type === 'alert') {
-            const okButton = document.createElement('button');
-            okButton.textContent = 'OK';
-            okButton.className = 'bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300';
-            okButton.onclick = () => customModal.style.display = 'none';
-            modalButtons.appendChild(okButton);
-        } else if (type === 'confirm') {
-            const confirmBtn = document.createElement('button');
-            confirmBtn.textContent = 'Confirm';
-            confirmBtn.className = 'bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300';
-            confirmBtn.onclick = () => {
-                customModal.style.display = 'none';
-                if (onConfirm) onConfirm();
-            };
-            const cancelBtn = document.createElement('button');
-            cancelBtn.textContent = 'Cancel';
-            cancelBtn.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300';
-            cancelBtn.onclick = () => customModal.style.display = 'none';
-            modalButtons.appendChild(confirmBtn);
-            modalButtons.appendChild(cancelBtn);
+      const iconSpan = document.createElement('span')
+      iconSpan.className = `material-symbols-outlined text-${suggestion.iconColor} text-sm`
+      iconSpan.textContent = suggestion.type === 'Concept' ? 'school' : 'psychology'
+      
+      const typeSpan = document.createElement('span')
+      typeSpan.className = `text-xs font-bold text-${suggestion.iconColor} uppercase`
+      typeSpan.textContent = suggestion.type
+
+      headerDiv.appendChild(iconSpan)
+      headerDiv.appendChild(typeSpan)
+      
+      const textSpan = document.createElement('span')
+      textSpan.className = 'text-slate-300 text-sm group-hover:text-white'
+      textSpan.textContent = suggestion.text
+
+      button.appendChild(headerDiv)
+      button.appendChild(textSpan)
+
+      // Re-apply event listener to the new button
+      button.addEventListener('click', () => {
+        if (textSpan) {
+          userInput.value = textSpan.textContent
+          sendMessage()
         }
-        customModal.style.display = 'flex'; // Use flex to center content
+      })
+      suggestionGrid.appendChild(button)
+    })
+    
+    currentSuggestionIndex++
+  }
+
+  // Updated function to create bubbles WITHOUT icons
+  function addMessage(role, text) {
+    if (!welcomeState.classList.contains('hidden')) {
+      welcomeState.classList.add('hidden')
+      welcomeState.style.display = 'none'
     }
 
-    // Close modal when close button is clicked
-    closeButton.onclick = () => customModal.style.display = 'none';
+    const msgRow = document.createElement('div')
+    msgRow.className = `msg-row ${role} animate-slide-up`
 
-    // Close modal when clicking outside of it
-    window.onclick = (event) => {
-        if (event.target == customModal) {
-            customModal.style.display = 'none';
-        }
-    };
+    const content = document.createElement('div')
+    content.className = 'msg-content'
 
-    // Function to convert basic Markdown to HTML
-    function markdownToHtml(markdownText) {
-        let html = markdownText;
-
-        // Convert bold text (**) - must be before italic to prevent issues with single asterisks
-        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        // Convert italic text (*)
-        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-        // Convert headers (H1, H2, H3, H4)
-        // Order matters: H4, H3, H2, H1
-        html = html.replace(/^#### (.*$)/gm, '<h4>$1</h4>');
-        html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-        html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-        html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-
-        // Convert unordered lists (-)
-        // This regex looks for lines starting with '-' followed by a space,
-        // and captures the content. It then wraps them in <li> tags.
-        // After that, it looks for sequences of <li> tags and wraps them in <ul>.
-        html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
-        html = html.replace(/(<li>.*?<\/li>(\s*<li>.*?<\/li>)*)/gs, '<ul>$1</ul>');
-
-
-        // Convert ordered lists (1.)
-        // Similar to unordered lists, but for numbered lists.
-        html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
-        html = html.replace(/(<li>.*?<\/li>(\s*<li>.*?<\/li>)*)/gs, '<ol>$1</ol>');
-        
-        // Convert double newlines to paragraphs, but avoid converting lines that are already part of block elements
-        // This is a more robust way to handle paragraphs.
-        // It splits the text by double newlines, then processes each block.
-        // If a block doesn't start with an HTML tag, it wraps it in a paragraph.
-        html = html.split('\n\n').map(block => {
-            if (block.trim() === '') {
-                return '';
-            }
-            // Check if the block already starts with an HTML tag (h1-h4, ul, ol, li, p)
-            // This prevents wrapping already formatted blocks in <p> tags
-            if (block.match(/^(<h[1-4]>|<ul|<ol|<li|<p>)/i)) {
-                return block;
-            }
-            return `<p>${block.trim()}</p>`;
-        }).join('');
-
-        // Replace single newlines within paragraphs with <br> for line breaks
-        // This should be done AFTER block-level elements are handled
-        html = html.replace(/<p>(.*?)<\/p>/gs, (match, content) => {
-            return `<p>${content.replace(/\n/g, '<br>')}</p>`;
-        });
-
-        return html;
+    if (role === 'ai') {
+      content.classList.add('markdown-body')
+      content.innerHTML = marked.parse(text)
+    } else {
+      content.textContent = text
     }
 
+    msgRow.appendChild(content)
+    chatHistory.appendChild(msgRow)
+    scrollToBottom()
+  }
 
-    // Function to append messages to the chat box
-    function appendMessage(sender, message, isMarkdown = false) { // Added isMarkdown parameter
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('chat-message');
-        if (sender === 'user') {
-            messageElement.classList.add('user-message');
-            messageElement.classList.add('self-end'); // Align to right
-            messageElement.textContent = message; // User messages are plain text
-        } else {
-            messageElement.classList.add('ai-message');
-            messageElement.classList.add('self-start'); // Align to left
-            if (isMarkdown) { // Conditionally render Markdown
-                messageElement.innerHTML = markdownToHtml(message); 
-            } else {
-                messageElement.textContent = message; 
-            }
-        }
-        chatBox.appendChild(messageElement);
-        // Scroll to the bottom of the chat box
-        chatBox.scrollTop = chatBox.scrollHeight;
+  // --- Logic for Context Switching ---
+  function updateContextUI(mode, filename = null) {
+    const iconDiv = contextIndicator.querySelector('div:first-child')
+    const titleDiv = contextIndicator.querySelector('div:last-child div:first-child')
+    const subtitleDiv = contextIndicator.querySelector('div:last-child div:last-child')
+    const iconSpan = iconDiv.querySelector('span')
+
+    if (mode === 'report') {
+      contextIndicator.className = 'bg-emerald-900/20 border border-emerald-800/50 rounded-xl p-3 flex items-center gap-3 transition-all duration-300'
+      iconDiv.className = 'w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400'
+      iconSpan.textContent = 'description'
+      titleDiv.textContent = 'Report Active'
+      titleDiv.className = 'text-sm font-semibold text-emerald-200'
+      subtitleDiv.textContent = filename || 'PDF Analysis'
+      subtitleDiv.className = 'text-[10px] text-emerald-400 truncate max-w-[150px]'
+    } else {
+      contextIndicator.className = 'bg-slate-800/50 border border-slate-700 rounded-xl p-3 flex items-center gap-3 transition-all duration-300'
+      iconDiv.className = 'w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400'
+      iconSpan.textContent = 'public'
+      titleDiv.textContent = 'General Mode'
+      titleDiv.className = 'text-sm font-semibold text-slate-200'
+      subtitleDiv.textContent = 'External Knowledge Base'
+      subtitleDiv.className = 'text-[10px] text-slate-400'
+    }
+  }
+
+  // --- Event Listeners (Manual Upload) ---
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      fileNameDisplay.textContent = file.name
+      fileNameDisplay.className = 'text-xs text-white font-medium truncate w-full px-2'
+    } else {
+      fileNameDisplay.textContent = 'Drop PDF here or click'
+      fileNameDisplay.className = 'text-xs text-slate-300 font-medium truncate w-full px-2'
+    }
+  })
+
+  uploadButton.addEventListener('click', async () => {
+    const file = fileInput.files[0]
+    if (!file) {
+      alert('Please select a file first.')
+      return
     }
 
-    // Event listener for the Upload button
-    uploadButton.addEventListener('click', async () => {
-        const file = reportFile.files[0];
-        const llmMode = llmModel.value;
+    uploadStatus.classList.remove('hidden', 'text-red-400', 'text-green-400')
+    uploadStatus.className = 'text-center text-[10px] text-blue-400 mt-2 animate-pulse'
+    uploadStatus.textContent = 'Processing PDF...'
+    uploadButton.disabled = true
+    uploadButton.classList.add('opacity-50', 'cursor-not-allowed')
 
-        if (!file) {
-            showModal('Please select a PDF file to upload.', 'alert');
-            return;
-        }
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('llm_mode', llmSelector.value)
 
-        if (file.type !== 'application/pdf') {
-            showModal('Invalid file type. Please upload a PDF file.', 'alert');
-            return;
-        }
+    try {
+      const response = await fetch('/chatbot/upload_report', {
+        method: 'POST',
+        body: formData
+      })
+      const data = await response.json()
 
-        uploadStatus.textContent = 'Uploading and processing report...';
-        uploadButton.disabled = true;
-        loadingIndicator.classList.remove('hidden'); // Show loading indicator
+      if (response.ok && !data.error) {
+        uploadStatus.className = 'text-center text-[10px] text-green-400 mt-2'
+        uploadStatus.textContent = 'Ready'
+        updateContextUI('report', file.name)
 
-        const formData = new FormData();
-        formData.append('report_file', file);
-        formData.append('llm_mode', llmMode); // Append selected LLM mode
-
-        try {
-            const response = await fetch(`${FLASK_CHATBOT_BASE_URL}/upload_report`, {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                uploadStatus.textContent = 'Report processed successfully!';
-                // Clear the chat box and add the summary as the first AI message
-                chatBox.innerHTML = ''; // Clear existing messages
-                // Pass true for isMarkdown to render the summary with Markdown
-                appendMessage('ai', result.message, true); 
-                appendMessage('ai', 'How can I help you with this report?'); // Follow-up message
-                // Also clear the reportSummary div on the left panel
-                reportSummary.innerHTML = `<h3 class="font-semibold text-blue-900 mb-2">Report Summary:</h3><p>Report summary moved to chat interface.</p>`;
-
-            } else {
-                uploadStatus.textContent = `Error: ${result.error || 'Unknown error'}`;
-                showModal(`Error uploading report: ${result.error || 'Unknown error'}`, 'alert');
-                reportSummary.innerHTML = `<h3 class="font-semibold text-blue-900 mb-2">Report Summary:</h3><p>Failed to load summary.</p>`;
-            }
-        } catch (error) {
-            console.error('Error during upload:', error);
-            uploadStatus.textContent = 'Network error or server unreachable.';
-            showModal('Network error or server unreachable. Please check your connection and try again.', 'alert');
-            reportSummary.innerHTML = `<h3 class="font-semibold text-blue-900 mb-2">Report Summary:</h3><p>Failed to load summary due to network error.</p>`;
-        } finally {
-            uploadButton.disabled = false;
-            loadingIndicator.classList.add('hidden'); // Hide loading indicator
-        }
-    });
-
-    // Function to send a chat message
-    async function sendChatMessage() {
-        const userMessage = userMessageInput.value.trim();
-        if (userMessage === '') {
-            showModal('Please enter a message.', 'alert');
-            return;
-        }
-
-        // Check if the chatBox currently contains the welcome message.
-        // This assumes the welcome message is the *only* content initially
-        // or is uniquely identified by the 'welcome-section' class.
-        if (chatBox.querySelector('.welcome-section')) {
-            chatBox.innerHTML = ''; // Clear the welcome message.
-        }
-
-        appendMessage('user', userMessage);
-        userMessageInput.value = ''; // Clear input field
-        sendMessageButton.disabled = true;
-        loadingIndicator.classList.remove('hidden'); // Show loading indicator
-
-        try {
-            const response = await fetch(`${FLASK_CHATBOT_BASE_URL}/chat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: userMessage })
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                // Pass true for isMarkdown to render AI responses with Markdown
-                appendMessage('ai', result.response, true);
-            } else {
-                appendMessage('ai', `Error: ${result.error || 'Unknown error'}`);
-                showModal(`Error during chat: ${result.error || 'Unknown error'}`, 'alert');
-            }
-        } catch (error) {
-            console.error('Error during chat:', error);
-            appendMessage('ai', 'Network error or server unreachable.');
-            showModal('Network error or server unreachable. Please check your connection and try again.', 'alert');
-        } finally {
-            sendMessageButton.disabled = false;
-            loadingIndicator.classList.add('hidden'); // Hide loading indicator
-        }
+        chatHistory.innerHTML = ''
+        addMessage('ai', data.message || 'I have analyzed your report. Here is the summary:\n\n' + (data.summary || ''))
+      } else {
+        throw new Error(data.error || 'Upload failed')
+      }
+    } catch (err) {
+      uploadStatus.className = 'text-center text-[10px] text-red-400 mt-2'
+      uploadStatus.textContent = 'Error: ' + err.message
+    } finally {
+      uploadButton.disabled = false
+      uploadButton.classList.remove('opacity-50', 'cursor-not-allowed')
     }
+  })
 
-    // Event listener for the Send Message button
-    sendMessageButton.addEventListener('click', sendChatMessage);
+  // --- Event Listeners (Chat & Reset) ---
+  async function sendMessage() {
+    const text = userInput.value.trim()
+    if (!text || isProcessing) return
 
-    // Event listener for Enter key in the message input
-    userMessageInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent default form submission
-            sendChatMessage();
+    userInput.value = ''
+    addMessage('user', text)
+    isProcessing = true
+    typingIndicator.classList.remove('hidden')
+    scrollToBottom()
+
+    try {
+      const response = await fetch('/chatbot/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      })
+      const data = await response.json()
+
+      typingIndicator.classList.add('hidden')
+
+      if (data.response) {
+        addMessage('ai', data.response)
+        // Rotate suggestions after a successful message
+        if (welcomeState.classList.contains('hidden') === false) { 
+            // Re-check welcome state visibility to ensure we don't accidentally update 
+            // suggestions after the chat has started, if that was the intended behavior.
+            // If you want it to rotate *after* every message (even when the welcome state is hidden),
+            // remove the surrounding if statement. I'll keep it here assuming you only want
+            // the rotation when the user is forced back to the welcome state.
+            updateSuggestions() 
         }
-    });
+      } else {
+        addMessage('ai', 'I encountered an error or received an empty response.')
+      }
+    } catch (err) {
+      typingIndicator.classList.add('hidden')
+      addMessage('ai', 'Error connecting to server. Please check your connection.')
+      console.error(err)
+    } finally {
+      isProcessing = false
+    }
+  }
 
-    // Event listener for Clear Chat & Report button
-    clearChatButton.addEventListener('click', () => {
-        showModal('Are you sure you want to clear the chat and report context? This action cannot be undone.', 'confirm', async () => {
-            // User confirmed, proceed with clearing
-            uploadStatus.textContent = 'Clearing chat and report...';
-            clearChatButton.disabled = true;
-            loadingIndicator.classList.remove('hidden');
+  sendBtn.addEventListener('click', sendMessage)
+  userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendMessage()
+  })
 
-            try {
-                const response = await fetch(`${FLASK_CHATBOT_BASE_URL}/clear_chat`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({}) // Empty body for clear_chat
-                });
+  resetBtn.addEventListener('click', async () => {
+    if (confirm('Are you sure? This will clear the current chat context.')) {
+      await fetch('/chatbot/clear_chat', { method: 'POST' })
+      chatHistory.innerHTML = ''
+      welcomeState.classList.remove('hidden')
+      welcomeState.style.display = 'flex'
+      updateContextUI('general')
+      fileInput.value = ''
+      fileNameDisplay.textContent = 'Drop PDF here or click'
+      fileNameDisplay.className = 'text-xs text-slate-300 font-medium truncate w-full px-2'
+      uploadStatus.classList.add('hidden')
+      updateSuggestions() // Re-run suggestion update on reset
 
-                const result = await response.json();
+      window.history.pushState({}, document.title, '/chatbot')
+    }
+  })
 
-                if (response.ok) {
-                    uploadStatus.textContent = 'Chat and report cleared successfully!';
-                    reportSummary.innerHTML = `<h3 class="font-semibold text-blue-900 mb-2">Report Summary:</h3><p>Upload a PDF report to see its summary here.</p>`;
-                    chatBox.innerHTML = '<div class="chat-message ai-message">Hello! Upload a security report to get started.</div>'; // Reset chat
-                    showModal('Chat and report context cleared.', 'alert');
-                } else {
-                    uploadStatus.textContent = `Error: ${result.message || 'Unknown error'}`;
-                    showModal(`Error clearing chat: ${result.message || 'Unknown error'}`, 'alert');
-                }
-            } catch (error) {
-                console.error('Error during clear chat:', error);
-                uploadStatus.textContent = 'Network error or server unreachable during clear chat.';
-                showModal('Network error or server unreachable. Please check your connection and try again.', 'alert');
-            } finally {
-                clearChatButton.disabled = false;
-                loadingIndicator.classList.add('hidden');
-            }
-        });
-    });
-});
+  // 🚨 NOTE: We remove the suggestion-btn listener block here because 
+  // the listeners are now attached dynamically inside updateSuggestions()
+
+  // Function to check URL parameters on page load
+  function checkUrlForAnalysis() {
+    const params = new URLSearchParams(window.location.search)
+    const mode = params.get('mode')
+    const summary = params.get('summary')
+    const filename = params.get('filename')
+
+    if (mode && summary) {
+      const decodedSummary = decodeURIComponent(summary)
+
+      const contextName = filename ? filename : `${mode.toUpperCase()} Scan Analysis`
+      updateContextUI('report', contextName)
+
+      addMessage('ai', decodedSummary)
+
+      window.history.replaceState({}, document.title, '/chatbot')
+    } else {
+       // Run the suggestion update on clean initial load
+       updateSuggestions()
+    }
+  }
+
+  // Execute the URL check and initial suggestion load on initialization
+  checkUrlForAnalysis()
+})

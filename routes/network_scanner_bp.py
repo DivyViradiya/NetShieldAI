@@ -4,6 +4,8 @@ import json
 import time
 import os
 import queue
+import requests
+import uuid 
 
 # Import the updated network_scanner module
 from Services import network_scanner
@@ -18,11 +20,15 @@ network_scanner_bp = Blueprint('network_scanner_bp', __name__)
 # ==========================================
 # 1. To change the FOLDER, edit 'RESULTS_DIR' in 'Services/network_scanner.py'
 # 2. To change the FILENAME, edit the variable below:
-PDF_FILENAME = r"D:\NetShieldAI\Services\PDFs\nmap_report.pdf" 
+PDF_FILENAME = "nmap_report.pdf" 
+PDF_REPORT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'PDFs') # Assuming common PDF folder
 
 # This constructs the full path automatically
 JSON_REPORT_PATH = network_scanner.JSON_REPORT_FILE
-PDF_REPORT_PATH = os.path.join(network_scanner.RESULTS_DIR, PDF_FILENAME)
+# Use a derived path for the final PDF to ensure it is correctly accessed and served
+PDF_REPORT_PATH = os.path.join(network_scanner.RESULTS_DIR, PDF_FILENAME) 
+# 🚨 NEW: Central server proxy URL (Must match the one in chatbot_bp.py)
+SERVER_PROXY_URL = "http://localhost:5100" # NOTE: Using 5100 based on run.py, adjust if FastAPI is on a different port (e.g., 5000)
 # ==========================================
 
 @network_scanner_bp.route('/')
@@ -49,7 +55,7 @@ def scan_ports():
     scan_type = data.get('scan_type', 'default')
 
     # Validate scan type
-    valid_scan_types = ['default', 'os', 'fragmented', 'aggressive', 'tcp_syn']
+    valid_scan_types = ['default', 'os', 'fragmented', 'aggressive', 'tcp_syn', 'vuln', 'udp']
     if scan_type not in valid_scan_types:
         return jsonify({"status": "error", "message": "Invalid scan type specified."}), 400
 
@@ -82,8 +88,10 @@ def scan_ports():
                 if os.path.exists(JSON_REPORT_PATH):
                     network_scanner.log("[*] Scan complete. Generating PDF report...")
                     
+                    # Ensure PDF output directory exists (needed by WeasyPrint)
+                    os.makedirs(os.path.dirname(PDF_REPORT_PATH), exist_ok=True)
+                    
                     # Call the generator with the file path
-                    # We use the globally configured PDF_REPORT_PATH
                     pdf_generator.create_nmap_report_pdf(str(JSON_REPORT_PATH), str(PDF_REPORT_PATH))
                     
                     if os.path.exists(PDF_REPORT_PATH):
@@ -103,6 +111,25 @@ def scan_ports():
 
     threading.Thread(target=scan_task).start()
     return jsonify({"status": "success", "message": f"{scan_type.upper()} scan for {target_ip} initiated."})
+
+@network_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
+def trigger_ai_analysis_route():
+    """
+    Checks if PDF exists and tells the client to call the central proxy via the chatbot blueprint.
+    (Proxying logic moved to chatbot_bp.py:scanner_analysis_proxy)
+    """
+    if not os.path.exists(PDF_REPORT_PATH):
+        network_scanner.log(f"[!] Analysis failed: PDF report not found at {PDF_REPORT_PATH}")
+        return jsonify({
+            "status": "error", 
+            "message": "PDF report not available. Please run a scan first."
+        }), 404
+
+    # Now returns the scanner type so the chatbot blueprint knows which file to read.
+    return jsonify({
+        "status": "success",
+        "scanner_type": "nmap" 
+    })
 
 @network_scanner_bp.route('/report_files', methods=['GET'])
 def get_report_files():
@@ -127,7 +154,6 @@ def download_pdf_report():
     
     try:
         # Dynamically determine directory and filename from the global path
-        # This prevents errors if you change the path at the top of the file
         directory = os.path.dirname(PDF_REPORT_PATH)
         filename = os.path.basename(PDF_REPORT_PATH)
 

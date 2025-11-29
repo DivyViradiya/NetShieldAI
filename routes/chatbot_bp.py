@@ -7,6 +7,9 @@ from logging.handlers import RotatingFileHandler
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask import redirect, url_for, flash # Make sure redirect, url_for, and flash are imported
+from routes.network_scanner_bp import PDF_REPORT_PATH as NMAP_PDF_PATH
+from routes.zap_scanner_bp import PDF_REPORT_PATH as ZAP_PDF_PATH
+from routes.ssl_scanner_bp import PDF_REPORT_PATH as SSL_PDF_PATH
 
 # Initialize the Flask Blueprint for chatbot-related routes
 chatbot_bp = Blueprint('chatbot_bp', __name__)
@@ -57,9 +60,9 @@ def chatbot_page():
 def upload_report():
     """Handles file uploads by sending them to the central server proxy."""
     try:
-        if 'report_file' not in request.files:
+        if 'file' not in request.files:
             return jsonify({'error': 'No file part'}), 400
-        file = request.files['report_file']
+        file = request.files['file']
         if file.filename == '':
             return jsonify({'error': 'No selected file'}), 400
 
@@ -72,7 +75,7 @@ def upload_report():
             # No need to save the file locally on the client app anymore,
             # we can just stream it directly.
             try:
-                files_to_send = {'report_file': (file.filename, file.read(), file.content_type)}
+                files_to_send = {'file': (file.filename, file.read(), file.content_type)}
                 
                 # --- CHANGE START ---
                 # We define this dictionary to be passed as URL parameters (Query String)
@@ -156,7 +159,76 @@ def chat_with_ai():
         logger.error(f"An unexpected error occurred in chat route: {e}", exc_info=True)
         return jsonify({'status': 'error', 'message': f'An unexpected error occurred: {e}'}), 500
 
+@chatbot_bp.route('/scanner_analysis', methods=['POST'])
+def scanner_analysis_proxy():
+    """
+    Handles PDF analysis requests initiated by the scanner pages. 
+    Reads the specific scanner's PDF file from disk and proxies it to the central server.
+    Ensures session continuity.
+    """
+    try:
+        # Get parameters from the request body (sent by scanner JS)
+        data = request.get_json()
+        scanner_type = data.get('scanner_type')
+        llm_mode = data.get('llm_mode', 'local')
 
+        if not scanner_type:
+            return jsonify({'error': 'Missing scanner type'}), 400
+
+        # Map scanner type to the correct PDF path
+        # This structure ensures we load the correct file based on the button clicked
+        pdf_map = {
+            'nmap': NMAP_PDF_PATH,
+            'zap': ZAP_PDF_PATH,
+            'ssl': SSL_PDF_PATH
+        }
+        
+        pdf_path = pdf_map.get(scanner_type)
+
+        if not pdf_path or not os.path.exists(pdf_path):
+            return jsonify({'error': f'PDF file for {scanner_type} not found. Please run a scan first.'}), 404
+        
+        # --- File Reading and Proxying Logic (Same as upload_report) ---
+        
+        # 1. Read the file content
+        with open(pdf_path, 'rb') as f:
+            pdf_content = f.read()
+
+        # 2. Prepare the request
+        filename = os.path.basename(pdf_path)
+        files_to_send = {'file': (filename, pdf_content, 'application/pdf')}
+        params = {'llm_mode': llm_mode}
+        proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
+        
+        logger.info(f"Sending scanner file to server proxy ({llm_mode} mode): {proxy_upload_url}")
+        
+        # 3. Send the request to the central server
+        response = requests.post(proxy_upload_url, files=files_to_send, params=params)
+        response.raise_for_status()
+
+        analysis_result = response.json()
+        
+        # 4. Update local session ID if the backend created a new one
+        if 'session_id' in analysis_result:
+            session['chatbot_session_id'] = analysis_result['session_id'] 
+            logger.info(f"Stored session ID from server: {analysis_result['session_id']}")
+
+        if "error" in analysis_result:
+            return jsonify(analysis_result), response.status_code
+        
+        # 5. Return the summary and mode for the client to redirect/display
+        return jsonify({
+            'status': 'success',
+            'summary': analysis_result.get('summary', 'Report uploaded and processed.'),
+            'llm_mode': llm_mode
+        })
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error communicating with server proxy during scanner analysis: {e}", exc_info=True)
+        return jsonify({'error': f'Error communicating with the central server: {str(e)}'}), 500
+    except Exception as e:
+        logger.error(f"An unexpected error occurred during scanner analysis: {e}", exc_info=True)
+        return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
 
 @chatbot_bp.route('/clear_chat', methods=['POST'])

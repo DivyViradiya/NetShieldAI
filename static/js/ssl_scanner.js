@@ -9,8 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const copyResultsBtn = document.getElementById('copyResultsBtn');
     const refreshReportBtn = document.getElementById('refreshReportBtn');
     
-    // --- ADDED: Reference for Download Button ---
+    // --- Download & Analysis Elements ---
     const downloadReportBtn = document.getElementById('downloadReportBtn');
+    const analyzeReportDropdown = document.getElementById('analyzeReportDropdown'); // 🚨 NEW
+    const llmAnalysisOptions = document.getElementById('llmAnalysisOptions');     // 🚨 NEW
+    const CHATBOT_REDIRECT_URL = '/chatbot';                                     // 🚨 NEW
 
     // Report-specific elements
     const summaryTarget = document.getElementById('summaryTarget');
@@ -23,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const vulnerabilitiesList = document.getElementById('vulnerabilitiesList');
 
     let eventSource = null;
-    // --- ADDED: State for download URL ---
     let reportDownloadUrl = null;
 
     // --- Core Functions ---
@@ -34,9 +36,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateButtonState(button, isLoading) {
         const buttonText = button.querySelector('.button-text');
         const spinner = button.querySelector('.spinner');
+        
         button.disabled = isLoading;
         if (buttonText) buttonText.classList.toggle('hidden', isLoading);
         if (spinner) spinner.classList.toggle('hidden', !isLoading);
+        
+        // Handle dropdown caret
+        const caret = button.querySelector('.fa-caret-down');
+        if (caret) caret.classList.toggle('hidden', isLoading);
     }
 
     /**
@@ -53,16 +60,35 @@ document.addEventListener('DOMContentLoaded', function() {
         vulnerabilitiesList.innerHTML = '<li class="text-gray-500">Awaiting scan results...</li>';
         resultsContent.textContent = 'Raw JSON report will appear here after a scan.';
         
-        // ADDED: Reset download button on clear
-        if (downloadReportBtn) {
-            downloadReportBtn.disabled = true;
-            downloadReportBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            reportDownloadUrl = null;
-        }
+        // Reset download and analysis buttons
+        [downloadReportBtn, analyzeReportDropdown].forEach(btn => {
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.classList.remove('hover:bg-red-500', 'hover:bg-indigo-500');
+            }
+        });
+        reportDownloadUrl = null;
     }
 
-    // --- ADDED: Report Availability Check (The Logic from Network Scanner) ---
+    // --- Report Availability Check ---
+    /**
+     * Checks the server for available PDF report and updates the buttons.
+     * 🚨 MODIFIED: Now manages the Analysis button state.
+     */
     async function checkReportAvailability() {
+        // Function to disable and reset a button
+        const disableButton = (button, hoverClass) => {
+            if (!button) return;
+            button.disabled = true;
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+            button.classList.remove(hoverClass);
+        };
+
+        // Disable both buttons initially
+        disableButton(downloadReportBtn, 'hover:bg-red-500');
+        disableButton(analyzeReportDropdown, 'hover:bg-indigo-500');
+
         try {
             const response = await fetch('/ssl_scanner/report_files');
             if (response.ok) {
@@ -70,11 +96,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.status === 'success' && data.pdf_report) {
                     reportDownloadUrl = data.pdf_report;
                     
-                    // Enable the button
-                    if (downloadReportBtn) {
-                        downloadReportBtn.disabled = false;
-                        downloadReportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    }
+                    // Enable Download Button
+                    downloadReportBtn.disabled = false;
+                    downloadReportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    downloadReportBtn.classList.add('hover:bg-red-500');
+                    
+                    // Enable Analysis Button
+                    analyzeReportDropdown.disabled = false;
+                    analyzeReportDropdown.classList.remove('opacity-50', 'cursor-not-allowed');
+                    analyzeReportDropdown.classList.add('hover:bg-indigo-500');
+                    
                     return;
                 }
             }
@@ -82,13 +113,67 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error checking report availability:', error);
         }
 
-        // Disable button if check failed or no report found
         reportDownloadUrl = null;
-        if (downloadReportBtn) {
-            downloadReportBtn.disabled = true;
-            downloadReportBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+    
+    /**
+     * 🚨 NEW FUNCTION: Triggers the server-side proxy to upload the PDF for AI analysis.
+     * @param {string} llmMode - The selected LLM mode ('local' or 'gemini').
+     */
+async function analyzeReport(llmMode) {
+        const button = analyzeReportDropdown;
+        if (button.disabled) return;
+        
+        logOutput.innerHTML += `<div>[*] Preparing SSL PDF for AI analysis (${llmMode})...</div>`;
+        
+        updateButtonState(button, true);
+        downloadReportBtn.disabled = true;
+
+        try {
+            // 1. First, check local PDF availability via the local blueprint.
+            let response = await fetch('/ssl_scanner/trigger_ai_analysis', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ llm_mode: llmMode })
+            });
+            let data = await response.json();
+            
+            if (data.status !== 'success') {
+                throw new Error(data.message || 'PDF availability check failed.');
+            }
+            
+            // 2. Now call the central proxy route on the chatbot blueprint.
+            const CHATBOT_PROXY_URL = `${CHATBOT_REDIRECT_URL}/scanner_analysis`;
+            response = await fetch(CHATBOT_PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type }) // Pass scanner_type
+            });
+
+            data = await response.json(); // Data now contains summary and llm_mode
+
+            if (response.ok && data.status === 'success') {
+                logOutput.innerHTML += `<div>[✓] AI analysis initiated. Summary received. Redirecting...</div>`;
+                scanStatus.textContent = 'Analysis Complete';
+                
+                // 3. Redirect, passing summary and mode (from the server response)
+                window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                return;
+            } else {
+                throw new Error(data.message || `Analysis failed with status ${response.status}`);
+            }
+        } catch (error) {
+            logOutput.innerHTML += `<div>[x] AI Analysis Error: ${error.message}</div>`;
+            // Reset status color to error for the main status box
+            scanStatus.textContent = 'Analysis Failed';
+            scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-red-500 bg-red-100';
+        } finally {
+            // Only run cleanup if no redirect happened (i.e., if it failed)
+            updateButtonState(button, false);
+            checkReportAvailability(); 
         }
     }
+
 
     // --- Report Rendering Functions (Unchanged) ---
     function renderVulnerabilities(vulnerabilities) {
@@ -116,15 +201,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderServerConfig(configs) {
         serverConfigDetails.innerHTML = '';
         const details = [
-            `<strong>TLS Compression:</strong> ${configs.tls_compression?.supported ? `<span class="font-bold text-red-500">Enabled (${configs.tls_compression.method})</span>` : '<span class="text-green-600">Disabled</span>'}`,
-            `<strong>Secure Renegotiation:</strong> ${configs.renegotiation?.secure ? '<span class="text-green-600">Supported</span>' : '<span class="font-bold text-red-500">Not Supported</span>'}`,
+            `<strong>TLS Compression:</strong> ${configs.tls_compression?.supported ? `<span class="font-bold text-red-500">Enabled (CRIME risk)</span>` : '<span class="text-green-600">Disabled</span>'}`,
+            `<strong>Secure Renegotiation:</strong> ${configs.renegotiation?.secure ? '<span class="text-green-600">Supported</span>' : '<span class="font-bold text-red-500">Not Secure</span>'}`,
             `<strong>OCSP Stapling:</strong> ${configs.ocsp_stapling?.supported ? '<span class="text-green-600">Supported</span>' : 'Not Supported'}`,
             `<strong>Fallback SCSV:</strong> ${configs.fallback_scsv_supported ? '<span class="text-green-600">Supported</span>' : 'Not Supported'}`
         ];
         serverConfigDetails.innerHTML = details.map(d => `<p>${d}</p>`).join('');
     }
 
-function renderCertificateChain(chain) {
+    function renderCertificateChain(chain) {
         certificateChainContainer.innerHTML = '';
         if (!chain || chain.length === 0) {
             certificateChainContainer.innerHTML = '<p class="text-gray-500 text-sm">No certificate information found.</p>';
@@ -134,8 +219,6 @@ function renderCertificateChain(chain) {
             const isLeaf = index === 0;
             const card = document.createElement('div');
             
-            // FIX: Changed 'bg-gray-50' to 'bg-slate-800' (Dark Mode Background)
-            // FIX: Added 'border-slate-700' to match other panels
             card.className = 'bg-slate-800 p-4 rounded-lg border border-slate-700';
             
             card.innerHTML = `
@@ -161,8 +244,8 @@ function renderCertificateChain(chain) {
         protocols.forEach(p => {
             const row = protocolsTableBody.insertRow();
             row.innerHTML = `
-                <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-800">${p.name}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm ${p.enabled ? 'text-green-600 font-semibold' : 'text-gray-500'}">${p.enabled ? 'Enabled' : 'Disabled'}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-slate-300">${p.name}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm ${p.enabled ? 'text-green-500 font-semibold' : 'text-red-500'}">${p.enabled ? 'Enabled' : 'Disabled'}</td>
             `;
         });
     }
@@ -176,9 +259,9 @@ function renderCertificateChain(chain) {
         ciphers.forEach(c => {
             const row = ciphersTableBody.insertRow();
             row.innerHTML = `
-                <td class="px-4 py-2 whitespace-nowrap text-sm">${c.protocol}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm font-medium ${c.bits < 128 ? 'text-red-500' : 'text-gray-800'}">${c.bits}-bit</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600">${c.name}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-slate-300">${c.protocol}</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm font-medium ${c.bits < 128 ? 'text-red-500' : 'text-slate-300'}">${c.bits}-bit</td>
+                <td class="px-4 py-2 whitespace-nowrap text-sm text-slate-400">${c.name}</td>
             `;
         });
     }
@@ -206,7 +289,6 @@ function renderCertificateChain(chain) {
 
                 resultsContent.textContent = JSON.stringify(report, null, 2);
                 
-                // ADDED: Check for PDF availability after loading JSON
                 checkReportAvailability();
             } else {
                 clearScanResults();
@@ -269,55 +351,74 @@ function renderCertificateChain(chain) {
     });
 
     if (copyResultsBtn) {
-            // Find the text content element inside the button for feedback
             const copyButtonText = copyResultsBtn.textContent;
             
             copyResultsBtn.addEventListener('click', () => {
                 const textToCopy = resultsContent.textContent;
                 
-                // Prevent copying placeholder text
                 if (!textToCopy || textToCopy.includes('Awaiting scan results')) {
-                    // Optional: Provide quick feedback that there's nothing to copy
                     console.log('No scan results to copy.');
                     return;
                 }
 
-                // Use modern Clipboard API
-                // The button's existing text is "COPY". We will temporarily change this.
                 navigator.clipboard.writeText(textToCopy).then(() => {
-                    
-                    // --- Visual Feedback: Change button text to indicate success ---
                     const originalContent = copyResultsBtn.innerHTML;
                     copyResultsBtn.innerHTML = '<i class="fas fa-check text-green-500 mr-1"></i> COPIED!';
                     
-                    // Revert back after 2 seconds
                     setTimeout(() => { 
-                        // This uses the original HTML content of the button, assuming the icon is part of the button element
                         copyResultsBtn.innerHTML = originalContent; 
                     }, 2000);
                 }).catch(err => {
                     console.error('Failed to copy text: ', err);
-                    alert('Failed to copy to clipboard. Please ensure the page is served over HTTPS and the tab is active. Manual copy may be required.'); // Informative error message
+                    alert('Failed to copy to clipboard. Manual copy may be required.'); 
                 });
             });
         }
 
     refreshReportBtn.addEventListener('click', () => {
         fetchAndDisplayReport();
-        checkReportAvailability(); // ADDED: Re-check on refresh
+        checkReportAvailability(); 
     });
 
-    // ADDED: Download Button Listener
     if (downloadReportBtn) {
         downloadReportBtn.addEventListener('click', () => {
             if (reportDownloadUrl) {
-                // Trigger download
                 window.location.href = reportDownloadUrl;
             } else {
                 console.log('No report available to download.');
             }
         });
     }
+    
+    // 🚨 NEW: Analysis Dropdown Toggle
+    if (analyzeReportDropdown) {
+        analyzeReportDropdown.addEventListener('click', (e) => {
+            if (!analyzeReportDropdown.disabled) {
+                llmAnalysisOptions.classList.toggle('hidden');
+                e.stopPropagation(); 
+            }
+        });
+    }
+    
+    // 🚨 NEW: Analysis Option Selection
+    if (llmAnalysisOptions) {
+        llmAnalysisOptions.addEventListener('click', (e) => {
+            e.preventDefault();
+            const option = e.target.closest('a[data-llm-mode]');
+            if (option) {
+                const llmMode = option.dataset.llmMode;
+                llmAnalysisOptions.classList.add('hidden'); 
+                analyzeReport(llmMode); // Start the analysis and redirection
+            }
+        });
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (llmAnalysisOptions && analyzeReportDropdown && !analyzeReportDropdown.contains(e.target)) {
+            llmAnalysisOptions.classList.add('hidden');
+        }
+    });
 
     // --- Server-Sent Events (SSE) Setup ---
     function setupLogStream() {
@@ -332,15 +433,13 @@ function renderCertificateChain(chain) {
                 logOutput.appendChild(logLine);
                 logOutput.scrollTop = logOutput.scrollHeight;
                 
-                // ADDED: Logic to detect completion strings based on ssl_scanner_bp.py logs
-                // We check for "PDF report generated successfully" or "SSL scan complete"
                 if (message.includes("PDF report generated successfully") || message.includes("SSL scan complete")) {
                     scanStatus.textContent = 'Scan Complete';
                     scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-green-500 bg-green-100';
                     updateButtonState(initiateScanBtn, false);
                     
-                    fetchAndDisplayReport(); // Reload JSON results
-                    checkReportAvailability(); // Enable download button
+                    fetchAndDisplayReport(); 
+                    checkReportAvailability(); 
                 }
             }
         };
@@ -355,5 +454,5 @@ function renderCertificateChain(chain) {
     // --- Initial Page Load ---
     setupLogStream();
     fetchAndDisplayReport(); 
-    checkReportAvailability(); // ADDED: Check on load
+    checkReportAvailability(); 
 });

@@ -4,6 +4,8 @@ import json
 import time
 import os
 from queue import Empty
+import requests
+import uuid
 
 # Import the ssl_scanner module
 from Services import ssl_scanner
@@ -15,12 +17,13 @@ ssl_scanner_bp = Blueprint('ssl_scanner_bp', __name__)
 # ==========================================
 # --- ⚙️ CONFIGURATION: PDF OUTPUT PATH ---
 # ==========================================
-PDF_FILENAME = r"D:\NetShieldAI\Services\PDFs\ssl_report.pdf" 
-
-# This constructs the full path automatically
-# We use the RESULTS_DIR from ssl_scanner to ensure consistency
+PDF_FILENAME = "ssl_report.pdf" 
+# Use the RESULTS_DIR from ssl_scanner to ensure consistency
 JSON_REPORT_PATH = ssl_scanner.JSON_REPORT_FILE
 PDF_REPORT_PATH = os.path.join(ssl_scanner.RESULTS_DIR, PDF_FILENAME)
+
+# 🚨 NEW: Central server proxy URL (Must match the one in other blueprints)
+SERVER_PROXY_URL = "http://localhost:5100" 
 # ==========================================
 
 @ssl_scanner_bp.route('/')
@@ -84,6 +87,25 @@ def scan_ssl():
 
     threading.Thread(target=scan_task).start()
     return jsonify({"status": "success", "message": f"SSL scan for {target_host} initiated."})
+
+@ssl_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
+def trigger_ai_analysis_route():
+    """
+    Checks if PDF exists and returns scanner type. 
+    (Proxying logic moved to chatbot_bp.py:scanner_analysis_proxy)
+    """
+    if not os.path.exists(PDF_REPORT_PATH):
+        ssl_scanner.log(f"[!] Analysis failed: PDF report not found at {PDF_REPORT_PATH}")
+        return jsonify({
+            "status": "error", 
+            "message": "PDF report not available. Please run a scan first."
+        }), 404
+
+    # Returns the scanner type so the chatbot blueprint knows which file to read.
+    return jsonify({
+        "status": "success",
+        "scanner_type": "ssl" 
+    })
 
 @ssl_scanner_bp.route('/report_files', methods=['GET'])
 def get_report_files():

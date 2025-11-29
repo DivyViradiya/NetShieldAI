@@ -1,4 +1,4 @@
-# Nmap 7.97 scan initiated Fri Nov 28 16:21:10 2025 as: nmap --exclude-ports 5000 -T4 -sS -sV -Pn --top-ports 1000 -oG D:\\NetShieldAI\\Services\\results\\network_scanner\\scan_result_tcp.txt 192.168.29.48
+# Nmap 7.97 scan initiated Sat Nov 29 13:28:01 2025 as: nmap -T4 -sS --top-ports 1000 -sV -Pn --exclude-ports 5000 -oG D:\\NetShieldAI\\Services\\results\\network_scanner\\scan_result_tcp.txt 192.168.29.48
 Host: 192.168.29.48 ()	Status: Up
 Host: 192.168.29.48 ()	Ports: 135/open/tcp//msrpc//Microsoft Windows RPC/, 139/open/tcp//netbios-ssn//Microsoft Windows netbios-ssn/, 445/open/tcp//microsoft-ds?///, 5100/open/tcp//http//Werkzeug httpd 3.1.3 (Python 3.13.4)/	Ignored State: closed (996)
-# Nmap done at Fri Nov 28 16:21:18 2025 -- 1 IP address (1 host up) scanned in 8.25 seconds
+# Nmap done at Sat Nov 29 13:28:10 2025 -- 1 IP address (1 host up) scanned in 8.66 seconds
