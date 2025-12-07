@@ -34,3 +34,45 @@
 [2025-11-29 13:41:25] [*] Local IP requested: 192.168.29.48
 [2025-11-29 14:08:34] [*] Local IP requested: 192.168.29.48
 [2025-11-29 14:08:45] [*] Local IP requested: 192.168.29.48
+[2025-11-29 15:35:22] [*] Local IP requested: 192.168.29.48
+[2025-11-29 15:44:13] [*] Local IP requested: 192.168.29.48
+[2025-11-29 16:12:12] [*] Local IP requested: 192.168.29.48
+[2025-11-29 16:35:34] [*] Local IP requested: 192.168.29.48
+[2025-11-29 16:43:11] [*] Local IP requested: 192.168.29.48
+[2025-11-29 21:23:32] [*] Local IP requested: 192.168.29.48
+[2025-11-29 21:24:07] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:24:06] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:24:36] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:26:03] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:28:14] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:28:55] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:34:48] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:35:20] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:37:23] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:37:38] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:38:10] [*] Local IP requested: 192.168.29.48
+[2025-11-30 14:38:29] [*] Local IP requested: 192.168.29.48
+[2025-12-05 09:01:07] [SNIFFER] [+] Starting deep protocol detail capture on 'Ethernet' for host '192.168.1.1' for 5 seconds...
+[2025-12-05 09:01:07] [SNIFFER] [*] Executing: tshark -i Ethernet -a duration:5 -f host 192.168.1.1 and tcp -T fields -E separator=, -e frame.time -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e tcp.flags -e tcp.seq -e tcp.ack -e tcp.len -e tcp.options.mss
+[2025-12-05 09:01:07] [SNIFFER] [*] Capturing packets. Waiting for 5 seconds...
+[2025-12-05 09:01:08] [SNIFFER] [+] Protocol detail capture complete. Total TCP segments processed: 0
+[2025-12-05 09:01:47] [SNIFFER] [+] Starting deep protocol detail capture on 'Ethernet' for host '192.168.29.48' for 5 seconds...
+[2025-12-05 09:01:47] [SNIFFER] [*] Executing: tshark -i Ethernet -a duration:5 -f host 192.168.29.48 and tcp -T fields -E separator=, -e frame.time -e ip.src -e ip.dst -e tcp.srcport -e tcp.dstport -e tcp.flags -e tcp.seq -e tcp.ack -e tcp.len -e tcp.options.mss
+[2025-12-05 09:01:47] [SNIFFER] [*] Capturing packets. Waiting for 5 seconds...
+[2025-12-05 09:01:48] [SNIFFER] [+] Protocol detail capture complete. Total TCP segments processed: 0
+[2025-12-05 10:27:48] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:27:50] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:27:52] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:29:04] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:29:05] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:29:06] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:29:06] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:29:58] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:31:13] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:31:14] [*] Local IP requested: 192.168.29.48
+[2025-12-05 10:31:14] [*] Local IP requested: 192.168.29.48
+[2025-12-06 14:49:54] [*] Local IP requested: 192.168.29.48
+[2025-12-06 14:51:25] [*] Local IP requested: 192.168.29.48
+[2025-12-06 14:52:30] [*] Local IP requested: 192.168.29.48
+[2025-12-06 14:52:33] [*] Local IP requested: 192.168.29.48
+[2025-12-06 14:54:22] [*] Local IP requested: 192.168.29.48

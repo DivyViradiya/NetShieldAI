@@ -10,6 +10,7 @@ from routes.zap_scanner_bp import zap_scanner_bp
 from routes.ssl_scanner_bp import ssl_scanner_bp
 from routes.chatbot_bp import chatbot_bp
 from routes.auth_bp import auth_bp
+from routes.packet_sniffer_bp import packet_sniffer_bp
 
 # --- NEW: Import the elevation function ---
 from Services.network_scanner import ensure_admin_privileges
@@ -26,6 +27,7 @@ app.secret_key = 'VulnScanAI'
 app.register_blueprint(network_scanner_bp, url_prefix='/network_scanner')
 app.register_blueprint(zap_scanner_bp, url_prefix='/zap_scanner')
 app.register_blueprint(ssl_scanner_bp, url_prefix='/ssl_scanner')
+app.register_blueprint(packet_sniffer_bp, url_prefix='/packet_sniffer')
 app.register_blueprint(chatbot_bp, url_prefix='/chatbot')
 app.register_blueprint(auth_bp)
 

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Packet Sniffer Analysis Report</title>
+    <link rel="stylesheet" href="file:///D:/NetShieldAI/static/css/PDF_style/report_style.css">
+    <style>
+        /* Keep essential custom styles for Sniffer-specific elements */
+        
+        /* Consistent card styling from Nmap template */
+        .finding-card {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            page-break-inside: avoid;
+        }
+        .finding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .finding-header h4 { margin: 0; font-size: 14px; color: #003366; }
+        
+        .badge { padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 9px; }
+        .risk-high { background-color: #fca5a5; color: #991b1b; } /* Encrypted (Data present) / Anomaly Alert */
+        .risk-low { background-color: #d1fae5; color: #065f46; } /* Unencrypted / Anomaly Clear */
+        .risk-warning { background-color: #fcd34d; color: #92400e; } /* Medium Risk Anomaly */
+        .risk-critical { background-color: #f87171; color: #7f1d1d; } /* Critical Anomaly */
+        
+        /* Grid for packet details */
+        .packet-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two columns for details */
+            gap: 5px 15px;
+            font-size: 11px;
+        }
+        .packet-details-grid div {
+            padding: 3px 0;
+            line-height: 1.2;
+        }
+        .packet-details-grid strong {
+            display: inline-block;
+            width: 100px;
+            font-weight: 600;
+        }
+        
+        /* Custom formatting for the Application/State Summary block */
+        .finding-text {
+            background-color: #eef2f5; 
+            border-left: 3px solid #003366; 
+            padding: 10px; 
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 10px;
+            margin-top: 5px; /* Added margin */
+        }
+
+        /* Anomaly table styling */
+        .anomaly-details-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .anomaly-details-table th, .anomaly-details-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: left;
+        }
+        .anomaly-details-table th {
+            background-color: #f3f4f6;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+    </style>
+</head>
+<body>
+    {% set first_packet = data.dissected_packets | first %}
+    {% set first_packet_time = first_packet._source.layers.frame["frame.time"] | default('N/A') | slice(0, 19) if first_packet and first_packet._source.layers.frame["frame.time"] is defined else 'N/A' %}
+
+    <header>
+        <div class="header-left">
+            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="Logo" class="logo">
+        </div>
+        <div class="header-right">
+            <h1>Network Assessment Report</h1>
+            <h2>Packet Sniffer Analysis (TShark)</h2>
+        </div>
+    </header>
+
+    <div class="report-info">
+        <div class="info-box">
+            <strong>Target IP Analyzed</strong>
+            <span>{{ data.target_ip | default('N/A') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Capture Date:</strong>
+            <span>{{ data.timestamp | default(generation_date) | slice(0, 19) }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Packets Analyzed (Sample)</strong>
+            {# Updated to use the corrected total_packets field #}
+            <span>{{ data.traffic_summary.total_packets | default(0) }}</span>
+        </div>
+    </div>
+
+    <section class="summary">
+        <h3>Capture Summary</h3>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="risk-info">
+                    <td><strong>Capture Status</strong></td>
+                    <td><strong>{{ data.status | default('Failed') | title }}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Total Packets Captured</strong></td>
+                    <td>{{ data.traffic_summary.total_packets | default(0) }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Bytes Transferred</strong></td>
+                    <td>{{ (data.traffic_summary.total_bytes | default(0)) | round(2) }} bytes</td>
+                </tr>
+                <tr>
+                    <td><strong>Effective Duration</strong></td>
+                    <td>{{ (data.traffic_summary.effective_capture_duration_seconds | default(0)) | round(2) }} s</td>
+                </tr>
+                <tr>
+                    <td><strong>Average Rate</strong></td>
+                    <td>{{ (data.traffic_summary.average_rate_bps | default(0)) | round(2) }} bps</td>
+                </tr>
+                <tr class="risk-medium">
+                    <td><strong>Raw Capture Path</strong></td>
+                    <td><code style="background:#eee; padding:2px 5px; border-radius:3px;">{{ data.pcap_file | default('N/A') }}</code></td>
+                </tr>
+                <tr>
+                    <td><strong>First Packet Time</strong></td>
+                    <td>{{ first_packet_time }}Z</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    {# --------------------------------------------------------------------------------- #}
+    {# NEW SECTION: SECURITY ANOMALY REPORT #}
+    {# --------------------------------------------------------------------------------- #}
+    {% set anomaly_data = data.security_anomaly_report | default({}) %}
+    <section class="findings" style="page-break-before: always;">
+        <h3>Security Anomaly Report</h3>
+        
+        {% if anomaly_data.summary == "No anomalies detected." %}
+            <div class="finding-card" style="padding: 20px; text-align: center; background-color: #ecfdf5; border-color: #a7f3d0; color: #065f46;">
+                <h4>✅ No Security Anomalies Detected</h4>
+                <p>The analyzed traffic segment did not contain suspicious activity such as port scans, fragmentation, or cleartext credentials based on current heuristics.</p>
+            </div>
+        {% else %}
+            <div class="finding-card" style="background-color: #fef2f2; border-color: #fca5a5; color: #991b1b;">
+                <h4>🚨 Anomalies Detected: {{ anomaly_data.summary }}</h4>
+                <p>The following potential security threats were identified:</p>
+            </div>
+            
+            {% for type, alerts in anomaly_data.items() %}
+                {% if type != 'summary' and alerts %}
+                    <div class="finding-card" style="margin-top: 15px;">
+                        <div class="finding-header">
+                            <h4>{{ type | replace('_', ' ') | title }} ({{ alerts | length }} Incident{% if alerts | length > 1 %}s{% endif %})</h4>
+                            <span class="badge risk-critical">HIGH RISK</span>
+                        </div>
+                        
+                        <table class="anomaly-details-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Source/Target</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alert in alerts %}
+                                    <tr>
+                                        <td>{{ alert.type | default('N/A') }}</td>
+                                        <td>{{ alert.source_ip | default('N/A') }} &rarr; {{ alert.target_ip | default('N/A') }}</td>
+                                        <td>{{ alert.details | default('N/A') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </section>
+    
+    {# --------------------------------------------------------------------------------- #}
+    {# TRAFFIC CONVERSATION AND HIERARCHY (Add for completeness) #}
+    {# --------------------------------------------------------------------------------- #}
+    <section class="summary" style="page-break-before: always;">
+        <h3>Traffic Conversation Statistics</h3>
+        <p>Raw output from TShark (TCP Conversation Stats):</p>
+        <div class="finding-text">
+            {% for line in data.traffic_summary.tcp_conversation_stats | default([]) %}
+                {{ line }}
+            {% endfor %}
+        </div>
+        
+        <h3 style="margin-top: 30px;">Protocol Distribution</h3>
+        <p>Raw output from TShark (Protocol Hierarchy Stats):</p>
+        <div class="finding-text">
+            {% for line in data.traffic_summary.protocol_hierarchy_stats | default([]) %}
+                {{ line }}
+            {% endfor %}
+        </div>
+    </section>
+
+    {# --------------------------------------------------------------------------------- #}
+    {# ORIGINAL PACKET DISSECTION SECTION #}
+    {# --------------------------------------------------------------------------------- #}
+    <section class="findings" style="page-break-before: always;">
+        <h3>Dissected Packet Findings (Sample)</h3>
+            
+        {% if data.dissected_packets %}
+            {% for packet in data.dissected_packets %}
+                {# Define frequently used variables for cleaner access #}
+                {% set layers = packet._source.layers %}
+                {% set frame = layers.frame | default({}) %}
+                {% set ip = layers.ip | default({}) %}
+                {% set tcp = layers.tcp | default({}) %}
+                {% set udp = layers.udp | default({}) %}
+                
+                {% set ip_proto = ip['ip.proto'] | default("") %}
+                {% set proto_name = "TCP" if ip_proto == "6" else ("UDP" if ip_proto == "17" else "Other") %}
+                
+                {# Determine encryption status based on presence of TLS/SSL layers OR common HTTPS port #}
+                {% set is_encrypted = "tls" in layers or "ssl" in layers or tcp['tcp.dstport'] == "443" or tcp['tcp.srcport'] == "443" %}
+                
+                <div class="finding-card">
+                    <div class="finding-header">
+                        
+                        <h4>Packet {{ frame['frame.number'] | default('?') }} <span style="color:#666; font-size: 0.8em;">({{ proto_name }})</span></h4>
+                        
+                        {% if is_encrypted %}
+                        <span class="badge risk-high">ENCRYPTED</span>
+                        {% else %}
+                        <span class="badge risk-low">UNENCRYPTED</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="packet-details-grid">
+                        <div><strong>Time (Rel):</strong> {{ frame['frame.time_relative'] | default('N/A') }}s</div>
+                        <div><strong>Packet Length:</strong> {{ frame['frame.len'] | default('N/A') }} bytes</div>
+
+                        <div><strong>Source IP:</strong> {{ ip['ip.src'] | default('N/A') }}</div>
+                        <div><strong>Destination IP:</strong> {{ ip['ip.dst'] | default('N/A') }}</div>
+
+                        {% if proto_name == "TCP" %}
+                        <div><strong>Source Port:</strong> {{ tcp['tcp.srcport'] }}</div>
+                        <div><strong>Destination Port:</strong> {{ tcp['tcp.dstport'] }}</div>
+                        
+                        {# Safely access 'flags_tree' for display #}
+                        {% set flags_tree = tcp.get('tcp.flags_tree', {}) %}
+                        <div><strong>TCP Flags:</strong> {{ tcp['tcp.flags'] | default('N/A') }} ({{ flags_tree.get('tcp.flags.str', 'N/A') | replace('\u00b7', ' ') | trim }})</div>
+                        
+                        {# RTT Check #}
+                        {% set rtt_value = tcp.get("analysis", {}).get("tcp.analysis.ack_rtt") %}
+
+                        {# Check if the retrieved value exists before displaying the RTT line #}
+                        {% if rtt_value is defined and rtt_value is not none %}
+                        <div><strong>RTT:</strong> <span style="color: #1e40af; font-weight: bold;">{{ rtt_value }}s</span></div>
+                        {% endif %}
+
+                        {% elif proto_name == "UDP" %}
+                        <div><strong>Source Port:</strong> {{ udp['udp.srcport'] }}</div>
+                        <div><strong>Destination Port:</strong> {{ udp['udp.dstport'] }}</div>
+                        <div><strong>Layer 4:</strong> UDP ({{ udp['udp.length'] | default('?') }} bytes data)</div>
+                        <div><strong>Layer 4:</strong> N/A</div>
+                        {% else %}
+                        <div><strong>Layer 4:</strong> N/A</div>
+                        <div><strong>Layer 4:</strong> N/A</div>
+                        {% endif %}
+                    </div>
+
+                    <h5 class="layer-heading">Application / State Summary</h5>
+                    <div class="finding-text">
+                        {# Safely access 'flags_tree' for state analysis #}
+                        {% set state_flags = tcp.get('tcp.flags_tree', {}) %}
+                        
+                        {% if tcp and state_flags.get("tcp.flags.syn") == "1" and state_flags.get("tcp.flags.ack") == "0" %}
+                            **Connection State:** SYN Request (Initiating Handshake)
+                        {% elif tcp and state_flags.get("tcp.flags.syn") == "1" and state_flags.get("tcp.flags.ack") == "1" %}
+                            **Connection State:** SYN-ACK Response (Handshake in Progress)
+                        {% elif tcp and state_flags.get("tcp.flags.reset") == "1" %}
+                            **Connection State:** RST (Connection Reset/Refused)
+                        {% elif layers.http %}
+                            **HTTP Request:** {{ layers.http['http.request.method'] | default('?') }} {{ layers.http['http.request.uri'] | default('N/A') }} (Unencrypted Application Data)
+                        {% elif layers.dns %}
+                            **DNS Query:** {{ layers.dns['Queries']['dns.qry.name'] | default('N/A') }}
+                        {% elif layers.tls %}
+                            **TLS/SSL Handshake:** {{ layers.tls['tls.handshake.type'] | default('Encrypted Data Transfer') }}
+                        {% else %}
+                            {# Calculate payload size safely #}
+                            {% set payload_len = 0 %}
+                            {% if tcp.get('tcp.len') %}
+                                {% set payload_len = tcp['tcp.len'] | int %}
+                            {% elif udp.get('udp.length') %}
+                                {% set payload_len = udp['udp.length'] | int %}
+                            {% endif %}
+                            **Payload Size:** {{ payload_len }} bytes. Layer 7 data not identified.
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        
+        {% else %}
+            <div class="finding-card" style="padding: 20px; text-align: center; color: #555;">
+                <h4>⚠️ No Packets Analyzed</h4>
+                <p>No packets were captured or the JSON analysis failed. Please check the log stream for TShark errors.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <footer style="margin-top: 50px; text-align: center; font-size: 0.8em; color: #777;">
+        <p>Generated by NetShieldAI Reporting Engine</p>
+    </footer>
+
+</body>
+</html>

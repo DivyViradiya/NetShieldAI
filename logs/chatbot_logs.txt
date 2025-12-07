@@ -821,3 +821,31 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5
 2025-11-29 14:02:13 - chatbot - ERROR - Error clearing chat via server proxy for session 565fce73-44b0-4cbb-bccc-e54dbe4a0e86: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /clear_chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002168C1CF490>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
 2025-11-29 14:05:35 - chatbot - ERROR - Error clearing chat via server proxy for session 565fce73-44b0-4cbb-bccc-e54dbe4a0e86: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /clear_chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002168C3279B0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
 2025-11-29 14:07:52 - chatbot - ERROR - Error clearing chat via server proxy for session 565fce73-44b0-4cbb-bccc-e54dbe4a0e86: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /clear_chat (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002168BDC3AC0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-11-29 15:34:06 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 15:34:09 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 15:34:12 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 16:11:31 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 16:11:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 16:11:40 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 16:34:34 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 16:34:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 16:34:44 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 21:23:15 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 21:23:20 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 21:23:25 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 21:33:31 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 21:34:56 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 22:10:36 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 22:10:41 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-29 22:10:51 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-30 14:23:47 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-30 14:23:52 - chatbot - INFO - Chatbot Blueprint initialized
+2025-11-30 14:23:56 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-05 10:27:30 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-05 10:27:35 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-05 10:27:43 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-06 14:48:15 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-06 14:48:20 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-06 14:48:27 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-06 14:50:39 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-06 14:51:23 - chatbot - INFO - Chatbot Blueprint initialized

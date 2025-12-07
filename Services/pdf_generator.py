@@ -9,12 +9,15 @@ import pathlib
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'PDF_templates')
+# Assuming 'static/css/PDF_style/report_style.css' is the general style sheet
 CSS_FILE_PATH = os.path.join(PROJECT_ROOT, 'static', 'css', 'PDF_style', 'report_style.css')
 
 # --- Template File Names ---
 ZAP_TEMPLATE_FILE = "zap_report_template.html"
 NMAP_TEMPLATE_FILE = "nmap_report_template.html"
 SSL_TEMPLATE_FILE = "ssl_report_template.html"
+SNIFFER_TEMPLATE_FILE = "sniffer_report_template.html"
+
 
 def create_nmap_report_pdf(source_data, pdf_path):
     """
@@ -75,6 +78,7 @@ def create_zap_report_pdf(json_path, pdf_path):
     """
     Reads the ZAP JSON report and renders it as a PDF.
     """
+    # ... (Implementation of ZAP report generation) ...
     print(f"[*] Starting WeasyPrint PDF generation for ZAP: {json_path}")
 
     if not os.path.exists(json_path):
@@ -108,6 +112,7 @@ def create_ssl_report_pdf(source_data, pdf_path):
     """
     Renders SSL Scan data into an HTML template and saves it as a PDF.
     """
+    # ... (Implementation of SSL report generation) ...
     print(f"[*] Starting WeasyPrint PDF generation for SSL...")
 
     # 1. Determine Input Type (Path or Dict)
@@ -151,6 +156,77 @@ def create_ssl_report_pdf(source_data, pdf_path):
     print(f"[+] WeasyPrint SSL report saved successfully to: {pdf_path}")
     return True
 
+def create_packet_sniffer_report_pdf(source_data, pdf_path):
+    """
+    Renders Packet Sniffer (TShark) data into an HTML template and saves it as a PDF.
+    
+    This function now handles the newly added 'security_anomaly_report' section.
+    
+    Args:
+        source_data (dict | str): Either the analysis data dictionary OR a file path to the JSON.
+        pdf_path (str): The destination path for the PDF.
+    """
+    print(f"[*] Starting WeasyPrint PDF generation for Packet Sniffer Analysis...")
+
+    # 1. Determine Input Type (Path or Dict)
+    sniffer_data = {}
+    if isinstance(source_data, str):
+        # It's a file path
+        if not os.path.exists(source_data):
+            raise FileNotFoundError(f"Packet Sniffer JSON report not found at {source_data}")
+        try:
+            with open(source_data, 'r', encoding='utf-8') as f:
+                sniffer_data = json.load(f)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Error decoding Packet Sniffer JSON file: {e}") from e
+    elif isinstance(source_data, dict):
+        # It's already data
+        sniffer_data = source_data
+    else:
+        raise ValueError("create_packet_sniffer_report_pdf expects a file path (str) or data (dict)")
+    
+    # Basic data integrity check
+    if not sniffer_data or sniffer_data.get('status') != 'success':
+        print("[!] Warning: Packet Sniffer data is empty or analysis status is not 'success'.")
+
+    # 2. Validate Resources
+    # NOTE: The check below will fail if running in a restricted environment without the full file structure.
+    # In a real environment, this ensures all assets are present.
+    if not os.path.exists(CSS_FILE_PATH):
+         print(f"[!] Warning: CSS file not found at {CSS_FILE_PATH}. PDF styling will be minimal.")
+         # Allow execution to proceed without CSS if file is missing
+         css = None
+    else:
+         # 3. Load CSS
+         css = CSS(filename=CSS_FILE_PATH)
+
+    # 4. Set up Jinja2 Environment
+    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
+    try:
+        template = env.get_template(SNIFFER_TEMPLATE_FILE)
+    except Exception as e:
+        raise FileNotFoundError(f"Jinja2 template file not found: {SNIFFER_TEMPLATE_FILE}. Check TEMPLATE_DIR: {TEMPLATE_DIR}") from e
+
+    # 5. Prepare Template Data
+    template_data = {
+        "data": sniffer_data,
+        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    # 6. Render HTML
+    rendered_html = template.render(template_data)
+
+    # 7. Render PDF
+    base_url = pathlib.Path(PROJECT_ROOT).as_uri() # Resolves assets
+    html = HTML(string=rendered_html, base_url=base_url)
+
+    # Write the PDF
+    stylesheets = [css] if css else []
+    html.write_pdf(pdf_path, stylesheets=stylesheets)
+
+    print(f"[+] WeasyPrint Packet Sniffer report saved successfully to: {pdf_path}")
+    return True
+
 
 # --- Main block for testing ---
 if __name__ == "__main__":
@@ -190,3 +266,25 @@ if __name__ == "__main__":
         print("[TEST SUCCESS] Dummy Nmap PDF created.")
     except Exception as e:
         print(f"[TEST FAILED] Nmap generation error: {e}")
+        
+    # --- Packet Sniffer Test (Production Flow Test) ---
+    print("\n--- Testing Packet Sniffer PDF Generation (Using Real Output File) ---")
+    
+    # Corrected path construction: PROJECT_ROOT is D:\NetShieldAI\Services.
+    # The file path is D:\NetShieldAI\Services\results\packet_sniffer\pcap_analysis_report.json
+    # The original path failed because it was missing 'Services' from the PROJECT_ROOT reference.
+    SNIFFER_JSON_REPORT = r"D:\NetShieldAI\Services\results\packet_sniffer\pcap_analysis_report.json"
+    
+    # Define the output path for the test PDF
+    sniffer_test_pdf_path = os.path.join(BASE_DIR, 'results', 'packet_sniffer', 'sniffer_report_TEST_REAL.pdf')
+    os.makedirs(os.path.dirname(sniffer_test_pdf_path), exist_ok=True)
+
+    if os.path.exists(SNIFFER_JSON_REPORT):
+        print(f"[*] Found required JSON file: {SNIFFER_JSON_REPORT}")
+        try:
+            create_packet_sniffer_report_pdf(SNIFFER_JSON_REPORT, sniffer_test_pdf_path)
+            print("[TEST SUCCESS] Production Packet Sniffer PDF created.")
+        except Exception as e:
+            print(f"[TEST FAILED] Sniffer generation error using real file: {e}")
+    else:
+        print(f"[SKIP] Production JSON file not found at {SNIFFER_JSON_REPORT}. Run packet_sniffer first to create it.")
