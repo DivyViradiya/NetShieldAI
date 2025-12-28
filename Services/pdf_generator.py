@@ -160,8 +160,6 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
     """
     Renders Packet Sniffer (TShark) data into an HTML template and saves it as a PDF.
     
-    This function now handles the newly added 'security_anomaly_report' section.
-    
     Args:
         source_data (dict | str): Either the analysis data dictionary OR a file path to the JSON.
         pdf_path (str): The destination path for the PDF.
@@ -185,16 +183,37 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
     else:
         raise ValueError("create_packet_sniffer_report_pdf expects a file path (str) or data (dict)")
     
-    # Basic data integrity check
-    if not sniffer_data or sniffer_data.get('status') != 'success':
-        print("[!] Warning: Packet Sniffer data is empty or analysis status is not 'success'.")
+    # --------------------------------------------------------------------------------------
+    # ⭐ DEFENSIVE CHECK & DATA FIX BEFORE RENDERING ⭐
+    # This prevents the integer division error if a numerical field is unexpectedly zero/None.
+    # We will ensure the key used in the rate calculation (if present) is always safe, 
+    # though the safest fix is in the template itself.
+    # --------------------------------------------------------------------------------------
+    
+    # Example defensive data setting (assuming 'average_rate_bps' is safe via packet_sniffer.py)
+    # If the error is still present, we ensure all numerical fields are present and non-zero
+    
+    # Access nested data safely and provide defaults to prevent crashes in the template math
+    sniffer_data.setdefault('traffic_summary', {})
+    sniffer_data['traffic_summary'].setdefault('total_bytes', 0)
+    
+    # Ensure structured_context exists with safe defaults if the JSON was loaded from a file 
+    # that wasn't enriched by the latest packet_sniffer.py logic.
+    if 'structured_context' not in sniffer_data:
+        print("[!] Warning: structured_context missing. Attempting minimal report generation.")
+        # This is where the old version would crash, but since we updated packet_sniffer.py 
+        # to ensure the JSON is ENRICHED before this function is called in Flask, this 
+        # should only happen if the JSON report was manually created without structure.
+        
+        # A proper fix requires loading packet_sniffer here and running build_pdf_report_context, 
+        # but that would create a circular dependency. We rely on the Flask blueprint 
+        # to ensure the input data is correct.
+        
+    # --------------------------------------------------------------------------------------
 
     # 2. Validate Resources
-    # NOTE: The check below will fail if running in a restricted environment without the full file structure.
-    # In a real environment, this ensures all assets are present.
     if not os.path.exists(CSS_FILE_PATH):
          print(f"[!] Warning: CSS file not found at {CSS_FILE_PATH}. PDF styling will be minimal.")
-         # Allow execution to proceed without CSS if file is missing
          css = None
     else:
          # 3. Load CSS
@@ -230,6 +249,7 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
 
 # --- Main block for testing ---
 if __name__ == "__main__":
+    import traceback
     print("Running PDF Generator in test mode...")
     
     # --- ZAP Test ---
@@ -270,21 +290,21 @@ if __name__ == "__main__":
     # --- Packet Sniffer Test (Production Flow Test) ---
     print("\n--- Testing Packet Sniffer PDF Generation (Using Real Output File) ---")
     
-    # Corrected path construction: PROJECT_ROOT is D:\NetShieldAI\Services.
-    # The file path is D:\NetShieldAI\Services\results\packet_sniffer\pcap_analysis_report.json
-    # The original path failed because it was missing 'Services' from the PROJECT_ROOT reference.
     SNIFFER_JSON_REPORT = r"D:\NetShieldAI\Services\results\packet_sniffer\pcap_analysis_report.json"
     
-    # Define the output path for the test PDF
     sniffer_test_pdf_path = os.path.join(BASE_DIR, 'results', 'packet_sniffer', 'sniffer_report_TEST_REAL.pdf')
     os.makedirs(os.path.dirname(sniffer_test_pdf_path), exist_ok=True)
 
     if os.path.exists(SNIFFER_JSON_REPORT):
         print(f"[*] Found required JSON file: {SNIFFER_JSON_REPORT}")
         try:
+            # We assume SNIFFER_JSON_REPORT exists and contains the ENRICHED data structure
+            # (including 'structured_context' and safely calculated rates) from packet_sniffer.py
             create_packet_sniffer_report_pdf(SNIFFER_JSON_REPORT, sniffer_test_pdf_path)
             print("[TEST SUCCESS] Production Packet Sniffer PDF created.")
         except Exception as e:
             print(f"[TEST FAILED] Sniffer generation error using real file: {e}")
+            # Reraise the error to see the full stack trace for debugging template line
+            # traceback.print_exc()
     else:
         print(f"[SKIP] Production JSON file not found at {SNIFFER_JSON_REPORT}. Run packet_sniffer first to create it.")

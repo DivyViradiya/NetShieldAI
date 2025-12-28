@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NetShieldAI - Packet Sniffer</title>
+    <title>NetShieldAI - Network Monitor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
+      /* --- UNIFIED CSS FROM NETWORK SCANNER --- */
+      
       /* Base and Layout Styles */
       html,
       body {
@@ -19,7 +21,6 @@
       body {
         font-family: 'Inter', sans-serif;
         background-color: #050505; /* Deep Black */
-        /* Subtle radial gradient for depth */
         background-image: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.05), transparent 25%);
         color: #e2e8f0;
         display: flex;
@@ -35,7 +36,7 @@
         flex-direction: column;
       }
       
-      /* Navbar Styles (PRESERVED) */
+      /* Navbar Styles */
       .navbar {
         background-color: #0d121c;
         padding: 1rem 2rem;
@@ -99,9 +100,7 @@
         width: 100%;
       }
       
-      /* --- REDESIGNED CENTRAL AREA CSS --- */
-      
-      /* Layout Grid */
+      /* Main Grid Layout */
       .main-grid {
         max-width: 1600px;
         width: 96%;
@@ -111,7 +110,7 @@
         gap: 2rem;
       }
       
-      /* Cards */
+      /* Panels/Cards */
       .control-panel,
       .results-panel {
         background-color: rgba(13, 18, 28, 0.7); /* Translucent dark */
@@ -120,7 +119,7 @@
         border-radius: 1rem;
         display: flex;
         flex-direction: column;
-        overflow: hidden; /* Contains children */
+        overflow: hidden;
         transition: border-color 0.3s ease;
       }
       
@@ -134,9 +133,9 @@
       }
       .results-panel {
         padding: 0;
-      } /* Padding handled by children for full-width headers */
+      }
       
-      /* Typography tweaks for Main Area */
+      /* Typography */
       h1 {
         font-size: 1.5rem;
         letter-spacing: -0.02em;
@@ -156,9 +155,10 @@
       /* Inputs - Minimalist Underline Style */
       .input-group {
         position: relative;
+        margin-bottom: 0.5rem;
       }
       
-      select,
+      /* Added input[type='number'] to match text inputs */
       input[type='text'],
       input[type='number'] {
         background-color: transparent;
@@ -170,41 +170,14 @@
         transition: border-color 0.3s ease;
         font-size: 0.95rem;
       }
-      select:focus,
+      input[type='text']::placeholder,
+      input[type='number']::placeholder {
+        color: #475569;
+      }
       input[type='text']:focus,
       input[type='number']:focus {
         outline: none;
         border-bottom-color: #3b82f6;
-      }
-      select {
-        /* Custom arrow for select on dark background */
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2394a3b8'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.21 8.27a.75.75 0 01.02-1.06z' clip-rule='evenodd' /%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 0.75rem center;
-        background-size: 1.5em 1.5em;
-        padding-right: 2.5rem;
-        cursor: pointer;
-      }
-      
-      /* FIX: Explicitly set the text color for options in the dropdown list */
-      select option {
-        background: #0d121c; /* Background of the dropdown list items */
-        color: #f8fafc; /* Text color for non-selected/non-hovered items */
-      }
-      
-      /* FIX: Ensure readable text color when an option is selected or highlighted */
-      select option:checked,
-      select option:hover {
-        /* When selected (which defaults to a bright background), force dark text */
-        color: #050505;
-      }
-      
-      input[type='text']::placeholder,
-      input[type='number']::placeholder {
-        color: #475569;
       }
       
       /* Buttons */
@@ -222,17 +195,10 @@
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
       }
-      .primary-action-button:disabled {
-        background: #1e293b;
-        color: #475569;
-        box-shadow: none;
-        cursor: not-allowed;
-        transform: none;
-      }
       
-      /* Stop Button (Red/Danger) */
-      .stop-action-button {
-        background: linear-gradient(135deg, #ef4444, #b91c1c); /* Red/Danger color */
+      /* Red Button for Stop/Vuln */
+      .vuln-action-button {
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
         color: #ffffff;
         border: none;
         box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
@@ -241,16 +207,9 @@
         padding: 0.75rem 1rem;
         border-radius: 0.75rem;
       }
-      .stop-action-button:hover {
+      .vuln-action-button:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-      }
-      .stop-action-button:disabled {
-        background: #1e293b;
-        color: #475569;
-        box-shadow: none;
-        cursor: not-allowed;
-        transform: none;
       }
       
       .secondary-button {
@@ -277,7 +236,7 @@
         animation: spin 0.8s linear infinite;
       }
       .primary-action-button .spinner,
-      .stop-action-button .spinner {
+      .vuln-action-button .spinner {
         border-top-color: #fff;
       }
       .secondary-button .spinner {
@@ -292,7 +251,7 @@
         }
       }
       
-      /* Terminals (Log & Raw) */
+      /* Terminals */
       .terminal-window {
         background-color: #050505;
         border: 1px solid #1e293b;
@@ -302,7 +261,7 @@
         color: #cbd5e1;
       }
       
-      /* Tab Styles */
+      /* Tabs */
       .tab-button {
         padding: 0.75rem 1.5rem;
         cursor: pointer;
@@ -319,13 +278,12 @@
         border-bottom-color: #3b82f6;
       }
       
-      /* Table Styles */
+      /* Tables */
       .results-header-bar {
         background-color: rgba(13, 18, 28, 0.9);
         border-bottom: 1px solid #1e293b;
         padding: 1.5rem;
       }
-      
       .results-table-container {
         border: none;
       }
@@ -360,7 +318,7 @@
         gap: 0.5rem;
       }
       
-      /* Footer (PRESERVED) */
+      /* Footer */
       footer {
         background-color: #0d121c;
         color: #cbd5e1;
@@ -404,16 +362,16 @@
       </div>
       <ul class="navbar-links">
         <li>
-          <a href="/network_scanner">Network Scanning</a>
+          <a href="/network_scanner">Network Scanner</a>
         </li>
         <li>
-          <a href="/packet_sniffer" class="active">Packet Sniffer</a>
+          <a href="/packet_sniffer" class="active">Network Monitor</a>
         </li>
         <li>
-          <a href="/zap_scanner">Web Application Scanning</a>
+          <a href="/zap_scanner">Web Application Scanner</a>
         </li>
         <li>
-          <a href="/ssl_scanner">SSL Scans</a>
+          <a href="/ssl_scanner">SSL Scanner</a>
         </li>
         <li>
           <a href="/chatbot">AI Analyzer</a>
@@ -423,154 +381,216 @@
 
     <div id="page-wrapper">
       <div class="main-grid">
-        <!-- LEFT PANEL: Configuration and Controls -->
         <div class="control-panel left-panel">
           <div class="flex items-center mb-8">
-            <div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-500 mr-3">
-              <i class="fas fa-network-wired text-xl"></i>
+            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mr-3">
+              <i class="fas fa-wave-square text-xl"></i>
             </div>
             <div>
               <h1 class="font-bold text-white">Packet Sniffer</h1>
-              <p class="text-xs text-slate-400">Capture & Analyze Traffic</p>
+              <p class="text-xs text-slate-400">Capture & Analyze</p>
             </div>
           </div>
 
           <div class="space-y-6 flex-grow">
-            <!-- Target IP -->
             <div class="input-group">
-              <label for="targetIp" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Target IP</label>
-              <div class="flex items-end gap-2">
-                <input type="text" id="targetIp" placeholder="e.g., 192.168.1.1 (Required for Filter)" />
-                <button id="detectIpBtn" class="mb-1 p-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-indigo-400 transition-colors" title="Detect Local IP"><i class="fas fa-crosshairs"></i></button>
-              </div>
+              <label for="snifferTargetIp" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Target (Optional)</label>
+              <input type="text" id="snifferTargetIp" placeholder="Filter by IP (e.g. 192.168.1.5)" />
             </div>
 
-            <!-- Interface Selection -->
-            <div class="input-group">
-              <label for="interfaceId" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Network Interface</label>
-              <select id="interfaceId" class="block w-full text-sm py-2 px-0">
-                <option value="">Loading Interfaces...</option>
-              </select>
-            </div>
-
-            <!-- Duration and Max Packets -->
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-3 pt-2">
               <div class="input-group">
-                <label for="duration" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Duration (Sec)</label>
-                <input type="number" id="duration" value="30" min="10" max="300" />
+                <label for="captureDuration" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Duration (sec)</label>
+                <input type="number" id="captureDuration" min="1" value="10" />
               </div>
               <div class="input-group">
-                <label for="maxPackets" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Max Packets to Dissect</label>
-                <input type="number" id="maxPackets" value="50" min="1" max="1000" />
+                <label for="maxPackets" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Max Packets</label>
+                <input type="number" id="maxPackets" min="1" value="200" />
               </div>
             </div>
 
-            <!-- BPF Filter -->
             <div class="input-group">
-              <label for="customBpfFilter" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Custom BPF Filter (Optional)</label>
-              <input type="text" id="customBpfFilter" placeholder="e.g., 'tcp port 80 or udp'" />
-              <p class="text-xs text-slate-600 mt-1">Leave blank to use default host filter.</p>
+              <label for="bpfFilter" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">BPF Filter</label>
+              <input type="text" id="bpfFilter" placeholder="e.g. tcp port 80" />
             </div>
 
-            <!-- Action Buttons -->
-            <div class="grid grid-cols-2 gap-3 pt-4">
+            <div class="grid grid-cols-2 gap-3 pt-2">
               <button id="startCaptureBtn" class="primary-action-button flex items-center justify-center">
-                <span class="button-text"><i class="fas fa-play mr-2"></i> Start Capture</span>
+                <span class="button-text">Start Capture</span>
                 <span class="spinner hidden ml-2"></span>
               </button>
-              <button id="stopCaptureBtn" class="stop-action-button flex items-center justify-center" disabled>
-                <span class="button-text"><i class="fas fa-stop mr-2"></i> Stop Capture</span>
+              <button id="stopCaptureBtn" class="vuln-action-button flex items-center justify-center">
+                <span class="button-text"><i class="fas fa-stop mr-1"></i> Stop</span>
                 <span class="spinner hidden ml-2"></span>
               </button>
             </div>
 
-            <div id="scanStatus" class="text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400">
-              <i class="fas fa-circle text-[8px] mr-2 text-green-500"></i> System Ready
+            <div id="snifferStatus" class="text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400">
+              <i class="fas fa-circle text-[8px] mr-2 text-green-500"></i> Ready to capture
             </div>
           </div>
 
-          <!-- Log Output -->
           <div class="mt-8 border-t border-slate-800 pt-4">
             <div class="flex justify-between items-center mb-2">
               <span class="text-xs font-bold text-slate-500 uppercase">Live Event Log</span>
-              <button id="clearLogBtn" class="text-[10px] text-slate-600 hover:text-slate-300">CLEAR</button>
+              <button id="clearSnifferLogBtn" class="text-[10px] text-slate-600 hover:text-slate-300">CLEAR</button>
             </div>
-            <div id="logOutput" class="terminal-window p-3 h-32 overflow-auto whitespace-pre leading-snug"></div>
+            <div id="snifferLogOutput" class="terminal-window p-3 h-32 overflow-auto whitespace-pre leading-snug"></div>
           </div>
         </div>
 
-        <!-- RIGHT PANEL: Results and Reporting -->
         <div class="results-panel right-panel">
           <div class="results-header-bar flex justify-between items-center">
             <div>
-              <h2 class="text-white">Analysis Results (<span id="totalPacketsDisplay">0</span> Packets Captured)</h2>
+              <h2 class="text-white">Sniffer Results (<span id="packetCountDisplay">0</span> Packets)</h2>
               <div class="flex gap-3 mt-2">
                 <div class="status-pill">
-                  <span class="text-slate-500">Capture Time:</span>
-                  <span id="captureDurationDisplay" class="font-mono text-indigo-400">0.00s</span>
+                  <span class="text-slate-500">Duration:</span>
+                  <span id="durationDisplay" class="font-mono text-blue-400">0.0s</span>
                 </div>
                 <div class="status-pill">
-                  <span class="text-slate-500">BPF Filter:</span>
-                  <span id="filterDisplay" class="font-mono text-yellow-400">host 127.0.0.1</span>
+                  <span class="text-slate-500">Rate:</span>
+                  <span id="avgRateDisplay" class="font-mono text-indigo-400">0 Kbps</span>
+                </div>
+                <div class="status-pill">
+                  <span class="text-slate-500">Filter:</span>
+                  <span id="targetDisplay" class="font-mono text-green-400">None</span>
                 </div>
               </div>
             </div>
 
             <div class="flex gap-2 items-center">
-              <button id="downloadJsonBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium flex items-center" disabled><i class="fas fa-file-code mr-2 text-yellow-500"></i> JSON</button>
-              <div class="h-8 w-px bg-slate-700 mx-1"></div>
-              <button id="refreshResultsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium"><i class="fas fa-sync-alt"></i></button>
+              <button id="refreshSnifferResultsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium"><i class="fas fa-sync-alt"></i></button>
 
               <div class="relative inline-block text-left">
-                <button id="analyzeReportDropdown" disabled class="px-3 py-2 rounded-lg bg-indigo-600/90 text-white text-xs font-medium hover:bg-indigo-500 transition-colors flex items-center opacity-50 cursor-not-allowed">
+                <button id="snifferAnalyzeReportDropdown" disabled class="px-3 py-2 rounded-lg bg-indigo-600/90 text-white text-xs font-medium hover:bg-indigo-500 transition-colors flex items-center opacity-50 cursor-not-allowed">
                   <span class="button-text flex items-center">Analyze Report</span>
                   <span class="spinner hidden ml-2"></span>
                   <i class="fas fa-caret-down ml-2"></i>
                 </button>
 
-                <div id="llmAnalysisOptions" class="absolute right-0 mt-2 w-40 origin-top-right rounded-md shadow-lg bg-slate-800 ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-20">
-                  <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="analyzeReportDropdown">
+                <div id="snifferLlmAnalysisOptions" class="absolute right-0 mt-2 w-40 origin-top-right rounded-md shadow-lg bg-slate-800 ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-20">
+                  <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="snifferAnalyzeReportDropdown">
                     <a href="#" data-llm-mode="local" class="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white" role="menuitem"><i class="fas fa-laptop mr-2 text-blue-400"></i> Local LLM</a>
                     <a href="#" data-llm-mode="gemini" class="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white" role="menuitem"><i class="fas fa-brain mr-2 text-green-400"></i> Gemini AI</a>
                   </div>
                 </div>
               </div>
-              <button id="downloadReportBtn" disabled class="px-3 py-2 rounded-lg bg-red-600/90 text-white text-xs font-medium hover:bg-red-500 transition-colors flex items-center opacity-50 cursor-not-allowed"><i class="fas fa-file-pdf mr-2"></i> Report</button>
+              <button id="snifferDownloadReportBtn" disabled class="px-3 py-2 rounded-lg bg-red-600/90 text-white text-xs font-medium hover:bg-red-500 transition-colors flex items-center opacity-50 cursor-not-allowed"><i class="fas fa-file-pdf mr-2"></i> Report</button>
             </div>
           </div>
 
-          <!-- Tabs -->
           <div class="flex border-b border-slate-800 px-6">
-            <button id="packetsTabBtn" class="tab-button active">Dissected Packets</button>
-            <button id="flowsTabBtn" class="tab-button">Application Flows</button>
-            <button id="statsTabBtn" class="tab-button">Traffic Stats</button>
+            <button id="summaryTabBtn" class="tab-button active">Summary</button>
+            <button id="flowsTabBtn" class="tab-button">Flows</button>
+            <button id="anomaliesTabBtn" class="tab-button">Anomalies</button>
+            <button id="packetsTabBtn" class="tab-button">Packets</button>
           </div>
 
           <div class="flex-grow flex flex-col min-h-0">
-            <!-- Dissected Packets Content -->
-            <div id="packetsContent" class="flex-grow flex flex-col p-6 min-h-0">
+            <div id="summaryContent" class="flex-grow flex flex-col p-6 min-h-0">
+              <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+                <div class="terminal-window p-3 text-center">
+                  <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Status</p>
+                  <p id="summaryStatus" class="text-lg font-bold text-emerald-400">Idle</p>
+                </div>
+                <div class="terminal-window p-3 text-center">
+                  <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Packets</p>
+                  <p id="summaryTotalPackets" class="text-lg font-bold text-emerald-400">0</p>
+                </div>
+                <div class="terminal-window p-3 text-center">
+                  <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Bytes</p>
+                  <p id="summaryTotalBytes" class="text-lg font-bold text-blue-400">0 B</p>
+                </div>
+                <div class="terminal-window p-3 text-center">
+                  <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Top Protocol</p>
+                  <p id="summaryPrimaryProto" class="text-lg font-bold text-indigo-400">-</p>
+                </div>
+              </div>
+
+              <div class="overflow-hidden rounded-lg border border-slate-800 mb-4 bg-slate-900/30">
+                <div class="px-4 py-2 border-b border-slate-800 flex items-center justify-between">
+                  <h3 class="text-[11px] font-bold text-slate-500 uppercase">Capture Metadata</h3>
+                </div>
+                <div class="results-table-container max-h-32 overflow-auto">
+                  <table class="min-w-full text-sm results-table">
+                    <tbody id="captureMetaBody" class="results-table-tbody divide-y divide-slate-800">
+                      <tr>
+                        <td colspan="2" class="px-4 py-3 text-center text-slate-500 text-sm">Awaiting capture...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-grow min-h-0">
+                <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40 flex flex-col h-64">
+                  <div class="px-4 py-2 border-b border-slate-800 bg-slate-900/80 sticky top-0">
+                    <h3 class="text-[11px] font-bold text-slate-500 uppercase">Protocol Hierarchy</h3>
+                  </div>
+                  <div class="results-table-container flex-grow overflow-auto">
+                    <table class="min-w-full text-xs results-table">
+                      <thead class="sticky top-0 bg-slate-900/90 backdrop-blur-sm z-10">
+                        <tr>
+                          <th class="px-4 py-2 text-left text-slate-400">Protocol</th>
+                          <th class="px-4 py-2 text-right text-slate-400">Frames</th>
+                          <th class="px-4 py-2 text-right text-slate-400">Bytes</th>
+                        </tr>
+                      </thead>
+                      <tbody id="protocolStatsBody" class="results-table-tbody divide-y divide-slate-800">
+                        <tr>
+                          <td colspan="3" class="px-4 py-4 text-center text-slate-500">No data available.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40 flex flex-col h-64">
+                  <div class="px-4 py-2 border-b border-slate-800 bg-slate-900/80 sticky top-0">
+                    <h3 class="text-[11px] font-bold text-slate-500 uppercase">TCP Conversations</h3>
+                  </div>
+                  <div class="results-table-container flex-grow overflow-auto">
+                    <table class="min-w-full text-xs results-table">
+                      <thead class="sticky top-0 bg-slate-900/90 backdrop-blur-sm z-10">
+                        <tr>
+                          <th class="px-4 py-2 text-left text-slate-400">Source</th>
+                          <th class="px-4 py-2 text-center text-slate-600 w-8"></th>
+                          <th class="px-4 py-2 text-left text-slate-400">Destination</th>
+                          <th class="px-4 py-2 text-right text-slate-400">Bytes</th>
+                        </tr>
+                      </thead>
+                      <tbody id="conversationStatsBody" class="results-table-tbody divide-y divide-slate-800">
+                        <tr>
+                          <td colspan="4" class="px-4 py-4 text-center text-slate-500">No conversations recorded.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="flowsContent" class="hidden flex-grow flex flex-col p-6 min-h-0">
               <div class="overflow-hidden rounded-lg border border-slate-800 flex-grow relative bg-slate-900/30">
-                <div class="absolute inset-0 overflow-auto results-table-container">
+                <div class="px-4 py-2 border-b border-slate-800 flex items-center justify-between">
+                  <h3 class="text-[11px] font-bold text-slate-500 uppercase">Application Flows</h3>
+                </div>
+                <div class="absolute inset-0 top-8 overflow-auto results-table-container">
                   <table class="min-w-full text-sm results-table">
                     <thead class="sticky top-0 backdrop-blur-md">
                       <tr>
-                        <th scope="col" class="px-4 py-3 text-left">#</th>
-                        <th scope="col" class="px-4 py-3 text-left">Time (Rel)</th>
-                        <th scope="col" class="px-4 py-3 text-left">Source</th>
-                        <th scope="col" class="px-4 py-3 text-left">Destination</th>
-                        <th scope="col" class="px-4 py-3 text-left">Protocol</th>
-                        <th scope="col" class="px-4 py-3 text-left">Info Summary</th>
-                        <th scope="col" class="px-4 py-3 text-left">Anomaly</th>
+                        <th class="px-6 py-3 text-left">Timestamp</th>
+                        <th class="px-6 py-3 text-left">Source</th>
+                        <th class="px-6 py-3 text-left">Destination</th>
+                        <th class="px-6 py-3 text-left">Method</th>
+                        <th class="px-6 py-3 text-left">URI</th>
+                        <th class="px-6 py-3 text-left">Response</th>
                       </tr>
                     </thead>
-                    <tbody id="dissectedPacketsTableBody" class="divide-y divide-slate-800 results-table-tbody">
+                    <tbody id="flowsTableBody" class="divide-y divide-slate-800 results-table-tbody">
                       <tr>
-                        <td colspan="7" class="p-12 text-center">
-                          <div class="text-slate-600 mb-2">
-                            <i class="fas fa-binoculars text-4xl opacity-20"></i>
-                          </div>
-                          <p class="text-slate-500">Start a capture to view live dissected packets.</p>
-                        </td>
+                        <td colspan="6" class="p-12 text-center text-slate-500">No flows recorded.</td>
                       </tr>
                     </tbody>
                   </table>
@@ -578,70 +598,68 @@
               </div>
             </div>
 
-            <!-- Application Flows Content -->
-            <div id="flowsContent" class="hidden flex-grow flex-col p-6 min-h-0">
+            <div id="anomaliesContent" class="hidden flex-grow flex flex-col p-6 min-h-0">
+              <div class="terminal-window p-3 mb-4">
+                <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Summary</p>
+                <p id="anomalySummaryText" class="text-xs text-slate-200">No anomalies detected.</p>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-grow min-h-0">
+                <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40 flex flex-col">
+                  <div class="px-4 py-2 border-b border-slate-800">
+                    <h3 class="text-[11px] font-bold text-slate-500 uppercase">Port Scans</h3>
+                  </div>
+                  <div class="results-table-container flex-grow overflow-auto">
+                    <table class="min-w-full text-xs results-table">
+                      <tbody id="portScansBody" class="results-table-tbody divide-y divide-slate-800">
+                        <tr>
+                          <td class="px-4 py-4 text-center text-slate-500">None detected.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40 flex flex-col">
+                  <div class="px-4 py-2 border-b border-slate-800">
+                    <h3 class="text-[11px] font-bold text-slate-500 uppercase">Cleartext Credentials</h3>
+                  </div>
+                  <div class="results-table-container flex-grow overflow-auto">
+                    <table class="min-w-full text-xs results-table">
+                      <tbody id="cleartextBody" class="results-table-tbody divide-y divide-slate-800">
+                        <tr>
+                          <td class="px-4 py-4 text-center text-slate-500">None detected.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="packetsContent" class="hidden flex-grow flex flex-col p-6 min-h-0">
               <div class="overflow-hidden rounded-lg border border-slate-800 flex-grow relative bg-slate-900/30">
                 <div class="absolute inset-0 overflow-auto results-table-container">
                   <table class="min-w-full text-sm results-table">
                     <thead class="sticky top-0 backdrop-blur-md">
                       <tr>
-                        <th scope="col" class="px-4 py-3 text-left">Time</th>
-                        <th scope="col" class="px-4 py-3 text-left">Source IP</th>
-                        <th scope="col" class="px-4 py-3 text-left">Dest IP</th>
-                        <th scope="col" class="px-4 py-3 text-left">Method</th>
-                        <th scope="col" class="px-4 py-3 text-left">URI</th>
-                        <th scope="col" class="px-4 py-3 text-left">Response Code</th>
+                        <th class="px-6 py-3 text-left">No.</th>
+                        <th class="px-6 py-3 text-left">Time</th>
+                        <th class="px-6 py-3 text-left">Source IP</th>
+                        <th class="px-6 py-3 text-left">Dest IP</th>
+                        <th class="px-6 py-3 text-left">Protocol</th>
+                        <th class="px-6 py-3 text-left">Length</th>
                       </tr>
                     </thead>
-                    <tbody id="applicationFlowsTableBody" class="divide-y divide-slate-800 results-table-tbody">
+                    <tbody id="packetsTableBody" class="divide-y divide-slate-800 results-table-tbody">
                       <tr>
                         <td colspan="6" class="p-12 text-center">
-                          <p class="text-slate-500">Application layer flows (e.g., HTTP) will appear here after capture.</p>
+                          <div class="text-slate-600 mb-2">
+                            <i class="fas fa-network-wired text-4xl opacity-20"></i>
+                          </div>
+                          <p class="text-slate-500">Start a capture to view dissected packets.</p>
                         </td>
                       </tr>
                     </tbody>
                   </table>
-                </div>
-              </div>
-            </div>
-
-            <!-- Traffic Stats Content -->
-            <div id="statsContent" class="hidden flex-grow flex-col p-6 min-h-0">
-              <div class="space-y-6 flex-grow overflow-y-auto">
-                <!-- 1. General Summary Table -->
-                <h3 class="text-xs font-bold text-slate-500 uppercase">Traffic Summary</h3>
-                <div class="rounded-lg border border-slate-800 overflow-hidden bg-slate-900/30">
-                  <table class="min-w-full text-sm results-table">
-                    <tbody id="generalSummaryTableBody" class="divide-y divide-slate-800 results-table-tbody">
-                      <tr>
-                        <td colspan="2" class="px-4 py-8 text-center text-slate-500">Run capture to view summary.</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <!-- 2. Security Anomaly Table -->
-                <h3 class="text-xs font-bold text-slate-500 uppercase pt-4">Security Anomaly Report (<span id="anomalyCountDisplay">0</span> Alerts)</h3>
-                <div class="rounded-lg border border-slate-800 overflow-hidden bg-slate-900/30">
-                  <table class="min-w-full text-sm results-table">
-                    <thead class="sticky top-0 bg-slate-800/80">
-                      <tr>
-                        <th class="px-4 py-2 text-left w-1/3">Type</th>
-                        <th class="px-4 py-2 text-left">Details</th>
-                      </tr>
-                    </thead>
-                    <tbody id="anomalyReportTableBody" class="divide-y divide-slate-800 results-table-tbody">
-                      <tr>
-                        <td colspan="2" class="px-4 py-4 text-center text-slate-500">No anomalies checked.</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-
-                <!-- 3. Protocol Hierarchy / Conversation Stats (Raw Block) -->
-                <h3 class="text-xs font-bold text-slate-500 uppercase pt-4">TShark Raw Statistics Output</h3>
-                <div id="rawStatsOutput" class="terminal-window p-4 min-h-[120px] overflow-y-auto">
-                  <span class="text-slate-600">// Protocol Hierarchy and TCP Conversation statistics will appear here.</span>
                 </div>
               </div>
             </div>

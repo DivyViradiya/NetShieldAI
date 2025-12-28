@@ -4,6 +4,105 @@
     <meta charset="UTF-8">
     <title>SSL Scan Report</title>
     <link rel="stylesheet" href="file:///D:/NetShieldAI/static/css/PDF_style/report_style.css">
+    <style>
+        .scan-subtitle {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .summary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .summary-card {
+            flex: 1 1 30%;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            padding: 10px 12px;
+            background: #f9fafb;
+        }
+
+        .summary-label {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6b7280;
+        }
+
+        .summary-value {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 9px;
+        }
+
+        .risk-critical { background-color: #fee2e2; color: #991b1b; }
+        .risk-high     { background-color: #fecaca; color: #7f1d1d; }
+        .risk-medium   { background-color: #fef3c7; color: #92400e; }
+        .risk-low      { background-color: #dcfce7; color: #166534; }
+        .risk-info     { background-color: #dbeafe; color: #1d4ed8; }
+
+        .finding-card {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            page-break-inside: avoid;
+        }
+
+        .finding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .finding-header h4 {
+            margin: 0;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            font-size: 0.9em;
+        }
+
+        .cipher-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8em;
+        }
+        .cipher-table th,
+        .cipher-table td {
+            border: 1px solid #e5e7eb;
+            padding: 6px 8px;
+            text-align: left;
+        }
+        .cipher-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+
+        .section-note {
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,8 +113,28 @@
         <div class="header-right">
             <h1>SSL/TLS Security Report</h1>
             <h2>SSLScan Engine</h2>
+            <div class="scan-subtitle">
+                Analysis of protocol support, certificate configuration, and cipher strength for the target endpoint.
+            </div>
         </div>
     </header>
+
+    {# Pre-calculated vulnerability counts #}
+    {% set vulns = data.vulnerabilities | default([]) %}
+    {% set ns = namespace(high=0, medium=0, low=0, info=0) %}
+    {% for v in vulns %}
+        {% if v.severity %}
+            {% if v.severity|lower == 'high' %}
+                {% set ns.high = ns.high + 1 %}
+            {% elif v.severity|lower == 'medium' %}
+                {% set ns.medium = ns.medium + 1 %}
+            {% elif v.severity|lower == 'low' %}
+                {% set ns.low = ns.low + 1 %}
+            {% else %}
+                {% set ns.info = ns.info + 1 %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
 
     <div class="report-info">
         <div class="info-box">
@@ -32,22 +151,68 @@
         </div>
     </div>
 
-    <!-- Vulnerabilities Section -->
+    <!-- High-level SSL/TLS overview -->
     <section class="summary">
+        <h3>Overview</h3>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">Total Vulnerabilities</div>
+                <div class="summary-value">
+                    {{ vulns | length }}
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">High Severity Issues</div>
+                <div class="summary-value">
+                    {% if ns.high > 0 %}
+                        <span class="badge risk-high">{{ ns.high }} HIGH</span>
+                    {% else %}
+                        <span class="badge risk-low">None detected</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Protocols Enabled</div>
+                <div class="summary-value">
+                    {{ data.protocols | length if data.protocols else 0 }}
+                </div>
+            </div>
+        </div>
+
+        <p class="section-note" style="margin-top: 10px;">
+            Use this overview to quickly understand whether the server exposes legacy protocols or
+            high-severity weaknesses that should be remediated with priority.
+        </p>
+    </section>
+
+    <!-- Vulnerabilities Section -->
+    <section class="summary" style="page-break-before: always;">
         <h3>Detected Vulnerabilities</h3>
-        {% if data.vulnerabilities %}
+        {% if vulns %}
             <table class="summary-table">
                 <thead>
                     <tr>
-                        <th>Severity</th>
-                        <th>Vulnerability</th>
+                        <th style="width: 12%;">Severity</th>
+                        <th style="width: 25%;">Vulnerability</th>
                         <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for vuln in data.vulnerabilities %}
-                    <tr class="risk-{{ vuln.severity | lower }}">
-                        <td><span class="badge risk-{{ vuln.severity | lower }}">{{ vuln.severity }}</span></td>
+                    {% for vuln in vulns %}
+                    {% set sev = vuln.severity | default('info') | lower %}
+                    {% set cls = 'risk-info' %}
+                    {% if sev == 'high' %}
+                        {% set cls = 'risk-high' %}
+                    {% elif sev == 'medium' %}
+                        {% set cls = 'risk-medium' %}
+                    {% elif sev == 'low' %}
+                        {% set cls = 'risk-low' %}
+                    {% endif %}
+                    <tr class="{{ cls }}">
+                        <td>
+                            <span class="badge {{ cls }}">{{ vuln.severity | upper }}</span>
+                        </td>
                         <td><strong>{{ vuln.name }}</strong></td>
                         <td>{{ vuln.description }}</td>
                     </tr>
@@ -55,9 +220,12 @@
                 </tbody>
             </table>
         {% else %}
-            <div class="finding-card" style="text-align: center; color: green; padding: 20px;">
-                <h4>✅ No Known SSL Vulnerabilities Detected</h4>
-                <p>The server appears to be configured securely against common SSL/TLS attacks.</p>
+            <div class="finding-card" style="text-align: center; color: #166534; padding: 20px;">
+                <h4>✅ No Known SSL/TLS Vulnerabilities Detected</h4>
+                <p>
+                    The server appears to be configured securely against the checks performed by this scan.
+                    Continue to monitor and rescan regularly as new issues are discovered.
+                </p>
             </div>
         {% endif %}
     </section>
@@ -65,24 +233,46 @@
     <!-- Protocols Section -->
     <section class="findings">
         <h3>Supported Protocols</h3>
+        <p>
+            The table below shows which SSL/TLS protocol versions are accepted by the server.
+            Legacy protocols (SSLv2, SSLv3, TLS 1.0/1.1) should generally be disabled.
+        </p>
         <table class="summary-table">
             <thead>
                 <tr>
                     <th>Protocol</th>
                     <th>Status</th>
+                    <th>Risk Note</th>
                 </tr>
             </thead>
             <tbody>
                 {% for proto in data.protocols %}
+                {% set enabled = proto.enabled %}
+                {% set name = proto.name | default('Unknown') %}
+                {% set risk_label = 'Modern / Recommended' %}
+                {% set badge_cls = 'risk-low' %}
+
+                {% if 'SSL' in name or 'TLSv1.0' in name or 'TLSv1.1' in name %}
+                    {% set badge_cls = 'risk-high' %}
+                    {% set risk_label = 'Legacy – should be disabled' %}
+                {% elif 'TLSv1.2' in name %}
+                    {% set badge_cls = 'risk-low' %}
+                    {% set risk_label = 'Widely used and acceptable' %}
+                {% elif 'TLSv1.3' in name %}
+                    {% set badge_cls = 'risk-info' %}
+                    {% set risk_label = 'Latest protocol – preferred' %}
+                {% endif %}
+
                 <tr>
-                    <td><strong>{{ proto.name }}</strong></td>
+                    <td><strong>{{ name }}</strong></td>
                     <td>
-                        {% if proto.enabled %}
-                            <span class="badge risk-low" style="background-color: #d4edda; color: #155724;">Enabled</span>
+                        {% if enabled %}
+                            <span class="badge {{ badge_cls }}">Enabled</span>
                         {% else %}
-                            <span style="color: #ccc;">Disabled</span>
+                            <span style="color: #9ca3af;">Disabled</span>
                         {% endif %}
                     </td>
+                    <td>{{ risk_label }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -91,77 +281,139 @@
 
     <!-- Server Configuration -->
     <section class="findings">
-        <h3>Server Configuration</h3>
+        <h3>Server Configuration Checks</h3>
         <div class="finding-card">
+            <div class="finding-header">
+                <h4>Key SSL/TLS Behaviors</h4>
+            </div>
             <div class="finding-details">
-                <p><strong>Heartbleed Vulnerability:</strong> 
-                    {% if data.vulnerabilities|selectattr('name', 'equalto', 'Heartbleed')|list %}
-                        <span style="color:red; font-weight:bold;">VULNERABLE</span>
+                <p>
+                    <strong>Heartbleed Vulnerability:</strong>
+                    {% if vulns|selectattr('name', 'equalto', 'Heartbleed')|list %}
+                        <span style="color:#b91c1c; font-weight:bold;">VULNERABLE</span>
+                        — Immediate remediation recommended.
                     {% else %}
-                        <span style="color:green;">Safe</span>
+                        <span style="color:#166534; font-weight:bold;">Safe</span>
                     {% endif %}
                 </p>
-                <p><strong>TLS Compression (CRIME):</strong> 
-                    {% if data.server_configs.tls_compression.supported %}
-                        <span style="color:orange;">Enabled (Risk)</span>
+
+                <p>
+                    <strong>TLS Compression (CRIME):</strong>
+                    {% if data.server_configs and data.server_configs.tls_compression and data.server_configs.tls_compression.supported %}
+                        <span style="color:#b45309; font-weight:bold;">Enabled (Risk)</span>
+                        — TLS-level compression should be disabled to avoid CRIME-style attacks.
                     {% else %}
-                        Disabled
+                        <span style="color:#166534;">Disabled</span>
                     {% endif %}
                 </p>
-                <p><strong>Secure Renegotiation:</strong> 
-                    {% if data.server_configs.renegotiation.secure %}
-                        <span style="color:green;">Supported</span>
+
+                <p>
+                    <strong>Secure Renegotiation:</strong>
+                    {% if data.server_configs and data.server_configs.renegotiation and data.server_configs.renegotiation.secure %}
+                        <span style="color:#166534;">Supported</span>
+                        — Client/server renegotiation uses the secure extension.
                     {% else %}
-                        <span style="color:red;">Not Supported (Risk)</span>
+                        <span style="color:#b91c1c; font-weight:bold;">Not Supported (Risk)</span>
                     {% endif %}
                 </p>
-                <p><strong>Fallback SCSV:</strong> {{ 'Supported' if data.server_configs.fallback_scsv_supported else 'Not Supported' }}</p>
+
+                <p>
+                    <strong>Fallback SCSV:</strong>
+                    {% if data.server_configs and data.server_configs.fallback_scsv_supported %}
+                        <span style="color:#166534;">Supported</span>
+                        — Protects against protocol downgrade attacks.
+                    {% else %}
+                        <span style="color:#b45309;">Not Supported</span>
+                        — Consider enabling TLS_FALLBACK_SCSV if supported by your stack.
+                    {% endif %}
+                </p>
             </div>
         </div>
     </section>
 
     <!-- Certificate Chain -->
-    <section class="findings">
+    <section class="findings" style="page-break-before: always;">
         <h3>Certificate Chain</h3>
+        <p>
+            Details of the server certificate and any intermediate or root certificates
+            presented during the TLS handshake.
+        </p>
         {% if data.certificate_chain %}
             {% for cert in data.certificate_chain %}
             <div class="finding-card">
                 <div class="finding-header">
                     <h4>{{ cert.level | title }} Certificate</h4>
+                    <span class="badge risk-info">
+                        {{ cert.key_type }} {{ cert.key_size }}-bit
+                    </span>
                 </div>
                 <div class="finding-details">
                     <p><strong>Common Name (CN):</strong> {{ cert.common_name }}</p>
                     <p><strong>Issuer:</strong> {{ cert.issuer }}</p>
                     <p><strong>Signature Algorithm:</strong> {{ cert.signature_algorithm }}</p>
-                    <p><strong>Key:</strong> {{ cert.key_type }} ({{ cert.key_size }} bits)</p>
-                    <p><strong>Validity:</strong> {{ cert.not_before }} <strong>to</strong> {{ cert.not_after }}</p>
+                    <p>
+                        <strong>Key:</strong>
+                        {{ cert.key_type }} ({{ cert.key_size }} bits)
+                    </p>
+                    <p>
+                        <strong>Validity:</strong>
+                        {{ cert.not_before }} <strong>to</strong> {{ cert.not_after }}
+                    </p>
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <p>No certificate chain information available.</p>
+            <div class="finding-card" style="padding: 15px;">
+                <p>No certificate chain information was available from this scan.</p>
+            </div>
         {% endif %}
     </section>
 
     <!-- Ciphers -->
     <section class="findings">
         <h3>Supported Ciphers</h3>
-        <table class="summary-table" style="font-size: 0.8em;">
+        <p>
+            This section lists all ciphers accepted by the server for the scanned port.
+            Ciphers with key sizes below 128 bits or known-weak algorithms should be disabled.
+        </p>
+        <table class="cipher-table">
             <thead>
                 <tr>
                     <th>Protocol</th>
                     <th>Cipher Name</th>
                     <th>Bits</th>
-                    <th>Status</th>
+                    <th>Strength / Status</th>
                 </tr>
             </thead>
             <tbody>
                 {% for cipher in data.ciphers %}
+                {% set bits = cipher.bits | default(0) | int %}
+                {% set status = cipher.status | default('accepted') %}
+                {% set cls = 'risk-low' %}
+                {% set label = 'Strong' %}
+
+                {% if bits < 112 %}
+                    {% set cls = 'risk-high' %}
+                    {% set label = 'Weak – should be disabled' %}
+                {% elif bits < 128 %}
+                    {% set cls = 'risk-medium' %}
+                    {% set label = 'Borderline – avoid for new deployments' %}
+                {% elif bits >= 256 %}
+                    {% set cls = 'risk-info' %}
+                    {% set label = 'Very strong (256-bit)' %}
+                {% endif %}
+
                 <tr>
                     <td>{{ cipher.protocol }}</td>
                     <td>{{ cipher.name }}</td>
-                    <td>{{ cipher.bits }}</td>
-                    <td>{{ cipher.status }}</td>
+                    <td>{{ bits }}</td>
+                    <td>
+                        {% if status|lower == 'accepted' %}
+                            <span class="badge {{ cls }}">{{ label }}</span>
+                        {% else %}
+                            <span style="color:#9ca3af;">{{ status | title }}</span>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

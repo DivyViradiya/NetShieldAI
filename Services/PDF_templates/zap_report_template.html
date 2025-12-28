@@ -1,9 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-R">
+    <meta charset="UTF-8">
     <title>ZAP Scan Report</title>
     <link rel="stylesheet" href="file:///D:/NetShieldAI/static/css/PDF_style/report_style.css">
+    <style>
+        /* Extra presentation tweaks for ZAP PDF */
+
+        .scan-subtitle {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .summary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .summary-card {
+            flex: 1 1 30%;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            padding: 10px 12px;
+            background: #f9fafb;
+        }
+
+        .summary-label {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6b7280;
+        }
+
+        .summary-value {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .finding-card {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            page-break-inside: avoid;
+        }
+
+        .finding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .finding-header h4 {
+            margin: 0;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .finding-meta {
+            margin-bottom: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .finding-details p {
+            margin: 4px 0;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 9px;
+        }
+
+        .risk-high     { background-color: #fecaca; color: #7f1d1d; }
+        .risk-medium   { background-color: #fef3c7; color: #92400e; }
+        .risk-low      { background-color: #dcfce7; color: #166534; }
+        .risk-info     { background-color: #dbeafe; color: #1d4ed8; }
+
+        .predicted-score {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        .predicted-unmapped {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .confidence-3 { background-color: #bbf7d0; color: #166534; }
+        .confidence-2 { background-color: #fef3c7; color: #92400e; }
+        .confidence-1 { background-color: #fee2e2; color: #b91c1c; }
+        .confidence-0 { background-color: #e5e7eb; color: #4b5563; }
+        .confidence-other { background-color: #e5e7eb; color: #4b5563; }
+
+        .finding-text {
+            background-color: #f3f4f6;
+            border-left: 3px solid #003366;
+            padding: 8px;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            margin: 4px 0 8px 0;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            font-size: 0.9em;
+        }
+
+        .legend-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8em;
+            margin-top: 10px;
+        }
+        .legend-table th,
+        .legend-table td {
+            border: 1px solid #e5e7eb;
+            padding: 6px 8px;
+            text-align: left;
+        }
+        .legend-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+
+        .section-note {
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,8 +150,18 @@
         <div class="header-right">
             <h1>Vulnerability Scan Report</h1>
             <h2>ZAP Scanner</h2>
+            <div class="scan-subtitle">
+                Automated web application security assessment, including risk-ranked issues and remediation guidance.
+            </div>
         </div>
     </header>
+
+    {# Pre-calc counts for cards #}
+    {% set high_count   = data.summary.High  | default(0) %}
+    {% set medium_count = data.summary.Medium | default(0) %}
+    {% set low_count    = data.summary.Low  | default(0) %}
+    {% set info_count   = data.summary.Info | default(0) %}
+    {% set total_count  = data.summary.Total | default(0) %}
 
     <div class="report-info">
         <div class="info-box">
@@ -32,9 +178,40 @@
         </div>
     </div>
 
+    <!-- High-level summary cards -->
     <section class="summary">
-        <h3>Scan Summary</h3>
-        <table class="summary-table">
+        <h3>Scan Overview</h3>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">Total Alerts</div>
+                <div class="summary-value">{{ total_count }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">High Risk</div>
+                <div class="summary-value">
+                    {% if high_count > 0 %}
+                        <span class="badge risk-high">{{ high_count }} HIGH</span>
+                    {% else %}
+                        <span class="badge risk-low">None</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Medium &amp; Low Risk</div>
+                <div class="summary-value">
+                    {{ medium_count }} Medium / {{ low_count }} Low
+                </div>
+            </div>
+        </div>
+
+        <p class="section-note" style="margin-top: 10px;">
+            Prioritize remediation of <strong>High</strong> and <strong>Medium</strong> risk findings first,
+            then address Low and Informational issues as part of hardening.
+        </p>
+
+        <!-- Numeric summary table -->
+        <table class="summary-table" style="margin-top: 15px;">
             <thead>
                 <tr>
                     <th>Risk Level</th>
@@ -44,49 +221,98 @@
             <tbody>
                 <tr class="risk-high">
                     <td>High</td>
-                    <td>{{ data.summary.High | default(0) }}</td>
+                    <td>{{ high_count }}</td>
                 </tr>
                 <tr class="risk-medium">
                     <td>Medium</td>
-                    <td>{{ data.summary.Medium | default(0) }}</td>
+                    <td>{{ medium_count }}</td>
                 </tr>
                 <tr class="risk-low">
                     <td>Low</td>
-                    <td>{{ data.summary.Low | default(0) }}</td>
+                    <td>{{ low_count }}</td>
                 </tr>
                 <tr class="risk-info">
                     <td>Informational</td>
-                    <td>{{ data.summary.Info | default(0) }}</td>
+                    <td>{{ info_count }}</td>
                 </tr>
-                <tr class="risk-total">
+                <tr>
                     <td><strong>Total</strong></td>
-                    <td><strong>{{ data.summary.Total | default(0) }}</strong></td>
+                    <td><strong>{{ total_count }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Legend -->
+        <h4 style="margin-top: 18px; font-size: 0.95em;">Risk &amp; Score Legend</h4>
+        <table class="legend-table">
+            <thead>
+                <tr>
+                    <th>Badge</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge risk-high">High Risk</span></td>
+                    <td>Issues that can lead to compromise of data, authentication, or full system control.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge risk-medium">Medium Risk</span></td>
+                    <td>Exposures that may enable privilege escalation or sensitive information leakage.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge risk-low">Low Risk</span></td>
+                    <td>Minor weaknesses or best-practice deviations with limited impact.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge risk-info">Informational</span></td>
+                    <td>Non-exploit issues that still provide useful security context.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge predicted-score">Predicted Score</span></td>
+                    <td>Model-based severity estimate based on vulnerability features and context.</td>
                 </tr>
             </tbody>
         </table>
     </section>
 
-    <section class="findings">
+    <!-- Detailed findings -->
+    <section class="findings" style="page-break-before: always;">
         <h3>Detailed Findings</h3>
+        <p class="section-note">
+            Each card represents one ZAP alert. Use the Description and Solution sections to understand
+            the impact and remediation steps. References may include external standards or documentation.
+        </p>
         
         {% if data.findings %}
             {% for finding in data.findings %}
+            {% set risk_class = 'risk-info' %}
+            {% if finding.risk and finding.risk|lower == 'high' %}
+                {% set risk_class = 'risk-high' %}
+            {% elif finding.risk and finding.risk|lower == 'medium' %}
+                {% set risk_class = 'risk-medium' %}
+            {% elif finding.risk and finding.risk|lower == 'low' %}
+                {% set risk_class = 'risk-low' %}
+            {% endif %}
+
             <div class="finding-card">
                 <div class="finding-header">
                     <h4>{{ finding.name }}</h4>
+                    <span class="badge {{ risk_class }}">{{ finding.risk | default('Info') }} Risk</span>
                 </div>
                 
                 <div class="finding-meta">
-                    <span class="badge risk-{{ finding.risk | lower }}">{{ finding.risk }} Risk</span>
-                    
-                    <span class="badge predicted-score 
-                          {% if finding.predicted_risk_score == 'Unmapped' or finding.predicted_risk_score == 'Unprofiled' or finding.predicted_risk_score == 'N/A (Model not loaded)' %}
-                          predicted-unmapped
-                          {% endif %}
-                    ">
-                        Predicted Score: {{ finding.predicted_risk_score }}
+                    {# Predicted risk score #}
+                    {% set pred = finding.predicted_risk_score | default('Unmapped') %}
+                    {% set pred_cls = 'predicted-score' %}
+                    {% if pred in ['Unmapped', 'Unprofiled', 'N/A (Model not loaded)'] %}
+                        {% set pred_cls = pred_cls ~ ' predicted-unmapped' %}
+                    {% endif %}
+                    <span class="badge {{ pred_cls }}">
+                        Predicted Score: {{ pred }}
                     </span>
-                    
+
+                    {# Confidence badge based on numeric value #}
                     {% if finding.confidence == '3' %}
                         <span class="badge confidence-3">Confidence: High</span>
                     {% elif finding.confidence == '2' %}
@@ -103,22 +329,32 @@
                 <div class="finding-details">
                     <p><strong>URL:</strong> <span>{{ finding.url }}</span></p>
 
-                    <strong>Description:</strong>
+                    <p><strong>Description:</strong></p>
                     <div class="finding-text">{{ finding.description | safe }}</div>
                     
-                    <strong>Solution:</strong>
+                    <p><strong>Solution:</strong></p>
                     <div class="finding-text">{{ finding.solution | safe }}</div>
 
                     {% if finding.reference %}
-                    <strong>Reference:</strong>
+                    <p><strong>Reference:</strong></p>
                     <div class="finding-text">{{ finding.reference | safe }}</div>
                     {% endif %}
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <p>No vulnerabilities found.</p>
+            <div class="finding-card" style="padding: 20px; text-align: center; color: #166534;">
+                <h4>✅ No Vulnerabilities Found</h4>
+                <p>
+                    ZAP did not report any security alerts for the scanned target using the configured scan profile.
+                </p>
+            </div>
         {% endif %}
     </section>
+
+    <footer style="margin-top: 40px; text-align: center; font-size: 0.8em; color: #777;">
+        <p>Generated by NetShieldAI Reporting Engine</p>
+    </footer>
+
 </body>
 </html>

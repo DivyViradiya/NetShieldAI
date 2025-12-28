@@ -1,9 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-R">
+    <meta charset="UTF-8">
     <title>Network Scan Report</title>
     <link rel="stylesheet" href="file:///D:/NetShieldAI/static/css/PDF_style/report_style.css">
+    <style>
+        /* Extra presentation tweaks specifically for Nmap PDF */
+
+        .scan-subtitle {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .host-summary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .host-summary-card {
+            flex: 1 1 30%;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            padding: 10px 12px;
+            background: #f9fafb;
+        }
+
+        .host-summary-label {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6b7280;
+        }
+
+        .host-summary-value {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .legend-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            margin-top: 10px;
+        }
+        .legend-table th,
+        .legend-table td {
+            border: 1px solid #e5e7eb;
+            padding: 6px 8px;
+            text-align: left;
+        }
+        .legend-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+
+        .finding-card {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            page-break-inside: avoid;
+        }
+
+        .finding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .finding-header h4 {
+            margin: 0;
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 9px;
+        }
+
+        .risk-critical { background-color: #fee2e2; color: #991b1b; }
+        .risk-high     { background-color: #fecaca; color: #7f1d1d; }
+        .risk-medium   { background-color: #fef3c7; color: #92400e; }
+        .risk-low      { background-color: #dcfce7; color: #166534; }
+        .risk-info     { background-color: #dbeafe; color: #1d4ed8; }
+
+        .port-meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5px;
+            margin-top: 8px;
+        }
+        .port-meta-table th,
+        .port-meta-table td {
+            border: 1px solid #e5e7eb;
+            padding: 5px 7px;
+            text-align: left;
+        }
+        .port-meta-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+
+        .finding-text {
+            background-color: #f3f4f6;
+            border-left: 3px solid #003366;
+            padding: 8px;
+            font-family: Consolas, "Courier New", monospace;
+            white-space: pre-wrap;
+            font-size: 9px;
+            margin-top: 6px;
+        }
+
+        .risk-section {
+            border-left: 4px solid #b91c1c;
+            background-color: #fef2f2;
+        }
+
+        .cpe-section {
+            border-left: 3px solid #166534;
+            background-color: #ecfdf5;
+        }
+
+        .raw-summary-block {
+            white-space: pre-wrap;
+            font-size: 0.75em;
+            line-height: 1.25;
+            color: #4b5563;
+            background-color: #f9fafb;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,8 +153,21 @@
         <div class="header-right">
             <h1>Network Assessment Report</h1>
             <h2>Nmap Scanner</h2>
+            <div class="scan-subtitle">
+                Host and service enumeration using Nmap with version and vulnerability insights.
+            </div>
         </div>
     </header>
+
+    {# Pre-calc: any high-risk ports? #}
+    {% set ns = namespace(vuln_count=0) %}
+    {% if data.ports %}
+        {% for p in data.ports %}
+            {% if p.vulnerability_notes and p.vulnerability_notes | length > 5 %}
+                {% set ns.vuln_count = ns.vuln_count + 1 %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
     <div class="report-info">
         <div class="info-box">
@@ -32,9 +184,36 @@
         </div>
     </div>
 
+    <!-- Host overview / mini dashboard -->
     <section class="summary">
-        <h3>Scan Summary</h3>
-        <table class="summary-table">
+        <h3>Scan Overview</h3>
+
+        <div class="host-summary-grid">
+            <div class="host-summary-card">
+                <div class="host-summary-label">Open Ports</div>
+                <div class="host-summary-value">
+                    {{ data.ports | length if data.ports else 0 }}
+                </div>
+            </div>
+            <div class="host-summary-card">
+                <div class="host-summary-label">Detected Vulnerable Services</div>
+                <div class="host-summary-value">
+                    {% if ns.vuln_count > 0 %}
+                        {{ ns.vuln_count }} service{% if ns.vuln_count > 1 %}s{% endif %}
+                    {% else %}
+                        None detected
+                    {% endif %}
+                </div>
+            </div>
+            <div class="host-summary-card">
+                <div class="host-summary-label">OS Fingerprint</div>
+                <div class="host-summary-value">
+                    {{ data.os_guess if data.os_guess else "Unknown / Not Detected" }}
+                </div>
+            </div>
+        </div>
+
+        <table class="summary-table" style="margin-top: 15px;">
             <thead>
                 <tr>
                     <th>Metric</th>
@@ -46,7 +225,7 @@
                     <td><strong>Scan Arguments</strong></td>
                     <td><code style="background:#eee; padding:2px 5px; border-radius:3px;">{{ data.scan_args }}</code></td>
                 </tr>
-                
+
                 {% if data.os_guess and data.os_guess != 'Unknown / Not Detected' %}
                 <tr class="risk-info">
                     <td><strong>OS Detected</strong></td>
@@ -58,69 +237,139 @@
                     <td><strong>Open Ports Found</strong></td>
                     <td><strong>{{ data.ports | length }}</strong></td>
                 </tr>
+
+                <tr>
+                    <td><strong>Vulnerable Services</strong></td>
+                    <td>
+                        {% if ns.vuln_count > 0 %}
+                            <span class="badge risk-high">YES – {{ ns.vuln_count }}</span>
+                        {% else %}
+                            <span class="badge risk-low">NONE DETECTED</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Legend -->
+        <h4 style="margin-top: 18px; font-size: 0.95em;">Risk Badge Legend</h4>
+        <table class="legend-table">
+            <thead>
+                <tr>
+                    <th>Badge</th>
+                    <th>Meaning</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge risk-high">VULNERABILITY FOUND</span></td>
+                    <td>Known or suspected vulnerability data is associated with this service.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge risk-medium">EXPOSED SERVICE</span></td>
+                    <td>Open and reachable service, no vulnerability data attached.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge risk-low">INFORMATIONAL</span></td>
+                    <td>Low-risk or internal-facing service information.</td>
+                </tr>
             </tbody>
         </table>
     </section>
 
-    <section class="findings">
-        <h3>Detected Open Ports & Services</h3>
+    <!-- Open Ports & Services -->
+    <section class="findings" style="page-break-before: always;">
+        <h3>Detected Open Ports &amp; Services</h3>
+        <p>
+            Each card below represents one exposed service discovered by Nmap, including
+            protocol, version details, and any associated vulnerability notes or CPE identifiers.
+        </p>
         
         {% if data.ports %}
             {% for port in data.ports %}
+            {% set has_vuln = port.vulnerability_notes and port.vulnerability_notes | length > 5 %}
+            {% set badge_class = "risk-high" if has_vuln else "risk-medium" %}
+            {% set badge_label = "VULNERABILITY FOUND" if has_vuln else "EXPOSED SERVICE" %}
             <div class="finding-card">
-                <div class="finding-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h4>Port {{ port.port }} <span style="color:#666; font-size: 0.8em;">/ {{ port.protocol }}</span></h4>
-                    
-                    {% if port.vulnerability_notes and port.vulnerability_notes | length > 5 %}
-                    <span class="badge risk-high">VULNERABILITY FOUND</span>
-                    {% else %}
-                    <span class="badge risk-medium">{{ port.service | upper }}</span>
-                    {% endif %}
+                <div class="finding-header">
+                    <h4>
+                        Port {{ port.port }}
+                        <span style="color:#6b7280; font-size: 0.8em;"> / {{ port.protocol }}</span>
+                        {% if port.service %}
+                            &nbsp;–&nbsp;<span style="font-weight: 500;">{{ port.service | upper }}</span>
+                        {% endif %}
+                    </h4>
+                    <span class="badge {{ badge_class }}">{{ badge_label }}</span>
                 </div>
                 
-                <div class="finding-details">
-                    <p>
-                        <strong>State:</strong> {{ port.state | title }}
-                        &nbsp;|&nbsp; 
-                        <strong>Protocol:</strong> {{ port.protocol }}
-                    </p>
+                <table class="port-meta-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Attribute</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>State</td>
+                            <td>{{ port.state | default('unknown') | title }}</td>
+                        </tr>
+                        <tr>
+                            <td>Protocol</td>
+                            <td>{{ port.protocol | default('N/A') }}</td>
+                        </tr>
+                        <tr>
+                            <td>Service Name</td>
+                            <td>{{ port.service | default('Unknown') }}</td>
+                        </tr>
+                        <tr>
+                            <td>Local Process</td>
+                            <td>
+                                {% if port.process_name and port.process_name != 'N/A' %}
+                                    {{ port.process_name }}
+                                {% else %}
+                                    Not identified
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CPE Identifier</td>
+                            <td>
+                                {% if port.cpe and port.cpe != 'N/A' %}
+                                    <code style="font-size: 0.8em;">{{ port.cpe }}</code>
+                                {% else %}
+                                    Not reported
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                    {% if port.version %}
-                    <div class="finding-text">
-                        <strong>Service Version:</strong><br>
-                        {{ port.version }}
-                    </div>
-                    {% endif %}
-
-                    {% if port.process_name and port.process_name != 'N/A' %}
-                    <div class="finding-text" style="background-color: #eef2f5; border-left: 3px solid #003366;">
-                        <strong>Local Process Detected:</strong><br>
-                        {{ port.process_name }}
-                    </div>
-                    {% endif %}
-                    
-                    {% if port.vulnerability_notes and port.vulnerability_notes | length > 5 %}
-                    <div class="finding-text risk-section" style="margin-top: 15px; border-left: 5px solid #cc0000; background-color: #ffeeee; padding: 10px;">
-                        <strong>Vulnerability Scan Findings:</strong>
-                        <pre style="white-space: pre-wrap; word-break: break-word; font-size: 0.9em; margin-top: 5px; color: #cc0000;">{{ port.vulnerability_notes }}</pre>
-                    </div>
-                    {% endif %}
-
-                    {% if port.cpe and port.cpe != 'N/A' %}
-                    <div class="finding-text cpe-section" style="margin-top: 10px; border-left: 3px solid #006600; background-color: #eeffee;">
-                        <strong>CPE Identifier:</strong><br>
-                        <code style="font-size: 0.8em;">{{ port.cpe }}</code>
-                    </div>
-                    {% endif %}
-                    
+                {% if port.version %}
+                <div class="finding-text">
+                    <strong>Service Version Fingerprint:</strong><br>
+                    {{ port.version }}
                 </div>
+                {% endif %}
+
+                {% if has_vuln %}
+                <div class="finding-text risk-section" style="margin-top: 10px;">
+                    <strong>Vulnerability Scan Notes:</strong>
+                    <pre style="white-space: pre-wrap; word-break: break-word; font-size: 0.9em; margin-top: 5px; color: #7f1d1d;">
+{{ port.vulnerability_notes }}
+                    </pre>
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         
         {% else %}
             <div class="finding-card" style="padding: 20px; text-align: center; color: #555;">
                 <h4>✅ No Open Ports Detected</h4>
-                <p>The scan did not identify any open ports accessible from the network.</p>
+                <p>
+                    The scan did not identify any open ports accessible from the network
+                    using the specified Nmap arguments.
+                </p>
             </div>
         {% endif %}
     </section>
@@ -128,11 +377,17 @@
     {% if data.raw_output_summary %}
     <section class="raw-summary" style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px; page-break-before: always;">
         <h3>Raw Scan Output Summary</h3>
-        <pre style="white-space: pre-wrap; font-size: 0.75em; line-height: 1.2; color: #555; background-color: #f7f7f7; padding: 10px; border: 1px solid #eee;">{{ data.raw_output_summary }}</pre>
+        <p class="section-note">
+            This is a condensed view of the original Nmap output, preserved for reference
+            and validation of the parsed results shown above.
+        </p>
+        <div class="raw-summary-block">
+{{ data.raw_output_summary }}
+        </div>
     </section>
     {% endif %}
 
-    <footer style="margin-top: 50px; text-align: center; font-size: 0.8em; color: #777;">
+    <footer style="margin-top: 40px; text-align: center; font-size: 0.8em; color: #777;">
         <p>Generated by NetShieldAI Reporting Engine</p>
     </footer>
 

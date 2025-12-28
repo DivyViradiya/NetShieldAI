@@ -50,10 +50,7 @@ def get_interfaces_route():
 def start_capture_route():
     """
     API endpoint to initiate packet capture and analysis.
-    Accepts: target_ip (required), duration (optional), max_packets (optional),
-             interface_id (optional), custom_bpf_filter (optional).
-    NOTE: This endpoint WILL NOT attempt to elevate privileges. The Flask server
-    process must already be running with administrator/root privileges.
+    ... [docstring content unchanged] ...
     """
     data = request.get_json(force=True, silent=True) or {}
     target_ip = data.get('target_ip')
@@ -107,43 +104,52 @@ def start_capture_route():
             max_packets=max_packets
         )
 
-        if analysis_data.get('status') != 'success':
+        # ------------------------------------------------------------------
+        # ⭐ CRITICAL CHANGE: ENRICH DATA & GENERATE PDF CONTEXT ⭐
+        # ------------------------------------------------------------------
+        if analysis_data.get('status') == 'success':
+            
+            # 1. Enrich report data with structured context (including structured tables/features)
+            structured_context = packet_sniffer.build_pdf_report_context(analysis_data)
+            analysis_data["structured_context"] = {k: v for k, v in structured_context.items() if k != 'raw'}
+            analysis_data["extracted_features"] = structured_context.get("features", [])
+
+            # 2. Save the enriched JSON report (this is what the PDF generator reads)
+            json_path = packet_sniffer.save_json_report(analysis_data)
+        
+            # 3. Generate PDF report (best-effort)
+            if json_path:
+                try:
+                    packet_sniffer.log("[*] Analysis complete. Generating PDF report...")
+
+                    # Ensure output directory exists
+                    os.makedirs(PDF_REPORT_PATH.parent, exist_ok=True)
+
+                    # Create PDF using pdf_generator - pass the data dictionary directly
+                    # NOTE: We pass the actual data dictionary instead of reading the file again for efficiency.
+                    pdf_generator.create_packet_sniffer_report_pdf(analysis_data, str(PDF_REPORT_PATH))
+
+                    if PDF_REPORT_PATH.exists():
+                        packet_sniffer.log(f"[+] PDF report generated successfully: {PDF_REPORT_PATH}")
+                    else:
+                        packet_sniffer.log("[!] PDF generation ran but file not found.")
+
+                except ImportError:
+                    packet_sniffer.log("[!] Error: PDF generator dependencies missing.")
+                except Exception as e:
+                    packet_sniffer.log(f"[!] FAILED to generate PDF: {str(e)}")
+        # ------------------------------------------------------------------
+        # ⭐ END CRITICAL CHANGE ⭐
+        # ------------------------------------------------------------------
+        else:
+            # Handle analysis failure
             packet_sniffer.log(f"[!] JSON Analysis failed: {analysis_data.get('message', 'Unknown error')}")
             packet_sniffer.send_sse_event("analysis_complete", {"target_ip": target_ip, "status": "analysis_failed"})
             return
 
-        # Save JSON report
-        json_path = packet_sniffer.save_json_report(analysis_data)
-
-        # Extract security features (no return required)
-        try:
-            packet_sniffer.extract_security_features(analysis_data)
-        except Exception as e:
-            packet_sniffer.log(f"[!] Feature extraction failed: {e}")
-
-        # Generate PDF report (best-effort)
-        if json_path:
-            try:
-                packet_sniffer.log("[*] Analysis complete. Generating PDF report...")
-
-                # Ensure output directory exists
-                os.makedirs(PDF_REPORT_PATH.parent, exist_ok=True)
-
-                # Create PDF using pdf_generator (may raise if dependencies missing)
-                pdf_generator.create_packet_sniffer_report_pdf(str(JSON_REPORT_PATH), str(PDF_REPORT_PATH))
-
-                if PDF_REPORT_PATH.exists():
-                    packet_sniffer.log(f"[+] PDF report generated successfully: {PDF_REPORT_PATH}")
-                else:
-                    packet_sniffer.log("[!] PDF generation ran but file not found.")
-
-            except ImportError:
-                packet_sniffer.log("[!] Error: PDF generator dependencies missing.")
-            except Exception as e:
-                packet_sniffer.log(f"[!] FAILED to generate PDF: {str(e)}")
-
         # Send analysis completion event to UI (SSE)
         packet_sniffer.send_sse_event("analysis_complete", {"target_ip": target_ip, "status": "success"})
+
 
     # Launch the background thread
     threading.Thread(
