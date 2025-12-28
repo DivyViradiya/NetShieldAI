@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NetShieldAI - Network Monitor</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -329,6 +330,29 @@
         flex-shrink: 0;
       }
       
+      div.vis-tooltip {
+        background-color: rgba(15, 23, 42, 0.95) !important; /* Slate-900 */
+        border: 1px solid #3b82f6 !important; /* Blue-500 border */
+        color: #e2e8f0 !important; /* Slate-200 text */
+        font-family: 'Fira Code', monospace !important;
+        font-size: 11px !important;
+        padding: 8px 12px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+        backdrop-filter: blur(4px);
+        z-index: 99999;
+      }
+      
+      #networkGraphCanvas canvas {
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
+      }
+      
+      #graphContent .relative {
+        isolation: isolate; /* Helps with Z-index stacking contexts */
+      }
+      
       /* Custom Scrollbars */
       ::-webkit-scrollbar {
         width: 6px;
@@ -485,6 +509,7 @@
             <button id="flowsTabBtn" class="tab-button">Flows</button>
             <button id="anomaliesTabBtn" class="tab-button">Anomalies</button>
             <button id="packetsTabBtn" class="tab-button">Packets</button>
+            <button id="graphTabBtn" class="tab-button">Network Graph</button>
           </div>
 
           <div class="flex-grow flex flex-col min-h-0">
@@ -660,6 +685,38 @@
                       </tr>
                     </tbody>
                   </table>
+                </div>
+              </div>
+            </div>
+
+            <div id="graphContent" class="hidden flex-grow flex flex-col p-6 min-h-0">
+              <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/30 flex-grow relative h-full">
+                <div id="networkGraphCanvas" class="absolute inset-0 w-full h-full"></div>
+
+                <div class="absolute top-4 left-4 z-10 pointer-events-none">
+                  <h3 class="text-slate-300 font-bold text-sm tracking-wider uppercase bg-slate-900/80 px-3 py-1 rounded border border-slate-700 backdrop-blur-sm shadow-lg"><i class="fas fa-project-diagram mr-2 text-blue-500"></i>Network Topology</h3>
+                </div>
+
+                <div class="absolute top-4 right-4 flex flex-col gap-2 z-10">
+                  <button id="graphZoomInBtn" class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Zoom In"><i class="fas fa-plus"></i></button>
+                  <button id="graphZoomOutBtn" class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Zoom Out"><i class="fas fa-minus"></i></button>
+                  <button id="graphFitBtn" class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Fit to Screen"><i class="fas fa-compress-arrows-alt"></i></button>
+                </div>
+
+                <div class="absolute bottom-4 right-4 bg-slate-900/90 p-3 rounded-lg border border-slate-700 text-xs backdrop-blur-sm shadow-xl z-10">
+                  <h4 class="font-bold text-slate-500 mb-2 uppercase text-[10px]">Legend</h4>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
+                    <span class="text-slate-300">Local Network</span>
+                  </div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]"></span>
+                    <span class="text-slate-300">External IP</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] bg-slate-800 px-1 rounded text-slate-400 border border-slate-700">443</span>
+                    <span class="text-slate-300">Port Number</span>
+                  </div>
                 </div>
               </div>
             </div>

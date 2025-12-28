@@ -32,12 +32,20 @@ document.addEventListener('DOMContentLoaded', () => {
         flowsTabBtn: document.getElementById('flowsTabBtn'),
         anomaliesTabBtn: document.getElementById('anomaliesTabBtn'),
         packetsTabBtn: document.getElementById('packetsTabBtn'),
+        graphTabBtn: document.getElementById('graphTabBtn'),
 
         // Tab Content Containers
         summaryContent: document.getElementById('summaryContent'),
         flowsContent: document.getElementById('flowsContent'),
         anomaliesContent: document.getElementById('anomaliesContent'),
         packetsContent: document.getElementById('packetsContent'),
+        graphContent: document.getElementById('graphContent'),
+
+        // Graph Canvas & Controls (UPDATED)
+        networkGraphCanvas: document.getElementById('networkGraphCanvas'),
+        graphZoomInBtn: document.getElementById('graphZoomInBtn'),
+        graphZoomOutBtn: document.getElementById('graphZoomOutBtn'),
+        graphFitBtn: document.getElementById('graphFitBtn'),
 
         // Summary Tab Specifics
         summaryStatus: document.getElementById('summaryStatus'),
@@ -46,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
         summaryPrimaryProto: document.getElementById('summaryPrimaryProto'),
         captureMetaBody: document.getElementById('captureMetaBody'),
         
-        // UPDATED: Now points to table bodies instead of raw text boxes
         protocolStatsBody: document.getElementById('protocolStatsBody'),
         conversationStatsBody: document.getElementById('conversationStatsBody'),
 
@@ -68,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isActionInProgress = false;
     let reportDownloadUrl = null;
     let eventSource = null;
+    let networkInstance = null; // Store the Vis.js network instance
 
     // --- UI HELPERS ---
 
@@ -80,14 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         button.disabled = isLoading;
 
-        // Toggle opacity/cursor classes for the button itself
         if (isLoading) {
             button.classList.add('cursor-not-allowed', 'opacity-70');
         } else {
             button.classList.remove('cursor-not-allowed', 'opacity-70');
         }
 
-        // Toggle visibility of inner elements
         if (textSpan) textSpan.classList.toggle('hidden', isLoading); 
         if (spinnerSpan) spinnerSpan.classList.toggle('hidden', !isLoading);
         if (caretIcon) caretIcon.classList.toggle('hidden', isLoading); 
@@ -102,10 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function setStatus(text, type = 'ready') {
         if (!elements.snifferStatus) return;
 
-        // Reset base classes
         elements.snifferStatus.className = 'text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400';
         
-        // Remove old icon
         const oldIcon = elements.snifferStatus.querySelector('i');
         if (oldIcon) oldIcon.remove();
 
@@ -180,12 +184,14 @@ document.addEventListener('DOMContentLoaded', () => {
             flows: elements.flowsContent,
             anomalies: elements.anomaliesContent,
             packets: elements.packetsContent,
+            graph: elements.graphContent,
         };
         const btnMap = {
             summary: elements.summaryTabBtn,
             flows: elements.flowsTabBtn,
             anomalies: elements.anomaliesTabBtn,
             packets: elements.packetsTabBtn,
+            graph: elements.graphTabBtn,
         };
 
         Object.entries(map).forEach(([key, el]) => {
@@ -197,6 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!btn) return;
             btn.classList.toggle('active', key === name);
         });
+        
+        // If switching to graph, fit the network to the view
+        if (name === 'graph' && networkInstance) {
+             networkInstance.fit();
+        }
     }
 
     // --- SSE LOG STREAM ---
@@ -243,6 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderFlows(report);
             renderAnomalies(report);
             renderPackets(report);
+            renderGraph(report);
         } catch (e) {
             console.error(e);
             appendLog('[x] Failed to fetch sniffer report.');
@@ -299,12 +311,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // --- NEW: Render the parsed tables ---
         renderProtocolTable(protoStats);
         renderConversationTable(tcpStats);
     }
-
-    // --- NEW TABLE PARSERS ---
 
     function renderProtocolTable(lines) {
         if (!elements.protocolStatsBody) return;
@@ -315,7 +324,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // TShark line example: "  eth      frames:6 bytes:360"
         const regex = /([a-zA-Z0-9\-\._]+)\s+frames:(\d+)\s+bytes:(\d+)/;
 
         lines.forEach(line => {
@@ -325,7 +333,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const frames = match[2];
                 const bytes = parseInt(match[3], 10);
                 
-                // Calculate indentation based on leading spaces
                 const leadingSpaces = line.search(/\S|$/);
                 const indent = Math.max(0, (leadingSpaces / 2) * 10); 
 
@@ -352,7 +359,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         validLines.forEach(line => {
-            // Raw: "192.168.1.5:5432 <-> 10.0.0.1:80      10 500 ..."
             const splitArrow = line.split('<->');
             if (splitArrow.length !== 2) return;
 
@@ -360,18 +366,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const rightSideRaw = splitArrow[1].trim();
 
             const rightParts = rightSideRaw.split(/\s+/);
-            const rightSide = rightParts[0]; // IP:Port
+            const rightSide = rightParts[0]; 
 
-            // Attempt to grab bytes. Heuristic: Usually the 2nd to last "bytes" looking number, or just the last large integer.
-            // Using regex to find "X bytes" if TShark labels it, or just grab from columns if unlabeled.
             let displayBytes = '-';
-            
             const bytesMatch = line.match(/\s(\d+)\s+bytes/); 
             if(bytesMatch) {
                 displayBytes = bytesMatch[1];
             } else if (rightParts.length >= 4) {
-                 // Fallback for unlabeled columns: endpoints <-> endpoint B  framesA bytesA framesB bytesB totalFrames totalBytes duration
-                 // totalBytes is often 2nd from last
                  displayBytes = rightParts[rightParts.length - 2] || '?';
             }
 
@@ -502,6 +503,145 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- UPDATED: ADVANCED GRAPH RENDERING ---
+
+    function processGraphData(report) {
+        const lines = (report.traffic_summary && report.traffic_summary.tcp_conversation_stats) ? report.traffic_summary.tcp_conversation_stats : [];
+        const nodesMap = new Map(); 
+        const edges = [];
+
+        lines.forEach(line => {
+            if (!line.includes('<->')) return;
+            
+            const parts = line.split('<->');
+            const leftFull = parts[0].trim();
+            const rightFull = parts[1].trim().split(/\s+/)[0]; 
+
+            const leftParts = leftFull.split(':');
+            const rightParts = rightFull.split(':');
+
+            const srcIp = leftParts[0];
+            const srcPort = leftParts[1] || '?';
+            const dstIp = rightParts[0];
+            const dstPort = rightParts[1] || '?';
+            
+            if(!srcIp || !dstIp) return;
+
+            let bytes = 0;
+            const bytesMatch = line.match(/\s(\d+)\s+bytes/); 
+            if(bytesMatch) bytes = parseInt(bytesMatch[1], 10);
+
+            const isLocal = (ip) => /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(ip);
+
+            // Process Source Node
+            if (!nodesMap.has(srcIp)) {
+                nodesMap.set(srcIp, { 
+                    id: srcIp, 
+                    label: srcIp, 
+                    group: isLocal(srcIp) ? 'local' : 'external',
+                    value: bytes 
+                });
+            } else {
+                nodesMap.get(srcIp).value += bytes;
+            }
+
+            // Process Dest Node
+            if (!nodesMap.has(dstIp)) {
+                nodesMap.set(dstIp, { 
+                    id: dstIp, 
+                    label: dstIp, 
+                    group: isLocal(dstIp) ? 'local' : 'external',
+                    value: bytes
+                });
+            } else {
+                nodesMap.get(dstIp).value += bytes;
+            }
+
+            // Create Edge
+            const displayPort = (parseInt(srcPort) < parseInt(dstPort) && parseInt(srcPort) < 10000) ? srcPort : dstPort;
+            
+            edges.push({ 
+                from: srcIp, 
+                to: dstIp, 
+                label: displayPort !== '?' ? displayPort : '', 
+                font: { align: 'top', size: 10, strokeWidth: 2, strokeColor: '#050505', color: '#94a3b8' },
+                width: bytes > 5000 ? 3 : 1, 
+                // Fix Edge Tooltip as well:
+                title: `${bytes} Bytes Transferred` 
+            });
+        });
+
+        const nodes = Array.from(nodesMap.values()).map(n => ({
+            id: n.id,
+            label: n.id,
+            group: n.group,
+            value: Math.log(n.value + 1000), 
+            // --- FIX APPLIED HERE: Using \n instead of <br> ---
+            title: `IP:  ${n.id}\nLoc: ${n.group.toUpperCase()}\nVol: ${(n.value/1024).toFixed(2)} KB`
+        }));
+
+        return { nodes, edges };
+    }
+
+    function renderGraph(report) {
+        if (!elements.networkGraphCanvas) return;
+        
+        const data = processGraphData(report);
+        
+        if (data.nodes.length === 0) return;
+
+        const options = {
+            nodes: {
+                shape: 'dot',
+                font: { face: 'Inter', size: 12, color: '#e2e8f0', strokeWidth: 3, strokeColor: '#050505' },
+                scaling: { min: 10, max: 30 }, 
+                shadow: true
+            },
+            groups: {
+                local: {
+                    color: { background: '#3b82f6', border: '#2563eb', highlight: { background: '#60a5fa', border: '#3b82f6' } }, 
+                },
+                external: {
+                    color: { background: '#f97316', border: '#ea580c', highlight: { background: '#fb923c', border: '#f97316' } }, 
+                }
+            },
+            edges: {
+                color: { color: '#475569', highlight: '#94a3b8' },
+                smooth: { type: 'continuous' },
+                selectionWidth: 2
+            },
+            // --- UPDATED PHYSICS FOR ROUND LAYOUT ---
+            physics: {
+                stabilization: {
+                    enabled: true,
+                    iterations: 1000 // Pre-calculate layout so it starts round
+                },
+                barnesHut: {
+                    gravitationalConstant: -12000, // Strong repulsion pushes nodes into a wide circle
+                    centralGravity: 0.3,           // Pulls them back to center lightly
+                    springLength: 150,             // Length of the lines
+                    springConstant: 0.04,
+                    damping: 0.09,
+                    avoidOverlap: 0.2
+                },
+                solver: 'barnesHut', // Switching back to this solver ensures circular star shapes
+                minVelocity: 0.75
+            },
+            interaction: {
+                hover: true,
+                tooltipDelay: 100,
+                zoomView: false, 
+                dragView: true
+            }
+        };
+
+        if (networkInstance) {
+            networkInstance.setData(data);
+        } else {
+            networkInstance = new vis.Network(elements.networkGraphCanvas, data, options);
+        }
+    }
+
     // --- DOWNLOAD & AI LOGIC ---
 
     async function checkReportAvailability() {
@@ -618,6 +758,34 @@ document.addEventListener('DOMContentLoaded', () => {
         if(elements.flowsTabBtn) elements.flowsTabBtn.addEventListener('click', () => switchTab('flows'));
         if(elements.anomaliesTabBtn) elements.anomaliesTabBtn.addEventListener('click', () => switchTab('anomalies'));
         if(elements.packetsTabBtn) elements.packetsTabBtn.addEventListener('click', () => switchTab('packets'));
+        if(elements.graphTabBtn) elements.graphTabBtn.addEventListener('click', () => switchTab('graph'));
+
+        // NEW: Graph Zoom Controls
+        if (elements.graphZoomInBtn) {
+            elements.graphZoomInBtn.addEventListener('click', () => {
+                if (networkInstance) {
+                    const scale = networkInstance.getScale() + 0.3;
+                    networkInstance.moveTo({ scale: scale, animation: true });
+                }
+            });
+        }
+
+        if (elements.graphZoomOutBtn) {
+            elements.graphZoomOutBtn.addEventListener('click', () => {
+                if (networkInstance) {
+                    const scale = networkInstance.getScale() - 0.3;
+                    networkInstance.moveTo({ scale: scale, animation: true });
+                }
+            });
+        }
+
+        if (elements.graphFitBtn) {
+            elements.graphFitBtn.addEventListener('click', () => {
+                if (networkInstance) {
+                    networkInstance.fit({ animation: true });
+                }
+            });
+        }
 
         if(elements.refreshSnifferResultsBtn) {
             elements.refreshSnifferResultsBtn.addEventListener('click', () => {
