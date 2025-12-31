@@ -129,3 +129,100 @@ sudo apt purge vulnscanai-app
 
 
 
+
+User oriented planning:
+Phase 1: The Foundation (Database & Auth)
+Focus: root directory and models.py We need to set up the database and the user model before we touch any scanning logic.
+Create models.py: Define the User table (id, username, password, is_admin).
+Create routes/auth_bp.py: Implement Login, Register, Logout, and Admin Dashboard routes.
+Update run.py: Initialize Flask-SQLAlchemy and Flask-Login here.
+
+Phase 2: Service Refactoring (Dynamic Paths)
+Focus: Services/ directory Currently, your scripts hardcode paths like D:\NetShieldAI\Services\results. We must change them to accept a dynamic path.
+Modify network_scanner.py: Update functions to accept a output_dir argument.
+Modify packet_sniffer.py: Ensure PCAP and JSON files are saved to results/<user_id>/packet_sniffer/.
+Modify zap_scanner.py & ssl_scanner.py: Same dynamic path logic.
+Modify pdf_generator.py: Ensure it reads/writes PDFs from the specific user's folder.
+
+Phase 3: The Glue (Blueprints)
+Focus: routes/ directory The blueprints act as the bridge. They need to know who is logged in and tell the Services where to save the files.
+Update network_scanner_bp.py (and others):
+Get current_user.id.
+Construct the path: base_path / str(user_id) / 'network_scanner'.
+Pass this path to the Service functions.
+Secure Endpoints: Add @login_required decorators to all scanning routes.
+
+Phase 4: The Interface (Frontend)
+Focus: templates/ directory
+Create login.html & register.html: Beautiful, dark-mode auth pages.
+Update home.html: Show "Login" button if guest, "Dashboard/Logout" if user.
+Create admin_dashboard.html: A table for the admin to see/delete users.
+
+
+
+1. Create The Master Template (base.html)
+Goal: Remove code duplication. Currently, every one of your files contains the full <head>, <style>, <nav>, and <footer>.
+Action: We will extract the common CSS (Tailwind + your custom dark theme styles), the Navbar logic (which needs to switch between "Login" and "Logout" buttons), and the Footer into a single file.
+Result: If you want to change the navbar later, you only do it in one place.
+
+2. Create Authentication Pages
+Goal: Allow users to sign up and sign in.
+templates/login.html: A clean, centered card for username/password entry.
+templates/register.html: A registration form.
+templates/admin_dashboard.html: A simple view for the admin to see registered users (since we added that route in Phase 1).
+
+3. Refactor Existing Templates
+Goal: Update your 6 existing files to "extend" the new base.html instead of repeating code.
+home.html: We will strip the <html>, <head>, and <nav> tags and just keep the Hero Section and Feature Cards.
+network_scanner.html, packet_sniffer.html, etc.: We will strip the outer HTML shell and keep only the Control Panel and Results Panel grids. We will also ensure they retain their specific Page Titles and custom scripts.
+
+
+
+
+Step 1: The Foundation (base.html)
+We will create the master layout file that acts as the skeleton for every page.
+Action: Extract all common CSS (Tailwind + your custom dark theme), Google Fonts, and FontAwesome links into this file.
+New Navbar: Implement the 4-item structure you requested:
+Cyber Arsenal (Link to Tools Hub)
+NetShield AI (Link to Chatbot)
+Command Center (Link to Home/Dashboard)
+Dynamic Auth Button:
+If Logged Out: Shows "Login / Register".
+If Logged In: Shows User Profile button (Dropdown with "My Dashboard" & "Logout").
+Flash Messages: Add a block to display alerts (like "Login Failed" or "Scan Started") automatically.
+
+Step 2: Authentication Pages
+We need clean, professional pages for user entry.
+login.html: A centered, glass-morphism card for users to sign in.
+register.html: A registration form.
+admin_dashboard.html: A table view for the Admin to see all registered users (matching your auth_bp.py logic).
+
+Step 3: The User Dashboard (user_dashboard.html)
+New Requirement: You asked for a place to see "all scan information and PDFs".
+Action: Create a personal dashboard for the standard user.
+Features:
+A summary of recent activities.
+"My Reports" Section: A list of generated PDF reports (Nmap, ZAP, SSL, Sniffer) pulled from their user folder, available for download.
+
+Step 4: The Cyber Arsenal (tools_hub.html)
+We will create the dedicated "Tools" page.
+Action: Move the "Powerful Scanning Tools" grid from your current home.html to this file.
+Purpose: This becomes the launchpad for your 4 scanners.
+
+Step 5: Refactor the "Command Center" (home.html)
+Your home.html will become a lightweight landing page/overview.
+Action: Strip the navbar, footer, and tools grid.
+Content: Keep the Hero section and "How It Works" (or convert "How It Works" into a "System Status" view later). It will extend base.html.
+
+Step 6: Refactor Scanner Interfaces
+We will strip the heavy HTML shell from your 4 scanner pages and the chatbot.
+Action: Convert network_scanner.html, packet_sniffer.html, zap_scanner.html, ssl_scanner.html, and chatbot.html to simple templates that:
+{% extends "base.html" %}
+Fill the {% block content %} with their specific panels.
+Load their specific JS files.
+
+Step 7: Backend Wiring
+We need to ensure run.py or a new blueprint handles the new routes.
+Action:
+Add @app.route('/arsenal') -> Renders tools_hub.html.
+Add @app.route('/dashboard') -> Renders user_dashboard.html (We will need to write the logic to list the user's PDF files here).

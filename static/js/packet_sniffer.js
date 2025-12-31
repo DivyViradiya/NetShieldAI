@@ -108,41 +108,49 @@ document.addEventListener('DOMContentLoaded', () => {
     function setStatus(text, type = 'ready') {
         if (!elements.snifferStatus) return;
 
-        elements.snifferStatus.className = 'text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400';
+        // FIX: Remove background, border, and padding classes. 
+        // Use simple text styling that fits inside your new HTML structure.
+        elements.snifferStatus.className = 'text-[0.75rem] font-semibold uppercase tracking-wide';
         
         const oldIcon = elements.snifferStatus.querySelector('i');
         if (oldIcon) oldIcon.remove();
 
         const icon = document.createElement('i');
         let iconClass = '';
-        let colorClass = '';
+        let textColorClass = '';
 
         switch (type) {
             case 'busy':
-                colorClass = 'text-yellow-400 bg-yellow-900/20 border-yellow-900/50';
+                textColorClass = 'text-yellow-400';
                 iconClass = 'fas fa-cog fa-spin';
                 break;
             case 'error':
-                colorClass = 'text-red-400 bg-red-900/20 border-red-900/50';
+                textColorClass = 'text-red-400';
                 iconClass = 'fas fa-exclamation-circle';
                 break;
             case 'success':
-                colorClass = 'text-green-400 bg-green-900/20 border-green-900/50';
+                textColorClass = 'text-green-400';
                 iconClass = 'fas fa-check-circle';
                 break;
             default: // ready
-                colorClass = 'text-slate-400 bg-slate-900/50 border-slate-800';
-                iconClass = 'fas fa-circle text-green-500'; 
+                // Gray text, matches your 'btn-secondary' look
+                textColorClass = 'text-slate-400';
+                iconClass = ''; // No extra icon for ready, your HTML already has the green dot
                 break;
         }
 
-        if (type !== 'ready') {
-            elements.snifferStatus.className = `text-center text-xs py-2 rounded border ${colorClass}`;
+        // Apply just the text color
+        if (textColorClass) {
+            elements.snifferStatus.classList.add(textColorClass);
         }
 
-        icon.className = `${iconClass} text-[10px] mr-2`;
         elements.snifferStatus.textContent = text;
-        elements.snifferStatus.prepend(icon);
+
+        // Only prepend a JS icon if it's NOT 'ready' (e.g. show spinner when busy)
+        if (iconClass) {
+            icon.className = `${iconClass} mr-1`;
+            elements.snifferStatus.prepend(icon);
+        }
     }
 
     // --- API HANDLER ---

@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  NetShieldAI - Operative Dashboard
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .dashboard-container {
+      max-width: 1400px;
+      padding: 4rem 2rem;
+      margin: 0 auto;
+    }
+    
+    /* Profile Header */
+    .profile-header {
+      margin-bottom: 3rem;
+      border-bottom: 1px solid #27272a;
+      padding-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+    }
+    
+    .profile-title h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    
+    .profile-title p {
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+    
+    .meta-tag {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #3b82f6;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    /* Reports Table */
+    .reports-section {
+      background: #0f0f11;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .reports-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid #27272a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .reports-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .reports-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .reports-table th {
+      text-align: left;
+      padding: 1rem 2rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #64748b;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #27272a;
+    }
+    
+    .reports-table td {
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid #1a1a1a;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+    
+    .reports-table tr:last-child td {
+      border-bottom: none;
+    }
+    .reports-table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .dot.ready {
+      background: #10b981;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    }
+    .dot.pending {
+      background: #334155;
+    }
+    
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+    }
+    
+    .action-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: #27272a;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="dashboard-container fade-in-element">
+    <div class="profile-header">
+      <div class="profile-title">
+        <h1>Command Dashboard</h1>
+        <p>Welcome back, {{ current_user.username }}. System is operational.</p>
+      </div>
+      <div class="profile-meta">
+        <div class="meta-tag">
+          ID: {{ current_user.id }} // USER_LEVEL:{% if current_user.is_admin %}
+            ADMIN
+          {% else %}
+            OPERATOR
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="reports-section">
+      <div class="reports-header">
+        <div class="reports-title">Scan Intelligence Archive</div>
+        <a href="{{ url_for('tools_hub') }}" class="action-btn" style="border-color: #3b82f6; color: #3b82f6;">
+          <span class="material-symbols-outlined" style="font-size: 1.1rem;">add</span>
+          New Scan
+        </a>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="reports-table">
+          <thead>
+            <tr>
+              <th>Module Name</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="font-bold text-white">Network Cartography</div>
+                <div class="text-xs text-gray-500">Nmap Engine</div>
+              </td>
+              <td>INFRASTRUCTURE</td>
+              <td>
+                {% if reports.nmap %}
+                  <span class="status-indicator" style="color: #10b981;"><div class="dot ready"></div>Complete</span>
+                {% else %}
+                  <span class="status-indicator" style="color: #64748b;"><div class="dot pending"></div>No Data</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if reports.nmap %}
+                  <a href="{{ url_for('network_scanner_bp.download_pdf_report') }}" class="action-btn"><span class="material-symbols-outlined" style="font-size: 1.1rem;">download</span> PDF</a>
+                {% else %}
+                  <span class="action-btn disabled"><span class="material-symbols-outlined">block</span> Unavailable</span>
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="font-bold text-white">Web Vulnerability</div>
+                <div class="text-xs text-gray-500">OWASP ZAP Engine</div>
+              </td>
+              <td>WEB APPLICATION</td>
+              <td>
+                {% if reports.zap %}
+                  <span class="status-indicator" style="color: #10b981;"><div class="dot ready"></div>Complete</span>
+                {% else %}
+                  <span class="status-indicator" style="color: #64748b;"><div class="dot pending"></div>No Data</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if reports.zap %}
+                  <a href="{{ url_for('zap_scanner_bp.download_pdf_report') }}" class="action-btn"><span class="material-symbols-outlined" style="font-size: 1.1rem;">download</span> PDF</a>
+                {% else %}
+                  <span class="action-btn disabled"><span class="material-symbols-outlined">block</span> Unavailable</span>
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="font-bold text-white">SSL/TLS Analysis</div>
+                <div class="text-xs text-gray-500">SSLScan Engine</div>
+              </td>
+              <td>ENCRYPTION</td>
+              <td>
+                {% if reports.ssl %}
+                  <span class="status-indicator" style="color: #10b981;"><div class="dot ready"></div>Complete</span>
+                {% else %}
+                  <span class="status-indicator" style="color: #64748b;"><div class="dot pending"></div>No Data</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if reports.ssl %}
+                  <a href="{{ url_for('ssl_scanner_bp.download_pdf_report') }}" class="action-btn"><span class="material-symbols-outlined" style="font-size: 1.1rem;">download</span> PDF</a>
+                {% else %}
+                  <span class="action-btn disabled"><span class="material-symbols-outlined">block</span> Unavailable</span>
+                {% endif %}
+              </td>
+            </tr>
+
+            <tr>
+              <td>
+                <div class="font-bold text-white">Traffic Inspector</div>
+                <div class="text-xs text-gray-500">TShark Engine</div>
+              </td>
+              <td>NETWORK TRAFFIC</td>
+              <td>
+                {% if reports.sniffer %}
+                  <span class="status-indicator" style="color: #10b981;"><div class="dot ready"></div>Complete</span>
+                {% else %}
+                  <span class="status-indicator" style="color: #64748b;"><div class="dot pending"></div>No Data</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if reports.sniffer %}
+                  <a href="{{ url_for('packet_sniffer_bp.download_pdf_report') }}" class="action-btn"><span class="material-symbols-outlined" style="font-size: 1.1rem;">download</span> PDF</a>
+                {% else %}
+                  <span class="action-btn disabled"><span class="material-symbols-outlined">block</span> Unavailable</span>
+                {% endif %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

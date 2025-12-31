@@ -11,14 +11,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // --- Download & Analysis Elements ---
     const downloadReportBtn = document.getElementById('downloadReportBtn');
-    const analyzeReportDropdown = document.getElementById('analyzeReportDropdown'); // 🚨 NEW
-    const llmAnalysisOptions = document.getElementById('llmAnalysisOptions');     // 🚨 NEW
-    const CHATBOT_REDIRECT_URL = '/chatbot';                                     // 🚨 NEW
+    const analyzeReportDropdown = document.getElementById('analyzeReportDropdown'); 
+    const llmAnalysisOptions = document.getElementById('llmAnalysisOptions'); 
+    const CHATBOT_REDIRECT_URL = '/chatbot'; 
 
     // Report-specific elements
     const summaryTarget = document.getElementById('summaryTarget');
     const summaryIp = document.getElementById('summaryIp');
     const summaryPort = document.getElementById('summaryPort');
+    const summaryRenegotiation = document.getElementById('summaryRenegotiation'); // Added
     const serverConfigDetails = document.getElementById('serverConfigDetails');
     const certificateChainContainer = document.getElementById('certificateChainContainer');
     const protocolsTableBody = document.getElementById('protocolsTableBody');
@@ -30,64 +31,64 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Core Functions ---
 
-    /**
-     * Toggles the loading state of a button.
-     */
-    function updateButtonState(button, isLoading) {
-        const buttonText = button.querySelector('.button-text');
+    function toggleSpinner(button, isLoading) {
+        if (!button) return;
         const spinner = button.querySelector('.spinner');
-        
+        const icon = button.querySelector('.material-symbols-outlined'); 
+        const text = button.querySelector('.button-text'); 
+
         button.disabled = isLoading;
-        if (buttonText) buttonText.classList.toggle('hidden', isLoading);
-        if (spinner) spinner.classList.toggle('hidden', !isLoading);
-        
-        // Handle dropdown caret
-        const caret = button.querySelector('.fa-caret-down');
-        if (caret) caret.classList.toggle('hidden', isLoading);
+
+        if (isLoading) {
+            button.classList.add('opacity-70', 'cursor-not-allowed');
+            if (icon && !icon.classList.contains('expand_more')) icon.classList.add('hidden'); // Don't hide dropdown arrow
+            if (spinner) spinner.classList.remove('hidden');
+        } else {
+            button.classList.remove('opacity-70', 'cursor-not-allowed');
+            if (spinner) spinner.classList.add('hidden');
+            if (icon) icon.classList.remove('hidden');
+        }
+    }
+
+    function updateStatus(msg, type) {
+        scanStatus.textContent = msg;
+        scanStatus.style.color = '#a1a1aa';
+        if (type === 'success') scanStatus.style.color = '#10b981';
+        if (type === 'error') scanStatus.style.color = '#ef4444';
+        if (type === 'busy') scanStatus.style.color = '#eab308';
     }
 
     /**
      * Resets all report sections.
      */
     function clearScanResults() {
-        summaryTarget.textContent = 'N/A';
-        summaryIp.textContent = 'N/A';
-        summaryPort.textContent = 'N/A';
-        serverConfigDetails.innerHTML = '<p class="text-gray-500">Awaiting scan results...</p>';
-        certificateChainContainer.innerHTML = '<p class="text-gray-500 text-sm">Awaiting scan results...</p>';
-        protocolsTableBody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-gray-500">Awaiting scan results...</td></tr>';
-        ciphersTableBody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-gray-500">Awaiting scan results...</td></tr>';
-        vulnerabilitiesList.innerHTML = '<li class="text-gray-500">Awaiting scan results...</li>';
-        resultsContent.textContent = 'Raw JSON report will appear here after a scan.';
+        summaryTarget.textContent = '---';
+        summaryIp.textContent = '---';
+        summaryPort.textContent = '---';
+        if(summaryRenegotiation) summaryRenegotiation.textContent = '---';
         
-        // Reset download and analysis buttons
+        serverConfigDetails.innerHTML = 'Waiting for scan...';
+        certificateChainContainer.innerHTML = '<div style="text-align:center; color: #555; padding: 2rem;">Waiting for scan...</div>';
+        protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: #555; padding: 2rem;">Waiting for scan...</td></tr>';
+        ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #555; padding: 2rem;">Waiting for scan...</td></tr>';
+        vulnerabilitiesList.innerHTML = '<li style="color: #666;">Waiting for scan...</li>';
+        resultsContent.textContent = '// Raw JSON report';
+        
         [downloadReportBtn, analyzeReportDropdown].forEach(btn => {
             if (btn) {
                 btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-                btn.classList.remove('hover:bg-red-500', 'hover:bg-indigo-500');
+                btn.style.opacity = '0.7';
             }
         });
         reportDownloadUrl = null;
     }
 
     // --- Report Availability Check ---
-    /**
-     * Checks the server for available PDF report and updates the buttons.
-     * 🚨 MODIFIED: Now manages the Analysis button state.
-     */
     async function checkReportAvailability() {
-        // Function to disable and reset a button
-        const disableButton = (button, hoverClass) => {
-            if (!button) return;
-            button.disabled = true;
-            button.classList.add('opacity-50', 'cursor-not-allowed');
-            button.classList.remove(hoverClass);
-        };
-
-        // Disable both buttons initially
-        disableButton(downloadReportBtn, 'hover:bg-red-500');
-        disableButton(analyzeReportDropdown, 'hover:bg-indigo-500');
+        downloadReportBtn.disabled = true;
+        downloadReportBtn.style.opacity = '0.7';
+        analyzeReportDropdown.disabled = true;
+        analyzeReportDropdown.style.opacity = '0.7';
 
         try {
             const response = await fetch('/ssl_scanner/report_files');
@@ -96,41 +97,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.status === 'success' && data.pdf_report) {
                     reportDownloadUrl = data.pdf_report;
                     
-                    // Enable Download Button
                     downloadReportBtn.disabled = false;
-                    downloadReportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    downloadReportBtn.classList.add('hover:bg-red-500');
+                    downloadReportBtn.style.opacity = '1';
                     
-                    // Enable Analysis Button
                     analyzeReportDropdown.disabled = false;
-                    analyzeReportDropdown.classList.remove('opacity-50', 'cursor-not-allowed');
-                    analyzeReportDropdown.classList.add('hover:bg-indigo-500');
-                    
+                    analyzeReportDropdown.style.opacity = '1';
                     return;
                 }
             }
         } catch (error) {
             console.error('Error checking report availability:', error);
         }
-
         reportDownloadUrl = null;
     }
     
-    /**
-     * 🚨 NEW FUNCTION: Triggers the server-side proxy to upload the PDF for AI analysis.
-     * @param {string} llmMode - The selected LLM mode ('local' or 'gemini').
-     */
-async function analyzeReport(llmMode) {
+    async function analyzeReport(llmMode) {
         const button = analyzeReportDropdown;
         if (button.disabled) return;
         
-        logOutput.innerHTML += `<div>[*] Preparing SSL PDF for AI analysis (${llmMode})...</div>`;
+        // append log manually
+        const logLine = document.createElement('div');
+        logLine.textContent = `[*] Preparing SSL PDF for AI analysis (${llmMode})...`;
+        logLine.style.color = '#3b82f6';
+        logOutput.appendChild(logLine);
         
-        updateButtonState(button, true);
+        toggleSpinner(button, true);
         downloadReportBtn.disabled = true;
 
         try {
-            // 1. First, check local PDF availability via the local blueprint.
+            // 1. Check local PDF
             let response = await fetch('/ssl_scanner/trigger_ai_analysis', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -138,97 +133,114 @@ async function analyzeReport(llmMode) {
             });
             let data = await response.json();
             
-            if (data.status !== 'success') {
-                throw new Error(data.message || 'PDF availability check failed.');
-            }
+            if (data.status !== 'success') throw new Error(data.message);
             
-            // 2. Now call the central proxy route on the chatbot blueprint.
+            // 2. Call Proxy
             const CHATBOT_PROXY_URL = `${CHATBOT_REDIRECT_URL}/scanner_analysis`;
             response = await fetch(CHATBOT_PROXY_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type }) // Pass scanner_type
+                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type }) 
             });
 
-            data = await response.json(); // Data now contains summary and llm_mode
+            data = await response.json();
 
             if (response.ok && data.status === 'success') {
-                logOutput.innerHTML += `<div>[✓] AI analysis initiated. Summary received. Redirecting...</div>`;
-                scanStatus.textContent = 'Analysis Complete';
-                
-                // 3. Redirect, passing summary and mode (from the server response)
+                updateStatus('Redirecting...', 'success');
                 window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
                 return;
             } else {
-                throw new Error(data.message || `Analysis failed with status ${response.status}`);
+                throw new Error(data.message || `Analysis failed`);
             }
         } catch (error) {
-            logOutput.innerHTML += `<div>[x] AI Analysis Error: ${error.message}</div>`;
-            // Reset status color to error for the main status box
-            scanStatus.textContent = 'Analysis Failed';
-            scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-red-500 bg-red-100';
+            const errLine = document.createElement('div');
+            errLine.textContent = `[x] AI Analysis Error: ${error.message}`;
+            errLine.style.color = '#ef4444';
+            logOutput.appendChild(errLine);
+            updateStatus('Analysis Failed', 'error');
         } finally {
-            // Only run cleanup if no redirect happened (i.e., if it failed)
-            updateButtonState(button, false);
+            toggleSpinner(button, false);
             checkReportAvailability(); 
         }
     }
 
 
-    // --- Report Rendering Functions (Unchanged) ---
+    // --- Report Rendering Functions ---
     function renderVulnerabilities(vulnerabilities) {
         vulnerabilitiesList.innerHTML = '';
         if (!vulnerabilities || vulnerabilities.length === 0) {
-            vulnerabilitiesList.innerHTML = '<li class="text-green-600 font-medium"><i class="fas fa-check-circle mr-2"></i>No vulnerabilities detected.</li>';
+            vulnerabilitiesList.innerHTML = '<li style="color: #10b981; font-weight: 500;">No vulnerabilities detected.</li>';
             return;
         }
 
-        const severityClasses = {
-            'Critical': 'text-red-700 bg-red-100 border-red-500',
-            'High': 'text-orange-700 bg-orange-100 border-orange-500',
-            'Medium': 'text-yellow-700 bg-yellow-100 border-yellow-500',
-            'Low': 'text-blue-700 bg-blue-100 border-blue-500',
+        const riskColors = {
+            'Critical': 'border-left: 3px solid #ef4444; color: #fca5a5;',
+            'High': 'border-left: 3px solid #ef4444; color: #fca5a5;',
+            'Medium': 'border-left: 3px solid #f97316; color: #fdba74;',
+            'Low': 'border-left: 3px solid #eab308; color: #fde047;',
         };
 
         vulnerabilities.forEach(vuln => {
             const li = document.createElement('li');
-            li.className = `p-3 rounded-md border-l-4 ${severityClasses[vuln.severity] || 'text-gray-700 bg-gray-100 border-gray-500'}`;
-            li.innerHTML = `<strong class="font-semibold">${vuln.name}</strong> <span class="block text-sm">${vuln.description}</span>`;
+            li.className = 'vuln-item';
+            // Apply inline style based on severity
+            const style = riskColors[vuln.severity] || 'border-left: 3px solid #3b82f6; color: #93c5fd;';
+            li.style.cssText = style + ' padding: 0.75rem; background: rgba(255,255,255,0.05); margin-bottom: 0.5rem; list-style:none;';
+            
+            li.innerHTML = `
+                <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 4px;">${vuln.name}</div>
+                <div style="font-size: 0.8rem; opacity: 0.8;">${vuln.description}</div>
+            `;
             vulnerabilitiesList.appendChild(li);
         });
     }
 
     function renderServerConfig(configs) {
         serverConfigDetails.innerHTML = '';
-        const details = [
-            `<strong>TLS Compression:</strong> ${configs.tls_compression?.supported ? `<span class="font-bold text-red-500">Enabled (CRIME risk)</span>` : '<span class="text-green-600">Disabled</span>'}`,
-            `<strong>Secure Renegotiation:</strong> ${configs.renegotiation?.secure ? '<span class="text-green-600">Supported</span>' : '<span class="font-bold text-red-500">Not Secure</span>'}`,
-            `<strong>OCSP Stapling:</strong> ${configs.ocsp_stapling?.supported ? '<span class="text-green-600">Supported</span>' : 'Not Supported'}`,
-            `<strong>Fallback SCSV:</strong> ${configs.fallback_scsv_supported ? '<span class="text-green-600">Supported</span>' : 'Not Supported'}`
-        ];
-        serverConfigDetails.innerHTML = details.map(d => `<p>${d}</p>`).join('');
+        
+        const createItem = (label, val, isBad) => `
+            <div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <span>${label}</span>
+                <span style="color: ${isBad ? '#ef4444' : '#10b981'}; font-weight:600;">${val}</span>
+            </div>
+        `;
+
+        let html = '';
+        html += createItem('TLS Compression', configs.tls_compression?.supported ? 'Enabled (Risk)' : 'Disabled', configs.tls_compression?.supported);
+        html += createItem('Secure Renegotiation', configs.renegotiation?.secure ? 'Supported' : 'Insecure', !configs.renegotiation?.secure);
+        html += createItem('OCSP Stapling', configs.ocsp_stapling?.supported ? 'Supported' : 'Not Supported', false); // Neutral
+        html += createItem('Fallback SCSV', configs.fallback_scsv_supported ? 'Supported' : 'Not Supported', false);
+
+        serverConfigDetails.innerHTML = html;
+        
+        // Update the top stat card for renegotiation
+        if(summaryRenegotiation) {
+            const secure = configs.renegotiation?.secure;
+            summaryRenegotiation.textContent = secure ? "Secure" : "Insecure";
+            summaryRenegotiation.style.color = secure ? "#10b981" : "#ef4444";
+        }
     }
 
     function renderCertificateChain(chain) {
         certificateChainContainer.innerHTML = '';
         if (!chain || chain.length === 0) {
-            certificateChainContainer.innerHTML = '<p class="text-gray-500 text-sm">No certificate information found.</p>';
+            certificateChainContainer.innerHTML = '<div style="text-align:center; color: #555;">No certificate info.</div>';
             return;
         }
         chain.forEach((cert, index) => {
             const isLeaf = index === 0;
             const card = document.createElement('div');
-            
-            card.className = 'bg-slate-800 p-4 rounded-lg border border-slate-700';
+            card.className = 'cert-card';
             
             card.innerHTML = `
-                <h4 class="text-md font-semibold mb-2 text-slate-100">${isLeaf ? 'Leaf Certificate' : `Intermediate #${index}`}</h4>
-                <div class="space-y-1 text-sm text-slate-300">
-                    <p><strong class="text-slate-400">Subject:</strong> <span class="font-medium text-slate-200">${cert.common_name}</span></p>
-                    <p><strong class="text-slate-400">Issuer:</strong> <span class="font-medium text-slate-200">${cert.issuer}</span></p>
-                    <p><strong class="text-slate-400">Validity:</strong> ${cert.not_before} to ${cert.not_after}</p>
-                    <p><strong class="text-slate-400">Signature:</strong> ${cert.signature_algorithm} (${cert.key_size}-bit ${cert.key_type})</p>
-                    <p><strong class="text-slate-400">Alt Names:</strong> ${cert.alt_names.length > 0 ? cert.alt_names.join(', ') : 'N/A'}</p>
+                <div style="color: ${isLeaf ? '#10b981' : '#a1a1aa'}; font-weight: 700; margin-bottom: 8px; font-size: 0.85rem; text-transform:uppercase;">
+                    ${isLeaf ? 'Leaf Certificate' : `Intermediate #${index}`}
+                </div>
+                <div style="display: grid; gap: 4px;">
+                    <div><span class="cert-label">Subject:</span><span class="cert-val">${cert.common_name}</span></div>
+                    <div><span class="cert-label">Issuer:</span><span class="cert-val">${cert.issuer}</span></div>
+                    <div><span class="cert-label">Validity:</span><span class="cert-val" style="font-size:0.75rem;">${cert.not_before} - ${cert.not_after}</span></div>
+                    <div><span class="cert-label">Sig:</span><span class="cert-val" style="font-size:0.75rem;">${cert.signature_algorithm} (${cert.key_size}-bit)</span></div>
                 </div>
             `;
             certificateChainContainer.appendChild(card);
@@ -238,14 +250,16 @@ async function analyzeReport(llmMode) {
     function renderProtocols(protocols) {
         protocolsTableBody.innerHTML = '';
         if (!protocols || protocols.length === 0) {
-            protocolsTableBody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-gray-500">No protocols detected.</td></tr>';
+            protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:1rem; color:#555;">None detected</td></tr>';
             return;
         }
         protocols.forEach(p => {
             const row = protocolsTableBody.insertRow();
             row.innerHTML = `
-                <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-slate-300">${p.name}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm ${p.enabled ? 'text-green-500 font-semibold' : 'text-red-500'}">${p.enabled ? 'Enabled' : 'Disabled'}</td>
+                <td>${p.name}</td>
+                <td style="color: ${p.enabled ? '#10b981' : '#52525b'}; font-weight: ${p.enabled ? '600' : '400'}">
+                    ${p.enabled ? 'Enabled' : 'Disabled'}
+                </td>
             `;
         });
     }
@@ -253,22 +267,20 @@ async function analyzeReport(llmMode) {
     function renderCiphers(ciphers) {
         ciphersTableBody.innerHTML = '';
         if (!ciphers || ciphers.length === 0) {
-            ciphersTableBody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-gray-500">No ciphers detected.</td></tr>';
+            ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:1rem; color:#555;">None detected</td></tr>';
             return;
         }
         ciphers.forEach(c => {
             const row = ciphersTableBody.insertRow();
+            const weak = c.bits < 128;
             row.innerHTML = `
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-slate-300">${c.protocol}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm font-medium ${c.bits < 128 ? 'text-red-500' : 'text-slate-300'}">${c.bits}-bit</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-slate-400">${c.name}</td>
+                <td style="color: #a1a1aa; font-size: 0.75rem;">${c.protocol}</td>
+                <td style="color: ${weak ? '#ef4444' : '#10b981'};">${c.bits}</td>
+                <td style="font-family: monospace; font-size: 0.75rem;">${c.name}</td>
             `;
         });
     }
 
-    /**
-     * Fetches the report JSON from the backend.
-     */
     async function fetchAndDisplayReport() {
         try {
             const response = await fetch('/ssl_scanner/report');
@@ -310,9 +322,14 @@ async function analyzeReport(llmMode) {
 
         clearScanResults();
         logOutput.innerHTML = '';
-        updateButtonState(initiateScanBtn, true);
-        scanStatus.textContent = 'Scanning...';
-        scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-yellow-500 bg-yellow-100';
+        toggleSpinner(initiateScanBtn, true);
+        updateStatus('Scanning...', 'busy');
+        
+        // Add initial log
+        const initLog = document.createElement('div');
+        initLog.textContent = `> Initiating SSL scan for ${targetHost}...`;
+        initLog.style.color = '#a1a1aa';
+        logOutput.appendChild(initLog);
 
         try {
             const response = await fetch('/ssl_scanner/scan', {
@@ -323,74 +340,39 @@ async function analyzeReport(llmMode) {
             const data = await response.json();
 
             if (data.status !== 'success') {
-                scanStatus.textContent = 'Scan Failed';
-                scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-red-500 bg-red-100';
-                updateButtonState(initiateScanBtn, false);
+                updateStatus('Start Failed', 'error');
+                toggleSpinner(initiateScanBtn, false);
             }
         } catch (error) {
-            console.error('Error initiating SSL scan:', error);
-            scanStatus.textContent = 'Scan Failed';
-            scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-red-500 bg-red-100';
-            updateButtonState(initiateScanBtn, false);
+            console.error('Error:', error);
+            updateStatus('Conn Error', 'error');
+            toggleSpinner(initiateScanBtn, false);
         }
     });
 
     clearLogBtn.addEventListener('click', async () => {
-        updateButtonState(clearLogBtn, true);
-        try {
-            const response = await fetch('/ssl_scanner/clear_log', { method: 'POST' });
-            const data = await response.json();
-            if (data.status === 'success') {
-                logOutput.innerHTML = '';
-            }
-        } catch (error) {
-            console.error('Error clearing log:', error);
-        } finally {
-            updateButtonState(clearLogBtn, false);
-        }
+        logOutput.innerHTML = '';
+        await fetch('/ssl_scanner/clear_log', { method: 'POST' });
     });
 
-    if (copyResultsBtn) {
-            const copyButtonText = copyResultsBtn.textContent;
-            
-            copyResultsBtn.addEventListener('click', () => {
-                const textToCopy = resultsContent.textContent;
-                
-                if (!textToCopy || textToCopy.includes('Awaiting scan results')) {
-                    console.log('No scan results to copy.');
-                    return;
-                }
-
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    const originalContent = copyResultsBtn.innerHTML;
-                    copyResultsBtn.innerHTML = '<i class="fas fa-check text-green-500 mr-1"></i> COPIED!';
-                    
-                    setTimeout(() => { 
-                        copyResultsBtn.innerHTML = originalContent; 
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Failed to copy text: ', err);
-                    alert('Failed to copy to clipboard. Manual copy may be required.'); 
-                });
-            });
-        }
+    copyResultsBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(resultsContent.textContent).then(() => {
+            const original = copyResultsBtn.textContent;
+            copyResultsBtn.textContent = 'COPIED!';
+            setTimeout(() => copyResultsBtn.textContent = original, 2000);
+        });
+    });
 
     refreshReportBtn.addEventListener('click', () => {
         fetchAndDisplayReport();
-        checkReportAvailability(); 
     });
 
     if (downloadReportBtn) {
         downloadReportBtn.addEventListener('click', () => {
-            if (reportDownloadUrl) {
-                window.location.href = reportDownloadUrl;
-            } else {
-                console.log('No report available to download.');
-            }
+            if (reportDownloadUrl) window.location.href = reportDownloadUrl;
         });
     }
     
-    // 🚨 NEW: Analysis Dropdown Toggle
     if (analyzeReportDropdown) {
         analyzeReportDropdown.addEventListener('click', (e) => {
             if (!analyzeReportDropdown.disabled) {
@@ -400,7 +382,6 @@ async function analyzeReport(llmMode) {
         });
     }
     
-    // 🚨 NEW: Analysis Option Selection
     if (llmAnalysisOptions) {
         llmAnalysisOptions.addEventListener('click', (e) => {
             e.preventDefault();
@@ -408,19 +389,18 @@ async function analyzeReport(llmMode) {
             if (option) {
                 const llmMode = option.dataset.llmMode;
                 llmAnalysisOptions.classList.add('hidden'); 
-                analyzeReport(llmMode); // Start the analysis and redirection
+                analyzeReport(llmMode); 
             }
         });
     }
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
         if (llmAnalysisOptions && analyzeReportDropdown && !analyzeReportDropdown.contains(e.target)) {
             llmAnalysisOptions.classList.add('hidden');
         }
     });
 
-    // --- Server-Sent Events (SSE) Setup ---
+    // --- SSE ---
     function setupLogStream() {
         if (eventSource) eventSource.close();
         eventSource = new EventSource('/ssl_scanner/log_stream');
@@ -430,28 +410,25 @@ async function analyzeReport(llmMode) {
             if (message && message !== ': keep-alive\n\n') {
                 const logLine = document.createElement('div');
                 logLine.textContent = message;
+                
+                // Color coding
+                if(message.includes('[!]')) logLine.style.color = '#ef4444';
+                else if(message.includes('[+]')) logLine.style.color = '#10b981';
+                else logLine.style.color = '#a1a1aa';
+
                 logOutput.appendChild(logLine);
                 logOutput.scrollTop = logOutput.scrollHeight;
                 
-                if (message.includes("PDF report generated successfully") || message.includes("SSL scan complete")) {
-                    scanStatus.textContent = 'Scan Complete';
-                    scanStatus.className = 'text-center text-sm mt-4 p-2 rounded-md text-green-500 bg-green-100';
-                    updateButtonState(initiateScanBtn, false);
-                    
+                if (message.includes("PDF report generated") || message.includes("SSL scan complete")) {
+                    updateStatus('Complete', 'success');
+                    toggleSpinner(initiateScanBtn, false);
                     fetchAndDisplayReport(); 
-                    checkReportAvailability(); 
                 }
             }
         };
-
-        eventSource.onerror = function(err) {
-            console.error('EventSource failed:', err);
-            eventSource.close();
-            setTimeout(setupLogStream, 5000); 
-        };
     }
 
-    // --- Initial Page Load ---
+    // --- Init ---
     setupLogStream();
     fetchAndDisplayReport(); 
     checkReportAvailability(); 

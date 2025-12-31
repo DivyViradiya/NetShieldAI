@@ -1,734 +1,800 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NetShieldAI - Network Monitor</title>
-    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <style>
-      /* --- UNIFIED CSS FROM NETWORK SCANNER --- */
-      
-      /* Base and Layout Styles */
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
+{% extends 'base.html' %}
+
+{% block title %}
+  NetShieldAI - Live Monitor
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    /* --- DASHBOARD THEME VARIABLES --- */
+    :root {
+      --bg-app: #09090b;
+      --bg-card: #18181b;
+      --bg-input: #27272a;
+      --border-subtle: #27272a;
+      --accent-primary: #f43f5e;
+      --accent-blue: #3b82f6;
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      --radius-card: 16px;
+      --radius-sm: 8px;
+    }
+    
+    /* --- 1. LAYOUT UTILITIES (Fixes for missing classes) --- */
+    .dashboard-wrapper {
+      padding: 1.5rem;
+      background-color: var(--bg-app);
+      min-height: 100vh;
+      color: var(--text-main);
+      font-family: 'Inter', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    /* Positioning */
+    .relative {
+      position: relative;
+    }
+    .absolute {
+      position: absolute;
+    }
+    .inset-0 {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+    .hidden {
+      display: none !important;
+    }
+    
+    /* Sizing & Overflow */
+    .w-full {
+      width: 100%;
+    }
+    .h-full {
+      height: 100%;
+    }
+    .overflow-auto {
+      overflow: auto;
+    }
+    .overflow-hidden {
+      overflow: hidden;
+    }
+    
+    /* Flexbox & Grid helpers */
+    .flex {
+      display: flex;
+    }
+    .flex-col {
+      flex-direction: column;
+    }
+    .justify-between {
+      justify-content: space-between;
+    }
+    .justify-center {
+      justify-content: center;
+    }
+    .items-center {
+      align-items: center;
+    }
+    .gap-3 {
+      gap: 0.75rem;
+    }
+    .gap-4 {
+      gap: 1rem;
+    }
+    .gap-6 {
+      gap: 1.5rem;
+    }
+    
+    .grid {
+      display: grid;
+    }
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Padding/Margins/Backgrounds */
+    .p-6 {
+      padding: 1.5rem;
+    }
+    .mb-2 {
+      margin-bottom: 0.5rem;
+    }
+    .pb-2 {
+      padding-bottom: 0.5rem;
+    }
+    .bg-black {
+      background-color: #000;
+    }
+    
+    /* --- 2. TOP CONTROL HEADER --- */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: transparent;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+    }
+    
+    .search-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+    
+    .dash-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: white;
+      padding: 12px 12px 12px 40px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .dash-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+    
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    /* Buttons styled like the dashboard icons/buttons */
+    .btn-dash {
+      height: 42px;
+      padding: 0 1.25rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border-subtle);
+    }
+    
+    .btn-primary {
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
+    }
+    .btn-primary:hover {
+      background: #e11d48;
+    }
+    
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-muted);
+    }
+    .btn-secondary:hover {
+      color: white;
+      border-color: #52525b;
+    }
+    
+    .btn-danger-outline {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .btn-danger-outline:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+    
+    /* --- 3. METRIC CARDS ROW --- */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+    
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 140px;
+      position: relative;
+    }
+    
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-title {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .stat-icon-box {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-primary);
+    }
+    
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: white;
+      font-family: 'Fira Code', monospace;
+    }
+    
+    .stat-footer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .badge-trend {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.7rem;
+    }
+    
+    /* --- 4. MAIN DASHBOARD CONTENT (Grid Split) --- */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2.5fr 1fr; /* Large Graph Area vs Side Panel */
+      gap: 1.5rem;
+      height: 600px;
+    }
+    
+    .dash-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative; /* Essential for child absolute positioning */
+    }
+    
+    .panel-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      z-index: 10;
+    }
+    
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+    }
+    
+    /* Tab Navigation styled as Pill Toggles */
+    .tab-pills {
+      display: flex;
+      gap: 0.5rem;
+      background: #000;
+      padding: 4px;
+      border-radius: 8px;
+    }
+    
+    .tab-pill {
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tab-pill.active {
+      background: var(--bg-card);
+      color: white;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    .panel-content {
+      position: relative; /* Key for absolute children */
+      flex: 1;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* --- TABLES --- */
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .dash-table th {
+      text-align: left;
+      padding: 1rem 1.5rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.01);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .dash-table td {
+      padding: 1rem 1.5rem;
+      color: #e4e4e7;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.85rem;
+    }
+    .dash-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    /* Live Terminal Footer */
+    .terminal-footer {
+      height: 180px;
+      background: #000;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .term-text {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: #10b981;
+      overflow-y: auto;
+    }
+    
+    .text-gradient {
+      background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+    }
+    
+    /* 2. Status Badge */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    
+    /* 3. Ghost Back Button */
+    .btn-ghost {
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      height: 40px;
+      color: #a1a1aa;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    
+    .btn-ghost:hover {
+      color: #ffffff;
+      transform: translateX(-4px);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Graph Canvas */
+    #networkGraphCanvas {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
-      
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #050505; /* Deep Black */
-        background-image: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.05), transparent 25%);
-        color: #e2e8f0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        padding-top: 5rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .metrics-row {
+        grid-template-columns: repeat(2, 1fr);
       }
-      
-      #page-wrapper {
-        flex: 1 0 auto;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-      }
-      
-      /* Navbar Styles */
-      .navbar {
-        background-color: #0d121c;
-        padding: 1rem 2rem;
-        box-shadow: none;
-        border-bottom: 1px solid #1e293b;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-      }
-      
-      .navbar-logo-img {
-        width: auto;
-        height: 30px;
-      }
-      
-      .navbar-links {
-        list-style: none;
-        display: flex;
-        gap: 2.5rem;
-        margin: 0;
-        padding: 0;
-      }
-      
-      .navbar-links li a {
-        text-decoration: none;
-        color: #94a3b8;
-        font-weight: 600;
-        transition: color 0.3s ease, transform 0.2s ease;
-        position: relative;
-      }
-      
-      .navbar-links li a::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: -5px;
-        left: 0;
-        background-color: #4299e1;
-        transition: width 0.3s ease-out;
-      }
-      
-      .navbar-links li a:hover {
-        color: #f8fafc;
-        transform: translateY(-2px);
-      }
-      
-      .navbar-links li a:hover::after {
-        width: 100%;
-      }
-      
-      .navbar-links li a.active {
-        color: #f8fafc;
-      }
-      .navbar-links li a.active::after {
-        width: 100%;
-      }
-      
-      /* Main Grid Layout */
       .main-grid {
-        max-width: 1600px;
-        width: 96%;
-        margin: 2rem auto;
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr;
+        height: auto;
       }
-      
-      /* Panels/Cards */
-      .control-panel,
-      .results-panel {
-        background-color: rgba(13, 18, 28, 0.7); /* Translucent dark */
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(51, 65, 85, 0.5);
-        border-radius: 1rem;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        transition: border-color 0.3s ease;
+      .dash-panel {
+        height: 500px;
       }
-      
-      .control-panel:hover,
-      .results-panel:hover {
-        border-color: rgba(59, 130, 246, 0.4);
-      }
-      
-      .control-panel {
-        padding: 1.5rem;
-      }
-      .results-panel {
-        padding: 0;
-      }
-      
-      /* Typography */
-      h1 {
-        font-size: 1.5rem;
-        letter-spacing: -0.02em;
-      }
-      h2 {
-        font-size: 1.25rem;
-        font-weight: 600;
-      }
-      h3 {
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #64748b;
-        font-weight: 700;
-      }
-      
-      /* Inputs - Minimalist Underline Style */
-      .input-group {
-        position: relative;
-        margin-bottom: 0.5rem;
-      }
-      
-      /* Added input[type='number'] to match text inputs */
-      input[type='text'],
-      input[type='number'] {
-        background-color: transparent;
-        border: none;
-        border-bottom: 2px solid #334155;
-        color: #f8fafc;
-        padding: 0.75rem 0;
-        width: 100%;
-        transition: border-color 0.3s ease;
-        font-size: 0.95rem;
-      }
-      input[type='text']::placeholder,
-      input[type='number']::placeholder {
-        color: #475569;
-      }
-      input[type='text']:focus,
-      input[type='number']:focus {
-        outline: none;
-        border-bottom-color: #3b82f6;
-      }
-      
-      /* Buttons */
-      .primary-action-button {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: #ffffff;
-        border: none;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-        transition: all 0.2s ease-in-out;
-        font-weight: 600;
-        padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
-      }
-      .primary-action-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
-      }
-      
-      /* Red Button for Stop/Vuln */
-      .vuln-action-button {
-        background: linear-gradient(135deg, #ef4444, #b91c1c);
-        color: #ffffff;
-        border: none;
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        transition: all 0.2s ease-in-out;
-        font-weight: 600;
-        padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
-      }
-      .vuln-action-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-      }
-      
-      .secondary-button {
-        background-color: rgba(30, 41, 59, 0.5);
-        color: #94a3b8;
-        border: 1px solid transparent;
-        transition: all 0.2s ease;
-      }
-      .secondary-button:hover {
-        background-color: rgba(51, 65, 85, 0.8);
-        color: #f8fafc;
-      }
-      .secondary-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      
-      /* Spinner */
-      .spinner {
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        animation: spin 0.8s linear infinite;
-      }
-      .primary-action-button .spinner,
-      .vuln-action-button .spinner {
-        border-top-color: #fff;
-      }
-      .secondary-button .spinner {
-        border-top-color: #94a3b8;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      
-      /* Terminals */
-      .terminal-window {
-        background-color: #050505;
-        border: 1px solid #1e293b;
-        border-radius: 0.5rem;
-        font-family: 'Fira Code', monospace;
-        font-size: 0.8rem;
-        color: #cbd5e1;
-      }
-      
-      /* Tabs */
-      .tab-button {
-        padding: 0.75rem 1.5rem;
-        cursor: pointer;
-        font-weight: 600;
-        color: #64748b;
-        border-bottom: 2px solid transparent;
-        transition: all 0.2s ease;
-      }
-      .tab-button:hover {
-        color: #f8fafc;
-      }
-      .tab-button.active {
-        color: #3b82f6;
-        border-bottom-color: #3b82f6;
-      }
-      
-      /* Tables */
-      .results-header-bar {
-        background-color: rgba(13, 18, 28, 0.9);
-        border-bottom: 1px solid #1e293b;
-        padding: 1.5rem;
-      }
-      .results-table-container {
-        border: none;
-      }
-      .results-table thead {
-        background-color: rgba(30, 41, 59, 0.3);
-      }
-      .results-table th {
-        color: #64748b;
-        font-weight: 600;
-        border-bottom: 1px solid #1e293b;
-      }
-      .results-table tbody tr {
-        transition: background-color 0.1s;
-      }
-      .results-table tbody tr:hover {
-        background-color: rgba(59, 130, 246, 0.05);
-      }
-      .results-table-tbody td {
-        color: #e2e8f0;
-        border-bottom: 1px solid #1e293b;
-      }
-      
-      /* Status Pills */
-      .status-pill {
-        background: #0f172a;
-        border: 1px solid #1e293b;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.8rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      
-      /* Footer */
-      footer {
-        background-color: #0d121c;
-        color: #cbd5e1;
-        text-align: center;
-        padding: 1.5rem 0;
-        width: 100%;
-        margin-top: auto;
-        flex-shrink: 0;
-      }
-      
-      div.vis-tooltip {
-        background-color: rgba(15, 23, 42, 0.95) !important; /* Slate-900 */
-        border: 1px solid #3b82f6 !important; /* Blue-500 border */
-        color: #e2e8f0 !important; /* Slate-200 text */
-        font-family: 'Fira Code', monospace !important;
-        font-size: 11px !important;
-        padding: 8px 12px !important;
-        border-radius: 8px !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
-        backdrop-filter: blur(4px);
-        z-index: 99999;
-      }
-      
-      #networkGraphCanvas canvas {
-        display: block;
-        width: 100% !important;
-        height: 100% !important;
-      }
-      
-      #graphContent .relative {
-        isolation: isolate; /* Helps with Z-index stacking contexts */
-      }
-      
-      /* Custom Scrollbars */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 3px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #475569;
-      }
-      
-      @media (max-width: 1024px) {
-        .main-grid {
-          grid-template-columns: 1fr;
-        }
-        .control-panel {
-          margin-bottom: 0;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar">
-      <div class="navbar-brand">
-        <a href="/"><img src="/static/images/NetShieldAI_logo.png" alt="NetShieldAI Logo" class="navbar-logo-img" /></a>
+    }
+  </style>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="dashboard-wrapper fade-in-element">
+    <div class="flex flex-col items-start mb-8">
+      <a href="{{ url_for('tools_hub') }}" class="btn-ghost" style="padding-left: 0; margin-bottom: 1rem;">
+        <span class="material-symbols-outlined" style="font-size: 1.1rem; margin-right: 8px;">arrow_back</span>
+        <span>Security Hub</span>
+      </a>
+
+      <div>
+        <h1 class="text-gradient" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;">Network Monitor</h1>
+
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px; font-weight: 400;">Packet Capture & Traffic Analysis</p>
       </div>
-      <ul class="navbar-links">
-        <li>
-          <a href="/network_scanner">Network Scanner</a>
-        </li>
-        <li>
-          <a href="/packet_sniffer" class="active">Network Monitor</a>
-        </li>
-        <li>
-          <a href="/zap_scanner">Web Application Scanner</a>
-        </li>
-        <li>
-          <a href="/ssl_scanner">SSL Scanner</a>
-        </li>
-        <li>
-          <a href="/chatbot">AI Analyzer</a>
-        </li>
-      </ul>
-    </nav>
+    </div>
 
-    <div id="page-wrapper">
-      <div class="main-grid">
-        <div class="control-panel left-panel">
-          <div class="flex items-center mb-8">
-            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mr-3">
-              <i class="fas fa-wave-square text-xl"></i>
-            </div>
-            <div>
-              <h1 class="font-bold text-white">Packet Sniffer</h1>
-              <p class="text-xs text-slate-400">Capture & Analyze</p>
-            </div>
+    <div class="dashboard-header">
+      <div class="header-left">
+        <div class="search-container">
+          <span class="material-symbols-outlined search-icon">wifi_find</span>
+          <input type="text" id="snifferTargetIp" class="dash-input" placeholder="Enter Target IP (e.g., 192.168.1.5)..." />
+        </div>
+
+        <button id="startCaptureBtn" class="btn-dash btn-primary">
+          <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+          Start Scan
+          <span class="spinner hidden"></span>
+        </button>
+
+        <button id="stopCaptureBtn" class="btn-dash btn-danger-outline">
+          <span class="material-symbols-outlined" style="font-size:1.1rem">stop</span>
+          Stop
+          <span class="spinner hidden"></span>
+        </button>
+      </div>
+
+      <div class="header-actions">
+        <button id="advancedScanToggle" class="btn-dash btn-secondary"><span class="material-symbols-outlined">tune</span></button>
+
+        <div class="btn-dash btn-secondary" style="cursor: default;">
+          <span class="material-symbols-outlined" style="font-size: 1rem; color: #10b981;">fiber_manual_record</span>
+          <span id="snifferStatus" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">IDLE</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="advancedScanOptions" class="hidden" style="position: absolute; top: 80px; right: 24px; width: 300px; background: #18181b; border: 1px solid #333; padding: 1.5rem; border-radius: 12px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      <h4 style="color:white; margin-bottom:1rem; font-size:0.9rem;">Scan Configuration</h4>
+      <div style="display:flex; flex-direction:column; gap:1rem;">
+        <div>
+          <label style="color:#a1a1aa; font-size:0.75rem;">Duration (sec)</label>
+          <input type="number" id="captureDuration" value="30" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
+        </div>
+        <div>
+          <label style="color:#a1a1aa; font-size:0.75rem;">Max Packets</label>
+          <input type="number" id="maxPackets" value="100" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
+        </div>
+        <div>
+          <label style="color:#a1a1aa; font-size:0.75rem;">BPF Filter</label>
+          <input type="text" id="bpfFilter" placeholder="tcp port 80" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Total Packets</span>
+          <div class="stat-icon-box">
+            <span class="material-symbols-outlined">dataset</span>
           </div>
+        </div>
+        <div id="summaryTotalPackets" class="stat-value">0</div>
+        <div class="stat-footer">
+          <span class="badge-trend">+ Live</span>
+          <span>captured</span>
+        </div>
+      </div>
 
-          <div class="space-y-6 flex-grow">
-            <div class="input-group">
-              <label for="snifferTargetIp" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Target (Optional)</label>
-              <input type="text" id="snifferTargetIp" placeholder="Filter by IP (e.g. 192.168.1.5)" />
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 pt-2">
-              <div class="input-group">
-                <label for="captureDuration" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Duration (sec)</label>
-                <input type="number" id="captureDuration" min="1" value="10" />
-              </div>
-              <div class="input-group">
-                <label for="maxPackets" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Max Packets</label>
-                <input type="number" id="maxPackets" min="1" value="200" />
-              </div>
-            </div>
-
-            <div class="input-group">
-              <label for="bpfFilter" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">BPF Filter</label>
-              <input type="text" id="bpfFilter" placeholder="e.g. tcp port 80" />
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 pt-2">
-              <button id="startCaptureBtn" class="primary-action-button flex items-center justify-center">
-                <span class="button-text">Start Capture</span>
-                <span class="spinner hidden ml-2"></span>
-              </button>
-              <button id="stopCaptureBtn" class="vuln-action-button flex items-center justify-center">
-                <span class="button-text"><i class="fas fa-stop mr-1"></i> Stop</span>
-                <span class="spinner hidden ml-2"></span>
-              </button>
-            </div>
-
-            <div id="snifferStatus" class="text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400">
-              <i class="fas fa-circle text-[8px] mr-2 text-green-500"></i> Ready to capture
-            </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Data Volume</span>
+          <div class="stat-icon-box">
+            <span class="material-symbols-outlined">data_usage</span>
           </div>
+        </div>
+        <div id="summaryTotalBytes" class="stat-value">0 B</div>
+        <div class="stat-footer">
+          <span>Payload size</span>
+        </div>
+      </div>
 
-          <div class="mt-8 border-t border-slate-800 pt-4">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-xs font-bold text-slate-500 uppercase">Live Event Log</span>
-              <button id="clearSnifferLogBtn" class="text-[10px] text-slate-600 hover:text-slate-300">CLEAR</button>
-            </div>
-            <div id="snifferLogOutput" class="terminal-window p-3 h-32 overflow-auto whitespace-pre leading-snug"></div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Top Protocol</span>
+          <div class="stat-icon-box">
+            <span class="material-symbols-outlined">dns</span>
+          </div>
+        </div>
+        <div id="summaryPrimaryProto" class="stat-value" style="font-size: 1.5rem; color: var(--accent-blue);">-</div>
+        <div class="stat-footer">
+          <span>Most frequent</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Throughput</span>
+          <div class="stat-icon-box">
+            <span class="material-symbols-outlined">speed</span>
+          </div>
+        </div>
+        <div id="avgRateDisplay" class="stat-value">
+          0 <span style="font-size:1rem;">Kbps</span>
+        </div>
+        <div class="stat-footer">
+          <span>Avg rate</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div class="dash-panel">
+        <div class="panel-header">
+          <span class="panel-title">Network Visualization</span>
+          <div class="tab-pills">
+            <div id="graphTabBtn" class="tab-pill">Graph</div>
+            <div id="packetsTabBtn" class="tab-pill active">Packet List</div>
+            <div id="flowsTabBtn" class="tab-pill">Flows</div>
+            <div id="anomaliesTabBtn" class="tab-pill">Anomalies</div>
           </div>
         </div>
 
-        <div class="results-panel right-panel">
-          <div class="results-header-bar flex justify-between items-center">
-            <div>
-              <h2 class="text-white">Sniffer Results (<span id="packetCountDisplay">0</span> Packets)</h2>
-              <div class="flex gap-3 mt-2">
-                <div class="status-pill">
-                  <span class="text-slate-500">Duration:</span>
-                  <span id="durationDisplay" class="font-mono text-blue-400">0.0s</span>
-                </div>
-                <div class="status-pill">
-                  <span class="text-slate-500">Rate:</span>
-                  <span id="avgRateDisplay" class="font-mono text-indigo-400">0 Kbps</span>
-                </div>
-                <div class="status-pill">
-                  <span class="text-slate-500">Filter:</span>
-                  <span id="targetDisplay" class="font-mono text-green-400">None</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex gap-2 items-center">
-              <button id="refreshSnifferResultsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium"><i class="fas fa-sync-alt"></i></button>
-
-              <div class="relative inline-block text-left">
-                <button id="snifferAnalyzeReportDropdown" disabled class="px-3 py-2 rounded-lg bg-indigo-600/90 text-white text-xs font-medium hover:bg-indigo-500 transition-colors flex items-center opacity-50 cursor-not-allowed">
-                  <span class="button-text flex items-center">Analyze Report</span>
-                  <span class="spinner hidden ml-2"></span>
-                  <i class="fas fa-caret-down ml-2"></i>
-                </button>
-
-                <div id="snifferLlmAnalysisOptions" class="absolute right-0 mt-2 w-40 origin-top-right rounded-md shadow-lg bg-slate-800 ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-20">
-                  <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="snifferAnalyzeReportDropdown">
-                    <a href="#" data-llm-mode="local" class="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white" role="menuitem"><i class="fas fa-laptop mr-2 text-blue-400"></i> Local LLM</a>
-                    <a href="#" data-llm-mode="gemini" class="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white" role="menuitem"><i class="fas fa-brain mr-2 text-green-400"></i> Gemini AI</a>
-                  </div>
-                </div>
-              </div>
-              <button id="snifferDownloadReportBtn" disabled class="px-3 py-2 rounded-lg bg-red-600/90 text-white text-xs font-medium hover:bg-red-500 transition-colors flex items-center opacity-50 cursor-not-allowed"><i class="fas fa-file-pdf mr-2"></i> Report</button>
+        <div class="panel-content">
+          <div id="graphContent" class="hidden absolute inset-0 bg-black">
+            <div id="networkGraphCanvas"></div>
+            <div style="position: absolute; bottom: 16px; right: 16px; display: flex; gap: 8px;">
+              <button id="graphFitBtn" class="btn-dash btn-secondary" style="padding: 0 8px; height: 32px;"><span class="material-symbols-outlined" style="font-size:1rem;">fit_screen</span></button>
             </div>
           </div>
 
-          <div class="flex border-b border-slate-800 px-6">
-            <button id="summaryTabBtn" class="tab-button active">Summary</button>
-            <button id="flowsTabBtn" class="tab-button">Flows</button>
-            <button id="anomaliesTabBtn" class="tab-button">Anomalies</button>
-            <button id="packetsTabBtn" class="tab-button">Packets</button>
-            <button id="graphTabBtn" class="tab-button">Network Graph</button>
+          <div id="packetsContent" class="absolute inset-0 overflow-auto">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Time</th>
+                  <th>Source</th>
+                  <th>Dest</th>
+                  <th>Proto</th>
+                  <th>Len</th>
+                </tr>
+              </thead>
+              <tbody id="packetsTableBody">
+                <tr>
+                  <td colspan="6" style="text-align:center; padding: 3rem; color: #555;">Waiting for data stream...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <div class="flex-grow flex flex-col min-h-0">
-            <div id="summaryContent" class="flex-grow flex flex-col p-6 min-h-0">
-              <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
-                <div class="terminal-window p-3 text-center">
-                  <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Status</p>
-                  <p id="summaryStatus" class="text-lg font-bold text-emerald-400">Idle</p>
-                </div>
-                <div class="terminal-window p-3 text-center">
-                  <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Packets</p>
-                  <p id="summaryTotalPackets" class="text-lg font-bold text-emerald-400">0</p>
-                </div>
-                <div class="terminal-window p-3 text-center">
-                  <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Bytes</p>
-                  <p id="summaryTotalBytes" class="text-lg font-bold text-blue-400">0 B</p>
-                </div>
-                <div class="terminal-window p-3 text-center">
-                  <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Top Protocol</p>
-                  <p id="summaryPrimaryProto" class="text-lg font-bold text-indigo-400">-</p>
-                </div>
+          <div id="flowsContent" class="hidden absolute inset-0 overflow-auto">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Source</th>
+                  <th>Destination</th>
+                  <th>Method</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="flowsTableBody">
+                <tr>
+                  <td colspan="5" style="text-align:center; padding: 3rem; color: #555;">No flows detected yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="anomaliesContent" class="hidden absolute inset-0 overflow-auto p-6">
+            <div style="background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+              <h5 style="color: #ef4444; margin-bottom: 0.5rem; font-size: 0.9rem;">Security Analysis</h5>
+              <p id="anomalySummaryText" style="color: #d1d5db; font-size: 0.85rem;">No active threats detected in current stream.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <h6 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.5rem;">Cleartext Creds</h6>
+                <table class="dash-table">
+                  <tbody id="cleartextBody">
+                    <tr>
+                      <td>Safe</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-
-              <div class="overflow-hidden rounded-lg border border-slate-800 mb-4 bg-slate-900/30">
-                <div class="px-4 py-2 border-b border-slate-800 flex items-center justify-between">
-                  <h3 class="text-[11px] font-bold text-slate-500 uppercase">Capture Metadata</h3>
-                </div>
-                <div class="results-table-container max-h-32 overflow-auto">
-                  <table class="min-w-full text-sm results-table">
-                    <tbody id="captureMetaBody" class="results-table-tbody divide-y divide-slate-800">
-                      <tr>
-                        <td colspan="2" class="px-4 py-3 text-center text-slate-500 text-sm">Awaiting capture...</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+              <div>
+                <h6 style="color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.5rem;">Port Scans</h6>
+                <table class="dash-table">
+                  <tbody id="portScansBody">
+                    <tr>
+                      <td>None</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+            </div>
+          </div>
 
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-grow min-h-0">
-                <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40 flex flex-col h-64">
-                  <div class="px-4 py-2 border-b border-slate-800 bg-slate-900/80 sticky top-0">
-                    <h3 class="text-[11px] font-bold text-slate-500 uppercase">Protocol Hierarchy</h3>
-                  </div>
-                  <div class="results-table-container flex-grow overflow-auto">
-                    <table class="min-w-full text-xs results-table">
-                      <thead class="sticky top-0 bg-slate-900/90 backdrop-blur-sm z-10">
-                        <tr>
-                          <th class="px-4 py-2 text-left text-slate-400">Protocol</th>
-                          <th class="px-4 py-2 text-right text-slate-400">Frames</th>
-                          <th class="px-4 py-2 text-right text-slate-400">Bytes</th>
-                        </tr>
-                      </thead>
-                      <tbody id="protocolStatsBody" class="results-table-tbody divide-y divide-slate-800">
-                        <tr>
-                          <td colspan="3" class="px-4 py-4 text-center text-slate-500">No data available.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+          <div id="summaryContent" class="hidden"></div>
+        </div>
+      </div>
 
-                <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40 flex flex-col h-64">
-                  <div class="px-4 py-2 border-b border-slate-800 bg-slate-900/80 sticky top-0">
-                    <h3 class="text-[11px] font-bold text-slate-500 uppercase">TCP Conversations</h3>
-                  </div>
-                  <div class="results-table-container flex-grow overflow-auto">
-                    <table class="min-w-full text-xs results-table">
-                      <thead class="sticky top-0 bg-slate-900/90 backdrop-blur-sm z-10">
-                        <tr>
-                          <th class="px-4 py-2 text-left text-slate-400">Source</th>
-                          <th class="px-4 py-2 text-center text-slate-600 w-8"></th>
-                          <th class="px-4 py-2 text-left text-slate-400">Destination</th>
-                          <th class="px-4 py-2 text-right text-slate-400">Bytes</th>
-                        </tr>
-                      </thead>
-                      <tbody id="conversationStatsBody" class="results-table-tbody divide-y divide-slate-800">
-                        <tr>
-                          <td colspan="4" class="px-4 py-4 text-center text-slate-500">No conversations recorded.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+      <div class="flex flex-col gap-6" style="height: 100%; min-height: 0;">
+        <div class="dash-panel" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+          <div class="panel-header">
+            <span class="panel-title" style="font-size: 0.9rem;">Protocols</span>
+          </div>
+          <div class="panel-content" style="flex: 1; overflow-y: auto;">
+            <table class="dash-table">
+              <tbody id="protocolStatsBody">
+                <tr>
+                  <td style="color:#555;">No data</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1.5rem;">
+          <h5 class="panel-title" style="margin-bottom: 1rem; font-size: 0.9rem;">Intelligence</h5>
+
+          <div class="flex flex-col gap-3">
+            <div class="relative w-full">
+              <button id="snifferAnalyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+                <span>AI Analysis</span>
+                <span class="material-symbols-outlined">expand_more</span>
+              </button>
+              <div id="snifferLlmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-[#333] z-50 rounded-md shadow-xl">
+                <a href="#" data-llm-mode="local" class="block px-4 py-3 text-xs text-gray-400 hover:text-white hover:bg-[#27272a]">Local LLM</a>
+                <a href="#" data-llm-mode="gemini" class="block px-4 py-3 text-xs text-gray-400 hover:text-white hover:bg-[#27272a]">Gemini AI</a>
               </div>
             </div>
 
-            <div id="flowsContent" class="hidden flex-grow flex flex-col p-6 min-h-0">
-              <div class="overflow-hidden rounded-lg border border-slate-800 flex-grow relative bg-slate-900/30">
-                <div class="px-4 py-2 border-b border-slate-800 flex items-center justify-between">
-                  <h3 class="text-[11px] font-bold text-slate-500 uppercase">Application Flows</h3>
-                </div>
-                <div class="absolute inset-0 top-8 overflow-auto results-table-container">
-                  <table class="min-w-full text-sm results-table">
-                    <thead class="sticky top-0 backdrop-blur-md">
-                      <tr>
-                        <th class="px-6 py-3 text-left">Timestamp</th>
-                        <th class="px-6 py-3 text-left">Source</th>
-                        <th class="px-6 py-3 text-left">Destination</th>
-                        <th class="px-6 py-3 text-left">Method</th>
-                        <th class="px-6 py-3 text-left">URI</th>
-                        <th class="px-6 py-3 text-left">Response</th>
-                      </tr>
-                    </thead>
-                    <tbody id="flowsTableBody" class="divide-y divide-slate-800 results-table-tbody">
-                      <tr>
-                        <td colspan="6" class="p-12 text-center text-slate-500">No flows recorded.</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+            <button id="snifferDownloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+              <span>Export PDF</span>
+              <span class="material-symbols-outlined">download</span>
+            </button>
 
-            <div id="anomaliesContent" class="hidden flex-grow flex flex-col p-6 min-h-0">
-              <div class="terminal-window p-3 mb-4">
-                <p class="text-[10px] text-slate-500 uppercase font-semibold mb-1">Summary</p>
-                <p id="anomalySummaryText" class="text-xs text-slate-200">No anomalies detected.</p>
-              </div>
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-grow min-h-0">
-                <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40 flex flex-col">
-                  <div class="px-4 py-2 border-b border-slate-800">
-                    <h3 class="text-[11px] font-bold text-slate-500 uppercase">Port Scans</h3>
-                  </div>
-                  <div class="results-table-container flex-grow overflow-auto">
-                    <table class="min-w-full text-xs results-table">
-                      <tbody id="portScansBody" class="results-table-tbody divide-y divide-slate-800">
-                        <tr>
-                          <td class="px-4 py-4 text-center text-slate-500">None detected.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-                <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/40 flex flex-col">
-                  <div class="px-4 py-2 border-b border-slate-800">
-                    <h3 class="text-[11px] font-bold text-slate-500 uppercase">Cleartext Credentials</h3>
-                  </div>
-                  <div class="results-table-container flex-grow overflow-auto">
-                    <table class="min-w-full text-xs results-table">
-                      <tbody id="cleartextBody" class="results-table-tbody divide-y divide-slate-800">
-                        <tr>
-                          <td class="px-4 py-4 text-center text-slate-500">None detected.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div id="packetsContent" class="hidden flex-grow flex flex-col p-6 min-h-0">
-              <div class="overflow-hidden rounded-lg border border-slate-800 flex-grow relative bg-slate-900/30">
-                <div class="absolute inset-0 overflow-auto results-table-container">
-                  <table class="min-w-full text-sm results-table">
-                    <thead class="sticky top-0 backdrop-blur-md">
-                      <tr>
-                        <th class="px-6 py-3 text-left">No.</th>
-                        <th class="px-6 py-3 text-left">Time</th>
-                        <th class="px-6 py-3 text-left">Source IP</th>
-                        <th class="px-6 py-3 text-left">Dest IP</th>
-                        <th class="px-6 py-3 text-left">Protocol</th>
-                        <th class="px-6 py-3 text-left">Length</th>
-                      </tr>
-                    </thead>
-                    <tbody id="packetsTableBody" class="divide-y divide-slate-800 results-table-tbody">
-                      <tr>
-                        <td colspan="6" class="p-12 text-center">
-                          <div class="text-slate-600 mb-2">
-                            <i class="fas fa-network-wired text-4xl opacity-20"></i>
-                          </div>
-                          <p class="text-slate-500">Start a capture to view dissected packets.</p>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <div id="graphContent" class="hidden flex-grow flex flex-col p-6 min-h-0">
-              <div class="overflow-hidden rounded-lg border border-slate-800 bg-slate-900/30 flex-grow relative h-full">
-                <div id="networkGraphCanvas" class="absolute inset-0 w-full h-full"></div>
-
-                <div class="absolute top-4 left-4 z-10 pointer-events-none">
-                  <h3 class="text-slate-300 font-bold text-sm tracking-wider uppercase bg-slate-900/80 px-3 py-1 rounded border border-slate-700 backdrop-blur-sm shadow-lg"><i class="fas fa-project-diagram mr-2 text-blue-500"></i>Network Topology</h3>
-                </div>
-
-                <div class="absolute top-4 right-4 flex flex-col gap-2 z-10">
-                  <button id="graphZoomInBtn" class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Zoom In"><i class="fas fa-plus"></i></button>
-                  <button id="graphZoomOutBtn" class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Zoom Out"><i class="fas fa-minus"></i></button>
-                  <button id="graphFitBtn" class="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white flex items-center justify-center transition-colors shadow-lg" title="Fit to Screen"><i class="fas fa-compress-arrows-alt"></i></button>
-                </div>
-
-                <div class="absolute bottom-4 right-4 bg-slate-900/90 p-3 rounded-lg border border-slate-700 text-xs backdrop-blur-sm shadow-xl z-10">
-                  <h4 class="font-bold text-slate-500 mb-2 uppercase text-[10px]">Legend</h4>
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>
-                    <span class="text-slate-300">Local Network</span>
-                  </div>
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]"></span>
-                    <span class="text-slate-300">External IP</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-[10px] bg-slate-800 px-1 rounded text-slate-400 border border-slate-700">443</span>
-                    <span class="text-slate-300">Port Number</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <button id="refreshSnifferResultsBtn" class="btn-dash btn-secondary w-full justify-center"><span class="material-symbols-outlined">refresh</span></button>
           </div>
         </div>
       </div>
     </div>
 
-    <footer>
-      <p>A Product of NetShield Pvt. Ltd. | Empowering Digital Trust.</p>
-    </footer>
+    <div class="terminal-footer">
+      <div class="flex justify-between items-center mb-2 pb-2 border-b border-[#333]">
+        <span style="font-size: 0.7rem; text-transform: uppercase; color: #666; font-weight: 700;">Live Terminal Output</span>
+        <button id="clearSnifferLogBtn" style="background: none; border: none; color: #666; font-size: 0.7rem; cursor: pointer; font-weight:700;">CLEAR</button>
+      </div>
+      <div id="snifferLogOutput" class="term-text custom-scrollbar">
+        <div style="opacity: 0.5;">> System Ready. Initializing interface...</div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
 
-    <script src="/static/js/packet_sniffer.js"></script>
-  </body>
-</html>
+{% block extra_scripts %}
+  <script src="{{ url_for('static', filename='js/packet_sniffer.js') }}"></script>
+  <script>
+    // --- UI INTERACTION LOGIC ---
+    
+    // 1. Toggle Advanced Config
+    const configBtn = document.getElementById('advancedScanToggle')
+    const configMenu = document.getElementById('advancedScanOptions')
+    if (configBtn && configMenu) {
+      configBtn.addEventListener('click', (e) => {
+        configMenu.classList.toggle('hidden')
+        e.stopPropagation()
+      })
+      document.addEventListener('click', (e) => {
+        if (!configBtn.contains(e.target) && !configMenu.contains(e.target)) {
+          configMenu.classList.add('hidden')
+        }
+      })
+    }
+    
+    // 2. Tab Switcher Logic (Pills)
+    const tabs = [
+      { btn: 'graphTabBtn', content: 'graphContent' },
+      { btn: 'packetsTabBtn', content: 'packetsContent' },
+      { btn: 'flowsTabBtn', content: 'flowsContent' },
+      { btn: 'anomaliesTabBtn', content: 'anomaliesContent' }
+    ]
+    
+    function activateTab(targetBtnId) {
+      const targetTab = tabs.find((t) => t.btn === targetBtnId)
+      if (!targetTab) return
+    
+      // Hide all
+      tabs.forEach((t) => {
+        const b = document.getElementById(t.btn)
+        const c = document.getElementById(t.content)
+        if (b) b.classList.remove('active')
+        if (c) c.classList.add('hidden')
+      })
+    
+      // Show target
+      const activeBtn = document.getElementById(targetTab.btn)
+      const activeContent = document.getElementById(targetTab.content)
+      if (activeBtn) activeBtn.classList.add('active')
+      if (activeContent) activeContent.classList.remove('hidden')
+    }
+    
+    // Initialize Click Listeners
+    tabs.forEach((tab) => {
+      const btn = document.getElementById(tab.btn)
+      if (btn) {
+        btn.addEventListener('click', () => {
+          activateTab(tab.btn)
+        })
+      }
+    })
+    
+    // 3. Force "Packet List" to be visible on load
+    document.addEventListener('DOMContentLoaded', function () {
+      // Ensure Packets tab is the default active one
+      activateTab('packetsTabBtn')
+    })
+  </script>
+{% endblock %}

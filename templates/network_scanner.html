@@ -1,569 +1,754 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NetShieldAI - Network Scanner</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <style>
-      /* Base and Layout Styles */
-      html,
-      body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
+{% extends 'base.html' %}
+
+{% block title %}
+  NetShieldAI - Network Scanner
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    /* --- DASHBOARD THEME VARIABLES --- */
+    :root {
+      --bg-app: #09090b;
+      --bg-card: #18181b;
+      --bg-input: #27272a;
+      --border-subtle: #27272a;
+      --accent-primary: #f43f5e;
+      --accent-blue: #3b82f6;
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      --radius-card: 16px;
+      --radius-sm: 8px;
+    }
+    
+    /* --- LAYOUT UTILITIES --- */
+    .dashboard-wrapper {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      background-color: var(--bg-app);
+      min-height: 100vh;
+      color: var(--text-main);
+      font-family: 'Inter', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    /* Positioning & Sizing */
+    .relative {
+      position: relative;
+    }
+    .absolute {
+      position: absolute;
+    }
+    .inset-0 {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+    
+    /* CRITICAL: Helper to hide elements via JS */
+    .hidden {
+      display: none !important;
+    }
+    
+    .w-full {
+      width: 100%;
+    }
+    .h-full {
+      height: 100%;
+    }
+    .overflow-auto {
+      overflow: auto;
+    }
+    
+    /* Flexbox & Grid */
+    .flex {
+      display: flex;
+    }
+    .flex-col {
+      flex-direction: column;
+    }
+    .justify-between {
+      justify-content: space-between;
+    }
+    .justify-center {
+      justify-content: center;
+    }
+    .items-center {
+      align-items: center;
+    }
+    .gap-2 {
+      gap: 0.5rem;
+    }
+    .gap-3 {
+      gap: 0.75rem;
+    }
+    .gap-4 {
+      gap: 1rem;
+    }
+    .gap-6 {
+      gap: 1.5rem;
+    }
+    
+    .grid {
+      display: grid;
+    }
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Padding/Margins/Backgrounds */
+    .p-4 {
+      padding: 1rem;
+    }
+    .p-6 {
+      padding: 1.5rem;
+    }
+    .mb-2 {
+      margin-bottom: 0.5rem;
+    }
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+    .pb-2 {
+      padding-bottom: 0.5rem;
+    }
+    .bg-black {
+      background-color: #000;
+    }
+    
+    /* --- TOP CONTROL HEADER --- */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: transparent;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+    }
+    
+    .search-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+    
+    .dash-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: white;
+      padding: 12px 12px 12px 40px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .dash-input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+    }
+    
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    /* Buttons */
+    .btn-dash {
+      height: 42px;
+      padding: 0 1.25rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border-subtle);
+      text-decoration: none;
+      color: var(--text-muted);
+    }
+    .btn-dash:hover {
+      color: white;
+      border-color: #52525b;
+    }
+    
+    .btn-icon-only {
+      padding: 0;
+      width: 42px;
+      justify-content: center;
+    }
+    
+    .btn-primary {
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
+    }
+    .btn-primary:hover {
+      background: #e11d48;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-muted);
+    }
+    .btn-secondary:hover {
+      color: white;
+      border-color: #52525b;
+    }
+    
+    .btn-danger-outline {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .btn-danger-outline:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+    
+    /* --- METRIC CARDS ROW --- */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+    
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 140px;
+      position: relative;
+    }
+    
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-title {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .stat-icon-box {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-primary);
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+      font-family: 'Fira Code', monospace;
+    }
+    
+    .stat-footer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    /* --- MAIN DASHBOARD CONTENT --- */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2.5fr 1fr;
+      gap: 1.5rem;
+      height: 600px;
+    }
+    
+    .dash-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .panel-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      z-index: 10;
+    }
+    
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+    }
+    
+    /* Tab Navigation Pills */
+    .tab-pills {
+      display: flex;
+      gap: 0.5rem;
+      background: #000;
+      padding: 4px;
+      border-radius: 8px;
+    }
+    
+    .tab-pill {
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .tab-pill.active {
+      background: var(--bg-card);
+      color: white;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+    
+    .panel-content {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /* --- TABLES --- */
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .dash-table th {
+      text-align: left;
+      padding: 1rem 1.5rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.01);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .dash-table td {
+      padding: 1rem 1.5rem;
+      color: #e4e4e7;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.85rem;
+    }
+    .dash-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    /* Live Terminal Footer */
+    .terminal-footer {
+      height: 180px;
+      background: #000;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .term-text {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: #10b981;
+      overflow-y: auto;
+    }
+    
+    /* Input inside dropdown */
+    .dropdown-input {
+      background: #09090b;
+      border: 1px solid #333;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+    
+    .text-gradient {
+      background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+    }
+    
+    /* 2. Status Badge */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    
+    /* 3. Glassmorphism Back Button */
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(4px);
+      color: #d4d4d8;
+      border-radius: 9999px; /* Pill shape */
+      transition: all 0.2s ease;
+    }
+    .btn-glass:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: white;
+      transform: translateX(-2px); /* Subtle slide effect */
+    }
+    .btn-ghost {
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      height: 40px;
+      color: #a1a1aa; /* Muted text */
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    
+    .btn-ghost:hover {
+      color: #ffffff;
+      transform: translateX(-4px); /* Subtle slide left to indicate "Back" */
+      background: rgba(255, 255, 255, 0.05); /* Very faint background on hover */
+    }
+    
+    .spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
-      
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #050505; /* Deep Black */
-        /* Subtle radial gradient for depth */
-        background-image: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08), transparent 25%), radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.05), transparent 25%);
-        color: #e2e8f0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        padding-top: 5rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .metrics-row {
+        grid-template-columns: repeat(2, 1fr);
       }
-      
-      #page-wrapper {
-        flex: 1 0 auto;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-      }
-      
-      /* Navbar Styles (PRESERVED) */
-      .navbar {
-        background-color: #0d121c;
-        padding: 1rem 2rem;
-        box-shadow: none;
-        border-bottom: 1px solid #1e293b;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-      }
-      
-      .navbar-logo-img {
-        width: auto;
-        height: 30px;
-      }
-      
-      .navbar-links {
-        list-style: none;
-        display: flex;
-        gap: 2.5rem;
-        margin: 0;
-        padding: 0;
-      }
-      
-      .navbar-links li a {
-        text-decoration: none;
-        color: #94a3b8;
-        font-weight: 600;
-        transition: color 0.3s ease, transform 0.2s ease;
-        position: relative;
-      }
-      
-      .navbar-links li a::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: -5px;
-        left: 0;
-        background-color: #4299e1;
-        transition: width 0.3s ease-out;
-      }
-      
-      .navbar-links li a:hover {
-        color: #f8fafc;
-        transform: translateY(-2px);
-      }
-      
-      .navbar-links li a:hover::after {
-        width: 100%;
-      }
-      
-      .navbar-links li a.active {
-        color: #f8fafc;
-      }
-      .navbar-links li a.active::after {
-        width: 100%;
-      }
-      
-      /* --- REDESIGNED CENTRAL AREA CSS --- */
-      
-      /* Layout Grid */
       .main-grid {
-        max-width: 1600px;
-        width: 96%;
-        margin: 2rem auto;
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr;
+        height: auto;
       }
-      
-      /* Cards */
-      .control-panel,
-      .results-panel {
-        background-color: rgba(13, 18, 28, 0.7); /* Translucent dark */
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(51, 65, 85, 0.5);
-        border-radius: 1rem;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden; /* Contains children */
-        transition: border-color 0.3s ease;
+      .dash-panel {
+        height: 500px;
       }
-      
-      .control-panel:hover,
-      .results-panel:hover {
-        border-color: rgba(59, 130, 246, 0.4);
-      }
-      
-      .control-panel {
-        padding: 1.5rem;
-      }
-      .results-panel {
-        padding: 0;
-      } /* Padding handled by children for full-width headers */
-      
-      /* Typography tweaks for Main Area */
-      h1 {
-        font-size: 1.5rem;
-        letter-spacing: -0.02em;
-      }
-      h2 {
-        font-size: 1.25rem;
-        font-weight: 600;
-      }
-      h3 {
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #64748b;
-        font-weight: 700;
-      }
-      
-      /* Inputs - Minimalist Underline Style */
-      .input-group {
-        position: relative;
-      }
-      
-      input[type='text'] {
-        background-color: transparent;
-        border: none;
-        border-bottom: 2px solid #334155;
-        color: #f8fafc;
-        padding: 0.75rem 0;
-        width: 100%;
-        transition: border-color 0.3s ease;
-        font-size: 0.95rem;
-      }
-      input[type='text']::placeholder {
-        color: #475569;
-      }
-      input[type='text']:focus {
-        outline: none;
-        border-bottom-color: #3b82f6;
-      }
-      
-      /* Buttons */
-      .primary-action-button {
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: #ffffff;
-        border: none;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-        transition: all 0.2s ease-in-out;
-        font-weight: 600;
-        padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
-      }
-      .primary-action-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
-      }
-      .primary-action-button:disabled {
-        background: #1e293b;
-        color: #475569;
-        box-shadow: none;
-        cursor: not-allowed;
-        transform: none;
-      }
-      
-      /* New Vuln Button Style */
-      .vuln-action-button {
-        background: linear-gradient(135deg, #ef4444, #b91c1c); /* Red/Danger color */
-        color: #ffffff;
-        border: none;
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        transition: all 0.2s ease-in-out;
-        font-weight: 600;
-        padding: 0.75rem 1rem;
-        border-radius: 0.75rem;
-      }
-      .vuln-action-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-      }
-      .vuln-action-button:disabled {
-        background: #1e293b;
-        color: #475569;
-        box-shadow: none;
-        cursor: not-allowed;
-        transform: none;
-      }
-      
-      .secondary-button {
-        background-color: rgba(30, 41, 59, 0.5);
-        color: #94a3b8;
-        border: 1px solid transparent;
-        transition: all 0.2s ease;
-      }
-      .secondary-button:hover {
-        background-color: rgba(51, 65, 85, 0.8);
-        color: #f8fafc;
-      }
-      .secondary-button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      
-      /* Toggle Button Specifics */
-      #advancedScanToggle {
-        background-color: transparent;
-        border: 1px dashed #334155;
-        color: #64748b;
-      }
-      #advancedScanToggle:hover {
-        border-color: #64748b;
-        color: #94a3b8;
-      }
-      
-      /* Spinner */
-      .spinner {
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        animation: spin 0.8s linear infinite;
-      }
-      .primary-action-button .spinner,
-      .vuln-action-button .spinner {
-        border-top-color: #fff;
-      }
-      .secondary-button .spinner {
-        border-top-color: #94a3b8;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      
-      /* Terminals (Log & Raw) */
-      .terminal-window {
-        background-color: #050505;
-        border: 1px solid #1e293b;
-        border-radius: 0.5rem;
-        font-family: 'Fira Code', monospace;
-        font-size: 0.8rem;
-        color: #cbd5e1;
-      }
-      
-      /* Tab Styles */
-      .tab-button {
-        padding: 0.75rem 1.5rem;
-        cursor: pointer;
-        font-weight: 600;
-        color: #64748b;
-        border-bottom: 2px solid transparent;
-        transition: all 0.2s ease;
-      }
-      .tab-button:hover {
-        color: #f8fafc;
-      }
-      .tab-button.active {
-        color: #3b82f6;
-        border-bottom-color: #3b82f6;
-      }
-      
-      /* Table Styles */
-      .results-header-bar {
-        background-color: rgba(13, 18, 28, 0.9);
-        border-bottom: 1px solid #1e293b;
-        padding: 1.5rem;
-      }
-      
-      .results-table-container {
-        border: none;
-      }
-      .results-table thead {
-        background-color: rgba(30, 41, 59, 0.3);
-      }
-      .results-table th {
-        color: #64748b;
-        font-weight: 600;
-        border-bottom: 1px solid #1e293b;
-      }
-      .results-table tbody tr {
-        transition: background-color 0.1s;
-      }
-      .results-table tbody tr:hover {
-        background-color: rgba(59, 130, 246, 0.05);
-      }
-      .results-table-tbody td {
-        color: #e2e8f0;
-        border-bottom: 1px solid #1e293b;
-      }
-      
-      /* Fix for long vulnerability text */
-      .vuln-cell-content {
-        white-space: pre-wrap; /* Allows text to wrap */
-        word-break: break-word; /* Prevents overflow */
-        font-family: inherit; /* Use Inter font */
-        font-size: 0.85rem;
-        margin: 0;
-        padding: 0;
-      }
-      
-      /* Status Pills */
-      .status-pill {
-        background: #0f172a;
-        border: 1px solid #1e293b;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.8rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      
-      /* Footer (PRESERVED) */
-      footer {
-        background-color: #0d121c;
-        color: #cbd5e1;
-        text-align: center;
-        padding: 1.5rem 0;
-        width: 100%;
-        margin-top: auto;
-        flex-shrink: 0;
-      }
-      
-      /* Custom Scrollbars */
-      ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 3px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #475569;
-      }
-      
-      @media (max-width: 1024px) {
-        .main-grid {
-          grid-template-columns: 1fr;
-        }
-        .control-panel {
-          margin-bottom: 0;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar">
-      <div class="navbar-brand">
-        <a href="/"><img src="/static/images/NetShieldAI_logo.png" alt="NetShieldAI Logo" class="navbar-logo-img" /></a>
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="dashboard-wrapper fade-in-element">
+    <div class="flex flex-col items-start mb-8">
+      <a href="{{ url_for('tools_hub') }}" class="btn-ghost" style="padding-left: 0; margin-bottom: 1rem;">
+        <span class="material-symbols-outlined" style="font-size: 1.1rem; margin-right: 8px;">arrow_back</span>
+        <span>Security Hub</span>
+      </a>
+
+      <div>
+        <h1 class="text-gradient" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;">Network Scanner</h1>
+
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px; font-weight: 400;">Active Reconnaissance & Vulnerability Assessment</p>
       </div>
-      <ul class="navbar-links">
-        <li>
-          <a href="/network_scanner" class="active">Network Scanner</a>
-        </li>
-        <li>
-          <a href="/packet_sniffer">Network Monitor</a>
-        </li>
-        <li>
-          <a href="/zap_scanner">Web Application Scanner</a>
-        </li>
-        <li>
-          <a href="/ssl_scanner">SSL Scanner</a>
-        </li>
-        <li>
-          <a href="/chatbot">AI Analyzer</a>
-        </li>
-      </ul>
-    </nav>
+    </div>
 
-    <div id="page-wrapper">
-      <div class="main-grid">
-        <div class="control-panel left-panel">
-          <div class="flex items-center mb-8">
-            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 mr-3">
-              <i class="fas fa-shield-alt text-xl"></i>
-            </div>
-            <div>
-              <h1 class="font-bold text-white">Network Scanner</h1>
-              <p class="text-xs text-slate-400">Configure & Execute</p>
-            </div>
-          </div>
+    <div class="dashboard-header">
+      <div class="header-left">
+        <div class="search-container">
+          <span class="material-symbols-outlined search-icon">radar</span>
+          <input type="text" id="targetIp" class="dash-input" placeholder="Enter Target IP (e.g., 192.168.1.1)..." />
+          <button id="detectIpBtn" class="btn-dash btn-secondary btn-icon-only" title="Auto-Detect IP"><span class="material-symbols-outlined">my_location</span></button>
+        </div>
 
-          <div class="space-y-6 flex-grow">
-            <div class="input-group">
-              <label for="targetIp" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Target</label>
-              <div class="flex items-end gap-2">
-                <input type="text" id="targetIp" placeholder="IP Address or CIDR (e.g. 192.168.1.1)" />
-                <button id="detectIpBtn" class="mb-1 p-2 rounded-md hover:bg-slate-800 text-slate-400 hover:text-blue-400 transition-colors" title="Detect Local IP"><i class="fas fa-crosshairs"></i></button>
-              </div>
-            </div>
+        <button id="scanTcpBtn" class="btn-dash btn-primary">
+          <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+          <span>TCP Scan</span>
+          <span class="spinner hidden"></span>
+        </button>
 
-            <div class="grid grid-cols-2 gap-3 pt-2">
-              <button id="scanTcpBtn" class="primary-action-button flex items-center justify-center">
-                <span class="button-text">TCP Scan</span>
-                <span class="spinner hidden ml-2"></span>
-              </button>
-              <button id="scanVulnBtn" class="vuln-action-button flex items-center justify-center">
-                <span class="button-text">VULN Scan</span>
-                <span class="spinner hidden ml-2"></span>
-              </button>
-            </div>
+        <button id="scanVulnBtn" class="btn-dash btn-danger-outline">
+          <span class="material-symbols-outlined" style="font-size:1.1rem">bug_report</span>
+          <span>Vuln Scan</span>
+          <span class="spinner hidden"></span>
+        </button>
+      </div>
 
-            <div id="scanStatus" class="text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400">
-              <i class="fas fa-circle text-[8px] mr-2 text-green-500"></i> System Ready
-            </div>
+      <div class="header-actions">
+        <button id="advancedScanToggle" class="btn-dash btn-secondary"><span class="material-symbols-outlined">tune</span></button>
 
-            <div class="relative pt-2">
-              <button id="advancedScanToggle" class="w-full py-2 px-3 rounded text-xs font-semibold flex items-center justify-between">
-                <span>Advanced Options</span>
-                <i class="fas fa-chevron-down text-[10px]" id="advancedScanArrow"></i>
-              </button>
-              <div id="advancedScanOptions" class="hidden mt-2 space-y-1 p-1 bg-slate-900 rounded border border-slate-800">
-                <button data-scan-type="udp" class="w-full text-left px-3 py-2 rounded text-xs text-slate-400 hover:bg-slate-800 hover:text-white flex items-center transition-colors"><i class="fas fa-ethernet w-5 mr-2 text-green-500"></i>UDP Scan</button>
-                <button data-scan-type="os" class="w-full text-left px-3 py-2 rounded text-xs text-slate-400 hover:bg-slate-800 hover:text-white flex items-center transition-colors"><i class="fas fa-fingerprint w-5 mr-2 text-blue-500"></i>OS Detection</button>
-                <button data-scan-type="fragmented" class="w-full text-left px-3 py-2 rounded text-xs text-slate-400 hover:bg-slate-800 hover:text-white flex items-center transition-colors"><i class="fas fa-puzzle-piece w-5 mr-2 text-purple-500"></i>Fragmented Packet</button>
-                <button data-scan-type="aggressive" class="w-full text-left px-3 py-2 rounded text-xs text-slate-400 hover:bg-slate-800 hover:text-white flex items-center transition-colors"><i class="fas fa-bolt w-5 mr-2 text-yellow-500"></i>Aggressive</button>
-                <button data-scan-type="tcp_syn" class="w-full text-left px-3 py-2 rounded text-xs text-slate-400 hover:bg-slate-800 hover:text-white flex items-center transition-colors"><i class="fas fa-user-secret w-5 mr-2 text-red-500"></i>TCP SYN Stealth</button>
-              </div>
-            </div>
+        <div class="btn-dash btn-secondary" style="cursor: default;">
+          <span class="material-symbols-outlined" style="font-size: 1rem; color: #10b981;">fiber_manual_record</span>
+          <span id="scanStatus" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">READY</span>
+        </div>
+      </div>
+    </div>
 
-            <div class="input-group pt-2">
-              <label for="whitelistPorts" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Whitelist</label>
-              <div class="flex items-end gap-2">
-                <input type="text" id="whitelistPorts" placeholder="80, 443, 8080" />
-                <div class="flex gap-1 mb-1">
-                  <button id="updateWhitelistBtn" class="p-2 rounded hover:bg-slate-800 text-slate-400 hover:text-green-400 transition-colors"><i class="fas fa-save"></i></button>
-                  <button id="clearWhitelistBtn" class="p-2 rounded hover:bg-slate-800 text-slate-400 hover:text-red-400 transition-colors"><i class="fas fa-trash"></i></button>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div id="advancedScanOptions" class="hidden" style="position: absolute; top: 180px; right: 24px; width: 340px; background: #18181b; border: 1px solid #333; padding: 1.5rem; border-radius: 12px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      <h4 style="color:white; margin-bottom:1rem; font-size:0.9rem;">Scan Configuration</h4>
 
-          <div class="mt-8 border-t border-slate-800 pt-4">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-xs font-bold text-slate-500 uppercase">Live Event Log</span>
-              <button id="clearLogBtn" class="text-[10px] text-slate-600 hover:text-slate-300">CLEAR</button>
-            </div>
-            <div id="logOutput" class="terminal-window p-3 h-32 overflow-auto whitespace-pre leading-snug"></div>
+      <div style="display:flex; flex-direction:column; gap:1.25rem;">
+        <div>
+          <label style="color:#a1a1aa; font-size:0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Select Scan Mode</label>
+
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button data-scan-type="tcp_syn" class="btn-dash btn-secondary w-full justify-center" style="height: 36px; font-size: 0.8rem;"><span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 6px;">visibility_off</span> SYN Stealth</button>
+
+            <button data-scan-type="udp" class="btn-dash btn-secondary w-full justify-center" style="height: 36px; font-size: 0.8rem;"><span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 6px;">wifi_tethering</span> UDP Scan</button>
+
+            <button data-scan-type="os" class="btn-dash btn-secondary w-full justify-center" style="height: 36px; font-size: 0.8rem;"><span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 6px;">fingerprint</span> OS Detect</button>
+
+            <button data-scan-type="aggressive" class="btn-dash btn-secondary w-full justify-center" style="height: 36px; font-size: 0.8rem;"><span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 6px;">rocket_launch</span> Aggressive</button>
+
+            <button data-scan-type="fragmented" class="btn-dash btn-secondary w-full justify-center" style="height: 36px; font-size: 0.8rem; grid-column: span 2;"><span class="material-symbols-outlined" style="font-size: 1rem; margin-right: 6px;">grid_view</span> Fragmented Packets (Firewall Evasion)</button>
           </div>
         </div>
 
-        <div class="results-panel right-panel">
-          <div class="results-header-bar flex justify-between items-center">
+        <div>
+          <label style="color:#a1a1aa; font-size:0.75rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;">Port Whitelist (Ignore)</label>
+          <div class="flex gap-2 mt-2">
+            <input type="text" id="whitelistPorts" placeholder="e.g. 80, 443, 8080..." class="dropdown-input w-full" />
+            <button id="updateWhitelistBtn" class="btn-dash btn-secondary btn-icon-only" style="height: 32px;" title="Save"><span class="material-symbols-outlined" style="font-size:1rem;">save</span></button>
+            <button id="clearWhitelistBtn" class="btn-dash btn-secondary btn-icon-only" style="height: 32px;" title="Clear"><span class="material-symbols-outlined" style="font-size:1rem;">delete</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Target Host</span>
+          <div class="stat-icon-box">
+            <span class="material-symbols-outlined">dns</span>
+          </div>
+        </div>
+        <div id="localIpDisplay" class="stat-value" style="font-size:1rem; padding-top:4px;">---</div>
+        <div class="stat-footer">
+          <span>Local / Target IP</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Open Ports</span>
+          <div class="stat-icon-box">
+            <span class="material-symbols-outlined">meeting_room</span>
+          </div>
+        </div>
+        <div id="portCountDisplay" class="stat-value">0</div>
+        <div class="stat-footer">
+          <span style="color:#10b981;">+ Accessible</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Vulnerabilities</span>
+          <div class="stat-icon-box">
+            <span class="material-symbols-outlined">security</span>
+          </div>
+        </div>
+        <div class="stat-value" style="color: var(--accent-primary);">0</div>
+        <div class="stat-footer">
+          <span>Potential risks</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">System Status</span>
+          <div class="stat-icon-box">
+            <span class="material-symbols-outlined">memory</span>
+          </div>
+        </div>
+        <div class="stat-value" style="color:#10b981; font-size:1.2rem;">ONLINE</div>
+        <div class="stat-footer">
+          <span>Scanner Ready</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div class="dash-panel">
+        <div class="panel-header">
+          <span class="panel-title">Scan Results</span>
+          <div class="tab-pills">
+            <div id="portsTabBtn" class="tab-pill active">Open Ports</div>
+            <div id="rawTabBtn" class="tab-pill">Raw Log</div>
+          </div>
+        </div>
+
+        <div class="panel-content">
+          <div id="portsContent" class="absolute inset-0 overflow-auto">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Port</th>
+                  <th>Protocol</th>
+                  <th>Service</th>
+                  <th>Vulnerability Assessment</th>
+                </tr>
+              </thead>
+              <tbody id="openPortsTableBody">
+                <tr>
+                  <td colspan="4" style="text-align:center; padding: 3rem; color: #555;">Initiate a scan to view results...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="rawContent" class="hidden absolute inset-0 flex flex-col p-4 bg-black">
+            <div class="flex justify-between items-center mb-2">
+              <span style="font-size:0.75rem; color:#666; font-weight:700;" id="rawScanTypeDisplay">RAW OUTPUT</span>
+              <button id="copyResultsBtn" class="btn-dash btn-secondary" style="height:28px; font-size:0.7rem;">COPY</button>
+            </div>
+            <div id="resultsContent" class="term-text" style="flex:1; border:1px solid #333; padding:1rem; border-radius:8px;">// Buffer Empty</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-6" style="height: 100%; min-height: 0;">
+        <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1.5rem;">
+          <h5 class="panel-title" style="margin-bottom: 1rem; font-size: 0.9rem;">Admin Actions</h5>
+          <div class="flex flex-col gap-3">
+            <button id="verifyPortsBtn" class="btn-dash btn-secondary w-full justify-between">
+              <span>Verify Closed</span>
+              <span class="material-symbols-outlined">verified_user</span>
+            </button>
+            <button id="blockPortsBtn" class="btn-dash btn-danger-outline w-full justify-between">
+              <span>Block All Open</span>
+              <span class="material-symbols-outlined">block</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1.5rem;">
+          <div class="flex justify-between items-center mb-4">
+            <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence</h5>
+            <button id="refreshResultsBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px;" title="Refresh Data">
+              <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
+              <span class="spinner hidden"></span>
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <div class="relative w-full">
+              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+                <span>AI Analysis</span>
+                <span class="material-symbols-outlined">expand_more</span>
+              </button>
+              <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-[#333] z-50 rounded-md shadow-xl">
+                <a href="#" data-llm-mode="local" class="block px-4 py-3 text-xs text-gray-400 hover:text-white hover:bg-[#27272a]">Local LLM</a>
+                <a href="#" data-llm-mode="gemini" class="block px-4 py-3 text-xs text-gray-400 hover:text-white hover:bg-[#27272a]">Gemini AI</a>
+              </div>
+            </div>
+
+            <button id="downloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+              <span>Export PDF</span>
+              <span class="material-symbols-outlined">picture_as_pdf</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-panel" style="flex: 1; min-height: 180px; padding: 1.5rem;">
+          <h5 class="panel-title" style="margin-bottom: 1rem; font-size: 0.9rem;">Vulnerability Severity</h5>
+          <div class="flex flex-col gap-4">
             <div>
-              <h2 class="text-white">Scan Results (<span id="portCountDisplay">0</span> Ports Open)</h2>
-              <div class="flex gap-3 mt-2">
-                <div class="status-pill">
-                  <span class="text-slate-500">Local IP:</span>
-                  <span id="localIpDisplay" class="font-mono text-blue-400">---</span>
-                </div>
-                <div class="status-pill">
-                  <span class="text-slate-500">Whitelist:</span>
-                  <span id="whitelistedPortsDisplay" class="font-mono text-green-400">0</span>
-                </div>
+              <div class="flex justify-between text-xs" style="color:#a1a1aa; margin-bottom:4px;">
+                <span style="color:#ef4444; font-weight:600;">CRITICAL</span>
+                <span>0</span>
+              </div>
+              <div style="height:4px; background:#27272a; border-radius:2px;">
+                <div style="width:0%; height:100%; background:#ef4444; border-radius:2px;"></div>
               </div>
             </div>
-
-            <div class="flex gap-2 items-center">
-              <button id="blockPortsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium flex items-center"><i class="fas fa-ban mr-2 text-red-500"></i> Block</button>
-              <button id="verifyPortsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium flex items-center"><i class="fas fa-check-double mr-2 text-blue-500"></i> Verify</button>
-              <div class="h-8 w-px bg-slate-700 mx-1"></div>
-              <button id="refreshResultsBtn" class="px-3 py-2 rounded-lg secondary-button text-xs font-medium"><i class="fas fa-sync-alt"></i></button>
-
-              <div class="relative inline-block text-left">
-                <button id="analyzeReportDropdown" disabled class="px-3 py-2 rounded-lg bg-indigo-600/90 text-white text-xs font-medium hover:bg-indigo-500 transition-colors flex items-center opacity-50 cursor-not-allowed">
-                  <span class="button-text flex items-center">Analyze Report</span>
-                  <span class="spinner hidden ml-2"></span>
-                  <i class="fas fa-caret-down ml-2"></i>
-                </button>
-
-                <div id="llmAnalysisOptions" class="absolute right-0 mt-2 w-40 origin-top-right rounded-md shadow-lg bg-slate-800 ring-1 ring-black ring-opacity-5 focus:outline-none hidden z-20">
-                  <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="analyzeReportDropdown">
-                    <a href="#" data-llm-mode="local" class="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white" role="menuitem"><i class="fas fa-laptop mr-2 text-blue-400"></i> Local LLM</a>
-                    <a href="#" data-llm-mode="gemini" class="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white" role="menuitem"><i class="fas fa-brain mr-2 text-green-400"></i> Gemini AI</a>
-                  </div>
-                </div>
+            <div>
+              <div class="flex justify-between text-xs" style="color:#a1a1aa; margin-bottom:4px;">
+                <span style="color:#f97316; font-weight:600;">HIGH</span>
+                <span>0</span>
               </div>
-              <button id="downloadReportBtn" disabled class="px-3 py-2 rounded-lg bg-red-600/90 text-white text-xs font-medium hover:bg-red-500 transition-colors flex items-center opacity-50 cursor-not-allowed"><i class="fas fa-file-pdf mr-2"></i> Report</button>
-            </div>
-          </div>
-
-          <div class="flex border-b border-slate-800 px-6">
-            <button id="portsTabBtn" class="tab-button active">Open Ports</button>
-            <button id="rawTabBtn" class="tab-button">Raw Output</button>
-          </div>
-
-          <div class="flex-grow flex flex-col min-h-0">
-            <div id="portsContent" class="flex-grow flex flex-col p-6 min-h-0">
-              <div class="overflow-hidden rounded-lg border border-slate-800 flex-grow relative bg-slate-900/30">
-                <div class="absolute inset-0 overflow-auto results-table-container">
-                  <table class="min-w-full text-sm results-table">
-                    <thead class="sticky top-0 backdrop-blur-md">
-                      <tr>
-                        <th scope="col" class="px-6 py-3 text-left">Port</th>
-                        <th scope="col" class="px-6 py-3 text-left">Protocol</th>
-                        <th scope="col" class="px-6 py-3 text-left">Service (Version)</th>
-                        <th scope="col" class="px-6 py-3 text-left">Process Name</th>
-                        <th scope="col" class="px-6 py-3 text-left">Vulnerability Summary</th>
-                      </tr>
-                    </thead>
-                    <tbody id="openPortsTableBody" class="divide-y divide-slate-800 results-table-tbody">
-                      <tr>
-                        <td colspan="5" class="p-12 text-center">
-                          <div class="text-slate-600 mb-2">
-                            <i class="fas fa-radar text-4xl opacity-20"></i>
-                          </div>
-                          <p class="text-slate-500">Initiate a scan to view open ports.</p>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+              <div style="height:4px; background:#27272a; border-radius:2px;">
+                <div style="width:0%; height:100%; background:#f97316; border-radius:2px;"></div>
               </div>
             </div>
-
-            <div id="rawContent" class="hidden flex-grow flex-col p-6 pt-0 min-h-0">
-              <div class="flex justify-between items-center mb-2">
-                <h3 class="text-xs font-bold text-slate-600" id="rawScanTypeDisplay">RAW OUTPUT (TCP)</h3>
-                <button id="copyResultsBtn" class="text-xs text-blue-500 hover:text-blue-400">COPY</button>
+            <div>
+              <div class="flex justify-between text-xs" style="color:#a1a1aa; margin-bottom:4px;">
+                <span style="color:#eab308; font-weight:600;">MEDIUM</span>
+                <span>0</span>
               </div>
-              <div id="resultsContent" class="terminal-window p-4 flex-grow overflow-y-auto min-h-[120px]">
-                <span class="text-slate-600">// Awaiting output stream...</span>
+              <div style="height:4px; background:#27272a; border-radius:2px;">
+                <div style="width:0%; height:100%; background:#eab308; border-radius:2px;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs" style="color:#a1a1aa; margin-bottom:4px;">
+                <span style="color:#3b82f6; font-weight:600;">LOW</span>
+                <span>0</span>
+              </div>
+              <div style="height:4px; background:#27272a; border-radius:2px;">
+                <div style="width:0%; height:100%; background:#3b82f6; border-radius:2px;"></div>
               </div>
             </div>
           </div>
@@ -571,10 +756,18 @@
       </div>
     </div>
 
-    <footer>
-      <p>A Product of NetShield Pvt. Ltd. | Empowering Digital Trust.</p>
-    </footer>
+    <div class="terminal-footer">
+      <div class="flex justify-between items-center mb-2 pb-2 border-b border-[#333]">
+        <span style="font-size: 0.7rem; text-transform: uppercase; color: #666; font-weight: 700;">Live Terminal Output</span>
+        <button id="clearLogBtn" style="background: none; border: none; color: #666; font-size: 0.7rem; cursor: pointer; font-weight:700;">CLEAR</button>
+      </div>
+      <div id="logOutput" class="term-text custom-scrollbar">
+        <div style="opacity: 0.5;">> System Ready. Waiting for target...</div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
 
-    <script src="/static/js/network_scanner.js"></script>
-  </body>
-</html>
+{% block extra_scripts %}
+  <script src="{{ url_for('static', filename='js/network_scanner.js') }}"></script>
+{% endblock %}

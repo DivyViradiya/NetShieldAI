@@ -1,917 +1,513 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NetShieldAI - Secure Your Digital Assets</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <style>
-      /*******************************************/
-      /* --- ORIGINAL NAVBAR/DROPDOWN STYLES --- */
-      /* --- MODIFIED FOR BLACK THEME --- */
-      /*******************************************/
-      .navbar-logo-img {
-        /* Set your desired width here. I've guessed 150px. */
-        width: auto;
-        height: 30px; /* This keeps the aspect ratio correct */
-      }
-      
-      .navbar {
-        /* background-color: #1e293b; */
-        background-color: #0d121c; /* Darker surface */
-        padding: 1rem 2rem;
-        box-shadow: none;
-        /* border-bottom: 1px solid #334155; */
-        border-bottom: 1px solid #1e293b; /* Darker border */
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-      }
-      
-      .navbar-links {
-        list-style: none;
-        display: flex;
-        gap: 2.5rem;
-        margin: 0;
-        padding: 0;
-      }
-      
-      .navbar-links li a {
-        text-decoration: none;
-        color: #94a3b8; /* Muted light text */
-        font-weight: 600;
-        transition: color 0.3s ease, transform 0.2s ease;
-        position: relative;
-      }
-      
-      .navbar-links li a::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: -5px;
-        left: 0;
-        background-color: #4299e1; /* Accent blue - stays the same */
-        transition: width 0.3s ease-out;
-      }
-      
-      .navbar-links li a:hover {
-        color: #f8fafc; /* Bright light text */
-        transform: translateY(-2px);
-      }
-      
-      .navbar-links li a:hover::after {
-        width: 100%;
-      }
-      
-      .profile-dropdown {
-        position: relative;
-        display: inline-block;
-      }
-      
-      .profile-button-text {
-        background: none;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 0;
-        color: #94a3b8;
-      }
-      
-      .profile-button-text:hover {
-        color: #f8fafc;
-      }
-      
-      .profile-button-text .arrow-down {
-        font-size: 0.6rem;
-        margin-top: 2px;
-        transition: transform 0.2s ease-in-out;
-      }
-      
-      .profile-button-text.open .arrow-down {
-        transform: rotate(180deg);
-      }
-      
-      .profile-dropdown-content {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: 100%;
-        margin-top: 1rem;
-        /* background-color: #1e293b; */
-        background-color: #0d121c; /* Darker surface */
-        min-width: 260px;
-        box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.3);
-        z-index: 1;
-        border-radius: 0.5rem;
-        /* border: 1px solid #334155; */
-        border: 1px solid #1e293b; /* Darker border */
-        overflow: hidden;
-      }
-      
-      .profile-dropdown-content .user-info {
-        padding: 1rem;
-        /* border-bottom: 1px solid #334155; */
-        border-bottom: 1px solid #1e293b; /* Darker border */
-      }
-      
-      .profile-dropdown-content .user-info .username {
-        font-weight: 600;
-        color: #f8fafc; /* Light text */
-        font-size: 1rem;
-      }
-      
-      .profile-dropdown-content .user-info .email {
-        font-size: 0.875rem;
-        color: #94a3b8; /* Muted light text */
-      }
-      
-      .profile-dropdown-content .details {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-        color: #94a3b8; /* Muted light text */
-      }
-      
-      .profile-dropdown-content .details p {
-        margin: 0.5rem 0;
-      }
-      
-      .profile-dropdown-content a.logout-link {
-        color: #ef4444; /* Red - stays the same */
-        padding: 0.75rem 1rem;
-        text-decoration: none;
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 500;
-        /* border-top: 1px solid #334155; */
-        border-top: 1px solid #1e293b; /* Darker border */
-        text-align: center;
-      }
-      
-      .profile-dropdown-content a.logout-link:hover {
-        background-color: #3f1a1a; /* Dark red hover */
-      }
-      
-      /*********************************/
-      /* --- NEW REVAMPED STYLES --- */
-      /* --- MODIFIED FOR BLACK THEME --- */
-      /*********************************/
-      
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #000000; /* Pure black background */
-      
-        /* --- SUBTLE GRID ADDITION --- */
-        background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-        background-size: 40px 40px;
-        /* --------------------------- */
-      
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        padding-top: 5rem;
-        color: #cbd5e1; /* Default light text */
-        position: relative;
-        overflow-x: hidden;
-      }
-      
-      /* ADJUSTED Animated Background Shapes for Dark Mode */
-      @keyframes move-shape {
-        0% {
-          transform: translate(0, 0) rotate(0deg) scale(1);
-        }
-        25% {
-          transform: translate(10vw, 20vh) rotate(90deg) scale(1.1);
-        }
-        50% {
-          transform: translate(-15vw, 40vh) rotate(180deg) scale(1);
-        }
-        75% {
-          transform: translate(5vw, -10vh) rotate(270deg) scale(1.1);
-        }
-        100% {
-          transform: translate(0, 0) rotate(360deg) scale(1);
-        }
-      }
-      
-      body::before,
-      body::after {
-        content: '';
-        position: fixed;
-        z-index: -1;
-        border-radius: 50%;
-        background-color: #2563eb; /* Vibrant blue for a "nebula" effect */
-        opacity: 0.25; /* More subtle on dark */
-        filter: blur(80px); /* Much softer blur */
-      }
-      
-      body::before {
-        width: 350px;
-        height: 350px;
-        top: 10vh;
-        left: 5vw;
-        animation: move-shape 40s infinite linear alternate;
-      }
-      
-      body::after {
-        width: 450px;
-        height: 450px;
-        bottom: 5vh;
-        right: 10vw;
-        animation: move-shape 55s infinite linear alternate-reverse;
-      }
-      
-      h1,
-      h2,
-      h3 {
-        font-family: 'Inter', sans-serif;
-      }
-      
-      .hero-section {
-        background-color: transparent;
-        text-align: center;
-        padding: 5rem 2rem;
-        margin-bottom: 3rem;
-      }
-      
-      .hero-section h1 {
-        font-size: 3.2rem;
-        font-weight: 800;
-        margin-bottom: 1.5rem;
-        line-height: 1.25;
-        color: #f8fafc; /* Bright white text */
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
-        text-shadow: none;
-      }
-      
-      .hero-section p {
-        font-size: 1.25rem;
-        line-height: 1.6;
-        max-width: 700px;
-        margin: 0 auto 2.5rem auto;
-        color: #cbd5e1; /* Light gray text */
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
-      }
-      
-      .btn-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        background-color: #3b82f6; /* Blue - stays the same */
-        color: white; /* Stays the same */
-        padding: 1rem 2.5rem;
-        border-radius: 0.75rem;
-        font-weight: 700;
-        text-decoration: none;
-        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); /* Main blue shadow */
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s, box-shadow 0.3s ease;
-      }
-      
-      .btn-primary:hover {
-        background-color: #2563eb; /* Stays the same */
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-      }
-      
-      .main-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 0 2rem;
-        max-width: 1200px;
-        margin: 0 auto 4rem auto;
-        gap: 3rem;
-      }
-      
-      .section-card {
-        /* background-color: rgba(30, 41, 59, 0.8); */
-        background-color: rgba(13, 18, 28, 0.8); /* Darker glass (based on #0d121c) */
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 0.75rem;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        /* border: 1px solid #334155; */
-        border: 1px solid #1e293b; /* Darker border */
-        padding: 3rem;
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s ease, transform 0.8s ease;
-      }
-      
-      .section-card h2 {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #f8fafc; /* Light text */
-        margin-bottom: 2.5rem;
-        position: relative;
-        padding-bottom: 1rem;
-        text-align: center;
-        text-shadow: none;
-      }
-      
-      .section-card h2::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background-color: #4299e1; /* Accent blue - stays the same */
-        border-radius: 1.5px;
-      }
-      
-      .tools-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
-      }
-      
-      .tool-card {
-        /* background-color: #1e293b; */
-        background-color: #0d121c; /* Darker surface */
-        /* border: 1px solid #334155; */
-        border: 1px solid #1e293b; /* Darker border */
-        color: #cbd5e1; /* Light text */
-        padding: 2rem;
-        border-radius: 0.75rem;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        text-decoration: none;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      }
-      
-      .tool-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
-      }
-      
-      .tool-icon {
-        font-size: 3.5rem;
-        color: #3b82f6; /* Accent blue - stays the same */
-        margin-bottom: 1rem;
-        transition: transform 0.3s ease;
-      }
-      
-      .tool-card:hover .tool-icon {
-        transform: scale(1.1);
-      }
-      
-      .tool-content h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #f8fafc; /* Light text */
-        margin-bottom: 0.5rem;
-      }
-      
-      .tool-content p {
-        font-size: 0.9rem;
-        color: #94a3b8; /* Muted light text */
-        line-height: 1.6;
-      }
-      
-      /* --- NEW STYLES FOR "HOW IT WORKS" --- */
-      .workflow-card {
-        background-color: transparent; /* Seamless inside section card */
-        color: #cbd5e1;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        text-align: left;
-      }
-      
-      .workflow-card h3 {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #f8fafc;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border-bottom: 1px solid #1e293b;
-        padding-bottom: 0.75rem;
-      }
-      
-      .workflow-card h3 .material-symbols-outlined {
-        color: #3b82f6;
-      }
-      
-      .step-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        position: relative;
-      }
-      
-      .step-list li {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1.25rem;
-        position: relative;
-      }
-      
-      .step-list li:last-child {
-        margin-bottom: 0;
-      }
-      
-      .step-icon {
-        flex-shrink: 0;
-        width: 24px;
-        height: 24px;
-        background-color: #1e293b;
-        color: #3b82f6;
-        border: 1px solid #3b82f6;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 0.75rem;
-        font-weight: 700;
-        z-index: 2;
-      }
-      
-      /* Vertical line connecting steps */
-      .step-list li:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        top: 24px;
-        left: 11.5px; /* Center of the 24px icon */
-        width: 1px;
-        height: calc(100% - 4px); /* Connect to next icon */
-        background-color: #334155;
-        z-index: 1;
-      }
-      
-      .step-content {
-        font-size: 0.9rem;
-        line-height: 1.5;
-        color: #94a3b8;
-      }
-      
-      .step-content strong {
-        color: #e2e8f0;
-        display: block;
-        margin-bottom: 0.25rem;
-      }
-      /* -------------------------------------- */
-      
-      .chatbot-card {
-        /* background-color: rgba(30, 41, 59, 0.8); */
-        background-color: rgba(13, 18, 28, 0.8); /* Darker glass (based on #0d121c) */
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 0.75rem;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        /* border: 1px solid #334155; */
-        border: 1px solid #1e293b; /* Darker border */
-        padding: 3rem;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        align-items: center;
-        gap: 3rem;
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s ease, transform 0.8s ease;
-      }
-      
-      .chatbot-text-content {
-        text-align: left;
-      }
-      
-      .chatbot-card h2 {
-        font-size: 2rem;
-        text-align: left;
-        padding: 0;
-        margin-bottom: 1rem;
-        color: #f8fafc; /* Explicitly set light text */
-        text-shadow: none;
-      }
-      
-      .chatbot-card h2::after {
-        display: none;
-      }
-      
-      .chatbot-card p {
-        font-size: 1.05rem;
-        line-height: 1.7;
-        margin-bottom: 2rem;
-        color: #cbd5e1; /* Light text */
-        text-align: left;
-      }
-      
-      .chat-demo-window {
-        /* background: #0d121c; */
-        background: #000000; /* Pure black */
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        height: 300px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        overflow: hidden;
-        /* border: 1px solid #334155; */
-        border: 1px solid #1e293b; /* Darker border */
-      }
-      
-      @keyframes slideUpFadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(15px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      
-      .chat-bubble {
-        padding: 0.75rem 1rem;
-        border-radius: 1rem;
-        margin-bottom: 0.75rem;
-        max-width: 80%;
-        line-height: 1.4;
-        opacity: 0;
-        animation: slideUpFadeIn 0.5s ease-out forwards;
-      }
-      
-      .chat-bubble.user {
-        background-color: #3b82f6; /* Blue - stays the same */
-        color: white; /* Stays the same */
-        border-bottom-right-radius: 0.25rem;
-        align-self: flex-end;
-        animation-delay: 0.5s;
-      }
-      
-      .chat-bubble.ai {
-        /* background-color: #334155; */
-        background-color: #1e293b; /* Darker bubble */
-        color: #f8fafc; /* Light text */
-        border-bottom-left-radius: 0.25rem;
-        align-self: flex-start;
-        animation-delay: 1.5s;
-      }
-      
-      .chat-bubble.typing {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 1rem 1rem;
-        animation-delay: 2.5s;
-      }
-      
-      @keyframes dot-bounce {
-        0%,
-        60%,
-        100% {
-          transform: translateY(0);
-        }
-        30% {
-          transform: translateY(-4px);
-        }
-      }
-      
-      .chat-bubble.typing span {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #94a3b8; /* Muted light gray - looks good on dark */
-        animation: dot-bounce 1.2s infinite;
-      }
-      .chat-bubble.typing span:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-      .chat-bubble.typing span:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-      
-      .fade-in-element.is-visible {
+{% extends 'base.html' %}
+
+{% block title %}
+  NetShieldAI - Autonomous Security Grid
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    /* --- NEO-FUTURISM THEME OVERRIDES --- */
+    :root {
+      --neo-bg: #050505;
+      --neo-card: #0f0f11;
+      --neo-border: #27272a;
+      --neo-accent: #f8fafc;
+      --neo-blue: #3b82f6;
+      --neo-cyan: #00f7ff;
+    }
+    
+    .main-content {
+      max-width: 1400px;
+      padding: 0 4rem;
+    }
+    
+    /* --- HERO SECTION --- */
+    .hero-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      text-align: left;
+      min-height: 80vh;
+      padding-top: 2rem;
+      padding-bottom: 6rem;
+      position: relative;
+      border-bottom: 1px solid var(--neo-border);
+      background: radial-gradient(circle at 70% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
+    }
+    
+    .hero-content {
+      max-width: 800px;
+      width: 100%;
+    }
+    
+    .hero-tagline {
+      font-size: 0.875rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--neo-blue);
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      justify-content: flex-start;
+    }
+    
+    .hero-tagline::before {
+      content: '//';
+      color: white;
+      font-weight: 800;
+      opacity: 0.5;
+    }
+    
+    .hero-title {
+      font-size: 4.5rem;
+      line-height: 1;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--neo-accent);
+      margin-bottom: 2rem;
+      letter-spacing: -0.03em;
+    }
+    
+    .hero-title span {
+      color: #333;
+      display: block;
+    }
+    
+    .hero-sub {
+      font-size: 1.15rem;
+      color: #94a3b8;
+      max-width: 600px;
+      margin-bottom: 3rem;
+      line-height: 1.7;
+      border-left: 1px solid var(--neo-border);
+      padding-left: 2rem;
+    }
+    
+    .hero-actions {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: flex-start;
+    }
+    
+    .btn-neo-primary {
+      background: var(--neo-accent);
+      color: black;
+      padding: 1rem 2.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      border: 1px solid white;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .btn-neo-primary:hover {
+      background: transparent;
+      color: white;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+    
+    /* --- STATUS BAR --- */
+    .status-bar {
+      width: 100%;
+      border-bottom: 1px solid var(--neo-border);
+      margin-bottom: 6rem;
+      padding: 2.5rem 0;
+    }
+    
+    .status-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+    
+    .status-item span {
+      display: block;
+      font-size: 0.7rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+    .status-item strong {
+      font-size: 1.4rem;
+      color: white;
+      font-weight: 500;
+    }
+    .status-item strong i {
+      font-style: normal;
+      color: var(--neo-blue);
+      font-size: 1rem;
+      vertical-align: middle;
+    }
+    
+    /* --- IMPROVED CARD DESIGN --- */
+    .section-header {
+      margin-bottom: 4rem;
+    }
+    .section-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: #555;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .section-title {
+      font-size: 3rem;
+      text-transform: uppercase;
+      font-weight: 300;
+      color: white;
+      line-height: 1.1;
+    }
+    .section-title b {
+      font-weight: 800;
+      display: block;
+      color: white;
+    }
+    
+    .neo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 8rem;
+    }
+    
+    .neo-card {
+      background: linear-gradient(180deg, #161618 0%, #0a0a0c 100%);
+      border: 1px solid #222;
+      border-radius: 4px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      height: 360px;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    
+    .neo-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neo-blue), transparent);
+      opacity: 0.3;
+      transition: opacity 0.3s ease;
+    }
+    
+    .neo-card:hover {
+      transform: translateY(-5px);
+      border-color: #333;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .neo-card:hover::before {
+      opacity: 1;
+    }
+    
+    .card-icon-box {
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .card-icon-box span {
+      font-size: 1.8rem;
+      color: #888;
+      transition: color 0.3s ease;
+    }
+    
+    .neo-card:hover .card-icon-box {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    
+    .neo-card:hover .card-icon-box span {
+      color: var(--neo-blue);
+    }
+    
+    .neo-card h3 {
+      font-size: 1.3rem;
+      color: white;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    
+    .neo-card p {
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+    
+    .card-link {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: #555;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+      padding-top: 1.5rem;
+      border-top: 1px solid #1a1a1a;
+    }
+    
+    .neo-card:hover .card-link {
+      color: var(--neo-blue);
+      border-color: #333;
+    }
+    
+    .card-link span {
+      font-size: 1rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .neo-card:hover .card-link span {
+      transform: translateX(5px);
+    }
+    
+    /* --- SIMPLIFIED CHATBOT UI --- */
+    .chatbot-banner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      margin-bottom: 6rem;
+      border: 1px solid var(--neo-border);
+      padding: 4rem;
+      background: linear-gradient(180deg, rgba(15, 15, 17, 0.5) 0%, rgba(5, 5, 5, 1) 100%);
+      border-radius: 4px;
+    }
+    
+    .simple-chat-window {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: relative;
+    }
+    
+    .chat-msg {
+      max-width: fit-content;
+      padding: 1rem 1.4rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      animation: fadeIn 0.5s ease forwards;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    
+    .chat-msg.ai {
+      background: #1a1a1a;
+      color: #e5e5e5;
+      border-left: 2px solid var(--neo-blue);
+      align-self: flex-start;
+      border-radius: 0 12px 12px 12px;
+    }
+    
+    .chat-msg.user {
+      background: var(--neo-blue);
+      color: white;
+      align-self: flex-end;
+      border-radius: 12px 12px 0 12px;
+      animation-delay: 0.8s;
+    }
+    
+    .chat-msg.ai.response {
+      animation-delay: 1.8s;
+    }
+    
+    @keyframes fadeIn {
+      to {
         opacity: 1;
         transform: translateY(0);
       }
-      
-      /*********************************/
-      /* --- ORIGINAL FOOTER STYLES -- */
-      /*********************************/
-      footer {
-        /* background-color: #1e293b; */
-        background-color: #0d121c; /* Darker surface */
-        color: white;
+    }
+    
+    @media (max-width: 1024px) {
+      .hero-title {
+        font-size: 3rem;
+      }
+      .status-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        padding: 0 2rem;
+      }
+      .chatbot-banner {
+        grid-template-columns: 1fr;
+      }
+      .hero-wrapper {
         text-align: center;
-        padding: 1rem 0;
-        width: 100%;
-        margin-top: auto;
-        flex-shrink: 0;
-        font-size: 0.9rem;
+        align-items: center;
+        padding-bottom: 4rem;
       }
-      
-      footer p {
-        margin: 0.5rem 0;
-        color: #cbd5e1;
+      .hero-sub {
+        border-left: none;
+        padding-left: 0;
       }
-      
-      /******************************/
-      /* --- RESPONSIVE STYLES --- */
-      /* --- (UNCHANGED) --- */
-      /******************************/
-      @media (max-width: 1024px) {
-        .main-content {
-          max-width: 700px;
-          padding: 0 1.5rem;
-        }
-        .tools-grid {
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        }
-        .chatbot-card {
-          grid-template-columns: 1fr;
-        }
-        .chat-demo-window {
-          margin-top: 2rem;
-        }
-        .chatbot-text-content {
-          text-align: center;
-        }
-        .chatbot-card h2,
-        .chatbot-card p {
-          text-align: center;
-        }
+      .hero-tagline,
+      .hero-actions {
+        justify-content: center;
       }
-      
-      @media (max-width: 768px) {
-        .navbar {
-          padding: 0.8rem 1rem;
-        }
-        .navbar-brand {
-          font-size: 1.4rem;
-        }
-        .navbar-links {
-          display: none;
-        }
-        body {
-          padding-top: 4rem;
-        }
-        .hero-section {
-          padding: 4rem 1rem;
-        }
-        .hero-section h1 {
-          font-size: 2.2rem;
-        }
-        .hero-section p {
-          font-size: 1rem;
-        }
-        .section-card,
-        .chatbot-card {
-          padding: 2rem 1.5rem;
-        }
-        .section-card h2,
-        .chatbot-card h2 {
-          font-size: 1.8rem;
-        }
-        .tools-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-  <body class="dark-mode">
-    <nav class="navbar">
-      <div class="navbar-brand">
-        <a href="/"><img src="/static/images/NetShieldAI_logo.png" alt="NetShieldAI Logo" class="navbar-logo-img" /></a>
-      </div>
-      <ul class="navbar-links">
-        <li>
-          <a href="/network_scanner">Network Scanner</a>
-        </li>
-        <li>
-          <a href="/packet_sniffer">Network Monitor</a>
-        </li>
-        <li>
-          <a href="/zap_scanner">Web Application Scanner</a>
-        </li>
-        <li>
-          <a href="/ssl_scanner">SSL/TLS Scanner</a>
-        </li>
-        <li>
-          <a href="/chatbot">AI Analyzer</a>
-        </li>
-      </ul>
-    </nav>
+    }
+  </style>
+{% endblock %}
 
-    <div class="hero-section">
-      <h1 class="fade-in-element">Detect, Protect and Prevent with NetShieldAI</h1>
-      <p class="fade-in-element">Harness the power of AI-driven vulnerability scanning and proactive security insights to protect your digital assets.</p>
-      <a href="/network_scanner" class="btn-primary fade-in-element">
-        Get Started
-        <span class="material-symbols-outlined">chevron_right</span>
-      </a>
+{% block content %}
+  <div class="hero-wrapper">
+    <div class="hero-content fade-in-element">
+      <div class="hero-tagline">Autonomous Defense Grid</div>
+      <h1 class="hero-title">
+        Unified. <br />
+        <span>Autonomous.</span>
+        <span>Secure.</span>
+      </h1>
+      <p class="hero-sub">NetShieldAI is the unified service to test the security posture of your website, network, and databases. Perform automated penetration testing and get AI-based insights—all without hiring a professional cybersecurity team.</p>
+      <div class="hero-actions">
+        <a href="{{ url_for('tools_hub') }}" class="btn-neo-primary">Launch Arsenal <span class="material-symbols-outlined">arrow_forward</span></a>
+        <a href="#workflow" class="btn-neo-primary" style="background: transparent; border-color: #333; color: white;">View Protocol</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar fade-in-element">
+    <div class="status-container">
+      <div class="status-item">
+        <span>Threat Database</span>
+        <strong>85+ <i>Vectors</i></strong>
+      </div>
+      <div class="status-item">
+        <span>Analysis Standard</span>
+        <strong>CWE <i>Mapped</i></strong>
+      </div>
+      <div class="status-item">
+        <span>Encryption Scan</span>
+        <strong>TLS <i>1.3 / SSL</i></strong>
+      </div>
+      <div class="status-item">
+        <span>AI Engine</span>
+        <strong>Active <i>v1.0</i></strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header fade-in-element">
+    <span class="section-label">System Modules</span>
+    <h2 class="section-title">Operational <b>Capabilities</b></h2>
+  </div>
+
+  <div class="neo-grid fade-in-element">
+    <a href="{{ url_for('tools_hub') }}" class="neo-card">
+      <div class="card-icon-box">
+        <span class="material-symbols-outlined">security</span>
+      </div>
+      <div>
+        <h3>Automated Pentesting</h3>
+        <p>Full-spectrum simulation of cyberattacks to identify weak points in your infrastructure before attackers do.</p>
+      </div>
+      <div class="card-link">
+        Execute <span class="material-symbols-outlined">chevron_right</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="neo-card">
+      <div class="card-icon-box">
+        <span class="material-symbols-outlined">database</span>
+      </div>
+      <div>
+        <h3>Database Injection (SQLi)</h3>
+        <p>Rigorous testing of database inputs to prevent SQL Injection attacks and secure sensitive user data.</p>
+      </div>
+      <div class="card-link">
+        Scan DB <span class="material-symbols-outlined">chevron_right</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="neo-card">
+      <div class="card-icon-box">
+        <span class="material-symbols-outlined">hub</span>
+      </div>
+      <div>
+        <h3>Network Cartography</h3>
+        <p>Map open ports, detect operating systems, and identify hidden services on your local or remote network.</p>
+      </div>
+      <div class="card-link">
+        Map Network <span class="material-symbols-outlined">chevron_right</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="neo-card">
+      <div class="card-icon-box">
+        <span class="material-symbols-outlined">language</span>
+      </div>
+      <div>
+        <h3>Web Vulnerability</h3>
+        <p>Deep inspection of web applications for XSS, CSRF, and configuration errors using OWASP standards.</p>
+      </div>
+      <div class="card-link">
+        Audit Web <span class="material-symbols-outlined">chevron_right</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('ssl_scanner_bp.ssl_scanner_page') }}" class="neo-card">
+      <div class="card-icon-box">
+        <span class="material-symbols-outlined">encrypted</span>
+      </div>
+      <div>
+        <h3>SSL/TLS Encryption</h3>
+        <p>Analyze certificate chains, cipher strength, and protocol versions to ensure encrypted traffic is secure.</p>
+      </div>
+      <div class="card-link">
+        Check Certs <span class="material-symbols-outlined">chevron_right</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="chatbot-banner fade-in-element">
+    <div class="banner-content">
+      <span class="section-label">AI ASSISTANT</span>
+      <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1.5rem;">Your Personal <b>Security Analyst</b></h2>
+      <p style="color: #888; margin-bottom: 2rem; line-height: 1.7;">NetShieldAI doesn't just give you a PDF. Our AI reads the report for you. Ask questions, get code fixes for SQL injection, or understand the severity of an open port—available 24/7.</p>
+      <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="btn-neo-primary">Start Analysis <span class="material-symbols-outlined">chat</span></a>
     </div>
 
-    <main class="main-content">
-      <div class="panel-wrapper">
-        <div class="section-card fade-in-element">
-          <h2>Our Powerful Scanning Tools</h2>
-          <div class="tools-grid">
-            <a href="/network_scanner" class="tool-card">
-              <span class="material-symbols-outlined tool-icon">router</span>
-              <div class="tool-content">
-                <h3>Network Scanning</h3>
-                <p>Identify open ports, services, and potential vulnerabilities across your network infrastructure.</p>
-              </div>
-            </a>
-            <a href="/zap_scanner" class="tool-card">
-              <span class="material-symbols-outlined tool-icon">web_asset</span>
-              <div class="tool-content">
-                <h3>Web Application Scanning</h3>
-                <p>Detect critical web vulnerabilities such as SQL Injection, XSS, and more in your web applications and APIs.</p>
-              </div>
-            </a>
-            <a href="/ssl_scanner" class="tool-card">
-              <span class="material-symbols-outlined tool-icon">lock</span>
-              <div class="tool-content">
-                <h3>SSL/TLS Security Scans</h3>
-                <p>Assess the strength and configuration of your SSL/TLS certificates and protocols to ensure robust encryption.</p>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
+    <div class="simple-chat-window">
+      <div class="chat-msg ai">Scan complete. I found a critical SQL Injection vulnerability in your login form.</div>
+      <div class="chat-msg user">How do I fix it?</div>
+      <div class="chat-msg ai response">You should use parameterized queries. Here is the Python code snippet to patch it...</div>
+    </div>
+  </div>
+{% endblock %}
 
-      <div class="panel-wrapper">
-        <div class="section-card fade-in-element">
-          <h2>How It Works</h2>
-          <div class="tools-grid">
-            <div class="workflow-card">
-              <h3><span class="material-symbols-outlined">router</span> Network Scanner</h3>
-              <ul class="step-list">
-                <li>
-                  <div class="step-icon">1</div>
-                  <div class="step-content">
-                    <strong>IP Detection</strong>
-                    Auto-detects IP. If undefined, manually enter your desired Target IP.
-                  </div>
-                </li>
-                <li>
-                  <div class="step-icon">2</div>
-                  <div class="step-content">
-                    <strong>Configure Scan</strong>
-                    Select Scan Type (TCP, OS, Fragmented, Aggressive, SYN, UDP) and Port range.
-                  </div>
-                </li>
-                <li>
-                  <div class="step-icon">3</div>
-                  <div class="step-content">
-                    <strong>Results</strong>
-                    View detailed table output and download the full report.
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            <div class="workflow-card">
-              <h3><span class="material-symbols-outlined">web_asset</span> ZAP Scanner</h3>
-              <ul class="step-list">
-                <li>
-                  <div class="step-icon">1</div>
-                  <div class="step-content">
-                    <strong>Target Input</strong>
-                    Enter the website URL you wish to inspect.
-                  </div>
-                </li>
-                <li>
-                  <div class="step-icon">2</div>
-                  <div class="step-content">
-                    <strong>Run Scan</strong>
-                    Initiate the scan. Vulnerabilities will populate in the sidebar instantly.
-                  </div>
-                </li>
-                <li>
-                  <div class="step-icon">3</div>
-                  <div class="step-content">
-                    <strong>Analysis</strong>
-                    Review specific issues and download the comprehensive report.
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            <div class="workflow-card">
-              <h3><span class="material-symbols-outlined">lock</span> SSL Scanner</h3>
-              <ul class="step-list">
-                <li>
-                  <div class="step-icon">1</div>
-                  <div class="step-content">
-                    <strong>Target Input</strong>
-                    Enter the website URL to check SSL configuration.
-                  </div>
-                </li>
-                <li>
-                  <div class="step-icon">2</div>
-                  <div class="step-content">
-                    <strong>Deep Scan</strong>
-                    Tool scans for all supported ciphers, protocols, and certificate validity.
-                  </div>
-                </li>
-                <li>
-                  <div class="step-icon">3</div>
-                  <div class="step-content">
-                    <strong>Output</strong>
-                    Receive a detailed breakdown of your security posture.
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="panel-wrapper">
-        <div class="chatbot-card fade-in-element">
-          <div class="chatbot-text-content">
-            <h2>NetShieldAI Chatbot</h2>
-            <p>Go beyond raw data. Our intelligent AI chatbot helps you understand scan reports, explains vulnerabilities, and provides actionable remediation advice.</p>
-            <a href="/chatbot" class="btn-primary">
-              Chat with AI Now
-              <span class="material-symbols-outlined">chat_bubble</span>
-            </a>
-          </div>
-          <div class="chat-demo-window">
-            <div class="chat-bubble user">Can you explain CVE-2024-1234?</div>
-            <div class="chat-bubble ai">Of course. CVE-2024-1234 is a critical remote code execution vulnerability...</div>
-            <div class="chat-bubble ai typing">
-              <span></span><span></span><span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <footer>
-      <p>&copy; 2025 NetShieldAI. All rights reserved.</p>
-      <p>A Product of NetShield Pvt. Ltd. | Empowering Digital Trust.</p>
-    </footer>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // Original dropdown script
-        const profileButton = document.getElementById('profile-button')
-        const dropdownContent = document.getElementById('profile-dropdown-content')
-      
-        if (profileButton) {
-          profileButton.addEventListener('click', function (event) {
-            event.stopPropagation()
-            const isVisible = dropdownContent.style.display === 'block'
-            dropdownContent.style.display = isVisible ? 'none' : 'block'
-            profileButton.classList.toggle('open', !isVisible)
-          })
-        }
-      
-        window.addEventListener('click', function (event) {
-          if (dropdownContent && !dropdownContent.contains(event.target) && (!profileButton || !profileButton.contains(event.target))) {
-            dropdownContent.style.display = 'none'
-            if (profileButton) {
-              profileButton.classList.remove('open')
-            }
-          }
-        })
-      
-        // Scroll animation script
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible')
-              }
-            })
-          },
-          {
-            threshold: 0.1
-          }
-        )
-      
-        const elementsToAnimate = document.querySelectorAll('.fade-in-element')
-        elementsToAnimate.forEach((el) => {
-          observer.observe(el)
-        })
-      })
-    </script>
-  </body>
-</html>
+{% block extra_scripts %}
+  <script>
+    /* No additional scripts required */
+  </script>
+{% endblock %}

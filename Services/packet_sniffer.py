@@ -25,19 +25,19 @@ from pathlib import Path
 
 # --- Configuration Paths ---
 BASE_DIR = Path(__file__).parent
-RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\packet_sniffer")
-ANALYSIS_REPORT_FILE = RESULTS_DIR / "pcap_analysis_report.json"
-PCAP_FILE = RESULTS_DIR / "capture.pcap"
+# Default global path (fallback)
+DEFAULT_RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\packet_sniffer")
+DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+
+# Logs (Shared)
 LOG_DIR = Path(r"D:\NetShieldAI\logs")
 LOG_FILE = LOG_DIR / "packet_sniffer_log.txt"
-
-RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
-# ⭐ PDF Path Configuration (Must match BP) ⭐
+# Note: PDF output dir is now handled dynamically per user in the blueprint, 
+# but we keep a reference here if needed for defaults.
 PDF_OUTPUT_DIR = Path(r"D:\NetShieldAI\Services\PDFs")
 PDF_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-PDF_REPORT_FILE = PDF_OUTPUT_DIR / "pcap_analysis_report.pdf"
 
 # --- Global State for Threading Control ---
 TCPDUMP_PROCESS = None
@@ -233,13 +233,37 @@ def get_selected_interface(interface_id=None):
     log(f"[!] Could not reliably auto-detect a primary interface name matching IP {local_ip}. Manual selection required.")
     return None
 
+# --- PHASE 2: Dynamic Path Helper ---
+
+def get_output_paths(output_dir=None):
+    """
+    Returns a dictionary of file paths based on the output directory.
+    If output_dir is None, uses the global DEFAULT_RESULTS_DIR.
+    """
+    if output_dir:
+        base = Path(output_dir)
+    else:
+        base = DEFAULT_RESULTS_DIR
+    
+    # Ensure dir exists
+    if not base.exists():
+        try:
+            base.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            log(f"[!] Error creating directory {base}: {e}")
+
+    return {
+        "pcap": base / "capture.pcap",
+        "json_report": base / "pcap_analysis_report.json",
+        "pdf_report": base / "pcap_analysis_report.pdf" 
+    }
+
 # --- Core Capture Logic ---
 
-def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom_bpf_filter=None):
+def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom_bpf_filter=None, output_dir=None):
     """
     Runs a TShark capture in a subprocess in the background.
-    :param interface_id: Optional ID (string/int) of the interface to use (from tshark -D list).
-    :param custom_bpf_filter: Optional custom BPF string (e.g., "tcp port 80").
+    Updated to accept output_dir for user isolation.
     """
     global TCPDUMP_PROCESS, TCPDUMP_STOP_EVENT
 
@@ -262,8 +286,12 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
         filter_expression = f"host {target_ip}"
         log(f"[*] Using default host filter: '{filter_expression}'")
 
+    # Dynamic path handling
+    paths = get_output_paths(output_dir)
+    pcap_file_path = paths["pcap"]
+
     cmd = [
-        capture_cmd, '-i', interface_name, '-w', str(PCAP_FILE),
+        capture_cmd, '-i', interface_name, '-w', str(pcap_file_path),
         '-f', filter_expression,
     ]
 
@@ -271,8 +299,8 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
 
     TCPDUMP_STOP_EVENT.clear()
     try:
-        if PCAP_FILE.exists():
-            PCAP_FILE.unlink()
+        if pcap_file_path.exists():
+            pcap_file_path.unlink()
     except Exception as e:
         log(f"[!] Failed to remove existing PCAP file: {e}")
 
@@ -298,8 +326,8 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
                 TCPDUMP_PROCESS.kill()
                 log("[!] Forced termination of tshark process.")
 
-        log(f"[+] Packet capture finished. Data saved to {PCAP_FILE}.")
-        return str(PCAP_FILE)
+        log(f"[+] Packet capture finished. Data saved to {pcap_file_path}.")
+        return str(pcap_file_path)
 
     except Exception as e:
         log(f"[!] Error during packet capture: {e}")
@@ -307,7 +335,7 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
     finally:
         TCPDUMP_PROCESS = None
         TCPDUMP_STOP_EVENT.clear()
-        send_sse_event("capture_complete", str(PCAP_FILE))
+        send_sse_event("capture_complete", str(pcap_file_path))
 
 def stop_capture():
     """Signals the running capture thread to stop."""
@@ -784,7 +812,7 @@ def _parse_proto_lines(proto_lines):
     if not proto_lines:
         return entries
 
-    # Join to single text and look for lines like "  tcp                                frames:6 bytes:764"
+    # Join to single text and look for lines like "  tcp                         frames:6 bytes:764"
     text = "\n".join(proto_lines)
     # simple regex for lines with 'frames:' and 'bytes:'
     import re
@@ -803,9 +831,7 @@ def _parse_proto_lines(proto_lines):
 
 def _parse_tcp_conv_lines(conv_lines):
     """
-    Parse tcp_conversation_stats into structured conversations. Will look for a summary line
-    such as: "192.168.29.48:26214        <-> 192.168.29.196:8009              2 328 bytes       4 436 bytes       6 764 bytes     0.000000000         5.0823"
-    Returns list of dicts with src, src_port, dst, dst_port, frames, bytes, duration
+    Parse tcp_conversation_stats into structured conversations.
     """
     convs = []
     if not conv_lines:
@@ -843,35 +869,18 @@ def _parse_tcp_conv_lines(conv_lines):
                 # Pattern 1: Find total bytes (usually in the third column)
                 bytes_match = re.search(r'[\d\s]+bytes\s+(\d+)\s+bytes', rest)
                 if bytes_match:
-                    # This often matches the final two byte columns, which may contain the total.
-                    # This is brittle due to TShark's formatting, but we must try.
                     pass 
                 
                 # Fallback to the total traffic summary line in the conversation list raw output
-                # Example: "97 79 kB" is the total frames and bytes.
-                # Find the last number pair before the start time, excluding duration
                 totals_match = re.findall(r'(\d+)\s+([\d\.]+)\s+(?:bytes|kB|MB)', line.strip())
 
                 if totals_match:
                     # The last match that is not a duration (which is typically float and lacks 'bytes' or 'kB')
                     # We look for the part before the duration/start time, e.g., "97 79 kB"
-                    # Because TShark columns vary, rely on the structured parsing in build_pdf_report_context 
-                    # using the output of this function to handle the parsing into the structure.
-
-                    # Let's rely on the more robust parsing inside build_pdf_report_context
-                    # by just returning the raw line for now, but since the template expects structured data,
-                    # we must try to extract the essential numerical fields here.
-
-                    # Final attempt to parse frames/bytes: look for the format "X Y bytes" or "X Y kB"
-                    # We'll rely on the text splitting/regex above and trust the line parsing in build_pdf_report_context
-                    # which is specifically designed to handle this mess (line 424 onwards).
                     
                     # For simplicity and robustness against TShark's variable output:
                     # Look for the last numbers before start time (parts[3] and parts[4] typically hold totals)
-                    # Example line: 192.168.29.48:28456 <-> 13.107.246.58:443 56 74 kB 41 5096 bytes 97 79 kB 3.221203000 0.0722
-                    # The parts in line split are: ['192.168.29.48:28456 <-> 13.107.246.58:443', '56 74 kB', '41 5096 bytes', '97 79 kB', '3.221203000', '0.0722']
                     
-                    # Target: 97 79 kB (The total frames and bytes)
                     if len(parts) >= 4:
                         # parts[-3] is usually the total frames/bytes column (e.g., '97 79 kB')
                         total_col = parts[-3].strip()
@@ -880,31 +889,19 @@ def _parse_tcp_conv_lines(conv_lines):
                         total_match = re.match(r'(\d+)\s+(.*?)\s+(?:bytes|kB|MB)', total_col)
                         if total_match:
                             frames_total = int(total_match.group(1))
-                            # NOTE: Bytes conversion (kB -> bytes) is too fragile here without knowing the unit.
-                            # We stick to raw numerical extraction and let the consumer handle display logic.
                             bytes_total_str = total_match.group(2).strip()
                             try:
-                                # Convert 79 kB to 79000. It's too risky.
-                                # Let's stick to total frames for reliable numerical conversion.
                                 pass
                             except ValueError:
                                 pass
                             
                     # Simple fallback: look for the total frames number (usually 3rd number if traffic is present)
                     all_numbers = re.findall(r'(\d+)', line)
-                    if len(all_numbers) >= 5: # Needs to have at least: src_port, dst_port, frames_in, frames_out, frames_total
+                    if len(all_numbers) >= 5: 
                         try:
-                            # Total frames is often the 5th number from the right (before start time and duration)
-                            # This is still fragile. We rely on the initial check for consistency.
                             pass
                         except ValueError:
                             pass
-                
-                # If we couldn't parse frames/bytes robustly, rely on the caller's ability to display the raw line.
-                # Since the current template relies on KB conversions, we must rely on the frames/bytes fields 
-                # from the original structured parsing attempt (which is absent here). 
-                # Let's revert to the initial logic from the provided code that seemed to fail to extract frames/bytes 
-                # and instead add a simple logic to extract the last frame/byte count before the timestamps.
                 
                 # --- START: Simplified Total Extraction (for template use) ---
                 frames_total = None
@@ -959,7 +956,9 @@ def _parse_tcp_conv_lines(conv_lines):
     return convs
 
 def _build_packet_timeline(dissected_packets, max_entries=100):
-# ... (function body unchanged) ...
+    """
+    Construct a simplified timeline of packets for the report.
+    """
     out = []
     if not dissected_packets:
         return out
@@ -1011,7 +1010,6 @@ def _build_packet_timeline(dissected_packets, max_entries=100):
     return out
 
 def _sample_packet_hexdump(dissected_packets, sample_count=3, bytes_limit=256):
-# ... (function body unchanged) ...
     """
     Extract some printable hex or payload snippets to include as examples.
     """
@@ -1037,17 +1035,7 @@ def _sample_packet_hexdump(dissected_packets, sample_count=3, bytes_limit=256):
 
 def build_pdf_report_context(analysis_data):
     """
-    Given the raw analysis_data (the JSON you currently save), produce a richer
-    context dict that's easy to render from Jinja templates and includes:
-     - metadata summary (packets/bytes/duration)
-     - structured protocol list
-     - structured TCP conversations
-     - top talkers (simple src IP grouping)
-     - timeline (chronological short view)
-     - sample packet payloads (hex)
-     - extracted features (if present)
-     - anomalies (if present)
-     - application flows
+    Given the raw analysis_data, produce a richer context dict.
     """
     if not analysis_data or not isinstance(analysis_data, dict):
         return {"error": "No data"}
@@ -1135,31 +1123,23 @@ def build_pdf_report_context(analysis_data):
     return context
 
 
-def save_json_report(analysis_data):
+def save_json_report(analysis_data, output_dir=None):
     """Saves the final analysis dictionary to a JSON file."""
+    paths = get_output_paths(output_dir)
+    json_path = paths["json_report"]
     try:
-        with open(ANALYSIS_REPORT_FILE, 'w', encoding='utf-8') as f:
+        with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(analysis_data, f, indent=4)
-        log(f"[+] Analysis report saved to {ANALYSIS_REPORT_FILE}")
-        return str(ANALYSIS_REPORT_FILE)
+        log(f"[+] Analysis report saved to {json_path}")
+        return str(json_path)
     except Exception as e:
         log(f"[!] Failed to save JSON report: {e}")
         return None
 
-def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, interface_id: str = None, bpf_filter: str = None, max_packets_for_detail: int = 50):
+def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, interface_id: str = None, bpf_filter: str = None, max_packets_for_detail: int = 50, output_dir=None):
     """
     The primary function to execute the full packet sniffer and analyzer workflow.
-
-    1. Ensures admin privileges.
-    2. Runs a TShark packet capture for the specified duration and filter.
-    3. Analyzes the resulting PCAP file to generate a comprehensive JSON report.
-
-    :param target_ip: The primary IP address to focus the capture and analysis on.
-    :param capture_duration_seconds: How long to run the live capture (default: 10s).
-    :param interface_id: Optional ID of the interface to use (from tshark -D).
-    :param bpf_filter: Optional custom BPF string (e.g., "tcp port 80").
-    :param max_packets_for_detail: Max number of packets to include in the detailed JSON dissection.
-    :return: The final analysis report dictionary or None on fatal failure.
+    Updated to accept output_dir for Phase 2 dynamic paths.
     """
     log("--- STARTING PACKET ANALYZER SERVICE ---")
 
@@ -1168,9 +1148,7 @@ def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, int
         log("[FATAL] TShark not found. Aborting service.")
         return {"status": "error", "message": "TShark executable not found."}
     
-    # Privilege check is done inside run_packet_capture, but we can do a quick check here too
     if not is_admin():
-        # If admin is missing, we rely on the auto-elevation logic
         log("[WARNING] Running without confirmed admin rights. Attempting elevation now...")
         # Note: If elevation fails, the whole process will exit inside ensure_admin_privileges()
 
@@ -1178,48 +1156,42 @@ def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, int
     final_filter = bpf_filter if bpf_filter is not None else f"host {target_ip}"
     
     # 2. Start and Wait for Packet Capture
+    # Pass output_dir to run_packet_capture
     capture_thread = threading.Thread(
         target=run_packet_capture,
-        args=(target_ip, capture_duration_seconds, interface_id, final_filter)
+        args=(target_ip, capture_duration_seconds, interface_id, final_filter, output_dir)
     )
     capture_thread.start()
     capture_thread.join()
 
+    # Get the PCAP path from the dynamic helper
+    paths = get_output_paths(output_dir)
+    pcap_path = paths["pcap"]
+
     # 3. Analyze the PCAP file
-    if PCAP_FILE.exists():
+    if pcap_path.exists():
         log("--- STARTING PCAP ANALYSIS ---")
         try:
-            report_data = analyze_pcap_to_json(str(PCAP_FILE), target_ip, max_packets=max_packets_for_detail)
+            report_data = analyze_pcap_to_json(str(pcap_path), target_ip, max_packets=max_packets_for_detail)
             
-            # --- START: RECOMMENDED CHANGES FOR PDF CONTEXT ---
-            # 4. Enrich Report Data with Structured Context for PDF/Templating
+            # 4. Enrich Report Data
             if report_data.get('status') == 'success':
                 structured_context = build_pdf_report_context(report_data)
-                
-                # Merge the structured context directly into the main report, excluding 'raw'
-                # 'raw' is the same as the parent report_data, avoiding duplication.
                 report_data["structured_context"] = {k: v for k, v in structured_context.items() if k != 'raw'}
-                
-                # Ensure features (extracted via context builder) are also explicitly stored
                 report_data["extracted_features"] = structured_context.get("features", [])
                 
                 # 5. Save the enriched report
-                save_json_report(report_data)
+                save_json_report(report_data, output_dir=output_dir)
 
                 # 6. Summarize Report and Log
-                # Use the features we just extracted/stored for logging
                 log(f"Extracted Features Sample: {report_data.get('extracted_features', [])[:5]}")
-                
                 log(f"Application Flow Summary: {report_data['application_flow_analysis'].get('summary', 'N/A')}")
-                
                 anomaly_summary = report_data['security_anomaly_report'].get('summary', 'N/A')
                 log(f"Security Anomaly Summary: {anomaly_summary}")
                 if anomaly_summary != "No anomalies detected.":
                     log(f"Full Anomaly Report: {json.dumps(report_data['security_anomaly_report'], indent=2)}")
-            # --- END: RECOMMENDED CHANGES FOR PDF CONTEXT ---
             else:
-                # If analysis failed, just save the error report
-                save_json_report(report_data)
+                save_json_report(report_data, output_dir=output_dir)
 
             log("--- SERVICE COMPLETED ---")
             return report_data
@@ -1232,32 +1204,31 @@ def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, int
         return {"status": "error", "message": "PCAP file creation failed."}
 
 
-# --- Entry Point Demo (REPLACEMENT) ---
+# --- Entry Point Demo ---
 
 if __name__ == '__main__':
-    # 1. Ensure elevation first, as everything else depends on it
-    # If this fails, the script will exit. If it relaunches successfully, it will run the rest.
+    # 1. Ensure elevation first
     ensure_admin_privileges()
 
     # --- Test Parameters ---
     TARGET_IP = "192.168.29.48"
     CAPTURE_TIME = 30
     
-    # Test with a specific filter (e.g., target IP, focusing only on HTTP)
+    # Test with a specific filter
     CUSTOM_FILTER = f"host {TARGET_IP} and tcp port 80"
     
-    # Display interfaces for user information, but allow run_analyzer_service to auto-detect
+    # Display interfaces
     interfaces = list_available_interfaces()
     if interfaces:
         print("\nAvailable Interfaces (Select an ID to use it explicitly):")
         for idx, data in interfaces.items():
             print(f"  {idx}. {data['description']} ({data['name']})")
     
-    # Set interface_to_use to None to rely on auto-detection logic in get_selected_interface
     interface_to_use = None 
     
     print(f"\n--- Running Full Test Workflow for IP: {TARGET_IP} (Duration: {CAPTURE_TIME}s) ---")
     
+    # Run service (without output_dir, using default global path for test)
     final_report = run_analyzer_service(
         target_ip=TARGET_IP, 
         capture_duration_seconds=CAPTURE_TIME,
@@ -1274,4 +1245,6 @@ if __name__ == '__main__':
             break
             
     if final_report and final_report.get('status') == 'success':
-        print(f"\n✅ Final Report Status: {final_report.get('status')}. See {ANALYSIS_REPORT_FILE} for full details.")
+        # Default report path for test
+        default_report_path = get_output_paths()["json_report"]
+        print(f"\n✅ Final Report Status: {final_report.get('status')}. See {default_report_path} for full details.")

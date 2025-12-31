@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, session
+from flask_login import login_required, current_user
 import requests
 import os
 import uuid
@@ -6,50 +7,76 @@ import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from flask import redirect, url_for, flash # Make sure redirect, url_for, and flash are imported
-from routes.network_scanner_bp import PDF_REPORT_PATH as NMAP_PDF_PATH
-from routes.zap_scanner_bp import PDF_REPORT_PATH as ZAP_PDF_PATH
-from routes.ssl_scanner_bp import PDF_REPORT_PATH as SSL_PDF_PATH
 
 # Initialize the Flask Blueprint for chatbot-related routes
 chatbot_bp = Blueprint('chatbot_bp', __name__)
 
-# --- Logging Setup (No changes needed) ---
+# --- Logging Setup ---
 log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
 os.makedirs(log_dir, exist_ok=True)
 log_file = os.path.join(log_dir, 'chatbot_logs.txt')
+
 logger = logging.getLogger('chatbot')
 logger.setLevel(logging.INFO)
+
+# Use RotatingFileHandler to prevent logs from growing indefinitely
 file_handler = RotatingFileHandler(log_file, maxBytes=1024 * 1024 * 5, backupCount=5, encoding='utf-8')
 file_handler.setLevel(logging.INFO)
+
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.ERROR)
+
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 file_handler.setFormatter(formatter)
 console_handler.setFormatter(formatter)
+
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 logger.info("Chatbot Blueprint initialized")
-# --- End of Logging Setup ---
-
 
 # =======================================================================
-# NEW: Configure the URL to point to the proxy on your main server.
-# This is the only address the local app needs to know.
+# Proxy Configuration
 # =======================================================================
+# This points to the AI Backend Service.
+# NOTE: Ensure your AI Backend (FastAPI/Flask) is running on this specific port.
 SERVER_PROXY_URL = "http://localhost:5000"
 
 MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024  # 100 MB
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'uploads')
+
+# --- Helper to resolve User Paths ---
+def get_user_pdf_path(scanner_type):
+    """
+    Dynamically resolves the path to a specific report PDF for the current user.
+    """
+    if not current_user.is_authenticated:
+        return None
+        
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    # NEW LOGIC: Composite Identifier (Matches other blueprints)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    results_root = os.path.join(base_dir, 'Services', 'results', user_identifier)
+    
+    # Map scanner types to their folder and filename conventions
+    path_map = {
+        'nmap': os.path.join(results_root, 'network_scanner', 'nmap_report.pdf'),
+        'zap': os.path.join(results_root, 'zap_scanner', 'zap_report.pdf'),
+        'ssl': os.path.join(results_root, 'ssl_scanner', 'ssl_report.pdf'),
+        'packet_sniffer': os.path.join(results_root, 'packet_sniffer', 'pcap_analysis_report.pdf')
+    }
+    
+    return path_map.get(scanner_type)
 
 
 @chatbot_bp.route('/')
+@login_required
 def chatbot_page():
     """Renders the chatbot UI page and ensures a session ID exists."""
     try:
+        # If no session ID exists, generate one but don't persist to DB until user chats/uploads
         if 'chatbot_session_id' not in session:
             session['chatbot_session_id'] = str(uuid.uuid4())
-            logger.info(f"New local chat session started: {session['chatbot_session_id']}")
+            logger.info(f"New local chat session started for user {current_user.id}: {session['chatbot_session_id']}")
         return render_template('chatbot.html')
     except Exception as e:
         logger.error(f"Error in chatbot_page: {str(e)}", exc_info=True)
@@ -57,8 +84,9 @@ def chatbot_page():
 
 
 @chatbot_bp.route('/upload_report', methods=['POST'])
+@login_required
 def upload_report():
-    """Handles file uploads by sending them to the central server proxy."""
+    """Handles manual file uploads by sending them to the central server proxy."""
     try:
         if 'file' not in request.files:
             return jsonify({'error': 'No file part'}), 400
@@ -72,33 +100,28 @@ def upload_report():
             if file.content_length > MAX_FILE_SIZE_BYTES:
                 return jsonify({'error': f'File size exceeds the limit of {MAX_FILE_SIZE_BYTES / (1024 * 1024)}MB.'}), 413
 
-            # No need to save the file locally on the client app anymore,
-            # we can just stream it directly.
             try:
+                # Read file into memory to proxy it
                 files_to_send = {'file': (file.filename, file.read(), file.content_type)}
                 
-                # --- CHANGE START ---
-                # We define this dictionary to be passed as URL parameters (Query String)
-                # This matches FastAPI's: llm_mode: str = Query(...)
-                params = {'llm_mode': llm_mode_param}
-                # --- CHANGE END ---
+                # Inject composite user_id into params
+                current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+                params = {
+                    'llm_mode': llm_mode_param,
+                    'user_id': current_user_identifier
+                }
                 
-                # Construct the URL to the server's proxy endpoint
                 proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
                 
-                logger.info(f"Sending file to server proxy ({llm_mode_param} mode): {proxy_upload_url}")
+                logger.info(f"Sending file to server proxy ({llm_mode_param} mode) for User {current_user_identifier}")
                 
-                # --- CHANGE START ---
-                # Use 'params=params' to attach llm_mode to the URL (e.g., .../upload_report?llm_mode=gemini)
-                # 'files=' handles the multipart upload in the body
+                # Send request (no timeout set here to allow large file processing, but consider adding one in prod)
                 response = requests.post(proxy_upload_url, files=files_to_send, params=params)
-                # --- CHANGE END ---
-                
                 response.raise_for_status()
 
                 analysis_result = response.json()
                 
-                # The proxy returns the session_id from FastAPI, store it locally
+                # Update session ID if backend provides one
                 if 'session_id' in analysis_result:
                     session['chatbot_session_id'] = analysis_result['session_id'] 
                     logger.info(f"Stored session ID from server: {analysis_result['session_id']}")
@@ -122,19 +145,21 @@ def upload_report():
 
 
 @chatbot_bp.route('/chat', methods=['POST'])
+@login_required
 def chat_with_ai():
     """Sends a chat message to the central server proxy."""
     try:
         user_message = request.json.get('message')
         current_session_id = session.get('chatbot_session_id')
 
-        # This payload is sent to the proxy, which forwards it to FastAPI
+        # Inject composite user_id into payload
+        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
         payload_to_server = {
             'message': user_message,
-            'session_id': current_session_id
+            'session_id': current_session_id,
+            'user_id': current_user_identifier
         }
 
-        # Construct the URL to the server's proxy endpoint
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat"
         
         # Make the request to the server proxy
@@ -160,14 +185,13 @@ def chat_with_ai():
         return jsonify({'status': 'error', 'message': f'An unexpected error occurred: {e}'}), 500
 
 @chatbot_bp.route('/scanner_analysis', methods=['POST'])
+@login_required
 def scanner_analysis_proxy():
     """
     Handles PDF analysis requests initiated by the scanner pages. 
-    Reads the specific scanner's PDF file from disk and proxies it to the central server.
-    Ensures session continuity.
+    Reads the specific scanner's PDF file from the USER's directory and proxies it.
     """
     try:
-        # Get parameters from the request body (sent by scanner JS)
         data = request.get_json()
         scanner_type = data.get('scanner_type')
         llm_mode = data.get('llm_mode', 'local')
@@ -175,20 +199,14 @@ def scanner_analysis_proxy():
         if not scanner_type:
             return jsonify({'error': 'Missing scanner type'}), 400
 
-        # Map scanner type to the correct PDF path
-        # This structure ensures we load the correct file based on the button clicked
-        pdf_map = {
-            'nmap': NMAP_PDF_PATH,
-            'zap': ZAP_PDF_PATH,
-            'ssl': SSL_PDF_PATH
-        }
-        
-        pdf_path = pdf_map.get(scanner_type)
+        # Dynamically resolve the PDF path for the current logged-in user
+        pdf_path = get_user_pdf_path(scanner_type)
 
-        if not pdf_path or not os.path.exists(pdf_path):
-            return jsonify({'error': f'PDF file for {scanner_type} not found. Please run a scan first.'}), 404
-        
-        # --- File Reading and Proxying Logic (Same as upload_report) ---
+        if not pdf_path:
+             return jsonify({'error': 'Invalid scanner type provided.'}), 400
+
+        if not os.path.exists(pdf_path):
+            return jsonify({'error': f'PDF report for {scanner_type} not found. Please run a scan first.'}), 404
         
         # 1. Read the file content
         with open(pdf_path, 'rb') as f:
@@ -197,18 +215,23 @@ def scanner_analysis_proxy():
         # 2. Prepare the request
         filename = os.path.basename(pdf_path)
         files_to_send = {'file': (filename, pdf_content, 'application/pdf')}
-        params = {'llm_mode': llm_mode}
+        
+        # 3. Inject composite user_id into params
+        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+        params = {
+            'llm_mode': llm_mode,
+            'user_id': current_user_identifier
+        }
+        
         proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
         
-        logger.info(f"Sending scanner file to server proxy ({llm_mode} mode): {proxy_upload_url}")
+        logger.info(f"Sending {scanner_type} report to server proxy ({llm_mode} mode) for User {current_user_identifier}")
         
-        # 3. Send the request to the central server
         response = requests.post(proxy_upload_url, files=files_to_send, params=params)
         response.raise_for_status()
 
         analysis_result = response.json()
         
-        # 4. Update local session ID if the backend created a new one
         if 'session_id' in analysis_result:
             session['chatbot_session_id'] = analysis_result['session_id'] 
             logger.info(f"Stored session ID from server: {analysis_result['session_id']}")
@@ -216,7 +239,6 @@ def scanner_analysis_proxy():
         if "error" in analysis_result:
             return jsonify(analysis_result), response.status_code
         
-        # 5. Return the summary and mode for the client to redirect/display
         return jsonify({
             'status': 'success',
             'summary': analysis_result.get('summary', 'Report uploaded and processed.'),
@@ -232,34 +254,168 @@ def scanner_analysis_proxy():
 
 
 @chatbot_bp.route('/clear_chat', methods=['POST'])
+@login_required
 def clear_chat():
     """
-    Receives an API request to clear the chat session.
-    Returns a JSON response indicating success or failure.
+    Legacy endpoint: clears the ACTIVE session.
     """
     try:
         session_id = session.get('chatbot_session_id')
         if not session_id:
-            # If there's no session, the goal is achieved. Return success.
             return jsonify({'status': 'success', 'message': 'No active session to clear.'})
 
-        # It's better to get the URL from app config
-        proxy_clear_url = f"{SERVER_PROXY_URL}/clear_chat"
-        payload = {'session_id': session_id}
+        proxy_clear_url = f"{SERVER_PROXY_URL}/delete_session"
+        
+        payload = {
+            'session_id': session_id
+        }
         
         try:
-            # Make the request to the backend service
             response = requests.post(proxy_clear_url, json=payload, timeout=10)
-            response.raise_for_status() # Raise an exception for bad status codes (4xx or 5xx)
             
-            # Clear local flask session data only after successful proxy call
+            # Clear local flask session data
             session.pop('chatbot_session_id', None)
             return jsonify({'status': 'success', 'message': 'Chat session has been cleared successfully.'})
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Error clearing chat via server proxy for session {session_id}: {e}")
-            return jsonify({'status': 'error', 'message': f'Failed to communicate with the backend service.'}), 500
+            session.pop('chatbot_session_id', None) 
+            return jsonify({'status': 'error', 'message': f'Failed to communicate with the backend service, but local session cleared.'}), 500
 
     except Exception as e:
         logger.error(f"An unexpected error occurred in clear_chat: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'An unexpected server error occurred.'}), 500
+    
+    
+@chatbot_bp.route('/get_history', methods=['GET'])
+@login_required
+def get_chat_history_proxy():
+    """
+    Proxies the history fetch request to the backend.
+    """
+    try:
+        session_id = session.get('chatbot_session_id')
+        
+        if not session_id:
+            return jsonify({'chat_history': [], 'session_metadata': None})
+
+        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+        
+        proxy_url = f"{SERVER_PROXY_URL}/get_history"
+        params = {
+            'user_id': current_user_identifier, 
+            'session_id': session_id
+        }
+        
+        try:
+            response = requests.get(proxy_url, params=params, timeout=5)
+            response.raise_for_status()
+            return jsonify(response.json())
+        except requests.exceptions.RequestException as e:
+            logger.warning(f"Could not fetch history from backend: {e}")
+            return jsonify({'chat_history': [], 'session_metadata': None})
+
+    except Exception as e:
+        logger.error(f"Error in get_chat_history_proxy: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+    
+    
+@chatbot_bp.route('/get_sessions', methods=['GET'])
+@login_required
+def get_sessions_proxy():
+    """Proxies the request to get all user sessions."""
+    try:
+        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+        proxy_url = f"{SERVER_PROXY_URL}/get_user_sessions"
+        params = {'user_id': current_user_identifier}
+        
+        response = requests.get(proxy_url, params=params, timeout=5)
+        return jsonify(response.json())
+    except Exception as e:
+        return jsonify({'sessions': []})
+
+@chatbot_bp.route('/switch_session', methods=['POST'])
+@login_required
+def switch_session():
+    """Updates the Flask session to point to a specific past session ID or clears it."""
+    try:
+        data = request.json
+        
+        # Check if the key exists in the payload
+        if 'session_id' in data:
+            new_session_id = data.get('session_id')
+            
+            if new_session_id:
+                # Switch to a specific history item
+                session['chatbot_session_id'] = new_session_id
+            else:
+                # Logic for "New Chat" (Received null) -> Clear the cookie
+                # This forces chatbot_page to generate a fresh UUID on reload
+                session.pop('chatbot_session_id', None)
+                
+            return jsonify({'success': True})
+            
+        return jsonify({'success': False, 'message': 'No session_id provided'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# =======================================================================
+# NEW ROUTES FOR PIN, RENAME, DELETE
+# =======================================================================
+
+@chatbot_bp.route('/delete_session', methods=['POST'])
+@login_required
+def delete_session_proxy():
+    """
+    Proxies the request to delete a SPECIFIC session (not necessarily the active one).
+    """
+    try:
+        data = request.json
+        target_session_id = data.get('session_id')
+        
+        if not target_session_id:
+             return jsonify({'error': 'Missing session_id'}), 400
+
+        proxy_url = f"{SERVER_PROXY_URL}/delete_session"
+        response = requests.post(proxy_url, json={'session_id': target_session_id})
+        
+        # If the deleted session was the currently active one, clear the cookie
+        if session.get('chatbot_session_id') == target_session_id:
+            session.pop('chatbot_session_id', None)
+            
+        return jsonify(response.json()), response.status_code
+    except Exception as e:
+        logger.error(f"Error deleting session: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@chatbot_bp.route('/rename_session', methods=['POST'])
+@login_required
+def rename_session_proxy():
+    """
+    Proxies the request to rename a session.
+    """
+    try:
+        data = request.json
+        # Expects: { session_id: "...", new_title: "..." }
+        proxy_url = f"{SERVER_PROXY_URL}/rename_session"
+        response = requests.post(proxy_url, json=data)
+        return jsonify(response.json()), response.status_code
+    except Exception as e:
+         return jsonify({'error': str(e)}), 500
+
+
+@chatbot_bp.route('/toggle_pin', methods=['POST'])
+@login_required
+def toggle_pin_proxy():
+    """
+    Proxies the request to pin/unpin a session.
+    """
+    try:
+        data = request.json
+        # Expects: { session_id: "...", is_pinned: boolean }
+        proxy_url = f"{SERVER_PROXY_URL}/toggle_pin"
+        response = requests.post(proxy_url, json=data)
+        return jsonify(response.json()), response.status_code
+    except Exception as e:
+         return jsonify({'error': str(e)}), 500

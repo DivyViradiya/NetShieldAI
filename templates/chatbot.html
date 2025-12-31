@@ -1,420 +1,951 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Security Analyst - NetShieldAI</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+{% extends 'base.html' %}
 
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace']
-            },
-            colors: {
-              slate: {
-                850: '#151e2e',
-                900: '#0f172a',
-                950: '#020617'
-              }
-            },
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-out forwards',
-              'slide-up': 'slideUp 0.3s ease-out forwards'
-            },
-            keyframes: {
-              fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
-              slideUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
-            }
-          }
-        }
-      }
-    </script>
+{% block title %}
+  NetShield Analyst | AI Security Grid
+{% endblock %}
 
-    <style>
-      /* --- CORE LAYOUT RESET --- */
-      body {
-        background-color: #000000;
-        background-image: radial-gradient(circle at 50% 0%, #111827 0%, #000000 60%);
-        color: #e2e8f0;
-        height: 100vh;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
+{% block extra_css %}
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+
+  <style>
+    /* --- THEME VARIABLES --- */
+    :root {
+      --neo-bg: #050505;
+      --neo-card: #0f0f11;
+      --neo-border: #27272a;
+      --neo-blue: #3b82f6;
+      --neo-cyan: #00f7ff;
+      --font-code: 'JetBrains Mono', monospace;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --sidebar-width: 300px;
+      --content-width: 1000px;
+    }
+    
+    /* --- CRITICAL LAYOUT LOCK --- */
+    html,
+    body {
+      height: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Navbar Fixed Height */
+    .navbar {
+      flex: 0 0 auto !important;
+      position: relative !important;
+      z-index: 50;
+      border-bottom: 1px solid var(--neo-border);
+    }
+    
+    footer,
+    .flash-container {
+      display: none !important;
+    }
+    
+    /* Main Container */
+    .main-content {
+      flex: 1 1 auto !important;
+      height: 0 !important;
+      min-height: 0 !important;
+      display: flex !important;
+      flex-direction: row !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
+    
+    .app-layout {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      background-color: var(--neo-bg);
+      overflow: hidden;
+    }
+    
+    /* --- SIDEBAR LAYOUT --- */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--neo-card);
+      border-right: 1px solid var(--neo-border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      z-index: 20;
+    }
+    
+    .sidebar-header {
+      flex: 0 0 auto;
+      padding: 1.5rem 1.2rem;
+    }
+    
+    .sidebar-content {
+      flex: 0 0 auto;
+      padding: 0 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .sidebar-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: #555;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      display: block;
+      font-weight: 700;
+    }
+    
+    /* Status Indicator */
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.7rem 0.9rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--neo-border);
+    }
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    .status-text {
+      font-size: 0.7rem;
+      color: #e5e5e5;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    
+    /* --- MINIMALIST WORKFLOW PANEL --- */
+    .workflow-panel {
+      background: rgba(20, 20, 23, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    
+    /* Upload State: Clean Button */
+    .neo-upload {
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      background: transparent;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .neo-upload:hover {
+      border-color: var(--neo-blue);
+      background: rgba(59, 130, 246, 0.05);
+    }
+    .neo-upload input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .upload-icon {
+      font-size: 1.5rem;
+      color: #666;
+      transition: color 0.2s;
+    }
+    .neo-upload:hover .upload-icon {
+      color: var(--neo-blue);
+    }
+    
+    /* Config State: Minimal List */
+    .view-config {
+      display: none;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .workflow-panel.mode-config .view-upload {
+      display: none;
+    }
+    .workflow-panel.mode-config .view-config {
+      display: flex;
+    }
+    
+    /* File Chip */
+    .file-preview-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+    }
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      overflow: hidden;
+    }
+    .file-name {
+      font-size: 0.75rem;
+      color: #ddd;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+    }
+    .btn-remove-file {
+      background: transparent;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 2px;
+      border-radius: 4px;
+      transition: 0.2s;
+    }
+    .btn-remove-file:hover {
+      color: #ef4444;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Minimal Dropdown */
+    .custom-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .custom-select {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .custom-select-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #888;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .custom-select-trigger:hover {
+      border-color: #555;
+      color: #ccc;
+    }
+    .custom-select.open .custom-select-trigger {
+      border-color: var(--neo-blue);
+      color: white;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .custom-options {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      border: 1px solid var(--neo-blue);
+      border-top: 0;
+      background: #09090b;
+      z-index: 100;
+      border-bottom-left-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+    .custom-select.open .custom-options {
+      display: block;
+    }
+    .custom-option {
+      padding: 0.7rem 0.8rem;
+      font-size: 0.75rem;
+      color: #999;
+      cursor: pointer;
+      border-top: 1px solid #1a1a1a;
+    }
+    .custom-option:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: white;
+    }
+    .custom-option.selected {
+      color: var(--neo-blue);
+      background: rgba(59, 130, 246, 0.05);
+    }
+    
+    /* Action Button */
+    .btn-neo-action {
+      background: var(--neo-blue);
+      color: white;
+      width: 100%;
+      padding: 0.7rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: 0.2s;
+      font-size: 0.75rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .btn-neo-action:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    .btn-neo-action:disabled {
+      background: rgba(255, 255, 255, 0.05);
+      color: #444;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Spinner */
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
-      
-      /* --- YOUR NAVBAR STYLES APPLIED HERE --- */
-      .navbar-logo-img {
-        width: auto;
-        height: 30px;
+    }
+    
+    /* --- CHAT AREA --- */
+    .chat-interface {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+      background-image: radial-gradient(circle at 50% 0%, #111 0%, transparent 50%), linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+    }
+    
+    .messages-area {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding: 2rem 4rem;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .messages-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .messages-area::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 3px;
+    }
+    
+    .chat-hero {
+      margin: auto;
+      text-align: center;
+      width: 100%;
+      max-width: var(--content-width);
+    }
+    .chat-hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: white;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    
+    .suggestions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+    .suggestion-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--neo-border);
+      padding: 1.2rem;
+      cursor: pointer;
+      transition: 0.3s;
+      border-radius: var(--radius-md);
+      text-align: left;
+    }
+    .suggestion-card:hover {
+      border-color: var(--neo-blue);
+      transform: translateY(-2px);
+    }
+    .suggestion-card h5 {
+      color: white;
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .suggestion-card p {
+      color: #888;
+      font-size: 0.8rem;
+      margin: 0;
+    }
+    
+    /* Messages */
+    .msg-row {
+      display: flex;
+      margin-bottom: 1.5rem;
+      width: 100%;
+    }
+    .msg-row.user {
+      justify-content: flex-end;
+    }
+    
+    .msg-bubble {
+      max-width: var(--content-width);
+      padding: 1.5rem 2rem; /* Increased Padding */
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .msg-row.user .msg-bubble {
+      background: var(--neo-blue);
+      color: white;
+      border-radius: 16px 16px 2px 16px;
+    }
+    .msg-row.ai .msg-bubble {
+      background: #0f0f11;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e5e5e5;
+      border-radius: 16px 16px 16px 2px;
+    }
+    
+    /* --- NEW MARKDOWN STYLING FOR STRUCTURING --- */
+    .markdown-content h1,
+    .markdown-content h2,
+    .markdown-content h3 {
+      color: white;
+      margin-top: 1.5rem;
+      margin-bottom: 0.8rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .markdown-content h1 {
+      font-size: 1.4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+    .markdown-content h2 {
+      font-size: 1.2rem;
+      margin-top: 1.2rem;
+    }
+    .markdown-content h3 {
+      font-size: 1.1rem;
+      color: #e5e5e5;
+    }
+    
+    .markdown-content p {
+      margin-bottom: 1rem;
+      color: #d4d4d8;
+    }
+    
+    .markdown-content ul,
+    .markdown-content ol {
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+    }
+    .markdown-content li {
+      margin-bottom: 0.4rem;
+      color: #d4d4d8;
+    }
+    
+    /* Highlight Code/Files inline */
+    .markdown-content code {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--neo-cyan);
+      font-family: var(--font-code);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    
+    /* Code Blocks */
+    .markdown-content pre {
+      background: #050505;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      border: 1px solid #27272a;
+      margin: 1rem 0;
+    }
+    
+    .markdown-content strong {
+      color: white;
+      font-weight: 700;
+    }
+    
+    .markdown-content blockquote {
+      border-left: 3px solid var(--neo-blue);
+      padding-left: 1rem;
+      margin: 1rem 0;
+      color: #a1a1aa;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 0.8rem 1rem;
+      border-radius: 0 4px 4px 0;
+    }
+    
+    .markdown-content hr {
+      border: 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 1.5rem 0;
+    }
+    
+    /* Typing Dots */
+    .typing-dots {
+      display: inline-flex;
+      gap: 4px;
+      padding: 0.5rem 0;
+    }
+    .typing-dots span {
+      width: 6px;
+      height: 6px;
+      background-color: var(--neo-blue);
+      border-radius: 50%;
+      animation: typingBounce 1.4s infinite ease-in-out both;
+    }
+    .typing-dots span:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    .typing-dots span:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+    @keyframes typingBounce {
+      0%,
+      80%,
+      100% {
+        transform: scale(0);
       }
-      
-      .navbar {
-        background-color: #0d121c;
-        padding: 1rem 2rem;
-        box-shadow: none;
-        border-bottom: 1px solid #1e293b;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
+      40% {
+        transform: scale(1);
       }
-      
-      .navbar-links {
-        list-style: none;
-        display: flex;
-        gap: 2.5rem;
-        margin: 0;
-        padding: 0;
-      }
-      
-      .navbar-links li a {
-        text-decoration: none;
-        color: #94a3b8;
-        font-weight: 600;
-        transition: color 0.3s ease, transform 0.2s ease;
-        position: relative;
-      }
-      
-      .navbar-links li a::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: -5px;
-        left: 0;
-        background-color: #4299e1;
-        transition: width 0.3s ease-out;
-      }
-      
-      .navbar-links li a:hover {
-        color: #f8fafc;
-        transform: translateY(-2px);
-      }
-      
-      .navbar-links li a:hover::after {
-        width: 100%;
-      }
-      
-      /* Active State Override for visual consistency */
-      .navbar-links li a.active {
-        color: #f8fafc;
-      }
-      .navbar-links li a.active::after {
-        width: 100%;
-      }
-      
-      /* --- CENTRAL AREA ADJUSTMENT --- */
-      /* Calculated: 30px img + 1rem top + 1rem bottom + 1px border ~= 65px */
-      .main-wrapper {
-        margin-top: 65px;
-        height: calc(100vh - 65px);
-        display: flex;
-        width: 100%;
-        overflow: hidden;
-        position: relative;
-      }
-      
-      /* --- FOOTER STYLES --- */
-      footer {
-        background-color: #0d121c;
-        color: white;
-        text-align: center;
-        padding: 1rem 0;
-        width: 100%;
-        flex-shrink: 0;
-        font-size: 0.9rem;
-        border-top: 1px solid #1e293b;
-        z-index: 1000;
-      }
-      
-      footer p {
-        margin: 0.5rem 0;
-        color: #cbd5e1;
-      }
-      
-      /* --- SIDEBAR & CHAT COMPONENTS --- */
+    }
+    
+    /* Input Area */
+    .input-zone {
+      flex: 0 0 auto;
+      padding: 0 4rem 2rem 4rem;
+      z-index: 30;
+      pointer-events: none;
+    }
+    .input-wrapper {
+      pointer-events: auto;
+      display: flex;
+      background: rgba(15, 15, 17, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 50px;
+      padding: 0.5rem;
+      width: 100%;
+      max-width: var(--content-width);
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .input-wrapper:focus-within {
+      border-color: var(--neo-blue);
+      box-shadow: 0 10px 40px rgba(59, 130, 246, 0.15);
+      transform: translateY(-2px);
+    }
+    .chat-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .send-btn {
+      background: var(--neo-blue);
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+    }
+    .send-btn:hover {
+      background: white;
+      color: black;
+    }
+    
+    /* --- SESSION LIST (SIDEBAR) --- */
+    .btn-icon-only {
+      background: transparent;
+      border: 1px solid var(--neo-border);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+    .btn-icon-only:hover {
+      background: var(--neo-blue);
+      border-color: var(--neo-blue);
+    }
+    
+    .session-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .session-item {
+      padding: 0.8rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: 0.2s;
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .session-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .session-item.active {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--neo-blue);
+    }
+    .session-item.pinned {
+      border-left: 3px solid var(--neo-cyan);
+    }
+    
+    .session-info {
+      flex: 1;
+      overflow: hidden;
+    }
+    
+    .session-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #ddd;
+      display: block;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .session-date {
+      font-size: 0.65rem;
+      color: #666;
+    }
+    
+    /* Menu Button */
+    .session-menu-btn {
+      background: transparent;
+      border: none;
+      color: #555;
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 4px;
+      opacity: 0.6;
+      transition: 0.2s;
+      margin-left: 4px;
+    }
+    .session-item:hover .session-menu-btn,
+    .session-menu-btn:hover {
+      opacity: 1;
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Context Menu */
+    .context-menu {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: #111;
+      border: 1px solid var(--neo-border);
+      border-radius: 8px;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      width: 120px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+    .context-menu.show {
+      display: flex;
+    }
+    
+    .menu-item {
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      color: #bbb;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    .menu-item.delete:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+    
+    .pin-icon {
+      font-size: 0.7rem;
+      color: var(--neo-cyan);
+      margin-right: 4px;
+      display: none;
+    }
+    .session-item.pinned .pin-icon {
+      display: inline-block;
+    }
+    
+    /* --- RENAME MODAL --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(2px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.show {
+      display: flex;
+    }
+    .neo-modal {
+      background: var(--neo-card);
+      border: 1px solid var(--neo-border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      width: 300px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+    .modal-header {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 1rem;
+    }
+    .modal-input {
+      width: 100%;
+      background: #000;
+      border: 1px solid var(--neo-border);
+      color: white;
+      padding: 0.8rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-family: inherit;
+    }
+    .modal-input:focus {
+      border-color: var(--neo-blue);
+      outline: none;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+    .btn-modal {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      border: none;
+      font-weight: 600;
+    }
+    .btn-cancel {
+      background: transparent;
+      color: #888;
+    }
+    .btn-cancel:hover {
+      color: white;
+    }
+    .btn-save {
+      background: var(--neo-blue);
+      color: white;
+    }
+    .btn-save:hover {
+      background: white;
+      color: black;
+    }
+    
+    @media (max-width: 768px) {
       .sidebar {
-        background: rgba(13, 18, 28, 0.6);
-        border-right: 1px solid #1e293b;
+        display: none;
       }
-      
-      .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #334155;
-        border-radius: 10px;
-      }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #475569;
-      }
-      
-      /* --- CHAT BUBBLES (No Icons) --- */
-      .msg-row {
-        display: flex;
-        width: 100%;
-        margin-bottom: 1.5rem;
-      }
-      .msg-row.user {
-        justify-content: flex-end;
-      }
-      .msg-row.ai {
-        justify-content: flex-start;
-      }
-      
-      .msg-content {
-        padding: 1rem 1.25rem;
-        max-width: 85%;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        font-size: 0.95rem;
-        line-height: 1.6;
-      }
-      
-      .msg-row.user .msg-content {
-        background: #2563eb;
-        color: white;
-        border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
-      }
-      
-      .msg-row.ai .msg-content {
-        background: #1e293b;
-        border: 1px solid #334155;
-        color: #e2e8f0;
-        border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
-      }
-      
-      /* --- MARKDOWN FORMATTING --- */
-      .markdown-body h1,
-      .markdown-body h2,
-      .markdown-body h3 {
-        color: #f8fafc;
-        font-weight: 700;
-        margin-top: 1.5rem;
-        margin-bottom: 0.75rem;
-      }
-      .markdown-body h1 {
-        font-size: 1.5rem;
-        border-bottom: 1px solid #334155;
-        padding-bottom: 0.5rem;
-      }
-      .markdown-body p {
-        margin-bottom: 1rem;
-      }
-      .markdown-body strong {
-        color: #ffffff;
-        font-weight: 700;
-      }
-      .markdown-body ul,
-      .markdown-body ol {
-        margin-left: 1.5rem;
-        margin-bottom: 1rem;
-      }
-      .markdown-body ul {
-        list-style-type: disc;
-      }
-      .markdown-body pre {
-        background: #0f172a;
-        border: 1px solid #334155;
+      .input-zone {
         padding: 1rem;
-        border-radius: 0.5rem;
-        overflow-x: auto;
-        margin: 1rem 0;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.85rem;
       }
-      .markdown-body code {
-        background: rgba(148, 163, 184, 0.1);
-        padding: 0.2em 0.4em;
-        border-radius: 0.25em;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.85em;
-        color: #60a5fa;
-      }
-      .markdown-body pre code {
-        background: transparent;
-        padding: 0;
-        color: #e2e8f0;
-      }
-      
-      /* --- UPLOAD ZONE --- */
-      .upload-zone {
-        background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23334155FF' stroke-width='2' stroke-dasharray='6%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-        transition: all 0.3s ease;
-      }
-      .upload-zone:hover {
-        background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%233B82F6FF' stroke-width='2' stroke-dasharray='6%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
-        background-color: rgba(59, 130, 246, 0.05);
-      }
-      
-      .typing-dot {
-        width: 6px;
-        height: 6px;
-        background: #94a3b8;
-        border-radius: 50%;
-        animation: bounce 1.4s infinite ease-in-out both;
-      }
-      .typing-dot:nth-child(1) {
-        animation-delay: -0.32s;
-      }
-      .typing-dot:nth-child(2) {
-        animation-delay: -0.16s;
-      }
-      @keyframes bounce {
-        0%,
-        80%,
-        100% {
-          transform: scale(0);
-        }
-        40% {
-          transform: scale(1);
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar">
-      <div class="navbar-brand">
-        <a href="/"><img src="/static/images/NetShieldAI_logo.png" alt="NetShieldAI Logo" class="navbar-logo-img" /></a>
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+          <span class="sidebar-label" style="margin:0;">NetShield OS</span>
+          <button id="new-chat-btn" class="btn-icon-only" title="New Analysis"><span class="material-symbols-outlined">add</span></button>
+        </div>
+
+        <div class="system-status">
+          <div class="pulse-dot" id="status-dot"></div>
+          <span class="status-text" id="status-text">NetShield KB</span>
+        </div>
       </div>
-      <ul class="navbar-links">
-        <li>
-          <a href="/network_scanner">Network Scanning</a>
-        </li>
-        <li>
-          <a href="/zap_scanner">Web Application Scanning</a>
-        </li>
-        <li>
-          <a href="/ssl_scanner">SSL Scans</a>
-        </li>
-        <li>
-          <a href="/chatbot" class="active">AI Analyzer</a>
-        </li>
-      </ul>
-    </nav>
 
-    <div class="main-wrapper">
-      <aside class="sidebar w-80 p-5 flex flex-col gap-6 overflow-y-auto hidden md:flex flex-shrink-0">
-        <div>
-          <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Analysis Context</h3>
-          <div id="context-indicator" class="bg-slate-800/50 border border-slate-700 rounded-xl p-3 flex items-center gap-3 transition-all duration-300">
-            <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
-              <span class="material-symbols-outlined text-lg">public</span>
-            </div>
-            <div>
-              <div class="text-sm font-semibold text-slate-200">General Mode</div>
-              <div class="text-[10px] text-slate-400">External Knowledge Base</div>
+      <div class="sidebar-content">
+        <span class="sidebar-label">Active Workflow</span>
+
+        <div class="workflow-panel" id="workflow-panel">
+          <div class="view-upload" id="view-upload">
+            <div class="neo-upload" id="upload-zone">
+              <input type="file" id="file-upload-input" accept=".pdf" />
+              <span class="material-symbols-outlined upload-icon">add_circle</span>
+              <span style="font-size: 0.75rem; color: #888;">Select Report PDF</span>
             </div>
           </div>
-        </div>
 
-        <div class="flex-1 flex flex-col gap-4">
-          <div class="flex justify-between items-end">
-            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Upload Report</h3>
-          </div>
-
-          <form id="upload-form" class="flex flex-col gap-4">
-            <div class="upload-zone rounded-xl h-32 relative cursor-pointer group">
-              <input type="file" id="file" name="file" accept=".pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-              <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-4 text-center">
-                <span class="material-symbols-outlined text-slate-500 text-3xl mb-2 group-hover:text-blue-400 transition-colors">cloud_upload</span>
-                <p id="file-name-display" class="text-xs text-slate-300 font-medium truncate w-full px-2">Drop PDF here or click</p>
-                <p class="text-[10px] text-slate-500 mt-1">Max Size: 100MB</p>
+          <div class="view-config" id="view-config">
+            <div class="file-preview-bar">
+              <div class="file-info">
+                <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">description</span>
+                <span class="file-name" id="selected-filename">report.pdf</span>
               </div>
+              <button class="btn-remove-file" id="remove-file-btn" title="Remove"><span class="material-symbols-outlined" style="font-size: 1rem;">close</span></button>
             </div>
 
-            <div>
-              <label class="text-[10px] text-slate-500 uppercase font-bold mb-1.5 block">AI Model</label>
-              <div class="relative">
-                <select id="llm_mode_selector" class="w-full bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg p-2.5 pr-8 appearance-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none cursor-pointer">
-                  <option value="local">NetShield Local (Privacy Focused)</option>
-                  <option value="gemini">Google Gemini (High Speed)</option>
-                </select>
-                <span class="material-symbols-outlined absolute right-2.5 top-2 text-slate-500 text-sm pointer-events-none">expand_more</span>
-              </div>
-            </div>
+            <input type="hidden" id="selected-model-value" value="" />
 
-            <button type="button" id="upload-button" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-medium py-2.5 rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-2">
-              <span class="material-symbols-outlined text-lg">analytics</span>
-              Analyze Report
-            </button>
-            <p id="upload-status" class="text-center text-[10px] hidden"></p>
-          </form>
-        </div>
-
-        <div class="pt-4 border-t border-slate-800">
-          <button id="reset-session-btn" class="w-full bg-slate-800/50 hover:bg-slate-800 border border-slate-700 text-slate-400 hover:text-white text-xs py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-sm">restart_alt</span>
-            Start New Session
-          </button>
-        </div>
-      </aside>
-
-      <main class="flex-1 flex flex-col relative bg-transparent h-full">
-        <div id="messages-container" class="flex-1 overflow-y-auto custom-scrollbar p-6 scroll-smooth">
-          <div id="welcome-state" class="h-full flex flex-col items-center justify-center max-w-2xl mx-auto animate-fade-in">
-            <div class="relative mb-8">
-              <div class="absolute inset-0 bg-blue-500 blur-[40px] opacity-20 rounded-full"></div>
-              <div class="relative bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl">
-                <span class="material-symbols-outlined text-blue-400 text-5xl">security</span>
-              </div>
-            </div>
-
-            <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 text-center tracking-tight">NetShield <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Intelligence</span></h1>
-            <p class="text-slate-400 text-center mb-10 text-lg leading-relaxed">I am your dedicated security analyst. Upload a report for deep vulnerability assessment or ask me anything about cybersecurity.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full" id="suggestion-grid"></div>
-          </div>
-
-          <div id="chat-history" class="space-y-4 max-w-4xl mx-auto pb-4"></div>
-
-          <div id="typing-indicator" class="hidden max-w-4xl mx-auto mt-2">
-            <div class="msg-row ai">
-              <div class="msg-content" style="background: transparent; border: none; padding-left: 0;">
-                <div class="flex gap-1 items-center">
-                  <div class="typing-dot"></div>
-                  <div class="typing-dot"></div>
-                  <div class="typing-dot"></div>
+            <div class="custom-select-wrapper">
+              <div class="custom-select" id="custom-model-select">
+                <div class="custom-select-trigger" id="custom-trigger">
+                  <span>Select Model</span>
+                  <span class="material-symbols-outlined" style="font-size: 1rem;">arrow_drop_down</span>
+                </div>
+                <div class="custom-options">
+                  <div class="custom-option" data-value="local">
+                    <span style="color:white; font-weight:500;">NetShield Local</span>
+                  </div>
+                  <div class="custom-option" data-value="gemini">
+                    <span style="color:white; font-weight:500;">Google Gemini</span>
+                  </div>
                 </div>
               </div>
             </div>
+
+            <button id="start-analysis-btn" class="btn-neo-action" disabled>
+              <span class="btn-text">Analyze</span>
+              <div class="spinner"></div>
+              <span class="material-symbols-outlined icon" style="font-size: 1rem;">bolt</span>
+            </button>
           </div>
+        </div>
+      </div>
+
+      <div style="padding: 0 1.2rem; margin-top: 1rem; flex: 1; overflow-y: auto;">
+        <span class="sidebar-label" style="margin-top: 1rem;">Recent Sessions</span>
+        <div id="session-list" class="session-list"></div>
+      </div>
+
+      <div style="padding: 1rem;"></div>
+    </aside>
+
+    <main class="chat-interface">
+      <div class="messages-area" id="messages-container">
+        <div id="welcome-state" class="chat-hero">
+          <h1 style="line-height: 1;">
+            <span style="font-size: 0.9rem; letter-spacing: 0.3em; color: var(--neo-blue); display: block; margin-bottom: 1.5rem;">// SECURE CHANNEL</span>
+            NetShield<br />
+            <span style="color: #333;">Analyst</span>
+          </h1>
+          <p style="color: #666; font-size: 1rem;">
+            Autonomous security consultant ready.<br />Upload a report via the sidebar or start chatting to query the Knowledgebase.
+          </p>
+          <div class="suggestions" id="suggestion-grid"></div>
         </div>
 
-        <div class="p-4 border-t border-slate-800 bg-[#0d121c] z-10">
-          <div class="max-w-4xl mx-auto relative group">
-            <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl opacity-0 group-focus-within:opacity-20 transition duration-500"></div>
-            <div class="relative flex items-center bg-[#000000] border border-slate-800 rounded-xl shadow-lg p-1.5 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all">
-              <input type="text" id="user-input" class="w-full bg-transparent text-white placeholder-slate-500 text-sm px-4 py-3 outline-none" placeholder="Ask a question or describe a security issue..." autocomplete="off" />
-              <button id="send-btn" class="p-2.5 bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white rounded-lg transition-all duration-200 flex-shrink-0"><span class="material-symbols-outlined text-xl leading-none">arrow_upward</span></button>
-            </div>
-            <div class="text-center mt-2">
-              <p class="text-[10px] text-slate-600">AI can generate incorrect info. Verify critical findings.</p>
+        <div id="chat-history"></div>
+
+        <div id="typing-indicator" style="display: none; padding: 1rem;">
+          <div class="msg-row ai">
+            <div class="msg-bubble" style="padding: 1rem 1.5rem; display: inline-flex; align-items: center;">
+              <div class="typing-dots">
+                <span></span><span></span><span></span>
+              </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
+
+      <div class="input-zone">
+        <div class="input-wrapper">
+          <input type="text" id="user-input" class="chat-input" placeholder="Describe threat or query database..." autocomplete="off" />
+          <button id="send-btn" class="send-btn"><span class="material-symbols-outlined">arrow_upward</span></button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="rename-modal">
+    <div class="neo-modal">
+      <div class="modal-header">Rename Session</div>
+      <input type="text" id="rename-input" class="modal-input" placeholder="Enter new session title..." autocomplete="off" />
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" id="cancel-rename">Cancel</button>
+        <button class="btn-modal btn-save" id="confirm-rename">Save</button>
+      </div>
     </div>
+  </div>
+{% endblock %}
 
-    <footer>
-      <p>&copy; 2025 NetShieldAI. All rights reserved.</p>
-      <p>A Product of NetShield Pvt. Ltd. | Empowering Digital Trust.</p>
-    </footer>
-
-    <script src="/static/js/chatbot.js"></script>
-  </body>
-</html>
+{% block extra_scripts %}
+  <script src="/static/js/chatbot.js"></script>
+{% endblock %}

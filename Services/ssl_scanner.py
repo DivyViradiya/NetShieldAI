@@ -13,14 +13,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent.parent
 SSLSCAN_EXECUTABLE = Path(r"C:\Program Files\sslscan\sslscan.exe")
 
-# Define paths for storing results
-RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\ssl_scanner")
-RESULTS_DIR.mkdir(parents=True, exist_ok=True)  # Create directory if it doesn't exist
+# Define default paths for storing results (Fallback)
+DEFAULT_RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\ssl_scanner")
+DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-SSL_REPORT_XML = RESULTS_DIR / "ssl_report.xml"
-JSON_REPORT_FILE = RESULTS_DIR / "ssl_report.json" # <--- NEW: Path for JSON report
+# Logs (Shared)
 LOG_FILE = Path(r"D:\NetShieldAI\logs\ssl_agent_log.txt")
-
 # Ensure logs directory exists
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
@@ -62,16 +60,44 @@ def is_sslscan_available():
     log("[✓] sslscan.exe found.")
     return True
 
-def save_ssl_json(data):
+# --- PHASE 2: Dynamic Path Helper ---
+
+def get_output_paths(output_dir=None):
+    """
+    Returns a dictionary of file paths based on the output directory.
+    If output_dir is None, uses the global DEFAULT_RESULTS_DIR.
+    """
+    if output_dir:
+        base = Path(output_dir)
+    else:
+        base = DEFAULT_RESULTS_DIR
+    
+    if not base.exists():
+        try:
+            base.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            log(f"[!] Error creating directory {base}: {e}")
+
+    return {
+        "xml_report": base / "ssl_report.xml",
+        "json_report": base / "ssl_report.json",
+        "pdf_report": base / "ssl_report.pdf"
+    }
+
+def save_ssl_json(data, output_dir=None):
     """Saves the parsed SSL scan data to a JSON file."""
+    paths = get_output_paths(output_dir)
+    json_file = paths["json_report"]
     try:
-        with open(JSON_REPORT_FILE, 'w', encoding='utf-8') as f:
+        with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
-        log(f"[+] SSL JSON report saved to {JSON_REPORT_FILE}")
+        log(f"[+] SSL JSON report saved to {json_file}")
+        return str(json_file)
     except Exception as e:
         log(f"[!] Failed to save SSL JSON report: {e}")
+        return None
 
-def run_ssl_scan(target_host):
+def run_ssl_scan(target_host, output_dir=None):
     """Runs an SSL/TLS scan using the local sslscan.exe."""
     if not target_host:
         log("[!] Target host cannot be empty for SSL scan.")
@@ -81,11 +107,16 @@ def run_ssl_scan(target_host):
     if not is_sslscan_available():
         return None
     
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    paths = get_output_paths(output_dir)
+    xml_report_path = paths["xml_report"]
+    
+    # Ensure directory exists
+    if not xml_report_path.parent.exists():
+        xml_report_path.parent.mkdir(parents=True, exist_ok=True)
 
     local_cmd = [
         str(SSLSCAN_EXECUTABLE),
-        f"--xml={SSL_REPORT_XML}",
+        f"--xml={xml_report_path}",
         '--show-client-cas',
         '--show-cipher-ids',
         '--show-signatures',
@@ -93,7 +124,7 @@ def run_ssl_scan(target_host):
     ]
 
     try:
-        log(f"[*] Executing command: {' '.join(local_cmd)}")
+        log(f"[*] Executing command: {' '.join(str(x) for x in local_cmd)}")
         process = subprocess.run(
             local_cmd,
             capture_output=True,
@@ -108,16 +139,16 @@ def run_ssl_scan(target_host):
         if process.stderr:
             log(f"[SSLScan STDERR]\n{process.stderr}")
 
-        if process.returncode != 0 and not SSL_REPORT_XML.exists():
+        if process.returncode != 0 and not xml_report_path.exists():
             log(f"[!] SSL scan failed with exit code {process.returncode} and no report was generated.")
             return None
         
-        if SSL_REPORT_XML.exists() and SSL_REPORT_XML.stat().st_size > 0:
-            log(f"[+] SSL scan complete. Report saved to {SSL_REPORT_XML}")
-            send_sse_event("ssl_scan_complete", {"target_host": target_host, "report_file": str(SSL_REPORT_XML)})
-            return str(SSL_REPORT_XML)
+        if xml_report_path.exists() and xml_report_path.stat().st_size > 0:
+            log(f"[+] SSL scan complete. Report saved to {xml_report_path}")
+            send_sse_event("ssl_scan_complete", {"target_host": target_host, "report_file": str(xml_report_path)})
+            return str(xml_report_path)
         else:
-            log(f"[!] SSL scan may have failed or generated an empty report: {SSL_REPORT_XML}")
+            log(f"[!] SSL scan may have failed or generated an empty report: {xml_report_path}")
             return None
             
     except Exception as e:
@@ -127,10 +158,11 @@ def run_ssl_scan(target_host):
 # ############################################################################
 # ## MODIFIED AND ENHANCED parse_ssl_report FUNCTION
 # ############################################################################
-def parse_ssl_report(report_file):
+def parse_ssl_report(report_file, output_dir=None):
     """
     Parses an SSLScan XML report file to extract maximum details, including
     specific vulnerabilities and server configuration details.
+    Updated to accept output_dir for saving the JSON result.
     """
     if not os.path.exists(report_file):
         log(f"[!] SSLScan report file not found: {report_file}")
@@ -252,7 +284,7 @@ def parse_ssl_report(report_file):
         log(f"[+] SSLScan report '{os.path.basename(report_file)}' parsed successfully.")
         
         # NEW: Save the parsed data to JSON for PDF generation
-        save_ssl_json(scan_summary)
+        save_ssl_json(scan_summary, output_dir=output_dir)
         
         send_sse_event("ssl_report_parsed", scan_summary)
         return scan_summary
@@ -280,6 +312,8 @@ if __name__ == "__main__":
 
     target = "expired.badssl.com" # Using a test site with known issues
     log(f"Attempting SSL Scan on: {target}")
+    
+    # Test using default output directory
     report_path = run_ssl_scan(target)
     
     if report_path:

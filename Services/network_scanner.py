@@ -15,22 +15,10 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).parent.parent.parent
 
-# Define paths for storing results
-RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\network_scanner")
-RESULTS_DIR.mkdir(parents=True, exist_ok=True)  # Create directory if it doesn't exist
-
-# Define file paths
-WHITELIST_FILE = RESULTS_DIR / "whitelisted_ports.json"
-JSON_REPORT_FILE = RESULTS_DIR / "nmap_report.json"  # <--- Final JSON for PDF
-
-# Standard Nmap Output Files
-SCAN_RESULT_TCP = RESULTS_DIR / "scan_result_tcp.txt"
-SCAN_RESULT_UDP = RESULTS_DIR / "scan_result_udp.txt"
-SCAN_RESULT_OS = RESULTS_DIR / "scan_result_os.txt"
-SCAN_RESULT_FRAGMENTED = RESULTS_DIR / "scan_result_fragmented.txt"
-SCAN_RESULT_AGGRESSIVE = RESULTS_DIR / "scan_result_aggressive.txt"
-SCAN_RESULT_TCP_SYN = RESULTS_DIR / "scan_result_tcp_syn.txt"
-SCAN_RESULT_VULN = RESULTS_DIR / "scan_result_vuln.txt" # <--- NEW VULNERABILITY OUTPUT FILE
+# --- PHASE 2: Dynamic Path Setup ---
+# We keep the default global path for backward compatibility or system-wide actions.
+DEFAULT_RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\network_scanner")
+DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Ensure logs directory exists
 LOG_DIR = Path(r"D:\NetShieldAI\logs")
@@ -74,44 +62,82 @@ def send_sse_event(event_name, data=""):
     sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
     log_queue.put(sse_message)
 
-# --- Whitelist Persistence Functions ---
-def load_whitelist():
+# --- PHASE 2: Dynamic Path Helper ---
+def get_output_paths(output_dir=None):
+    """
+    Returns a dictionary of file paths.
+    If output_dir is provided (User ID folder), it returns paths in that folder.
+    Otherwise, it defaults to the global DEFAULT_RESULTS_DIR.
+    """
+    if output_dir:
+        base = Path(output_dir)
+    else:
+        base = DEFAULT_RESULTS_DIR
+    
+    if not base.exists():
+        try:
+            base.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            log(f"[!] Error creating output directory {base}: {e}")
+
+    return {
+        "whitelist": base / "whitelisted_ports.json",
+        "json_report": base / "nmap_report.json",
+        "tcp": base / "scan_result_tcp.txt",
+        "udp": base / "scan_result_udp.txt",
+        "os": base / "scan_result_os.txt",
+        "fragmented": base / "scan_result_fragmented.txt",
+        "aggressive": base / "scan_result_aggressive.txt",
+        "tcp_syn": base / "scan_result_tcp_syn.txt",
+        "vuln": base / "scan_result_vuln.txt"
+    }
+
+# --- Whitelist Persistence Functions (Updated for Phase 2) ---
+def load_whitelist(output_dir=None):
     """Loads whitelisted ports from a JSON file."""
     global whitelisted_ports
-    if WHITELIST_FILE.exists():
+    paths = get_output_paths(output_dir)
+    whitelist_file = paths["whitelist"]
+
+    if whitelist_file.exists():
         try:
-            with open(WHITELIST_FILE, 'r', encoding='utf-8') as f:
+            with open(whitelist_file, 'r', encoding='utf-8') as f:
                 loaded_ports = json.load(f)
                 if isinstance(loaded_ports, list):
                     whitelisted_ports = set(loaded_ports)
-                    log(f"[+] Loaded {len(whitelisted_ports)} whitelisted ports from {WHITELIST_FILE}.")
+                    log(f"[+] Loaded {len(whitelisted_ports)} whitelisted ports from {whitelist_file}.")
                 else:
-                    log(f"[!] Whitelist file '{WHITELIST_FILE}' contains invalid format. Starting with empty whitelist.")
+                    log(f"[!] Whitelist file '{whitelist_file}' contains invalid format. Starting with empty whitelist.")
                     whitelisted_ports = set()
         except json.JSONDecodeError as e:
-            log(f"[!] Error decoding whitelist file '{WHITELIST_FILE}': {e}. Starting with empty whitelist.")
+            log(f"[!] Error decoding whitelist file '{whitelist_file}': {e}. Starting with empty whitelist.")
             whitelisted_ports = set()
         except Exception as e:
-            log(f"[!] Unexpected error loading whitelist file '{WHITELIST_FILE}': {e}. Starting with empty whitelist.")
+            log(f"[!] Unexpected error loading whitelist file '{whitelist_file}': {e}. Starting with empty whitelist.")
             whitelisted_ports = set()
     else:
-        log(f"[*] Whitelist file '{WHITELIST_FILE}' not found. Starting with empty whitelist.")
-    save_whitelist() # Ensure file exists and is valid on startup
+        log(f"[*] Whitelist file '{whitelist_file}' not found. Starting with empty whitelist.")
+    
+    # We don't force save here on load to avoid creating files unnecessarily if reading only
+    if not output_dir: 
+        save_whitelist() # Ensure global file exists on startup if using global
 
-def save_whitelist():
+def save_whitelist(output_dir=None):
     """Saves the current whitelisted ports to a JSON file."""
+    paths = get_output_paths(output_dir)
+    whitelist_file = paths["whitelist"]
     try:
-        with open(WHITELIST_FILE, 'w', encoding='utf-8') as f:
+        with open(whitelist_file, 'w', encoding='utf-8') as f:
             json.dump(list(whitelisted_ports), f, indent=4)
-        log(f"[+] Whitelist saved to {WHITELIST_FILE}.")
+        log(f"[+] Whitelist saved to {whitelist_file}.")
     except Exception as e:
-        log(f"[!] Error saving whitelist to file '{WHITELIST_FILE}': {e}")
+        log(f"[!] Error saving whitelist to file '{whitelist_file}': {e}")
 
-def clear_whitelist():
+def clear_whitelist(output_dir=None):
     """Clears the whitelisted ports and saves the empty state."""
     global whitelisted_ports
     whitelisted_ports.clear()
-    save_whitelist()
+    save_whitelist(output_dir)
     log("[*] Whitelist cleared.")
 
 # --- OS-Specific Helper Functions ---
@@ -463,74 +489,82 @@ def parse_nmap_grepable_output(file_path):
     
     return parsed_data
 
-def save_nmap_json(data):
+def save_nmap_json(data, output_dir=None):
     """Saves the parsed scan data to the JSON report file for PDF generation."""
+    paths = get_output_paths(output_dir)
+    json_file = paths["json_report"]
     try:
-        with open(JSON_REPORT_FILE, 'w', encoding='utf-8') as f:
+        with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
-        log(f"[+] JSON Scan report saved to {JSON_REPORT_FILE}")
+        log(f"[+] JSON Scan report saved to {json_file}")
     except Exception as e:
         log(f"[!] Failed to save JSON report: {e}")
 
 # --- Nmap Scanning ---
 # Note: All scan functions implicitly require admin rights because they call run_nmap_scan
-def run_os_detection_scan(target_ip):
-    return run_nmap_scan(target_ip, scan_type="os")
+def run_os_detection_scan(target_ip, output_dir=None):
+    return run_nmap_scan(target_ip, scan_type="os", output_dir=output_dir)
 
-def run_fragmented_scan(target_ip):
-    return run_nmap_scan(target_ip, scan_type="fragmented")
+def run_fragmented_scan(target_ip, output_dir=None):
+    return run_nmap_scan(target_ip, scan_type="fragmented", output_dir=output_dir)
 
-def run_aggressive_scan(target_ip):
-    return run_nmap_scan(target_ip, scan_type="aggressive")
+def run_aggressive_scan(target_ip, output_dir=None):
+    return run_nmap_scan(target_ip, scan_type="aggressive", output_dir=output_dir)
 
-def run_tcp_syn_scan(target_ip):
-    return run_nmap_scan(target_ip, scan_type="tcp_syn")
+def run_tcp_syn_scan(target_ip, output_dir=None):
+    return run_nmap_scan(target_ip, scan_type="tcp_syn", output_dir=output_dir)
     
-def run_vulnerability_scan(target_ip):
-    return run_nmap_scan(target_ip, scan_type="vuln")
+def run_vulnerability_scan(target_ip, output_dir=None):
+    return run_nmap_scan(target_ip, scan_type="vuln", output_dir=output_dir)
 
 
-def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
+def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_dir=None):
     """
     Runs an Nmap scan with the specified parameters using local Nmap installation.
     Triggers both SSE updates and JSON file generation.
+    Updated for Phase 2 to accept dynamic output directory.
     """
     if not is_admin():
         log(f"[!] Nmap scans require administrator privileges. This should have been handled on startup.")
         return None
     
+    # Get Dynamic Paths
+    paths = get_output_paths(output_dir)
+
     # Handle special scan types to determine flags and output file
     flags = []
-    output_file = SCAN_RESULT_TCP # Default
+    output_file = paths["tcp"] # Default
     
     if scan_type == "os":
         flags = ['-O', '--osscan-limit']
-        output_file = SCAN_RESULT_OS
+        output_file = paths["os"]
     elif scan_type == "fragmented":
         flags = ['-f', '-sS']
-        output_file = SCAN_RESULT_FRAGMENTED
+        output_file = paths["fragmented"]
     elif scan_type == "aggressive":
         flags = ['-A']
-        output_file = SCAN_RESULT_AGGRESSIVE
+        output_file = paths["aggressive"]
     elif scan_type == "tcp_syn":
         flags = ['-sS']
-        output_file = SCAN_RESULT_TCP_SYN
+        output_file = paths["tcp_syn"]
     elif scan_type == "vuln": # <--- NEW VULNERABILITY SCAN LOGIC
         # Use -sC to run default scripts, -sV for version detection, and --script vuln
         # We also add -Pn to skip host discovery if it's slow, and -T4 for speed.
         flags = ['-sC', '-sV', '--script', 'vuln', '-Pn'] 
-        output_file = SCAN_RESULT_VULN
+        output_file = paths["vuln"]
     elif protocol_type == "UDP":
         flags = ['-sU', '--top-ports', '1000', '-sV', '-Pn']
-        output_file = SCAN_RESULT_UDP
+        output_file = paths["udp"]
     else: # Default TCP
         flags = ['-sS', '--top-ports', '1000', '-sV', '-Pn']
-        output_file = SCAN_RESULT_TCP
+        output_file = paths["tcp"]
 
     scan_type_display = scan_type.upper() if scan_type != "default" else f"{protocol_type} (Top 1000)"
     log(f"[+] Running {scan_type_display} scan on {target_ip}...")
 
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    # Ensure output directory exists (handled by get_output_paths but good safety)
+    if not os.path.exists(os.path.dirname(output_file)):
+        os.makedirs(os.path.dirname(output_file))
     
     if not is_nmap_installed():
         return None
@@ -582,7 +616,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default"):
         # 2. Generate JSON Report (PDF) - NEW functionality
         log(f"[+] Processing results for PDF report...")
         scan_data = parse_nmap_grepable_output(output_file)
-        save_nmap_json(scan_data)
+        save_nmap_json(scan_data, output_dir=output_dir)
         
         return str(output_file)
 
@@ -809,12 +843,15 @@ def verify_ports_closed(target_ip):
         else:
             log(f"[~] UDP Port {port} (Service: {p_info['service']}) verification is limited. Re-scan to confirm status.")
 
-def add_to_whitelist(ports_str):
+def add_to_whitelist(ports_str, output_dir=None):
+    """
+    Updated for Phase 2 to accept output_dir.
+    """
     if ports_str:
         ports = [p.strip() for p in ports_str.split(',') if p.strip().isdigit()]
         if ports:
             whitelisted_ports.update(ports)
-            save_whitelist()
+            save_whitelist(output_dir)
             log(f"[~] Whitelisted ports updated: {', '.join(ports)}")
             return True
     log("[!] No valid port numbers found in whitelist input.")

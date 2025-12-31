@@ -2,45 +2,45 @@ import os
 import threading
 import json
 import time
+import queue # Import queue to handle empty exception
 from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory
+from flask_login import login_required, current_user
 import requests
 import uuid 
+from werkzeug.utils import secure_filename # <--- Added Import
 
 # Import the new zap_scanner module
 from Services import zap_scanner
 # --- NEW: Import the PDF generator ---
 from Services import pdf_generator 
 
-# Assuming you might still have this for other parts of your app
-# from Services.api_client import login_required
-
 zap_scanner_bp = Blueprint('zap_scanner_bp', __name__)
 
-# ==========================================
-# --- ⚙️ CONFIGURATION: PDF OUTPUT PATH ---
-# ==========================================
-# The full path to the saved PDF is D:\NetShieldAI\Services\PDFs\zap_report.pdf
+# --- User-Specific Directory Helper ---
+def get_user_results_dir():
+    if not current_user.is_authenticated:
+        return None
+    
+    # NEW LOGIC: Composite Identifier
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
 
-PDF_FOLDER_PATH = r"D:\NetShieldAI\Services\PDFs" 
-PDF_FILENAME = "zap_report.pdf" 
-PDF_REPORT_PATH = os.path.join(PDF_FOLDER_PATH, PDF_FILENAME) 
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    user_dir = os.path.join(base_dir, 'Services', 'results', user_identifier, 'zap_scanner')
+    
+    # FIXED: Added exist_ok=True to prevent race condition crashes
+    os.makedirs(user_dir, exist_ok=True)
+        
+    return user_dir
 
-JSON_REPORT_PATH = os.path.join(zap_scanner.RESULTS_DIR, "zap_report.json")
-XML_REPORT_PATH = os.path.join(zap_scanner.RESULTS_DIR, "zap_report.xml")
-
-# 🚨 NEW: Central server proxy URL (Must match the one in chatbot_bp.py and network_scanner_bp.py)
 SERVER_PROXY_URL = "http://localhost:5100" 
-# ==========================================
-
 
 # -----------------------------------------------
 # ## 🖥️ UI Route
 # -----------------------------------------------
 
 @zap_scanner_bp.route('/')
-# @login_required  # Uncomment if you want to protect this page
+@login_required 
 def zap_scanner_page():
-    """Renders the ZAP scanner page."""
     return render_template('zap_scanner.html')
 
 
@@ -49,66 +49,73 @@ def zap_scanner_page():
 # -----------------------------------------------
 
 @zap_scanner_bp.route('/scan', methods=['POST'])
-# @login_required # Uncomment if you want to protect this endpoint
+@login_required 
 def initiate_zap_scan():
-    """
-    API endpoint to initiate a ZAP quick scan.
-    Runs the scan, parses results, and generates PDF in a separate thread.
-    """
     data = request.get_json()
     target_url = data.get('target_url')
 
     if not target_url:
-        zap_scanner.log("[!] Target URL is required for ZAP scan.")
         return jsonify({"status": "error", "message": "Target URL is required."}), 400
     
+    # --- Auto-append Protocol ---
+    target_url = target_url.strip() 
+    if not target_url.startswith(('http://', 'https://')):
+        target_url = 'http://' + target_url
+    
     if zap_scanner.model is None:
-        zap_scanner.log("[!] FATAL: ML model is not loaded. Cannot start scan.")
-        return jsonify({"status": "error", "message": "ML model is not loaded. Check server logs for details."}), 500
+        return jsonify({"status": "error", "message": "ML model is not loaded. Check server logs."}), 500
+
+    # Capture User Context for Thread using Composite ID
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_output_dir = get_user_results_dir()
 
     def scan_and_process_task():
-        # Ensure PDF output directory exists before the thread starts trying to write to it
-        os.makedirs(PDF_FOLDER_PATH, exist_ok=True)
-        zap_scanner.log(f"[*] Starting ZAP Quick Scan for {target_url}...")
+        # Pass composite ID to log function
+        zap_scanner.log(f"[*] Starting ZAP Quick Scan for {target_url} (User: {current_user_identifier})...", current_user_identifier)
         
-        # 1. Run the ZAP Scan
-        scan_successful = zap_scanner.run_zap_scan(target_url, XML_REPORT_PATH)
+        paths = zap_scanner.get_output_paths(user_output_dir)
+        xml_path = paths["xml_report"]
+        pdf_path = paths["pdf_report"]
+        
+        os.makedirs(os.path.dirname(xml_path), exist_ok=True)
+        
+        # 1. Run Scan (Pass composite ID)
+        scan_successful = zap_scanner.run_zap_scan(target_url, str(xml_path), current_user_identifier)
 
         if scan_successful:
-            zap_scanner.log("[+] ZAP scan command finished. Now parsing and enriching report...")
+            zap_scanner.log("[+] ZAP scan command finished. Parsing...", current_user_identifier)
             
-            # 2. Parse XML and Enrich (AI Model, etc.)
-            scan_results = zap_scanner.parse_zap_xml_report(XML_REPORT_PATH)
+            # 2. Parse (Pass composite ID)
+            scan_results = zap_scanner.parse_zap_xml_report(str(xml_path), current_user_identifier)
             
             if scan_results:
                 scan_results["target_url"] = target_url
-                # 3. Save JSON Report
-                json_report_path = zap_scanner.save_json_report(scan_results, zap_scanner.RESULTS_DIR)
+                # 3. Save JSON (Pass composite ID to logging inside save function if needed, usually directory is enough)
+                json_report_path = zap_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier)
                 
                 if json_report_path:
-                    zap_scanner.log(f"[+] JSON report saved: {json_report_path}")
+                    zap_scanner.log(f"[+] JSON report saved.", current_user_identifier)
                     
-                    # 4. Generate PDF Report
+                    # 4. Generate PDF
                     try:
-                        zap_scanner.log("[*] Starting PDF report generation...")
-                        # Ensure the generator uses the correct path definitions
-                        pdf_generator.create_zap_report_pdf(json_report_path, PDF_REPORT_PATH)
+                        zap_scanner.log("[*] Generating PDF report...", current_user_identifier)
+                        pdf_generator.create_zap_report_pdf(json_report_path, str(pdf_path))
                         
-                        if os.path.exists(PDF_REPORT_PATH):
-                            zap_scanner.log(f"[+] PDF report generated: {PDF_REPORT_PATH}")
-                            zap_scanner.log(f"[*] Scan, analysis, and prediction complete.")
+                        if pdf_path.exists():
+                            zap_scanner.log(f"[+] PDF generated successfully.", current_user_identifier)
+                            zap_scanner.log(f"[*] Scan, analysis, and prediction complete.", current_user_identifier)
                         else:
-                             zap_scanner.log("[!] PDF generation ran but file is missing.")
+                             zap_scanner.log("[!] PDF generation failed (file missing).", current_user_identifier)
                              
                     except Exception as e:
-                        zap_scanner.log(f"[!] FAILED to generate PDF report: {e}")
+                        zap_scanner.log(f"[!] FAILED to generate PDF report: {e}", current_user_identifier)
 
                 else:
-                    zap_scanner.log("[!] Failed to save the final JSON report.")
+                    zap_scanner.log("[!] Failed to save JSON report.", current_user_identifier)
             else:
-                zap_scanner.log("[!] Failed to parse the ZAP XML report after the scan.")
+                zap_scanner.log("[!] Failed to parse ZAP XML report.", current_user_identifier)
         else:
-            zap_scanner.log(f"[!] ZAP scan failed for target: {target_url}. Check logs for details.")
+            zap_scanner.log(f"[!] ZAP scan failed for target: {target_url}.", current_user_identifier)
 
     threading.Thread(target=scan_and_process_task).start()
     
@@ -119,19 +126,18 @@ def initiate_zap_scan():
 
 
 @zap_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
+@login_required
 def trigger_ai_analysis_route():
-    """
-    Checks if PDF exists and returns scanner type. 
-    (Proxying logic moved to chatbot_bp.py:scanner_analysis_proxy)
-    """
-    if not os.path.exists(PDF_REPORT_PATH):
-        zap_scanner.log(f"[!] Analysis failed: PDF report not found at {PDF_REPORT_PATH}")
+    user_dir = get_user_results_dir()
+    paths = zap_scanner.get_output_paths(user_dir)
+    pdf_path = paths["pdf_report"]
+
+    if not pdf_path.exists():
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
         }), 404
 
-    # Returns the scanner type so the chatbot blueprint knows which file to read.
     return jsonify({
         "status": "success",
         "scanner_type": "zap" 
@@ -143,45 +149,38 @@ def trigger_ai_analysis_route():
 # -----------------------------------------------
 
 @zap_scanner_bp.route('/scan_results', methods=['GET'])
-# @login_required # Uncomment if you want to protect this endpoint
+@login_required 
 def get_zap_scan_results():
-    """
-    API endpoint to get the final, enriched ZAP scan report (JSON).
-    """
-    if not os.path.exists(JSON_REPORT_PATH):
+    user_dir = get_user_results_dir()
+    paths = zap_scanner.get_output_paths(user_dir)
+    json_path = paths["json_report"]
+
+    if not json_path.exists():
         return jsonify({
             "status": "pending",
-            "message": "No JSON report available. Please run a scan first or wait for the current one to complete."
+            "message": "No JSON report available."
         }), 404
     
     try:
-        with open(JSON_REPORT_PATH, 'r', encoding='utf-8') as f:
+        with open(json_path, 'r', encoding='utf-8') as f:
             report_data = json.load(f)
-        
-        return jsonify({
-            "status": "success",
-            "data": report_data
-        })
+        return jsonify({"status": "success", "data": report_data})
     except Exception as e:
-        zap_scanner.log(f"[!] Error reading or parsing JSON report file: {e}")
-        return jsonify({
-            "status": "error",
-            "message": f"Failed to read or parse the report file. Check server logs for details."
-        }), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @zap_scanner_bp.route('/report_files', methods=['GET'])
+@login_required
 def get_report_files():
-    """
-    Returns the status and paths of the generated report files.
-    """
-    json_exists = os.path.exists(JSON_REPORT_PATH)
-    pdf_exists = os.path.exists(PDF_REPORT_PATH)
+    user_dir = get_user_results_dir()
+    paths = zap_scanner.get_output_paths(user_dir)
+    
+    json_exists = paths["json_report"].exists()
+    pdf_exists = paths["pdf_report"].exists()
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
-    # The frontend needs the internal API paths to request the files
     return jsonify({
         "status": "success",
         "json_report": "/zap_scanner/scan_results" if json_exists else None,
@@ -190,63 +189,59 @@ def get_report_files():
 
 
 @zap_scanner_bp.route('/download_pdf', methods=['GET'])
+@login_required
 def download_pdf_report():
-    """
-    Serves the generated PDF report for download using send_from_directory.
-    """
-    if not os.path.exists(PDF_REPORT_PATH):
-        return jsonify({"status": "error", "message": "PDF report file not found."}), 404
+    user_dir = get_user_results_dir()
+    paths = zap_scanner.get_output_paths(user_dir)
+    pdf_path = paths["pdf_report"]
+
+    if not pdf_path.exists():
+        return jsonify({"status": "error", "message": "PDF file not found."}), 404
     
     try:
-        # Use the separate directory and filename variables directly
-        directory = PDF_FOLDER_PATH
-        filename = PDF_FILENAME
-
-        return send_from_directory(
-            directory=directory,
-            path=filename,
-            as_attachment=True
-        )
+        directory = str(pdf_path.parent)
+        filename = pdf_path.name
+        return send_from_directory(directory=directory, path=filename, as_attachment=True)
     except Exception as e:
-        zap_scanner.log(f"[!] Error serving PDF file: {e}")
         return jsonify({"status": "error", "message": "Could not serve PDF file."}), 500
 
 
 # -----------------------------------------------
-# ## 📝 Log Streaming Routes
+# ## 📝 Log Streaming Routes (User Isolated)
 # -----------------------------------------------
 
 @zap_scanner_bp.route('/clear_log', methods=['POST'])
-# @login_required # Uncomment if you want to protect this endpoint
+@login_required 
 def clear_zap_log_route():
-    """API endpoint to clear the ZAP scanner log file."""
-    zap_scanner.clear_log_file()
-    return jsonify({"status": "success", "message": "ZAP log cleared."})
+    """Clears the log for the CURRENT USER only."""
+    # Use composite identifier
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    zap_scanner.clear_log_file(current_user_identifier)
+    return jsonify({"status": "success", "message": "Log cleared."})
 
 
 @zap_scanner_bp.route('/log_stream')
-# @login_required # Uncomment if you want to protect this endpoint
+@login_required 
 def zap_log_stream():
     """
-    Server-Sent Events (SSE) endpoint to stream the ZAP scanner log.
+    Streams logs specifically for the logged-in user from their memory queue.
     """
+    # Use composite identifier
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    
     def generate_logs():
-        try:
-            with open(zap_scanner.LOG_FILE, 'r', encoding='utf-8') as f:
-                f.seek(0, 2) # Go to the end of the file
-                while True:
-                    line = f.readline()
-                    if not line:
-                        time.sleep(0.5)
-                        # Yield a keep-alive message
-                        yield ": keep-alive\n\n"
-                        continue
-                    # Ensure it's formatted as an SSE data block
-                    yield f"data: {line.strip()}\n\n"
-        except FileNotFoundError:
-            yield "data: Log file not found. It will be created when the scan starts.\n\n"
-        except Exception as e:
-            print(f"Error in log stream: {e}")
-            yield f"data: An error occurred in the log stream: {e}\n\n"
+        # Get the specific queue for this user
+        user_queue = zap_scanner.get_user_queue(current_user_identifier)
+        
+        while True:
+            try:
+                # Wait for message (blocking to avoid busy loop)
+                message = user_queue.get(timeout=5)
+                yield f"data: {message}\n\n"
+            except queue.Empty:
+                # Keep connection alive
+                yield ": keep-alive\n\n"
+            except Exception as e:
+                yield f"data: Error in stream: {str(e)}\n\n"
 
     return Response(generate_logs(), mimetype='text/event-stream')

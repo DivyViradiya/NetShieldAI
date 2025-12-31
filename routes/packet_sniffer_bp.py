@@ -2,6 +2,7 @@ from flask import (
     Blueprint, Flask, render_template, jsonify, request,
     Response, send_from_directory
 )
+from flask_login import login_required, current_user
 import threading
 import json
 import time
@@ -10,6 +11,7 @@ import queue as _queue_module
 import uuid
 import re
 from pathlib import Path
+from werkzeug.utils import secure_filename # <--- Added Import
 
 # Import the packet_sniffer module
 from Services import packet_sniffer
@@ -18,17 +20,34 @@ from Services import pdf_generator
 
 packet_sniffer_bp = Blueprint('packet_sniffer_bp', __name__)
 
+# --- PHASE 3: User-Specific Directory Helper ---
+def get_user_results_dir():
+    """
+    Constructs the path: Services/results/<username_id>/packet_sniffer
+    """
+    if not current_user.is_authenticated:
+        return None
+    
+    # NEW LOGIC: Composite Identifier
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    user_dir = os.path.join(base_dir, 'Services', 'results', user_identifier, 'packet_sniffer')
+    
+    # FIXED: Added exist_ok=True to prevent race condition crashes
+    os.makedirs(user_dir, exist_ok=True)
+        
+    return user_dir
+
 # ==========================================
-# --- ⚙️ CONFIGURATION: PDF/JSON OUTPUT PATH
+# --- ⚙️ CONFIGURATION (Default references)
 # ==========================================
-# Use the paths defined in packet_sniffer for consistency
-JSON_REPORT_PATH = Path(packet_sniffer.ANALYSIS_REPORT_FILE)
-PDF_REPORT_PATH = Path(packet_sniffer.PDF_REPORT_FILE)
 SERVER_PROXY_URL = "http://localhost:5100"
 # ==========================================
 
 
 @packet_sniffer_bp.route('/')
+@login_required
 def packet_sniffer_page():
     """Renders the packet sniffer page."""
     return render_template('packet_sniffer.html')
@@ -36,6 +55,7 @@ def packet_sniffer_page():
 
 # --- Interface Listing ---
 @packet_sniffer_bp.route('/get_interfaces', methods=['GET'])
+@login_required
 def get_interfaces_route():
     """API endpoint to list available network interfaces using tshark -D."""
     if not packet_sniffer.get_packet_capture_cmd():
@@ -47,10 +67,10 @@ def get_interfaces_route():
 
 
 @packet_sniffer_bp.route('/start_capture', methods=['POST'])
+@login_required
 def start_capture_route():
     """
     API endpoint to initiate packet capture and analysis.
-    ... [docstring content unchanged] ...
     """
     data = request.get_json(force=True, silent=True) or {}
     target_ip = data.get('target_ip')
@@ -66,7 +86,7 @@ def start_capture_route():
         packet_sniffer.log("[!] No target IP provided for capture filter.")
         return jsonify({"status": "error", "message": "No target IP provided."}), 400
 
-    # Check admin privileges. IMPORTANT: do NOT attempt to prompt for elevation here.
+    # Check admin privileges.
     if not packet_sniffer.is_admin():
         packet_sniffer.log("[!] Sniffing requires administrator/root privileges. Server is not elevated.")
         return jsonify({
@@ -77,18 +97,26 @@ def start_capture_route():
     if not packet_sniffer.get_packet_capture_cmd():
         return jsonify({"status": "error", "message": "TShark (Wireshark) not found."}), 500
 
-    # Normalise interface_id to string if provided
     if interface_id is not None:
         interface_id = str(interface_id)
 
-    def scan_task(interface_id_local, custom_bpf_filter_local):
-        packet_sniffer.log(f"[*] Starting capture for {target_ip} ({duration}s)...")
+    # Determine User Directory for this capture
+    user_output_dir = get_user_results_dir()
 
+    # --- FIX: Capture Composite User ID in the main thread ---
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+
+    def scan_task(interface_id_local, custom_bpf_filter_local):
+        # Use the captured 'current_user_identifier' here
+        packet_sniffer.log(f"[*] Starting capture for {target_ip} ({duration}s) User: {current_user_identifier}...")
+
+        # Pass user_output_dir to run_packet_capture
         pcap_file = packet_sniffer.run_packet_capture(
             target_ip,
             duration,
             interface_id=interface_id_local,
-            custom_bpf_filter=custom_bpf_filter_local
+            custom_bpf_filter=custom_bpf_filter_local,
+            output_dir=user_output_dir
         )
 
         if not pcap_file:
@@ -98,39 +126,41 @@ def start_capture_route():
 
         packet_sniffer.log("[*] Capture complete. Starting JSON analysis...")
 
+        # Analyze
         analysis_data = packet_sniffer.analyze_pcap_to_json(
             pcap_file,
             target_ip,
             max_packets=max_packets
         )
 
-        # ------------------------------------------------------------------
-        # ⭐ CRITICAL CHANGE: ENRICH DATA & GENERATE PDF CONTEXT ⭐
-        # ------------------------------------------------------------------
+        # Enrich and Save
         if analysis_data.get('status') == 'success':
             
-            # 1. Enrich report data with structured context (including structured tables/features)
+            # Enrich
             structured_context = packet_sniffer.build_pdf_report_context(analysis_data)
             analysis_data["structured_context"] = {k: v for k, v in structured_context.items() if k != 'raw'}
             analysis_data["extracted_features"] = structured_context.get("features", [])
 
-            # 2. Save the enriched JSON report (this is what the PDF generator reads)
-            json_path = packet_sniffer.save_json_report(analysis_data)
-        
-            # 3. Generate PDF report (best-effort)
+            # Save JSON report to user directory
+            json_path = packet_sniffer.save_json_report(analysis_data, output_dir=user_output_dir)
+            
+            # Generate PDF report in user directory
             if json_path:
                 try:
                     packet_sniffer.log("[*] Analysis complete. Generating PDF report...")
 
+                    # Get user-specific PDF path
+                    user_paths = packet_sniffer.get_output_paths(user_output_dir)
+                    pdf_path = user_paths["pdf_report"]
+
                     # Ensure output directory exists
-                    os.makedirs(PDF_REPORT_PATH.parent, exist_ok=True)
+                    os.makedirs(pdf_path.parent, exist_ok=True)
 
-                    # Create PDF using pdf_generator - pass the data dictionary directly
-                    # NOTE: We pass the actual data dictionary instead of reading the file again for efficiency.
-                    pdf_generator.create_packet_sniffer_report_pdf(analysis_data, str(PDF_REPORT_PATH))
+                    # Create PDF using pdf_generator
+                    pdf_generator.create_packet_sniffer_report_pdf(analysis_data, str(pdf_path))
 
-                    if PDF_REPORT_PATH.exists():
-                        packet_sniffer.log(f"[+] PDF report generated successfully: {PDF_REPORT_PATH}")
+                    if pdf_path.exists():
+                        packet_sniffer.log(f"[+] PDF report generated successfully: {pdf_path}")
                     else:
                         packet_sniffer.log("[!] PDF generation ran but file not found.")
 
@@ -138,16 +168,12 @@ def start_capture_route():
                     packet_sniffer.log("[!] Error: PDF generator dependencies missing.")
                 except Exception as e:
                     packet_sniffer.log(f"[!] FAILED to generate PDF: {str(e)}")
-        # ------------------------------------------------------------------
-        # ⭐ END CRITICAL CHANGE ⭐
-        # ------------------------------------------------------------------
+
         else:
-            # Handle analysis failure
             packet_sniffer.log(f"[!] JSON Analysis failed: {analysis_data.get('message', 'Unknown error')}")
             packet_sniffer.send_sse_event("analysis_complete", {"target_ip": target_ip, "status": "analysis_failed"})
             return
 
-        # Send analysis completion event to UI (SSE)
         packet_sniffer.send_sse_event("analysis_complete", {"target_ip": target_ip, "status": "success"})
 
 
@@ -162,6 +188,7 @@ def start_capture_route():
 
 
 @packet_sniffer_bp.route('/stop_capture', methods=['POST'])
+@login_required
 def stop_capture_route():
     """API endpoint to stop the running capture process."""
     if packet_sniffer.stop_capture():
@@ -170,10 +197,15 @@ def stop_capture_route():
 
 
 @packet_sniffer_bp.route('/trigger_ai_analysis', methods=['POST'])
+@login_required
 def trigger_ai_analysis_route():
     """Checks if PDF exists before triggering AI analysis."""
-    if not PDF_REPORT_PATH.exists():
-        packet_sniffer.log(f"[!] Analysis failed: PDF report not found at {PDF_REPORT_PATH}")
+    user_dir = get_user_results_dir()
+    paths = packet_sniffer.get_output_paths(user_dir)
+    pdf_path = paths["pdf_report"]
+
+    if not pdf_path.exists():
+        packet_sniffer.log(f"[!] Analysis failed: PDF report not found at {pdf_path}")
         return jsonify({
             "status": "error",
             "message": "PDF report not available. Please run a scan first."
@@ -186,10 +218,14 @@ def trigger_ai_analysis_route():
 
 
 @packet_sniffer_bp.route('/report_files', methods=['GET'])
+@login_required
 def get_report_files():
-    """Checks availability of reports."""
-    json_exists = JSON_REPORT_PATH.exists()
-    pdf_exists = PDF_REPORT_PATH.exists()
+    """Checks availability of reports in user directory."""
+    user_dir = get_user_results_dir()
+    paths = packet_sniffer.get_output_paths(user_dir)
+    
+    json_exists = paths["json_report"].exists()
+    pdf_exists = paths["pdf_report"].exists()
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
@@ -202,14 +238,19 @@ def get_report_files():
 
 
 @packet_sniffer_bp.route('/download_pdf', methods=['GET'])
+@login_required
 def download_pdf_report():
-    """Serves the PDF report dynamically based on the configured path."""
-    if not PDF_REPORT_PATH.exists():
+    """Serves the PDF report dynamically from user directory."""
+    user_dir = get_user_results_dir()
+    paths = packet_sniffer.get_output_paths(user_dir)
+    pdf_path = paths["pdf_report"]
+
+    if not pdf_path.exists():
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
 
     try:
-        directory = str(PDF_REPORT_PATH.parent)
-        filename = PDF_REPORT_PATH.name
+        directory = str(pdf_path.parent)
+        filename = pdf_path.name
         return send_from_directory(directory, filename, as_attachment=True, mimetype='application/pdf')
     except Exception as e:
         packet_sniffer.log(f"[!] Error serving PDF file: {e}")
@@ -217,24 +258,30 @@ def download_pdf_report():
 
 
 @packet_sniffer_bp.route('/get_json_report', methods=['GET'])
+@login_required
 def get_json_report_file():
-    """Serves the JSON analysis report file."""
-    if not JSON_REPORT_PATH.exists():
+    """Serves the JSON analysis report file from user directory."""
+    user_dir = get_user_results_dir()
+    paths = packet_sniffer.get_output_paths(user_dir)
+    json_path = paths["json_report"]
+
+    if not json_path.exists():
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
 
-    directory = str(JSON_REPORT_PATH.parent)
-    filename = JSON_REPORT_PATH.name
+    directory = str(json_path.parent)
+    filename = json_path.name
     return send_from_directory(directory, filename, as_attachment=True, mimetype='application/json')
 
 
 @packet_sniffer_bp.route('/clear_log', methods=['POST'])
+@login_required
 def clear_log_route():
-    # If you add a clear_log_file() to packet_sniffer, call it here.
-    # Example: packet_sniffer.clear_log_file()
+    # If a clear_log_file function exists in packet_sniffer, call it here.
     return jsonify({"status": "success", "message": "Log cleared."})
 
 
 @packet_sniffer_bp.route('/log_stream')
+@login_required
 def log_stream():
     """Streams logs from the packet_sniffer queue to the frontend (SSE)."""
     def generate_logs():

@@ -5,28 +5,41 @@ import psutil
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import json
-# --- NEW: ML Imports ---
 import pandas as pd
 import joblib
 from pathlib import Path
+import queue  # Queue for real-time streaming
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
 
 # --- Path and Logging Setup ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-RESULTS_DIR = r"D:\NetShieldAI\Services\results\zap_scanner"
-LOGS_DIR = r"D:\NetShieldAI\logs"
-LOG_FILE = os.path.join(LOGS_DIR, "zap_agent_log.txt")
+DEFAULT_RESULTS_DIR = r"D:\NetShieldAI\Services\results\zap_scanner"
+if not os.path.exists(DEFAULT_RESULTS_DIR):
+    os.makedirs(DEFAULT_RESULTS_DIR)
 
-# --- NEW: ML Model and Data Paths ---
+LOGS_DIR = r"D:\NetShieldAI\logs"
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
+
+# --- USER ISOLATION: Dictionary to hold a queue for each user_id ---
+# Structure: { '1': <Queue object>, '2': <Queue object> }
+user_queues = {}
+
+def get_user_queue(user_id):
+    """Ensures a queue exists for the user and returns it."""
+    if user_id not in user_queues:
+        user_queues[user_id] = queue.Queue()
+    return user_queues[user_id]
+
+# --- ML Model Setup ---
 MODELS_DIR = r"D:\NetShieldAI\models"
 DATA_DIR = r"D:\NetShieldAI\Data"
 MODEL_PATH = Path(MODELS_DIR) / 'vulnerability_ranker.joblib'
 PROFILES_PATH = Path(DATA_DIR) / 'cwe_profiles.csv'
 TRAINING_COLUMNS_PATH = Path(MODELS_DIR) / 'training_columns.joblib'
 
-# --- NEW: Load ML Artifacts on Startup ---
 try:
     model = joblib.load(MODEL_PATH)
     cwe_profiles = pd.read_csv(PROFILES_PATH, index_col='cwe_id')
@@ -34,13 +47,9 @@ try:
     print("✅ ML Model and data artifacts loaded successfully.")
 except FileNotFoundError as e:
     print(f"FATAL: Could not load ML model or data files: {e}")
-    print("Please ensure the model, profiles, and columns files are in the correct directories.")
-    model = None # Set to None to prevent script from running without the model
+    model = None
 
-# --- NEW: ZAP Alert to CWE Mapping ---
-# This map translates ZAP finding names to the CWEs the model was trained on.
-# This would typically be in a separate, more extensive configuration file.
-# --- NEW: Comprehensive ZAP Alert to CWE Mapping (Generated from ZAP data) ---
+# --- FULL ZAP to CWE Mapping ---
 ZAP_TO_CWE_MAP = {
     'Directory Browsing': 'CWE-548',
     'Private IP Disclosure': 'CWE-497',
@@ -230,50 +239,89 @@ ZAP_TO_CWE_MAP = {
     'Remote OS Command Injection (Time Based)': 'CWE-78',
     'NoSQL Injection - MongoDB (Time Based)': 'CWE-943',
 }
-print("✅ ZAP-to-CWE mapping created.")
 
+# --- LOGGING FUNCTIONS (USER-AWARE) ---
 
-def log(message):
-    """Logs messages to the console and to a persistent log file."""
+def log(message, user_id=None):
+    """
+    Logs messages to:
+    1. System Console
+    2. User-specific log file (if user_id provided)
+    3. User-specific Memory Queue (for real-time frontend)
+    """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_message = f"[{timestamp}] {message}"
+    
+    # 1. System Console
     print(log_message)
-    try:
-        with open(LOG_FILE, 'a', encoding='utf-8') as f:
-            f.write(log_message + "\n")
-    except Exception as e:
-        print(f"[{timestamp}] FATAL: Failed to write to log file {LOG_FILE}: {e}")
+    
+    # If a specific user is targeted
+    if user_id:
+        user_id = str(user_id)
+        
+        # 2. User-Specific Log File
+        user_log_file = os.path.join(LOGS_DIR, f"zap_agent_log_{user_id}.txt")
+        try:
+            with open(user_log_file, 'a', encoding='utf-8') as f:
+                f.write(log_message + "\n")
+        except Exception as e:
+            print(f"FATAL: Failed to write to user log file {user_log_file}: {e}")
 
-def clear_log_file():
-    """Clears the content of the log file at the start of a run."""
+        # 3. User-Specific Queue (Streaming)
+        uq = get_user_queue(user_id)
+        uq.put(log_message)
+        
+    else:
+        # Fallback to general system log if no user context (e.g. system errors)
+        try:
+            with open(os.path.join(LOGS_DIR, "zap_system_log.txt"), 'a', encoding='utf-8') as f:
+                f.write(log_message + "\n")
+        except:
+            pass
+
+def clear_log_file(user_id):
+    """Clears the log file and queue for a specific user."""
+    if not user_id: return
+    user_id = str(user_id)
+    user_log_file = os.path.join(LOGS_DIR, f"zap_agent_log_{user_id}.txt")
+    
     try:
-        with open(LOG_FILE, 'w', encoding='utf-8') as f:
+        with open(user_log_file, 'w', encoding='utf-8') as f:
             f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+        
+        # Clear Queue
+        uq = get_user_queue(user_id)
+        with uq.mutex:
+            uq.queue.clear()
+            
     except Exception as e:
-        print(f"FATAL: Could not clear log file: {e}")
+        print(f"FATAL: Could not clear log file for user {user_id}: {e}")
 
-def kill_zap_processes():
-    """Finds and terminates any running ZAP processes."""
-    log("Checking for and terminating existing ZAP processes...")
+def kill_zap_processes(user_id=None):
+    """
+    Terminates ZAP processes. 
+    NOTE: ZAP is often global on the server. Killing it might affect others. 
+    For single-server setups, this resets the engine.
+    """
+    log("Checking for and terminating existing ZAP processes...", user_id)
     killed_a_process = False
     current_pid = os.getpid()
     for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
         try:
             if proc.info['pid'] != current_pid and proc.info['cmdline'] and 'zap.jar' in ' '.join(proc.info['cmdline']).lower():
-                log(f"Found ZAP process {proc.name()} (PID: {proc.info['pid']}). Terminating...")
+                log(f"Found ZAP process {proc.name()} (PID: {proc.info['pid']}). Terminating...", user_id)
                 proc.kill()
                 killed_a_process = True
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
     if not killed_a_process:
-        log("No running ZAP processes found.")
+        log("No running ZAP processes found.", user_id)
     else:
-        log("Waiting 5 seconds for system resources to be released...")
+        log("Waiting 5 seconds for system resources to be released...", user_id)
         time.sleep(5)
 
-# --- NEW: Prediction Function (adapted from notebook) ---
+# --- ML Prediction ---
 def predict_risk(vulnerability_name: str):
-    """Takes a vulnerability name, looks up its profile, and predicts its risk score."""
     if model is None:
         return "N/A (Model not loaded)"
 
@@ -297,62 +345,95 @@ def predict_risk(vulnerability_name: str):
     predicted_score = model.predict(profile_final)
     return round(float(predicted_score[0]), 2)
 
+# --- Path Helper ---
+def get_output_paths(output_dir=None):
+    if output_dir:
+        base = Path(output_dir)
+    else:
+        base = Path(DEFAULT_RESULTS_DIR)
+    
+    if not base.exists():
+        try:
+            base.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            print(f"[!] Error creating directory {base}: {e}")
 
-def run_zap_scan(target_url, report_path):
-    """Launches a ZAP scan and generates an XML report."""
-    kill_zap_processes()
+    return {
+        "xml_report": base / "zap_report.xml",
+        "json_report": base / "zap_report.json",
+        "pdf_report": base / "zap_report.pdf"
+    }
+
+# --- Core Scan Logic ---
+def run_zap_scan(target_url, report_path, user_id):
+    """Launches ZAP and streams output to user specific log."""
+    kill_zap_processes(user_id)
     if not os.path.exists(ZAP_EXECUTABLE_PATH):
-        log(f"Error: ZAP executable not found at '{ZAP_EXECUTABLE_PATH}'")
+        log(f"Error: ZAP executable not found at '{ZAP_EXECUTABLE_PATH}'", user_id)
         return False
 
-    log(f"\n--- Starting ZAP Quick Scan ---")
-    log(f"Target: {target_url}")
-    log(f"Report will be saved to: {report_path}")
+    log(f"\n--- Starting ZAP Quick Scan ---", user_id)
+    log(f"Target: {target_url}", user_id)
+    log(f"Report will be saved to: {report_path}", user_id)
+
+    report_dir = os.path.dirname(report_path)
+    if not os.path.exists(report_dir):
+        os.makedirs(report_dir)
 
     command = [
         ZAP_EXECUTABLE_PATH, '-cmd',
         '-quickurl', target_url,
-        '-quickout', report_path,
+        '-quickout', str(report_path),
         '-quickprogress'
     ]
 
     try:
-        log(f"Executing command: {' '.join(command)}")
+        log(f"Executing command: {' '.join(command)}", user_id)
         zap_directory = os.path.dirname(ZAP_EXECUTABLE_PATH)
+        
         process = subprocess.Popen(
-            command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            text=True, encoding='utf-8', errors='replace', cwd=zap_directory
+            command, 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.STDOUT,
+            text=True, 
+            encoding='utf-8', 
+            errors='replace', 
+            cwd=zap_directory,
+            bufsize=1 
         )
-        log("--- ZAP Output ---")
-        while True:
-            output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
-                break
-            if output:
-                print(output.strip())
-                with open(LOG_FILE, 'a', encoding='utf-8') as f:
-                    f.write(output)
+        
+        log("--- ZAP Output Stream Started ---", user_id)
+        
+        # Stream stdout line by line
+        for line in iter(process.stdout.readline, ''):
+            if line:
+                stripped_line = line.strip()
+                print(stripped_line) 
+                
+                # Push to User Queue
+                log(stripped_line, user_id)
+
         process.wait()
-        log("--- End of ZAP Output ---")
+        log("--- End of ZAP Output ---", user_id)
 
         if process.returncode == 0 and os.path.exists(report_path):
-            log(f"Scan completed successfully!")
+            log(f"Scan completed successfully!", user_id)
             return True
         else:
-            log(f"Error: ZAP process failed or report not created. Return code: {process.returncode}.")
+            log(f"Error: ZAP process failed. Return code: {process.returncode}.", user_id)
             return False
+            
     except Exception as e:
-        log(f"An unexpected error occurred: {e}")
+        log(f"An unexpected error occurred: {e}", user_id)
         return False
 
-# --- MODIFIED: Report Parsing Function ---
-def parse_zap_xml_report(report_file):
-    """Parses a ZAP XML report and enriches it with predicted risk scores."""
+def parse_zap_xml_report(report_file, user_id=None):
+    """Parses ZAP XML and enriches with ML."""
     if not os.path.exists(report_file):
-        log(f"Error: ZAP report file not found for parsing: {report_file}")
+        log(f"Error: ZAP report file not found for parsing: {report_file}", user_id)
         return None
     
-    log(f"Parsing ZAP report: {report_file}")
+    log(f"Parsing ZAP report: {report_file}", user_id)
     
     report_data = {
         "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -367,9 +448,7 @@ def parse_zap_xml_report(report_file):
         for alertitem in root.findall('.//alertitem'):
             riskdesc = alertitem.find('riskdesc').text
             risk = riskdesc.split(' ')[0]
-            
-            if risk == "Info":
-                risk = "Info"
+            if risk == "Info": risk = "Info"
 
             finding_name = alertitem.find('alert').text
             predicted_score = predict_risk(finding_name)
@@ -380,13 +459,9 @@ def parse_zap_xml_report(report_file):
                 "predicted_risk_score": predicted_score,
                 "confidence": alertitem.find('confidence').text,
                 "url": alertitem.find('.//uri').text,
-                
-                # --- UPDATED LINES ---
-                # Use get_inner_html to preserve <p>, <ul>, <li> tags
                 "description": get_inner_html(alertitem.find('desc')),
                 "solution": get_inner_html(alertitem.find('solution')),
                 "reference": get_inner_html(alertitem.find('reference'))
-                # --- END OF UPDATES ---
             }
             
             if risk in report_data["summary"]:
@@ -395,78 +470,35 @@ def parse_zap_xml_report(report_file):
             
             report_data["findings"].append(finding)
             
-        # --- NEW: Sort findings by predicted risk score ---
-        # Sorts in descending order, placing "N/A" values at the end
+        # Sort by predicted score
         report_data["findings"].sort(
             key=lambda x: x['predicted_risk_score'] if isinstance(x['predicted_risk_score'], (int, float)) else -1,
             reverse=True
         )
 
-        log("Report parsed and enriched successfully.")
+        log("Report parsed and enriched successfully.", user_id)
         return report_data
     except Exception as e:
-        log(f"An error occurred during report parsing: {e}")
+        log(f"An error occurred during report parsing: {e}", user_id)
         return None
 
 def get_inner_html(element):
-    """
-    Returns the full inner HTML of an ElementTree element as a string.
-    """
-    if element is None:
-        return ""
-    # This captures the element's text AND all child tags (like <p>, <a>, <ul>)
+    if element is None: return ""
     return (element.text or '') + ''.join(ET.tostring(e, encoding='unicode') for e in element)
 
-def save_json_report(data, output_dir):
-    """Saves the scan results in JSON format with a fixed filename."""
+def save_json_report(data, output_dir, user_id=None):
     try:
-        json_filename = "zap_report.json"
-        json_path = os.path.join(output_dir, json_filename)
+        if output_dir:
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+            json_path = os.path.join(output_dir, "zap_report.json")
+        else:
+            json_path = os.path.join(DEFAULT_RESULTS_DIR, "zap_report.json")
+
         with open(json_path, 'w') as f:
             json.dump(data, f, indent=2)
-        log(f"JSON report saved to: {json_path}")
+        log(f"JSON report saved to: {json_path}", user_id)
         return json_path
     except Exception as e:
-        log(f"Error saving JSON report: {e}")
+        log(f"Error saving JSON report: {e}", user_id)
         return None
-
-if __name__ == "__main__":
-    clear_log_file()
-    log("--- ZAP Scanner Script Started ---")
-    
-    target_to_scan = "http://www.example.com"
-    xml_report_path = os.path.join(RESULTS_DIR, "zap_report.xml")
-    
-    log(f"Starting ZAP scan for target: {target_to_scan}")
-    scan_successful = run_zap_scan(target_to_scan, xml_report_path)
-
-    if scan_successful:
-        log("Parsing and enriching scan results...")
-        scan_results = parse_zap_xml_report(xml_report_path)
-        if scan_results:
-            scan_results["target_url"] = target_to_scan
-            json_report_path = save_json_report(scan_results, RESULTS_DIR)
-            
-            # Print summary to console
-            summary = scan_results["summary"]
-            print("\n" + "="*60)
-            print("                ZAP Scan Summary & Risk Prediction")
-            print("="*60)
-            print(f"  Target: {target_to_scan}")
-            if json_report_path:
-                print(f"  JSON Report: {json_report_path}")
-            print("-"*60)
-            # --- MODIFIED: Print enriched findings ---
-            print("  {:<45} {:<8} {:<10}".format("Finding", "Risk", "Predicted Score"))
-            print("  {:<45} {:<8} {:<10}".format("-------", "----", "---------------"))
-            for finding in scan_results["findings"]:
-                print(f"  {finding['name'][:42]:<45} {finding['risk']:<8} {finding['predicted_risk_score']}")
-            print("~"*60)
-            print(f"  Total Alerts Found: {summary['Total']}")
-            print("="*60)
-        else:
-            log("Could not generate a summary as report parsing failed.")
-    else:
-        log("Scan failed. Check the log file for details.")
-    
-    log("--- ZAP Scanner Script Finished ---")

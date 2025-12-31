@@ -1,139 +1,133 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Element Selectors ---
     const elements = {
+        // Inputs & Controls
+        targetIpInput: document.getElementById('targetIp'),
         detectIpBtn: document.getElementById('detectIpBtn'),
         scanTcpBtn: document.getElementById('scanTcpBtn'),
-        scanVulnBtn: document.getElementById('scanVulnBtn'), 
+        scanVulnBtn: document.getElementById('scanVulnBtn'),
         
+        // Advanced Config (Settings)
         advancedScanToggle: document.getElementById('advancedScanToggle'),
         advancedScanOptions: document.getElementById('advancedScanOptions'),
-        advancedScanArrow: document.getElementById('advancedScanArrow'),
-        updateWhitelistBtn: document.getElementById('updateWhitelistBtn'),
-        clearWhitelistBtn: document.getElementById('clearWhitelistBtn'),
-        blockPortsBtn: document.getElementById('blockPortsBtn'),
-        verifyPortsBtn: document.getElementById('verifyPortsBtn'),
-        clearLogBtn: document.getElementById('clearLogBtn'),
-        refreshResultsBtn: document.getElementById('refreshResultsBtn'),
-        
-        copyResultsBtn: document.getElementById('copyResultsBtn'),
-        resultsContent: document.getElementById('resultsContent'), 
-        
-        downloadReportBtn: document.getElementById('downloadReportBtn'),
-        
-        // 🚨 NEW SELECTORS for AI Analysis
-        analyzeReportDropdown: document.getElementById('analyzeReportDropdown'),
-        llmAnalysisOptions: document.getElementById('llmAnalysisOptions'),
-        
-        targetIpInput: document.getElementById('targetIp'),
         whitelistPortsInput: document.getElementById('whitelistPorts'),
-        logOutput: document.getElementById('logOutput'),
+        updateWhitelistBtn: document.getElementById('updateWhitelistBtn'),
+        clearWhitelistBtn: document.getElementById('clearWhitelistBtn'), 
+        
+        // Admin Actions (Right Panel)
+        verifyPortsBtn: document.getElementById('verifyPortsBtn'), 
+        blockPortsBtn: document.getElementById('blockPortsBtn'), 
+
+        // Results Header
         scanStatus: document.getElementById('scanStatus'),
         localIpDisplay: document.getElementById('localIpDisplay'),
-        whitelistedPortsDisplay: document.getElementById('whitelistedPortsDisplay'),
+        portCountDisplay: document.getElementById('portCountDisplay'),
         
+        // Toolbar
+        refreshResultsBtn: document.getElementById('refreshResultsBtn'),
+        analyzeReportDropdown: document.getElementById('analyzeReportDropdown'),
+        llmAnalysisOptions: document.getElementById('llmAnalysisOptions'),
+        downloadReportBtn: document.getElementById('downloadReportBtn'),
+        
+        // Tabs
         portsTabBtn: document.getElementById('portsTabBtn'),
         rawTabBtn: document.getElementById('rawTabBtn'),
         portsContent: document.getElementById('portsContent'),
         rawContent: document.getElementById('rawContent'),
-        portCountDisplay: document.getElementById('portCountDisplay'),
-        rawScanTypeDisplay: document.getElementById('rawScanTypeDisplay'),
         
+        // Content Areas
         openPortsTableBody: document.getElementById('openPortsTableBody'),
+        rawScanTypeDisplay: document.getElementById('rawScanTypeDisplay'),
+        copyResultsBtn: document.getElementById('copyResultsBtn'),
+        resultsContent: document.getElementById('resultsContent'), 
+        
+        // Live Terminal
+        clearLogBtn: document.getElementById('clearLogBtn'),
+        logOutput: document.getElementById('logOutput'),
     };
 
     // --- State Variables ---
     const API_BASE_URL = '/network_scanner';
-    const CHATBOT_REDIRECT_URL = '/chatbot'; // Target page for Q&A
-    let lastScanType = 'tcp'; // Track the last scan type for refreshing results
+    const CHATBOT_REDIRECT_URL = '/chatbot'; 
+    let lastScanType = 'tcp'; 
     let isActionInProgress = false;
     let reportDownloadUrl = null;
 
-
     // --- Helper Functions ---
     
-    /**
-     * Toggles the loading spinner on a button.
-     * 🚨 MODIFIED to support nested button/span structures like the analyzeReportDropdown
-     */
     function toggleSpinner(button, isLoading) {
         if (!button) return;
-        // Check for direct children with .button-text and .spinner
-        let buttonText = button.querySelector('.button-text');
-        let spinner = button.querySelector('.spinner');
+        const spinner = button.querySelector('.spinner');
+        const icon = button.querySelector('.material-symbols-outlined'); // Select the icon
         
-        // If not found, assume it is the button itself (for primary/secondary)
-        if (!buttonText) buttonText = button;
-        if (!spinner) spinner = button.querySelector('.spinner');
+        // Don't disable dropdown toggles, just main action buttons
+        if (button.id !== 'analyzeReportDropdown') {
+            button.disabled = isLoading;
+        }
 
-        button.disabled = isLoading;
-        if (buttonText && spinner) {
-            buttonText.classList.toggle('hidden', isLoading);
-            spinner.classList.toggle('hidden', !isLoading);
-        } else if (isLoading) {
-             // For buttons without explicit spinner/text, dim them
-             button.classList.add('opacity-50', 'cursor-not-allowed');
+        if (isLoading) {
+            button.classList.add('opacity-70');
+            if (button.tagName !== 'A' && button.id !== 'analyzeReportDropdown') button.classList.add('cursor-not-allowed');
+            
+            // Swap Icon for Spinner (Hides the icon so button size doesn't change)
+            if (icon) icon.classList.add('hidden'); 
+            if (spinner) spinner.classList.remove('hidden');
+            
         } else {
-             button.classList.remove('opacity-50', 'cursor-not-allowed');
+            button.classList.remove('opacity-70', 'cursor-not-allowed');
+            
+            // Swap Spinner back for Icon
+            if (spinner) spinner.classList.add('hidden');
+            if (icon) icon.classList.remove('hidden');
         }
         
-        // Ensure the dropdown caret is hidden when busy
-        const caret = button.querySelector('.fa-caret-down');
-        if (caret) caret.classList.toggle('hidden', isLoading);
+        // Caret handling for dropdowns (Special Case)
+        if (icon && icon.textContent === 'expand_more') {
+            icon.style.display = isLoading ? 'none' : 'inline-block';
+        }
     }
     
-    /**
-     * Appends a message to the log display.
-     */
     function appendLog(message) {
         if (!elements.logOutput) return;
-        elements.logOutput.textContent += message + '\n'; 
+        const line = document.createElement('div');
+        
+        if (message.includes('[!]') || message.includes('[x]')) line.className = 'text-[#ef4444]'; // Tailwind Red-500 equivalent
+        else if (message.includes('[✓]') || message.includes('[+]')) line.className = 'text-[#10b981]'; // Tailwind Green-500 equivalent
+        else if (message.includes('[*]')) line.className = 'text-[#3b82f6]'; // Tailwind Blue-500 equivalent
+        else line.className = 'text-[#a1a1aa]';
+        
+        line.textContent = message;
+        elements.logOutput.appendChild(line);
         elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
     }
 
-    /**
-     * Sets the main status message text and color.
-     */
     function setStatus(text, type = 'ready') {
         if (!elements.scanStatus) return;
         
-        // Remove old classes and icons
-        elements.scanStatus.className = 'text-center text-xs py-2 rounded border border-slate-800 bg-slate-900/50 text-slate-400';
-        const currentIcon = elements.scanStatus.querySelector('i');
-        if (currentIcon) currentIcon.remove();
-
-        let iconClass = '';
-
+        // Reset classes
+        elements.scanStatus.className = 'status-val font-mono ml-2';
+        
         switch (type) {
             case 'busy':
-                elements.scanStatus.classList.add('bg-yellow-900/50', 'text-yellow-400');
-                iconClass = 'fas fa-cog fa-spin';
+                elements.scanStatus.style.color = '#eab308'; // Yellow
+                elements.scanStatus.innerHTML = `BUSY...`;
                 break;
             case 'error':
-                elements.scanStatus.classList.add('bg-red-900/50', 'text-red-400');
-                iconClass = 'fas fa-times-circle';
+                elements.scanStatus.style.color = '#ef4444'; // Red
+                elements.scanStatus.textContent = text;
                 break;
             case 'success':
-                elements.scanStatus.classList.add('bg-green-900/50', 'text-green-400');
-                iconClass = 'fas fa-check-circle';
+                elements.scanStatus.style.color = '#10b981'; // Green
+                elements.scanStatus.textContent = text;
                 break;
             default: // ready
-                elements.scanStatus.classList.add('bg-slate-900/50', 'text-green-400');
-                iconClass = 'fas fa-circle';
+                elements.scanStatus.style.color = '#10b981';
+                elements.scanStatus.textContent = 'READY';
         }
-        
-        const iconElement = document.createElement('i');
-        iconElement.className = `${iconClass} text-[8px] mr-2`;
-        elements.scanStatus.prepend(iconElement);
-
-        elements.scanStatus.textContent = text;
     }
-
 
     // --- API & Data Functions ---
 
-    /**
-     * A generic function to handle API POST requests.
-     */
     async function apiPost(endpoint, body = {}, button = null) {
         if (isActionInProgress) return;
         isActionInProgress = true;
@@ -149,11 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error(data.message || `Request failed with status ${response.status}`);
             }
-            appendLog(`[✓] ${data.message}`);
+            if(data.message) appendLog(`[✓] ${data.message}`);
             return data;
         } catch (error) {
             appendLog(`[x] Error: ${error.message}`);
-            setStatus('Error occurred', 'error');
+            setStatus('Error', 'error');
             return null;
         } finally {
             if (button) toggleSpinner(button, false);
@@ -161,18 +155,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // ... (fetchAndDisplayLocalIp, fetchAndDisplayWhitelist, updateOpenPortsTable unchanged)
-
     async function fetchAndDisplayLocalIp() {
         try {
             const response = await fetch(`${API_BASE_URL}/local_ip`);
             const data = await response.json();
-            elements.localIpDisplay.textContent = data.local_ip || 'Not Detected';
+            elements.localIpDisplay.textContent = data.local_ip || '---';
+            
             if (elements.targetIpInput.value === '') {
-                elements.targetIpInput.value = data.local_ip;
+                const parts = data.local_ip.split('.');
+                if(parts.length === 4) {
+                    parts.pop();
+                    elements.targetIpInput.value = parts.join('.') + '.1';
+                } else {
+                    elements.targetIpInput.value = data.local_ip;
+                }
             }
         } catch (error) {
-            appendLog('[x] Error fetching local IP.');
+            appendLog('[x] Error detecting local IP.');
         }
     }
 
@@ -181,88 +180,69 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`${API_BASE_URL}/whitelisted_ports`);
             const data = await response.json();
             const ports = data.whitelisted_ports;
-            elements.whitelistedPortsDisplay.textContent = ports.length > 0 ? ports.join(', ') : 'None';
+            if(elements.whitelistPortsInput) {
+                if(elements.whitelistPortsInput.value === '') elements.whitelistPortsInput.value = ports.join(', ');
+            }
         } catch (error) {
-            appendLog('[x] Error fetching whitelist.');
+            console.error(error);
         }
     }
     
-    /**
-     * Updates the Open Ports table with all new columns.
-     * @param {Array} ports Array of port objects, including 'process_name' and 'vulnerability'.
-     */
     function updateOpenPortsTable(ports) {
-        elements.openPortsTableBody.innerHTML = ''; // Clear table
-        elements.portCountDisplay.textContent = ports ? ports.length : 0; // Update port count
+        elements.openPortsTableBody.innerHTML = ''; 
+        elements.portCountDisplay.textContent = ports ? ports.length : 0; 
 
-        // Colspan changed from 4 to 5 for new column
         if (!ports || ports.length === 0) {
-            elements.openPortsTableBody.innerHTML = `<tr><td colspan="5" class="p-12 text-center">
-                <div class="text-slate-600 mb-2"><i class="fas fa-radar text-4xl opacity-20"></i></div>
-                <p class="text-slate-500">Initiate a scan to view open ports.</p>
+            elements.openPortsTableBody.innerHTML = `
+                <tr><td colspan="4" style="text-align: center; padding: 2rem;">
+                    <div style="color: #555;">No Open Ports Detected</div>
                 </td></tr>`;
             return;
         }
         
         ports.forEach(p => {
-            // Determine text color for vulnerability cell
-            let vulnTextColor = 'text-slate-400';
-            if (p.vulnerability && p.vulnerability.toLowerCase().includes('run vuln scan')) {
-                vulnTextColor = 'text-blue-400/80';
-            } else if (p.vulnerability && (p.vulnerability.toLowerCase().includes('vulnerable') || p.vulnerability.toLowerCase().includes('cve'))) {
-                vulnTextColor = 'text-red-400'; // Highlight critical findings
-            } else if (p.vulnerability && p.vulnerability.toLowerCase() !== 'n/a') {
-                vulnTextColor = 'text-yellow-400/80';
+            let vulnStyle = 'color: #a1a1aa;';
+            let vulnText = p.vulnerability || 'N/A';
+            
+            if (vulnText.toLowerCase().includes('exploit') || vulnText.toLowerCase().includes('cve')) {
+                vulnStyle = 'color: #ef4444; font-weight: bold;';
+            } else if (vulnText.toLowerCase().includes('run vuln scan')) {
+                vulnStyle = 'color: #3b82f6; font-style: italic;';
             }
-
 
             const row = `
                 <tr>
-                    <td class="px-6 py-3 text-sm font-mono">${p.port || 'N/A'}</td>
-                    <td class="px-6 py-3 text-sm">${p.protocol || 'N/A'}</td>
-                    <td class="px-6 py-3 text-sm">${p.service || 'N/A'} (${p.version || 'N/A'})</td>
-                    <td class="px-6 py-3 text-sm font-mono text-blue-400/80">${p.process_name || 'Not Found'}</td>
-                    <td class="px-6 py-3 text-sm ${vulnTextColor}">
-                         <pre class="vuln-cell-content">${p.vulnerability || 'N/A'}</pre>
-                    </td>
+                    <td style="font-family: monospace; color: white;">${p.port}</td>
+                    <td style="color: #d4d4d8;">${p.protocol}</td>
+                    <td style="color: #d4d4d8;">${p.service} <span style="font-size: 0.75em; color: #71717a;">(${p.version || ''})</span></td>
+                    <td style="${vulnStyle} font-family: monospace; font-size: 0.8em;">${vulnText}</td>
                 </tr>`;
             elements.openPortsTableBody.insertAdjacentHTML('beforeend', row);
         });
     }
 
-    /**
-     * Fetches the current list of open ports and updates the table.
-     */
     async function fetchAndDisplayOpenPorts() {
         try {
             const response = await fetch(`${API_BASE_URL}/open_ports`);
             const data = await response.json();
-            // Use the modified table rendering function
             updateOpenPortsTable(data.open_ports);
         } catch (error) {
-            appendLog('[x] Error fetching open ports.');
+            console.error('Error fetching ports', error);
         }
     }
 
-    /**
-     * Loads the raw text content for a specific scan type.
-     */
     async function loadScanResults(scanType) {
-        elements.resultsContent.textContent = 'Loading...';
-        elements.rawScanTypeDisplay.textContent = `RAW OUTPUT (${scanType.toUpperCase()})`;
+        elements.resultsContent.textContent = '// Loading data...';
+        if(elements.rawScanTypeDisplay) elements.rawScanTypeDisplay.textContent = `RAW DATA (${scanType.toUpperCase()})`;
         try {
             const response = await fetch(`${API_BASE_URL}/get_scan_results?type=${scanType}`);
             const data = await response.json();
-            elements.resultsContent.textContent = response.ok ? data.content : data.message;
+            elements.resultsContent.textContent = response.ok ? data.content : '// No raw data available for this scan type.';
         } catch (error) {
-            elements.resultsContent.textContent = 'Failed to load results.';
+            elements.resultsContent.textContent = '// Failed to load results.';
         }
     }
 
-    /**
-     * Checks if a PDF report is available and updates the download/analysis buttons.
-     * 🚨 MODIFIED: Now enables the Analysis button as well.
-     */
     async function checkReportAvailability() {
         try {
             const response = await fetch(`${API_BASE_URL}/report_files`);
@@ -270,331 +250,313 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (data.status === 'success' && data.pdf_report) {
                     reportDownloadUrl = data.pdf_report;
-                    
-                    // Enable Download Button
                     if (elements.downloadReportBtn) {
                         elements.downloadReportBtn.disabled = false;
-                        elements.downloadReportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                        elements.downloadReportBtn.classList.add('hover:bg-red-500'); 
+                        elements.downloadReportBtn.style.opacity = '1';
                     }
-                    
-                    // 🚨 Enable Analysis Button
                     if (elements.analyzeReportDropdown) {
                         elements.analyzeReportDropdown.disabled = false;
-                        elements.analyzeReportDropdown.classList.remove('opacity-50', 'cursor-not-allowed');
-                        elements.analyzeReportDropdown.classList.add('hover:bg-indigo-500');
+                        elements.analyzeReportDropdown.style.opacity = '1';
                     }
                     return;
                 }
             }
-        } catch (error) {
-            console.error('Error checking report availability:', error);
-        }
+        } catch (error) { console.error(error); }
 
-        // Disable all report actions if no PDF is found
         reportDownloadUrl = null;
         [elements.downloadReportBtn, elements.analyzeReportDropdown].forEach(btn => {
             if (btn) {
                 btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-                btn.classList.remove('hover:bg-red-500', 'hover:bg-indigo-500'); 
+                btn.style.opacity = '0.5';
             }
         });
     }
 
-    /**
-     * 🚨 NEW FUNCTION: Triggers the server-side proxy to upload the PDF for AI analysis.
-     * @param {string} llmMode - The selected LLM mode ('local' or 'gemini').
-     */
-async function analyzeReport(llmMode) {
+    async function analyzeReport(llmMode) {
         const button = elements.analyzeReportDropdown;
         if (!button || button.disabled) return;
         
-        setStatus(`Preparing Nmap report for AI analysis (${llmMode})...`, 'busy');
+        setStatus(`Analyzing...`, 'busy');
         toggleSpinner(button, true); 
-        elements.downloadReportBtn.disabled = true;
-
+        
         try {
-            // 1. First, check local PDF availability via the local blueprint.
-            // This prevents unnecessarily trying to hit the proxy if no PDF exists.
+            // 1. Trigger Proxy
             let response = await fetch(`${API_BASE_URL}/trigger_ai_analysis`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ llm_mode: llmMode }) // Sending llm_mode, though not strictly needed here
+                body: JSON.stringify({ llm_mode: llmMode })
             });
             let data = await response.json();
             
-            if (data.status !== 'success') {
-                throw new Error(data.message || 'PDF availability check failed.');
-            }
+            if (data.status !== 'success') throw new Error(data.message);
             
-            // 2. Now call the central proxy route on the chatbot blueprint.
-            // This request relies on the browser's session cookie.
+            // 2. Call Chatbot Proxy
             response = await fetch(`${CHATBOT_REDIRECT_URL}/scanner_analysis`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type }) // Pass scanner_type
+                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type })
             });
 
-            data = await response.json(); // Data now contains summary and llm_mode
+            data = await response.json();
 
             if (response.ok && data.status === 'success') {
-                appendLog(`[✓] AI analysis initiated. Summary received. Redirecting...`);
-                setStatus('Analysis complete. Redirecting...', 'success');
-                
-                // 3. Redirect, passing summary and mode (from the server response)
+                appendLog(`[✓] Analysis complete. Redirecting...`);
                 window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
             } else {
-                throw new Error(data.message || `Analysis failed with status ${response.status}`);
+                throw new Error(data.message);
             }
         } catch (error) {
             appendLog(`[x] AI Analysis Error: ${error.message}`);
             setStatus('Analysis failed', 'error');
         } finally {
-            // Only run cleanup if no redirect happened (i.e., if it failed)
             toggleSpinner(button, false);
-            checkReportAvailability(); 
         }
     }
 
-    /**
-     * Initiates a network scan.
-     */
     async function initiateScan(protocolType, scanType, button) {
         const targetIp = elements.targetIpInput.value.trim();
         if (!targetIp) {
-            appendLog('[!] Target IP is required.');
-            setStatus('Target IP is required', 'error');
+            appendLog('[!] Error: Target IP/CIDR is required.');
             return;
         }
         
         lastScanType = scanType === 'default' ? protocolType.toLowerCase() : scanType;
-        setStatus(`Scanning (${lastScanType.toUpperCase()})...`, 'busy');
-        
-        // Switch to Ports tab automatically when scan is initiated
-        switchTab('ports');
+        setStatus(`Scanning...`, 'busy');
+        switchTab('ports'); 
+
+        const whitelist = elements.whitelistPortsInput ? elements.whitelistPortsInput.value.split(',').map(s => s.trim()).filter(s => s) : [];
 
         await apiPost('/scan', {
             target_ip: targetIp,
             protocol_type: protocolType,
-            scan_type: scanType
+            scan_type: scanType,
+            whitelist: whitelist
         }, button);
     }
     
-    /**
-     * Server-Sent Events (SSE) for Live Log.
-     */
     function initializeLogStream() {
         const eventSource = new EventSource(`${API_BASE_URL}/log_stream`);
-
         eventSource.onmessage = (event) => {
             const message = event.data;
             if (message.startsWith(':')) return;
-
             appendLog(message);
 
-            if (message.includes("scan complete") || message.includes("process completed") || message.includes("finished")) {
-                setStatus('Action complete!', 'success');
-                // Auto-refresh data on completion
+            if (message.toLowerCase().includes("scan complete") || message.toLowerCase().includes("finished")) {
+                setStatus('Scan Complete', 'success');
                 fetchAndDisplayOpenPorts();
                 loadScanResults(lastScanType);
                 checkReportAvailability();
             }
         };
-
         eventSource.onerror = () => {
-            appendLog('[!] Log stream connection failed. Please refresh.');
-            setStatus('Log stream disconnected', 'error');
+            console.warn('Log stream disconnected.');
             eventSource.close();
         };
     }
     
-    /**
-     * Tab Switching Logic.
-     */
     function switchTab(tabName) {
-        // Update tab buttons
         elements.portsTabBtn.classList.toggle('active', tabName === 'ports');
         elements.rawTabBtn.classList.toggle('active', tabName === 'raw');
-
-        // Update content containers
         elements.portsContent.classList.toggle('hidden', tabName !== 'ports');
         elements.rawContent.classList.toggle('hidden', tabName !== 'raw');
         
-        // Ensure raw output view is updated if switching to it
-        if (tabName === 'raw') {
-            loadScanResults(lastScanType);
-        }
+        if (tabName === 'raw') loadScanResults(lastScanType);
     }
 
-
-    // --- Event Listeners ---
-    
+    // --- Event Listeners (Setup) ---
     function setupEventListeners() {
-        elements.detectIpBtn.addEventListener('click', fetchAndDisplayLocalIp);
+        if(elements.detectIpBtn) elements.detectIpBtn.addEventListener('click', fetchAndDisplayLocalIp);
 
-        // Main Button Listeners: TCP & VULN
-        elements.scanTcpBtn.addEventListener('click', () => initiateScan('TCP', 'default', elements.scanTcpBtn));
-        elements.scanVulnBtn.addEventListener('click', () => initiateScan('TCP', 'vuln', elements.scanVulnBtn));
+        // Scans
+        if(elements.scanTcpBtn) elements.scanTcpBtn.addEventListener('click', () => initiateScan('TCP', 'default', elements.scanTcpBtn));
+        if(elements.scanVulnBtn) elements.scanVulnBtn.addEventListener('click', () => initiateScan('TCP', 'vuln', elements.scanVulnBtn));
 
-        // Tab Event Listeners
+        // Tabs
         elements.portsTabBtn.addEventListener('click', () => switchTab('ports'));
         elements.rawTabBtn.addEventListener('click', () => switchTab('raw'));
 
-        elements.advancedScanToggle.addEventListener('click', () => {
-            elements.advancedScanOptions.classList.toggle('hidden');
-            elements.advancedScanArrow.classList.toggle('rotate-180');
-        });
-
-        elements.advancedScanOptions.addEventListener('click', (e) => {
-            const button = e.target.closest('button[data-scan-type]');
-            if (button) {
-                const scanType = button.dataset.scanType;
+        // Advanced Options Toggle
+        if(elements.advancedScanToggle && elements.advancedScanOptions) {
+            elements.advancedScanToggle.addEventListener('click', (e) => {
+                e.stopPropagation(); // Stop click from reaching document
+                elements.advancedScanOptions.classList.toggle('hidden');
                 
-                // Determine Protocol: UDP scan uses UDP protocol, all others use TCP
-                const protocolType = scanType === 'udp' ? 'UDP' : 'TCP';
-
-                initiateScan(protocolType, scanType, null);
-                elements.advancedScanOptions.classList.add('hidden');
-                elements.advancedScanArrow.classList.remove('rotate-180');
-            }
-        });
-
-        elements.updateWhitelistBtn.addEventListener('click', async () => {
-            const ports = elements.whitelistPortsInput.value.trim();
-            if (ports && await apiPost('/add_whitelist', { ports }, elements.updateWhitelistBtn)) {
-                elements.whitelistPortsInput.value = '';
-                fetchAndDisplayWhitelist();
-            }
-        });
-
-        elements.clearWhitelistBtn.addEventListener('click', async () => {
-            if (await apiPost('/clear_whitelist', {}, elements.clearWhitelistBtn)) {
-                fetchAndDisplayWhitelist();
-            }
-        });
-
-        elements.blockPortsBtn.addEventListener('click', () => apiPost('/block_ports', {}, elements.blockPortsBtn));
-
-        elements.verifyPortsBtn.addEventListener('click', () => {
-            const targetIp = elements.targetIpInput.value.trim();
-            if (!targetIp) {
-                appendLog('[!] Target IP is required for verification.');
-                return;
-            }
-            apiPost('/verify_ports', { target_ip: targetIp }, elements.verifyPortsBtn);
-        });
-        
-        elements.clearLogBtn.addEventListener('click', async () => {
-            const originalContent = elements.clearLogBtn.innerHTML;
-            elements.clearLogBtn.disabled = true;
-            elements.clearLogBtn.innerHTML = '<span class="spinner ml-1"></span>';
-            
-            try {
-                if (await apiPost('/clear_log', {})) {
-                    elements.logOutput.textContent = '';
-                }
-            } finally {
-                elements.clearLogBtn.disabled = false;
-                elements.clearLogBtn.innerHTML = originalContent;
-            }
-        });
-
-        elements.refreshResultsBtn.addEventListener('click', () => {
-            setStatus('Refreshing data...', 'busy');
-            Promise.all([
-                fetchAndDisplayLocalIp(),
-                fetchAndDisplayWhitelist(),
-                fetchAndDisplayOpenPorts(),
-                loadScanResults(lastScanType),
-                checkReportAvailability()
-            ]).then(() => setStatus('System Ready', 'ready'));
-        });
-
-        elements.copyResultsBtn.addEventListener('click', () => {
-            const textToCopy = elements.resultsContent.textContent;
-            const originalContent = elements.copyResultsBtn.innerHTML;
-
-            if (!textToCopy || textToCopy.includes('Loading') || textToCopy.includes('Failed to load') || textToCopy.includes('Awaiting output stream')) {
-                appendLog('[!] No valid results to copy.');
-                return;
-            }
-
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                elements.copyResultsBtn.innerHTML = '<i class="fas fa-check text-green-500 mr-1"></i> COPIED!';
-                elements.copyResultsBtn.style.pointerEvents = 'none';
-
-                appendLog('[✓] Raw output copied to clipboard.');
-                
-                setTimeout(() => { 
-                    elements.copyResultsBtn.innerHTML = originalContent; 
-                    elements.copyResultsBtn.style.pointerEvents = 'auto'; 
-                }, 2000);
-            }).catch(err => {
-                appendLog(`[x] Failed to copy: ${err.message}. Please copy manually.`);
+                // Add event listener to document to close when clicking outside
+                const closeMenu = (docEvent) => {
+                    if (!elements.advancedScanOptions.contains(docEvent.target) && docEvent.target !== elements.advancedScanToggle) {
+                        elements.advancedScanOptions.classList.add('hidden');
+                        document.removeEventListener('click', closeMenu);
+                    }
+                };
+                document.addEventListener('click', closeMenu);
             });
-        });
+        }
 
+        // Advanced Options Click inside Menu (UDP/OS Scan etc)
+        if(elements.advancedScanOptions) {
+            elements.advancedScanOptions.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-scan-type]');
+                if(btn) {
+                    const type = btn.dataset.scanType;
+                    const protocol = type === 'udp' ? 'UDP' : 'TCP';
+                    elements.advancedScanOptions.classList.add('hidden'); 
+                    initiateScan(protocol, type, null); 
+                }
+            });
+        }
+
+        // Admin Actions (Right Panel)
+        // Verify Ports
+        if(elements.verifyPortsBtn) {
+            elements.verifyPortsBtn.addEventListener('click', async () => {
+                const targetIp = elements.targetIpInput.value.trim();
+                if(!targetIp) {
+                    appendLog('[!] Enter IP before verifying.');
+                    return;
+                }
+                appendLog('[*] Verifying closed ports...');
+                await apiPost('/verify_ports', { target_ip: targetIp }, elements.verifyPortsBtn);
+            });
+        }
+
+        // Block Ports
+        if(elements.blockPortsBtn) {
+            elements.blockPortsBtn.addEventListener('click', async () => {
+                if(confirm("Are you sure you want to attempt blocking ALL currently detected open ports? This requires admin privileges.")) {
+                    appendLog('[*] Initiating Firewall Block...');
+                    await apiPost('/block_ports', {}, elements.blockPortsBtn);
+                }
+            });
+        }
+
+        // Whitelist Actions
+        if(elements.updateWhitelistBtn) {
+            elements.updateWhitelistBtn.addEventListener('click', async () => {
+                const ports = elements.whitelistPortsInput.value.trim();
+                if (ports && await apiPost('/add_whitelist', { ports }, elements.updateWhitelistBtn)) {
+                    appendLog('[*] Whitelist updated locally.');
+                }
+            });
+        }
+        
+        // Clear Whitelist
+        if(elements.clearWhitelistBtn) {
+            elements.clearWhitelistBtn.addEventListener('click', async () => {
+                 if(await apiPost('/clear_whitelist', {}, elements.clearWhitelistBtn)) {
+                     elements.whitelistPortsInput.value = '';
+                     appendLog('[*] Whitelist cleared.');
+                 }
+            });
+        }
+
+        // Logs
+        if(elements.clearLogBtn) {
+            elements.clearLogBtn.addEventListener('click', () => {
+                elements.logOutput.innerHTML = '';
+                apiPost('/clear_log');
+            });
+        }
+
+        // Refresh with Visual Feedback
+        if(elements.refreshResultsBtn) {
+            elements.refreshResultsBtn.addEventListener('click', () => {
+                setStatus('Refreshing...', 'busy');
+                toggleSpinner(elements.refreshResultsBtn, true); // Spin the button
+
+                // 1. VISUAL FEEDBACK: Force Table to "Loading" state immediately
+                elements.openPortsTableBody.innerHTML = `
+                    <tr><td colspan="4" style="text-align:center; padding: 3rem; color: #a1a1aa;">
+                        <span class="spinner inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                        Refreshing data...
+                    </td></tr>`;
+                
+                // 2. VISUAL FEEDBACK: Force Raw Log to "Loading"
+                elements.resultsContent.textContent = '// Refreshing log data...';
+
+                // 3. Perform Fetches
+                Promise.all([
+                    fetchAndDisplayOpenPorts(),
+                    loadScanResults(lastScanType),
+                    checkReportAvailability()
+                ]).then(() => {
+                    setStatus('System Ready', 'success');
+                    // Small delay to ensure the user sees the refresh happen if it's too fast
+                    setTimeout(() => toggleSpinner(elements.refreshResultsBtn, false), 500);
+                }).catch((err) => {
+                    console.error(err);
+                    setStatus('Refresh Failed', 'error');
+                    toggleSpinner(elements.refreshResultsBtn, false);
+                });
+            });
+        }
+
+        // Copy Raw
+        if(elements.copyResultsBtn) {
+            elements.copyResultsBtn.addEventListener('click', () => {
+                const text = elements.resultsContent.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = elements.copyResultsBtn.textContent;
+                    elements.copyResultsBtn.textContent = 'COPIED!';
+                    setTimeout(() => elements.copyResultsBtn.textContent = originalText, 2000);
+                });
+            });
+        }
+
+        // Download PDF
         if (elements.downloadReportBtn) {
             elements.downloadReportBtn.addEventListener('click', () => {
                 if (reportDownloadUrl) {
                     window.location.href = reportDownloadUrl;
-                    appendLog('[✓] Downloading PDF report...');
-                } else {
-                    appendLog('[!] No report available to download.');
+                    appendLog('[✓] Download started.');
                 }
             });
         }
         
-        // 🚨 NEW: Analysis Dropdown Toggle
-        elements.analyzeReportDropdown.addEventListener('click', (e) => {
-            // Only toggle if the button is NOT disabled
-            if (!elements.analyzeReportDropdown.disabled) {
-                elements.llmAnalysisOptions.classList.toggle('hidden');
-                e.stopPropagation(); // Prevent document click from immediately closing it
-            }
-        });
+        // AI Dropdown Toggle
+        if(elements.analyzeReportDropdown) {
+            elements.analyzeReportDropdown.addEventListener('click', (e) => {
+                if (!elements.analyzeReportDropdown.disabled) {
+                    e.stopPropagation();
+                    elements.llmAnalysisOptions.classList.toggle('hidden');
+                    
+                     const closeAiMenu = (docEvent) => {
+                        if (!elements.llmAnalysisOptions.contains(docEvent.target) && docEvent.target !== elements.analyzeReportDropdown) {
+                            elements.llmAnalysisOptions.classList.add('hidden');
+                            document.removeEventListener('click', closeAiMenu);
+                        }
+                    };
+                    document.addEventListener('click', closeAiMenu);
+                }
+            });
+        }
         
-        // 🚨 NEW: Analysis Option Selection
-        elements.llmAnalysisOptions.addEventListener('click', (e) => {
-            e.preventDefault();
-            const option = e.target.closest('a[data-llm-mode]');
-            if (option) {
-                const llmMode = option.dataset.llmMode;
-                elements.llmAnalysisOptions.classList.add('hidden'); // Close dropdown
-                analyzeReport(llmMode); // Start the analysis and redirection
-            }
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (elements.llmAnalysisOptions && elements.analyzeReportDropdown && !elements.analyzeReportDropdown.contains(e.target)) {
-                elements.llmAnalysisOptions.classList.add('hidden');
-            }
-        });
+        // AI Selection
+        if(elements.llmAnalysisOptions) {
+            elements.llmAnalysisOptions.addEventListener('click', (e) => {
+                e.preventDefault();
+                const option = e.target.closest('a[data-llm-mode]');
+                if (option) {
+                    const llmMode = option.dataset.llmMode;
+                    elements.llmAnalysisOptions.classList.add('hidden');
+                    analyzeReport(llmMode);
+                }
+            });
+        }
     }
 
-    // --- Initialization ---
+    // --- Init ---
     function init() {
-        appendLog('Initializing UI...');
         setupEventListeners();
         initializeLogStream();
+        switchTab('ports');
         
-        // Ensure default tab is 'ports'
-        switchTab('ports'); 
-
-        // Initial data fetch
-        setStatus('Initializing...', 'busy');
-        Promise.all([
-            fetchAndDisplayLocalIp(),
-            fetchAndDisplayWhitelist(),
-            fetchAndDisplayOpenPorts(),
-            loadScanResults(lastScanType),
-            checkReportAvailability()
-        ]).then(() => {
-            setStatus('System Ready', 'ready');
-            appendLog('Initialization complete. Ready for commands.');
-        });
+        // Initial Fetch
+        fetchAndDisplayLocalIp();
+        fetchAndDisplayWhitelist();
+        fetchAndDisplayOpenPorts();
+        checkReportAvailability();
+        
+        appendLog('System Initialized... Waiting for input...');
     }
 
     init();
