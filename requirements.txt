@@ -1,0 +1,14 @@
+flask
+flask-sqlalchemy
+flask-login
+flask-wtf
+email-validator
+requests
+pandas
+joblib
+psutil
+weasyprint
+jinja2
+scikit-learn
+werkzeug
+scapy
