@@ -9,6 +9,8 @@
       {% endblock %}
     </title>
 
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/NS_Logo.png') }}">
+
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -33,7 +35,6 @@
       body {
         font-family: 'Inter', sans-serif;
         background-color: var(--bg-color);
-        /* Subtle noise texture or grid can go here if desired, keeping it clean for now */
         background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
         background-size: 50px 50px;
       
@@ -43,41 +44,22 @@
         padding-top: 5rem;
         color: var(--text-muted);
         position: relative;
-        overflow-x: hidden; /* Prevent horizontal scroll */
+        overflow-x: hidden; 
       }
       
+/*******************************************/
+      /* --- HIDE SCROLLBARS --- */
       /*******************************************/
-      /* --- ELEGANT SCROLLBAR STYLING --- */
-      /*******************************************/
-      /* Firefox */
-      * {
-        scrollbar-width: thin;
-        scrollbar-color: #333 var(--bg-color);
-      }
       
-      /* Chrome, Edge, Safari */
+      /* Hide scrollbar for Chrome, Safari and Opera */
       ::-webkit-scrollbar {
-        width: 6px; /* Very thin */
-        height: 6px;
+        display: none;
       }
-      
-      ::-webkit-scrollbar-track {
-        background: var(--bg-color);
-      }
-      
-      ::-webkit-scrollbar-thumb {
-        background-color: #333;
-        border-radius: 3px;
-        transition: background-color 0.3s;
-      }
-      
-      ::-webkit-scrollbar-thumb:hover {
-        background-color: #555;
-      }
-      
-      /* Corner */
-      ::-webkit-scrollbar-corner {
-        background: var(--bg-color);
+
+      /* Hide scrollbar for IE, Edge and Firefox */
+      html, body {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
       }
       
       /*******************************************/
@@ -85,13 +67,13 @@
       /*******************************************/
       .navbar-logo-img {
         width: auto;
-        height: 28px; /* Slightly smaller for elegance */
+        height: 28px; 
       }
       
       .navbar {
-        background-color: rgba(5, 5, 5, 0.85); /* Semi-transparent black */
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        background-color: rgba(5, 5, 5, 0.95); 
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         padding: 1rem 2rem;
         border-bottom: 1px solid var(--border-color);
         display: flex;
@@ -134,7 +116,6 @@
         color: var(--text-light);
       }
       
-      /* Subtle underline animation */
       .navbar-links li a::after {
         content: '';
         position: absolute;
@@ -162,7 +143,7 @@
       }
       
       /*******************************************/
-      /* --- PROFILE DROPDOWN STYLES --- */
+      /* --- UPDATED PROFILE DROPDOWN STYLES --- */
       /*******************************************/
       .profile-dropdown {
         position: relative;
@@ -196,69 +177,112 @@
         transform: rotate(180deg);
       }
       
+      /* Updated: Dropdown Container */
       .profile-dropdown-content {
         display: none;
         position: absolute;
         right: 0;
-        top: 140%;
-        background-color: var(--surface-color);
-        min-width: 200px;
-        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5);
+        top: 150%; /* Pushed down slightly for better separation */
+        background-color: #0f0f11; /* Solid surface color */
+        min-width: 280px; /* Wider to fit emails */
+        box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.6);
         z-index: 1001;
         border: 1px solid var(--border-color);
-        animation: fadeIn 0.2s ease-out;
+        border-radius: 12px; /* Modern rounded corners */
+        animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 0.5rem; /* Inner padding */
       }
       
-      .profile-dropdown-content .user-info {
-        padding: 1rem;
-        border-bottom: 1px solid var(--border-color);
-        background-color: rgba(255, 255, 255, 0.01);
-      }
-      
-      .profile-dropdown-content .user-info .username {
-        font-weight: 700;
-        color: var(--text-light);
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      
-      .profile-dropdown-content a.details {
-        display: block;
+      /* New: User Header (Name & Email) */
+      .profile-dropdown-content .user-header {
         padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .profile-dropdown-content .user-header .full-name {
+        font-weight: 600;
+        color: var(--text-light);
+        font-size: 1rem;
+      }
+
+      .profile-dropdown-content .user-header .user-email {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      
+      /* New: Meta Data Section (Job/Org/Audit) */
+      .profile-dropdown-content .meta-data {
+        padding: 0.75rem 1rem;
+        background-color: rgba(255, 255, 255, 0.02);
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+      }
+
+      .meta-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .meta-row .material-symbols-outlined {
+        font-size: 1rem;
+        opacity: 0.6;
+      }
+
+      .meta-row.audit-text {
+        margin-top: 0.5rem;
+        font-family: monospace; /* Security tool aesthetic */
+        color: #71717a; /* Slightly darker gray */
+      }
+      
+      /* Link Styling */
+      .profile-dropdown-content a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem; /* Space between icon and text */
+        padding: 0.6rem 1rem;
         font-size: 0.85rem;
         color: var(--text-muted);
         text-decoration: none;
         transition: all 0.2s;
-        border-left: 2px solid transparent;
+        border-radius: 6px; /* Rounded items */
+        margin-bottom: 2px;
+      }
+
+      .profile-dropdown-content a .material-symbols-outlined {
+        font-size: 1.2rem;
+        opacity: 0.8;
       }
       
       .profile-dropdown-content a.details:hover {
-        background-color: rgba(255, 255, 255, 0.03);
+        background-color: rgba(255, 255, 255, 0.05);
         color: var(--text-light);
-        border-left-color: var(--accent-blue);
       }
       
       .profile-dropdown-content a.logout-link {
         color: #ef4444;
-        padding: 0.75rem 1rem;
-        text-decoration: none;
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 500;
-        border-top: 1px solid var(--border-color);
-        text-align: center;
-        transition: background 0.2s;
+        margin-top: 0.5rem;
+        border-top: 1px solid rgba(255,255,255,0.05);
       }
       
       .profile-dropdown-content a.logout-link:hover {
-        background-color: rgba(239, 68, 68, 0.05);
+        background-color: rgba(239, 68, 68, 0.1);
       }
       
       @keyframes fadeIn {
         from {
           opacity: 0;
-          transform: translateY(-5px);
+          transform: translateY(-8px);
         }
         to {
           opacity: 1;
@@ -271,7 +295,7 @@
       /*******************************************/
       .flash-container {
         max-width: 1200px;
-        margin: -1.2rem auto 0 auto;
+        margin: 1rem auto 0 auto;
         padding: 0 2rem;
         z-index: 900;
       }
@@ -326,34 +350,66 @@
       }
       
       footer {
-        background-color: var(--bg-color);
+        background-color: var(--surface-color); 
         color: var(--text-muted);
-        text-align: center;
-        padding: 0.8rem 0; /* Reduced padding for narrower look */
+        padding: 2rem 0;
         width: 100%;
         margin-top: auto;
         flex-shrink: 0;
-        font-size: 0.75rem; /* Slightly smaller text */
+        font-size: 0.8rem;
         border-top: 1px solid var(--border-color);
+        position: relative;
+      }
+
+      footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        opacity: 0.5;
+      }
+      
+      .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        text-align: center;
+      }
+
+      @media (min-width: 768px) {
+        .footer-content {
+          flex-direction: row;
+          justify-content: space-between;
+          text-align: left;
+        }
+      }
+      
+      footer p {
+        margin: 0;
+        opacity: 0.7;
+      }
+
+      footer .footer-brand {
+        color: var(--text-light);
+        font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
       
-      footer p {
-        margin: 0.2rem 0; /* Tighter margins */
-        opacity: 0.6;
-      }
-      
-      /* Base Style for Child Template Section Cards to Match Theme */
       .section-card {
         background-color: var(--surface-color);
         border: 1px solid var(--border-color);
         padding: 3rem;
-        /* Remove heavy drop shadows for a cleaner Neo look, or keep it subtle */
         box-shadow: none;
       }
       
-      /* Animation Utility */
       .fade-in-element {
         opacity: 0;
         transform: translateY(20px);
@@ -380,7 +436,9 @@
   <body class="dark-mode">
     <nav class="navbar">
       <div class="navbar-brand">
-        <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="navbar-logo-img" /></a>
+        <a href="{{ url_for('index') }}">
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="navbar-logo-img" />
+        </a>
       </div>
 
       <div class="navbar-container">
@@ -391,6 +449,13 @@
           <li>
             <a href="{{ url_for('tools_hub') }}">Security Hub</a>
           </li>
+
+          {% if current_user.is_authenticated %}
+            <li>
+              <a href="{{ url_for('dashboard_bp.dashboard') }}">Security Posture</a>
+            </li>
+          {% endif %}
+
           <li>
             <a href="{{ url_for('chatbot_bp.chatbot_page') }}">AI Analyzer</a>
           </li>
@@ -399,22 +464,66 @@
         {% if current_user.is_authenticated %}
           <div class="profile-dropdown">
             <button id="profile-button" class="profile-button-text">
-              {{ current_user.username }}
+              {{ current_user.full_name.split(' ')[0] if current_user.full_name else current_user.username }}
               <span class="material-symbols-outlined arrow-down">expand_more</span>
             </button>
 
             <div id="profile-dropdown-content" class="profile-dropdown-content">
-              <div class="user-info">
-                <div class="username">{{ current_user.username }}</div>
+              
+              <div class="user-header">
+                <div class="full-name">
+                  {{ current_user.full_name if current_user.full_name else current_user.username }}
+                </div>
+                <div class="user-email">{{ current_user.email }}</div>
               </div>
 
-              <a href="{{ url_for('user_dashboard') }}" class="details">My Dashboard</a>
+              <div class="meta-data">
+                {% if current_user.organization or current_user.job_title %}
+                  <div class="meta-row">
+                    <span class="material-symbols-outlined">business_center</span>
+                    <span>
+                      {% if current_user.job_title and current_user.organization %}
+                        {{ current_user.job_title }} at {{ current_user.organization }}
+                      {% elif current_user.job_title %}
+                        {{ current_user.job_title }}
+                      {% else %}
+                        {{ current_user.organization }}
+                      {% endif %}
+                    </span>
+                  </div>
+                {% endif %}
+
+                {% if current_user.phone_number %}
+                  <div class="meta-row">
+                    <span class="material-symbols-outlined">smartphone</span>
+                    <span>{{ current_user.phone_number }}</span>
+                  </div>
+                {% endif %}
+
+                {% if current_user.last_login_at %}
+                  <div class="meta-row audit-text">
+                    <span class="material-symbols-outlined" style="font-size: 0.9rem;">history</span>
+                    Last login: {{ current_user.last_login_at.strftime('%Y-%m-%d %H:%M') }}
+                  </div>
+                {% endif %}
+              </div>
 
               {% if current_user.is_admin %}
-                <a href="{{ url_for('auth.admin_dashboard') }}" class="details">Admin Panel</a>
+                <a href="{{ url_for('auth.admin_dashboard') }}" class="details">
+                  <span class="material-symbols-outlined">admin_panel_settings</span>
+                  Admin Panel
+                </a>
               {% endif %}
 
-              <a href="{{ url_for('auth.logout') }}" class="logout-link">Logout</a>
+              <a href="{{ url_for('auth.account_settings') }}" class="details">
+                <span class="material-symbols-outlined">manage_accounts</span>
+                Account Settings
+              </a>
+
+              <a href="{{ url_for('auth.logout') }}" class="logout-link">
+                <span class="material-symbols-outlined">logout</span>
+                Logout
+              </a>
             </div>
           </div>
         {% else %}
@@ -450,8 +559,10 @@
     </main>
 
     <footer>
-      <p>&copy; 2025 NetShieldAI. All rights reserved.</p>
-      <p>NetShield Pvt. Ltd. // Empowering Digital Trust</p>
+      <div class="footer-content">
+        <p>&copy; 2026 NetShieldAI. All rights reserved.</p>
+        <p class="footer-brand">NetShield Pvt. Ltd. // Empowering Digital Trust</p>
+        </div>
     </footer>
 
     <script>

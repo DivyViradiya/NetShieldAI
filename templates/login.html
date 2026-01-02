@@ -1,102 +1,113 @@
 {% extends 'base.html' %}
 
-{% block title %}
-  NetShieldAI - Access Control
-{% endblock %}
+{% block title %}NetShieldAI - Access Control{% endblock %}
 
 {% block content %}
-  <div class="min-h-[85vh] flex items-center justify-center p-4">
-    <div class="flex w-full max-w-[1000px] h-[600px] bg-[#0a0a0c] rounded-2xl border border-[#27272a] shadow-2xl overflow-hidden">
-      <!-- LEFT PANEL -->
-      <div class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[#050505]">
-        <div class="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" alt="Cybersecurity Background" class="w-full h-full object-cover opacity-40 mix-blend-overlay" />
-          <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent"></div>
-          <div class="absolute inset-0 bg-blue-900/10"></div>
-        </div>
+  <div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
+    
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+    <div id="login-card" class="relative z-10 flex w-full max-w-[1000px] h-[600px] bg-[#0a0a0c] rounded-2xl border border-[#27272a] shadow-2xl overflow-hidden transition-all duration-700 ease-in-out">
+      
+      <div class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[#050505] bg-[radial-gradient(#1d4ed833_1px,transparent_1px)] [background-size:20px_20px]">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
 
         <div class="relative z-10">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-blue-500 text-3xl">shield</span>
-            <span class="text-xl font-bold text-white tracking-widest">NETSHIELD<span class="text-blue-500">AI</span></span>
-          </div>
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg" />
         </div>
 
         <div class="relative z-10 mb-8">
-          <h2 class="text-3xl font-bold text-white mb-4">Secure.<br />Autonomous.<br />Verified.</h2>
-          <p class="text-gray-400 text-sm">Monitor threats, analyze vulnerabilities, and secure infrastructure in real time.</p>
+          <h2 class="text-3xl font-bold text-white mb-4 tracking-tight drop-shadow-md">
+            Secure.<br />Autonomous.<br />Verified.
+          </h2>
+          <p class="text-gray-400 text-sm max-w-xs border-l-2 border-blue-500 pl-4">
+            Monitor threats, analyze vulnerabilities, and secure infrastructure in real time.
+          </p>
         </div>
       </div>
 
-      <!-- RIGHT PANEL -->
-      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[#0a0a0c] flex flex-col justify-center">
+      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[#0a0a0c] flex flex-col justify-center relative">
+        
         <h3 class="text-2xl font-bold text-white mb-2">Welcome back</h3>
         <p class="text-gray-500 text-sm mb-8">Please enter your details to sign in.</p>
 
-        <!-- FLASH MESSAGES -->
         {% with messages=get_flashed_messages(with_categories=true) %}
           {% if messages %}
             <div class="mb-6 space-y-2">
               {% for category, message in messages %}
-                {% if category == 'danger' %}
-                  {% set msg_class = 'bg-red-900/20 text-red-400 border-red-900' %}
-                {% else %}
-                  {% set msg_class = 'bg-blue-900/20 text-blue-400 border-blue-900' %}
-                {% endif %}
-
-                <div class="p-3 rounded text-sm border {{ msg_class }}">{{ message }}</div>
+                <div class="p-3 rounded text-sm border 
+                  {% if category == 'danger' %}
+                    bg-red-900/20 text-red-400 border-red-900
+                  {% else %}
+                    bg-blue-900/20 text-blue-400 border-blue-900
+                  {% endif %}">
+                  {{ message }}
+                </div>
               {% endfor %}
             </div>
           {% endif %}
         {% endwith %}
 
-        <!-- LOGIN FORM -->
-        <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-5">
+        <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-5" id="loginForm">
           {{ form.hidden_tag() }}
 
-          <div>
-            {{ form.username.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-            {{ form.username(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3', placeholder='Enter your ID') }}
-            {% for error in form.username.errors %}
-              <span class="text-xs text-red-500">{{ error }}</span>
-            {% endfor %}
-          </div>
+          <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
 
           <div>
-            {{ form.password.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-            {{ form.password(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3', placeholder='••••••••') }}
-            {% for error in form.password.errors %}
-              <span class="text-xs text-red-500">{{ error }}</span>
-            {% endfor %}
+            {{ form.username.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+            {{ form.username(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300 placeholder-gray-700', placeholder='Enter your ID') }}
           </div>
 
-          <div class="flex items-center justify-between text-xs pt-2">
-            <label class="flex items-center gap-2 text-gray-400"><input type="checkbox" class="rounded border-gray-700 bg-[#121214] text-blue-500" />Remember me</label>
-            <a href="#" class="text-blue-500 hover:underline">Forgot password?</a>
+          <div>
+            {{ form.password.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+            {{ form.password(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300 placeholder-gray-700', placeholder='••••••••') }}
           </div>
 
-          {{ form.submit(class='w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition transform hover:-translate-y-0.5') }}
+          <div class="flex items-center justify-between text-xs pt-1">
+            <label class="flex items-center gap-2 text-gray-400 cursor-pointer hover:text-white transition">
+              <input type="checkbox" class="rounded border-gray-700 bg-[#121214] text-blue-600 focus:ring-0 focus:ring-offset-0" />
+              Remember me
+            </label>
+            <a href="#" class="text-blue-500 hover:text-blue-400 transition">Forgot password?</a>
+          </div>
 
+          <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+            <span>Sign In</span>
+          </button>
+          
           <div class="relative py-4">
-            <div class="absolute inset-0 flex items-center">
-              <span class="w-full border-t border-[#27272a]"></span>
-            </div>
-            <div class="relative flex justify-center text-xs uppercase">
-              <span class="bg-[#0a0a0c] px-2 text-gray-500">Or continue with</span>
-            </div>
+            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-[#27272a]"></span></div>
+            <div class="relative flex justify-center text-xs uppercase"><span class="bg-[#0a0a0c] px-2 text-gray-600 font-medium">Or continue with</span></div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <button type="button" class="bg-[#121214] border border-[#27272a] text-white py-2.5 rounded-lg">Google</button>
-            <button type="button" class="bg-[#121214] border border-[#27272a] text-white py-2.5 rounded-lg">GitHub</button>
+            <button type="button" class="bg-[#121214] border border-[#27272a] text-white py-2.5 rounded-lg hover:bg-[#1a1a1e] hover:border-gray-600 transition">Google</button>
+            <button type="button" class="bg-[#121214] border border-[#27272a] text-white py-2.5 rounded-lg hover:bg-[#1a1a1e] hover:border-gray-600 transition">GitHub</button>
           </div>
         </form>
-
+        
         <p class="text-sm text-gray-500 mt-8 text-center">
-          Don’t have an account?
-          <a href="{{ url_for('auth.register') }}" class="text-blue-500 hover:underline">Create account</a>
+          Don’t have an account? <a href="{{ url_for('auth.register') }}" class="text-blue-500 hover:text-blue-400 font-medium transition">Create account</a>
         </p>
       </div>
     </div>
   </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const card = document.getElementById('login-card');
+      
+      const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+      btn.innerHTML = spinner + "Authenticating...";
+      btn.classList.add('opacity-75', 'cursor-not-allowed');
+      
+      card.classList.add('opacity-0', 'scale-95'); 
+      
+      setTimeout(() => {
+        e.target.submit();
+      }, 600);
+    });
+  </script>
 {% endblock %}

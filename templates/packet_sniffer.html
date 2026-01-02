@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  NetShieldAI - Live Monitor
+  NetShieldAI - Network Monitor
 {% endblock %}
 
 {% block extra_css %}
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
   <style>
     /* --- DASHBOARD THEME VARIABLES --- */
     :root {
@@ -16,14 +17,21 @@
       --accent-blue: #3b82f6;
       --text-main: #ffffff;
       --text-muted: #a1a1aa;
-      --radius-card: 16px;
+      --radius-card: 12px;
       --radius-sm: 8px;
+
+      /* Risk Colors / Status */
+      --risk-high: #ef4444;
+      --risk-med: #f97316;
+      --risk-low: #eab308;
+      --risk-info: #3b82f6;
+      --status-online: #10b981;
     }
     
-    /* --- 1. LAYOUT UTILITIES (Fixes for missing classes) --- */
+    /* --- LAYOUT UTILITIES --- */
     .dashboard-wrapper {
       padding: 1.5rem;
-      background-color: var(--bg-app);
+      background-color: transparent;
       min-height: 100vh;
       color: var(--text-main);
       font-family: 'Inter', system-ui, sans-serif;
@@ -33,254 +41,188 @@
     }
     
     /* Positioning */
-    .relative {
-      position: relative;
-    }
-    .absolute {
-      position: absolute;
-    }
-    .inset-0 {
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-    }
-    .hidden {
-      display: none !important;
-    }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .hidden { display: none !important; }
     
     /* Sizing & Overflow */
-    .w-full {
-      width: 100%;
-    }
-    .h-full {
-      height: 100%;
-    }
-    .overflow-auto {
-      overflow: auto;
-    }
-    .overflow-hidden {
-      overflow: hidden;
-    }
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    .overflow-auto { overflow: auto; }
+    .overflow-hidden { overflow: hidden; }
     
     /* Flexbox & Grid helpers */
-    .flex {
-      display: flex;
-    }
-    .flex-col {
-      flex-direction: column;
-    }
-    .justify-between {
-      justify-content: space-between;
-    }
-    .justify-center {
-      justify-content: center;
-    }
-    .items-center {
-      align-items: center;
-    }
-    .gap-3 {
-      gap: 0.75rem;
-    }
-    .gap-4 {
-      gap: 1rem;
-    }
-    .gap-6 {
-      gap: 1.5rem;
-    }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .items-center { align-items: center; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.5rem; }
     
-    .grid {
+    .grid { display: grid; }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .p-6 { padding: 1.5rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .pb-2 { padding-bottom: 0.5rem; }
+    .bg-black { background-color: #000; }
+    
+    /* --- NEW TOP GRID LAYOUT (ZAP STYLE) --- */
+    .scan-overview-grid {
       display: grid;
-    }
-    .grid-cols-2 {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    
-    /* Padding/Margins/Backgrounds */
-    .p-6 {
-      padding: 1.5rem;
-    }
-    .mb-2 {
+      grid-template-columns: 2fr 3fr; 
+      gap: 1.5rem;
       margin-bottom: 0.5rem;
-    }
-    .pb-2 {
-      padding-bottom: 0.5rem;
-    }
-    .bg-black {
-      background-color: #000;
-    }
-    
-    /* --- 2. TOP CONTROL HEADER --- */
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      background: transparent;
-    }
-    
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex: 1;
-    }
-    
-    .search-container {
-      position: relative;
       width: 100%;
-      max-width: 400px;
     }
-    
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 1.2rem;
-    }
-    
-    .dash-input {
-      width: 100%;
+
+    /* 1. Control Panel Card */
+    .control-card {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      color: white;
-      padding: 12px 12px 12px 40px;
-      border-radius: var(--radius-sm);
-      font-size: 0.9rem;
-      transition: border-color 0.2s;
-    }
-    .dash-input:focus {
-      outline: none;
-      border-color: var(--accent-primary);
-    }
-    
-    .header-actions {
+      border-radius: var(--radius-card);
+      padding: 1.25rem;
       display: flex;
-      align-items: center;
-      gap: 0.75rem;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.25rem;
+      height: 140px; 
+      position: relative;
     }
-    
-    /* Buttons styled like the dashboard icons/buttons */
-    .btn-dash {
-      height: 42px;
-      padding: 0 1.25rem;
-      border-radius: var(--radius-sm);
-      font-weight: 600;
-      font-size: 0.85rem;
+
+    .input-group { display: flex; gap: 0.5rem; width: 100%; }
+    .search-container { position: relative; flex: 1; }
+
+    .status-row {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-      transition: all 0.2s;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    /* 2. Metrics Grid (4 columns) */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      height: 140px;
+      width: 100%;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
       border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; 
+      justify-content: center;
+      height: 100%;
+      padding: 1.5rem; 
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
+
+    .metric-card:hover { transform: translateY(-2px); }
+
+    .metric-label {
+      font-size: 0.75rem; 
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+      position: relative;
+      z-index: 2;
+    }
+
+    .metric-value {
+      font-family: 'Fira Code', monospace;
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1;
+      color: white;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 4px;
+    }
+
+    .metric-info {
+      margin-top: 4px;
+      font-size: 0.7rem;
+      color: #71717a;
+      font-weight: 400;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* --- INPUTS --- */
+    .search-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted); font-size: 1.2rem;
+    }
+  .dash-input {
+      width: 100%; background: var(--bg-input); border: 1px solid var(--border-subtle);
+      color: white; padding: 0 12px 0 40px; border-radius: var(--radius-sm);
+      height: 42px;
+      font-size: 0.9rem; transition: border-color 0.2s;
+    }
+
+    /* --- FIX: STOP WHITE BACKGROUND ON AUTOFILL --- */
+    .dash-input:-webkit-autofill,
+    .dash-input:-webkit-autofill:hover, 
+    .dash-input:-webkit-autofill:focus, 
+    .dash-input:-webkit-autofill:active {
+        /* This huge shadow covers the white background */
+        -webkit-box-shadow: 0 0 0 30px var(--bg-input) inset !important;
+        /* This forces the text to be white */
+        -webkit-text-fill-color: white !important;
+        /* This delays the background color switch indefinitely */
+        transition: background-color 5000s ease-in-out 0s;
+    }
+    .dash-input:focus { outline: none; border-color: var(--accent-primary); }
+    
+    /* Buttons */
+    .btn-dash {
+      height: 42px; padding: 0 1rem; border-radius: var(--radius-sm);
+      font-weight: 600; font-size: 0.85rem; display: flex; align-items: center;
+      gap: 0.5rem; cursor: pointer; transition: all 0.2s;
+      border: 1px solid var(--border-subtle); color: var(--text-muted); text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-dash:hover { color: white; border-color: #52525b; }
+    .btn-icon-only { padding: 0; width: 42px; justify-content: center; }
     
     .btn-primary {
-      background: var(--accent-primary);
-      color: white;
-      border: none;
+      background: var(--accent-primary); color: white; border: none;
       box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
     }
-    .btn-primary:hover {
-      background: #e11d48;
-    }
-    
-    .btn-secondary {
-      background: var(--bg-card);
-      color: var(--text-muted);
-    }
-    .btn-secondary:hover {
-      color: white;
-      border-color: #52525b;
-    }
+    .btn-primary:hover { background: #e11d48; color: white; }
     
     .btn-danger-outline {
       background: rgba(239, 68, 68, 0.1);
       color: #ef4444;
       border: 1px solid rgba(239, 68, 68, 0.2);
     }
-    .btn-danger-outline:hover {
-      background: rgba(239, 68, 68, 0.2);
-    }
+    .btn-danger-outline:hover { background: rgba(239, 68, 68, 0.2); }
+
+    .btn-secondary { background: var(--bg-card); }
     
-    /* --- 3. METRIC CARDS ROW --- */
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-    }
-    
-    .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-card);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 140px;
-      position: relative;
-    }
-    
-    .stat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 0.5rem;
-    }
-    
-    .stat-title {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-    
-    .stat-icon-box {
-      width: 32px;
-      height: 32px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent-primary);
-    }
-    
-    .stat-value {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: white;
-      font-family: 'Fira Code', monospace;
-    }
-    
-    .stat-footer {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: auto;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    
-    .badge-trend {
-      background: rgba(16, 185, 129, 0.1);
-      color: #10b981;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 0.7rem;
-    }
-    
-    /* --- 4. MAIN DASHBOARD CONTENT (Grid Split) --- */
+    /* --- MAIN CONTENT & TABLES --- */
     .main-grid {
       display: grid;
-      grid-template-columns: 2.5fr 1fr; /* Large Graph Area vs Side Panel */
+      grid-template-columns: 2.5fr 1fr;
       gap: 1.5rem;
       height: 600px;
     }
-    
     .dash-panel {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
@@ -288,9 +230,8 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      position: relative; /* Essential for child absolute positioning */
+      position: relative;
     }
-    
     .panel-header {
       padding: 1.25rem 1.5rem;
       border-bottom: 1px solid var(--border-subtle);
@@ -300,168 +241,254 @@
       background: var(--bg-card);
       z-index: 10;
     }
+    .panel-title { font-size: 1rem; font-weight: 600; color: white; }
     
-    .panel-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: white;
-    }
-    
-    /* Tab Navigation styled as Pill Toggles */
+    /* Tab Pills */
     .tab-pills {
-      display: flex;
-      gap: 0.5rem;
-      background: #000;
-      padding: 4px;
-      border-radius: 8px;
+      display: flex; gap: 0.5rem; background: #000;
+      padding: 4px; border-radius: 8px;
     }
-    
     .tab-pill {
-      padding: 6px 16px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 6px;
-      font-weight: 600;
-      transition: all 0.2s;
+      padding: 6px 16px; font-size: 0.75rem; color: var(--text-muted);
+      cursor: pointer; border-radius: 6px; font-weight: 600; transition: all 0.2s;
     }
     .tab-pill.active {
-      background: var(--bg-card);
-      color: white;
+      background: var(--bg-card); color: white;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
     }
     
-    .panel-content {
-      position: relative; /* Key for absolute children */
-      flex: 1;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-    }
+    .panel-content { position: relative; flex: 1; overflow: hidden; width: 100%; height: 100%; }
     
-    /* --- TABLES --- */
-    .dash-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    /* Tables */
+    .dash-table { width: 100%; border-collapse: collapse; }
     .dash-table th {
-      text-align: left;
-      padding: 1rem 1.5rem;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
+      text-align: left; padding: 1rem 1.5rem; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);
       border-bottom: 1px solid var(--border-subtle);
       background: rgba(255, 255, 255, 0.01);
-      position: sticky;
-      top: 0;
-      z-index: 5;
+      position: sticky; top: 0; z-index: 5;
     }
     .dash-table td {
-      padding: 1rem 1.5rem;
-      color: #e4e4e7;
-      border-bottom: 1px solid var(--border-subtle);
-      font-size: 0.85rem;
+      padding: 1rem 1.5rem; color: #e4e4e7;
+      border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem;
     }
-    .dash-table tr:last-child td {
-      border-bottom: none;
-    }
-    
-    /* Live Terminal Footer */
-    .terminal-footer {
-      height: 180px;
-      background: #000;
+    .dash-table tr:last-child td { border-bottom: none; }
+
+    /* --- DROPDOWN ENHANCEMENTS --- */
+    .custom-dropdown {
+      background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-card);
-      padding: 1rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      min-width: 100%;
+      z-index: 999;
+      animation: dropdownSlide 0.2s ease-out forwards;
+      transform-origin: top;
+    }
+
+    .dropdown-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      border-left: 2px solid transparent;
+    }
+
+    .dropdown-link:hover {
+      background: #27272a;
+      color: white;
+      border-left-color: var(--accent-primary);
+      padding-left: 16px; /* Slight movement effect */
+    }
+
+    @keyframes dropdownSlide {
+      from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* --- AI PROCESSING OVERLAY & ANIMATION --- */
+    .processing-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(24, 24, 27, 0.95); /* Matches card bg with slight transparency */
+      backdrop-filter: blur(4px);
+      z-index: 50;
       display: flex;
       flex-direction: column;
-    }
-    .term-text {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.8rem;
-      color: #10b981;
-      overflow-y: auto;
-    }
-    
-    .text-gradient {
-      background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
-    }
-    
-    /* 2. Status Badge */
-    .badge-pill {
-      display: inline-flex;
       align-items: center;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      color: #10b981;
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
+      justify-content: center;
+      transition: opacity 0.3s ease;
     }
-    
-    /* 3. Ghost Back Button */
-    .btn-ghost {
+
+    /* Minimal Breathing Animation - No Icon, Just Rings */
+    .ai-pulse-container {
+      position: relative;
+      width: 48px;
+      height: 48px;
       display: flex;
       align-items: center;
-      padding: 0 12px;
-      height: 40px;
-      color: #a1a1aa;
-      background: transparent;
-      border: none;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .ai-pulse-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px solid var(--accent-primary); /* Thinner border for minimal look */
+      opacity: 0;
+      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+
+    .ai-pulse-ring:nth-child(2) {
+      animation-delay: 0.6s; /* Slightly delayed second ring */
+    }
+
+    .processing-text {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: text-fade 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.3); opacity: 0; }
+      40% { opacity: 0.8; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+
+    @keyframes text-fade {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
     }
     
+    /* --- MODERN MINIMAL TERMINAL --- */
+    .terminal-footer { 
+      height: 160px; /* Reduced Height */
+      background: var(--bg-card); 
+      border: 1px solid var(--border-subtle); 
+      border-radius: var(--radius-card); 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden;
+    }
+
+    .terminal-header {
+      padding: 0.5rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      flex-shrink: 0;
+      height: 40px;
+    }
+
+    .term-title {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .term-window { 
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      background: transparent;
+      overflow-y: auto; 
+    }
+
+    /* Minimal Scrollbar */
+    .term-window::-webkit-scrollbar { width: 6px; }
+    .term-window::-webkit-scrollbar-track { background: transparent; }
+    .term-window::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+    .term-window::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+    
+    /* Log Layout */
+    .log-line { 
+        display: flex; 
+        gap: 1.5rem; 
+        font-family: 'Fira Code', monospace; 
+        font-size: 0.75rem;
+        line-height: 1.5;
+        padding: 1px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.02);
+    }
+    .log-line:last-child { border-bottom: none; }
+    
+    .log-time { 
+        color: #52525b; 
+        font-size: 0.7rem; 
+        white-space: nowrap; 
+        width: 70px;
+        flex-shrink: 0;
+    }
+    
+    .log-content {
+        color: #d4d4d8;
+        word-break: break-all;
+    }
+
+    .text-gradient {
+    background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Badges */
+    .badge-pill {
+      display: inline-flex; align-items: center; padding: 4px 10px;
+      border-radius: 9999px; background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2); color: #10b981;
+      font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    
+    .badge-trend {
+      background: rgba(16, 185, 129, 0.1); color: #10b981;
+      padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.7rem;
+    }
+    
+    /* Ghost Back Button */
+    .btn-ghost {
+      display: flex; align-items: center; padding: 0 12px; height: 40px;
+      color: #a1a1aa; background: transparent; border: none; border-radius: 8px;
+      text-decoration: none; transition: all 0.2s ease; font-weight: 600;
+      font-size: 0.85rem; cursor: pointer;
+    }
     .btn-ghost:hover {
-      color: #ffffff;
-      transform: translateX(-4px);
-      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff; transform: translateX(-4px); background: rgba(255, 255, 255, 0.05);
     }
     
     /* Graph Canvas */
-    #networkGraphCanvas {
-      width: 100%;
-      height: 100%;
-    }
+    #networkGraphCanvas { width: 100%; height: 100%; }
     
     .spinner {
-      width: 12px;
-      height: 12px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+      width: 12px; height: 12px; border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;
     }
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
     
     /* Responsive */
     @media (max-width: 1200px) {
-      .metrics-row {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .main-grid {
-        grid-template-columns: 1fr;
-        height: auto;
-      }
-      .dash-panel {
-        height: 500px;
-      }
+      .scan-overview-grid { grid-template-columns: 1fr; height: auto; }
+      .metrics-grid { height: auto; grid-template-columns: repeat(2, 1fr); }
+      .control-card { height: auto; }
+      .main-grid { grid-template-columns: 1fr; height: auto; }
+      .dash-panel { height: 500px; }
     }
   </style>
   <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
@@ -469,120 +496,106 @@
 
 {% block content %}
   <div class="dashboard-wrapper fade-in-element">
-    <div class="flex flex-col items-start mb-8">
+    <div class="flex flex-col items-start mb-6">
       <a href="{{ url_for('tools_hub') }}" class="btn-ghost" style="padding-left: 0; margin-bottom: 1rem;">
         <span class="material-symbols-outlined" style="font-size: 1.1rem; margin-right: 8px;">arrow_back</span>
         <span>Security Hub</span>
       </a>
 
       <div>
-        <h1 class="text-gradient" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;">Network Monitor</h1>
-
+        <h1 class="text-gradient" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;">Network
+          Monitor</h1>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px; font-weight: 400;">Packet Capture & Traffic Analysis</p>
       </div>
     </div>
 
-    <div class="dashboard-header">
-      <div class="header-left">
-        <div class="search-container">
-          <span class="material-symbols-outlined search-icon">wifi_find</span>
-          <input type="text" id="snifferTargetIp" class="dash-input" placeholder="Enter Target IP (e.g., 192.168.1.5)..." />
-        </div>
+    <div class="scan-overview-grid">
+      <div class="control-card">
+        <div class="input-group">
+          <div class="search-container">
+            <span class="material-symbols-outlined search-icon">wifi_find</span>
+            <input type="text" id="snifferTargetIp" class="dash-input" placeholder="Enter Target IP..." />
+            </div>
+          <button id="startCaptureBtn" class="btn-dash btn-primary" title="Start Capture" style="padding: 0 1rem;">
+            <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+            <span>Start Scan</span>
+            <span class="spinner hidden"></span>
+            </button>
+          <button id="stopCaptureBtn" class="btn-dash btn-danger-outline btn-icon-only" title="Stop Capture">
+            <span class="material-symbols-outlined" style="font-size:1.1rem">stop</span>
+            <span class="spinner hidden"></span>
+            </button>
 
-        <button id="startCaptureBtn" class="btn-dash btn-primary">
-          <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
-          Start Scan
-          <span class="spinner hidden"></span>
-        </button>
+          <div class="relative">
+            <button id="advancedScanToggle" class="btn-dash btn-secondary btn-icon-only" title="Configuration">
+              <span class="material-symbols-outlined">tune</span>
+            </button>
+            <div id="advancedScanOptions" class="hidden"
+              style="position: absolute; top: 50px; right: 0; width: 300px; background: #18181b; border: 1px solid #333; padding: 1.5rem; border-radius: 12px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+              <h4 style="color:white; margin-bottom:1rem; font-size:0.9rem;">Scan Configuration</h4>
+              <div style="display:flex; flex-direction:column; gap:1rem;">
+                <div>
+                  <label style="color:#a1a1aa; font-size:0.75rem;">Duration (sec)</label>
+                  <input type="number" id="captureDuration" value="30" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
+                  </div>
+                  <div>
+                    <label style="color:#a1a1aa; font-size:0.75rem;">Max Packets</label>
+                  <input type="number" id="maxPackets" value="100" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
+                  </div>
+                  <div>
+                    <label style="color:#a1a1aa; font-size:0.75rem;">BPF Filter</label>
+                  <input type="text" id="bpfFilter" placeholder="tcp port 80" class="dash-input"
+                    style="padding: 8px 12px; margin-top:4px;" />
+                  </div>
+              </div>
+              </div>
+          </div>
+          </div>
 
-        <button id="stopCaptureBtn" class="btn-dash btn-danger-outline">
-          <span class="material-symbols-outlined" style="font-size:1.1rem">stop</span>
-          Stop
-          <span class="spinner hidden"></span>
-        </button>
-      </div>
-
-      <div class="header-actions">
-        <button id="advancedScanToggle" class="btn-dash btn-secondary"><span class="material-symbols-outlined">tune</span></button>
-
-        <div class="btn-dash btn-secondary" style="cursor: default;">
-          <span class="material-symbols-outlined" style="font-size: 1rem; color: #10b981;">fiber_manual_record</span>
-          <span id="snifferStatus" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">IDLE</span>
-        </div>
-      </div>
-    </div>
-
-    <div id="advancedScanOptions" class="hidden" style="position: absolute; top: 80px; right: 24px; width: 300px; background: #18181b; border: 1px solid #333; padding: 1.5rem; border-radius: 12px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-      <h4 style="color:white; margin-bottom:1rem; font-size:0.9rem;">Scan Configuration</h4>
-      <div style="display:flex; flex-direction:column; gap:1rem;">
-        <div>
-          <label style="color:#a1a1aa; font-size:0.75rem;">Duration (sec)</label>
-          <input type="number" id="captureDuration" value="30" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
-        </div>
-        <div>
-          <label style="color:#a1a1aa; font-size:0.75rem;">Max Packets</label>
-          <input type="number" id="maxPackets" value="100" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
-        </div>
-        <div>
-          <label style="color:#a1a1aa; font-size:0.75rem;">BPF Filter</label>
-          <input type="text" id="bpfFilter" placeholder="tcp port 80" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
-        </div>
-      </div>
-    </div>
-
-    <div class="metrics-row">
-      <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-title">Total Packets</span>
-          <div class="stat-icon-box">
-            <span class="material-symbols-outlined">dataset</span>
+        <div class="status-row">
+          <div style="font-size: 0.85rem; color: var(--text-muted); font-family: 'Fira Code', monospace;">
+            Status: <span id="snifferStatus" style="color: white; margin-left: 5px;">IDLE</span>
+          </div>
+          <div class="badge-pill">
+            <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
+            Ready to capture
           </div>
         </div>
-        <div id="summaryTotalPackets" class="stat-value">0</div>
-        <div class="stat-footer">
-          <span class="badge-trend">+ Live</span>
-          <span>captured</span>
-        </div>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-title">Data Volume</span>
-          <div class="stat-icon-box">
-            <span class="material-symbols-outlined">data_usage</span>
-          </div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label" style="color: var(--accent-primary);">Total Packets</span>
+          <span id="summaryTotalPackets" class="metric-value">0</span>
+          <span class="metric-info">
+            <span class="material-symbols-outlined" style="font-size:0.9rem; color: #10b981;">dataset</span>
+            <span>+ Live</span> captured
+          </span>
         </div>
-        <div id="summaryTotalBytes" class="stat-value">0 B</div>
-        <div class="stat-footer">
-          <span>Payload size</span>
-        </div>
-      </div>
 
-      <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-title">Top Protocol</span>
-          <div class="stat-icon-box">
-            <span class="material-symbols-outlined">dns</span>
-          </div>
+        <div class="metric-card">
+          <span class="metric-label" style="color: var(--accent-blue);">Data Volume</span>
+          <span id="summaryTotalBytes" class="metric-value">0 B</span>
+          <span class="metric-info">
+            <span class="material-symbols-outlined" style="font-size:0.9rem;">data_usage</span>
+            Payload size
+          </span>
         </div>
-        <div id="summaryPrimaryProto" class="stat-value" style="font-size: 1.5rem; color: var(--accent-blue);">-</div>
-        <div class="stat-footer">
-          <span>Most frequent</span>
+        <div class="metric-card">
+          <span class="metric-label" style="color: #a1a1aa;">Top Protocol</span>
+          <span id="summaryPrimaryProto" class="metric-value" style="color: var(--accent-blue);">-</span>
+          <span class="metric-info">
+            <span class="material-symbols-outlined" style="font-size:0.9rem;">dns</span>
+            Most frequent
+          </span>
         </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-title">Throughput</span>
-          <div class="stat-icon-box">
-            <span class="material-symbols-outlined">speed</span>
-          </div>
-        </div>
-        <div id="avgRateDisplay" class="stat-value">
-          0 <span style="font-size:1rem;">Kbps</span>
-        </div>
-        <div class="stat-footer">
-          <span>Avg rate</span>
+        <div class="metric-card">
+          <span class="metric-label" style="color: #10b981;">Throughput</span>
+          <span id="avgRateDisplay" class="metric-value">0 <span style="font-size:1rem;">Kbps</span></span>
+          <span class="metric-info">
+            <span class="material-symbols-outlined" style="font-size:0.9rem;">speed</span>
+            Avg rate
+          </span>
         </div>
       </div>
     </div>
@@ -592,8 +605,8 @@
         <div class="panel-header">
           <span class="panel-title">Network Visualization</span>
           <div class="tab-pills">
-            <div id="graphTabBtn" class="tab-pill">Graph</div>
             <div id="packetsTabBtn" class="tab-pill active">Packet List</div>
+            <div id="graphTabBtn" class="tab-pill">Graph</div>
             <div id="flowsTabBtn" class="tab-pill">Flows</div>
             <div id="anomaliesTabBtn" class="tab-pill">Anomalies</div>
           </div>
@@ -696,41 +709,69 @@
           </div>
         </div>
 
-        <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1.5rem;">
-          <h5 class="panel-title" style="margin-bottom: 1rem; font-size: 0.9rem;">Intelligence</h5>
+        <div id="snifferIntelligencePanel" class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1.5rem; overflow: visible !important;">
+          <div id="aiProcessingOverlay" class="processing-overlay hidden" style="overflow: hidden; border-radius: var(--radius-card);">
+             <div class="ai-pulse-container">
+               <div class="ai-pulse-ring"></div>
+               <div class="ai-pulse-ring"></div>
+               </div>
+             <span id="aiProcessingText" class="processing-text">INITIALIZING AI...</span>
+          </div>
+
+          <div class="flex justify-between items-center mb-4">
+            <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence</h5>
+            <button id="refreshSnifferResultsBtn" class="btn-dash btn-secondary btn-icon-only"
+              style="height:32px; width:32px; border-radius: 6px;" title="Refresh Results">
+              <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
+            </button>
+          </div>
 
           <div class="flex flex-col gap-3">
             <div class="relative w-full">
-              <button id="snifferAnalyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+              <button id="snifferAnalyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between"
+                style="opacity: 0.7;">
                 <span>AI Analysis</span>
                 <span class="material-symbols-outlined">expand_more</span>
               </button>
-              <div id="snifferLlmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-[#333] z-50 rounded-md shadow-xl">
-                <a href="#" data-llm-mode="local" class="block px-4 py-3 text-xs text-gray-400 hover:text-white hover:bg-[#27272a]">Local LLM</a>
-                <a href="#" data-llm-mode="gemini" class="block px-4 py-3 text-xs text-gray-400 hover:text-white hover:bg-[#27272a]">Gemini AI</a>
+              
+              <div id="snifferLlmAnalysisOptions"
+                class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
+                <a href="#" data-llm-mode="local"
+                  class="dropdown-link">
+                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
+                   Local LLM
+                </a>
+                <a href="#" data-llm-mode="gemini"
+                  class="dropdown-link">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">auto_awesome</span>
+                  Gemini AI
+                </a>
               </div>
             </div>
 
-            <button id="snifferDownloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+            <button id="snifferDownloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between"
+              style="opacity: 0.7;">
               <span>Export PDF</span>
-              <span class="material-symbols-outlined">download</span>
+              <span class="material-symbols-outlined">picture_as_pdf</span>
             </button>
-
-            <button id="refreshSnifferResultsBtn" class="btn-dash btn-secondary w-full justify-center"><span class="material-symbols-outlined">refresh</span></button>
           </div>
         </div>
       </div>
     </div>
+      
+      <div class="terminal-footer">
+        <div class="terminal-header">
+          <div class="term-title">
+                <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--text-muted);">terminal</span>
+                Live Capture Log
+          </div>
+          <button id="clearSnifferLogBtn" style="background: none; border: none; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; transition: color 0.2s;">Clear Output</button>
+        </div>
+        
+        <div id="snifferLogOutput" class="term-window">
+           </div>
+      </div>
 
-    <div class="terminal-footer">
-      <div class="flex justify-between items-center mb-2 pb-2 border-b border-[#333]">
-        <span style="font-size: 0.7rem; text-transform: uppercase; color: #666; font-weight: 700;">Live Terminal Output</span>
-        <button id="clearSnifferLogBtn" style="background: none; border: none; color: #666; font-size: 0.7rem; cursor: pointer; font-weight:700;">CLEAR</button>
-      </div>
-      <div id="snifferLogOutput" class="term-text custom-scrollbar">
-        <div style="opacity: 0.5;">> System Ready. Initializing interface...</div>
-      </div>
-    </div>
   </div>
 {% endblock %}
 

@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
+from wtforms.validators import Optional
 
 class RegistrationForm(FlaskForm):
     """
@@ -66,3 +67,62 @@ class LoginForm(FlaskForm):
     ])
     
     submit = SubmitField('Login')
+    
+    
+class UpdateProfileForm(FlaskForm):
+    """
+    Form to update non-sensitive user profile information.
+    """
+    # Username is read-only to prevent broken links/sessions
+    username = StringField('Username', render_kw={'readonly': True})
+    
+    email = StringField('Email Address', validators=[
+        DataRequired(),
+        Email(message="Please enter a valid email address.")
+    ])
+    
+    full_name = StringField('Full Name', validators=[
+        Optional(),
+        Length(max=100)
+    ])
+    
+    phone_number = StringField('Phone Number', validators=[
+        Optional(),
+        Length(min=10, max=15, message="Please enter a valid phone number.")
+    ])
+    
+    organization = StringField('Organization', validators=[
+        Optional(),
+        Length(max=150)
+    ])
+    
+    job_title = StringField('Job Title', validators=[
+        Optional(),
+        Length(max=100)
+    ])
+    
+    submit_profile = SubmitField('Save Changes')
+
+
+class ChangePasswordForm(FlaskForm):
+    """
+    Separate form specifically for changing the password securely.
+    """
+    current_password = PasswordField('Current Password', validators=[
+        DataRequired()
+    ])
+    
+    new_password = PasswordField('New Password', validators=[
+        DataRequired(),
+        Length(min=8, message="Password must be at least 8 characters long."),
+        # Same regex as registration to ensure consistent security policy
+        Regexp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$',
+               message="Password must contain at least 1 letter, 1 number, and 1 special character.")
+    ])
+    
+    confirm_password = PasswordField('Confirm New Password', validators=[
+        DataRequired(),
+        EqualTo('new_password', message='Passwords must match.')
+    ])
+    
+    submit_security = SubmitField('Update Password')

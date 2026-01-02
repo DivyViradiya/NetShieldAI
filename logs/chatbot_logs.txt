@@ -1224,3 +1224,130 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5
 2025-12-31 17:42:17 - chatbot - INFO - New local chat session started for user 1: 042a25ca-4e20-4031-a50f-75e7c38da2c2
 2025-12-31 17:42:22 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=042a25ca-4e20-4031-a50f-75e7c38da2c2 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002AB8D60F750>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
 2025-12-31 17:42:26 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=042a25ca-4e20-4031-a50f-75e7c38da2c2 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002AB8D791BA0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-12-31 17:55:50 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-31 17:55:55 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-31 17:56:01 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-31 18:24:22 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-31 18:24:33 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-31 18:24:44 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-31 18:33:38 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-31 18:33:44 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-31 18:33:50 - chatbot - INFO - Chatbot Blueprint initialized
+2025-12-31 20:02:31 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=042a25ca-4e20-4031-a50f-75e7c38da2c2 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001CC5F245090>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2026-01-01 10:21:28 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 10:21:55 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 10:22:01 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 10:49:04 - chatbot - INFO - New local chat session started for user 2: cfee23db-3db5-4ec6-9aa9-55fad27845ed
+2026-01-01 10:49:08 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=MeghanshVora_2&session_id=cfee23db-3db5-4ec6-9aa9-55fad27845ed (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000020262EEEAD0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2026-01-01 10:56:55 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 10:57:18 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 10:58:12 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 10:58:19 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 10:58:30 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 10:59:17 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=cfee23db-3db5-4ec6-9aa9-55fad27845ed (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000016708D3EFD0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2026-01-01 11:18:40 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 11:18:48 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 11:18:55 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 13:31:52 - chatbot - INFO - New local chat session started for user 1: dc019e5e-85fa-4b5f-9d5a-3042f2ad4348
+2026-01-01 13:32:02 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=dc019e5e-85fa-4b5f-9d5a-3042f2ad4348 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000018E658DD160>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2026-01-01 16:04:26 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=dc019e5e-85fa-4b5f-9d5a-3042f2ad4348 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000018E336335C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2026-01-01 16:05:50 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=dc019e5e-85fa-4b5f-9d5a-3042f2ad4348 (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000018E76356570>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2026-01-01 16:25:53 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 16:30:45 - chatbot - INFO - Local session ID updated by server to: 3f910051-0dc2-456a-b4a7-c3e9c4096e40
+2026-01-01 16:34:13 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 16:34:19 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 16:34:24 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 16:35:05 - chatbot - INFO - New local chat session started for user 1: 73e10aa9-84de-414a-afac-343bfd552e9c
+2026-01-01 16:35:10 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=73e10aa9-84de-414a-afac-343bfd552e9c (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000023C101CA210>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2026-01-01 16:35:42 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 73e10aa9-84de-414a-afac-343bfd552e9c
+2026-01-01 16:35:49 - chatbot - INFO - Stream updated local session ID to: 3f910051-0dc2-456a-b4a7-c3e9c4096e40
+2026-01-01 16:40:23 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 3f910051-0dc2-456a-b4a7-c3e9c4096e40
+2026-01-01 16:44:00 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 3f910051-0dc2-456a-b4a7-c3e9c4096e40
+2026-01-01 16:44:18 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 3f910051-0dc2-456a-b4a7-c3e9c4096e40
+2026-01-01 17:44:51 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 3f910051-0dc2-456a-b4a7-c3e9c4096e40
+2026-01-01 17:45:33 - chatbot - INFO - New local chat session started for user 1: 9a502625-3322-4977-85fe-cc9f5552f0c5
+2026-01-01 17:55:48 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 17:59:53 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 18:15:51 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 18:19:07 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 18:19:55 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 18:29:05 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 18:29:31 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 18:35:58 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 18:56:59 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 18:57:04 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 18:57:09 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 19:21:14 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 19:22:09 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 19:22:28 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 19:23:24 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 19:23:41 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 21:07:33 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 21:07:44 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 21:07:54 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-01 21:10:03 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 00:43:00 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 00:43:08 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 00:43:15 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 00:49:23 - chatbot - INFO - New local chat session started for user 1: f8e211c8-61c8-46f5-b55b-732b849d2d68
+2026-01-02 00:49:36 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session f8e211c8-61c8-46f5-b55b-732b849d2d68
+2026-01-02 00:49:47 - chatbot - INFO - Stream updated local session ID to: 3f910051-0dc2-456a-b4a7-c3e9c4096e40
+2026-01-02 00:52:18 - chatbot - INFO - New local chat session started for user 1: ec0a9178-abe9-4e90-86db-06ee8e793a39
+2026-01-02 01:01:21 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session ec0a9178-abe9-4e90-86db-06ee8e793a39
+2026-01-02 01:01:29 - chatbot - INFO - Stream updated local session ID to: 86b79672-c701-42f5-9daf-baa0eac0a54c
+2026-01-02 01:02:01 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 86b79672-c701-42f5-9daf-baa0eac0a54c
+2026-01-02 13:00:29 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 13:00:38 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 13:00:44 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 13:02:01 - chatbot - INFO - New local chat session started for user 1: 782331d7-193c-4c13-8645-8b499b44fb44
+2026-01-02 13:23:37 - chatbot - INFO - Sending file to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-02 13:23:56 - chatbot - INFO - Stored session ID from server: b283c369-0eef-48b3-853f-f154a880cafb
+2026-01-02 13:24:52 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 86b79672-c701-42f5-9daf-baa0eac0a54c
+2026-01-02 13:27:04 - chatbot - INFO - Sending file to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-02 13:27:18 - chatbot - INFO - Stored session ID from server: 1220a808-701c-4216-ad7f-9a813d12f461
+2026-01-02 13:27:38 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 1220a808-701c-4216-ad7f-9a813d12f461
+2026-01-02 13:28:23 - chatbot - INFO - New local chat session started for user 1: 724ca267-661f-4780-a981-24ac8176d216
+2026-01-02 14:54:13 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 14:54:21 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 14:54:28 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:01:47 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:01:55 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:02:13 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:02:29 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:18:58 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:27:51 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:28:00 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:28:09 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:29:17 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:30:29 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:30:35 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:30:41 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:33:33 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:35:09 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:36:04 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 16:36:46 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 17:01:00 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 17:01:06 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 17:01:15 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 17:10:08 - chatbot - INFO - Sending nmap report to server proxy (gemini mode) for User DivyViradiya_1
+2026-01-02 17:10:27 - chatbot - INFO - Stored session ID from server: 0d0a3eb9-1e74-44c8-80f7-28e18474403b
+2026-01-02 17:16:31 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 0d0a3eb9-1e74-44c8-80f7-28e18474403b
+2026-01-02 18:12:59 - chatbot - INFO - Sending nmap report to server proxy (gemini mode) for User DivyViradiya_1
+2026-01-02 18:13:21 - chatbot - INFO - Stored session ID from server: 73a61cf1-87ea-4d61-aec0-90fc1b9db1b7
+2026-01-02 18:22:09 - chatbot - INFO - Sending nmap report to server proxy (gemini mode) for User DivyViradiya_1
+2026-01-02 18:22:24 - chatbot - INFO - Stored session ID from server: 14ad734d-414c-4e2e-b067-81dc902b4676
+2026-01-02 18:23:44 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 14ad734d-414c-4e2e-b067-81dc902b4676
+2026-01-02 18:24:04 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 14ad734d-414c-4e2e-b067-81dc902b4676
+2026-01-02 18:24:37 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session 14ad734d-414c-4e2e-b067-81dc902b4676
+2026-01-02 18:28:25 - chatbot - INFO - Sending nmap report to server proxy (gemini mode) for User DivyViradiya_1
+2026-01-02 18:28:41 - chatbot - INFO - Stored session ID from server: 6c5ba598-f325-4fe2-8584-63c321dbba1e
+2026-01-02 18:38:43 - chatbot - INFO - Sending packet_sniffer report to server proxy (gemini mode) for User DivyViradiya_1
+2026-01-02 18:38:50 - chatbot - INFO - Stored session ID from server: 06df61b8-ccfe-4601-95d9-6152dbf5250e
+2026-01-02 19:10:46 - chatbot - INFO - Sending ssl report to server proxy (gemini mode) for User DivyViradiya_1
+2026-01-02 19:11:05 - chatbot - INFO - Stored session ID from server: c5c2ee32-648a-44c9-8a03-4570a1b59b30
+2026-01-02 19:17:21 - chatbot - INFO - Sending zap report to server proxy (gemini mode) for User DivyViradiya_1
+2026-01-02 19:17:42 - chatbot - INFO - Stored session ID from server: a1296ee9-ed32-419e-9d57-763172349f3e
+2026-01-02 19:32:20 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 19:32:30 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 19:32:37 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-02 19:36:15 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyViradiya_1&session_id=a1296ee9-ed32-419e-9d57-763172349f3e (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000023F11FF5E80>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))

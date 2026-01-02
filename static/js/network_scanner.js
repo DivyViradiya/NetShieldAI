@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
         llmAnalysisOptions: document.getElementById('llmAnalysisOptions'),
         downloadReportBtn: document.getElementById('downloadReportBtn'),
         
+        // AI Animation Elements
+        aiProcessingOverlay: document.getElementById('aiProcessingOverlay'),
+        aiProcessingText: document.getElementById('aiProcessingText'),
+
         // Tabs
         portsTabBtn: document.getElementById('portsTabBtn'),
         rawTabBtn: document.getElementById('rawTabBtn'),
@@ -53,14 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let isActionInProgress = false;
     let reportDownloadUrl = null;
 
+    // --- 🔒 CSRF TOKEN RETRIEVAL ---
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
     // --- Helper Functions ---
     
     function toggleSpinner(button, isLoading) {
         if (!button) return;
         const spinner = button.querySelector('.spinner');
-        const icon = button.querySelector('.material-symbols-outlined'); // Select the icon
+        const icon = button.querySelector('.material-symbols-outlined'); 
         
-        // Don't disable dropdown toggles, just main action buttons
         if (button.id !== 'analyzeReportDropdown') {
             button.disabled = isLoading;
         }
@@ -69,34 +75,48 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.add('opacity-70');
             if (button.tagName !== 'A' && button.id !== 'analyzeReportDropdown') button.classList.add('cursor-not-allowed');
             
-            // Swap Icon for Spinner (Hides the icon so button size doesn't change)
             if (icon) icon.classList.add('hidden'); 
             if (spinner) spinner.classList.remove('hidden');
             
         } else {
             button.classList.remove('opacity-70', 'cursor-not-allowed');
             
-            // Swap Spinner back for Icon
             if (spinner) spinner.classList.add('hidden');
             if (icon) icon.classList.remove('hidden');
         }
         
-        // Caret handling for dropdowns (Special Case)
         if (icon && icon.textContent === 'expand_more') {
             icon.style.display = isLoading ? 'none' : 'inline-block';
         }
     }
     
+    // --- UPDATED MINIMAL LOG APPEND FUNCTION ---
     function appendLog(message) {
         if (!elements.logOutput) return;
+
+        // Get Timestamp
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+
+        // Determine Color Style
+        let contentStyle = 'color:#d4d4d8'; // Default grey-white
+        
+        if (message.includes('[!]') || message.includes('[x]')) {
+            contentStyle = 'color:#ef4444'; // Red
+        } else if (message.includes('[✓]') || message.includes('[+]')) {
+            contentStyle = 'color:#10b981'; // Green
+        } else if (message.includes('[*]')) {
+            contentStyle = 'color:#3b82f6'; // Blue
+        }
+
         const line = document.createElement('div');
+        line.className = 'log-line';
+        // Flex layout: Time on left, Content on right
+        line.innerHTML = `
+            <div class="log-time">${timeStr}</div>
+            <div class="log-content" style="${contentStyle}">${message}</div>
+        `;
         
-        if (message.includes('[!]') || message.includes('[x]')) line.className = 'text-[#ef4444]'; // Tailwind Red-500 equivalent
-        else if (message.includes('[✓]') || message.includes('[+]')) line.className = 'text-[#10b981]'; // Tailwind Green-500 equivalent
-        else if (message.includes('[*]')) line.className = 'text-[#3b82f6]'; // Tailwind Blue-500 equivalent
-        else line.className = 'text-[#a1a1aa]';
-        
-        line.textContent = message;
         elements.logOutput.appendChild(line);
         elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
     }
@@ -104,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function setStatus(text, type = 'ready') {
         if (!elements.scanStatus) return;
         
-        // Reset classes
         elements.scanStatus.className = 'status-val font-mono ml-2';
         
         switch (type) {
@@ -133,10 +152,20 @@ document.addEventListener('DOMContentLoaded', () => {
         isActionInProgress = true;
         if (button) toggleSpinner(button, true);
 
+        if (!csrfToken) {
+            appendLog('[x] Error: CSRF Token missing. Refresh page.');
+            isActionInProgress = false;
+            if (button) toggleSpinner(button, false);
+            return null;
+        }
+
         try {
             const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
                 body: JSON.stringify(body),
             });
             const data = await response.json();
@@ -274,43 +303,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function analyzeReport(llmMode) {
         const button = elements.analyzeReportDropdown;
+        const overlay = elements.aiProcessingOverlay;
+        const processingText = elements.aiProcessingText;
+        const llmOptions = elements.llmAnalysisOptions;
+
         if (!button || button.disabled) return;
         
-        setStatus(`Analyzing...`, 'busy');
-        toggleSpinner(button, true); 
+        // 1. UI Setup: Hide Dropdown, Show Overlay
+        if (llmOptions) llmOptions.classList.add('hidden');
+        if (overlay) overlay.classList.remove('hidden');
+        
+        // Update text based on selection
+        if (processingText) {
+            processingText.textContent = llmMode === 'gemini' 
+                ? 'CONTACTING GEMINI...' 
+                : 'LOADING LOCAL MODEL...';
+        }
+
+        setStatus(`Analyzing via ${llmMode}...`, 'busy');
         
         try {
-            // 1. Trigger Proxy
+            // 2. Trigger Proxy
             let response = await fetch(`${API_BASE_URL}/trigger_ai_analysis`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
                 body: JSON.stringify({ llm_mode: llmMode })
             });
             let data = await response.json();
             
             if (data.status !== 'success') throw new Error(data.message);
             
-            // 2. Call Chatbot Proxy
+            // Update text for the second phase
+            if (processingText) processingText.textContent = 'SYNTHESIZING REPORT...';
+
+            // 3. Call Chatbot Proxy
             response = await fetch(`${CHATBOT_REDIRECT_URL}/scanner_analysis`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
                 body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type })
             });
 
             data = await response.json();
 
             if (response.ok && data.status === 'success') {
+                if (processingText) processingText.textContent = 'REDIRECTING...';
                 appendLog(`[✓] Analysis complete. Redirecting...`);
-                window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                
+                // Small delay to let user read "Redirecting"
+                setTimeout(() => {
+                    window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                }, 800);
             } else {
                 throw new Error(data.message);
             }
         } catch (error) {
             appendLog(`[x] AI Analysis Error: ${error.message}`);
             setStatus('Analysis failed', 'error');
-        } finally {
-            toggleSpinner(button, false);
-        }
+            
+            // Hide overlay on error so user can try again
+            if (overlay) overlay.classList.add('hidden');
+        } 
     }
 
     async function initiateScan(protocolType, scanType, button) {
@@ -367,21 +425,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupEventListeners() {
         if(elements.detectIpBtn) elements.detectIpBtn.addEventListener('click', fetchAndDisplayLocalIp);
 
-        // Scans
         if(elements.scanTcpBtn) elements.scanTcpBtn.addEventListener('click', () => initiateScan('TCP', 'default', elements.scanTcpBtn));
         if(elements.scanVulnBtn) elements.scanVulnBtn.addEventListener('click', () => initiateScan('TCP', 'vuln', elements.scanVulnBtn));
 
-        // Tabs
         elements.portsTabBtn.addEventListener('click', () => switchTab('ports'));
         elements.rawTabBtn.addEventListener('click', () => switchTab('raw'));
 
-        // Advanced Options Toggle
         if(elements.advancedScanToggle && elements.advancedScanOptions) {
             elements.advancedScanToggle.addEventListener('click', (e) => {
-                e.stopPropagation(); // Stop click from reaching document
+                e.stopPropagation(); 
                 elements.advancedScanOptions.classList.toggle('hidden');
                 
-                // Add event listener to document to close when clicking outside
                 const closeMenu = (docEvent) => {
                     if (!elements.advancedScanOptions.contains(docEvent.target) && docEvent.target !== elements.advancedScanToggle) {
                         elements.advancedScanOptions.classList.add('hidden');
@@ -392,7 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Advanced Options Click inside Menu (UDP/OS Scan etc)
         if(elements.advancedScanOptions) {
             elements.advancedScanOptions.addEventListener('click', (e) => {
                 const btn = e.target.closest('button[data-scan-type]');
@@ -405,8 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Admin Actions (Right Panel)
-        // Verify Ports
         if(elements.verifyPortsBtn) {
             elements.verifyPortsBtn.addEventListener('click', async () => {
                 const targetIp = elements.targetIpInput.value.trim();
@@ -419,7 +470,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Block Ports
         if(elements.blockPortsBtn) {
             elements.blockPortsBtn.addEventListener('click', async () => {
                 if(confirm("Are you sure you want to attempt blocking ALL currently detected open ports? This requires admin privileges.")) {
@@ -429,7 +479,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Whitelist Actions
         if(elements.updateWhitelistBtn) {
             elements.updateWhitelistBtn.addEventListener('click', async () => {
                 const ports = elements.whitelistPortsInput.value.trim();
@@ -439,17 +488,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        // Clear Whitelist
         if(elements.clearWhitelistBtn) {
             elements.clearWhitelistBtn.addEventListener('click', async () => {
                  if(await apiPost('/clear_whitelist', {}, elements.clearWhitelistBtn)) {
-                     elements.whitelistPortsInput.value = '';
-                     appendLog('[*] Whitelist cleared.');
+                      elements.whitelistPortsInput.value = '';
+                      appendLog('[*] Whitelist cleared.');
                  }
             });
         }
 
-        // Logs
         if(elements.clearLogBtn) {
             elements.clearLogBtn.addEventListener('click', () => {
                 elements.logOutput.innerHTML = '';
@@ -457,30 +504,25 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Refresh with Visual Feedback
         if(elements.refreshResultsBtn) {
             elements.refreshResultsBtn.addEventListener('click', () => {
                 setStatus('Refreshing...', 'busy');
-                toggleSpinner(elements.refreshResultsBtn, true); // Spin the button
+                toggleSpinner(elements.refreshResultsBtn, true); 
 
-                // 1. VISUAL FEEDBACK: Force Table to "Loading" state immediately
                 elements.openPortsTableBody.innerHTML = `
                     <tr><td colspan="4" style="text-align:center; padding: 3rem; color: #a1a1aa;">
                         <span class="spinner inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
                         Refreshing data...
                     </td></tr>`;
                 
-                // 2. VISUAL FEEDBACK: Force Raw Log to "Loading"
                 elements.resultsContent.textContent = '// Refreshing log data...';
 
-                // 3. Perform Fetches
                 Promise.all([
                     fetchAndDisplayOpenPorts(),
                     loadScanResults(lastScanType),
                     checkReportAvailability()
                 ]).then(() => {
                     setStatus('System Ready', 'success');
-                    // Small delay to ensure the user sees the refresh happen if it's too fast
                     setTimeout(() => toggleSpinner(elements.refreshResultsBtn, false), 500);
                 }).catch((err) => {
                     console.error(err);
@@ -490,7 +532,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Copy Raw
         if(elements.copyResultsBtn) {
             elements.copyResultsBtn.addEventListener('click', () => {
                 const text = elements.resultsContent.textContent;
@@ -502,7 +543,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Download PDF
         if (elements.downloadReportBtn) {
             elements.downloadReportBtn.addEventListener('click', () => {
                 if (reportDownloadUrl) {
@@ -512,14 +552,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        // AI Dropdown Toggle
         if(elements.analyzeReportDropdown) {
             elements.analyzeReportDropdown.addEventListener('click', (e) => {
                 if (!elements.analyzeReportDropdown.disabled) {
                     e.stopPropagation();
                     elements.llmAnalysisOptions.classList.toggle('hidden');
                     
-                     const closeAiMenu = (docEvent) => {
+                      const closeAiMenu = (docEvent) => {
                         if (!elements.llmAnalysisOptions.contains(docEvent.target) && docEvent.target !== elements.analyzeReportDropdown) {
                             elements.llmAnalysisOptions.classList.add('hidden');
                             document.removeEventListener('click', closeAiMenu);
@@ -530,7 +569,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        // AI Selection
         if(elements.llmAnalysisOptions) {
             elements.llmAnalysisOptions.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -550,13 +588,13 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeLogStream();
         switchTab('ports');
         
-        // Initial Fetch
         fetchAndDisplayLocalIp();
         fetchAndDisplayWhitelist();
         fetchAndDisplayOpenPorts();
         checkReportAvailability();
         
-        appendLog('System Initialized... Waiting for input...');
+        // Wait for DOM
+        setTimeout(() => appendLog('System Ready. Waiting for target...'), 100);
     }
 
     init();

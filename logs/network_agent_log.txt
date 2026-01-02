@@ -1,127 +1,85 @@
-[2025-12-29 22:16:44] [*] Log file cleared.
-[2025-12-29 22:16:50] [*] Local IP requested: 192.168.29.48
-[2025-12-29 22:16:51] [*] Local IP requested: 192.168.29.48
-[2025-12-29 22:21:50] [*] Local IP requested: 192.168.29.48
-[2025-12-29 22:21:50] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-29 22:23:47] [*] Local IP requested: 192.168.29.48
-[2025-12-29 22:23:47] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-29 22:23:59] [*] Local IP requested: 192.168.29.48
-[2025-12-29 22:23:59] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-29 22:29:32] [*] Local IP requested: 192.168.29.48
-[2025-12-29 22:29:32] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-29 22:41:41] [*] Local IP requested: 192.168.29.48
-[2025-12-29 22:41:41] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-29 22:45:49] [*] Local IP requested: 192.168.29.48
-[2025-12-29 22:45:49] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 10:08:44] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 10:08:44] [*] Local IP requested: 192.168.29.48
-[2025-12-30 10:19:01] [*] Local IP requested: 192.168.29.48
-[2025-12-30 10:19:01] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:03:09] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:03:09] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:05:19] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:05:21] [*] Starting DEFAULT TCP scan for 192.168.29.1 (User 1)...
-[2025-12-30 11:05:21] [+] Running TCP (Top 1000) scan on 192.168.29.1...
-[2025-12-30 11:05:21] [*] Executing: nmap -T4 -sS --top-ports 1000 -sV -Pn -oG D:\NetShieldAI\Services\results\1\network_scanner\scan_result_tcp.txt 192.168.29.1
-[2025-12-30 11:06:38] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\1\network_scanner\scan_result_tcp.txt
-[2025-12-30 11:06:38] [+] Processing results for PDF report...
-[2025-12-30 11:06:39] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\1\network_scanner\nmap_report.json
-[2025-12-30 11:06:39] [*] Scan complete. Generating PDF report...
-[2025-12-30 11:06:44] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\1\network_scanner\nmap_report.pdf
-[2025-12-30 11:07:52] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:07:52] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:10:10] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:10:10] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:15:41] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:15:41] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:15:47] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:26:47] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:26:47] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:27:40] [*] Verifying all detected port status on 192.168.29.1...
-[2025-12-30 11:27:40] [!] TCP Port 80 (Service: http) is still OPEN.
-[2025-12-30 11:27:40] [!] TCP Port 443 (Service: ssl|http) is still OPEN.
-[2025-12-30 11:27:40] [!] TCP Port 1900 (Service: upnp) is still OPEN.
-[2025-12-30 11:27:40] [!] TCP Port 7443 (Service: ssl|oracleas-https?) is still OPEN.
-[2025-12-30 11:27:40] [!] TCP Port 8080 (Service: http-proxy) is still OPEN.
-[2025-12-30 11:27:40] [!] TCP Port 8443 (Service: ssl|https-alt?) is still OPEN.
-[2025-12-30 11:27:40] [+] Port verification process completed.
-[2025-12-30 11:29:13] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:29:13] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:29:17] [*] Starting OS TCP scan for 192.168.29.1 (User 1)...
-[2025-12-30 11:29:17] [+] Running OS scan on 192.168.29.1...
-[2025-12-30 11:29:17] [*] Executing: nmap -T4 -O --osscan-limit -oG D:\NetShieldAI\Services\results\1\network_scanner\scan_result_os.txt 192.168.29.1
-[2025-12-30 11:29:24] [+] OS scan complete. Results saved to D:\NetShieldAI\Services\results\1\network_scanner\scan_result_os.txt
-[2025-12-30 11:29:25] [+] Processing results for PDF report...
-[2025-12-30 11:29:25] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\1\network_scanner\nmap_report.json
-[2025-12-30 11:29:25] [*] Scan complete. Generating PDF report...
-[2025-12-30 11:29:27] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\1\network_scanner\nmap_report.pdf
-[2025-12-30 11:30:33] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:30:33] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:36:51] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:36:51] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:37:01] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:37:01] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:40:09] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:40:09] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:41:13] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:41:13] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:42:10] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:42:10] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:43:09] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:43:09] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:50:03] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:50:03] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:50:25] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:50:25] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 11:51:38] [*] Local IP requested: 192.168.29.48
-[2025-12-30 11:51:38] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-30 20:59:51] [*] Local IP requested: 192.168.29.48
-[2025-12-30 20:59:51] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:01:56] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:01:56] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:02:36] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:02:36] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:06:05] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:06:05] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:07:45] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:07:45] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:08:35] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:08:35] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:10:34] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:10:34] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:10:46] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:10:46] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:11:13] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:11:13] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:11:23] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:11:23] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:12:16] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:12:16] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:13:56] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:13:56] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 10:30:15] [*] Local IP requested: 192.168.29.48
-[2025-12-31 10:30:15] [*] Whitelist file 'D:\NetShieldAI\Services\results\1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 14:39:09] [*] Local IP requested: 192.168.29.48
-[2025-12-31 14:39:09] [*] Whitelist file 'D:\NetShieldAI\Services\results\Admin_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 14:39:10] [*] Local IP requested: 192.168.29.48
-[2025-12-31 14:39:12] [*] Starting DEFAULT TCP scan for 192.168.29.1 (User Admin_1)...
-[2025-12-31 14:39:12] [+] Running TCP (Top 1000) scan on 192.168.29.1...
-[2025-12-31 14:39:12] [*] Executing: nmap -T4 -sS --top-ports 1000 -sV -Pn -oG D:\NetShieldAI\Services\results\Admin_1\network_scanner\scan_result_tcp.txt 192.168.29.1
-[2025-12-31 14:40:34] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\Admin_1\network_scanner\scan_result_tcp.txt
-[2025-12-31 14:40:34] [+] Processing results for PDF report...
-[2025-12-31 14:40:35] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\Admin_1\network_scanner\nmap_report.json
-[2025-12-31 14:40:35] [*] Scan complete. Generating PDF report...
-[2025-12-31 14:40:38] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\Admin_1\network_scanner\nmap_report.pdf
-[2025-12-31 14:44:04] [*] Local IP requested: 192.168.29.48
-[2025-12-31 14:44:04] [*] Whitelist file 'D:\NetShieldAI\Services\results\Admin_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
-[2025-12-31 14:44:06] [*] Starting DEFAULT TCP scan for 192.168.29.1 (User Admin_1)...
-[2025-12-31 14:44:06] [+] Running TCP (Top 1000) scan on 192.168.29.1...
-[2025-12-31 14:44:06] [*] Executing: nmap -T4 -sS --top-ports 1000 -sV -Pn -oG D:\NetShieldAI\Services\results\Admin_1\network_scanner\scan_result_tcp.txt 192.168.29.1
-[2025-12-31 14:44:57] [*] Local IP requested: 192.168.29.48
-[2025-12-31 14:45:21] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\Admin_1\network_scanner\scan_result_tcp.txt
-[2025-12-31 14:45:22] [+] Processing results for PDF report...
-[2025-12-31 14:45:22] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\Admin_1\network_scanner\nmap_report.json
-[2025-12-31 14:45:22] [*] Scan complete. Generating PDF report...
-[2025-12-31 14:45:25] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\Admin_1\network_scanner\nmap_report.pdf
-[2025-12-31 14:51:53] [*] Local IP requested: 192.168.29.48
-[2025-12-31 14:51:53] [*] Whitelist file 'D:\NetShieldAI\Services\results\Admin_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-01 15:38:43] [*] Log file cleared.
+[2026-01-01 15:53:30] [*] Local IP requested: 192.168.29.48
+[2026-01-01 15:53:30] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 00:44:43] [*] Local IP requested: 192.168.29.48
+[2026-01-02 00:44:43] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 00:44:56] [*] Starting DEFAULT TCP scan for 192.168.29.1 (User DivyaViradiya_1)...
+[2026-01-02 00:44:56] [+] Running TCP (Top 1000) scan on 192.168.29.1...
+[2026-01-02 00:44:56] [*] Executing: nmap -T4 -sS --top-ports 1000 -sV -Pn -oG D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\scan_result_tcp.txt 192.168.29.1
+[2026-01-02 00:46:35] [*] Local IP requested: 192.168.29.48
+[2026-01-02 00:46:35] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 00:46:44] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\scan_result_tcp.txt
+[2026-01-02 00:46:46] [+] Processing results for PDF report...
+[2026-01-02 00:46:47] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-01-02 00:46:47] [*] Scan complete. Generating PDF report...
+[2026-01-02 00:46:55] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-01-02 00:47:36] [*] Local IP requested: 192.168.29.48
+[2026-01-02 00:47:36] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 00:54:02] [*] Local IP requested: 192.168.29.48
+[2026-01-02 00:54:02] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 14:55:28] [*] Local IP requested: 192.168.29.48
+[2026-01-02 14:55:28] [*] Whitelist file 'D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 14:55:31] [*] Starting DEFAULT TCP scan for 192.168.29.1 (User MeghanshVora_2)...
+[2026-01-02 14:55:31] [+] Running TCP (Top 1000) scan on 192.168.29.1...
+[2026-01-02 14:55:31] [*] Executing: nmap -T4 -sS --top-ports 1000 -sV -Pn -oG D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\scan_result_tcp.txt 192.168.29.1
+[2026-01-02 14:57:12] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\scan_result_tcp.txt
+[2026-01-02 14:57:12] [+] Processing results for PDF report...
+[2026-01-02 14:57:13] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\nmap_report.json
+[2026-01-02 14:57:13] [*] Scan complete. Generating PDF report...
+[2026-01-02 14:57:17] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\nmap_report.pdf
+[2026-01-02 15:01:14] [*] Local IP requested: 192.168.29.48
+[2026-01-02 15:01:14] [*] Whitelist file 'D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 15:07:14] [*] Local IP requested: 192.168.29.48
+[2026-01-02 15:07:14] [*] Whitelist file 'D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 15:08:44] [*] Local IP requested: 192.168.29.48
+[2026-01-02 15:08:44] [*] Whitelist file 'D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 15:11:19] [*] Local IP requested: 192.168.29.48
+[2026-01-02 15:11:19] [*] Whitelist file 'D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 15:12:57] [*] Local IP requested: 192.168.29.48
+[2026-01-02 15:12:57] [*] Whitelist file 'D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 15:16:24] [*] Local IP requested: 192.168.29.48
+[2026-01-02 15:16:24] [*] Whitelist file 'D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 15:26:08] [*] Local IP requested: 192.168.29.48
+[2026-01-02 15:26:08] [*] Whitelist file 'D:\NetShieldAI\Services\results\MeghanshVora_2\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 17:02:43] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 17:02:44] [*] Local IP requested: 192.168.29.48
+[2026-01-02 17:02:50] [*] Starting DEFAULT TCP scan for 192.168.29.48 (User DivyViradiya_1)...
+[2026-01-02 17:02:50] [+] Running TCP (Top 1000) scan on 192.168.29.48...
+[2026-01-02 17:02:50] [*] Executing: nmap -T4 -sS --top-ports 1000 -sV -Pn --exclude-ports 5000 -oG D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\scan_result_tcp.txt 192.168.29.48
+[2026-01-02 17:02:58] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\scan_result_tcp.txt
+[2026-01-02 17:02:59] [+] Processing results for PDF report...
+[2026-01-02 17:03:00] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\nmap_report.json
+[2026-01-02 17:03:00] [*] Scan complete. Generating PDF report...
+[2026-01-02 17:03:04] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\nmap_report.pdf
+[2026-01-02 17:09:52] [*] Local IP requested: 192.168.29.48
+[2026-01-02 17:09:52] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 17:09:53] [*] Verifying all detected port status on 192.168.29.1...
+[2026-01-02 17:09:54] [OK] TCP Port 135 (Service: msrpc) is CLOSED.
+[2026-01-02 17:09:55] [OK] TCP Port 139 (Service: netbios-ssn) is CLOSED.
+[2026-01-02 17:09:56] [OK] TCP Port 445 (Service: microsoft-ds?) is CLOSED.
+[2026-01-02 17:09:57] [OK] TCP Port 5100 (Service: http) is CLOSED.
+[2026-01-02 17:09:57] [+] Port verification process completed.
+[2026-01-02 18:12:56] [*] Local IP requested: 192.168.29.48
+[2026-01-02 18:12:56] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 18:19:15] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 18:19:15] [*] Local IP requested: 192.168.29.48
+[2026-01-02 18:21:03] [*] Local IP requested: 192.168.29.48
+[2026-01-02 18:21:04] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 18:28:22] [*] Local IP requested: 192.168.29.48
+[2026-01-02 18:28:22] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 19:24:18] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 19:24:18] [*] Local IP requested: 192.168.29.48
+[2026-01-02 19:34:26] [*] Local IP requested: 192.168.29.48
+[2026-01-02 19:34:26] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 19:34:32] [*] Local IP requested: 192.168.29.48
+[2026-01-02 19:34:32] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 19:37:20] [*] Local IP requested: 192.168.29.48
+[2026-01-02 19:37:20] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-01-02 19:37:22] [*] Starting DEFAULT TCP scan for 192.168.29.1 (User DivyViradiya_1)...
+[2026-01-02 19:37:22] [+] Running TCP (Top 1000) scan on 192.168.29.1...
+[2026-01-02 19:37:22] [*] Executing: nmap -T4 -sS --top-ports 1000 -sV -Pn -oG D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\scan_result_tcp.txt 192.168.29.1
+[2026-01-02 19:38:42] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\scan_result_tcp.txt
+[2026-01-02 19:38:42] [+] Processing results for PDF report...
+[2026-01-02 19:38:43] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\nmap_report.json
+[2026-01-02 19:38:43] [*] Scan complete. Generating PDF report...
+[2026-01-02 19:38:45] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyViradiya_1\network_scanner\nmap_report.pdf

@@ -7,7 +7,10 @@ import os
 from queue import Empty
 import requests
 import uuid
-from werkzeug.utils import secure_filename # <--- Added Import
+from werkzeug.utils import secure_filename 
+
+# [NEW] Import db to update user stats
+from extensions import db
 
 # Import the ssl_scanner module
 from Services import ssl_scanner
@@ -73,6 +76,13 @@ def scan_ssl():
 
     # --- FIX: Capture Composite User ID in the main thread ---
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+
+    # [NEW] Increment Database Counter for Stats
+    try:
+        current_user.scan_count_ssl += 1
+        db.session.commit()
+    except Exception as e:
+        ssl_scanner.log(f"[!] Failed to update user stats: {e}")
 
     # Function to run in a separate thread
     def scan_task():

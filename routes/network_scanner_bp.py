@@ -9,6 +9,9 @@ import requests
 import uuid 
 from werkzeug.utils import secure_filename
 
+# [NEW] Import db to update user stats
+from extensions import db
+
 # Import the updated network_scanner module
 from Services import network_scanner
 # --- Import PDF Generator ---
@@ -101,6 +104,14 @@ def scan_ports():
 
     # --- FIX: Capture Composite User ID in the main thread ---
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+
+    # [NEW] Increment Database Counter for Stats
+    try:
+        current_user.scan_count_nmap += 1
+        db.session.commit()
+    except Exception as e:
+        # Log error but don't stop the scan
+        network_scanner.log(f"[!] Failed to update user stats: {e}")
     
     # --- Threaded Scan Task ---
     def scan_task():

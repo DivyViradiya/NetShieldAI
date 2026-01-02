@@ -3,10 +3,9 @@ import threading
 import json
 import time
 import os
-from flask import render_template
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
-from flask_wtf.csrf import CSRFProtect  # <--- 1. ADD IMPORT
+from flask_wtf.csrf import CSRFProtect
 
 # --- Phase 1 Imports (Extensions & Models) ---
 from extensions import db, login_manager
@@ -19,6 +18,7 @@ from routes.ssl_scanner_bp import ssl_scanner_bp
 from routes.chatbot_bp import chatbot_bp
 from routes.auth_bp import auth_bp
 from routes.packet_sniffer_bp import packet_sniffer_bp
+from routes.dashboard_bp import dashboard_bp  # <--- NEW IMPORT
 
 # --- Import the elevation function ---
 from Services.network_scanner import ensure_admin_privileges
@@ -38,12 +38,11 @@ login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 
 # Initialize Global CSRF Protection
-csrf = CSRFProtect(app)  # <--- 2. INITIALIZE CSRF
+csrf = CSRFProtect(app)
 
 # --- USER LOADER ---
 @login_manager.user_loader
 def load_user(user_id):
-    # Fixed LegacyAPIWarning: changed Query.get() to db.session.get()
     return db.session.get(User, int(user_id)) 
 
 # --- REGISTER BLUEPRINTS ---
@@ -53,6 +52,9 @@ app.register_blueprint(ssl_scanner_bp, url_prefix='/ssl_scanner')
 app.register_blueprint(packet_sniffer_bp, url_prefix='/packet_sniffer')
 app.register_blueprint(chatbot_bp, url_prefix='/chatbot')
 app.register_blueprint(auth_bp)
+
+# Register the new Dashboard Blueprint
+app.register_blueprint(dashboard_bp, url_prefix='/dashboard') # <--- NEW REGISTRATION
 
 @app.route('/')
 def index():
@@ -64,25 +66,6 @@ def tools_hub():
     """Renders the central tools hub."""
     return render_template('tools_hub.html')
 
-@app.route('/dashboard')
-@login_required
-def user_dashboard():
-    # Define base path for this user
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    # Use composite identifier folder
-    folder_name = f"{secure_filename(current_user.username)}_{current_user.id}"
-    user_results_dir = os.path.join(base_dir, 'Services', 'results', folder_name)
-    
-    # Check for existence of reports to toggle buttons on the dashboard
-    reports = {
-        'nmap': os.path.exists(os.path.join(user_results_dir, 'network_scanner', 'nmap_report.pdf')),
-        'zap': os.path.exists(os.path.join(user_results_dir, 'zap_scanner', 'zap_report.pdf')),
-        'ssl': os.path.exists(os.path.join(user_results_dir, 'ssl_scanner', 'ssl_report.pdf')),
-        'sniffer': os.path.exists(os.path.join(user_results_dir, 'packet_sniffer', 'pcap_analysis_report.pdf'))
-    }
-    
-    return render_template('user_dashboard.html', reports=reports)
 
 if __name__ == '__main__':
     ensure_admin_privileges()

@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block extra_css %}
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
   <style>
     /* --- DASHBOARD THEME VARIABLES --- */
     :root {
@@ -12,11 +13,11 @@
       --bg-card: #18181b;
       --bg-input: #27272a;
       --border-subtle: #27272a;
-      --accent-primary: #f43f5e;
+      --accent-primary: #f43f5e; /* Rose/Red for ZAP */
       --accent-blue: #3b82f6;
       --text-main: #ffffff;
       --text-muted: #a1a1aa;
-      --radius-card: 16px;
+      --radius-card: 12px;
       --radius-sm: 8px;
     
       /* Risk Colors */
@@ -24,18 +25,20 @@
       --risk-med: #f97316;
       --risk-low: #eab308;
       --risk-info: #3b82f6;
+      --status-online: #10b981;
     }
     
     /* --- LAYOUT UTILITIES --- */
     .dashboard-wrapper {
       padding: 1.5rem;
-      background-color: var(--bg-app);
+      background-color: transparent;
       min-height: 100vh;
       color: var(--text-main);
       font-family: 'Inter', system-ui, sans-serif;
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      overflow-x: hidden;
     }
     
     /* Helpers */
@@ -92,9 +95,11 @@
     .text-gradient {
       background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
     }
+    
     .badge-pill {
       display: inline-flex;
       align-items: center;
@@ -107,41 +112,123 @@
       font-weight: 600;
       letter-spacing: 0.05em;
       text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-    .btn-ghost {
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      height: 40px;
-      color: #a1a1aa;
-      background: transparent;
-      border: none;
-      border-radius: 8px;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
-    .btn-ghost:hover {
-      color: #ffffff;
-      transform: translateX(-4px);
-      background: rgba(255, 255, 255, 0.05);
     }
     
-    /* --- INPUTS & CONTROLS --- */
-    .dashboard-header {
+    /* --- TOP GRID LAYOUT --- */
+    .scan-overview-grid {
+      display: grid;
+      grid-template-columns: 2fr 3fr;
+      gap: 1.5rem;
+      margin-bottom: 0.5rem;
+      width: 100%;
+    }
+    
+    /* 1. Control Panel Card */
+    .control-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 1.25rem;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.25rem;
+      height: 140px;
+      position: relative;
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
     }
     .search-container {
       position: relative;
       flex: 1;
-      max-width: 600px;
     }
+    
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+    
+    /* 2. Metrics Grid (4 columns) */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      height: 140px;
+      width: 100%;
+    }
+    
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      height: 100%;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    
+    .metric-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .metric-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .metric-value {
+      font-family: 'Fira Code', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      color: white;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .metric-info {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: #71717a;
+      font-weight: 400;
+      position: relative;
+      z-index: 2;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 1200px) {
+      .scan-overview-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .metrics-grid {
+        height: auto;
+        grid-template-columns: 1fr;
+      }
+      .control-card {
+        height: auto;
+      }
+    }
+    
+    /* --- INPUTS --- */
     .search-icon {
       position: absolute;
       left: 12px;
@@ -152,11 +239,12 @@
     }
     .dash-input {
       width: 100%;
-      background: var(--bg-card);
+      background: var(--bg-input);
       border: 1px solid var(--border-subtle);
       color: white;
-      padding: 12px 12px 12px 40px;
+      padding: 0 12px 0 40px;
       border-radius: var(--radius-sm);
+      height: 42px;
       font-size: 0.9rem;
       transition: border-color 0.2s;
     }
@@ -165,10 +253,20 @@
       border-color: var(--accent-primary);
     }
     
+    /* Fix Autofill White Background */
+    .dash-input:-webkit-autofill,
+    .dash-input:-webkit-autofill:hover,
+    .dash-input:-webkit-autofill:focus,
+    .dash-input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px var(--bg-input) inset !important;
+      -webkit-text-fill-color: white !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+    
     /* Buttons */
     .btn-dash {
       height: 42px;
-      padding: 0 1.25rem;
+      padding: 0 1rem;
       border-radius: var(--radius-sm);
       font-weight: 600;
       font-size: 0.85rem;
@@ -180,6 +278,7 @@
       border: 1px solid var(--border-subtle);
       color: var(--text-muted);
       text-decoration: none;
+      white-space: nowrap;
     }
     .btn-dash:hover {
       color: white;
@@ -201,65 +300,17 @@
       background: #e11d48;
       color: white;
     }
-    
     .btn-secondary {
       background: var(--bg-card);
     }
     
-    /* --- METRICS --- */
-    .metrics-row {
-      display: grid;
-      /* FIXED: Changed from 4 to 5 to include the Info card */
-      grid-template-columns: repeat(5, 1fr);
-      gap: 1.5rem;
-    }
-    .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-card);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 120px;
-    }
-    .stat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .stat-title {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-    .stat-value {
-      font-size: 1.75rem;
-      font-weight: 700;
-      color: white;
-      font-family: 'Fira Code', monospace;
-    }
-    
-    /* Risk Indicators */
-    .risk-high {
-      color: var(--risk-high) !important;
-    }
-    .risk-med {
-      color: var(--risk-med) !important;
-    }
-    .risk-low {
-      color: var(--risk-low) !important;
-    }
-    .risk-info {
-      color: var(--risk-info) !important;
-    }
-    
-    /* --- MAIN CONTENT --- */
+    /* --- MAIN CONTENT & TABLES --- */
     .main-grid {
       display: grid;
       grid-template-columns: 1fr 320px;
       gap: 1.5rem;
       height: 600px;
+      width: 100%;
     }
     .dash-panel {
       background: var(--bg-card);
@@ -272,7 +323,9 @@
       max-width: 100%;
     }
     .panel-header {
-      padding: 1.25rem 1.5rem;
+      flex-shrink: 0;
+      height: 60px;
+      padding: 0 1.5rem;
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
       justify-content: space-between;
@@ -284,17 +337,21 @@
       font-weight: 600;
       color: white;
     }
+    
     .panel-content {
-      flex: 1;
-      overflow: auto;
       position: relative;
+      flex: 1;
+      overflow: hidden;
     }
     
     /* Tables */
     .dash-table {
       width: 100%;
       border-collapse: collapse;
+      /* REQUIRED for wrapping: enforces strict widths */
+      table-layout: fixed;
     }
+    
     .dash-table th {
       text-align: left;
       padding: 1rem 1.5rem;
@@ -302,17 +359,31 @@
       text-transform: uppercase;
       color: var(--text-muted);
       border-bottom: 1px solid var(--border-subtle);
-      background: rgba(255, 255, 255, 0.01);
+      background: rgba(30, 30, 35, 1);
       position: sticky;
       top: 0;
+      z-index: 5;
     }
+    
     .dash-table td {
       padding: 1rem 1.5rem;
       color: #e4e4e7;
       border-bottom: 1px solid var(--border-subtle);
       font-size: 0.85rem;
-      vertical-align: top;
+      vertical-align: top; /* Ensures text aligns to top if wrapping occurs */
     }
+    
+    /* Specific wrapping for the URL column (4th column) */
+    .dash-table td:nth-child(4) {
+      word-break: break-all;
+      white-space: normal;
+    }
+    
+    /* Wrapping for Description (5th column) */
+    .dash-table td:nth-child(5) {
+      white-space: normal;
+    }
+    
     .dash-table a {
       color: var(--accent-blue);
       text-decoration: none;
@@ -321,30 +392,215 @@
       text-decoration: underline;
     }
     
-    /* Terminal */
-    .terminal-footer {
-      height: 180px;
-      background: #000;
+    /* --- DROPDOWN ENHANCEMENTS --- */
+    .custom-dropdown {
+      background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-card);
-      padding: 1rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      min-width: 100%;
+      z-index: 999;
+      animation: dropdownSlide 0.2s ease-out forwards;
+      transform-origin: top;
+    }
+    
+    .dropdown-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      border-left: 2px solid transparent;
+    }
+    
+    .dropdown-link:hover {
+      background: #27272a;
+      color: white;
+      border-left-color: var(--accent-primary);
+      padding-left: 16px; /* Slight movement effect */
+    }
+    
+    @keyframes dropdownSlide {
+      from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* --- AI PROCESSING OVERLAY (New Integration) --- */
+    .processing-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(24, 24, 27, 0.95);
+      backdrop-filter: blur(4px);
+      z-index: 50;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
+      border-radius: var(--radius-card);
     }
-    .term-text {
+
+    .ai-pulse-container {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .ai-pulse-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px solid var(--accent-primary);
+      opacity: 0;
+      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+
+    .ai-pulse-ring:nth-child(2) {
+      animation-delay: 0.6s;
+    }
+
+    .processing-text {
       font-family: 'Fira Code', monospace;
-      font-size: 0.8rem;
-      color: #10b981;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: text-fade 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.3); opacity: 0; }
+      40% { opacity: 0.8; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+
+    @keyframes text-fade {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+    
+    /* --- MODERN MINIMAL TERMINAL --- */
+    .terminal-footer {
+      height: 160px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    .terminal-header {
+      padding: 0.5rem 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.02);
+      flex-shrink: 0;
+      height: 40px;
+    }
+    
+    .term-title {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .term-window {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      background: transparent;
       overflow-y: auto;
     }
     
-    /* JSON Raw Content */
+    /* Minimal Scrollbar */
+    .term-window::-webkit-scrollbar {
+      width: 6px;
+    }
+    .term-window::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .term-window::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 4px;
+    }
+    .term-window::-webkit-scrollbar-thumb:hover {
+      background: #3f3f46;
+    }
+    
+    /* Log Layout */
+    .log-line {
+      display: flex;
+      gap: 1.5rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      padding: 1px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    }
+    .log-line:last-child {
+      border-bottom: none;
+    }
+    
+    .log-time {
+      color: #52525b;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      width: 70px;
+      flex-shrink: 0;
+    }
+    
+    .log-content {
+      color: #d4d4d8;
+      word-break: break-all;
+    }
+    
+    /* Back Button */
+    .btn-text-glow {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .btn-text-glow:hover {
+      color: #ffffff !important;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+      transform: translateX(-2px);
+    }
+    
+    /* Misc */
     #resultsContent {
       font-family: 'Fira Code', monospace;
       font-size: 0.75rem;
       color: #a1a1aa;
       padding: 1rem;
       white-space: pre-wrap;
+      overflow: auto;
+      height: 100%;
     }
     
     .spinner {
@@ -365,71 +621,65 @@
 
 {% block content %}
   <div class="dashboard-wrapper fade-in-element">
-    <div class="flex flex-col items-start mb-8">
-      <a href="{{ url_for('tools_hub') }}" class="btn-ghost" style="padding-left: 0; margin-bottom: 1rem;">
+    <div class="flex flex-col items-start mb-6">
+      <a href="{{ url_for('tools_hub') }}" class="btn-text-glow" style="padding-left: 0; margin-bottom: 1rem;">
         <span class="material-symbols-outlined" style="font-size: 1.1rem; margin-right: 8px;">arrow_back</span>
         <span>Security Hub</span>
       </a>
+
       <div>
         <h1 class="text-gradient" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;">Web App Scanner</h1>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px; font-weight: 400;">Automated Vulnerability Assessment & Risk Analysis</p>
       </div>
     </div>
 
-    <div class="dashboard-header">
-      <div class="search-container">
-        <span class="material-symbols-outlined search-icon">link</span>
-        <input type="url" id="targetUrl" class="dash-input" placeholder="Enter Target URL (e.g., https://example.com)..." />
-      </div>
-
-      <button id="startScanBtn" class="btn-dash btn-primary">
-        <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
-        <span class="button-text">Start Scan</span>
-        <span class="spinner hidden"></span>
-      </button>
-
-      <div class="btn-dash btn-secondary" style="cursor: default;">
-        <span>Target: <span id="lastScannedUrlDisplay">---</span></span>
-      </div>
-
-      <div class="btn-dash btn-secondary" style="cursor: default;">
-        <span class="material-symbols-outlined" style="font-size: 1rem; color: #10b981;">fiber_manual_record</span>
-        <span id="scanStatus" style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">READY</span>
-      </div>
-    </div>
-
-    <div class="metrics-row">
-      <div class="stat-card" style="border-left: 4px solid var(--risk-high);">
-        <div class="stat-header">
-          <span class="stat-title">High Risk</span>
+    <div class="scan-overview-grid">
+      <div class="control-card">
+        <div class="input-group">
+          <div class="search-container">
+            <span class="material-symbols-outlined search-icon">link</span>
+            <input type="url" id="targetUrl" class="dash-input" placeholder="Enter URL (e.g. http://example.com)" />
+          </div>
+          <button id="startScanBtn" class="btn-dash btn-primary" style="flex-shrink: 0;">
+            <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+            <span class="button-text">Start Scan</span>
+            <span class="spinner hidden"></span>
+          </button>
         </div>
-        <div id="highAlertsDisplay" class="stat-value risk-high">0</div>
-      </div>
-      <div class="stat-card" style="border-left: 4px solid var(--risk-med);">
-        <div class="stat-header">
-          <span class="stat-title">Medium Risk</span>
-        </div>
-        <div id="mediumAlertsDisplay" class="stat-value risk-med">0</div>
-      </div>
-      <div class="stat-card" style="border-left: 4px solid var(--risk-low);">
-        <div class="stat-header">
-          <span class="stat-title">Low Risk</span>
-        </div>
-        <div id="lowAlertsDisplay" class="stat-value risk-low">0</div>
-      </div>
 
-      <div class="stat-card" style="border-left: 4px solid var(--risk-info);">
-        <div class="stat-header">
-          <span class="stat-title">Info</span>
+        <div class="status-row">
+          <div style="font-size: 0.85rem; color: var(--text-muted); font-family: 'Fira Code', monospace;">
+            Target: <span id="lastScannedUrlDisplay" style="color: white; margin-left: 5px;">---</span>
+          </div>
+          <div class="badge-pill">
+            <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
+            <span id="scanStatus">READY</span>
+          </div>
         </div>
-        <div id="infoAlertsDisplay" class="stat-value risk-info">0</div>
       </div>
-      <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-title">Total Alerts</span>
-          <div style="font-size:0.75rem; color:#3b82f6;"></div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label" style="color: var(--risk-high);">High Risk</span>
+          <span id="highAlertsDisplay" class="metric-value" style="color: var(--risk-high);">0</span>
+          <span class="metric-info">Critical Vulns</span>
         </div>
-        <div id="totalAlertsDisplay" class="stat-value">0</div>
+
+        <div class="metric-card">
+          <span class="metric-label" style="color: var(--risk-med);">Medium Risk</span>
+          <span id="mediumAlertsDisplay" class="metric-value" style="color: var(--risk-med);">0</span>
+          <span class="metric-info">Action Required</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label" style="color: var(--risk-low);">Low Risk</span>
+          <span id="lowAlertsDisplay" class="metric-value" style="color: var(--risk-low);">0</span>
+          <span class="metric-info">Minor Issues</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label" style="color: var(--risk-info);">Info</span>
+          <span id="infoAlertsDisplay" class="metric-value" style="color: var(--risk-info);">0</span>
+          <span class="metric-info">Observational</span>
+          <span id="totalAlertsDisplay" class="hidden">0</span>
+        </div>
       </div>
     </div>
 
@@ -439,27 +689,37 @@
           <span class="panel-title">Vulnerability Findings</span>
         </div>
         <div class="panel-content">
-          <table class="dash-table">
-            <thead>
-              <tr>
-                <th style="width: 10%;">Risk</th>
-                <th style="width: 10%;">Score</th>
-                <th style="width: 25%;">Alert Name</th>
-                <th style="width: 20%;">URL</th>
-                <th style="width: 35%;">Description</th>
-              </tr>
-            </thead>
-            <tbody id="zapAlertsTableBody">
-              <tr>
-                <td colspan="5" style="text-align:center; padding: 3rem; color: #555;">Initiate a scan to view results...</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-auto" style="position: absolute; inset: 0;">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th style="width: 8%;">Risk</th>
+                  <th style="width: 7%;">Score</th>
+                  <th style="width: 20%;">Alert Name</th>
+                  <th style="width: 20%;">URL</th>
+                  <th style="width: 45%;">Description</th>
+                </tr>
+              </thead>
+              <tbody id="zapAlertsTableBody">
+                <tr>
+                  <td colspan="5" style="text-align:center; padding: 3rem; color: #555;">Initiate a scan to view results...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       <div class="flex flex-col gap-6" style="height: 100%; min-height: 0;">
-        <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1.5rem;">
+        <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1.5rem; overflow: visible !important;">
+          
+          <div id="aiProcessingOverlay" class="processing-overlay hidden" style="overflow: hidden; border-radius: var(--radius-card);">
+            <div class="ai-pulse-container">
+              <div class="ai-pulse-ring"></div>
+              <div class="ai-pulse-ring"></div>
+            </div>
+            <span id="aiProcessingText" class="processing-text">INITIALIZING AI...</span>
+          </div>
           <div class="flex justify-between items-center mb-4">
             <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence</h5>
             <button id="refreshResultsBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px;" title="Refresh Results"><span class="material-symbols-outlined" style="font-size:1rem;">refresh</span></button>
@@ -472,9 +732,16 @@
                 <span class="spinner hidden"></span>
                 <span class="material-symbols-outlined">expand_more</span>
               </button>
-              <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-[#333] z-50 rounded-md shadow-xl">
-                <a href="#" data-llm-mode="local" class="block px-4 py-3 text-xs text-gray-400 hover:text-white hover:bg-[#27272a]">Local LLM</a>
-                <a href="#" data-llm-mode="gemini" class="block px-4 py-3 text-xs text-gray-400 hover:text-white hover:bg-[#27272a]">Gemini AI</a>
+
+              <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
+                <a href="#" data-llm-mode="local" class="dropdown-link">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
+                  Local LLM
+                </a>
+                <a href="#" data-llm-mode="gemini" class="dropdown-link">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">auto_awesome</span>
+                  Gemini AI
+                </a>
               </div>
             </div>
 
@@ -488,7 +755,7 @@
         <div class="dash-panel" style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
           <div class="panel-header" style="padding: 1rem 1.5rem;">
             <span class="panel-title" style="font-size: 0.85rem;">Raw JSON</span>
-            <button id="copyResultsBtn" class="text-xs text-gray-500 hover:text-white uppercase font-bold">Copy</button>
+            <button id="copyResultsBtn" class="btn-text-glow" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">Copy</button>
           </div>
           <div class="panel-content" style="background: #000;">
             <div id="resultsContent">// Waiting for scan...</div>
@@ -498,13 +765,15 @@
     </div>
 
     <div class="terminal-footer">
-      <div class="flex justify-between items-center mb-2 pb-2 border-b border-[#333]">
-        <span style="font-size: 0.7rem; text-transform: uppercase; color: #666; font-weight: 700;">Live Terminal Output</span>
-        <button id="clearLogBtn" style="background: none; border: none; color: #666; font-size: 0.7rem; cursor: pointer; font-weight:700;">CLEAR</button>
+      <div class="terminal-header">
+        <div class="term-title">
+          <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--text-muted);">terminal</span>
+          Live Activity
+        </div>
+        <button id="clearLogBtn" style="background: none; border: none; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; transition: color 0.2s;">Clear Output</button>
       </div>
-      <div id="logOutput" class="term-text custom-scrollbar">
-        <div style="opacity: 0.5;">> System Ready. Waiting for target...</div>
-      </div>
+
+      <div id="logOutput" class="term-window"></div>
     </div>
   </div>
 {% endblock %}

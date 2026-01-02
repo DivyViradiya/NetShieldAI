@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Settings - NetShieldAI
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    /* --- INHERITED THEME VARIABLES --- */
+    :root {
+      --neo-bg: #050505;
+      --neo-card: #0a0a0c; /* Darker card bg */
+      --neo-border: #27272a;
+      --neo-accent: #f8fafc;
+      --neo-blue: #3b82f6;
+      --neo-red: #ef4444;
+    }
+    
+    .main-content {
+      max-width: 1400px;
+      padding: 0 4rem;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 60%);
+    }
+
+    /* --- PAGE HEADER --- */
+    .settings-header {
+      padding: 4rem 0 3rem;
+      border-bottom: 1px solid var(--neo-border);
+      margin-bottom: 3rem;
+    }
+
+    .header-tagline {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--neo-blue);
+      margin-bottom: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-tagline::before {
+      content: '//';
+      color: white;
+      opacity: 0.5;
+    }
+
+    .header-title {
+      font-size: 3rem;
+      line-height: 1;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: white;
+    }
+
+    .header-title span {
+      color: #444; /* Dimmed "Settings" text */
+    }
+
+    /* --- LAYOUT GRID --- */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr; /* Profile gets more space */
+      gap: 2rem;
+      padding-bottom: 4rem;
+    }
+
+    /* --- FORM CARDS (Adapted from Neo-Cards) --- */
+    .form-card {
+      background-color: var(--neo-card);
+      border: 1px solid var(--neo-border);
+      border-radius: 8px;
+      padding: 2.5rem;
+      position: relative;
+    }
+
+    /* Card Header */
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .card-icon {
+      color: var(--neo-blue);
+      font-size: 1.5rem;
+    }
+
+    .card-head h2 {
+      font-size: 1.25rem;
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+
+    .card-head p {
+      margin: 0;
+      font-size: 0.8rem;
+      color: #666;
+      display: block;
+      margin-top: 0.25rem;
+    }
+
+    /* --- FORM ELEMENTS --- */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #666;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .neo-input {
+      width: 100%;
+      background: #111; /* Slightly lighter than card */
+      border: 1px solid #333;
+      color: white;
+      padding: 0.9rem 1rem;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .neo-input:focus {
+      outline: none;
+      border-color: var(--neo-blue);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+      background: #151518;
+    }
+
+    .neo-input::placeholder {
+      color: #333;
+    }
+
+    /* Read Only Styling */
+    .neo-input[readonly] {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-style: dashed;
+    }
+
+    /* Security Input Specifics */
+    .security-card .neo-input:focus {
+      border-color: var(--neo-red); /* Red focus for password fields */
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+    }
+
+    /* --- BUTTONS --- */
+    .btn-submit {
+      width: 100%;
+      background: var(--neo-blue);
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+      clip-path: polygon(0 0, 100% 0, 100% 85%, 95% 100%, 0 100%); /* Techy angle */
+    }
+
+    .btn-submit:hover {
+      background: #2563eb;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-submit.security-btn {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #fff;
+    }
+    
+    .btn-submit.security-btn:hover {
+      background: var(--neo-red);
+      border-color: var(--neo-red);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+    }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 1024px) {
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+      .main-content {
+        padding: 0 2rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      .header-title {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content fade-in-element">
+  
+  <div class="settings-header">
+    <div class="header-tagline">System Configuration</div>
+    <h1 class="header-title">Identity <span>& Access</span></h1>
+  </div>
+
+  <div class="settings-grid">
+    
+    <div class="form-card">
+      <div class="card-head">
+        <span class="material-symbols-outlined card-icon">badge</span>
+        <div>
+          <h2>Personal Identity</h2>
+          <p>Public profile and organizational details.</p>
+        </div>
+      </div>
+
+      <form method="POST" action="">
+        {{ profile_form.hidden_tag() }}
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ profile_form.username.label }}</label>
+            {{ profile_form.username(class='neo-input', readonly=true) }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ profile_form.email.label }}</label>
+            {{ profile_form.email(class='neo-input') }}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ profile_form.full_name.label }}</label>
+            {{ profile_form.full_name(class='neo-input') }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ profile_form.phone_number.label }}</label>
+            {{ profile_form.phone_number(class='neo-input') }}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ profile_form.organization.label }}</label>
+            {{ profile_form.organization(class='neo-input') }}
+          </div>
+          <div class="form-group">
+            <label class="form-label">{{ profile_form.job_title.label }}</label>
+            {{ profile_form.job_title(class='neo-input') }}
+          </div>
+        </div>
+
+        {{ profile_form.submit_profile(class='btn-submit', value="SAVE CONFIGURATION") }}
+      </form>
+    </div>
+
+    <div class="form-card security-card">
+      <div class="card-head">
+        <span class="material-symbols-outlined card-icon" style="color: var(--neo-red);">lock_reset</span>
+        <div>
+          <h2>Security Keys</h2>
+          <p>Encryption and authentication.</p>
+        </div>
+      </div>
+
+      <form method="POST" action="">
+        {{ security_form.hidden_tag() }}
+
+        <div class="form-group">
+          <label class="form-label">{{ security_form.current_password.label }}</label>
+          {{ security_form.current_password(class='neo-input', placeholder='••••••••') }}
+        </div>
+
+        <div class="form-group" style="margin-top: 2rem;">
+          <label class="form-label" style="color: var(--neo-blue);">{{ security_form.new_password.label }}</label>
+          {{ security_form.new_password(class='neo-input', placeholder='New Passphrase') }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ security_form.confirm_password.label }}</label>
+          {{ security_form.confirm_password(class='neo-input', placeholder='Confirm Passphrase') }}
+        </div>
+
+        {{ security_form.submit_security(class='btn-submit security-btn', value="UPDATE CREDENTIALS") }}
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

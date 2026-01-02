@@ -8,24 +8,36 @@ class User(UserMixin, db.Model):
     
     # --- Identity & Contact ---
     username = db.Column(db.String(150), unique=True, nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)  # NEW: For verification/recovery
-    full_name = db.Column(db.String(150), nullable=True)            # NEW: For personalization
-    phone_number = db.Column(db.String(20), nullable=True)          # NEW: Future-proof for 2FA
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    full_name = db.Column(db.String(150), nullable=True)
+    phone_number = db.Column(db.String(20), nullable=True)
     
     # --- Professional Context (Useful for Reports) ---
-    organization = db.Column(db.String(150), nullable=True)         # NEW
-    job_title = db.Column(db.String(100), nullable=True)            # NEW
+    organization = db.Column(db.String(150), nullable=True)
+    job_title = db.Column(db.String(100), nullable=True)
     
     # --- Security & Authentication ---
     password_hash = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
-    is_active_account = db.Column(db.Boolean, default=True)         # NEW: To disable users without deleting
+    is_active_account = db.Column(db.Boolean, default=True)
     
     # --- Audit Trail ---
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)    # NEW: Account age
-    last_login_at = db.Column(db.DateTime, nullable=True)           # NEW: Login audit
-    last_login_ip = db.Column(db.String(45), nullable=True)         # NEW: IP tracking (IPv6 length)
-    failed_login_attempts = db.Column(db.Integer, default=0)        # NEW: For brute-force protection
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login_at = db.Column(db.DateTime, nullable=True)
+    last_login_ip = db.Column(db.String(45), nullable=True)
+    failed_login_attempts = db.Column(db.Integer, default=0)
+
+    # --- Activity Metrics ---
+    login_count = db.Column(db.Integer, default=0)
+
+    # --- Usage Statistics (Command Center Data) ---
+    scan_count_nmap = db.Column(db.Integer, default=0)
+    scan_count_zap = db.Column(db.Integer, default=0)
+    scan_count_ssl = db.Column(db.Integer, default=0)
+    scan_count_sniffer = db.Column(db.Integer, default=0)
+    
+    # [NEW] Track AI Analysis Usage
+    scan_count_ai = db.Column(db.Integer, default=0)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -38,4 +50,18 @@ class User(UserMixin, db.Model):
         self.last_login_at = datetime.utcnow()
         self.last_login_ip = ip_address
         self.failed_login_attempts = 0 # Reset counter on success
+        
+        # Increment login counter
+        self.login_count += 1
+        
         db.session.commit()
+
+    @property
+    def total_scans(self):
+        """Helper to calculate total system usage for this user."""
+        # Returns the sum of all specific tool counters including AI
+        return (self.scan_count_nmap + 
+                self.scan_count_zap + 
+                self.scan_count_ssl + 
+                self.scan_count_sniffer +
+                self.scan_count_ai)

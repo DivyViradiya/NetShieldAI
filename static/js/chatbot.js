@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const headers = {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken,
+            'X-Session-ID': currentSessionId, // Send session ID if available
             ...options.headers
         };
         return fetch(url, { ...options, headers });
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isProcessing = false;
     let currentSessionId = null; 
     let sessionToRename = null;
-    let isPinning = false; // PREVENTS DOUBLE CLICK ON PINS
+    let isPinning = false;
 
     // --- 4. Helper Functions ---
 
@@ -188,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Action Listeners
                     item.querySelector('.action-pin').addEventListener('click', (e) => {
                         e.stopPropagation();
-                        // Close menu immediately for better UX
                         menu.classList.remove('show');
                         togglePin(sess.session_id, !sess.is_pinned);
                     });
@@ -222,10 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 6. Session Actions (Optimistic Updates) ---
 
     async function togglePin(sessionId, newStatus) {
-        if (isPinning) return; // Prevent double clicks
+        if (isPinning) return; 
         isPinning = true;
 
-        // 1. Optimistic UI Update: Find the item and toggle visual state immediately
         const item = document.querySelector(`.session-item[data-id="${sessionId}"]`);
         if (item) {
             if (newStatus) {
@@ -238,20 +237,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            // 2. Send Request in Background
             await fetchWithAuth('/chatbot/toggle_pin', {
                 method: 'POST',
                 body: JSON.stringify({ session_id: sessionId, is_pinned: newStatus })
             });
-            // 3. Reload list to ensure correct sorting (pinned items go to top)
-            // We wait a tiny bit to let the user see the change, then sort
             setTimeout(() => loadSessionList(), 300);
-        } catch (e) { 
-            console.error(e);
-            // Revert on error would go here
-        } finally {
-            isPinning = false;
-        }
+        } catch (e) { console.error(e); } 
+        finally { isPinning = false; }
     }
 
     async function deleteSession(sessionId) {
@@ -349,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- FIX: NO RELOAD NEW CHAT ---
     function clearView() {
         currentSessionId = null;
         ui.chatHistory.innerHTML = '';
@@ -363,22 +354,26 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.startBtn.style.background = 'var(--neo-blue)';
         ui.startBtn.querySelector('.btn-text').textContent = "Analyze";
         ui.startBtn.querySelector('.icon').textContent = 'bolt';
-        ui.startBtn.disabled = true; // Ensure disabled on clear
+        ui.startBtn.disabled = true; 
         
-        // Remove active class from list
         document.querySelectorAll('.session-item').forEach(i => i.classList.remove('active'));
-        
         updateContextStatus(false);
     }
 
     // --- 8. Event Listeners ---
 
+    // === CRITICAL FIX: ENABLE BUTTON ON FILE SELECT ===
     ui.fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
             selectedFile = e.target.files[0];
             ui.selectedFilename.textContent = selectedFile.name;
             switchView('config');
             ui.removeFileBtn.style.display = 'flex'; 
+            
+            // Check if default model ('local') is present and enable button immediately
+            if (ui.hiddenModelInput.value) {
+                ui.startBtn.disabled = false;
+            }
         }
     });
 
@@ -390,6 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if(ui.customSelect) {
+        // Ensure default state is set correctly
         ui.hiddenModelInput.value = 'local';
         ui.customTrigger.querySelector('span').textContent = 'NetShield Local';
         ui.customTrigger.style.color = 'white';
@@ -417,6 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modelValue = ui.hiddenModelInput.value;
         if (!selectedFile || !modelValue) return;
 
+        // Visual Feedback for User
         ui.startBtn.disabled = true;
         ui.startBtn.querySelector('.btn-text').textContent = "ANALYZING...";
         ui.startBtn.querySelector('.icon').style.display = 'none';
@@ -467,56 +464,119 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // --- 9. STREAMING MESSAGE LOGIC (WITH VISUAL SMOOTHING) ---
     async function sendMessage() {
         const text = ui.userInput.value.trim();
         if (!text || isProcessing) return;
         
         ui.userInput.value = '';
-        addMessage('user', text);
+        addMessage('user', text); 
         isProcessing = true;
+        
+        // SHOW DOTS IMMEDIATELY
         ui.typingIndicator.style.display = 'block';
         scrollToBottom();
+
+        let aiRow = null;
+        let contentDiv = null;
         
+        // State for Visual Smoothing
+        let fullMarkdownText = ""; // The complete text received from server so far
+        let displayedText = "";    // The text currently shown on screen
+        let isStreamActive = true; // Flag to track if network is still sending
+
         try {
-            const response = await fetchWithAuth('/chatbot/chat', {
+            const response = await fetchWithAuth('/chatbot/chat_stream', {
                 method: 'POST',
                 body: JSON.stringify({ message: text })
             });
-            const data = await response.json();
-            ui.typingIndicator.style.display = 'none';
-            
-            if (data.response) {
-                addMessage('ai', data.response);
-                if (data.session_id && data.session_id !== currentSessionId) {
-                    currentSessionId = data.session_id;
-                    loadSessionList();
+
+            if (!response.body) throw new Error('ReadableStream not supported.');
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+
+            // 1. START THE NETWORK LOOP (Background)
+            const networkLoop = async () => {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value, { stream: true });
+                    fullMarkdownText += chunk; // Just append to buffer, don't render yet
+                    
+                    // Initialize bubble on first chunk
+                    if (!aiRow) {
+                        ui.typingIndicator.style.display = 'none';
+                        aiRow = document.createElement('div');
+                        aiRow.className = 'msg-row ai';
+                        const aiBubble = document.createElement('div');
+                        aiBubble.className = 'msg-bubble';
+                        contentDiv = document.createElement('div');
+                        contentDiv.className = 'markdown-content';
+                        aiBubble.appendChild(contentDiv);
+                        aiRow.appendChild(aiBubble);
+                        ui.chatHistory.appendChild(aiRow);
+                    }
                 }
-            }
-            else addMessage('ai', '_System Error: Null response._');
+                isStreamActive = false; // Network finished
+            };
+
+            networkLoop();
+
+            // 2. START THE RENDER LOOP (Foreground - Typewriter Effect)
+            const typeSpeed = 10; // ms per character (Lower = Faster)
             
+            const renderLoop = () => {
+                // If displayed text is shorter than received text, "type" the next characters
+                if (displayedText.length < fullMarkdownText.length) {
+                    
+                    // Calculate how many chars to add this frame (speed up if behind)
+                    const lag = fullMarkdownText.length - displayedText.length;
+                    const step = lag > 50 ? 5 : (lag > 20 ? 2 : 1); 
+                    
+                    displayedText = fullMarkdownText.substring(0, displayedText.length + step);
+                    
+                    if (contentDiv) {
+                        contentDiv.innerHTML = marked.parse(displayedText);
+                        scrollToBottom();
+                    }
+                }
+
+                // Continue loop if network is active OR we still have text to type
+                if (isStreamActive || displayedText.length < fullMarkdownText.length) {
+                    setTimeout(renderLoop, typeSpeed);
+                } else {
+                    // Final pass to ensure everything matches exactly
+                    if (contentDiv) {
+                        contentDiv.innerHTML = marked.parse(fullMarkdownText);
+                        loadSessionList(); // Refresh sidebar when done
+                        isProcessing = false;
+                        ui.userInput.focus();
+                    }
+                }
+            };
+
+            renderLoop();
+
         } catch (err) {
             ui.typingIndicator.style.display = 'none';
-            addMessage('ai', `_Connection Failure: ${err.message}_`);
-        } finally {
+            if(!aiRow) addMessage('ai', `_Error: ${err.message}_`);
+            else if(contentDiv) contentDiv.innerHTML += `<br><em style="color:red">[Error: ${err.message}]</em>`;
             isProcessing = false;
             ui.userInput.focus();
         }
     }
 
-    // --- NEW CHAT HANDLER (NO RELOAD) ---
     ui.newChatBtn.addEventListener('click', async () => {
         try {
-             // Tell backend to clear the session cookie
              await fetchWithAuth('/chatbot/switch_session', { 
                  method: 'POST', 
                  body: JSON.stringify({ session_id: null }) 
              });
         } catch(e) { console.error(e); }
-        
-        // Reset Frontend State completely WITHOUT reload
         clearView();
         currentSessionId = null;
-        loadSessionList(); // refresh list to remove active highlight
+        loadSessionList();
     });
 
     ui.sendBtn.addEventListener('click', sendMessage);

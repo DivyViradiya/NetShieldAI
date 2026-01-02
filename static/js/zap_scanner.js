@@ -32,15 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsContent = document.getElementById('resultsContent'); 
     const downloadPdfBtn = document.getElementById('downloadReportBtn'); 
     
-    // AI Analysis
+    // AI Analysis & Overlay Elements
     const analyzeReportDropdown = document.getElementById('analyzeReportDropdown');
     const llmAnalysisOptions = document.getElementById('llmAnalysisOptions');
+    const aiProcessingOverlay = document.getElementById('aiProcessingOverlay');
+    const aiProcessingText = document.getElementById('aiProcessingText');
+
+    // --- 🔒 CSRF TOKEN RETRIEVAL ---
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
     // --- Utility Functions ---
 
-    /**
-     * Toggles the loading state of a button.
-     */
     function toggleButtonLoading(button, isLoading) {
         if (!button) return;
         const spinner = button.querySelector('.spinner');
@@ -53,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
             button.style.opacity = '0.7';
             button.style.cursor = 'not-allowed';
             if (spinner) spinner.classList.remove('hidden');
-            // Hide icon only if it's not the dropdown arrow
             if (icon && !icon.textContent.includes('expand_more')) icon.style.display = 'none';
         } else {
             button.style.opacity = '1';
@@ -63,13 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * Updates the status badge color and text.
-     */
     function updateScanStatus(message, type = 'info') {
         scanStatus.textContent = message;
-        
-        // Reset colors
         scanStatus.style.color = '#a1a1aa'; // Default gray
         
         if (type === 'success') scanStatus.style.color = '#10b981'; // Green
@@ -77,24 +73,45 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (type === 'busy') scanStatus.style.color = '#eab308'; // Yellow
     }
 
+    // --- UPDATED LOG APPEND FUNCTION ---
     function appendLog(message) {
-        const div = document.createElement('div');
-        div.textContent = message;
-        div.style.marginBottom = '4px';
-        
-        if (message.includes('[!]') || message.includes('Error')) div.style.color = '#ef4444';
-        else if (message.includes('[+]') || message.includes('[✓]')) div.style.color = '#10b981';
-        else if (message.includes('[*]')) div.style.color = '#3b82f6';
-        else div.style.color = '#a1a1aa';
+        if (!logOutput) return;
 
-        logOutput.appendChild(div);
+        // 1. Get Local Timestamp
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+
+        // 2. Clean Message: Remove backend timestamp [YYYY-MM-DD HH:MM:SS] if present
+        let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
+        cleanedMessage = cleanedMessage.trim();
+
+        // 3. Determine Color Style
+        let contentStyle = 'color:#d4d4d8'; // Default grey-white
+        
+        const lowerMsg = cleanedMessage.toLowerCase();
+        if (cleanedMessage.includes('[!]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {
+            contentStyle = 'color:#ef4444'; // Red
+        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('[✓]') || lowerMsg.includes('success') || lowerMsg.includes('complete')) {
+            contentStyle = 'color:#10b981'; // Green
+        } else if (cleanedMessage.includes('[*]') || lowerMsg.includes('initiating')) {
+            contentStyle = 'color:#3b82f6'; // Blue
+        }
+
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        // Flex layout: Time on left, Content on right
+        line.innerHTML = `
+            <div class="log-time">${timeStr}</div>
+            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+        `;
+        
+        logOutput.appendChild(line);
         logOutput.scrollTop = logOutput.scrollHeight;
     }
 
     // --- Report & Button Management ---
 
     async function checkReportStatus() {
-        // Disable initially
         if (downloadPdfBtn) {
             downloadPdfBtn.disabled = true;
             downloadPdfBtn.style.opacity = '0.5';
@@ -110,22 +127,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
     
             if (data.status === "success" && data.pdf_report) {
-                // Enable PDF Download
                 if (downloadPdfBtn) {
                     downloadPdfBtn.href = data.pdf_report; 
                     downloadPdfBtn.setAttribute('download', 'zap_report.pdf'); 
                     downloadPdfBtn.disabled = false;
                     downloadPdfBtn.style.opacity = '1';
                     
-                    // Remove existing listeners to avoid duplicates, then add click handler
-                    // Note: Since it's an <a> tag or wrapped button, setting href might be enough 
-                    // but if it's a <button>, we need a click handler:
                     if (downloadPdfBtn.tagName === 'BUTTON') {
                         downloadPdfBtn.onclick = () => window.location.href = data.pdf_report;
                     }
                 }
                 
-                // Enable AI Analysis
                 if (analyzeReportDropdown) {
                     analyzeReportDropdown.disabled = false;
                     analyzeReportDropdown.style.opacity = '1';
@@ -136,47 +148,77 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
+    // --- UPDATED AI ANALYSIS LOGIC (With Overlay) ---
     async function analyzeReport(llmMode) {
         if (analyzeReportDropdown.disabled) return;
+        if (!csrfToken) {
+            appendLog('[!] Error: CSRF Token missing. Refresh page.');
+            return;
+        }
+
+        // 1. LOCK UI & SHOW OVERLAY
+        if (llmAnalysisOptions) llmAnalysisOptions.classList.add('hidden');
+        if (aiProcessingOverlay) {
+            aiProcessingOverlay.classList.remove('hidden');
+            if (aiProcessingText) {
+                aiProcessingText.textContent = llmMode === 'gemini' 
+                    ? 'CONTACTING GEMINI...' 
+                    : 'LOADING LOCAL MODEL...';
+            }
+        }
+
+        updateScanStatus(`AI Analysis (${llmMode})...`, 'busy');
         
-        updateScanStatus(`Analyzing with ${llmMode}...`, 'busy');
-        appendLog(`[*] Preparing ZAP PDF for analysis using ${llmMode} LLM...`);
-        
-        toggleButtonLoading(analyzeReportDropdown, true);
+        // Disable dropdown interactions
+        analyzeReportDropdown.disabled = true;
 
         try {
-            // 1. Prepare Analysis
+            // 2. Trigger Context Preparation (Backend loads Scan Data)
             let response = await fetch(ANALYZE_ENDPOINT, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify({ llm_mode: llmMode })
             });
             let data = await response.json();
             
             if (data.status !== 'success') throw new Error(data.message || 'Check failed.');
             
-            // 2. Call Proxy
+            // 3. Synthesize Report (Backend calls LLM)
+            if (aiProcessingText) aiProcessingText.textContent = 'SYNTHESIZING REPORT...';
+
             const CHATBOT_PROXY_URL = `${CHATBOT_REDIRECT_URL}/scanner_analysis`;
             response = await fetch(CHATBOT_PROXY_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type })
             });
 
             data = await response.json();
 
             if (response.ok && data.status === 'success') {
-                appendLog(`[✓] Analysis complete. Redirecting...`);
+                if (aiProcessingText) aiProcessingText.textContent = 'REDIRECTING...';
                 updateScanStatus('Redirecting...', 'success');
-                window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                // Brief delay to let the user see the "Redirecting" state
+                setTimeout(() => {
+                    window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                }, 800);
             } else {
                 throw new Error(data.message || `Analysis failed`);
             }
         } catch (error) {
             appendLog(`[!] AI Analysis Error: ${error.message}`);
             updateScanStatus('Analysis failed', 'error');
+            
+            // Hide overlay to allow retry
+            if (aiProcessingOverlay) aiProcessingOverlay.classList.add('hidden');
+            analyzeReportDropdown.disabled = false;
         } finally {
-            toggleButtonLoading(analyzeReportDropdown, false);
             checkReportStatus(); 
         }
     }
@@ -184,7 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Main Rendering Logic ---
 
     async function fetchAndDisplayResults() {
-        // Clear table with loading state
         zapAlertsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: #555;">Loading results...</td></tr>`;
 
         try {
@@ -194,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.status === 'success' && result.data) {
                 const report = result.data;
                 updateSummaryDisplay(report.summary, report.target_url);
-                populateAlertsTable(report.findings || report.alerts); // Handle 'findings' or 'alerts' key
+                populateAlertsTable(report.findings || report.alerts); 
                 resultsContent.textContent = JSON.stringify(report, null, 2);
             } else {
                 zapAlertsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: #555;">No results available.</td></tr>`;
@@ -210,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSummaryDisplay(summary, targetUrl) {
         if (!summary) return;
         lastScannedUrlDisplay.textContent = targetUrl || 'N/A';
-        // Handle case sensitivity (Summary vs summary) if needed
         totalAlertsDisplay.textContent = summary.Total || summary.total || '0';
         highAlertsDisplay.textContent = summary.High || summary.high || '0';
         mediumAlertsDisplay.textContent = summary.Medium || summary.medium || '0';
@@ -224,19 +264,21 @@ document.addEventListener('DOMContentLoaded', () => {
             findings.forEach(alert => {
                 const row = document.createElement('tr');
                 
-                // Determine Colors based on CSS Variables in your HTML
                 const risk = alert.risk || 'Info';
-                let riskColor = '#3b82f6'; // Default Info
+                let riskColor = '#3b82f6';
                 if (risk === 'High') riskColor = '#ef4444';
                 if (risk === 'Medium') riskColor = '#f97316';
                 if (risk === 'Low') riskColor = '#eab308';
+
+                // Increased truncate limit to 350 to match wider column
+                const description = (alert.description || '').substring(0, 350) + (alert.description?.length > 350 ? '...' : '');
 
                 row.innerHTML = `
                     <td style="color: ${riskColor}; font-weight: 700;">${risk}</td>
                     <td style="font-weight: 600;">${alert.confidence || 'N/A'}</td>
                     <td>${alert.name || alert.alert}</td>
                     <td style="font-family: monospace; font-size: 0.8rem; color: #a1a1aa;">${alert.url || (alert.method + ' ' + alert.path)}</td>
-                    <td style="font-size: 0.8rem; opacity: 0.8;">${(alert.description || '').substring(0, 100)}...</td>
+                    <td style="font-size: 0.8rem; opacity: 0.8;">${description}</td>
                 `;
                 zapAlertsTableBody.appendChild(row);
             });
@@ -254,15 +296,24 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (!csrfToken) {
+            appendLog('[!] Error: CSRF Token missing. Refresh page.');
+            return;
+        }
+
         toggleButtonLoading(startScanBtn, true);
         updateScanStatus(`Scanning...`, 'busy');
+        // Clear log but maintain cursor/layout
         logOutput.innerHTML = ''; 
         appendLog(`> Initiating ZAP Scan on ${targetUrl}...`);
 
         try {
             const response = await fetch(SCAN_ENDPOINT, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify({ target_url: targetUrl })
             });
             const data = await response.json();
@@ -272,7 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateScanStatus('Failed', 'error');
                 toggleButtonLoading(startScanBtn, false);
             }
-            // If success, SSE will handle the completion
         } catch (error) {
             appendLog(`[!] Network error: ${error.message}`);
             toggleButtonLoading(startScanBtn, false);
@@ -298,8 +348,16 @@ document.addEventListener('DOMContentLoaded', () => {
     startScanBtn.addEventListener('click', handleScanButtonClick);
 
     clearLogBtn.addEventListener('click', async () => {
+        if (!csrfToken) {
+            appendLog('[!] Error: CSRF Token missing. Refresh page.');
+            return;
+        }
+        
         logOutput.innerHTML = '';
-        await fetch(CLEAR_LOG_ENDPOINT, { method: 'POST' });
+        await fetch(CLEAR_LOG_ENDPOINT, { 
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken }
+        });
         appendLog("[*] Log cleared.");
     });
 
@@ -340,6 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initialize
+    setTimeout(() => appendLog('System Ready. Initializing ZAP Scanner interface...'), 100);
     checkReportStatus();
     fetchAndDisplayResults();
     setupLogStream();

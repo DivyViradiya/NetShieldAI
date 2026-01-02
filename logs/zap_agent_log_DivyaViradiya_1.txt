@@ -1,0 +1,70 @@
+--- Log cleared at 2025-12-31 19:21:55 ---
+[2026-01-01 15:56:45] [*] Starting ZAP Quick Scan for http://testphp.vulnweb.com (User: DivyaViradiya_1)...
+[2026-01-01 15:56:45] Checking for and terminating existing ZAP processes...
+[2026-01-01 15:56:47] No running ZAP processes found.
+[2026-01-01 15:56:47] 
+--- Starting ZAP Quick Scan ---
+[2026-01-01 15:56:47] Target: http://testphp.vulnweb.com
+[2026-01-01 15:56:47] Report will be saved to: D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-01-01 15:56:47] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -quickurl http://testphp.vulnweb.com -quickout D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml -quickprogress
+[2026-01-01 15:56:47] --- ZAP Output Stream Started ---
+[2026-01-01 15:56:47] 
+[2026-01-01 15:56:47] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-01-01 15:56:47] 
+[2026-01-01 15:56:47] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.16.1.jar -cmd -quickurl http://testphp.vulnweb.com -quickout D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml -quickprogress
+[2026-01-01 15:56:57] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-01-01 15:56:57] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Users/Divy/ZAP/plugin/network-beta-0.23.0.zap)
+[2026-01-01 15:56:57] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-01-01 15:56:57] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-01-01 15:56:59] Accessing URL
+[2026-01-01 15:57:19] Failed to attack the URL: Connect to http://testphp.vulnweb.com:80 [testphp.vulnweb.com/44.228.249.3] failed: Connect timed out
+[2026-01-01 15:57:20] Writing results to D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-01-01 15:57:27] --- End of ZAP Output ---
+[2026-01-01 15:57:27] Scan completed successfully!
+[2026-01-01 15:57:27] [+] ZAP scan command finished. Parsing...
+[2026-01-01 15:57:27] Parsing ZAP report: D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-01-01 15:57:27] Report parsed and enriched successfully.
+[2026-01-01 15:57:27] JSON report saved to: D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.json
+[2026-01-01 15:57:27] [+] JSON report saved.
+[2026-01-01 15:57:27] [*] Generating PDF report...
+[2026-01-01 15:57:53] [+] PDF generated successfully.
+[2026-01-01 15:57:53] [*] Scan, analysis, and prediction complete.
+[2026-01-01 15:58:04] [*] Starting ZAP Quick Scan for http://navigateaif.com (User: DivyaViradiya_1)...
+[2026-01-01 15:58:04] Checking for and terminating existing ZAP processes...
+[2026-01-01 15:58:06] No running ZAP processes found.
+[2026-01-01 15:58:06] 
+--- Starting ZAP Quick Scan ---
+[2026-01-01 15:58:06] Target: http://navigateaif.com
+[2026-01-01 15:58:06] Report will be saved to: D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-01-01 15:58:06] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -quickurl http://navigateaif.com -quickout D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml -quickprogress
+[2026-01-01 15:58:06] --- ZAP Output Stream Started ---
+[2026-01-01 15:58:06] 
+[2026-01-01 15:58:06] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-01-01 15:58:06] 
+[2026-01-01 15:58:06] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.16.1.jar -cmd -quickurl http://navigateaif.com -quickout D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml -quickprogress
+[2026-01-01 15:58:11] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-01-01 15:58:11] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Users/Divy/ZAP/plugin/network-beta-0.23.0.zap)
+[2026-01-01 15:58:11] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-01-01 15:58:11] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-01-01 15:58:12] Accessing URL
+[2026-01-01 15:58:12] Using traditional spider
+[2026-01-01 15:58:16] Active scanning
+[2026-01-01 15:58:17] [=======             ] 38% |
+[2026-01-01 15:58:17] [=======             ] 38% /
+[2026-01-01 15:58:18] [=============       ] 65% -
+[2026-01-01 15:58:18] [=================   ] 86% \
+[2026-01-01 15:58:19] [==================  ] 93% |
+[2026-01-01 15:58:19] [==================  ] 93% /
+[2026-01-01 15:58:19] [====================] 100%
+[2026-01-01 15:58:19] Attack complete
+[2026-01-01 15:58:20] Writing results to D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-01-01 15:58:28] --- End of ZAP Output ---
+[2026-01-01 15:58:28] Scan completed successfully!
+[2026-01-01 15:58:28] [+] ZAP scan command finished. Parsing...
+[2026-01-01 15:58:28] Parsing ZAP report: D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-01-01 15:58:28] Report parsed and enriched successfully.
+[2026-01-01 15:58:28] JSON report saved to: D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.json
+[2026-01-01 15:58:28] [+] JSON report saved.
+[2026-01-01 15:58:28] [*] Generating PDF report...
+[2026-01-01 15:58:30] [+] PDF generated successfully.
+[2026-01-01 15:58:30] [*] Scan, analysis, and prediction complete.

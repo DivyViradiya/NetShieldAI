@@ -1,43 +1,497 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  NetShieldAI - Admin Panel
+  NetShieldAI - Admin Overwatch
+{% endblock %}
+
+{% block extra_css %}
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* --- THEME VARIABLES --- */
+    :root {
+      --neo-bg: #050505;
+      --neo-card: #0a0a0c;
+      --neo-card-hover: #0e0e11;
+      --neo-border: #27272a;
+      --neo-text-main: #ffffff;
+      --neo-text-muted: #9ca3af;
+      --neo-blue: #3b82f6;
+      --neo-red: #f43f5e;
+      --neo-green: #10b981;
+      --neo-amber: #f59e0b;
+      --neo-purple: #8b5cf6;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    
+    body {
+      background-color: var(--neo-bg);
+      color: var(--neo-text-main);
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    
+    .dashboard-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    /* --- HEADER & HUD --- */
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--neo-border);
+      padding-bottom: 1.5rem;
+    }
+    
+    .hud-title h1 {
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+    .hud-title span {
+      color: var(--neo-red); /* Red for Admin Context */
+    }
+    
+    .admin-chip {
+      background: rgba(244, 63, 94, 0.1);
+      border: 1px solid var(--neo-red);
+      color: var(--neo-red);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    /* --- METRIC CARDS --- */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .hud-card {
+      background: var(--neo-card);
+      border: 1px solid var(--neo-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .hud-card:hover {
+      border-color: #444;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+    
+    .hud-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neo-red), transparent);
+      opacity: 0.5;
+    }
+    
+    .metric-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--neo-text-muted);
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .metric-value {
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.25rem;
+    }
+    
+    .metric-sub {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    
+    /* --- MAIN GRID --- */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    
+    .panel {
+      background: var(--neo-card);
+      border: 1px solid var(--neo-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #1a1a1a;
+      padding-bottom: 1rem;
+    }
+    
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    /* --- USER TABLE --- */
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    .mono-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .mono-table th {
+        text-align: left;
+        color: var(--neo-text-muted);
+        font-weight: 600;
+        padding: 0.75rem 0.5rem;
+        border-bottom: 1px solid var(--neo-border);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+    .mono-table td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid #1a1a1a;
+      color: #e4e4e7;
+      font-family: var(--font-mono);
+      vertical-align: middle;
+    }
+    .mono-table tr:last-child td {
+      border-bottom: none;
+    }
+    .mono-table tr:hover td {
+        background: rgba(255,255,255,0.02);
+    }
+    
+    /* --- BADGES & BUTTONS --- */
+    .status-badge {
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+    .status-active { color: var(--neo-green); border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); }
+    .status-suspended { color: var(--neo-red); border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.1); }
+    
+    .role-badge {
+        font-size: 0.7rem;
+        color: var(--neo-blue);
+    }
+    .role-admin { color: var(--neo-purple); font-weight: bold; }
+
+    .action-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .action-btn {
+        background: transparent;
+        border: 1px solid #333;
+        color: #666;
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .action-btn:hover { color: white; border-color: white; }
+    
+    .btn-suspend:hover { border-color: var(--neo-amber); color: var(--neo-amber); }
+    .btn-delete:hover { border-color: var(--neo-red); color: var(--neo-red); }
+    .btn-promote:hover { border-color: var(--neo-purple); color: var(--neo-purple); }
+
+    /* --- CHART CONTAINER --- */
+    .chart-wrapper {
+        position: relative;
+        height: 250px;
+        width: 100%;
+    }
+    
+    .power-user-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .power-user-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #1a1a1a;
+        font-size: 0.85rem;
+    }
+    .power-user-item:last-child { border-bottom: none; }
+    .power-user-rank { color: var(--neo-text-muted); width: 20px; }
+    .power-user-name { font-family: var(--font-mono); color: white; }
+    .power-user-score { color: var(--neo-blue); font-weight: bold; }
+
+  </style>
 {% endblock %}
 
 {% block content %}
-  <div class="max-w-6xl mx-auto p-8">
-    <div class="mb-8 border-b border-[#27272a] pb-4">
-      <h1 class="text-3xl font-bold text-white uppercase">System Administration</h1>
-      <p class="text-[#94a3b8] mt-2">Manage user access and system privileges.</p>
+  <div class="dashboard-container fade-in-element">
+    
+    <div class="hud-header">
+      <div class="hud-title">
+        <h1>Admin <span>Overwatch</span></h1>
+        <div style="font-size: 0.8rem; color: var(--neo-text-muted);">System Administration & Telemetry</div>
+      </div>
+      <div class="hud-actions">
+        <div class="admin-chip">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">security</span>
+          <span>Root Access</span>
+        </div>
+      </div>
     </div>
 
-    <div class="bg-[#0f0f11] border border-[#27272a] rounded-lg overflow-hidden">
-      <table class="w-full text-left">
-        <thead class="bg-[#1a1a1a]">
-          <tr>
-            <th class="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider">User ID</th>
-            <th class="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider">Username</th>
-            <th class="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider">Role</th>
-            <th class="p-4 text-xs font-bold text-[#64748b] uppercase tracking-wider">Status</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-[#27272a]">
-          {% for user in users %}
-            <tr class="hover:bg-[#161618] transition-colors">
-              <td class="p-4 text-white font-mono">{{ user.id }}</td>
-              <td class="p-4 text-[#cbd5e1]">{{ user.username }}</td>
-              <td class="p-4">
-                {% if user.is_admin %}
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-red-900/30 text-red-400 border border-red-900/50">ADMIN</span>
-                {% else %}
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium bg-blue-900/30 text-blue-400 border border-blue-900/50">OPERATOR</span>
-                {% endif %}
-              </td>
-              <td class="p-4 text-green-500 text-xs font-bold">ACTIVE</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="metrics-row">
+      <div class="hud-card">
+        <div class="metric-label">
+          Total Operators <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-blue);">group</span>
+        </div>
+        <div class="metric-value">{{ total_users }}</div>
+        <div class="metric-sub">Registered Accounts</div>
+      </div>
+      <div class="hud-card">
+        <div class="metric-label">
+          Active Sessions <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-green);">person_check</span>
+        </div>
+        <div class="metric-value">{{ active_users }}</div>
+        <div class="metric-sub">Online / Enabled</div>
+      </div>
+      <div class="hud-card">
+        <div class="metric-label">
+          Total Scans <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-amber);">radar</span>
+        </div>
+        <div class="metric-value">{{ total_system_scans }}</div>
+        <div class="metric-sub">Global Executions</div>
+      </div>
+      <div class="hud-card">
+        <div class="metric-label">
+          AI Queries <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-purple);">psychology</span>
+        </div>
+        <div class="metric-value">{{ tool_usage_stats['AI Analyst'] }}</div>
+        <div class="metric-sub">Neural Processing</div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      
+      <div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="material-symbols-outlined">dns</span> Operator Database
+            </div>
+            <div style="font-size:0.8rem; color: #555;">{{ users|length }} Records Found</div>
+          </div>
+          
+          <div class="table-container">
+            <table class="mono-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">ID</th>
+                  <th>Identity</th>
+                  <th>Role</th>
+                  <th>Context</th>
+                  <th>Scans</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Controls</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td style="color: #666;">#{{ user.id }}</td>
+                  <td>
+                    <div style="font-weight:bold; color:white;">{{ user.username }}</div>
+                    <div style="font-size:0.75rem; color:#666;">{{ user.email }}</div>
+                  </td>
+                  <td>
+                    {% if user.is_admin %}
+                      <span class="role-badge role-admin">ADMINISTRATOR</span>
+                    {% else %}
+                      <span class="role-badge">USER</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if user.organization %}
+                      <div style="font-size:0.75rem;">{{ user.organization }}</div>
+                      <div style="font-size:0.7rem; color:#555;">{{ user.job_title }}</div>
+                    {% else %}
+                      <span style="color:#333;">--</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ user.total_scans }}</td>
+                  <td>
+                    {% if user.is_active_account %}
+                      <span class="status-badge status-active">ACTIVE</span>
+                    {% else %}
+                      <span class="status-badge status-suspended">SUSPENDED</span>
+                    {% endif %}
+                  </td>
+                  <td style="text-align: right;">
+                    <div class="action-group" style="justify-content: flex-end;">
+                      <form action="{{ url_for('auth.toggle_user_status', user_id=user.id) }}" method="POST">
+                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                         <button type="submit" class="action-btn btn-suspend" title="{% if user.is_active_account %}Suspend{% else %}Activate{% endif %}">
+                           <span class="material-symbols-outlined" style="font-size:1.1rem;">
+                             {% if user.is_active_account %}block{% else %}check_circle{% endif %}
+                           </span>
+                         </button>
+                      </form>
+
+                      <form action="{{ url_for('auth.toggle_user_role', user_id=user.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="action-btn btn-promote" title="Toggle Admin Role">
+                           <span class="material-symbols-outlined" style="font-size:1.1rem;">shield_person</span>
+                        </button>
+                      </form>
+
+                      <form action="{{ url_for('auth.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete {{ user.username }}? This cannot be undone.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="action-btn btn-delete" title="Delete Account">
+                           <span class="material-symbols-outlined" style="font-size:1.1rem;">delete</span>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column;">
+        
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="material-symbols-outlined">pie_chart</span> Telemetry Analysis
+            </div>
+          </div>
+          <div class="chart-wrapper">
+             <canvas id="toolUsageChart"></canvas>
+          </div>
+        </div>
+
+        <div class="panel" style="flex-grow: 1;">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="material-symbols-outlined">leaderboard</span> Top Operators
+            </div>
+          </div>
+          <ul class="power-user-list">
+             {% for label in top_users_labels %}
+             <li class="power-user-item">
+                <span class="power-user-rank">{{ loop.index }}.</span>
+                <span class="power-user-name">{{ label }}</span>
+                <span class="power-user-score">{{ top_users_data[loop.index0] }} Scans</span>
+             </li>
+             {% endfor %}
+             
+             {% if top_users_labels|length == 0 %}
+                <li style="text-align:center; padding:1rem; color:#444;">No data available.</li>
+             {% endif %}
+          </ul>
+        </div>
+
+      </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('toolUsageChart').getContext('2d');
+        
+        // Data injected from Flask (auth_bp.py)
+        const usageData = {
+            nmap: {{ tool_usage_stats['Nmap'] }},
+            zap: {{ tool_usage_stats['ZAP'] }},
+            ssl: {{ tool_usage_stats['SSL'] }},
+            sniffer: {{ tool_usage_stats['Sniffer'] }},
+            ai: {{ tool_usage_stats['AI Analyst'] }}
+        };
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Network', 'Web Vuln', 'SSL/TLS', 'Traffic', 'AI Analysis'],
+                datasets: [{
+                    data: [usageData.nmap, usageData.zap, usageData.ssl, usageData.sniffer, usageData.ai],
+                    backgroundColor: [
+                        '#3b82f6', // Blue (Nmap)
+                        '#f43f5e', // Red (ZAP)
+                        '#10b981', // Green (SSL)
+                        '#f59e0b', // Amber (Sniffer)
+                        '#8b5cf6'  // Purple (AI)
+                    ],
+                    borderColor: '#0a0a0c', // Matches card background
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#9ca3af',
+                            font: { family: "'JetBrains Mono', monospace", size: 10 },
+                            boxWidth: 12
+                        }
+                    }
+                }
+            }
+        });
+    });
+  </script>
 {% endblock %}

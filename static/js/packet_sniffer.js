@@ -16,12 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
         snifferAnalyzeReportDropdown: document.getElementById('snifferAnalyzeReportDropdown'),
         snifferLlmAnalysisOptions: document.getElementById('snifferLlmAnalysisOptions'),
         
+        // AI Animation Elements
+        aiProcessingOverlay: document.getElementById('aiProcessingOverlay'),
+        aiProcessingText: document.getElementById('aiProcessingText'),
+        
         // Status & Logs
         snifferStatus: document.getElementById('snifferStatus'),
         snifferLogOutput: document.getElementById('snifferLogOutput'),
         clearSnifferLogBtn: document.getElementById('clearSnifferLogBtn'),
 
-        // Header Metrics (Top Right)
+        // Header Metrics
         packetCountDisplay: document.getElementById('packetCountDisplay'),
         targetDisplay: document.getElementById('targetDisplay'),
         durationDisplay: document.getElementById('durationDisplay'),
@@ -34,38 +38,33 @@ document.addEventListener('DOMContentLoaded', () => {
         packetsTabBtn: document.getElementById('packetsTabBtn'),
         graphTabBtn: document.getElementById('graphTabBtn'),
 
-        // Tab Content Containers
+        // Tab Content
         summaryContent: document.getElementById('summaryContent'),
         flowsContent: document.getElementById('flowsContent'),
         anomaliesContent: document.getElementById('anomaliesContent'),
         packetsContent: document.getElementById('packetsContent'),
         graphContent: document.getElementById('graphContent'),
 
-        // Graph Canvas & Controls (UPDATED)
+        // Graph
         networkGraphCanvas: document.getElementById('networkGraphCanvas'),
         graphZoomInBtn: document.getElementById('graphZoomInBtn'),
         graphZoomOutBtn: document.getElementById('graphZoomOutBtn'),
         graphFitBtn: document.getElementById('graphFitBtn'),
 
-        // Summary Tab Specifics
+        // Summary Data
         summaryStatus: document.getElementById('summaryStatus'),
         summaryTotalPackets: document.getElementById('summaryTotalPackets'),
         summaryTotalBytes: document.getElementById('summaryTotalBytes'),
         summaryPrimaryProto: document.getElementById('summaryPrimaryProto'),
         captureMetaBody: document.getElementById('captureMetaBody'),
-        
         protocolStatsBody: document.getElementById('protocolStatsBody'),
         conversationStatsBody: document.getElementById('conversationStatsBody'),
 
-        // Flows Tab
+        // Tables
         flowsTableBody: document.getElementById('flowsTableBody'),
-
-        // Anomalies Tab
         anomalySummaryText: document.getElementById('anomalySummaryText'),
         portScansBody: document.getElementById('portScansBody'),
         cleartextBody: document.getElementById('cleartextBody'),
-
-        // Packets Tab
         packetsTableBody: document.getElementById('packetsTableBody'),
     };
 
@@ -75,41 +74,70 @@ document.addEventListener('DOMContentLoaded', () => {
     let isActionInProgress = false;
     let reportDownloadUrl = null;
     let eventSource = null;
-    let networkInstance = null; // Store the Vis.js network instance
+    let networkInstance = null; 
+
+    // --- 🔒 CSRF TOKEN ---
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
     // --- UI HELPERS ---
 
     function toggleSpinner(button, isLoading) {
         if (!button) return;
-        
         const textSpan = button.querySelector('.button-text');
         const spinnerSpan = button.querySelector('.spinner');
         const caretIcon = button.querySelector('.fa-caret-down');
 
         button.disabled = isLoading;
-
         if (isLoading) {
             button.classList.add('cursor-not-allowed', 'opacity-70');
         } else {
             button.classList.remove('cursor-not-allowed', 'opacity-70');
         }
-
         if (textSpan) textSpan.classList.toggle('hidden', isLoading); 
         if (spinnerSpan) spinnerSpan.classList.toggle('hidden', !isLoading);
         if (caretIcon) caretIcon.classList.toggle('hidden', isLoading); 
     }
 
-    function appendLog(msg) {
+    // --- LOG APPEND FUNCTION ---
+    function appendLog(message) {
         if (!elements.snifferLogOutput) return;
-        elements.snifferLogOutput.textContent += msg + '\n';
+
+        // 1. Get Local Timestamp
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+
+        // 2. Clean Message: Remove backend timestamp [YYYY-MM-DD HH:MM:SS]
+        let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
+        cleanedMessage = cleanedMessage.trim();
+
+        // 3. Determine Color Style
+        let contentStyle = 'color:#d4d4d8'; 
+        
+        const lowerMsg = cleanedMessage.toLowerCase();
+        if (cleanedMessage.includes('[x]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {
+            contentStyle = 'color:#ef4444'; 
+        } else if (cleanedMessage.includes('[✓]') || lowerMsg.includes('success') || lowerMsg.includes('complete')) {
+            contentStyle = 'color:#10b981'; 
+        } else if (cleanedMessage.includes('[!]') || lowerMsg.includes('warning')) {
+            contentStyle = 'color:#f59e0b'; 
+        } else if (cleanedMessage.includes('[*]')) {
+             contentStyle = 'color:#3b82f6'; 
+        }
+
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        line.innerHTML = `
+            <div class="log-time">${timeStr}</div>
+            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+        `;
+        
+        elements.snifferLogOutput.appendChild(line);
         elements.snifferLogOutput.scrollTop = elements.snifferLogOutput.scrollHeight;
     }
 
     function setStatus(text, type = 'ready') {
         if (!elements.snifferStatus) return;
 
-        // FIX: Remove background, border, and padding classes. 
-        // Use simple text styling that fits inside your new HTML structure.
         elements.snifferStatus.className = 'text-[0.75rem] font-semibold uppercase tracking-wide';
         
         const oldIcon = elements.snifferStatus.querySelector('i');
@@ -133,20 +161,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 iconClass = 'fas fa-check-circle';
                 break;
             default: // ready
-                // Gray text, matches your 'btn-secondary' look
                 textColorClass = 'text-slate-400';
-                iconClass = ''; // No extra icon for ready, your HTML already has the green dot
+                iconClass = ''; 
                 break;
         }
 
-        // Apply just the text color
         if (textColorClass) {
             elements.snifferStatus.classList.add(textColorClass);
         }
 
         elements.snifferStatus.textContent = text;
 
-        // Only prepend a JS icon if it's NOT 'ready' (e.g. show spinner when busy)
         if (iconClass) {
             icon.className = `${iconClass} mr-1`;
             elements.snifferStatus.prepend(icon);
@@ -160,10 +185,20 @@ document.addEventListener('DOMContentLoaded', () => {
         isActionInProgress = true;
         if (button) toggleSpinner(button, true);
 
+        if (!csrfToken) {
+            appendLog('[x] Error: CSRF Token missing. Refresh page.');
+            isActionInProgress = false;
+            if (button) toggleSpinner(button, false);
+            return null;
+        }
+
         try {
             const res = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
                 body: JSON.stringify(body),
             });
             const data = await res.json();
@@ -212,13 +247,12 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.toggle('active', key === name);
         });
         
-        // If switching to graph, fit the network to the view
         if (name === 'graph' && networkInstance) {
              networkInstance.fit();
         }
     }
 
-    // --- SSE LOG STREAM ---
+    // --- SSE LOG STREAM (UPDATED) ---
 
     function initializeLogStream() {
         if (eventSource) eventSource.close();
@@ -231,10 +265,12 @@ document.addEventListener('DOMContentLoaded', () => {
             appendLog(msg);
 
             const lower = msg.toLowerCase();
+            // FIX: Ensure we switch to packets tab when capture is done
             if (lower.includes('capture complete') || lower.includes('analysis complete') || lower.includes('finished')) {
                 setStatus('Capture complete', 'success');
                 loadAndRenderReport();
                 checkReportAvailability();
+                switchTab('packets'); // <--- ADDED: Forces view to Packet List
             }
         };
 
@@ -511,8 +547,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- UPDATED: ADVANCED GRAPH RENDERING ---
-
     function processGraphData(report) {
         const lines = (report.traffic_summary && report.traffic_summary.tcp_conversation_stats) ? report.traffic_summary.tcp_conversation_stats : [];
         const nodesMap = new Map(); 
@@ -541,7 +575,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const isLocal = (ip) => /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(ip);
 
-            // Process Source Node
             if (!nodesMap.has(srcIp)) {
                 nodesMap.set(srcIp, { 
                     id: srcIp, 
@@ -553,7 +586,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 nodesMap.get(srcIp).value += bytes;
             }
 
-            // Process Dest Node
             if (!nodesMap.has(dstIp)) {
                 nodesMap.set(dstIp, { 
                     id: dstIp, 
@@ -565,7 +597,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 nodesMap.get(dstIp).value += bytes;
             }
 
-            // Create Edge
             const displayPort = (parseInt(srcPort) < parseInt(dstPort) && parseInt(srcPort) < 10000) ? srcPort : dstPort;
             
             edges.push({ 
@@ -574,7 +605,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 label: displayPort !== '?' ? displayPort : '', 
                 font: { align: 'top', size: 10, strokeWidth: 2, strokeColor: '#050505', color: '#94a3b8' },
                 width: bytes > 5000 ? 3 : 1, 
-                // Fix Edge Tooltip as well:
                 title: `${bytes} Bytes Transferred` 
             });
         });
@@ -584,7 +614,6 @@ document.addEventListener('DOMContentLoaded', () => {
             label: n.id,
             group: n.group,
             value: Math.log(n.value + 1000), 
-            // --- FIX APPLIED HERE: Using \n instead of <br> ---
             title: `IP:  ${n.id}\nLoc: ${n.group.toUpperCase()}\nVol: ${(n.value/1024).toFixed(2)} KB`
         }));
 
@@ -618,21 +647,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 smooth: { type: 'continuous' },
                 selectionWidth: 2
             },
-            // --- UPDATED PHYSICS FOR ROUND LAYOUT ---
             physics: {
-                stabilization: {
-                    enabled: true,
-                    iterations: 1000 // Pre-calculate layout so it starts round
-                },
+                stabilization: { enabled: true, iterations: 1000 },
                 barnesHut: {
-                    gravitationalConstant: -12000, // Strong repulsion pushes nodes into a wide circle
-                    centralGravity: 0.3,           // Pulls them back to center lightly
-                    springLength: 150,             // Length of the lines
+                    gravitationalConstant: -12000, 
+                    centralGravity: 0.3,           
+                    springLength: 150,             
                     springConstant: 0.04,
                     damping: 0.09,
                     avoidOverlap: 0.2
                 },
-                solver: 'barnesHut', // Switching back to this solver ensures circular star shapes
+                solver: 'barnesHut',
                 minVelocity: 0.75
             },
             interaction: {
@@ -663,12 +688,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (elements.snifferDownloadReportBtn) {
                     elements.snifferDownloadReportBtn.disabled = false;
-                    elements.snifferDownloadReportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    elements.snifferDownloadReportBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                    elements.snifferDownloadReportBtn.style.opacity = '1';
                 }
 
                 if (elements.snifferAnalyzeReportDropdown) {
                     elements.snifferAnalyzeReportDropdown.disabled = false;
-                    elements.snifferAnalyzeReportDropdown.classList.remove('opacity-50', 'cursor-not-allowed');
+                    elements.snifferAnalyzeReportDropdown.classList.remove('opacity-70', 'cursor-not-allowed');
+                    elements.snifferAnalyzeReportDropdown.style.opacity = '1';
                 }
                 return;
             }
@@ -679,25 +706,49 @@ document.addEventListener('DOMContentLoaded', () => {
         reportDownloadUrl = null;
         if (elements.snifferDownloadReportBtn) {
             elements.snifferDownloadReportBtn.disabled = true;
-            elements.snifferDownloadReportBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            elements.snifferDownloadReportBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            elements.snifferDownloadReportBtn.style.opacity = '0.7';
         }
         if (elements.snifferAnalyzeReportDropdown) {
             elements.snifferAnalyzeReportDropdown.disabled = true;
-            elements.snifferAnalyzeReportDropdown.classList.add('opacity-50', 'cursor-not-allowed');
+            elements.snifferAnalyzeReportDropdown.classList.add('opacity-70', 'cursor-not-allowed');
+            elements.snifferAnalyzeReportDropdown.style.opacity = '0.7';
         }
     }
 
     async function analyzeReport(llmMode) {
         const button = elements.snifferAnalyzeReportDropdown;
+        const overlay = elements.aiProcessingOverlay;
+        const processingText = elements.aiProcessingText;
+        const llmOptions = elements.snifferLlmAnalysisOptions;
+
         if (!button || button.disabled) return;
+        if (!csrfToken) {
+            appendLog('[x] Error: CSRF Token missing. Refresh page.');
+            return;
+        }
+
+        // 1. UI Setup
+        if (llmOptions) llmOptions.classList.add('hidden');
+        if (overlay) overlay.classList.remove('hidden');
+        
+        if (processingText) {
+            processingText.textContent = llmMode === 'gemini' 
+                ? 'CONTACTING GEMINI...' 
+                : 'LOADING LOCAL MODEL...';
+        }
 
         setStatus(`Preparing AI analysis (${llmMode})...`, 'busy');
         toggleSpinner(button, true);
 
         try {
+            // 2. Trigger
             let res = await fetch(`${API_BASE_URL}/trigger_ai_analysis`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
                 body: JSON.stringify({ llm_mode: llmMode }),
             });
             let data = await res.json();
@@ -706,23 +757,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.message || 'Analysis trigger failed.');
             }
 
+            // 3. Second Phase
+            if (processingText) processingText.textContent = 'SYNTHESIZING REPORT...';
+
             res = await fetch(`${CHATBOT_REDIRECT_URL}/scanner_analysis`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type }),
             });
             data = await res.json();
 
             if (res.ok && data.status === 'success') {
+                if (processingText) processingText.textContent = 'REDIRECTING...';
                 appendLog('[✓] AI analysis initiated. Redirecting...');
-                setStatus('Redirecting to AI...', 'success');
-                window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                
+                setTimeout(() => {
+                     window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                }, 800);
             } else {
                 throw new Error(data.message || `Analysis failed.`);
             }
         } catch (err) {
             appendLog(`[x] AI Analysis Error: ${err.message}`);
             setStatus('Analysis failed', 'error');
+             // Hide overlay on error so user can try again
+            if (overlay) overlay.classList.add('hidden');
         } finally {
             toggleSpinner(button, false);
             checkReportAvailability();
@@ -827,6 +889,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!elements.snifferAnalyzeReportDropdown.disabled) {
                     e.stopPropagation();
                     elements.snifferLlmAnalysisOptions.classList.toggle('hidden');
+                    
+                    const closeAiMenu = (docEvent) => {
+                        if (!elements.snifferLlmAnalysisOptions.contains(docEvent.target) && docEvent.target !== elements.snifferAnalyzeReportDropdown) {
+                            elements.snifferLlmAnalysisOptions.classList.add('hidden');
+                            document.removeEventListener('click', closeAiMenu);
+                        }
+                    };
+                    document.addEventListener('click', closeAiMenu);
                 }
             });
         }
@@ -842,21 +912,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 analyzeReport(mode);
             });
         }
-
-        document.addEventListener('click', (e) => {
-            if (elements.snifferAnalyzeReportDropdown && elements.snifferLlmAnalysisOptions) {
-                if (!elements.snifferAnalyzeReportDropdown.contains(e.target)) {
-                    elements.snifferLlmAnalysisOptions.classList.add('hidden');
-                }
-            }
-        });
     }
 
     function init() {
-        appendLog('Initializing Packet Sniffer...');
+        // Initial log message with delay to ensure DOM is ready
+        setTimeout(() => appendLog('System Ready. Initializing Packet Sniffer interface...'), 100);
+        
         setupEventListeners();
         initializeLogStream();
-        switchTab('summary');
+        switchTab('packets'); // Default tab
 
         loadAndRenderReport();
         checkReportAvailability();

@@ -435,6 +435,66 @@ def parse_zap_xml_report(report_file, user_id=None):
     
     log(f"Parsing ZAP report: {report_file}", user_id)
     
+    # Initialize Summary with "Info" key
+    report_data = {
+        "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "summary": {"High": 0, "Medium": 0, "Low": 0, "Info": 0, "Total": 0},
+        "findings": []
+    }
+    
+    try:
+        tree = ET.parse(report_file)
+        root = tree.getroot()
+        
+        for alertitem in root.findall('.//alertitem'):
+            riskdesc = alertitem.find('riskdesc').text
+            risk = riskdesc.split(' ')[0] # Extracts "High", "Medium", "Low", "Informational"
+            
+            # --- FIX STARTS HERE ---
+            # Normalize "Informational" to "Info" so it matches your summary key
+            if risk == "Informational": 
+                risk = "Info"
+            # --- FIX ENDS HERE ---
+
+            finding_name = alertitem.find('alert').text
+            predicted_score = predict_risk(finding_name)
+
+            finding = {
+                "name": finding_name,
+                "risk": risk, # Now this will be "Info"
+                "predicted_risk_score": predicted_score,
+                "confidence": alertitem.find('confidence').text,
+                "url": alertitem.find('.//uri').text,
+                "description": get_inner_html(alertitem.find('desc')),
+                "solution": get_inner_html(alertitem.find('solution')),
+                "reference": get_inner_html(alertitem.find('reference'))
+            }
+            
+            # Now this check will PASS because "Info" exists in summary
+            if risk in report_data["summary"]:
+                report_data["summary"][risk] += 1
+                report_data["summary"]["Total"] += 1
+            
+            report_data["findings"].append(finding)
+            
+        # Sort by predicted score
+        report_data["findings"].sort(
+            key=lambda x: x['predicted_risk_score'] if isinstance(x['predicted_risk_score'], (int, float)) else -1,
+            reverse=True
+        )
+
+        log("Report parsed and enriched successfully.", user_id)
+        return report_data
+    except Exception as e:
+        log(f"An error occurred during report parsing: {e}", user_id)
+        return None
+    """Parses ZAP XML and enriches with ML."""
+    if not os.path.exists(report_file):
+        log(f"Error: ZAP report file not found for parsing: {report_file}", user_id)
+        return None
+    
+    log(f"Parsing ZAP report: {report_file}", user_id)
+    
     report_data = {
         "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "summary": {"High": 0, "Medium": 0, "Low": 0, "Info": 0, "Total": 0},

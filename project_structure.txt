@@ -226,3 +226,5 @@ We need to ensure run.py or a new blueprint handles the new routes.
 Action:
 Add @app.route('/arsenal') -> Renders tools_hub.html.
 Add @app.route('/dashboard') -> Renders user_dashboard.html (We will need to write the logic to list the user's PDF files here).
+
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/NS_Logo.png') }}">

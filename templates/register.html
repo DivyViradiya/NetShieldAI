@@ -1,127 +1,279 @@
 {% extends 'base.html' %}
 
-{% block title %}
-  NetShieldAI - Initialize Account
-{% endblock %}
+{% block title %}NetShieldAI - Initialize Account{% endblock %}
 
 {% block content %}
-  <div class="min-h-[85vh] flex items-center justify-center p-4">
-    <div class="flex w-full max-w-[1000px] min-h-[700px] bg-[#0a0a0c] rounded-2xl border border-[#27272a] shadow-2xl overflow-hidden">
-      <!-- LEFT PANEL (REGISTER FORM) -->
-      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[#0a0a0c] flex flex-col justify-center">
-        <h3 class="text-2xl font-bold text-white mb-2">Create an account</h3>
-        <p class="text-gray-500 text-sm mb-8">Initialize your access parameters below.</p>
+  <div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[120px] pointer-events-none">
+    </div>
+    
+    <div
+      class="relative z-10 flex w-full max-w-[1000px] min-h-[600px] bg-[#0a0a0c] rounded-2xl border border-[#27272a] shadow-2xl overflow-hidden transition-all duration-500">
+    
+      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[#0a0a0c] flex flex-col justify-center relative">
+    
+        <div class="mb-8">
+          <h3 class="text-2xl font-bold text-white mb-2" id="step-title">Identity</h3>
+          <p class="text-gray-500 text-sm" id="step-desc">Establish your primary access credentials.</p>
+        </div>
 
-        <!-- FLASH MESSAGES -->
         {% with messages=get_flashed_messages(with_categories=true) %}
           {% if messages %}
             <div class="mb-6 space-y-2">
               {% for category, message in messages %}
-                {% if category == 'danger' %}
-                  {% set msg_class = 'bg-red-900/20 text-red-400 border-red-900' %}
-                {% else %}
-                  {% set msg_class = 'bg-blue-900/20 text-blue-400 border-blue-900' %}
-                {% endif %}
-
-                <div class="p-3 rounded text-sm border {{ msg_class }}">{{ message }}</div>
+                <div class="p-3 rounded text-sm border 
+                  {% if category == 'danger' %}
+                    bg-red-900/20 text-red-400 border-red-900
+                  {% else %}
+                    bg-blue-900/20 text-blue-400 border-blue-900
+                  {% endif %}">
+                  {{ message }}
+                </div>
               {% endfor %}
             </div>
           {% endif %}
         {% endwith %}
 
-        <!-- REGISTER FORM -->
-        <form method="POST" action="{{ url_for('auth.register') }}" class="space-y-4">
+        <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
           {{ form.hidden_tag() }}
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              {{ form.username.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-              {{ form.username(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3') }}
-              {% for error in form.username.errors %}
-                <span class="text-xs text-red-500">{{ error }}</span>
-              {% endfor %}
+          <div class="form-step transition-opacity duration-300" id="step1">
+            <div class="space-y-4">
+              <div>
+                {{ form.username.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+                {{ form.username(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
+                placeholder-gray-700 req-input') }}
+                {% for error in form.username.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
+                </div>
+              <div>
+                {{ form.email.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+                {{ form.email(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1 focus:outline-none
+                focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300 placeholder-gray-700 req-input')
+                }}
+                {% for error in form.email.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
+                </div>
+                </div>
+          </div>
+
+          <div class="form-step hidden opacity-0 transition-opacity duration-300" id="step2">
+            <div class="space-y-4">
+              <div>
+                {{ form.full_name.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+                {{ form.full_name(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
+                placeholder-gray-700 req-input') }}
+              </div>
+              <div>
+                {{ form.phone_number.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+                {{ form.phone_number(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
+                placeholder-gray-700 req-input') }}
+              </div>
             </div>
-
-            <div>
-              {{ form.email.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-              {{ form.email(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3') }}
-              {% for error in form.email.errors %}
-                <span class="text-xs text-red-500">{{ error }}</span>
-              {% endfor %}
-            </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>{{ form.full_name.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-              {{ form.full_name(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3') }}</div>
-
-            <div>{{ form.phone_number.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-              {{ form.phone_number(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3') }}</div>
+          <div class="form-step hidden opacity-0 transition-opacity duration-300" id="step3">
+            <div class="space-y-4">
+              <div>
+                {{ form.organization.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+                {{ form.organization(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
+                placeholder-gray-700 req-input') }}
+                </div>
+                <div>
+                  {{ form.job_title.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+                  {{ form.job_title(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
+                  focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
+                  placeholder-gray-700 req-input') }}
+                </div>
+                </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>{{ form.organization.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-              {{ form.organization(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3') }}</div>
-
-            <div>{{ form.job_title.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-              {{ form.job_title(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3') }}</div>
+          <div class="form-step hidden opacity-0 transition-opacity duration-300" id="step4">
+            <div class="space-y-4">
+              <div>
+                {{ form.password.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+                {{ form.password(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
+                placeholder-gray-700 req-input') }}
+                {% for error in form.password.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
+                </div>
+                <div>
+                  {{ form.confirm_password.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
+                  {{ form.confirm_password(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
+                  focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
+                  placeholder-gray-700 req-input') }}
+                  {% for error in form.confirm_password.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{%
+                  endfor %}
+                </div>
+                </div>
           </div>
 
-          <div>
-            {{ form.password.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-            {{ form.password(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3') }}
-            {% for error in form.password.errors %}
-              <span class="text-xs text-red-500">{{ error }}</span>
-            {% endfor %}
+          <div class="flex gap-3 mt-8">
+            <button type="button" id="prevBtn"
+              class="w-1/3 bg-[#121214] border border-[#27272a] text-gray-400 font-bold py-3 rounded-lg hidden hover:text-white transition">Back</button>
+            <button type="button" id="nextBtn"
+              class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5">Next
+              Step</button>
+            {{ form.submit(id='submitBtn', class='w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500
+            hover:to-green-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-green-900/20 transition-all transform
+            hover:-translate-y-0.5 hidden') }}
           </div>
-
-          <div>
-            {{ form.confirm_password.label(class='text-xs font-bold text-gray-500 uppercase ml-1') }}
-            {{ form.confirm_password(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3') }}
-            {% for error in form.confirm_password.errors %}
-              <span class="text-xs text-red-500">{{ error }}</span>
-            {% endfor %}
-          </div>
-
-          {{ form.submit(class='w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded-lg transition') }}
         </form>
 
         <p class="text-sm text-gray-500 mt-6 text-center">
-          Already have an account?
-          <a href="{{ url_for('auth.login') }}" class="text-blue-500 hover:underline">Log in</a>
+          Already have an account? <a href="{{ url_for('auth.login') }}"
+            class="text-blue-500 hover:text-blue-400 font-medium transition">Log in</a>
         </p>
       </div>
 
-      <!-- RIGHT PANEL (HERO / MESSAGE) -->
-      <div class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[#050505]">
-        <div class="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" alt="Cybersecurity Background" class="w-full h-full object-cover opacity-40 mix-blend-overlay" />
-          <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent"></div>
-          <div class="absolute inset-0 bg-blue-900/10"></div>
-        </div>
+      <div
+        class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[#050505] bg-[radial-gradient(#1d4ed833_1px,transparent_1px)] [background-size:20px_20px]">
+      
+        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
+        <div class="absolute inset-0 bg-blue-900/5"></div>
 
         <div class="relative z-10">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-blue-500 text-3xl">shield</span>
-            <span class="text-xl font-bold text-white tracking-widest">NETSHIELD<span class="text-blue-500">AI</span></span>
-          </div>
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo"
+            class="h-12 w-auto drop-shadow-lg" />
         </div>
 
         <div class="relative z-10 mb-8">
-          <h2 class="text-3xl font-bold text-white mb-4 leading-tight">
-            Secure.<br />
-            Autonomous.<br />
-            Verified.
-          </h2>
-          <p class="text-gray-400 text-sm leading-relaxed">Monitor threats, analyze vulnerabilities, and secure infrastructure in real time.</p>
-
-          <div class="flex gap-2 mt-6">
-            <div class="w-8 h-1 bg-blue-500 rounded-full"></div>
-            <div class="w-2 h-1 bg-gray-700 rounded-full"></div>
-            <div class="w-2 h-1 bg-gray-700 rounded-full"></div>
+          <div id="dynamic-text">
+            <h2 class="text-3xl font-bold text-white mb-4 leading-tight drop-shadow-md">Step 1: Identity</h2>
+            <p class="text-gray-400 text-sm leading-relaxed border-l-2 border-blue-500 pl-4">
+              Initializing secure handshake. Please provide valid identification parameters to begin the registration sequence.
+            </p>
+          </div>
+          <div class="flex gap-2 mt-6 pl-4" id="step-indicators">
+            <div class="w-8 h-1 bg-blue-500 rounded-full transition-all duration-300"></div>
+            <div class="w-2 h-1 bg-gray-700 rounded-full transition-all duration-300"></div>
+            <div class="w-2 h-1 bg-gray-700 rounded-full transition-all duration-300"></div>
+            <div class="w-2 h-1 bg-gray-700 rounded-full transition-all duration-300"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    const steps = [document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3'), document.getElementById('step4')];
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    // Removed progressBar element selection
+    const stepTitle = document.getElementById('step-title');
+    const stepDesc = document.getElementById('step-desc');
+
+    // Dynamic Right Panel Elements
+    const dynamicHeader = document.querySelector('#dynamic-text h2');
+    const dynamicPara = document.querySelector('#dynamic-text p');
+    const indicators = document.getElementById('step-indicators').children;
+
+    const content = {
+      1: {
+        title: "Identity", desc: "Establish your primary access credentials.",
+        panelTitle: "Step 1: Identity", panelDesc: "Initializing secure handshake. Please provide valid identification parameters to begin the registration sequence."
+      },
+      2: {
+        title: "Profile", desc: "We need your contact details for verification.",
+        panelTitle: "Step 2: User Profile", panelDesc: "Linking physical entity to digital identifier. This data is encrypted and stored locally."
+      },
+      3: {
+        title: "Professional", desc: "Your organizational context.",
+        panelTitle: "Step 3: Access Level", panelDesc: "Determining organizational role and calculating appropriate permission scopes."
+      },
+      4: {
+        title: "Security", desc: "Secure your account with a strong password.",
+        panelTitle: "Step 4: Encryption", panelDesc: "Finalizing account creation. Hashing credentials and generating access tokens."
+      }
+    };
+
+    function updateUI() {
+      // Toggle Steps
+      steps.forEach((step, index) => {
+        if (index + 1 === currentStep) {
+          step.classList.remove('hidden');
+          setTimeout(() => step.classList.remove('opacity-0'), 50); // Fade in
+        } else {
+          step.classList.add('opacity-0');
+          step.classList.add('hidden');
+        }
+      });
+
+      // Removed progressBar width update logic
+
+      // Update Text (Left Panel)
+      stepTitle.textContent = content[currentStep].title;
+      stepDesc.textContent = content[currentStep].desc;
+
+      // Update Text (Right Panel)
+      dynamicHeader.textContent = content[currentStep].panelTitle;
+      dynamicPara.textContent = content[currentStep].panelDesc;
+
+      // Update Buttons
+      if (currentStep === 1) {
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.remove('w-2/3');
+        nextBtn.classList.add('w-full');
+      } else {
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.add('w-2/3'); // Share space
+        nextBtn.classList.remove('w-full');
+      }
+
+      if (currentStep === totalSteps) {
+        nextBtn.classList.add('hidden');
+        submitBtn.classList.remove('hidden');
+        submitBtn.classList.add('w-2/3');
+      } else {
+        nextBtn.classList.remove('hidden');
+        submitBtn.classList.add('hidden');
+      }
+
+      // Update Right Panel Indicators
+      Array.from(indicators).forEach((dot, index) => {
+        if (index + 1 === currentStep) {
+          dot.classList.remove('bg-gray-700', 'w-2');
+          dot.classList.add('bg-blue-500', 'w-8');
+        } else {
+          dot.classList.add('bg-gray-700', 'w-2');
+          dot.classList.remove('bg-blue-500', 'w-8');
+        }
+      });
+    }
+
+    nextBtn.addEventListener('click', () => {
+      // Simple HTML5 validation check
+      const currentInputs = steps[currentStep - 1].querySelectorAll('input');
+      let valid = true;
+      currentInputs.forEach(input => {
+        if (!input.checkValidity()) {
+          input.reportValidity();
+          valid = false;
+        }
+      });
+
+      if (valid && currentStep < totalSteps) {
+        currentStep++;
+        updateUI();
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        updateUI();
+      }
+    });
+
+    // Initialize
+    updateUI();
+  });
+</script>
 {% endblock %}

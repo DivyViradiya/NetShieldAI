@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, session
+from flask import Blueprint, render_template, request, jsonify, session, Response, stream_with_context
 from flask_login import login_required, current_user
 import requests
 import os
@@ -7,6 +7,9 @@ import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 from werkzeug.utils import secure_filename
+
+# [NEW] Import db for stats tracking
+from extensions import db
 
 # Initialize the Flask Blueprint for chatbot-related routes
 chatbot_bp = Blueprint('chatbot_bp', __name__)
@@ -101,6 +104,13 @@ def upload_report():
                 return jsonify({'error': f'File size exceeds the limit of {MAX_FILE_SIZE_BYTES / (1024 * 1024)}MB.'}), 413
 
             try:
+                # [NEW] Increment AI Usage Counter
+                try:
+                    current_user.scan_count_ai += 1
+                    db.session.commit()
+                except Exception as e:
+                    logger.error(f"Failed to update AI stats: {e}")
+
                 # Read file into memory to proxy it
                 files_to_send = {'file': (file.filename, file.read(), file.content_type)}
                 
@@ -147,10 +157,20 @@ def upload_report():
 @chatbot_bp.route('/chat', methods=['POST'])
 @login_required
 def chat_with_ai():
-    """Sends a chat message to the central server proxy."""
+    """
+    Standard (Blocking) Chat Endpoint.
+    Sends a chat message to the central server proxy and waits for full response.
+    """
     try:
         user_message = request.json.get('message')
         current_session_id = session.get('chatbot_session_id')
+
+        # [NEW] Increment AI Usage Counter
+        try:
+            current_user.scan_count_ai += 1
+            db.session.commit()
+        except Exception as e:
+            logger.error(f"Failed to update AI stats: {e}")
 
         # Inject composite user_id into payload
         current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
@@ -184,6 +204,75 @@ def chat_with_ai():
         logger.error(f"An unexpected error occurred in chat route: {e}", exc_info=True)
         return jsonify({'status': 'error', 'message': f'An unexpected error occurred: {e}'}), 500
 
+
+# =======================================================================
+# NEW STREAMING PROXY ENDPOINT
+# =======================================================================
+@chatbot_bp.route('/chat_stream', methods=['POST'])
+@login_required
+def chat_with_ai_stream():
+    """
+    Proxies the streaming chat request to the backend.
+    Forwards chunks of data immediately to the client as they arrive from FastAPI.
+    """
+    try:
+        user_message = request.json.get('message')
+        current_session_id = session.get('chatbot_session_id')
+
+        # [NEW] Increment AI Usage Counter
+        try:
+            current_user.scan_count_ai += 1
+            db.session.commit()
+        except Exception as e:
+            logger.error(f"Failed to update AI stats: {e}")
+
+        # Inject composite user_id
+        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+        
+        payload_to_server = {
+            'message': user_message,
+            'session_id': current_session_id,
+            'user_id': current_user_identifier
+        }
+
+        # Point to the NEW FastAPI endpoint
+        proxy_chat_url = f"{SERVER_PROXY_URL}/chat_stream"
+        
+        # 1. Make request with stream=True
+        # We assume the FastAPI server is running on the proxy_chat_url
+        logger.info(f"Initiating stream to {proxy_chat_url} for session {current_session_id}")
+        
+        req = requests.post(proxy_chat_url, json=payload_to_server, stream=True)
+        
+        # 2. Update Session ID if provided in headers
+        # The backend streaming endpoint should send 'X-Session-ID' in headers
+        new_sess_id = req.headers.get("X-Session-ID")
+        if new_sess_id and new_sess_id != current_session_id:
+             session['chatbot_session_id'] = new_sess_id
+             logger.info(f"Stream updated local session ID to: {new_sess_id}")
+
+        # 3. Generator to forward chunks
+        def generate():
+            try:
+                for chunk in req.iter_content(chunk_size=None): # None = yield as received
+                    if chunk:
+                        # Yield raw bytes; Flask's stream_with_context handles the transfer
+                        yield chunk
+            except Exception as e:
+                logger.error(f"Stream Proxy Iteration Error: {e}")
+                yield b" [Connection Error during stream]"
+
+        # 4. Return Flask Response with generator
+        return Response(stream_with_context(generate()), mimetype='text/plain')
+
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Error communicating with server proxy stream: {e}", exc_info=True)
+        return jsonify({'status': 'error', 'message': f'Failed to connect to AI server.'}), 500
+    except Exception as e:
+        logger.error(f"Unexpected error in stream proxy: {e}", exc_info=True)
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
 @chatbot_bp.route('/scanner_analysis', methods=['POST'])
 @login_required
 def scanner_analysis_proxy():
@@ -208,6 +297,13 @@ def scanner_analysis_proxy():
         if not os.path.exists(pdf_path):
             return jsonify({'error': f'PDF report for {scanner_type} not found. Please run a scan first.'}), 404
         
+        try:
+            # [NEW] Increment AI Usage Counter
+            current_user.scan_count_ai += 1
+            db.session.commit()
+        except Exception as e:
+            logger.error(f"Failed to update AI stats: {e}")
+
         # 1. Read the file content
         with open(pdf_path, 'rb') as f:
             pdf_content = f.read()

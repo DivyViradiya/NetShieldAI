@@ -7,7 +7,10 @@ from flask import Blueprint, render_template, jsonify, request, Response, send_f
 from flask_login import login_required, current_user
 import requests
 import uuid 
-from werkzeug.utils import secure_filename # <--- Added Import
+from werkzeug.utils import secure_filename 
+
+# [NEW] Import db to update user stats
+from extensions import db
 
 # Import the new zap_scanner module
 from Services import zap_scanner
@@ -68,6 +71,13 @@ def initiate_zap_scan():
     # Capture User Context for Thread using Composite ID
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_output_dir = get_user_results_dir()
+
+    # [NEW] Increment Database Counter for Stats
+    try:
+        current_user.scan_count_zap += 1
+        db.session.commit()
+    except Exception as e:
+        zap_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     def scan_and_process_task():
         # Pass composite ID to log function
