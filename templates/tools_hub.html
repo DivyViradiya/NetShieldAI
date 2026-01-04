@@ -301,21 +301,20 @@
           <div class="launch-btn">
             Execute <span class="material-symbols-outlined">arrow_forward</span>
           </div>
-          </div>
-          </a>
+        </div>
+      </a>
           
-          <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="neo-card">
-            <div class="card-top">
-              <div class="card-icon-box">
-                <span class="material-symbols-outlined">troubleshoot</span>
-              </div>
-              <span class="status-badge status-active">Real-Time</span>
-            </div>
-            <h3>Network Monitor</h3>
-            <p>Powered by TShark. Capture live network traffic to analyze packet headers, detect anomalies, and inspect payload
-              data for threats.</p>
-            <div class="action-row">
-              <span class="text-xs text-[#555]">Traffic Analysis</span>
+      <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="neo-card">
+        <div class="card-top">
+          <div class="card-icon-box">
+            <span class="material-symbols-outlined">troubleshoot</span>
+          </div>
+          <span class="status-badge status-active">Real-Time</span>
+        </div>
+        <h3>Network Monitor</h3>
+        <p>Powered by TShark. Capture live network traffic to analyze packet headers, detect anomalies, and inspect payload data for threats.</p>
+        <div class="action-row">
+          <span class="text-xs text-[#555]">Traffic Analysis</span>
           <div class="launch-btn">
             Monitor <span class="material-symbols-outlined">arrow_forward</span>
           </div>
@@ -330,8 +329,7 @@
           <span class="status-badge status-active">Operational</span>
         </div>
         <h3>Web Vulnerability</h3>
-        <p>Powered by OWASP ZAP. Deep crawl your web applications to detect SQL Injection, XSS, and misconfigurations using AI
-          reranking.</p>
+        <p>Powered by OWASP ZAP. Deep crawl your web applications to detect SQL Injection, XSS, and misconfigurations using AI reranking.</p>
         <div class="action-row">
           <span class="text-xs text-[#555]">Application Security</span>
           <div class="launch-btn">
@@ -365,8 +363,7 @@
           <span class="status-badge status-dev">In Development</span>
         </div>
         <h3>SQL Injection (SQLMap)</h3>
-        <p>Advanced database penetration testing. This module allows deep inspection of injection points but is currently
-          offline for upgrades.</p>
+        <p>Advanced database penetration testing. This module allows deep inspection of injection points but is currently offline for upgrades.</p>
         <div class="action-row">
           <span class="text-xs text-[#555]">Database Security</span>
           <div class="launch-btn">
@@ -375,23 +372,22 @@
         </div>
       </div>
 
-      <div class="neo-card disabled">
+      <a href="{{ url_for('auto_pentest_bp.index') }}" class="neo-card">
         <div class="card-top">
           <div class="card-icon-box">
-            <span class="material-symbols-outlined">security_update_warning</span>
+            <span class="material-symbols-outlined">smart_toy</span>
           </div>
-          <span class="status-badge status-soon">Coming Soon</span>
+          <span class="status-badge status-active">Operational</span>
         </div>
         <h3>Automated Pentesting</h3>
-        <p>Full-spectrum attack simulation combining all modules into a single autonomous kill-chain workflow. Currently in
-          closed beta.</p>
+        <p>Full-spectrum attack simulation combining all modules into a single autonomous kill-chain workflow. Recon → Exploit → Report.</p>
         <div class="action-row">
           <span class="text-xs text-[#555]">Full Suite</span>
           <div class="launch-btn">
-            Restricted <span class="material-symbols-outlined">lock</span>
+            Orchestrate <span class="material-symbols-outlined">arrow_forward</span>
           </div>
         </div>
-      </div>
+      </a>
 
     </div>
   </div>

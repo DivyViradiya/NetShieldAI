@@ -198,7 +198,7 @@
       border-color: #333;
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     }
-
+    
     /* Glowing Corner Accents */
     .neo-card::after {
       content: '';
@@ -285,7 +285,7 @@
       color: var(--neo-blue);
       border-top-color: #333;
     }
-
+    
     /* --- DISABLED STATE --- */
     .neo-card.disabled {
       opacity: 0.5;
@@ -312,7 +312,7 @@
       color: #94a3b8;
       border-color: rgba(148, 163, 184, 0.2);
     }
-
+    
     /* --- MINIMAL AI CHAT UI --- */
     .chatbot-banner {
       display: grid;
@@ -327,7 +327,7 @@
       overflow: hidden;
       position: relative;
     }
-
+    
     /* Subtle background glow */
     .chatbot-banner::before {
       content: '';
@@ -339,20 +339,20 @@
       background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
       pointer-events: none;
     }
-
+    
     .banner-content {
       padding: 3rem;
       position: relative;
       z-index: 2;
     }
-
+    
     /* CHAT CONTAINER - Clean & Flat */
     .chat-wrapper {
       padding: 3rem 3rem 3rem 0;
       position: relative;
       z-index: 2;
     }
-
+    
     .chat-interface {
       background: rgba(20, 20, 23, 0.6);
       border: 1px solid #27272a;
@@ -363,7 +363,7 @@
       gap: 1.5rem;
       min-height: 280px;
     }
-
+    
     /* MESSAGES */
     .chat-msg {
       max-width: 90%;
@@ -373,7 +373,7 @@
       opacity: 0;
       transform: translateY(10px);
     }
-
+    
     .chat-msg.user {
       align-self: flex-end;
       background: #27272a;
@@ -382,12 +382,12 @@
       border-radius: 12px 12px 0 12px;
       margin-left: auto;
     }
-
+    
     .chat-msg.ai {
       align-self: flex-start;
       color: #94a3b8; /* Slate-400 */
     }
-
+    
     /* CODE BLOCK - Minimal */
     .code-snippet {
       background: #111;
@@ -411,7 +411,7 @@
       color: #555;
       font-weight: bold;
     }
-
+    
     /* TYPING INDICATOR */
     .typing-dots span {
       display: inline-block;
@@ -423,25 +423,56 @@
       margin-right: 2px;
     }
     
-    .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-    .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+    .typing-dots span:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    .typing-dots span:nth-child(2) {
+      animation-delay: -0.16s;
+    }
     
     @keyframes typing {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1); }
+      0%,
+      80%,
+      100% {
+        transform: scale(0);
+      }
+      40% {
+        transform: scale(1);
+      }
     }
     
     @keyframes fadeIn {
-      to { opacity: 1; transform: translateY(0); }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-
+    
     @media (max-width: 1024px) {
-      .hero-title { font-size: 3rem; }
-      .status-container { grid-template-columns: 1fr 1fr; gap: 2rem; padding: 0 1rem; }
-      .chatbot-banner { grid-template-columns: 1fr; gap: 0; }
-      .chat-wrapper { padding: 2rem; }
-      .chatbot-banner::before { width: 100%; height: 50%; bottom: 0; top: auto; }
-      .neo-grid { grid-template-columns: 1fr; } 
+      .hero-title {
+        font-size: 3rem;
+      }
+      .status-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        padding: 0 1rem;
+      }
+      .chatbot-banner {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      .chat-wrapper {
+        padding: 2rem;
+      }
+      .chatbot-banner::before {
+        width: 100%;
+        height: 50%;
+        bottom: 0;
+        top: auto;
+      }
+      .neo-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 {% endblock %}
@@ -455,11 +486,11 @@
         <span>Autonomous.</span>
         <span>Secure.</span>
       </h1>
-      <p class="hero-sub">NetShieldAI is the unified service to test the security posture of your website, network, and
-        databases. Perform automated penetration testing and get AI-based insights.</p>
+      <p class="hero-sub">NetShieldAI is the unified service to test the security posture of your website, network, and databases. Perform automated penetration testing and get AI-based insights.</p>
+
       <div class="hero-actions">
         <a href="{{ url_for('tools_hub') }}" class="btn-neo-primary">Launch Arsenal <span class="material-symbols-outlined">arrow_forward</span></a>
-        <a href="#workflow" class="btn-neo-primary" style="background: transparent; border-color: #333; color: white;">View Protocol</a>
+        <a href="{{ url_for('dashboard_bp.dashboard') }}" class="btn-neo-primary" style="background: transparent; border-color: #333; color: white;">Security Posture</a>
       </div>
     </div>
   </div>
@@ -495,25 +526,25 @@
       <div class="card-top">
         <div class="card-icon-box">
           <span class="material-symbols-outlined">hub</span>
-          </div>
+        </div>
       </div>
       <h3>Network Scanner</h3>
       <p>Uses Nmap to map open ports, detect operating systems, and identify hidden services.</p>
       <div class="card-action">
         Initialize Scan <span class="material-symbols-outlined">chevron_right</span>
       </div>
-      </a>
-      
-      <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="neo-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">troubleshoot</span>
-          </div>
+    </a>
+
+    <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="neo-card">
+      <div class="card-top">
+        <div class="card-icon-box">
+          <span class="material-symbols-outlined">troubleshoot</span>
         </div>
-        <h3>Network Monitor</h3>
-        <p>Real-time packet sniffing to analyze data transfer and capture handshake sequences.</p>
-        <div class="card-action">
-          Start Monitor <span class="material-symbols-outlined">chevron_right</span>
+      </div>
+      <h3>Network Monitor</h3>
+      <p>Real-time packet sniffing to analyze data transfer and capture handshake sequences.</p>
+      <div class="card-action">
+        Start Monitor <span class="material-symbols-outlined">chevron_right</span>
       </div>
     </a>
 
@@ -521,7 +552,7 @@
       <div class="card-top">
         <div class="card-icon-box">
           <span class="material-symbols-outlined">language</span>
-          </div>
+        </div>
       </div>
       <h3>Web App Vulnerability</h3>
       <p>Advanced crawling using ZAP engine with AI-based CVE/CWE reranking.</p>
@@ -534,7 +565,7 @@
       <div class="card-top">
         <div class="card-icon-box">
           <span class="material-symbols-outlined">encrypted</span>
-          </div>
+        </div>
       </div>
       <h3>SSL/TLS Scanner</h3>
       <p>Analyze certificate chains and cipher strength to ensure your encryption meets modern standards.</p>
@@ -547,7 +578,7 @@
       <div class="card-top">
         <div class="card-icon-box">
           <span class="material-symbols-outlined">database</span>
-          </div>
+        </div>
         <span class="status-badge dev">In Development</span>
       </div>
       <h3>SQL Injection (SQLMap)</h3>
@@ -561,66 +592,52 @@
       <div class="card-top">
         <div class="card-icon-box">
           <span class="material-symbols-outlined">security_update_warning</span>
-          </div>
-          <span class="status-badge soon">Coming Soon</span>
-          </div>
-          <h3>Automated Pentesting</h3>
-          <p>Full-spectrum attack simulation combining all modules into an autonomous workflow.</p>
-          <div class="card-action">
-            Access Restricted <span class="material-symbols-outlined">lock</span>
-          </div>
-          </div>
-          
-          </div>
-          
-          <div class="chatbot-banner fade-in-element">
-            <div class="banner-content">
-              <h2 class="section-title" style="font-size: 2rem; margin-bottom: 1rem;">Security Insights, <br /><b>Decoded.</b>
-              </h2>
-              <p style="color: #888; margin-bottom: 2rem; line-height: 1.6; font-size: 0.95rem;">
-                Don't just stare at logs. NetShieldAI analyzes scan results in real-time, explains vulnerabilities in plain
-                English, and generates patch code automatically.
-              </p>
-          
-              <div style="display: flex; gap: 2rem; margin-bottom: 2rem;">
-                <div>
-                  <strong style="color: white; font-size: 1.2rem; display: block;">24/7</strong>
-                  <span style="font-size: 0.7rem; color: #555; text-transform: uppercase;">Availability</span>
-                </div>
-                <div>
+        </div>
+        <span class="status-badge soon">Coming Soon</span>
+      </div>
+      <h3>Automated Pentesting</h3>
+      <p>Full-spectrum attack simulation combining all modules into an autonomous workflow.</p>
+      <div class="card-action">
+        Access Restricted <span class="material-symbols-outlined">lock</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chatbot-banner fade-in-element">
+    <div class="banner-content">
+      <h2 class="section-title" style="font-size: 2rem; margin-bottom: 1rem;">Security Insights, <br /><b>Decoded.</b></h2>
+      <p style="color: #888; margin-bottom: 2rem; line-height: 1.6; font-size: 0.95rem;">Don't just stare at logs. NetShieldAI analyzes scan results in real-time, explains vulnerabilities in plain English, and generates patch code automatically.</p>
+
+      <div style="display: flex; gap: 2rem; margin-bottom: 2rem;">
+        <div>
+          <strong style="color: white; font-size: 1.2rem; display: block;">24/7</strong>
+          <span style="font-size: 0.7rem; color: #555; text-transform: uppercase;">Availability</span>
+        </div>
+        <div>
           <strong style="color: white; font-size: 1.2rem; display: block;">Zero</strong>
           <span style="font-size: 0.7rem; color: #555; text-transform: uppercase;">False Positives*</span>
-          </div>
+        </div>
       </div>
-<a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="btn-neo-primary">
-  Initialize Chat <span class="material-symbols-outlined">chat</span>
-      </a>
-      </div>
+      <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="btn-neo-primary">Initialize Chat <span class="material-symbols-outlined">chat</span></a>
+    </div>
 
     <div class="chat-wrapper">
       <div class="chat-interface">
-        <div class="chat-msg user" style="animation-delay: 0.2s;">
-          How do I fix the SQL Injection found in the login?
-        </div>
-    
+        <div class="chat-msg user" style="animation-delay: 0.2s;">How do I fix the SQL Injection found in the login?</div>
+
         <div class="chat-msg ai" style="animation-delay: 1.0s;">
           <strong style="color: var(--neo-blue); display: block; margin-bottom: 0.5rem;">NetShield AI</strong>
-          You should replace the string concatenation with parameterized queries. This prevents attackers from manipulating
-          the input.
-    
-          <div class="code-snippet">
-            # VULNERABLE:
-            # cursor.execute("SELECT * FROM users WHERE id=" + id)
-    
-            # SECURE PATCH:
-            cursor.execute("SELECT * FROM users WHERE id=%s", (id,))
-          </div>
+          You should replace the string concatenation with parameterized queries. This prevents attackers from manipulating the input.<div class="code-snippet"># VULNERABLE: # cursor.execute("SELECT * FROM users WHERE id=" + id)
+
+            # SECURE PATCH: # cursor.execute("SELECT * FROM users WHERE id=%s", (id,))</div>
         </div>
 
         <div class="chat-msg ai" style="animation-delay: 2.5s; opacity: 0.5;">
-          <div class="typing-dots"><span></span><span></span><span></span></div>
+          <div class="typing-dots">
+            <span></span><span></span><span></span>
+          </div>
         </div>
-        </div>
+      </div>
     </div>
   </div>
 {% endblock %}

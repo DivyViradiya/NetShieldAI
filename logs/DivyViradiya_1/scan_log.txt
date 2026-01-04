@@ -1,0 +1,8 @@
+[16:14:15] [Bridge] Initializing Kill Chain against example.com (Profile: full_audit)
+[16:14:15] [Bridge] Job Dispatched. ID: 4e88bc89
+[16:17:24] [Bridge] Scan Engine finished. Downloading assets...
+[16:17:24] [Bridge] Saved: report_4e88bc89.json
+[16:17:24] [Bridge] Saved: graph_4e88bc89.json
+[16:17:24] [Bridge] Generating PDF Report...
+[16:17:28] [Bridge] PDF Saved: report_4e88bc89.pdf
+[16:17:28] [Bridge] [Blueprint] Scan finalized. Results at D:\NetShieldAI\Services\results\DivyViradiya_1\auto_pentest\report_4e88bc89.json

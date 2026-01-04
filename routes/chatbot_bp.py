@@ -74,13 +74,38 @@ def get_user_pdf_path(scanner_type):
 @chatbot_bp.route('/')
 @login_required
 def chatbot_page():
-    """Renders the chatbot UI page and ensures a session ID exists."""
+    """Renders the chatbot UI page with PRE-LOADED session data to prevent UI lag."""
     try:
         # If no session ID exists, generate one but don't persist to DB until user chats/uploads
         if 'chatbot_session_id' not in session:
             session['chatbot_session_id'] = str(uuid.uuid4())
             logger.info(f"New local chat session started for user {current_user.id}: {session['chatbot_session_id']}")
-        return render_template('chatbot.html')
+        
+        # [NEW] Pre-fetch Sessions Server-Side
+        # This eliminates the delay ("lag") the user sees when the page loads.
+        initial_sessions = []
+        try:
+            current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+            proxy_url = f"{SERVER_PROXY_URL}/get_user_sessions"
+            
+            # We use a short timeout (e.g., 2s) so the main page load doesn't hang 
+            # if the AI backend is momentarily unresponsive.
+            resp = requests.get(proxy_url, params={'user_id': current_user_identifier}, timeout=2)
+            
+            if resp.status_code == 200:
+                data = resp.json()
+                initial_sessions = data.get('sessions', [])
+            else:
+                logger.warning(f"Backend returned status {resp.status_code} during pre-fetch.")
+                
+        except Exception as e:
+            # If backend is down or times out, we just log it. 
+            # The page will still load, and the JS can try again or show an empty state.
+            logger.warning(f"Server-side session pre-fetch failed: {e}")
+
+        # Pass the pre-fetched data directly to the template
+        return render_template('chatbot.html', initial_sessions=initial_sessions)
+        
     except Exception as e:
         logger.error(f"Error in chatbot_page: {str(e)}", exc_info=True)
         return jsonify({"error": "An error occurred while loading the chatbot page"}), 500

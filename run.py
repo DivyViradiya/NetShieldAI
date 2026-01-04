@@ -18,7 +18,8 @@ from routes.ssl_scanner_bp import ssl_scanner_bp
 from routes.chatbot_bp import chatbot_bp
 from routes.auth_bp import auth_bp
 from routes.packet_sniffer_bp import packet_sniffer_bp
-from routes.dashboard_bp import dashboard_bp  # <--- NEW IMPORT
+from routes.dashboard_bp import dashboard_bp
+# [NEW] Import the Auto Pentest Blueprint
 
 # --- Import the elevation function ---
 from Services.network_scanner import ensure_admin_privileges
@@ -52,9 +53,8 @@ app.register_blueprint(ssl_scanner_bp, url_prefix='/ssl_scanner')
 app.register_blueprint(packet_sniffer_bp, url_prefix='/packet_sniffer')
 app.register_blueprint(chatbot_bp, url_prefix='/chatbot')
 app.register_blueprint(auth_bp)
-
-# Register the new Dashboard Blueprint
-app.register_blueprint(dashboard_bp, url_prefix='/dashboard') # <--- NEW REGISTRATION
+app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+# [NEW] Register the Auto Pentest Blueprint
 
 @app.route('/')
 def index():

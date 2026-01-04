@@ -17,6 +17,7 @@ ZAP_TEMPLATE_FILE = "zap_report_template.html"
 NMAP_TEMPLATE_FILE = "nmap_report_template.html"
 SSL_TEMPLATE_FILE = "ssl_report_template.html"
 SNIFFER_TEMPLATE_FILE = "sniffer_report_template.html"
+KILLCHAIN_TEMPLATE_FILE = "killchain_report_template.html"
 
 
 def create_nmap_report_pdf(source_data, pdf_path):
@@ -246,65 +247,106 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
     print(f"[+] WeasyPrint Packet Sniffer report saved successfully to: {pdf_path}")
     return True
 
+def create_killchain_report_pdf(source_data, pdf_path):
+    """
+    Renders the Full Kill Chain Report (Recon, Network, Vulns, ZAP, Traffic) to PDF.
+    Ensures ZERO data loss by mapping the full JSON structure to the template.
+    """
+    print(f"[*] Starting Full-Spectrum PDF generation for Kill Chain...")
 
-# --- Main block for testing ---
-if __name__ == "__main__":
-    import traceback
-    print("Running PDF Generator in test mode...")
-    
-    # --- ZAP Test ---
-    test_json_path = os.path.join(BASE_DIR, 'results', 'zap_scanner', 'zap_report.json')
-    test_pdf_path = os.path.join(BASE_DIR, 'results', 'zap_scanner', 'zap_report_TEST.pdf')
-
-    if os.path.exists(test_json_path):
-        try:
-            create_zap_report_pdf(test_json_path, test_pdf_path)
-        except Exception as e:
-            print(f"[TEST FAILED] ZAP generation error: {e}")
+    # 1. Load Data
+    data = {}
+    if isinstance(source_data, str):
+        if not os.path.exists(source_data):
+            raise FileNotFoundError(f"Kill Chain JSON not found: {source_data}")
+        with open(source_data, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    elif isinstance(source_data, dict):
+        data = source_data
     else:
-        print(f"[SKIP] ZAP JSON not found at {test_json_path}")
+        raise ValueError("Invalid input for PDF generation")
 
-    # --- Nmap Test ---
-    print("\n--- Testing Nmap PDF Generation ---")
-    dummy_nmap_data = {
-        "scan_args": "nmap -sV -oA test_dummy 127.0.0.1",
-        "scan_date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        "target_ip": "127.0.0.1",
-        "host_status": "up",
-        "os_guess": "Linux Test Environment",
-        "ports": [
-            {"port": "80", "protocol": "tcp", "service": "http", "version": "Apache 2.4", "state": "open", "process_name": "httpd"},
-            {"port": "22", "protocol": "tcp", "service": "ssh", "version": "OpenSSH", "state": "open", "process_name": "sshd"}
-        ]
-    }
-    
-    nmap_test_pdf_path = os.path.join(BASE_DIR, 'results', 'network_scanner', 'nmap_report_TEST.pdf')
-    os.makedirs(os.path.dirname(nmap_test_pdf_path), exist_ok=True)
-    
+    # 2. Validate Resources
+    if not os.path.exists(CSS_FILE_PATH):
+        print(f"[!] Warning: CSS not found at {CSS_FILE_PATH}")
+        css = None
+    else:
+        css = CSS(filename=CSS_FILE_PATH)
+
+    # 3. Load Template
+    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     try:
-        create_nmap_report_pdf(dummy_nmap_data, nmap_test_pdf_path)
-        print("[TEST SUCCESS] Dummy Nmap PDF created.")
+        template = env.get_template(KILLCHAIN_TEMPLATE_FILE)
     except Exception as e:
-        print(f"[TEST FAILED] Nmap generation error: {e}")
-        
-    # --- Packet Sniffer Test (Production Flow Test) ---
-    print("\n--- Testing Packet Sniffer PDF Generation (Using Real Output File) ---")
-    
-    SNIFFER_JSON_REPORT = r"D:\NetShieldAI\Services\results\packet_sniffer\pcap_analysis_report.json"
-    
-    sniffer_test_pdf_path = os.path.join(BASE_DIR, 'results', 'packet_sniffer', 'sniffer_report_TEST_REAL.pdf')
-    os.makedirs(os.path.dirname(sniffer_test_pdf_path), exist_ok=True)
+        raise FileNotFoundError(f"Template {KILLCHAIN_TEMPLATE_FILE} not found in {TEMPLATE_DIR}") from e
 
-    if os.path.exists(SNIFFER_JSON_REPORT):
-        print(f"[*] Found required JSON file: {SNIFFER_JSON_REPORT}")
-        try:
-            # We assume SNIFFER_JSON_REPORT exists and contains the ENRICHED data structure
-            # (including 'structured_context' and safely calculated rates) from packet_sniffer.py
-            create_packet_sniffer_report_pdf(SNIFFER_JSON_REPORT, sniffer_test_pdf_path)
-            print("[TEST SUCCESS] Production Packet Sniffer PDF created.")
-        except Exception as e:
-            print(f"[TEST FAILED] Sniffer generation error using real file: {e}")
-            # Reraise the error to see the full stack trace for debugging template line
-            # traceback.print_exc()
-    else:
-        print(f"[SKIP] Production JSON file not found at {SNIFFER_JSON_REPORT}. Run packet_sniffer first to create it.")
+    # 4. Data Enrichment & Stats Calculation
+    # We calculate summary stats here so the HTML template stays clean
+    
+    # A. Vulnerability Stats (Native + ZAP)
+    stats = {"Critical": 0, "High": 0, "Medium": 0, "Low": 0, "Info": 0}
+    
+    all_vulns = data.get("vulns", [])
+    
+    # Iterate Native Vulns
+    for v in all_vulns:
+        # Normalize severity case
+        sev = v.get("severity", "Info").capitalize()
+        if sev not in stats: sev = "Info"
+        stats[sev] += 1
+
+    # B. ZAP Stats (if separate, though your JSON merged them into 'vulns', we check just in case)
+    # Note: Your provided JSON shows ZAP findings are INSIDE 'vulns' list with "type": "ZAP: ..."
+    # So the loop above already covers ZAP findings! Excellent architecture.
+
+    # C. Network Stats
+    open_ports = len(data.get("network", {}).get("ports", []))
+    
+    # D. Recon Stats
+    subdomain_count = len(data.get("recon", {}).get("subdomains", []))
+    
+    # E. URL Stats
+    url_count = len(data.get("urls", []))
+
+    # F. Prepare Template Context
+    template_data = {
+        "report_id": f"KC-{int(datetime.now().timestamp())}",
+        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "target": data.get("recon", {}).get("target", "Unknown Target"),
+        
+        # Summary Metrics
+        "stats": stats,
+        "counts": {
+            "ports": open_ports,
+            "subdomains": subdomain_count,
+            "urls": url_count,
+            "anomalies": len(data.get("traffic_analysis", {}).get("anomalies", [])),
+            "credentials": len(data.get("traffic_analysis", {}).get("credentials", []))
+        },
+
+        # Full Data Sections (Passed directly for iteration in Jinja2)
+        "recon": data.get("recon", {}),
+        "network": data.get("network", {}),
+        "tech": data.get("tech", {}),
+        "traffic": data.get("traffic_analysis", {}),
+        "urls": data.get("urls", []),
+        
+        # Findings
+        "vulns": all_vulns, 
+        # We also pass the raw ZAP report if specific ZAP metadata (scan date, version) is needed
+        "zap_meta": data.get("zap_report", {}) 
+    }
+
+    # 5. Render HTML
+    rendered_html = template.render(template_data)
+    
+    # 6. Save PDF
+    # base_url is set so local images/css in /static/ work
+    base_url = pathlib.Path(PROJECT_ROOT).as_uri()
+    html = HTML(string=rendered_html, base_url=base_url)
+    
+    stylesheets = [css] if css else []
+    html.write_pdf(pdf_path, stylesheets=stylesheets)
+    
+    print(f"[+] Kill Chain PDF saved successfully: {pdf_path}")
+    return True

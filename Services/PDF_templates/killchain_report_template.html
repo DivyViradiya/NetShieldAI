@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kill Chain Audit Report</title>
+    <link rel="stylesheet" href="file:///D:/NetShieldAI/static/css/PDF_style/report_style.css">
+    <style>
+        /* INLINE STYLES FOR REPORT-SPECIFIC ELEMENTS */
+        .scan-subtitle {
+            font-size: 0.9em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .summary-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .summary-card {
+            flex: 1 1 20%; /* Adjusted for 4-5 cards */
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            padding: 10px 12px;
+            background: #f9fafb;
+        }
+
+        .summary-label {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #6b7280;
+        }
+
+        .summary-value {
+            font-size: 1.2em; /* Slightly larger for impact */
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 9px;
+            display: inline-block;
+        }
+
+        /* RISK COLORS */
+        .risk-critical { background-color: #fee2e2; color: #991b1b; }
+        .risk-high     { background-color: #fecaca; color: #7f1d1d; }
+        .risk-medium   { background-color: #fef3c7; color: #92400e; }
+        .risk-low      { background-color: #dcfce7; color: #166534; }
+        .risk-info     { background-color: #dbeafe; color: #1d4ed8; }
+
+        /* FINDING CARDS */
+        .finding-card {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            page-break-inside: avoid;
+        }
+
+        .finding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .finding-header h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #111827;
+        }
+
+        .finding-details p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #374151;
+        }
+
+        /* TABLES */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .summary-table th, .summary-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+        .summary-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+
+        .section-note {
+            font-size: 0.8em;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        /* SPECIFIC TO KILL CHAIN */
+        .tech-tag {
+            background: #eef2ff;
+            color: #4f46e5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-right: 5px;
+            border: 1px solid #c7d2fe;
+        }
+        
+        .url-list {
+            font-family: monospace;
+            font-size: 0.85em;
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 300px; /* Prevent huge pages */
+            overflow: hidden; /* For PDF print safety */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="Logo" class="logo">
+        </div>
+        <div class="header-right">
+            <h1>Automated Kill Chain Audit</h1>
+            <h2>Full-Spectrum Security Assessment</h2>
+            <div class="scan-subtitle">
+                Comprehensive analysis covering Reconnaissance, Network Mapping, Web Discovery, and Vulnerability Exploitation.
+            </div>
+        </div>
+    </header>
+
+    <div class="report-info">
+        <div class="info-box">
+            <strong>Target Scope:</strong>
+            <span>{{ target }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Report ID:</strong>
+            <span>{{ report_id }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Generated:</strong>
+            <span>{{ generation_date }}</span>
+        </div>
+    </div>
+
+    <section class="summary">
+        <h3>Executive Summary</h3>
+        
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">Total Findings</div>
+                <div class="summary-value">{{ vulns | length }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">High / Critical</div>
+                <div class="summary-value" style="color: #b91c1c;">
+                    {{ stats['High'] + stats['Critical'] }}
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Open Ports</div>
+                <div class="summary-value">{{ counts.ports }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">URLs Crawford</div>
+                <div class="summary-value">{{ counts.urls }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Traffic Anomalies</div>
+                <div class="summary-value">{{ counts.anomalies }}</div>
+            </div>
+        </div>
+
+        <p class="section-note" style="margin-top: 15px;">
+            <strong>Assessment Verdict:</strong> 
+            {% if stats['Critical'] > 0 or stats['High'] > 0 %}
+                <span style="color: #b91c1c; font-weight: bold;">CRITICAL RISK DETECTED.</span> Immediate remediation is required for {{ stats['Critical'] + stats['High'] }} high-impact vulnerabilities.
+            {% elif stats['Medium'] > 0 %}
+                <span style="color: #b45309; font-weight: bold;">MODERATE RISK.</span> Several security gaps identified that should be addressed.
+            {% else %}
+                <span style="color: #166534; font-weight: bold;">LOW RISK.</span> No major vulnerabilities found, but continue to monitor for configuration drifts.
+            {% endif %}
+        </p>
+    </section>
+
+    <section class="findings" style="page-break-before: always;">
+        <h3>Phase 1: Reconnaissance & Infrastructure</h3>
+        
+        <div class="finding-card">
+            <div class="finding-header">
+                <h4>Detected Technology Stack</h4>
+            </div>
+            <div class="finding-details">
+                {% if tech.technologies %}
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Technology</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category, techs in tech.technologies.items() %}
+                            <tr>
+                                <td><strong>{{ category }}</strong></td>
+                                <td>
+                                    {% for t in techs %}
+                                        <span class="tech-tag">{{ t }}</span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No specific technologies identified via headers or fingerprints.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="finding-card">
+            <div class="finding-header">
+                <h4>Network Surface (Open Ports)</h4>
+                <span class="badge risk-info">{{ network.status | default('Unknown') }}</span>
+            </div>
+            <div class="finding-details">
+                {% if network.ports %}
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Port</th>
+                                <th>Protocol</th>
+                                <th>Service</th>
+                                <th>Version</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in network.ports %}
+                            <tr>
+                                <td><strong>{{ p.port }}</strong></td>
+                                <td>{{ p.protocol }}</td>
+                                <td>{{ p.service }}</td>
+                                <td>{{ p.version | default('N/A') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No open ports detected on the target IP ({{ network.target }}).</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if recon.subdomains %}
+        <div class="finding-card">
+            <div class="finding-header">
+                <h4>Subdomains Found ({{ recon.subdomains | length }})</h4>
+            </div>
+            <div class="finding-details">
+                <p style="font-family: monospace; font-size: 0.9em;">
+                    {{ recon.subdomains | join(', ') }}
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="findings" style="page-break-before: always;">
+        <h3>Phase 2: Vulnerability Analysis</h3>
+        <p class="section-note">Consolidated findings from Python Native Scanner and OWASP ZAP.</p>
+
+        {% if vulns %}
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">Severity</th>
+                        <th style="width: 30%;">Vulnerability Type</th>
+                        <th style="width: 60%;">Evidence / Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in vulns %}
+                        {% set sev = v.severity | default('info') | lower %}
+                        {% set cls = 'risk-info' %}
+                        {% if sev == 'critical' %} {% set cls = 'risk-critical' %}
+                        {% elif sev == 'high' %} {% set cls = 'risk-high' %}
+                        {% elif sev == 'medium' %} {% set cls = 'risk-medium' %}
+                        {% elif sev == 'low' %} {% set cls = 'risk-low' %}
+                        {% endif %}
+
+                        <tr>
+                            <td><span class="badge {{ cls }}">{{ v.severity | upper }}</span></td>
+                            <td>
+                                <strong>{{ v.type }}</strong>
+                                <div style="font-size: 0.85em; color: #555; margin-top: 4px;">
+                                    {{ v.description | striptags | truncate(100) }}
+                                </div>
+                            </td>
+                            <td style="word-break: break-all; font-family: monospace; font-size: 0.85em;">
+                                {{ v.evidence | default('N/A') }}
+                                {% if v.parameter %}
+                                    <br><span style="color: #dc2626;">(Param: {{ v.parameter }})</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="finding-card" style="text-align: center; color: #166534; padding: 20px;">
+                <h4>✅ No Significant Vulnerabilities Found</h4>
+                <p>The automated scanners did not detect obvious security flaws.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    {% if traffic.credentials or traffic.anomalies %}
+    <section class="findings" style="page-break-before: always;">
+        <h3>Phase 3: Traffic & Signal Intelligence</h3>
+        
+        {% if traffic.credentials %}
+        <div class="finding-card" style="border-left: 4px solid #b91c1c;">
+            <div class="finding-header">
+                <h4 style="color: #b91c1c;">🚨 Plaintext Credentials Intercepted</h4>
+            </div>
+            <div class="finding-details">
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Protocol</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                            <th>Destination</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cred in traffic.credentials %}
+                        <tr>
+                            <td>{{ cred.protocol | default('HTTP/FTP') }}</td>
+                            <td>{{ cred.user }}</td>
+                            <td style="font-family: monospace; background: #fee2e2;">{{ cred.pass }}</td>
+                            <td>{{ cred.dest | default(target) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if traffic.anomalies %}
+        <div class="finding-card">
+            <div class="finding-header">
+                <h4>Network Anomalies</h4>
+            </div>
+            <div class="finding-details">
+                <ul>
+                    {% for anomaly in traffic.anomalies %}
+                        <li>{{ anomaly.description }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    <section class="findings">
+        <h3>Appendix A: Discovery Scope (URLs)</h3>
+        <p class="section-note">Top discovered endpoints. Full list available in JSON export.</p>
+        <div class="url-list">
+            {% for url in urls[:30] %}
+                <div>{{ url }}</div>
+            {% endfor %}
+            {% if urls|length > 30 %}
+                <div style="margin-top: 5px; color: #666;">... and {{ urls|length - 30 }} more.</div>
+            {% endif %}
+        </div>
+    </section>
+
+    <footer>
+        <p>Generated by NetShieldAI Reporting Engine &bull; Confidential Security Assessment</p>
+    </footer>
+
+</body>
+</html>

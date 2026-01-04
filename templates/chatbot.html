@@ -173,8 +173,12 @@
       flex-direction: column;
       gap: 0.8rem;
     }
-    .workflow-panel.mode-config .view-upload { display: none; }
-    .workflow-panel.mode-config .view-config { display: flex; }
+    .workflow-panel.mode-config .view-upload {
+      display: none;
+    }
+    .workflow-panel.mode-config .view-config {
+      display: flex;
+    }
     
     .file-preview-bar {
       display: flex;
@@ -210,11 +214,21 @@
       padding: 2px;
       border-radius: 4px;
     }
-    .btn-remove-file:hover { color: #ef4444; background: rgba(255, 255, 255, 0.05); }
+    .btn-remove-file:hover {
+      color: #ef4444;
+      background: rgba(255, 255, 255, 0.05);
+    }
     
     /* Minimal Dropdown */
-    .custom-select-wrapper { position: relative; width: 100%; }
-    .custom-select { position: relative; display: flex; flex-direction: column; }
+    .custom-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .custom-select {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
     .custom-select-trigger {
       display: flex;
       align-items: center;
@@ -247,7 +261,9 @@
       border-bottom-left-radius: 6px;
       border-bottom-right-radius: 6px;
     }
-    .custom-select.open .custom-options { display: block; }
+    .custom-select.open .custom-options {
+      display: block;
+    }
     .custom-option {
       padding: 0.7rem 0.8rem;
       font-size: 0.75rem;
@@ -255,8 +271,14 @@
       cursor: pointer;
       border-top: 1px solid #1a1a1a;
     }
-    .custom-option:hover { background: rgba(59, 130, 246, 0.1); color: white; }
-    .custom-option.selected { color: var(--neo-blue); background: rgba(59, 130, 246, 0.05); }
+    .custom-option:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: white;
+    }
+    .custom-option.selected {
+      color: var(--neo-blue);
+      background: rgba(59, 130, 246, 0.05);
+    }
     
     /* Action Button */
     .btn-neo-action {
@@ -290,7 +312,11 @@
       animation: spin 1s linear infinite;
       display: none;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
     
     /* --- CHAT AREA --- */
     .chat-interface {
@@ -311,10 +337,15 @@
       flex-direction: column;
       min-height: 0;
       /* FIX: Explicit gap between message rows */
-      gap: 2rem; 
+      gap: 2rem;
     }
-    .messages-area::-webkit-scrollbar { width: 6px; }
-    .messages-area::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    .messages-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    .messages-area::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 3px;
+    }
     
     .chat-hero {
       margin: auto;
@@ -344,18 +375,31 @@
       border-radius: var(--radius-md);
       text-align: left;
     }
-    .suggestion-card:hover { border-color: var(--neo-blue); }
-    .suggestion-card h5 { color: white; margin: 0 0 0.5rem 0; font-size: 0.9rem; font-weight: 700; }
-    .suggestion-card p { color: #888; font-size: 0.8rem; margin: 0; }
+    .suggestion-card:hover {
+      border-color: var(--neo-blue);
+    }
+    .suggestion-card h5 {
+      color: white;
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .suggestion-card p {
+      color: #888;
+      font-size: 0.8rem;
+      margin: 0;
+    }
     
     /* --- BUBBLE REDESIGN --- */
     .msg-row {
       display: flex;
       width: 100%;
       /* FIX: Explicit margin fallback for older browsers */
-      margin-bottom: 1.5rem; 
+      margin-bottom: 1.5rem;
     }
-    .msg-row.user { justify-content: flex-end; }
+    .msg-row.user {
+      justify-content: flex-end;
+    }
     
     .msg-bubble {
       max-width: var(--content-width);
@@ -385,8 +429,10 @@
     }
     
     /* --- MARKDOWN STYLING --- */
-    .markdown-content { color: #d4d4d8; }
-
+    .markdown-content {
+      color: #d4d4d8;
+    }
+    
     /* Clean Headings */
     .markdown-content h1,
     .markdown-content h2,
@@ -401,7 +447,9 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       padding-bottom: 0.5rem;
     }
-    .markdown-content h2 { font-size: 1.2rem; }
+    .markdown-content h2 {
+      font-size: 1.2rem;
+    }
     .markdown-content h3 {
       font-size: 1.1rem;
       display: flex;
@@ -416,13 +464,24 @@
       margin-right: 10px;
       border-radius: 4px;
     }
-
+    
     /* Spacing */
-    .markdown-content p { margin-bottom: 1rem; }
-    .markdown-content ul, .markdown-content ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
-    .markdown-content li { margin-bottom: 0.5rem; }
-    .markdown-content strong { color: white; font-weight: 700; }
-
+    .markdown-content p {
+      margin-bottom: 1rem;
+    }
+    .markdown-content ul,
+    .markdown-content ol {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+    }
+    .markdown-content li {
+      margin-bottom: 0.5rem;
+    }
+    .markdown-content strong {
+      color: white;
+      font-weight: 700;
+    }
+    
     /* Code */
     .markdown-content pre {
       background: #09090b;
@@ -440,8 +499,12 @@
       border-radius: 4px;
       font-size: 0.85em;
     }
-    .markdown-content pre code { background: transparent; padding: 0; color: inherit; }
-
+    .markdown-content pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    
     /* FIX: Tables Spacing & Design */
     .markdown-content table {
       width: 100%;
@@ -472,9 +535,13 @@
       vertical-align: top;
       line-height: 1.6;
     }
-    .markdown-content tr:last-child td { border-bottom: none; }
-    .markdown-content tr:hover td { background: rgba(255, 255, 255, 0.02); }
-
+    .markdown-content tr:last-child td {
+      border-bottom: none;
+    }
+    .markdown-content tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    
     .markdown-content hr {
       border: 0;
       height: 1px;
@@ -483,25 +550,45 @@
     }
     
     /* Typing Dots */
-    .typing-dots { display: inline-flex; gap: 4px; padding: 0.5rem 0; }
-    .typing-dots span {
-      width: 6px; height: 6px; background-color: var(--neo-blue);
-      border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both;
+    .typing-dots {
+      display: inline-flex;
+      gap: 4px;
+      padding: 0.5rem 0;
     }
-    .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-    .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-    @keyframes typingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+    .typing-dots span {
+      width: 6px;
+      height: 6px;
+      background-color: var(--neo-blue);
+      border-radius: 50%;
+      animation: typingBounce 1.4s infinite ease-in-out both;
+    }
+    .typing-dots span:nth-child(1) {
+      animation-delay: -0.32s;
+    }
+    .typing-dots span:nth-child(2) {
+      animation-delay: -0.16s;
+    }
+    @keyframes typingBounce {
+      0%,
+      80%,
+      100% {
+        transform: scale(0);
+      }
+      40% {
+        transform: scale(1);
+      }
+    }
     
     /* Input Area */
-/* Input Area */
+    /* Input Area */
     .input-zone {
       flex: 0 0 auto;
       /* Reduced side padding from 4rem to 1rem to expand width on smaller screens */
-      padding: 0 1rem 1.5rem 1rem; 
+      padding: 0 1rem 1.5rem 1rem;
       z-index: 30;
       pointer-events: none;
     }
-
+    
     .input-wrapper {
       pointer-events: auto;
       display: flex;
@@ -509,10 +596,10 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      
+    
       /* CHANGED: 50px -> 14px to make it a Rounded Rectangle */
-      border-radius: 14px; 
-      
+      border-radius: 14px;
+    
       padding: 0.5rem; /* Keep tight padding or increase to 0.75rem for bulkier look */
       width: 100%;
       max-width: var(--content-width);
@@ -533,15 +620,15 @@
       outline: none;
       font-family: inherit;
     }
-.send-btn {
+    .send-btn {
       background: var(--neo-blue);
       border: none;
       width: 48px;
       height: 48px;
-      
+    
       /* CHANGED: 50% -> 10px to match the input bar's boxy feel */
-      border-radius: 10px; 
-      
+      border-radius: 10px;
+    
       color: white;
       cursor: pointer;
       display: flex;
@@ -549,7 +636,10 @@
       justify-content: center;
       transition: 0.3s;
     }
-    .send-btn:hover { background: white; color: black; }
+    .send-btn:hover {
+      background: white;
+      color: black;
+    }
     
     /* Session List */
     .btn-icon-only {
@@ -565,9 +655,16 @@
       justify-content: center;
       transition: 0.2s;
     }
-    .btn-icon-only:hover { background: var(--neo-blue); border-color: var(--neo-blue); }
+    .btn-icon-only:hover {
+      background: var(--neo-blue);
+      border-color: var(--neo-blue);
+    }
     
-    .session-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .session-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
     
     .session-item {
       padding: 0.8rem;
@@ -581,11 +678,21 @@
       align-items: flex-start;
       justify-content: space-between;
     }
-    .session-item:hover { background: rgba(255, 255, 255, 0.05); }
-    .session-item.active { background: var(--neo-blue-dim); border-color: var(--neo-blue); }
-    .session-item.pinned { border-left: 3px solid var(--neo-cyan); }
+    .session-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .session-item.active {
+      background: var(--neo-blue-dim);
+      border-color: var(--neo-blue);
+    }
+    .session-item.pinned {
+      border-left: 3px solid var(--neo-cyan);
+    }
     
-    .session-info { flex: 1; overflow: hidden; }
+    .session-info {
+      flex: 1;
+      overflow: hidden;
+    }
     .session-title {
       font-size: 0.8rem;
       font-weight: 600;
@@ -596,7 +703,10 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .session-date { font-size: 0.65rem; color: #666; }
+    .session-date {
+      font-size: 0.65rem;
+      color: #666;
+    }
     
     .session-menu-btn {
       background: transparent;
@@ -609,7 +719,8 @@
       transition: 0.2s;
       margin-left: 4px;
     }
-    .session-item:hover .session-menu-btn, .session-menu-btn:hover {
+    .session-item:hover .session-menu-btn,
+    .session-menu-btn:hover {
       opacity: 1;
       color: white;
       background: rgba(255, 255, 255, 0.1);
@@ -628,7 +739,9 @@
       width: 120px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     }
-    .context-menu.show { display: flex; }
+    .context-menu.show {
+      display: flex;
+    }
     .menu-item {
       padding: 8px 12px;
       font-size: 0.75rem;
@@ -639,16 +752,34 @@
       gap: 8px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .menu-item:last-child { border-bottom: none; }
-    .menu-item:hover { background: rgba(255, 255, 255, 0.1); color: white; }
-    .menu-item.delete:hover { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    .menu-item.delete:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
     
-    .pin-icon { font-size: 0.7rem; color: var(--neo-cyan); margin-right: 4px; display: none; }
-    .session-item.pinned .pin-icon { display: inline-block; }
+    .pin-icon {
+      font-size: 0.7rem;
+      color: var(--neo-cyan);
+      margin-right: 4px;
+      display: none;
+    }
+    .session-item.pinned .pin-icon {
+      display: inline-block;
+    }
     
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(2px);
       z-index: 200;
@@ -656,7 +787,9 @@
       align-items: center;
       justify-content: center;
     }
-    .modal-overlay.show { display: flex; }
+    .modal-overlay.show {
+      display: flex;
+    }
     .neo-modal {
       background: var(--neo-card);
       border: 1px solid var(--neo-border);
@@ -665,7 +798,12 @@
       width: 300px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     }
-    .modal-header { font-size: 0.9rem; font-weight: 700; color: white; margin-bottom: 1rem; }
+    .modal-header {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 1rem;
+    }
     .modal-input {
       width: 100%;
       background: #000;
@@ -676,8 +814,15 @@
       margin-bottom: 1rem;
       font-family: inherit;
     }
-    .modal-input:focus { border-color: var(--neo-blue); outline: none; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+    .modal-input:focus {
+      border-color: var(--neo-blue);
+      outline: none;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
     .btn-modal {
       padding: 0.5rem 1rem;
       border-radius: 6px;
@@ -686,19 +831,42 @@
       border: none;
       font-weight: 600;
     }
-    .btn-cancel { background: transparent; color: #888; }
-    .btn-cancel:hover { color: white; }
-    .btn-save { background: var(--neo-blue); color: white; }
-    .btn-save:hover { background: white; color: black; }
+    .btn-cancel {
+      background: transparent;
+      color: #888;
+    }
+    .btn-cancel:hover {
+      color: white;
+    }
+    .btn-save {
+      background: var(--neo-blue);
+      color: white;
+    }
+    .btn-save:hover {
+      background: white;
+      color: black;
+    }
     
     @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .input-zone { padding: 1rem; }
+      .sidebar {
+        display: none;
+      }
+      .input-zone {
+        padding: 1rem;
+      }
     }
   </style>
 {% endblock %}
 
 {% block content %}
+  {# [NEW] PRE-FETCHED DATA INJECTION #}
+  <script>
+    // Server-Side Injection for Instant Load
+    // Takes the data passed from Flask and stores it in a window variable
+    // This allows chatbot.js to access it immediately without a network call.
+    window.PRELOADED_SESSIONS = {{ initial_sessions | tojson | safe }};
+  </script>
+
   <div class="app-layout">
     <aside class="sidebar">
       <div class="sidebar-header">
@@ -758,7 +926,7 @@
               <div class="spinner"></div>
               <span class="material-symbols-outlined icon" style="font-size: 1rem;">bolt</span>
             </button>
-            
+
             <div id="upload-status" style="margin-top: 10px; font-size: 0.75rem; text-align: center; min-height: 1.2em; color: #888;"></div>
           </div>
         </div>

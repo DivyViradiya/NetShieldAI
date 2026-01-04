@@ -135,83 +135,101 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 5. Session List & Context Menu Logic ---
 
+    // [NEW] Helper function to render the session list DOM elements
+    // This allows us to reuse the logic for both pre-loaded data and fetched data
+    function renderSessionList(sessions) {
+        ui.sessionList.innerHTML = ''; 
+        
+        if (sessions && sessions.length > 0) {
+            sessions.forEach(sess => {
+                const item = document.createElement('div');
+                item.className = `session-item ${sess.is_pinned ? 'pinned' : ''} ${sess.session_id === currentSessionId ? 'active' : ''}`;
+                item.dataset.id = sess.session_id;
+                
+                item.innerHTML = `
+                    <div class="session-info">
+                        <span class="session-title">${sess.title}</span>
+                        <span class="session-date">${sess.subtitle}</span>
+                    </div>
+                    <span class="pin-icon material-symbols-outlined" style="font-size:14px; ${sess.is_pinned ? '' : 'display:none'}">push_pin</span>
+                    <button class="session-menu-btn"><span class="material-symbols-outlined" style="font-size:16px">more_vert</span></button>
+                    
+                    <div class="context-menu" id="menu-${sess.session_id}">
+                        <div class="menu-item action-pin">
+                            <span class="material-symbols-outlined" style="font-size:14px">${sess.is_pinned ? 'do_not_disturb_on' : 'push_pin'}</span>
+                            ${sess.is_pinned ? 'Unpin' : 'Pin'}
+                        </div>
+                        <div class="menu-item action-rename">
+                            <span class="material-symbols-outlined" style="font-size:14px">edit</span> Rename
+                        </div>
+                        <div class="menu-item action-delete delete">
+                            <span class="material-symbols-outlined" style="font-size:14px">delete</span> Delete
+                        </div>
+                    </div>
+                `;
+
+                // Click Logic: Switch Session
+                item.addEventListener('click', (e) => {
+                    if (!e.target.closest('.session-menu-btn') && !e.target.closest('.context-menu')) {
+                        switchSession(sess.session_id);
+                    }
+                });
+
+                // Menu Toggle Logic
+                const menuBtn = item.querySelector('.session-menu-btn');
+                const menu = item.querySelector('.context-menu');
+                
+                menuBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); 
+                    document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('show'));
+                    menu.classList.toggle('show');
+                });
+
+                // Action Listeners
+                item.querySelector('.action-pin').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menu.classList.remove('show');
+                    togglePin(sess.session_id, !sess.is_pinned);
+                });
+                
+                item.querySelector('.action-rename').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openRenameModal(sess.session_id, sess.title);
+                    menu.classList.remove('show');
+                });
+                
+                item.querySelector('.action-delete').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    menu.classList.remove('show');
+                    // [CHANGED] Removed confirm() check for instant deletion
+                    deleteSession(sess.session_id);
+                });
+
+                ui.sessionList.appendChild(item);
+            });
+        } else {
+            ui.sessionList.innerHTML = '<p style="color:#444; font-size:0.7rem; padding:0.5rem; font-style:italic;">No history available.</p>';
+        }
+    }
+
     async function loadSessionList() {
         try {
+            // [NEW] Check for Server-Side Pre-loaded Data
+            // If the window variable exists, use it immediately to avoid network lag.
+            if (window.PRELOADED_SESSIONS) {
+                renderSessionList(window.PRELOADED_SESSIONS);
+                
+                // Clear the variable so subsequent updates (like after a pin/delete)
+                // perform a fresh network fetch to get the latest state.
+                window.PRELOADED_SESSIONS = null;
+                return;
+            }
+
+            // Fallback: Standard Network Fetch
             const response = await fetchWithAuth('/chatbot/get_sessions');
             const data = await response.json();
-            ui.sessionList.innerHTML = ''; 
-            
-            if (data.sessions && data.sessions.length > 0) {
-                data.sessions.forEach(sess => {
-                    const item = document.createElement('div');
-                    item.className = `session-item ${sess.is_pinned ? 'pinned' : ''} ${sess.session_id === currentSessionId ? 'active' : ''}`;
-                    item.dataset.id = sess.session_id;
-                    
-                    item.innerHTML = `
-                        <div class="session-info">
-                            <span class="session-title">${sess.title}</span>
-                            <span class="session-date">${sess.subtitle}</span>
-                        </div>
-                        <span class="pin-icon material-symbols-outlined" style="font-size:14px; ${sess.is_pinned ? '' : 'display:none'}">push_pin</span>
-                        <button class="session-menu-btn"><span class="material-symbols-outlined" style="font-size:16px">more_vert</span></button>
-                        
-                        <div class="context-menu" id="menu-${sess.session_id}">
-                            <div class="menu-item action-pin">
-                                <span class="material-symbols-outlined" style="font-size:14px">${sess.is_pinned ? 'do_not_disturb_on' : 'push_pin'}</span>
-                                ${sess.is_pinned ? 'Unpin' : 'Pin'}
-                            </div>
-                            <div class="menu-item action-rename">
-                                <span class="material-symbols-outlined" style="font-size:14px">edit</span> Rename
-                            </div>
-                            <div class="menu-item action-delete delete">
-                                <span class="material-symbols-outlined" style="font-size:14px">delete</span> Delete
-                            </div>
-                        </div>
-                    `;
+            renderSessionList(data.sessions);
 
-                    // Click Logic: Switch Session
-                    item.addEventListener('click', (e) => {
-                        if (!e.target.closest('.session-menu-btn') && !e.target.closest('.context-menu')) {
-                            switchSession(sess.session_id);
-                        }
-                    });
-
-                    // Menu Toggle Logic
-                    const menuBtn = item.querySelector('.session-menu-btn');
-                    const menu = item.querySelector('.context-menu');
-                    
-                    menuBtn.addEventListener('click', (e) => {
-                        e.stopPropagation(); 
-                        document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('show'));
-                        menu.classList.toggle('show');
-                    });
-
-                    // Action Listeners
-                    item.querySelector('.action-pin').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        menu.classList.remove('show');
-                        togglePin(sess.session_id, !sess.is_pinned);
-                    });
-                    
-                    item.querySelector('.action-rename').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        openRenameModal(sess.session_id, sess.title);
-                        menu.classList.remove('show');
-                    });
-                    
-                    item.querySelector('.action-delete').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        menu.classList.remove('show');
-                        if(confirm('Are you sure you want to delete this session?')) {
-                            deleteSession(sess.session_id);
-                        }
-                    });
-
-                    ui.sessionList.appendChild(item);
-                });
-            } else {
-                ui.sessionList.innerHTML = '<p style="color:#444; font-size:0.7rem; padding:0.5rem; font-style:italic;">No history available.</p>';
-            }
         } catch (e) { console.error("Error loading sessions:", e); }
     }
 
@@ -246,18 +264,33 @@ document.addEventListener('DOMContentLoaded', () => {
         finally { isPinning = false; }
     }
 
+    // [NEW] Optimistic Delete Function
     async function deleteSession(sessionId) {
+        // 1. Instant UI Update: Remove from DOM immediately
+        const item = document.querySelector(`.session-item[data-id="${sessionId}"]`);
+        if (item) {
+            item.remove(); // Removes element instantly
+        }
+
+        // 2. If deleting the current active session, clear the chat view immediately
+        if (sessionId === currentSessionId) {
+            clearView();
+        }
+
+        // 3. Send Network Request in Background
         try {
             await fetchWithAuth('/chatbot/delete_session', {
                 method: 'POST',
                 body: JSON.stringify({ session_id: sessionId })
             });
-            
-            if (sessionId === currentSessionId) {
-                clearView();
-            }
+            // We do NOT reload the list here to keep the UI stable.
+            // If the delete succeeded, the item is already gone.
+        } catch (e) { 
+            console.error("Delete failed:", e); 
+            // Only if it FAILS do we reload the list to restore the item (sync with server)
             loadSessionList();
-        } catch (e) { console.error(e); }
+            alert("Failed to delete session due to a network error.");
+        }
     }
 
     function openRenameModal(sessionId, currentTitle) {
