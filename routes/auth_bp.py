@@ -125,29 +125,31 @@ def admin_dashboard():
     total_users = len(users)
     active_users = User.query.filter_by(is_active_account=True).count()
     
-    # [UPDATED] Calculate Total System Scans (Sum of all users' scans INCLUDING AI)
+    # [UPDATED] Calculate Total System Scans (Sum of all users' scans INCLUDING Kill Chain)
     total_system_scans = db.session.query(
         func.sum(User.scan_count_nmap) + 
         func.sum(User.scan_count_zap) + 
         func.sum(User.scan_count_ssl) + 
         func.sum(User.scan_count_sniffer) + 
-        func.sum(User.scan_count_ai) # <--- Added AI
+        func.sum(User.scan_count_ai) + 
+        func.sum(User.scan_count_killchain) # <--- Added Kill Chain
     ).scalar() or 0
 
     # --- 2. Graph Data Preparation ---
     
-    # [UPDATED] Graph A: Tool Popularity (Now includes AI)
+    # [UPDATED] Graph A: Tool Popularity (Now includes Kill Chain)
     tool_usage_stats = {
         'Nmap': db.session.query(func.sum(User.scan_count_nmap)).scalar() or 0,
         'ZAP': db.session.query(func.sum(User.scan_count_zap)).scalar() or 0,
         'SSL': db.session.query(func.sum(User.scan_count_ssl)).scalar() or 0,
         'Sniffer': db.session.query(func.sum(User.scan_count_sniffer)).scalar() or 0,
-        'AI Analyst': db.session.query(func.sum(User.scan_count_ai)).scalar() or 0 # <--- Added AI
+        'AI Analyst': db.session.query(func.sum(User.scan_count_ai)).scalar() or 0,
+        'Kill Chain': db.session.query(func.sum(User.scan_count_killchain)).scalar() or 0 # <--- Added Kill Chain
     }
 
     # Graph B: Top Power Users (For Bar Chart)
     # Sort users by total_scans (descending) and take top 5
-    # Note: ensure User.total_scans in models.py also includes AI count
+    # Note: User.total_scans property in models.py now includes Kill Chain count automatically
     sorted_users = sorted(users, key=lambda u: u.total_scans, reverse=True)[:5]
     top_users_labels = [u.username for u in sorted_users]
     top_users_data = [u.total_scans for u in sorted_users]

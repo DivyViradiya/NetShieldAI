@@ -14,7 +14,7 @@
       --neo-accent: #f8fafc;
       --neo-blue: #3b82f6;
     }
-    
+   
     .main-content {
       max-width: 1400px;
       padding: 0 4rem;
@@ -528,8 +528,10 @@
           <span class="material-symbols-outlined">hub</span>
         </div>
       </div>
-      <h3>Network Scanner</h3>
-      <p>Uses Nmap to map open ports, detect operating systems, and identify hidden services.</p>
+      <div class="card-content">
+        <h3>Network Scanner</h3>
+        <p>Uses Nmap to map open ports, detect operating systems, and identify hidden services.</p>
+      </div>
       <div class="card-action">
         Initialize Scan <span class="material-symbols-outlined">chevron_right</span>
       </div>
@@ -541,8 +543,10 @@
           <span class="material-symbols-outlined">troubleshoot</span>
         </div>
       </div>
-      <h3>Network Monitor</h3>
-      <p>Real-time packet sniffing to analyze data transfer and capture handshake sequences.</p>
+      <div class="card-content">
+        <h3>Network Monitor</h3>
+        <p>Real-time packet sniffing to analyze data transfer and capture handshake sequences.</p>
+      </div>
       <div class="card-action">
         Start Monitor <span class="material-symbols-outlined">chevron_right</span>
       </div>
@@ -554,8 +558,10 @@
           <span class="material-symbols-outlined">language</span>
         </div>
       </div>
-      <h3>Web App Vulnerability</h3>
-      <p>Advanced crawling using ZAP engine with AI-based CVE/CWE reranking.</p>
+      <div class="card-content">
+        <h3>Web App Vulnerability</h3>
+        <p>Advanced crawling using ZAP engine with AI-based CVE/CWE reranking.</p>
+      </div>
       <div class="card-action">
         Audit Web App <span class="material-symbols-outlined">chevron_right</span>
       </div>
@@ -567,10 +573,28 @@
           <span class="material-symbols-outlined">encrypted</span>
         </div>
       </div>
-      <h3>SSL/TLS Scanner</h3>
-      <p>Analyze certificate chains and cipher strength to ensure your encryption meets modern standards.</p>
+      <div class="card-content">
+        <h3>SSL/TLS Scanner</h3>
+        <p>Analyze certificate chains and cipher strength to ensure your encryption meets modern standards.</p>
+      </div>
       <div class="card-action">
         Check Certificates <span class="material-symbols-outlined">chevron_right</span>
+      </div>
+    </a>
+
+    <a href="{{ url_for('killchain_bp.killchain_page') }}" class="neo-card">
+      <div class="card-top">
+        <div class="card-icon-box">
+          <span class="material-symbols-outlined">view_in_ar</span>
+        </div>
+        <span class="status-badge">Integrated Suite</span>
+      </div>
+      <div class="card-content">
+        <h3>Kill Chain Orchestrator</h3>
+        <p>Full-spectrum attack simulation. Automatically chain Nmap, SSL, and ZAP scanners.</p>
+      </div>
+      <div class="card-action">
+        Run Simulation <span class="material-symbols-outlined">double_arrow</span>
       </div>
     </a>
 
@@ -581,28 +605,15 @@
         </div>
         <span class="status-badge dev">In Development</span>
       </div>
-      <h3>SQL Injection (SQLMap)</h3>
-      <p>Deep database penetration testing to identify injection flaws.</p>
+      <div class="card-content">
+        <h3>SQL Injection</h3>
+        <p>Deep database penetration testing to identify injection flaws. Currently offline.</p>
+      </div>
       <div class="card-action">
         Module Offline <span class="material-symbols-outlined">lock</span>
       </div>
     </div>
-
-    <div class="neo-card disabled">
-      <div class="card-top">
-        <div class="card-icon-box">
-          <span class="material-symbols-outlined">security_update_warning</span>
-        </div>
-        <span class="status-badge soon">Coming Soon</span>
-      </div>
-      <h3>Automated Pentesting</h3>
-      <p>Full-spectrum attack simulation combining all modules into an autonomous workflow.</p>
-      <div class="card-action">
-        Access Restricted <span class="material-symbols-outlined">lock</span>
-      </div>
-    </div>
   </div>
-
   <div class="chatbot-banner fade-in-element">
     <div class="banner-content">
       <h2 class="section-title" style="font-size: 2rem; margin-bottom: 1rem;">Security Insights, <br /><b>Decoded.</b></h2>

@@ -23,6 +23,7 @@
       --neo-red: #f43f5e;
       --neo-green: #10b981;
       --neo-amber: #f59e0b;
+      --neo-purple: #8b5cf6;
       --font-mono: 'JetBrains Mono', monospace;
     }
     
@@ -55,9 +56,7 @@
       letter-spacing: 0.05em;
       margin: 0;
     }
-    .hud-title span {
-      color: var(--neo-blue);
-    }
+    .hud-title span { color: var(--neo-blue); }
     
     .user-chip {
       background: var(--neo-card);
@@ -69,7 +68,6 @@
       gap: 0.75rem;
       font-size: 0.85rem;
     }
-    
     .user-avatar {
       width: 28px;
       height: 28px;
@@ -109,10 +107,7 @@
     .hud-card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
+      top: 0; left: 0; width: 100%; height: 2px;
       background: linear-gradient(90deg, transparent, var(--neo-blue), transparent);
       opacity: 0.5;
     }
@@ -126,7 +121,6 @@
       display: flex;
       justify-content: space-between;
     }
-    
     .metric-value {
       font-family: var(--font-mono);
       font-size: 2.2rem;
@@ -134,195 +128,166 @@
       color: white;
       margin-bottom: 0.25rem;
     }
-    
-    .metric-sub {
-      font-size: 0.8rem;
-      color: #666;
-    }
-    
-    /* --- MAIN GRID (Fixed Vertical Alignment) --- */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 1.5rem;
-      align-items: start; /* <--- FIXED: Prevents cards from stretching vertically */
-    }
-    
-    .panel {
+    .metric-sub { font-size: 0.8rem; color: #666; }
+
+    /* --- PANEL STYLES (SHARED) --- */
+    .panel, .killchain-card {
       background: var(--neo-card);
       border: 1px solid var(--neo-border);
       border-radius: 8px;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0; 
+      transition: border-color 0.2s;
     }
-    
+
+    .panel:hover, .killchain-card:hover {
+        border-color: #3f3f46;
+    }
+
     .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid #1a1a1a;
-      padding-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #1a1a1a;
     }
-    
+
     .panel-title {
-      font-size: 1rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #e4e4e7;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .panel-title .material-symbols-outlined { font-size: 1.1rem; color: var(--neo-blue); }
+
+    /* --- HERO ROW (KILL CHAIN) --- */
+    .hero-row {
+        margin-bottom: 2rem;
     }
     
-    /* --- TABLES --- */
-    .mono-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-    .mono-table td {
-      padding: 0.75rem 0;
-      border-bottom: 1px solid #1a1a1a;
-      color: #e4e4e7;
-      font-family: var(--font-mono);
-    }
-    .mono-table tr:last-child td {
-      border-bottom: none;
+    /* Refactored Killchain Card to match Standard Panels */
+    .killchain-card {
+        display: grid; 
+        grid-template-columns: 1.2fr 0.8fr 1.5fr 1.5fr auto; 
+        gap: 1.5rem; 
+        align-items: start;
+        box-shadow: none; 
+        border-left: 1px solid var(--neo-border);
     }
     
-    /* --- SERVICE LIST --- */
-    .service-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+    .kc-col {
+        display: flex;
+        flex-direction: column;
     }
-    .service-item {
-      background: #111;
-      border: 1px solid #222;
-      padding: 0.75rem;
-      margin-bottom: 0.5rem;
-      border-radius: 4px;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      display: flex;
-      justify-content: space-between;
+
+    .tech-stack-wrapper { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .tech-badge {
+        display: inline-flex; align-items: center;
+        padding: 4px 10px;
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid var(--neo-purple);
+        color: var(--neo-purple);
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
     }
-    .service-item .port {
-      color: var(--neo-blue);
-      font-weight: bold;
-    }
-    
-    /* --- ZAP VULNERABILITY FIXES (Grid Layout for Headers) --- */
-    .vuln-item {
-      border: 1px solid #222;
-      border-radius: 4px;
-      margin-bottom: 0.5rem;
-      overflow: hidden;
-    }
-    
-    /* Using Grid here ensures title and badge never overlap */
-    .vuln-header {
-      background: #0f0f11;
-      padding: 0.75rem;
+
+    /* --- SPLIT GRID (ADJUSTED LAYOUT) --- */
+    .split-grid {
       display: grid;
-      grid-template-columns: 1fr auto; /* Title takes space | Badge takes minimum needed */
-      gap: 1rem;
-      align-items: center;
+      /* Adjusted to 60/40 split to fix spacing issues */
+      grid-template-columns: 1.6fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .col-left, .col-right {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem; 
+        height: 100%; 
+    }
+    
+    /* This forces the bottom card in each column to expand and fill space */
+    .panel:last-child {
+        flex: 1;
+    }
+
+    /* --- LISTS & TABLES --- */
+    .mono-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .mono-table td { padding: 0.75rem 0; border-bottom: 1px solid #1a1a1a; color: #e4e4e7; font-family: var(--font-mono); }
+    .mono-table tr:last-child td { border-bottom: none; }
+    
+    .service-list { list-style: none; padding: 0; margin: 0; }
+    .service-item {
+      background: #111; border: 1px solid #222; padding: 0.75rem;
+      margin-bottom: 0.5rem; border-radius: 4px;
+      font-family: var(--font-mono); font-size: 0.8rem;
+      display: flex; justify-content: space-between;
+    }
+    .service-item .port { color: var(--neo-blue); font-weight: bold; }
+
+    /* --- VULN STYLES --- */
+    .vuln-item { border: 1px solid #222; border-radius: 4px; margin-bottom: 0.5rem; overflow: hidden; }
+    .vuln-header {
+      background: #0f0f11; padding: 0.75rem;
+      display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center;
       cursor: pointer;
     }
-    .vuln-header:hover {
-      background: #151518;
-    }
-    
-    .vuln-title {
-      font-weight: 600;
-      font-size: 0.8rem;
-      line-height: 1.4;
-      color: #e4e4e7;
-    }
-    
-    .vuln-body {
-      padding: 1rem;
-      background: #050505;
-      font-size: 0.85rem;
-      color: #aaa;
-      display: none;
-      border-top: 1px solid #222;
-    }
-    .vuln-body.active {
-      display: block;
-    }
+    .vuln-header:hover { background: #151518; }
+    .vuln-title { font-weight: 600; font-size: 0.8rem; line-height: 1.4; color: #e4e4e7; }
+    .vuln-body { padding: 1rem; background: #050505; font-size: 0.85rem; color: #aaa; display: none; border-top: 1px solid #222; }
+    .vuln-body.active { display: block; }
     
     .risk-badge {
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.65rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      white-space: nowrap; /* Forces badge to stay on one line */
-      display: inline-block;
-      min-width: 60px;
-      text-align: center;
+      padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+      white-space: nowrap; display: inline-block; min-width: 60px; text-align: center;
     }
-    .risk-high {
-      color: var(--neo-red);
-      border: 1px solid var(--neo-red);
-      background: rgba(244, 63, 94, 0.1);
-    }
-    .risk-med {
-      color: var(--neo-amber);
-      border: 1px solid var(--neo-amber);
-      background: rgba(245, 158, 11, 0.1);
-    }
-    .risk-low {
-      color: var(--neo-blue);
-      border: 1px solid var(--neo-blue);
-      background: rgba(59, 130, 246, 0.1);
-    }
-    
-    /* --- DOWNLOAD BUTTON GRID (Fixed 4 Columns) --- */
+    .risk-critical { color: #ff0000; border: 1px solid #ff0000; background: rgba(255, 0, 0, 0.1); box-shadow: 0 0 5px rgba(255,0,0,0.2); }
+    .risk-high { color: var(--neo-red); border: 1px solid var(--neo-red); background: rgba(244, 63, 94, 0.1); }
+    .risk-med { color: var(--neo-amber); border: 1px solid var(--neo-amber); background: rgba(245, 158, 11, 0.1); }
+    .risk-low { color: var(--neo-blue); border: 1px solid var(--neo-blue); background: rgba(59, 130, 246, 0.1); }
+
+    /* --- DOWNLOAD GRID --- */
     .download-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr); /* Forces 4 equal columns */
-      gap: 0.5rem;
-      margin-top: auto;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-top: auto;
     }
-    
     .dl-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.75rem;
-      background: #111;
-      border: 1px solid var(--neo-border);
-      color: var(--neo-text-muted);
-      text-decoration: none;
-      font-size: 0.8rem;
-      border-radius: 6px;
-      transition: all 0.2s;
-      white-space: nowrap; /* Prevents button text wrapping */
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.75rem; background: #111; border: 1px solid var(--neo-border);
+      color: var(--neo-text-muted); text-decoration: none; font-size: 0.75rem;
+      border-radius: 6px; transition: all 0.2s; white-space: nowrap;
     }
-    
-    .dl-btn:hover:not(.disabled) {
-      background: var(--neo-blue);
-      color: white;
-      border-color: var(--neo-blue);
+    .dl-btn:hover:not(.disabled) { background: var(--neo-blue); color: white; border-color: var(--neo-blue); }
+    .dl-btn.killchain-btn:hover:not(.disabled) { background: var(--neo-purple); border-color: var(--neo-purple); }
+    .dl-btn.disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+
+    /* --- USAGE STATS GRID --- */
+    .usage-stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
     }
-    
-    .dl-btn.disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-      pointer-events: none;
+    .usage-stat-item {
+        background: #111;
+        padding: 0.75rem;
+        border-radius: 4px;
+        border: 1px solid #222;
     }
+    .usage-label { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 0.25rem; }
+    .usage-value { font-family: var(--font-mono); font-size: 0.9rem; color: #eee; }
   </style>
 {% endblock %}
 
 {% block content %}
   <div class="dashboard-container fade-in-element">
+    
     <div class="hud-header">
       <div class="hud-title">
         <h1>Command <span>Center</span></h1>
@@ -370,8 +335,82 @@
       </div>
     </div>
 
-    <div class="main-grid">
-      <div>
+    <div class="hero-row">
+        <div class="killchain-card">
+            
+            <div class="kc-col">
+                <h3 style="color: var(--neo-purple); font-size: 0.9rem; margin: 0 0 0.5rem 0; display:flex; align-items:center; gap:0.5rem; text-transform: uppercase; font-weight:700;">
+                    <span class="material-symbols-outlined" style="font-size:1.1rem;">deployed_code</span> Target Scope
+                </h3>
+                <div class="kc-target" id="zap-target" style="font-size: 1rem; font-weight: 700; color: white; margin-bottom: 0.5rem;">--</div>
+                <div id="tech-stack-container" class="tech-stack-wrapper">
+                    <span style="font-size:0.8rem; color:#444;">--</span>
+                </div>
+            </div>
+
+            <div class="kc-col" style="border-left: 1px solid #222; padding-left: 1.5rem;">
+                <div style="font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 0.5rem;">Reconnaissance</div>
+                <div style="margin-bottom: 0.5rem;">
+                    <span style="color: var(--neo-blue); font-weight: 700; font-family: var(--font-mono); font-size: 1.1rem;" id="kc-subdomains">0</span>
+                    <span style="font-size: 0.8rem; color: #888;"> Subdomains</span>
+                </div>
+                <div>
+                    <span style="color: var(--neo-blue); font-weight: 700; font-family: var(--font-mono); font-size: 1.1rem;" id="kc-urls">0</span>
+                    <span style="font-size: 0.8rem; color: #888;"> URLs Crawled</span>
+                </div>
+            </div>
+
+            <div class="kc-col" style="border-left: 1px solid #222; padding-left: 1.5rem;">
+                <div style="font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 0.75rem;">Severity Matrix</div>
+                <div style="display: flex; gap: 1rem; text-align: center;">
+                    <div>
+                        <div style="color: #ff0000; font-weight: 800; font-size: 1.2rem; line-height: 1;" id="kc-count-crit">0</div>
+                        <div style="font-size: 0.65rem; color: #888; margin-top: 4px;">CRIT</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--neo-red); font-weight: 700; font-size: 1.2rem; line-height: 1;" id="kc-count-high">0</div>
+                        <div style="font-size: 0.65rem; color: #888; margin-top: 4px;">HIGH</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--neo-amber); font-weight: 700; font-size: 1.2rem; line-height: 1;" id="kc-count-med">0</div>
+                        <div style="font-size: 0.65rem; color: #888; margin-top: 4px;">MED</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--neo-blue); font-weight: 700; font-size: 1.2rem; line-height: 1;" id="kc-count-low">0</div>
+                        <div style="font-size: 0.65rem; color: #888; margin-top: 4px;">LOW</div>
+                    </div>
+                </div>
+                <div style="width: 100%; height: 4px; background: #222; margin-top: 10px; display: flex; border-radius: 2px; overflow: hidden;">
+                    <div id="bar-crit" style="height: 100%; background: #ff0000; width: 0%;"></div>
+                    <div id="bar-high" style="height: 100%; background: var(--neo-red); width: 0%;"></div>
+                    <div id="bar-med" style="height: 100%; background: var(--neo-amber); width: 0%;"></div>
+                    <div id="bar-low" style="height: 100%; background: var(--neo-blue); width: 0%;"></div>
+                </div>
+            </div>
+
+            <div class="kc-col" style="border-left: 1px solid #222; padding-left: 1.5rem;">
+                <div style="font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 0.5rem;">Primary Threats</div>
+                <div id="kc-top-issues" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                    <span style="font-size: 0.8rem; color: #444;">--</span>
+                </div>
+            </div>
+
+            <div class="kc-action" style="align-self: center;">
+                <a id="btn-killchain-pdf" href="#" class="dl-btn killchain-btn disabled" title="Kill Chain Full Audit" style="padding: 1rem 1.5rem; font-size: 0.9rem;">
+                    <div style="display:flex; flex-direction:column; align-items:center; line-height: 1.2;">
+                        <span style="font-weight:700;">DOWNLOAD</span>
+                        <span style="font-size:0.7rem; opacity:0.7;">REPORT</span>
+                    </div>
+                    <span class="material-symbols-outlined" style="margin-left: 0.5rem;">download</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="split-grid">
+      
+      <div class="col-left">
+        
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">
@@ -416,19 +455,59 @@
             </tbody>
           </table>
         </div>
+
+        <div class="panel" style="flex: 1;">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="material-symbols-outlined">terminal</span> System Events
+                </div>
+                <div style="font-size:0.8rem; color: #555;">Live Feed</div>
+            </div>
+            <div id="system-event-log" style="font-family: var(--font-mono); font-size: 0.8rem; color: #888; display: flex; flex-direction: column; gap: 0.5rem;">
+                <div style="display: flex; gap: 1rem;">
+                    <span style="color: #444;">--:--:--</span>
+                    <span>System initialized. Waiting for telemetry...</span>
+                </div>
+            </div>
+        </div>
+
       </div>
 
-      <div style="display:flex; flex-direction:column;">
-        <div class="panel" style="flex-grow:1;">
+      <div class="col-right">
+        
+        <div class="panel">
           <div class="panel-header">
             <div class="panel-title">
               <span class="material-symbols-outlined">radar</span> Threat Radar
             </div>
-            <div style="font-size:0.8rem; color: #555; max-width: 200px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="zap-target">Target: None</div>
           </div>
           <div id="zap-vuln-list">
             <div style="text-align:center; padding:2rem; color:#444; font-size:0.9rem;">No vulnerabilities detected yet.</div>
           </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span class="material-symbols-outlined">person_search</span> Operator Activity
+              </div>
+              <div style="font-size:0.8rem; color: #555;" id="usage-account-type">Admin</div>
+            </div>
+            
+            <div class="usage-stats-grid">
+                <div class="usage-stat-item">
+                    <div class="usage-label">Last Login</div>
+                    <div class="usage-value" id="usage-last-login">--</div>
+                </div>
+                <div class="usage-stat-item">
+                    <div class="usage-label">Total Scans</div>
+                    <div class="usage-value" id="usage-total-scans">0</div>
+                </div>
+            </div>
+
+            <div style="position: relative; height: 150px; width: 100%;">
+                <canvas id="usageChart"></canvas>
+            </div>
         </div>
 
         <div class="panel">
@@ -449,27 +528,33 @@
             </div>
           </div>
 
-          <h4 style="font-size: 0.75rem; color: #666; text-transform:uppercase; margin-bottom:1rem;">Download Reports</h4>
+          <h4 style="font-size: 0.75rem; color: #666; text-transform:uppercase; margin-bottom:1rem;">Individual Logs</h4>
           <div class="download-grid">
             <a id="btn-nmap-pdf" href="#" class="dl-btn disabled" title="Network Report"><span>NET</span> <span class="material-symbols-outlined" style="font-size:1rem;">download</span></a>
             <a id="btn-zap-pdf" href="#" class="dl-btn disabled" title="Web Vulnerability Report"><span>WEB</span> <span class="material-symbols-outlined" style="font-size:1rem;">download</span></a>
             <a id="btn-ssl-pdf" href="#" class="dl-btn disabled" title="SSL/TLS Report"><span>SSL</span> <span class="material-symbols-outlined" style="font-size:1rem;">download</span></a>
             <a id="btn-sniffer-pdf" href="#" class="dl-btn disabled" title="Packet Analysis Report"><span>PCAP</span> <span class="material-symbols-outlined" style="font-size:1rem;">download</span></a>
+            <div style="opacity:0.2; border:1px dashed #444; border-radius:6px;"></div>
           </div>
         </div>
+
       </div>
+
     </div>
   </div>
 
   <script>
     const apiEndpoints = {
+      killchain: "{{ url_for('dashboard_bp.get_killchain_stats') }}",
       network: "{{ url_for('dashboard_bp.get_network_stats') }}",
       zap: "{{ url_for('dashboard_bp.get_zap_stats') }}",
       ssl: "{{ url_for('dashboard_bp.get_ssl_stats') }}",
-      sniffer: "{{ url_for('dashboard_bp.get_sniffer_stats') }}"
+      sniffer: "{{ url_for('dashboard_bp.get_sniffer_stats') }}",
+      usage: "{{ url_for('dashboard_bp.get_usage_stats') }}" 
     }
     
     const reportUrls = {
+      killchain: "{{ url_for('killchain_bp.download_pdf_report') }}",
       network: "{{ url_for('network_scanner_bp.download_pdf_report') }}",
       zap: "{{ url_for('zap_scanner_bp.download_pdf_report') }}",
       ssl: "{{ url_for('ssl_scanner_bp.download_pdf_report') }}",

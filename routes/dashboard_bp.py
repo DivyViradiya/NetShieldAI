@@ -13,7 +13,6 @@ dashboard_bp = Blueprint('dashboard_bp', __name__)
 def get_user_results_dir():
     """
     Constructs the path: Services/results/<username_id>
-    Matches the logic used in scanner blueprints.
     """
     if not current_user.is_authenticated:
         return None
@@ -41,18 +40,106 @@ def load_json_safe(path):
 @dashboard_bp.route('/')
 @login_required
 def dashboard():
-    """Renders the dashboard UI frame. The JS will fetch data from APIs below."""
+    """Renders the dashboard UI frame."""
     return render_template('dashboard.html')
 
 # --- Modular API Endpoints ---
 
+# [NEW] --- Kill Chain Combined Stats ---
+@dashboard_bp.route('/api/stats/killchain')
+@login_required
+def get_killchain_stats():
+    """
+    Parses the massive killchain_report.json to provide a high-level 
+    security posture overview for the Dashboard.
+    """
+    user_dir = get_user_results_dir()
+    
+    response = {
+        "status": "Not Scanned",
+        "target": "N/A",
+        "scan_date": "N/A",
+        "vuln_summary": {"Critical": 0, "High": 0, "Medium": 0, "Low": 0, "Info": 0},
+        "top_risks": [],
+        "tech_stack": {},
+        "network_summary": {"open_ports": 0, "subdomains": 0, "urls_crawled": 0}
+    }
+
+    if not user_dir: return jsonify(response)
+
+    # Path to the killchain specific report
+    # Path: Services/results/{User_ID}/killchain/reports/killchain_report.json
+    kc_path = os.path.join(user_dir, 'killchain', 'reports', 'killchain_report.json')
+    data = load_json_safe(kc_path)
+
+    if data:
+        # 1. Basic Metadata
+        response['status'] = "Completed"
+        response['target'] = data.get('target', 'Unknown')
+        response['scan_date'] = data.get('scan_date', 'N/A')
+
+        # 2. Vulnerability Summary (Counts from vulns_grouped)
+        # Structure: "vulns_grouped": { "Critical": [...], "High": [...] }
+        vuln_groups = data.get('vulns_grouped', {})
+        total_vulns = 0
+        
+        for severity in ['Critical', 'High', 'Medium', 'Low', 'Info']:
+            count = len(vuln_groups.get(severity, []))
+            response['vuln_summary'][severity] = count
+            total_vulns += count
+
+        # 3. Extract Top Risks (Critical & High)
+        # We take up to 5 items, prioritizing Critical then High
+        top_risks = []
+        
+        # Helper to format risk for UI
+        def format_risk(vuln_item, sev_label):
+            return {
+                "type": vuln_item.get('type', 'Unknown Vulnerability'),
+                "severity": sev_label,
+                "evidence": vuln_item.get('evidence', '')[:100], # Truncate evidence
+                "param": vuln_item.get('parameter', 'N/A')
+            }
+
+        for v in vuln_groups.get('Critical', []):
+            top_risks.append(format_risk(v, 'Critical'))
+        
+        # If we have space left, add Highs
+        if len(top_risks) < 5:
+            for v in vuln_groups.get('High', []):
+                if len(top_risks) >= 5: break
+                top_risks.append(format_risk(v, 'High'))
+        
+        response['top_risks'] = top_risks
+
+        # 4. Tech Stack Extraction
+        # Structure: "tech": { "technologies": { "Server": ["nginx"], "Language": ["PHP"] } }
+        tech_data = data.get('tech', {}).get('technologies', {})
+        response['tech_stack'] = tech_data
+
+        # 5. Network/Recon Summary
+        # Structure: "network": { "ports": [...] }, "recon": { "subdomains": [...] }
+        ports = data.get('network', {}).get('ports', [])
+        subdomains = data.get('recon', {}).get('subdomains', [])
+        
+        # [UPDATED] Added urls_crawled count here
+        response['network_summary'] = {
+            "open_ports": len(ports),
+            "subdomains": len(subdomains),
+            "urls_crawled": len(data.get('urls', [])), 
+            "ports_list": [f"{p.get('port')}/{p.get('service')}" for p in ports[:5]] # Quick preview
+        }
+
+    return jsonify(response)
+
+
+# [EXISTING] --- Network Stats ---
 @dashboard_bp.route('/api/stats/network')
 @login_required
 def get_network_stats():
     """Returns aggregated stats for Nmap/Network Scanner."""
     user_dir = get_user_results_dir()
     
-    # Default response structure
     response = {
         "status": "Not Scanned",
         "target": "N/A",
@@ -66,22 +153,18 @@ def get_network_stats():
 
     if not user_dir: return jsonify(response)
 
-    # File: nmap_report.json
     nmap_path = os.path.join(user_dir, 'network_scanner', 'nmap_report.json')
     nmap_data = load_json_safe(nmap_path)
 
     if nmap_data:
         ports_list = nmap_data.get('ports', [])
         
-        # --- NEW: Extract Rich Service Data ---
         detailed_services = []
         for p in ports_list:
             port = p.get('port', '?')
             service = p.get('service', 'unknown')
             version = p.get('version', '').strip()
             
-            # Format: "135: msrpc (Microsoft Windows RPC)"
-            # If version is empty, just show "445: microsoft-ds"
             if version:
                 label = f"{port}: {service} ({version})"
             else:
@@ -97,16 +180,17 @@ def get_network_stats():
             "os_detected": nmap_data.get('os_guess', 'Unknown'),
             "open_ports_count": len(ports_list),
             "open_ports_list": [p.get('port') for p in ports_list],
-            "top_services": detailed_services[:5] # Return top 5 rich strings
+            "top_services": detailed_services[:5] 
         })
     
     return jsonify(response)
 
 
+# [EXISTING] --- ZAP Stats ---
 @dashboard_bp.route('/api/stats/zap')
 @login_required
 def get_zap_stats():
-    """Returns aggregated stats for ZAP Web Scanner with detailed solutions."""
+    """Returns aggregated stats for ZAP Web Scanner."""
     user_dir = get_user_results_dir()
     
     response = {
@@ -119,7 +203,6 @@ def get_zap_stats():
 
     if not user_dir: return jsonify(response)
 
-    # File: zap_report.json
     zap_path = os.path.join(user_dir, 'zap_scanner', 'zap_report.json')
     zap_data = load_json_safe(zap_path)
 
@@ -127,11 +210,9 @@ def get_zap_stats():
         summary = zap_data.get('summary', {})
         findings = zap_data.get('findings', [])
         
-        # 1. Process Findings (Deduplicate & Clean HTML)
         seen_alerts = set()
         processed_risks = []
 
-        # Helper to strip HTML tags for clean dashboard text
         def clean_html(raw_html):
             cleaner = re.compile('<.*?>')
             text = re.sub(cleaner, '', raw_html)
@@ -141,11 +222,9 @@ def get_zap_stats():
             name = f.get('name')
             risk = f.get('risk', 'Low')
             
-            # Key to ensure we don't show "Missing Headers" 50 times
             if name not in seen_alerts:
                 seen_alerts.add(name)
                 
-                # Clean the solution text (take first sentence or 100 chars)
                 raw_sol = f.get('solution', '')
                 clean_sol = clean_html(raw_sol)
                 short_sol = (clean_sol[:100] + '...') if len(clean_sol) > 100 else clean_sol
@@ -157,7 +236,6 @@ def get_zap_stats():
                     "confidence": f.get('confidence', '1')
                 })
 
-        # 2. Sort by Severity (High -> Medium -> Low)
         risk_order = {"High": 0, "Medium": 1, "Low": 2, "Info": 3}
         processed_risks.sort(key=lambda x: risk_order.get(x["risk"], 4))
 
@@ -171,17 +249,17 @@ def get_zap_stats():
                 "low": summary.get('Low', 0),
                 "info": summary.get('Info', 0)
             },
-            # Return top 5 distinct risks for the UI
             "top_risks": processed_risks[:5] 
         })
 
     return jsonify(response)
 
 
+# [EXISTING] --- SSL Stats ---
 @dashboard_bp.route('/api/stats/ssl')
 @login_required
 def get_ssl_stats():
-    """Returns aggregated stats for SSL Scanner with expiry calculation."""
+    """Returns aggregated stats for SSL Scanner."""
     user_dir = get_user_results_dir()
     
     response = {
@@ -197,7 +275,6 @@ def get_ssl_stats():
 
     if not user_dir: return jsonify(response)
 
-    # File: ssl_report.json
     ssl_path = os.path.join(user_dir, 'ssl_scanner', 'ssl_report.json')
     ssl_data = load_json_safe(ssl_path)
 
@@ -205,13 +282,10 @@ def get_ssl_stats():
         cert_chain = ssl_data.get('certificate_chain', [])
         primary_cert = cert_chain[0] if cert_chain else {}
         
-        # 1. Calculate Days Remaining
-        # Format example: "Feb 25 15:49:26 2026 GMT"
         days_left_str = "Unknown"
         expiry_str = primary_cert.get('not_after', '')
         if expiry_str:
             try:
-                # Strip ' GMT' and parse
                 clean_date = expiry_str.replace(' GMT', '')
                 expiry_dt = datetime.strptime(clean_date, "%b %d %H:%M:%S %Y")
                 delta = expiry_dt - datetime.now()
@@ -219,26 +293,20 @@ def get_ssl_stats():
             except Exception:
                 pass
 
-        # 2. Key Information
         k_type = primary_cert.get('key_type', 'RSA')
         k_size = primary_cert.get('key_size', 'Unknown')
         key_info = f"{k_type} {k_size} bits"
 
-        # 3. Check Protocols (Flag 1.0, 1.1, SSLv2, SSLv3)
         weak_protocols_found = []
         for proto in ssl_data.get('protocols', []):
-            p_name = proto.get('name', '') # e.g., "1.0", "1.1"
+            p_name = proto.get('name', '') 
             if proto.get('enabled') and p_name in ['SSLv2', 'SSLv3', '1.0', '1.1']:
-                # Format "1.0" -> "TLS 1.0"
                 full_name = f"TLS {p_name}" if p_name[0].isdigit() else p_name
                 weak_protocols_found.append(full_name)
 
-        # 4. Check Vulnerabilities
         vulns_list = ssl_data.get('vulnerabilities', [])
-        # Deduplicate vulnerability names
         vuln_names = list(set([v.get('name') for v in vulns_list]))
         
-        # Security Score Logic
         is_secure = (len(weak_protocols_found) == 0) and (len(vulns_list) == 0)
 
         response.update({
@@ -255,10 +323,11 @@ def get_ssl_stats():
     return jsonify(response)
 
 
+# [EXISTING] --- Sniffer Stats ---
 @dashboard_bp.route('/api/stats/sniffer')
 @login_required
 def get_sniffer_stats():
-    """Returns aggregated stats for Packet Sniffer (parses TShark text output)."""
+    """Returns aggregated stats for Packet Sniffer."""
     user_dir = get_user_results_dir()
     
     response = {
@@ -267,54 +336,42 @@ def get_sniffer_stats():
         "total_packets": 0,
         "duration": "0s",
         "unique_ips": 0,
-        "protocol_breakdown": {}, # e.g. {'TCP': 50, 'UDP': 120}
-        "top_talkers": []         # e.g. [{'src': '192.168.1.1', 'dst': '8.8.8.8', 'bytes': 500}]
+        "protocol_breakdown": {},
+        "top_talkers": []
     }
 
     if not user_dir: return jsonify(response)
 
-    # File: pcap_analysis_report.json
     sniffer_path = os.path.join(user_dir, 'packet_sniffer', 'pcap_analysis_report.json')
     sniffer_data = load_json_safe(sniffer_path)
 
     if sniffer_data:
         summ = sniffer_data.get('traffic_summary', {})
         
-        # 1. Basic Metrics
         response["status"] = "Analyzed"
         response["target"] = sniffer_data.get('target_ip', 'Unknown')
         response["total_packets"] = summ.get('total_packets', 0)
         response["duration"] = f"{round(summ.get('effective_capture_duration_seconds', 0), 2)}s"
 
-        # 2. Extract Protocol Counts (Parsing the text hierarchy)
-        # The JSON contains a list of strings mimicking a table. We look for "protocol  frames:N"
         proto_stats = summ.get('protocol_hierarchy_stats', [])
         protocols = {}
         
         for line in proto_stats:
-            # Regex to find lines like: "   tcp     frames:51"
-            # We skip 'eth', 'ip', 'frame' to focus on transport/app layer
             if "frames:" in line:
                 match = re.search(r'\s+([a-z0-9]+)\s+frames:(\d+)', line)
                 if match:
                     p_name = match.group(1).upper()
                     p_count = int(match.group(2))
-                    
-                    # Filter out low-level noise
                     if p_name not in ['FRAME', 'ETH', 'IP', 'DATA', 'VLAN']:
                         protocols[p_name] = p_count
 
         response["protocol_breakdown"] = protocols
 
-        # 3. Top Talkers (Parsing TCP Conversation Stats)
-        # We look for lines like: "192.168.29.48:28187 <-> 192.168.29.196:8009 ... 984 bytes"
         conv_stats = summ.get('tcp_conversation_stats', [])
         talkers = []
         
         for line in conv_stats:
             if "<->" in line:
-                # Regex to extract IPs and Byte count
-                # Matches: IP:Port <-> IP:Port ... N bytes
                 match = re.search(r'([\d\.]+):(\d+)\s+<->\s+([\d\.]+):(\d+).*?\s+(\d+)\s+bytes', line)
                 if match:
                     src_ip = match.group(1)
@@ -328,15 +385,56 @@ def get_sniffer_stats():
                         "display": f"{src_ip} ↔ {dst_ip}"
                     })
 
-        # Sort by bytes (highest first) and take top 5
         talkers.sort(key=lambda x: x['bytes'], reverse=True)
         response["top_talkers"] = talkers[:5]
         
-        # Estimate unique IPs from talkers if not explicit
         unique_ips = set()
         for t in talkers:
             unique_ips.add(t['source'])
             unique_ips.add(t['destination'])
         response["unique_ips"] = len(unique_ips)
+
+    return jsonify(response)
+
+@dashboard_bp.route('/api/stats/usage')
+@login_required
+def get_usage_stats():
+    """
+    Returns the usage metrics recorded in the User database model.
+    This powers the 'Usage Statistics' section of the dashboard.
+    """
+    # current_user is a proxy for the User model record defined in models.py
+    user = current_user
+    
+    # Format the last login date safely
+    last_login_str = "Never"
+    if user.last_login_at:
+        # Format example: "Jan 05, 2026 12:45 PM"
+        last_login_str = user.last_login_at.strftime("%b %d, %Y %I:%M %p")
+
+    response = {
+        "username": user.username,
+        "organization": user.organization or "Freelance",
+        "account_type": "Admin" if user.is_admin else "Standard",
+        
+        # --- Activity Metrics ---
+        "total_logins": user.login_count,
+        "last_login": last_login_str,
+        "last_ip": user.last_login_ip or "Unknown",
+        
+        # --- Scan Counters ---
+        "scans": {
+            "nmap": user.scan_count_nmap,
+            "zap": user.scan_count_zap,
+            "ssl": user.scan_count_ssl,
+            "sniffer": user.scan_count_sniffer,
+            "ai_analysis": user.scan_count_ai,
+            "killchain": user.scan_count_killchain
+        },
+        
+        # --- Aggregates ---
+        # Using the @property total_scans defined in your models.py
+        "total_system_usage": user.total_scans
+    }
 
     return jsonify(response)

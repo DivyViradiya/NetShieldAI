@@ -39,6 +39,9 @@ class User(UserMixin, db.Model):
     # [NEW] Track AI Analysis Usage
     scan_count_ai = db.Column(db.Integer, default=0)
 
+    # [NEW] Track Kill Chain Usage
+    scan_count_killchain = db.Column(db.Integer, default=0)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -59,9 +62,10 @@ class User(UserMixin, db.Model):
     @property
     def total_scans(self):
         """Helper to calculate total system usage for this user."""
-        # Returns the sum of all specific tool counters including AI
+        # Returns the sum of all specific tool counters including AI and Kill Chain
         return (self.scan_count_nmap + 
                 self.scan_count_zap + 
                 self.scan_count_ssl + 
                 self.scan_count_sniffer +
-                self.scan_count_ai)
+                self.scan_count_ai +
+                self.scan_count_killchain)

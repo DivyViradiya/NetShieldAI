@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  NetShieldAI - Cyber Arsenal
+  NetShieldAI - Security Arsenal
 {% endblock %}
 
 {% block extra_css %}
@@ -13,6 +13,7 @@
       --neo-border: #27272a;
       --neo-accent: #f8fafc;
       --neo-blue: #3b82f6;
+      --neo-violet: #8b5cf6; /* Polyhedron Theme Color */
     }
     
     /* Ensure content sits above the grid */
@@ -27,7 +28,6 @@
     footer {
       position: relative;
       z-index: 10;
-      /* Optional: Make it slightly transparent to blend with the grid, or keep solid */
       background-color: var(--neo-bg); 
       border-top: 1px solid #27272a;
     }
@@ -192,6 +192,28 @@
       flex-grow: 1;
       margin-bottom: 1.5rem;
     }
+
+    /* --- POLYHEDRON (Formerly Kill Chain) FIX --- */
+    /* Clean Violet Theme - Removes the messy background text */
+    .polyhedron-card:hover {
+      border-color: var(--neo-violet); 
+      background-color: #0c0a13; /* Deep violet tint */
+      box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.25); /* Violet Glow */
+    }
+
+    .polyhedron-card:hover::after {
+      box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.3);
+    }
+
+    .polyhedron-card:hover .card-icon-box {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: var(--neo-violet);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+    }
+
+    .polyhedron-card:hover .card-icon-box span {
+      color: white !important;
+    }
     
     /* STATUS BADGES */
     .status-badge {
@@ -214,6 +236,12 @@
       color: #fbbf24;
       border-color: rgba(251, 191, 36, 0.2);
       background: rgba(251, 191, 36, 0.05);
+    }
+
+    .status-suite {
+      color: var(--neo-violet);
+      border-color: rgba(139, 92, 246, 0.3);
+      background: rgba(139, 92, 246, 0.05);
     }
 
     .status-soon {
@@ -246,6 +274,11 @@
     
     .neo-card:hover .launch-btn {
       transform: translateX(5px);
+    }
+
+    /* Specialized button hover for Polyhedron */
+    .polyhedron-card:hover .launch-btn {
+        color: var(--neo-violet);
     }
 
     /* DISABLED STATE */
@@ -355,6 +388,37 @@
         </div>
       </a>
 
+      <a href="{{ url_for('killchain_bp.killchain_page') }}" class="neo-card polyhedron-card">
+        <div class="card-top">
+          <div class="card-icon-box">
+            <span class="material-symbols-outlined">view_in_ar</span>
+          </div>
+          
+          <span class="status-badge status-suite">
+            Integrated Suite
+          </span>
+        </div>
+
+        <h3>POLYHEDRON</h3>
+
+        <p>
+          Full-spectrum security validation. Orchestrates all modules into a unified, sequential penetration testing workflow.
+          <br><br>
+          <span style="font-family: 'Fira Code', monospace; font-size: 0.7rem; color: #71717a; display: block; padding-top: 4px; border-top: 1px dashed #333;">
+            <span style="color: var(--neo-violet);">01.</span> DISCOVERY &rarr; 
+            <span style="color: var(--neo-violet);">02.</span> AUDIT &rarr; 
+            <span style="color: var(--neo-violet);">03.</span> REPORT
+          </span>
+        </p>
+
+        <div class="action-row">
+          <span class="text-xs text-[#555]">Orchestration</span>
+          <div class="launch-btn">
+            Run Simulation <span class="material-symbols-outlined">double_arrow</span>
+          </div>
+        </div>
+      </a>
+
       <div class="neo-card disabled">
         <div class="card-top">
           <div class="card-icon-box">
@@ -371,23 +435,6 @@
           </div>
         </div>
       </div>
-
-      <a href="{{ url_for('auto_pentest_bp.index') }}" class="neo-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">smart_toy</span>
-          </div>
-          <span class="status-badge status-active">Operational</span>
-        </div>
-        <h3>Automated Pentesting</h3>
-        <p>Full-spectrum attack simulation combining all modules into a single autonomous kill-chain workflow. Recon → Exploit → Report.</p>
-        <div class="action-row">
-          <span class="text-xs text-[#555]">Full Suite</span>
-          <div class="launch-btn">
-            Orchestrate <span class="material-symbols-outlined">arrow_forward</span>
-          </div>
-        </div>
-      </a>
 
     </div>
   </div>

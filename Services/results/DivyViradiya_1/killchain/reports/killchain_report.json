@@ -1,0 +1,956 @@
+{
+    "target": "testphp.vulnweb.com",
+    "profile": "full_audit",
+    "scan_date": "2026-01-05 13:53:20",
+    "recon": {
+        "target": "testphp.vulnweb.com",
+        "subdomains": [
+            "testphp.vulnweb.com"
+        ],
+        "count": 1
+    },
+    "network": {
+        "target": "44.228.249.3",
+        "status": "up",
+        "ports": [
+            {
+                "port": "80",
+                "protocol": "TCP",
+                "service": "http",
+                "version": "nginx 1.19.0"
+            }
+        ],
+        "vulnerabilities": []
+    },
+    "vulns": [
+        {
+            "type": "SSRF",
+            "severity": "Critical",
+            "parameter": "pp",
+            "payload": "http://localhost",
+            "evidence": "Server attempted local connection",
+            "description": "Server fetched internal/metadata URL.",
+            "timestamp": "2026-01-05T14:14:06.931370"
+        },
+        {
+            "type": "SQL Injection (Error-Based)",
+            "severity": "Critical",
+            "parameter": "cat",
+            "payload": "'",
+            "evidence": "You have an error in your SQL syntax",
+            "description": "Database error messages leaked info.",
+            "timestamp": "2026-01-05T14:14:18.820123"
+        },
+        {
+            "type": "ZAP: Cross Site Scripting (Reflected)",
+            "severity": "High",
+            "evidence": "http://testphp.vulnweb.com/artists.php?artist=%3CscrIpt%3Ealert%281%29%3B%3C%2FscRipt%3E",
+            "description": "<p>Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.</p><p>When an attacker gets a user's br..."
+        },
+        {
+            "type": "ZAP: SQL Injection",
+            "severity": "High",
+            "evidence": "http://testphp.vulnweb.com/cart.php",
+            "description": "<p>SQL injection may be possible.</p>..."
+        },
+        {
+            "type": "ZAP: SQL Injection - MySQL",
+            "severity": "High",
+            "evidence": "http://testphp.vulnweb.com/artists.php?artist=%27",
+            "description": "<p>SQL injection may be possible.</p>..."
+        },
+        {
+            "type": "ZAP: SQL Injection - MySQL (Time Based)",
+            "severity": "High",
+            "evidence": "http://testphp.vulnweb.com/secured/newuser.php",
+            "description": "<p>SQL injection may be possible.</p>..."
+        },
+        {
+            "type": "Reflected XSS",
+            "severity": "High",
+            "parameter": "pp",
+            "payload": "<script>alert('XSS')</script>",
+            "evidence": "Payload reflected verbatim",
+            "description": "Payload reflected without encoding.",
+            "timestamp": "2026-01-05T14:14:02.342339"
+        },
+        {
+            "type": "Clickjacking Risk",
+            "severity": "Medium",
+            "evidence": "Missing X-Frame-Options or CSP frame-ancestors",
+            "parameter": "HTTP Headers",
+            "timestamp": "2026-01-05T13:54:23.852044"
+        },
+        {
+            "type": "ZAP: Absence of Anti-CSRF Tokens",
+            "severity": "Medium",
+            "evidence": "http://testphp.vulnweb.com",
+            "description": "<p>No Anti-CSRF tokens were found in a HTML submission form.</p><p>A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS..."
+        },
+        {
+            "type": "ZAP: Content Security Policy (CSP) Header Not Set",
+            "severity": "Medium",
+            "evidence": "http://testphp.vulnweb.com",
+            "description": "<p>Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that browsers should be allowed to load on that page \u2014 covered types are JavaScript, CSS, HTML frames,..."
+        },
+        {
+            "type": "ZAP: Missing Anti-clickjacking Header",
+            "severity": "Medium",
+            "evidence": "http://testphp.vulnweb.com",
+            "description": "<p>The response does not protect against 'ClickJacking' attacks. It should include either Content-Security-Policy with 'frame-ancestors' directive or X-Frame-Options.</p>..."
+        },
+        {
+            "type": "ZAP: XSLT Injection",
+            "severity": "Medium",
+            "evidence": "http://testphp.vulnweb.com/showimage.php?file=%3Cxsl%3Avalue-of+select%3D%22document%28%27http%3A%2F%2Ftestphp.vulnweb.com%3A22%27%29%22%2F%3E",
+            "description": "<p>Injection using XSL transformations may be possible, and may allow an attacker to read system information, read and write files, or execute arbitrary code.</p>..."
+        },
+        {
+            "type": "Clickjacking",
+            "severity": "Medium",
+            "parameter": "HTTP Headers",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Missing X-Frame-Options and CSP frame-ancestors headers",
+            "description": "The application allows itself to be embedded in an iframe. Attackers can overlay invisible layers to trick users into clicking hidden buttons.",
+            "remediation": "Set the 'X-Frame-Options' header to 'DENY' or 'SAMEORIGIN'. Use Content-Security-Policy 'frame-ancestors'."
+        },
+        {
+            "type": "Missing Anti-CSRF Token",
+            "severity": "Medium",
+            "parameter": "HTML Form",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Form to 'search.php?test=query' missing Anti-CSRF token",
+            "description": "A state-changing form (POST/PUT) does not appear to have a random CSRF token. Attackers can forge requests on behalf of users.",
+            "remediation": "Include a hidden input field with a random, session-unique CSRF token in every state-changing form."
+        },
+        {
+            "type": "Missing Anti-CSRF Token",
+            "severity": "Medium",
+            "parameter": "HTML Form",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Form to 'cart.php' missing Anti-CSRF token",
+            "description": "A state-changing form (POST/PUT) does not appear to have a random CSRF token. Attackers can forge requests on behalf of users.",
+            "remediation": "Include a hidden input field with a random, session-unique CSRF token in every state-changing form."
+        },
+        {
+            "type": "Missing CSP",
+            "severity": "Low",
+            "evidence": "Content-Security-Policy header is missing",
+            "parameter": "HTTP Headers",
+            "timestamp": "2026-01-05T13:54:23.850367"
+        },
+        {
+            "type": "Server Version Leak",
+            "severity": "Low",
+            "evidence": "Server Header: nginx/1.19.0",
+            "parameter": "HTTP Headers",
+            "timestamp": "2026-01-05T13:54:23.852065"
+        },
+        {
+            "type": "ZAP: Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+            "severity": "Low",
+            "evidence": "http://testphp.vulnweb.com",
+            "description": "<p>The web/application server is leaking information via one or more \"X-Powered-By\" HTTP response headers. Access to such information may facilitate attackers identifying other frameworks/components your web application is reliant upon and the vulnerabilities such components may be subject to.</p>..."
+        },
+        {
+            "type": "ZAP: Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+            "severity": "Low",
+            "evidence": "http://testphp.vulnweb.com",
+            "description": "<p>The web/application server is leaking version information via the \"Server\" HTTP response header. Access to such information may facilitate attackers identifying other vulnerabilities your web/application server is subject to.</p>..."
+        },
+        {
+            "type": "ZAP: X-Content-Type-Options Header Missing",
+            "severity": "Low",
+            "evidence": "http://testphp.vulnweb.com",
+            "description": "<p>The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, potentially causing the response body to be interpreted and displayed as a content type other than the declared content type. Current (early 2014) and legacy versions of Firefox will use the declared content type (if one is set), rather than performing MIME-sniffing.</p>..."
+        },
+        {
+            "type": "ZAP: ZAP is Out of Date",
+            "severity": "Low",
+            "evidence": "http://testphp.vulnweb.com/style.css",
+            "description": "<p>The version of ZAP you are using to test your app is out of date and is no longer being updated.</p><p>The risk level is set based on how out of date your ZAP version is.</p>..."
+        },
+        {
+            "type": "Missing Security Headers",
+            "severity": "Low",
+            "parameter": "HTTP Headers",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Missing HSTS (Strict-Transport-Security)",
+            "description": "Critical security headers (HSTS, X-Content-Type-Options) are missing, exposing the user to SSL stripping or MIME sniffing.",
+            "remediation": "Configure the web server to send Strict-Transport-Security and X-Content-Type-Options headers."
+        },
+        {
+            "type": "Missing Security Headers",
+            "severity": "Low",
+            "parameter": "HTTP Headers",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Missing X-Content-Type-Options: nosniff",
+            "description": "Critical security headers (HSTS, X-Content-Type-Options) are missing, exposing the user to SSL stripping or MIME sniffing.",
+            "remediation": "Configure the web server to send Strict-Transport-Security and X-Content-Type-Options headers."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'pp=12' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'cat=4' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'cat=2' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'artist=2' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'artist=3' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'pic=6' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'pic=5' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'pic=3' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'pic=4' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'pic=1' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'artist=1' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'cat=3' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'cat=1' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'pic=2' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "Potential IDOR",
+            "severity": "Low",
+            "parameter": "URL Parameter",
+            "payload": "N/A (Logic Check)",
+            "evidence": "Parameter 'pic=7' is numeric and predictable. Test manually for IDOR.",
+            "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+            "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+        },
+        {
+            "type": "ZAP: Authentication Request Identified",
+            "severity": "Info",
+            "evidence": "http://testphp.vulnweb.com/secured/newuser.php",
+            "description": "<p>The given request has been identified as an authentication request. The 'Other Info' field contains a set of key=value lines which identify any relevant fields. If the request is in a context which has an Authentication Method set to \"Auto-Detect\" then this rule will change the authentication to match the request identified.</p>..."
+        },
+        {
+            "type": "ZAP: Charset Mismatch (Header Versus Meta Content-Type Charset)",
+            "severity": "Info",
+            "evidence": "http://testphp.vulnweb.com",
+            "description": "<p>This check identifies responses where the HTTP Content-Type header declares a charset different from the charset defined by the body of the HTML or XML. When there's a charset mismatch between the HTTP header and content body Web browsers can be forced into an undesirable content-sniffing mode to determine the content's correct character set.</p><p></p><p>An attacker could manipulate content on the page to be interpreted in an encoding of their choice. For example, if an attacker can control ..."
+        },
+        {
+            "type": "ZAP: GET for POST",
+            "severity": "Info",
+            "evidence": "http://testphp.vulnweb.com/cart.php",
+            "description": "<p>A request that was originally observed as a POST was also accepted as a GET. This issue does not represent a security weakness unto itself, however, it may facilitate simplification of other attacks. For example if the original POST is subject to Cross-Site Scripting (XSS), then this finding may indicate that a simplified (GET based) XSS may also be possible.</p>..."
+        },
+        {
+            "type": "ZAP: Modern Web Application",
+            "severity": "Info",
+            "evidence": "http://testphp.vulnweb.com/AJAX/index.php",
+            "description": "<p>The application appears to be a modern web application. If you need to explore it automatically then the Ajax Spider may well be more effective than the standard one.</p>..."
+        },
+        {
+            "type": "ZAP: User Agent Fuzzer",
+            "severity": "Info",
+            "evidence": "http://testphp.vulnweb.com/AJAX",
+            "description": "<p>Check for differences in response based on fuzzed User Agent (eg. mobile sites, access as a Search Engine Crawler). Compares the response statuscode and the hashcode of the response body with the original response.</p>..."
+        },
+        {
+            "type": "ZAP: User Controllable HTML Element Attribute (Potential XSS)",
+            "severity": "Info",
+            "evidence": "http://testphp.vulnweb.com/guestbook.php",
+            "description": "<p>This check looks at user-supplied input in query string parameters and POST data to identify where certain HTML attribute values might be controlled. This provides hot-spot detection for XSS (cross-site scripting) that will require further review by a security analyst to determine exploitability.</p>..."
+        }
+    ],
+    "vulns_grouped": {
+        "Critical": [
+            {
+                "type": "SSRF",
+                "severity": "Critical",
+                "parameter": "pp",
+                "payload": "http://localhost",
+                "evidence": "Server attempted local connection",
+                "description": "Server fetched internal/metadata URL.",
+                "timestamp": "2026-01-05T14:14:06.931370"
+            },
+            {
+                "type": "SQL Injection (Error-Based)",
+                "severity": "Critical",
+                "parameter": "cat",
+                "payload": "'",
+                "evidence": "You have an error in your SQL syntax",
+                "description": "Database error messages leaked info.",
+                "timestamp": "2026-01-05T14:14:18.820123"
+            }
+        ],
+        "High": [
+            {
+                "type": "ZAP: Cross Site Scripting (Reflected)",
+                "severity": "High",
+                "evidence": "http://testphp.vulnweb.com/artists.php?artist=%3CscrIpt%3Ealert%281%29%3B%3C%2FscRipt%3E",
+                "description": "<p>Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.</p><p>When an attacker gets a user's br..."
+            },
+            {
+                "type": "ZAP: SQL Injection",
+                "severity": "High",
+                "evidence": "http://testphp.vulnweb.com/cart.php",
+                "description": "<p>SQL injection may be possible.</p>..."
+            },
+            {
+                "type": "ZAP: SQL Injection - MySQL",
+                "severity": "High",
+                "evidence": "http://testphp.vulnweb.com/artists.php?artist=%27",
+                "description": "<p>SQL injection may be possible.</p>..."
+            },
+            {
+                "type": "ZAP: SQL Injection - MySQL (Time Based)",
+                "severity": "High",
+                "evidence": "http://testphp.vulnweb.com/secured/newuser.php",
+                "description": "<p>SQL injection may be possible.</p>..."
+            },
+            {
+                "type": "Reflected XSS",
+                "severity": "High",
+                "parameter": "pp",
+                "payload": "<script>alert('XSS')</script>",
+                "evidence": "Payload reflected verbatim",
+                "description": "Payload reflected without encoding.",
+                "timestamp": "2026-01-05T14:14:02.342339"
+            }
+        ],
+        "Medium": [
+            {
+                "type": "Clickjacking Risk",
+                "severity": "Medium",
+                "evidence": "Missing X-Frame-Options or CSP frame-ancestors",
+                "parameter": "HTTP Headers",
+                "timestamp": "2026-01-05T13:54:23.852044"
+            },
+            {
+                "type": "ZAP: Absence of Anti-CSRF Tokens",
+                "severity": "Medium",
+                "evidence": "http://testphp.vulnweb.com",
+                "description": "<p>No Anti-CSRF tokens were found in a HTML submission form.</p><p>A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS..."
+            },
+            {
+                "type": "ZAP: Content Security Policy (CSP) Header Not Set",
+                "severity": "Medium",
+                "evidence": "http://testphp.vulnweb.com",
+                "description": "<p>Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that browsers should be allowed to load on that page \u2014 covered types are JavaScript, CSS, HTML frames,..."
+            },
+            {
+                "type": "ZAP: Missing Anti-clickjacking Header",
+                "severity": "Medium",
+                "evidence": "http://testphp.vulnweb.com",
+                "description": "<p>The response does not protect against 'ClickJacking' attacks. It should include either Content-Security-Policy with 'frame-ancestors' directive or X-Frame-Options.</p>..."
+            },
+            {
+                "type": "ZAP: XSLT Injection",
+                "severity": "Medium",
+                "evidence": "http://testphp.vulnweb.com/showimage.php?file=%3Cxsl%3Avalue-of+select%3D%22document%28%27http%3A%2F%2Ftestphp.vulnweb.com%3A22%27%29%22%2F%3E",
+                "description": "<p>Injection using XSL transformations may be possible, and may allow an attacker to read system information, read and write files, or execute arbitrary code.</p>..."
+            },
+            {
+                "type": "Clickjacking",
+                "severity": "Medium",
+                "parameter": "HTTP Headers",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Missing X-Frame-Options and CSP frame-ancestors headers",
+                "description": "The application allows itself to be embedded in an iframe. Attackers can overlay invisible layers to trick users into clicking hidden buttons.",
+                "remediation": "Set the 'X-Frame-Options' header to 'DENY' or 'SAMEORIGIN'. Use Content-Security-Policy 'frame-ancestors'."
+            },
+            {
+                "type": "Missing Anti-CSRF Token",
+                "severity": "Medium",
+                "parameter": "HTML Form",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Form to 'search.php?test=query' missing Anti-CSRF token",
+                "description": "A state-changing form (POST/PUT) does not appear to have a random CSRF token. Attackers can forge requests on behalf of users.",
+                "remediation": "Include a hidden input field with a random, session-unique CSRF token in every state-changing form."
+            },
+            {
+                "type": "Missing Anti-CSRF Token",
+                "severity": "Medium",
+                "parameter": "HTML Form",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Form to 'cart.php' missing Anti-CSRF token",
+                "description": "A state-changing form (POST/PUT) does not appear to have a random CSRF token. Attackers can forge requests on behalf of users.",
+                "remediation": "Include a hidden input field with a random, session-unique CSRF token in every state-changing form."
+            }
+        ],
+        "Low": [
+            {
+                "type": "Missing CSP",
+                "severity": "Low",
+                "evidence": "Content-Security-Policy header is missing",
+                "parameter": "HTTP Headers",
+                "timestamp": "2026-01-05T13:54:23.850367"
+            },
+            {
+                "type": "Server Version Leak",
+                "severity": "Low",
+                "evidence": "Server Header: nginx/1.19.0",
+                "parameter": "HTTP Headers",
+                "timestamp": "2026-01-05T13:54:23.852065"
+            },
+            {
+                "type": "ZAP: Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                "severity": "Low",
+                "evidence": "http://testphp.vulnweb.com",
+                "description": "<p>The web/application server is leaking information via one or more \"X-Powered-By\" HTTP response headers. Access to such information may facilitate attackers identifying other frameworks/components your web application is reliant upon and the vulnerabilities such components may be subject to.</p>..."
+            },
+            {
+                "type": "ZAP: Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                "severity": "Low",
+                "evidence": "http://testphp.vulnweb.com",
+                "description": "<p>The web/application server is leaking version information via the \"Server\" HTTP response header. Access to such information may facilitate attackers identifying other vulnerabilities your web/application server is subject to.</p>..."
+            },
+            {
+                "type": "ZAP: X-Content-Type-Options Header Missing",
+                "severity": "Low",
+                "evidence": "http://testphp.vulnweb.com",
+                "description": "<p>The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, potentially causing the response body to be interpreted and displayed as a content type other than the declared content type. Current (early 2014) and legacy versions of Firefox will use the declared content type (if one is set), rather than performing MIME-sniffing.</p>..."
+            },
+            {
+                "type": "ZAP: ZAP is Out of Date",
+                "severity": "Low",
+                "evidence": "http://testphp.vulnweb.com/style.css",
+                "description": "<p>The version of ZAP you are using to test your app is out of date and is no longer being updated.</p><p>The risk level is set based on how out of date your ZAP version is.</p>..."
+            },
+            {
+                "type": "Missing Security Headers",
+                "severity": "Low",
+                "parameter": "HTTP Headers",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Missing HSTS (Strict-Transport-Security)",
+                "description": "Critical security headers (HSTS, X-Content-Type-Options) are missing, exposing the user to SSL stripping or MIME sniffing.",
+                "remediation": "Configure the web server to send Strict-Transport-Security and X-Content-Type-Options headers."
+            },
+            {
+                "type": "Missing Security Headers",
+                "severity": "Low",
+                "parameter": "HTTP Headers",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Missing X-Content-Type-Options: nosniff",
+                "description": "Critical security headers (HSTS, X-Content-Type-Options) are missing, exposing the user to SSL stripping or MIME sniffing.",
+                "remediation": "Configure the web server to send Strict-Transport-Security and X-Content-Type-Options headers."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'pp=12' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'cat=4' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'cat=2' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'artist=2' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'artist=3' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'pic=6' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'pic=5' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'pic=3' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'pic=4' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'pic=1' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'artist=1' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'cat=3' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'cat=1' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'pic=2' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            },
+            {
+                "type": "Potential IDOR",
+                "severity": "Low",
+                "parameter": "URL Parameter",
+                "payload": "N/A (Logic Check)",
+                "evidence": "Parameter 'pic=7' is numeric and predictable. Test manually for IDOR.",
+                "description": "The application uses predictable numeric IDs to access resources. If authorization checks are missing, attackers can access other users' data.",
+                "remediation": "Implement strict Access Control Checks (Authorization) on every object access. Use UUIDs instead of sequential IDs."
+            }
+        ],
+        "Info": [
+            {
+                "type": "ZAP: Authentication Request Identified",
+                "severity": "Info",
+                "evidence": "http://testphp.vulnweb.com/secured/newuser.php",
+                "description": "<p>The given request has been identified as an authentication request. The 'Other Info' field contains a set of key=value lines which identify any relevant fields. If the request is in a context which has an Authentication Method set to \"Auto-Detect\" then this rule will change the authentication to match the request identified.</p>..."
+            },
+            {
+                "type": "ZAP: Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                "severity": "Info",
+                "evidence": "http://testphp.vulnweb.com",
+                "description": "<p>This check identifies responses where the HTTP Content-Type header declares a charset different from the charset defined by the body of the HTML or XML. When there's a charset mismatch between the HTTP header and content body Web browsers can be forced into an undesirable content-sniffing mode to determine the content's correct character set.</p><p></p><p>An attacker could manipulate content on the page to be interpreted in an encoding of their choice. For example, if an attacker can control ..."
+            },
+            {
+                "type": "ZAP: GET for POST",
+                "severity": "Info",
+                "evidence": "http://testphp.vulnweb.com/cart.php",
+                "description": "<p>A request that was originally observed as a POST was also accepted as a GET. This issue does not represent a security weakness unto itself, however, it may facilitate simplification of other attacks. For example if the original POST is subject to Cross-Site Scripting (XSS), then this finding may indicate that a simplified (GET based) XSS may also be possible.</p>..."
+            },
+            {
+                "type": "ZAP: Modern Web Application",
+                "severity": "Info",
+                "evidence": "http://testphp.vulnweb.com/AJAX/index.php",
+                "description": "<p>The application appears to be a modern web application. If you need to explore it automatically then the Ajax Spider may well be more effective than the standard one.</p>..."
+            },
+            {
+                "type": "ZAP: User Agent Fuzzer",
+                "severity": "Info",
+                "evidence": "http://testphp.vulnweb.com/AJAX",
+                "description": "<p>Check for differences in response based on fuzzed User Agent (eg. mobile sites, access as a Search Engine Crawler). Compares the response statuscode and the hashcode of the response body with the original response.</p>..."
+            },
+            {
+                "type": "ZAP: User Controllable HTML Element Attribute (Potential XSS)",
+                "severity": "Info",
+                "evidence": "http://testphp.vulnweb.com/guestbook.php",
+                "description": "<p>This check looks at user-supplied input in query string parameters and POST data to identify where certain HTML attribute values might be controlled. This provides hot-spot detection for XSS (cross-site scripting) that will require further review by a security analyst to determine exploitability.</p>..."
+            }
+        ]
+    },
+    "urls": [
+        "http://testphp.vulnweb.com/hpp/?pp=12",
+        "http://testphp.vulnweb.com/showimage.php?file=./pictures/3.jpg",
+        "http://testphp.vulnweb.com/listproducts.php?cat=4",
+        "http://testphp.vulnweb.com/showimage.php?file=./pictures/7.jpg",
+        "http://testphp.vulnweb.com/listproducts.php?cat=2",
+        "http://testphp.vulnweb.com/showimage.php?file=./pictures/4.jpg",
+        "http://testphp.vulnweb.com/listproducts.php?artist=2",
+        "http://testphp.vulnweb.com/listproducts.php?artist=3",
+        "http://testphp.vulnweb.com/showimage.php?file=./pictures/1.jpg",
+        "http://testphp.vulnweb.com/product.php?pic=6",
+        "http://testphp.vulnweb.com/product.php?pic=5",
+        "http://testphp.vulnweb.com/images",
+        "http://testphp.vulnweb.com/artists.php?artist=3",
+        "http://testphp.vulnweb.com/product.php?pic=3",
+        "http://testphp.vulnweb.com/product.php?pic=4",
+        "http://testphp.vulnweb.com/showimage.php?file=./pictures/5.jpg",
+        "http://testphp.vulnweb.com/product.php?pic=1",
+        "http://testphp.vulnweb.com/artists.php?artist=1",
+        "http://testphp.vulnweb.com/hpp/params.php?p=valid&pp=12",
+        "http://testphp.vulnweb.com/login.php",
+        "http://testphp.vulnweb.com/admin",
+        "http://testphp.vulnweb.com/showimage.php?file=./pictures/6.jpg",
+        "http://testphp.vulnweb.com/showimage.php?file=./pictures/2.jpg",
+        "http://testphp.vulnweb.com/artists.php?artist=2",
+        "http://testphp.vulnweb.com/listproducts.php?artist=1",
+        "http://testphp.vulnweb.com/listproducts.php?cat=3",
+        "http://testphp.vulnweb.com/listproducts.php?cat=1",
+        "http://testphp.vulnweb.com/product.php?pic=2",
+        "http://testphp.vulnweb.com/product.php?pic=7"
+    ],
+    "tech": {
+        "target": "http://testphp.vulnweb.com",
+        "technologies": {
+            "Server": [
+                "nginx/1.19.0"
+            ],
+            "Language": [
+                "PHP"
+            ]
+        },
+        "versions": {
+            "nginx": "1.19.0"
+        }
+    },
+    "traffic_analysis": {
+        "stats": {
+            "packet_count": "0"
+        },
+        "anomalies": [],
+        "credentials": []
+    },
+    "zap_report": {
+        "tool": "OWASP ZAP",
+        "scan_date": "2026-01-05 14:13:57",
+        "summary": {
+            "High": 4,
+            "Medium": 4,
+            "Low": 4,
+            "Info": 6,
+            "Total": 18
+        },
+        "findings": [
+            {
+                "name": "Cross Site Scripting (Reflected)",
+                "risk": "High",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com/artists.php?artist=%3CscrIpt%3Ealert%281%29%3B%3C%2FscRipt%3E",
+                "description": "<p>Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.</p><p>When an attacker gets a user's br...",
+                "solution": "<p>Phase: Architecture and Design</p><p>Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.</p><p>Examples of libraries and frameworks that make it easier to generate properly encoded output include Microsoft's Anti-XSS library, the OWASP ESAPI Encoding module, and Apache Wicket.</p><p></p><p>Phases: Implementation; Architecture and Design</p><p>Understand the context in which your data will be used and the ...",
+                "cwe": "CWE-79"
+            },
+            {
+                "name": "SQL Injection",
+                "risk": "High",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com/cart.php",
+                "description": "<p>SQL injection may be possible.</p>...",
+                "solution": "<p>Do not trust client side input, even if there is client side validation in place.</p><p>In general, type check all data on the server side.</p><p>If the application uses JDBC, use PreparedStatement or CallableStatement, with parameters passed by '?'</p><p>If the application uses ASP, use ADO Command Objects with strong type checking and parameterized queries.</p><p>If database Stored Procedures can be used, use them.</p><p>Do *not* concatenate strings into queries in the stored procedure, or ...",
+                "cwe": "CWE-89"
+            },
+            {
+                "name": "SQL Injection - MySQL",
+                "risk": "High",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com/artists.php?artist=%27",
+                "description": "<p>SQL injection may be possible.</p>...",
+                "solution": "<p>Do not trust client side input, even if there is client side validation in place.</p><p>In general, type check all data on the server side.</p><p>If the application uses JDBC, use PreparedStatement or CallableStatement, with parameters passed by '?'</p><p>If the application uses ASP, use ADO Command Objects with strong type checking and parameterized queries.</p><p>If database Stored Procedures can be used, use them.</p><p>Do *not* concatenate strings into queries in the stored procedure, or ...",
+                "cwe": "Unknown"
+            },
+            {
+                "name": "SQL Injection - MySQL (Time Based)",
+                "risk": "High",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com/secured/newuser.php",
+                "description": "<p>SQL injection may be possible.</p>...",
+                "solution": "<p>Do not trust client side input, even if there is client side validation in place.</p><p>In general, type check all data on the server side.</p><p>If the application uses JDBC, use PreparedStatement or CallableStatement, with parameters passed by '?'</p><p>If the application uses ASP, use ADO Command Objects with strong type checking and parameterized queries.</p><p>If database Stored Procedures can be used, use them.</p><p>Do *not* concatenate strings into queries in the stored procedure, or ...",
+                "cwe": "CWE-89"
+            },
+            {
+                "name": "Absence of Anti-CSRF Tokens",
+                "risk": "Medium",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "1",
+                "url": "http://testphp.vulnweb.com",
+                "description": "<p>No Anti-CSRF tokens were found in a HTML submission form.</p><p>A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS...",
+                "solution": "<p>Phase: Architecture and Design</p><p>Use a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.</p><p>For example, use anti-CSRF packages such as the OWASP CSRFGuard.</p><p></p><p>Phase: Implementation</p><p>Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.</p><p></p><p>Phase: Architecture and Design</p><p>Generate a ...",
+                "cwe": "CWE-352"
+            },
+            {
+                "name": "Content Security Policy (CSP) Header Not Set",
+                "risk": "Medium",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "3",
+                "url": "http://testphp.vulnweb.com",
+                "description": "<p>Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that browsers should be allowed to load on that page \u2014 covered types are JavaScript, CSS, HTML frames,...",
+                "solution": "<p>Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header.</p>...",
+                "cwe": "CWE-693"
+            },
+            {
+                "name": "Missing Anti-clickjacking Header",
+                "risk": "Medium",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com",
+                "description": "<p>The response does not protect against 'ClickJacking' attacks. It should include either Content-Security-Policy with 'frame-ancestors' directive or X-Frame-Options.</p>...",
+                "solution": "<p>Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site/app.</p><p>If you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive.</p>...",
+                "cwe": "CWE-1021"
+            },
+            {
+                "name": "XSLT Injection",
+                "risk": "Medium",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com/showimage.php?file=%3Cxsl%3Avalue-of+select%3D%22document%28%27http%3A%2F%2Ftestphp.vulnweb.com%3A22%27%29%22%2F%3E",
+                "description": "<p>Injection using XSL transformations may be possible, and may allow an attacker to read system information, read and write files, or execute arbitrary code.</p>...",
+                "solution": "<p>Sanitize and analyze every user input coming from any client-side.</p>...",
+                "cwe": "CWE-91"
+            },
+            {
+                "name": "Server Leaks Information via \"X-Powered-By\" HTTP Response Header Field(s)",
+                "risk": "Low",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com",
+                "description": "<p>The web/application server is leaking information via one or more \"X-Powered-By\" HTTP response headers. Access to such information may facilitate attackers identifying other frameworks/components your web application is reliant upon and the vulnerabilities such components may be subject to.</p>...",
+                "solution": "<p>Ensure that your web server, application server, load balancer, etc. is configured to suppress \"X-Powered-By\" headers.</p>...",
+                "cwe": "CWE-497"
+            },
+            {
+                "name": "Server Leaks Version Information via \"Server\" HTTP Response Header Field",
+                "risk": "Low",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "3",
+                "url": "http://testphp.vulnweb.com",
+                "description": "<p>The web/application server is leaking version information via the \"Server\" HTTP response header. Access to such information may facilitate attackers identifying other vulnerabilities your web/application server is subject to.</p>...",
+                "solution": "<p>Ensure that your web server, application server, load balancer, etc. is configured to suppress the \"Server\" header or provide generic details.</p>...",
+                "cwe": "CWE-497"
+            },
+            {
+                "name": "X-Content-Type-Options Header Missing",
+                "risk": "Low",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com",
+                "description": "<p>The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, potentially causing the response body to be interpreted and displayed as a content type other than the declared content type. Current (early 2014) and legacy versions of Firefox will use the declared content type (if one is set), rather than performing MIME-sniffing.</p>...",
+                "solution": "<p>Ensure that the application/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.</p><p>If possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application/web server to not perform MIME-sniffing.</p>...",
+                "cwe": "CWE-693"
+            },
+            {
+                "name": "ZAP is Out of Date",
+                "risk": "Low",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "3",
+                "url": "http://testphp.vulnweb.com/style.css",
+                "description": "<p>The version of ZAP you are using to test your app is out of date and is no longer being updated.</p><p>The risk level is set based on how out of date your ZAP version is.</p>...",
+                "solution": "<p>Download the latest version of ZAP from https://www.zaproxy.org/download/ and install it.</p>...",
+                "cwe": "Unknown"
+            },
+            {
+                "name": "Authentication Request Identified",
+                "risk": "Info",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "1",
+                "url": "http://testphp.vulnweb.com/secured/newuser.php",
+                "description": "<p>The given request has been identified as an authentication request. The 'Other Info' field contains a set of key=value lines which identify any relevant fields. If the request is in a context which has an Authentication Method set to \"Auto-Detect\" then this rule will change the authentication to match the request identified.</p>...",
+                "solution": "<p>This is an informational alert rather than a vulnerability and so there is nothing to fix.</p>...",
+                "cwe": "Unknown"
+            },
+            {
+                "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+                "risk": "Info",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "1",
+                "url": "http://testphp.vulnweb.com",
+                "description": "<p>This check identifies responses where the HTTP Content-Type header declares a charset different from the charset defined by the body of the HTML or XML. When there's a charset mismatch between the HTTP header and content body Web browsers can be forced into an undesirable content-sniffing mode to determine the content's correct character set.</p><p></p><p>An attacker could manipulate content on the page to be interpreted in an encoding of their choice. For example, if an attacker can control ...",
+                "solution": "<p>Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML.</p>...",
+                "cwe": "Unknown"
+            },
+            {
+                "name": "GET for POST",
+                "risk": "Info",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "3",
+                "url": "http://testphp.vulnweb.com/cart.php",
+                "description": "<p>A request that was originally observed as a POST was also accepted as a GET. This issue does not represent a security weakness unto itself, however, it may facilitate simplification of other attacks. For example if the original POST is subject to Cross-Site Scripting (XSS), then this finding may indicate that a simplified (GET based) XSS may also be possible.</p>...",
+                "solution": "<p>Ensure that only POST is accepted where POST is expected.</p>...",
+                "cwe": "CWE-16"
+            },
+            {
+                "name": "Modern Web Application",
+                "risk": "Info",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com/AJAX/index.php",
+                "description": "<p>The application appears to be a modern web application. If you need to explore it automatically then the Ajax Spider may well be more effective than the standard one.</p>...",
+                "solution": "<p>This is an informational alert and so no changes are required.</p>...",
+                "cwe": "Unknown"
+            },
+            {
+                "name": "User Agent Fuzzer",
+                "risk": "Info",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "2",
+                "url": "http://testphp.vulnweb.com/AJAX",
+                "description": "<p>Check for differences in response based on fuzzed User Agent (eg. mobile sites, access as a Search Engine Crawler). Compares the response statuscode and the hashcode of the response body with the original response.</p>...",
+                "solution": "...",
+                "cwe": "Unknown"
+            },
+            {
+                "name": "User Controllable HTML Element Attribute (Potential XSS)",
+                "risk": "Info",
+                "ml_risk_score": "N/A (Model missing)",
+                "confidence": "1",
+                "url": "http://testphp.vulnweb.com/guestbook.php",
+                "description": "<p>This check looks at user-supplied input in query string parameters and POST data to identify where certain HTML attribute values might be controlled. This provides hot-spot detection for XSS (cross-site scripting) that will require further review by a security analyst to determine exploitability.</p>...",
+                "solution": "<p>Validate all input and sanitize output it before writing to any HTML attributes.</p>...",
+                "cwe": "CWE-20"
+            }
+        ]
+    }
+}

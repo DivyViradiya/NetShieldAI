@@ -447,47 +447,82 @@
     </div>
   </div>
 
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('toolUsageChart').getContext('2d');
         
-        // Data injected from Flask (auth_bp.py)
+        // Data injected from Flask
+        // We use 'or 0' to prevent crashing if the key doesn't exist yet
         const usageData = {
-            nmap: {{ tool_usage_stats['Nmap'] }},
-            zap: {{ tool_usage_stats['ZAP'] }},
-            ssl: {{ tool_usage_stats['SSL'] }},
-            sniffer: {{ tool_usage_stats['Sniffer'] }},
-            ai: {{ tool_usage_stats['AI Analyst'] }}
+            nmap: {{ tool_usage_stats.get('Nmap', 0) }},
+            zap: {{ tool_usage_stats.get('ZAP', 0) }},
+            ssl: {{ tool_usage_stats.get('SSL', 0) }},
+            sniffer: {{ tool_usage_stats.get('Sniffer', 0) }},
+            killchain: {{ tool_usage_stats.get('Kill Chain', 0) }}, 
+            ai: {{ tool_usage_stats.get('AI Analyst', 0) }}
+        };
+
+        // Theme Colors
+        const colors = {
+            blue: '#3b82f6',
+            red: '#f43f5e',
+            green: '#10b981',
+            amber: '#f59e0b',
+            purple: '#8b5cf6', // Used for Kill Chain (Standard)
+            cyan: '#06b6d4',   // Used for AI (Distinct)
+            bg: '#0a0a0c'
         };
 
         new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Network', 'Web Vuln', 'SSL/TLS', 'Traffic', 'AI Analysis'],
+                labels: ['Network', 'Web Vuln', 'SSL/TLS', 'Traffic', 'Kill Chain', 'AI Analysis'],
                 datasets: [{
-                    data: [usageData.nmap, usageData.zap, usageData.ssl, usageData.sniffer, usageData.ai],
-                    backgroundColor: [
-                        '#3b82f6', // Blue (Nmap)
-                        '#f43f5e', // Red (ZAP)
-                        '#10b981', // Green (SSL)
-                        '#f59e0b', // Amber (Sniffer)
-                        '#8b5cf6'  // Purple (AI)
+                    data: [
+                        usageData.nmap, 
+                        usageData.zap, 
+                        usageData.ssl, 
+                        usageData.sniffer, 
+                        usageData.killchain, // Added Kill Chain
+                        usageData.ai
                     ],
-                    borderColor: '#0a0a0c', // Matches card background
-                    borderWidth: 2
+                    backgroundColor: [
+                        colors.blue,
+                        colors.red,
+                        colors.green,
+                        colors.amber,
+                        colors.purple, // Purple for Kill Chain
+                        colors.cyan    // Cyan for AI
+                    ],
+                    borderColor: colors.bg,
+                    borderWidth: 2,
+                    hoverOffset: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '75%', // Thinner ring to match User Dashboard style
                 plugins: {
                     legend: {
                         position: 'right',
                         labels: {
                             color: '#9ca3af',
                             font: { family: "'JetBrains Mono', monospace", size: 10 },
-                            boxWidth: 12
+                            boxWidth: 10,
+                            padding: 10,
+                            usePointStyle: true // Circular points for cleaner look
                         }
+                    },
+                    tooltip: {
+                        backgroundColor: '#111',
+                        titleColor: '#fff',
+                        bodyColor: '#ccc',
+                        borderColor: '#333',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: true,
+                        boxPadding: 4
                     }
                 }
             }
