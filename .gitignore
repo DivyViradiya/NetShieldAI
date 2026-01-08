@@ -2,3 +2,6 @@ venv
 instance
 run_ngrok.py
 Services/results
+.env
+scan_results
+zap_instances
