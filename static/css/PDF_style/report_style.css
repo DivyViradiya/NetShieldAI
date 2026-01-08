@@ -1,175 +1,198 @@
-/* D:\NetShieldAI\static\css\PDF_style\report_style.css */
+/* --- SUBTLE SLATE & STEEL THEME (UPDATED) --- */
+:root {
+    --neo-blue: #475569; /* Subdued Slate */
+    --neo-blue-accent: #3b82f6; /* Soft Brand Blue */
+    --neo-blue-soft: #f8fafc; /* Subtle Background Tint */
+    --neo-border: #e2e8f0; /* Soft Border */
+    --neo-text-main: #1e293b;
+    --neo-text-sub: #64748b;
+    --risk-high: #be123c;
+    --risk-medium: #d97706;
+    --risk-low: #059669;
+    --radius: 8px; /* Slightly tighter rounding for professionalism */
+}
 
-/* --- General & Page Setup --- */
 @page {
     size: A4;
-    margin: 1.5cm;
+    margin: 1cm;
     @bottom-right {
         content: "Page " counter(page) " of " counter(pages);
-        font-family: Arial, sans-serif;
-        font-size: 10px;
+        font-family: 'Inter', sans-serif;
+        font-size: 8px;
+        color: #94a3b8;
     }
 }
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #333;
-    font-size: 11pt;
-}
-h1 { font-size: 24pt; color: #003366; }
-h2 { font-size: 18pt; color: #444; }
-h3 {
-    font-size: 16pt;
-    color: #003366;
-    border-bottom: 2px solid #003366;
-    padding-bottom: 5px;
-    margin-top: 25px;
-}
-h4 {
-    font-size: 13pt;
-    color: #333;
+    font-family: 'Inter', Arial, sans-serif;
+    color: var(--neo-text-main);
+    line-height: 1.5;
     margin: 0;
-    padding: 0;
-}
-/* --- NEW: General link styling --- */
-a, a:visited {
-    color: #0056b3;
-    text-decoration: none;
+    padding: 20px 30px;
+    background-color: #fff;
 }
 
-/* --- Header --- */
+/* --- Header & Logo --- */
 header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    border-bottom: 3px solid #0056b3;
-    padding-bottom: 5px;
-}
-.header-left { flex: 1; }
-.header-right { flex: 2; text-align: right; }
-.logo { max-width: auto; 
-    max-height: 30px; 
+    align-items: flex-end; /* Aligns baseline for a cleaner look */
+    border-bottom: 1px solid var(--neo-border); /* Thinner border */
+    padding-bottom: 20px;
+    margin-bottom: 30px;
 }
 
-/* --- Report Info Boxes --- */
+.logo { 
+    height: 32px; /* Slightly more compact */
+    width: auto;
+}
+
+.header-right { text-align: right; }
+h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: var(--neo-text-main);
+}
+.scan-subtitle {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--neo-text-sub);
+    font-weight: 600;
+}
+
+/* --- Info Boxes --- */
 .report-info {
     display: flex;
-    justify-content: space-between;
-    background-color: #f4f4f4;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 20px 0;
+    border: 1px solid var(--neo-border);
+    background: var(--neo-blue-soft);
+    margin-bottom: 30px;
+    border-radius: var(--radius);
+    overflow: hidden;
 }
 .info-box {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    flex-basis: 33%;
+    flex: 1;
+    padding: 12px 20px;
+    border-right: 1px solid var(--neo-border);
 }
 .info-box strong {
-    font-size: 10pt;
-    color: #555;
-    margin-bottom: 3px;
+    display: block;
+    font-size: 0.6rem;
     text-transform: uppercase;
+    color: var(--neo-text-sub);
+    font-weight: 700;
+    letter-spacing: 0.05em;
 }
-.info-box span { font-size: 11pt; color: #000; }
+.info-box span { font-weight: 600; font-size: 1rem; }
 
-/* --- Summary Table --- */
-.summary-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
+/* --- Cards & Sections --- */
+h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    background-color: transparent; /* Removed block background for subtler tone */
+    color: var(--neo-blue-accent);
+    display: block;
+    padding: 0;
+    margin: 30px 0 15px 0;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    border-left: 3px solid var(--neo-blue-accent);
+    padding-left: 10px;
 }
-.summary-table th,
-.summary-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
+
+.host-summary-grid {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
 }
-.summary-table th { background-color: #003366; color: white; }
-.summary-table .risk-high td { background-color: #fdd; }
-.summary-table .risk-medium td { background-color: #ffedcc; }
-.summary-table .risk-low td { background-color: #fff9c4; }
-.summary-table .risk-info td { background-color: #e3f2fd; }
-.summary-table .risk-total td { background-color: #eee; }
+.host-summary-card {
+    flex: 1;
+    padding: 15px;
+    border: 1px solid var(--neo-border);
+    border-radius: var(--radius);
+    background: var(--neo-blue-soft); /* Inverted: soft background instead of white */
+    box-shadow: none; /* Removed heavy shadow */
+}
 
-
-/* --- Finding Card --- */
+/* --- Service/Finding Cards --- */
 .finding-card {
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid var(--neo-border);
     margin-bottom: 20px;
-    background: #fdfdfd;
+    border-radius: var(--radius);
+    overflow: hidden;
     page-break-inside: avoid;
 }
 .finding-header {
-    background-color: #f1f1f1;
-    border-bottom: 1px solid #ccc;
+    background: #f1f5f9; /* Light grey instead of solid blue */
+    color: var(--neo-text-main);
     padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--neo-border);
 }
-.finding-meta {
-    padding: 10px 15px;
-    border-bottom: 1px solid #eee;
+.finding-header h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
 }
-.finding-details {
+
+/* --- New Service Grid Layout --- */
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     padding: 15px;
+    gap: 15px;
 }
-/* --- UPDATED: Force long URLs to wrap correctly --- */
-.finding-details p {
-    word-wrap: break-word;
-    word-break: break-all;
+.grid-item { display: flex; flex-direction: column; }
+.grid-label { font-size: 0.55rem; text-transform: uppercase; color: var(--neo-text-sub); font-weight: 700; }
+.grid-value { font-size: 0.85rem; font-weight: 500; }
+
+/* --- Tables --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    border: 1px solid var(--neo-border);
 }
-.finding-text {
-    background-color: #f9f9f9;
-    border: 1px solid #eee;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    white-space: pre-wrap;
-    font-size: 10pt;
-    line-height: 1.5;
+th {
+    background: var(--neo-blue-soft);
+    color: var(--neo-text-sub);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    border: 1px solid var(--neo-border);
+    text-align: left;
 }
-/* --- NEW: Styles for the <p>, <ul>, <li> tags we preserved --- */
-.finding-text p {
-    margin-bottom: 10px;
+td { padding: 10px; border: 1px solid var(--neo-border); font-size: 0.85rem; }
+
+/* --- Footer --- */
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--neo-border);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
 }
-.finding-text ul, .finding-text ol {
-    margin-left: 20px;
-    margin-bottom: 10px;
-}
-.finding-text li {
-    margin-bottom: 5px;
-}
-.finding-text a {
-    word-break: break-all;
+.footer-logo { height: 20px; opacity: 0.5; margin-bottom: 0; }
+.footer-text {
+    font-size: 0.65rem;
+    color: var(--neo-text-sub);
+    font-weight: 500;
+    text-transform: uppercase;
 }
 
 /* --- Badges --- */
 .badge {
-    display: inline-block;
-    padding: 4px 8px;
-    font-size: 10pt;
-    font-weight: bold;
+    padding: 2px 10px;
+    font-size: 0.6rem;
+    font-weight: 700;
     border-radius: 4px;
-    color: white;
-    margin-right: 5px;
-    text-transform: capitalize;
+    text-transform: uppercase;
 }
-.badge.risk-high { background-color: #dc3545; }
-.badge.risk-medium { background-color: #fd7e14; }
-.badge.risk-low { background-color: #ffc107; color: #333; }
-.badge.risk-info { background-color: #0dcaf0; }
-
-.badge.predicted-score {
-    background-color: #003366;
-}
-/* --- NEW: Special style for 'Unmapped' scores --- */
-.badge.predicted-score.predicted-unmapped {
-    background-color: #6c757d;
-}
-
-.badge.confidence-3 { background-color: #28a745; }
-.badge.confidence-2 { background-color: #ffc107; color: #333; }
-.badge.confidence-1 { background-color: #6c757d; }
-.badge.confidence-0 { background-color: #444; }
-.badge.confidence-other { background-color: #17a2b8; }
+.badge.risk-high { background: #fee2e2; color: #991b1b; border: none; }
+.badge.risk-low { background: #dcfce7; color: #166534; border: none; }

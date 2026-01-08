@@ -169,13 +169,15 @@
     }
     
     .input-group {
-      display: flex;
-      gap: 0.5rem;
-      width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem; /* Standardized gap */
+        width: 100%;
     }
     .search-container {
-      position: relative;
-      flex: 1;
+        position: relative;
+        flex: 1 1 auto; 
+        min-width: 180px; 
     }
     
     .status-row {
@@ -707,23 +709,53 @@
         <div class="input-group">
           <div class="search-container">
             <span class="material-symbols-outlined search-icon">radar</span>
-            <input type="text" id="targetIp" class="dash-input" placeholder="ENTER TARGET IP..." />
+            <input type="text" id="targetIp" class="dash-input" placeholder="ENTER IP OR URL (e.g. google.com)..." />
           </div>
 
-          <button id="scanTcpBtn" class="btn-dash btn-primary">
+          <button id="scanTcpBtn" class="btn-dash btn-primary" title="Quick TCP Port Scan">
             <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
             <span class="button-text">TCP</span>
             <span class="spinner hidden"></span>
           </button>
 
-          <button id="scanVulnBtn" class="btn-dash btn-danger-outline">
+          <button id="scanVulnBtn" class="btn-dash btn-danger-outline" title="Full Vulnerability & CVE Scan">
             <span class="material-symbols-outlined" style="font-size:1.1rem">bug_report</span>
             <span class="button-text">VULN</span>
             <span class="spinner hidden"></span>
           </button>
-          <button id="advancedScanToggle" class="btn-dash btn-secondary btn-icon-only" title="Settings"><span class="material-symbols-outlined">tune</span></button>
-        </div>
 
+          <div class="relative">
+            <button id="advancedScanToggle" class="btn-dash btn-secondary" title="More Scan Modes">
+              <span class="material-symbols-outlined">layers</span>
+              <span>MODES</span>
+              <span class="material-symbols-outlined">expand_more</span>
+            </button>
+            
+            <div id="advancedScanOptions" class="hidden absolute top-full right-0 mt-2 custom-dropdown" style="width: 200px;">
+              <a href="#" data-scan-type="aggressive" class="dropdown-link">
+                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">rocket_launch</span>
+                Aggressive (-A)
+              </a>
+              <a href="#" data-scan-type="os" class="dropdown-link">
+                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">devices</span>
+                OS Detection
+              </a>
+              <a href="#" data-scan-type="tcp_syn" class="dropdown-link">
+                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">visibility_off</span>
+                SYN Stealth
+              </a>
+              <a href="#" data-scan-type="fragmented" class="dropdown-link">
+                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">grid_view</span>
+                Fragmented
+              </a>
+              <a href="#" data-scan-type="udp" class="dropdown-link">
+                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">directions_run</span>
+                UDP Scan
+              </a>
+            </div>
+          </div>
+        </div>
+        
         <div class="status-row">
           <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;">
             TARGET: <span id="localIpDisplay" style="color: white;">---</span>

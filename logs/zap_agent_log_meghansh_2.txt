@@ -1,0 +1,227 @@
+[2026-01-06 13:48:16] [*] Starting ZAP Quick Scan for https://www.navigateaif.com (User: meghansh_2)...
+[2026-01-06 13:48:16] Checking for and terminating existing ZAP processes...
+[2026-01-06 13:48:18] No running ZAP processes found.
+[2026-01-06 13:48:18] 
+--- Starting ZAP Quick Scan ---
+[2026-01-06 13:48:18] Target: https://www.navigateaif.com
+[2026-01-06 13:48:18] Report will be saved to: D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml
+[2026-01-06 13:48:18] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -quickurl https://www.navigateaif.com -quickout D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml -quickprogress
+[2026-01-06 13:48:18] --- ZAP Output Stream Started ---
+[2026-01-06 13:48:18] 
+[2026-01-06 13:48:18] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-01-06 13:48:18] 
+[2026-01-06 13:48:18] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -quickurl https://www.navigateaif.com -quickout D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml -quickprogress
+[2026-01-06 13:48:38] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-01-06 13:48:38] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-01-06 13:48:38] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-01-06 13:48:38] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-01-06 13:48:40] Accessing URL
+[2026-01-06 13:48:41] Using traditional spider
+[2026-01-06 13:48:44] Active scanning
+[2026-01-06 13:48:45] [                    ] 0% |
+[2026-01-06 13:48:46] [                    ] 0% /
+[2026-01-06 13:48:46] [                    ] 0% -
+[2026-01-06 13:48:47] [                    ] 2% \
+[2026-01-06 13:48:47] [                    ] 4% |
+[2026-01-06 13:48:48] [                    ] 4% /
+[2026-01-06 13:48:48] [==                  ] 10% -
+[2026-01-06 13:48:49] [==                  ] 11% \
+[2026-01-06 13:48:49] [==                  ] 13% |
+[2026-01-06 13:48:50] [==                  ] 14% /
+[2026-01-06 13:48:50] [===                 ] 15% -
+[2026-01-06 13:48:51] [===                 ] 17% \
+[2026-01-06 13:48:51] [====                ] 20% |
+[2026-01-06 13:48:52] [====                ] 22% /
+[2026-01-06 13:48:52] [====                ] 23% -
+[2026-01-06 13:48:53] [=====               ] 25% \
+[2026-01-06 13:48:53] [=====               ] 27% |
+[2026-01-06 13:48:54] [=====               ] 29% /
+[2026-01-06 13:48:54] [======              ] 31% -
+[2026-01-06 13:48:55] [======              ] 33% \
+[2026-01-06 13:48:55] [=======             ] 36% |
+[2026-01-06 13:48:56] [=======             ] 36% /
+[2026-01-06 13:48:56] [=======             ] 36% -
+[2026-01-06 13:48:57] [=======             ] 36% \
+[2026-01-06 13:48:57] [=======             ] 38% |
+[2026-01-06 13:48:58] [========            ] 41% /
+[2026-01-06 13:48:58] [========            ] 42% -
+[2026-01-06 13:48:59] [=========           ] 45% \
+[2026-01-06 13:48:59] [=========           ] 47% |
+[2026-01-06 13:49:00] [=========           ] 49% /
+[2026-01-06 13:49:00] [==========          ] 51% -
+[2026-01-06 13:49:01] [==========          ] 53% \
+[2026-01-06 13:49:01] [===========         ] 57% |
+[2026-01-06 13:49:02] [===========         ] 59% /
+[2026-01-06 13:49:02] [============        ] 61% -
+[2026-01-06 13:49:03] [============        ] 63% \
+[2026-01-06 13:49:03] [=============       ] 66% |
+[2026-01-06 13:49:04] [=============       ] 68% /
+[2026-01-06 13:49:04] [==============      ] 70% -
+[2026-01-06 13:49:05] [==============      ] 72% \
+[2026-01-06 13:49:05] [===============     ] 76% |
+[2026-01-06 13:49:06] [===============     ] 79% /
+[2026-01-06 13:49:06] [================    ] 81% -
+[2026-01-06 13:49:07] [================    ] 83% \
+[2026-01-06 13:49:07] [================    ] 83% |
+[2026-01-06 13:49:08] [================    ] 83% /
+[2026-01-06 13:49:08] [================    ] 83% -
+[2026-01-06 13:49:09] [================    ] 83% \
+[2026-01-06 13:49:09] [================    ] 83% |
+[2026-01-06 13:49:10] [================    ] 83% /
+[2026-01-06 13:49:10] [================    ] 83% -
+[2026-01-06 13:49:11] [================    ] 83% \
+[2026-01-06 13:49:11] [================    ] 83% |
+[2026-01-06 13:49:12] [================    ] 83% /
+[2026-01-06 13:49:12] [=================   ] 87% -
+[2026-01-06 13:49:13] [=================   ] 88% \
+[2026-01-06 13:49:13] [==================  ] 90% |
+[2026-01-06 13:49:14] [==================  ] 92% /
+[2026-01-06 13:49:14] [==================  ] 93% -
+[2026-01-06 13:49:15] [==================  ] 93% \
+[2026-01-06 13:49:15] [==================  ] 94% |
+[2026-01-06 13:49:16] [==================  ] 94% /
+[2026-01-06 13:49:16] [==================  ] 94% -
+[2026-01-06 13:49:17] [==================  ] 94% \
+[2026-01-06 13:49:17] [==================  ] 94% |
+[2026-01-06 13:49:18] [==================  ] 94% /
+[2026-01-06 13:49:18] [==================  ] 94% -
+[2026-01-06 13:49:19] [==================  ] 94% \
+[2026-01-06 13:49:19] [=================== ] 96% |
+[2026-01-06 13:49:20] [=================== ] 99% /
+[2026-01-06 13:49:20] [====================] 100%
+[2026-01-06 13:49:20] Attack complete
+[2026-01-06 13:49:20] Writing results to D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml
+[2026-01-06 13:49:27] --- End of ZAP Output ---
+[2026-01-06 13:49:27] Scan completed successfully!
+[2026-01-06 13:49:27] [+] ZAP scan command finished. Parsing...
+[2026-01-06 13:49:27] Parsing ZAP report: D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml
+[2026-01-06 13:49:27] Report parsed and enriched successfully.
+[2026-01-06 13:49:27] JSON report saved to: D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.json
+[2026-01-06 13:49:27] [+] JSON report saved.
+[2026-01-06 13:49:27] [*] Generating PDF report...
+[2026-01-06 13:49:29] [+] PDF generated successfully.
+[2026-01-06 13:49:29] [*] Scan, analysis, and prediction complete.
+[2026-01-06 13:50:25] [*] Starting ZAP Quick Scan for https://www.compliance.navigateaif.com (User: meghansh_2)...
+[2026-01-06 13:50:25] Checking for and terminating existing ZAP processes...
+[2026-01-06 13:50:28] No running ZAP processes found.
+[2026-01-06 13:50:28] 
+--- Starting ZAP Quick Scan ---
+[2026-01-06 13:50:28] Target: https://www.compliance.navigateaif.com
+[2026-01-06 13:50:28] Report will be saved to: D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml
+[2026-01-06 13:50:28] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -quickurl https://www.compliance.navigateaif.com -quickout D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml -quickprogress
+[2026-01-06 13:50:28] --- ZAP Output Stream Started ---
+[2026-01-06 13:50:28] 
+[2026-01-06 13:50:28] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-01-06 13:50:28] 
+[2026-01-06 13:50:28] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -quickurl https://www.compliance.navigateaif.com -quickout D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml -quickprogress
+[2026-01-06 13:50:48] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-01-06 13:50:48] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-01-06 13:50:48] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-01-06 13:50:48] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-01-06 13:50:51] Accessing URL
+[2026-01-06 13:50:51] Failed to attack the URL: host "No such host is known (www.compliance.navigateaif.com)" not found, please check that the URL you specify is correct
+[2026-01-06 13:50:52] Writing results to D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml
+[2026-01-06 13:50:59] --- End of ZAP Output ---
+[2026-01-06 13:50:59] Scan completed successfully!
+[2026-01-06 13:50:59] [+] ZAP scan command finished. Parsing...
+[2026-01-06 13:50:59] Parsing ZAP report: D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml
+[2026-01-06 13:50:59] Report parsed and enriched successfully.
+[2026-01-06 13:50:59] JSON report saved to: D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.json
+[2026-01-06 13:50:59] [+] JSON report saved.
+[2026-01-06 13:50:59] [*] Generating PDF report...
+[2026-01-06 13:51:00] [+] PDF generated successfully.
+[2026-01-06 13:51:00] [*] Scan, analysis, and prediction complete.
+[2026-01-06 13:52:19] [*] Starting ZAP Quick Scan for https://www.navigateaif.com (User: meghansh_2)...
+[2026-01-06 13:52:19] Checking for and terminating existing ZAP processes...
+[2026-01-06 13:52:22] No running ZAP processes found.
+[2026-01-06 13:52:22] 
+--- Starting ZAP Quick Scan ---
+[2026-01-06 13:52:22] Target: https://www.navigateaif.com
+[2026-01-06 13:52:22] Report will be saved to: D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml
+[2026-01-06 13:52:22] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -quickurl https://www.navigateaif.com -quickout D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml -quickprogress
+[2026-01-06 13:52:22] --- ZAP Output Stream Started ---
+[2026-01-06 13:52:22] 
+[2026-01-06 13:52:22] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-01-06 13:52:22] 
+[2026-01-06 13:52:22] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -quickurl https://www.navigateaif.com -quickout D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml -quickprogress
+[2026-01-06 13:52:36] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-01-06 13:52:36] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-01-06 13:52:36] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-01-06 13:52:36] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-01-06 13:52:37] Accessing URL
+[2026-01-06 13:52:37] Using traditional spider
+[2026-01-06 13:52:41] Active scanning
+[2026-01-06 13:52:42] [                    ] 0% |
+[2026-01-06 13:52:42] [                    ] 0% /
+[2026-01-06 13:52:43] [                    ] 0% -
+[2026-01-06 13:52:43] [                    ] 2% \
+[2026-01-06 13:52:44] [                    ] 4% |
+[2026-01-06 13:52:44] [                    ] 4% /
+[2026-01-06 13:52:45] [==                  ] 10% -
+[2026-01-06 13:52:45] [==                  ] 12% \
+[2026-01-06 13:52:46] [==                  ] 13% |
+[2026-01-06 13:52:46] [===                 ] 15% /
+[2026-01-06 13:52:47] [===                 ] 17% -
+[2026-01-06 13:52:47] [===                 ] 19% \
+[2026-01-06 13:52:48] [====                ] 21% |
+[2026-01-06 13:52:48] [====                ] 22% /
+[2026-01-06 13:52:49] [====                ] 24% -
+[2026-01-06 13:52:49] [=====               ] 26% \
+[2026-01-06 13:52:50] [=====               ] 29% |
+[2026-01-06 13:52:50] [======              ] 30% /
+[2026-01-06 13:52:51] [======              ] 32% -
+[2026-01-06 13:52:51] [======              ] 34% \
+[2026-01-06 13:52:52] [=======             ] 36% |
+[2026-01-06 13:52:52] [=======             ] 36% /
+[2026-01-06 13:52:53] [=======             ] 36% -
+[2026-01-06 13:52:53] [=======             ] 38% \
+[2026-01-06 13:52:54] [========            ] 42% |
+[2026-01-06 13:52:54] [========            ] 43% /
+[2026-01-06 13:52:55] [=========           ] 46% -
+[2026-01-06 13:52:55] [=========           ] 48% \
+[2026-01-06 13:52:56] [==========          ] 50% |
+[2026-01-06 13:52:56] [==========          ] 53% /
+[2026-01-06 13:52:57] [===========         ] 57% -
+[2026-01-06 13:52:57] [===========         ] 59% \
+[2026-01-06 13:52:58] [============        ] 61% |
+[2026-01-06 13:52:58] [============        ] 63% /
+[2026-01-06 13:52:59] [=============       ] 67% -
+[2026-01-06 13:52:59] [=============       ] 69% \
+[2026-01-06 13:53:00] [==============      ] 72% |
+[2026-01-06 13:53:00] [===============     ] 76% /
+[2026-01-06 13:53:01] [===============     ] 77% -
+[2026-01-06 13:53:01] [===============     ] 79% \
+[2026-01-06 13:53:02] [================    ] 83% |
+[2026-01-06 13:53:02] [================    ] 83% /
+[2026-01-06 13:53:03] [================    ] 83% -
+[2026-01-06 13:53:03] [================    ] 83% \
+[2026-01-06 13:53:04] [================    ] 83% |
+[2026-01-06 13:53:04] [================    ] 83% /
+[2026-01-06 13:53:05] [=================   ] 87% -
+[2026-01-06 13:53:05] [=================   ] 89% \
+[2026-01-06 13:53:06] [==================  ] 91% |
+[2026-01-06 13:53:06] [==================  ] 93% /
+[2026-01-06 13:53:07] [==================  ] 93% -
+[2026-01-06 13:53:07] [==================  ] 93% \
+[2026-01-06 13:53:08] [==================  ] 94% |
+[2026-01-06 13:53:08] [==================  ] 94% /
+[2026-01-06 13:53:09] [==================  ] 94% -
+[2026-01-06 13:53:09] [==================  ] 94% \
+[2026-01-06 13:53:10] [==================  ] 94% |
+[2026-01-06 13:53:10] [==================  ] 94% /
+[2026-01-06 13:53:11] [==================  ] 94% -
+[2026-01-06 13:53:11] [=================== ] 96% \
+[2026-01-06 13:53:12] [=================== ] 99% |
+[2026-01-06 13:53:12] [====================] 100%
+[2026-01-06 13:53:12] Attack complete
+[2026-01-06 13:53:13] Writing results to D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml
+[2026-01-06 13:53:20] --- End of ZAP Output ---
+[2026-01-06 13:53:20] Scan completed successfully!
+[2026-01-06 13:53:20] [+] ZAP scan command finished. Parsing...
+[2026-01-06 13:53:20] Parsing ZAP report: D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.xml
+[2026-01-06 13:53:21] Report parsed and enriched successfully.
+[2026-01-06 13:53:21] JSON report saved to: D:\NetShieldAI\Services\results\meghansh_2\zap_scanner\zap_report.json
+[2026-01-06 13:53:21] [+] JSON report saved.
+[2026-01-06 13:53:21] [*] Generating PDF report...
+[2026-01-06 13:53:22] [+] PDF generated successfully.
+[2026-01-06 13:53:22] [*] Scan, analysis, and prediction complete.

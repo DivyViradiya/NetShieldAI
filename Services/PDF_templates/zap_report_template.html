@@ -2,358 +2,352 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ZAP Scan Report</title>
-    <link rel="stylesheet" href="file:///D:/NetShieldAI/static/css/PDF_style/report_style.css">
+    <title>NetShieldAI | ZAP Vulnerability Report</title>
     <style>
-        /* Extra presentation tweaks for ZAP PDF */
+        /* --- SUBTLE SLATE & STEEL THEME (ZAP EXTENSION) --- */
+        :root {
+            --neo-blue: #475569;
+            --neo-blue-accent: #3b82f6;
+            --neo-blue-soft: #f8fafc;
+            --neo-border: #e2e8f0;
+            --neo-text-main: #1e293b;
+            --neo-text-sub: #64748b;
+            --risk-high: #be123c;
+            --risk-medium: #d97706;
+            --risk-low: #059669;
+            --radius: 8px;
+        }
+
+        @page {
+            size: A4;
+            margin: 1cm;
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-family: 'Inter', sans-serif;
+                font-size: 8px;
+                color: #94a3b8;
+            }
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--neo-text-main);
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px 30px;
+            background-color: #fff;
+        }
+
+        /* --- HEADER --- */
+        header {
+            border-bottom: 1px solid var(--neo-border);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .logo-container img {
+            height: 32px;
+            display: block;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--neo-text-main);
+        }
 
         .scan-subtitle {
-            font-size: 0.9em;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-
-        .summary-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .summary-card {
-            flex: 1 1 30%;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-            padding: 10px 12px;
-            background: #f9fafb;
-        }
-
-        .summary-label {
-            font-size: 0.75em;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #6b7280;
+            letter-spacing: 0.1em;
+            color: var(--neo-text-sub);
+            margin-top: 2px;
         }
 
-        .summary-value {
-            font-size: 0.95em;
-            font-weight: 600;
-            color: #111827;
-        }
-
-        .finding-card {
+        /* --- INFO BAR --- */
+        .report-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid var(--neo-border);
+            background: var(--neo-blue-soft);
             margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .info-box {
+            padding: 12px 20px;
+            border-right: 1px solid var(--neo-border);
+        }
+
+        .info-box:last-child { border-right: none; }
+
+        .info-box strong {
+            display: block;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: var(--neo-text-sub);
+            font-weight: 700;
+        }
+
+        .info-box span {
+            font-weight: 600;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        /* --- SECTION HEADERS --- */
+        h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--neo-blue-accent);
+            margin: 25px 0 15px 0;
+            letter-spacing: 0.1em;
+            border-left: 3px solid var(--neo-blue-accent);
+            padding-left: 10px;
+            font-weight: 700;
+        }
+
+        /* --- SUMMARY GRID --- */
+        .host-summary-grid {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .host-summary-card {
+            flex: 1;
+            padding: 12px;
+            background: var(--neo-blue-soft);
+            border: 1px solid var(--neo-border);
+            border-radius: var(--radius);
+        }
+
+        .host-summary-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--neo-text-sub);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .host-summary-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--neo-text-main);
+        }
+
+        /* --- FINDING CARDS --- */
+        .finding-card {
+            border: 1px solid var(--neo-border);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
             page-break-inside: avoid;
+            overflow: hidden;
         }
 
         .finding-header {
+            background: #f1f5f9;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--neo-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 8px;
-            margin-bottom: 10px;
         }
 
         .finding-header h4 {
             margin: 0;
-            font-size: 13px;
-            color: #111827;
+            font-size: 0.9rem;
+            font-weight: 700;
+            max-width: 75%;
         }
 
         .finding-meta {
-            margin-bottom: 8px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            padding: 12px 15px;
+            gap: 15px;
+            background: #fff;
         }
 
-        .finding-details p {
-            margin: 4px 0;
+        .grid-item { display: flex; flex-direction: column; }
+        .grid-label { font-size: 0.55rem; text-transform: uppercase; color: var(--neo-text-sub); font-weight: 700; margin-bottom: 2px; }
+        .grid-value { font-size: 0.85rem; font-weight: 500; }
+
+        .finding-text-block {
+            padding: 0 15px 15px 15px;
+            font-size: 0.8rem;
         }
 
-        .badge {
-            padding: 3px 8px;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 9px;
-        }
-
-        .risk-high     { background-color: #fecaca; color: #7f1d1d; }
-        .risk-medium   { background-color: #fef3c7; color: #92400e; }
-        .risk-low      { background-color: #dcfce7; color: #166534; }
-        .risk-info     { background-color: #dbeafe; color: #1d4ed8; }
-
-        .predicted-score {
-            background-color: #e5e7eb;
-            color: #374151;
-        }
-        .predicted-unmapped {
-            background-color: #f3f4f6;
-            color: #6b7280;
-        }
-
-        .confidence-3 { background-color: #bbf7d0; color: #166534; }
-        .confidence-2 { background-color: #fef3c7; color: #92400e; }
-        .confidence-1 { background-color: #fee2e2; color: #b91c1c; }
-        .confidence-0 { background-color: #e5e7eb; color: #4b5563; }
-        .confidence-other { background-color: #e5e7eb; color: #4b5563; }
-
-        .finding-text {
-            background-color: #f3f4f6;
-            border-left: 3px solid #003366;
-            padding: 8px;
-            font-size: 0.85em;
+        .code-box {
+            background: var(--neo-blue-soft);
+            border: 1px solid var(--neo-border);
+            padding: 10px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            margin-top: 5px;
             white-space: pre-wrap;
-            margin: 4px 0 8px 0;
+            color: var(--neo-text-main);
         }
 
-        .summary-table th,
-        .summary-table td {
-            font-size: 0.9em;
+        /* --- BADGES --- */
+        .badge {
+            padding: 2px 8px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            border-radius: 4px;
+            text-transform: uppercase;
         }
+        .badge-high { background: #fee2e2; color: #991b1b; }
+        .badge-medium { background: #fef3c7; color: #92400e; }
+        .badge-low { background: #dcfce7; color: #166534; }
+        .badge-info { background: #dbeafe; color: #1d4ed8; }
+        .badge-neutral { background: #f1f5f9; color: #475569; }
 
-        .legend-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8em;
-            margin-top: 10px;
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 40px;
+            padding: 15px 0;
+            border-top: 1px solid var(--neo-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .legend-table th,
-        .legend-table td {
-            border: 1px solid #e5e7eb;
-            padding: 6px 8px;
-            text-align: left;
-        }
-        .legend-table th {
-            background-color: #f3f4f6;
-            font-weight: 600;
-        }
-
-        .section-note {
-            font-size: 0.8em;
-            color: #6b7280;
-            margin-top: 4px;
-        }
+        .footer-logo { height: 18px; opacity: 0.6; }
+        .footer-text { font-size: 0.65rem; color: var(--neo-text-sub); text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="header-left">
-            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="Logo" class="logo">
+        <div class="logo-container">
+            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="NetShieldAI">
         </div>
         <div class="header-right">
-            <h1>Vulnerability Scan Report</h1>
-            <h2>ZAP Scanner</h2>
-            <div class="scan-subtitle">
-                Automated web application security assessment, including risk-ranked issues and remediation guidance.
-            </div>
+            <h1>Web Vulnerability Report</h1>
+            <div class="scan-subtitle">// ZAP Security Engine</div>
         </div>
     </header>
 
-    {# Pre-calc counts for cards #}
-    {% set high_count   = data.summary.High  | default(0) %}
+    {# Pre-calc counts #}
+    {% set high_count   = data.summary.High   | default(0) %}
     {% set medium_count = data.summary.Medium | default(0) %}
-    {% set low_count    = data.summary.Low  | default(0) %}
-    {% set info_count   = data.summary.Info | default(0) %}
-    {% set total_count  = data.summary.Total | default(0) %}
+    {% set low_count    = data.summary.Low    | default(0) %}
+    {% set total_count  = data.summary.Total  | default(0) %}
 
     <div class="report-info">
         <div class="info-box">
-            <strong>Target URL:</strong>
+            <strong>Target URL</strong>
             <span>{{ data.target_url | default('N/A') }}</span>
         </div>
         <div class="info-box">
-            <strong>Scan Date:</strong>
+            <strong>Scan Date</strong>
             <span>{{ data.scan_date | default('N/A') }}</span>
         </div>
         <div class="info-box">
-            <strong>Report Generated:</strong>
-            <span>{{ generation_date }}</span>
+            <strong>Engine</strong>
+            <span>OWASP ZAP 2.15+</span>
         </div>
     </div>
 
-    <!-- High-level summary cards -->
-    <section class="summary">
-        <h3>Scan Overview</h3>
-
-        <div class="summary-grid">
-            <div class="summary-card">
-                <div class="summary-label">Total Alerts</div>
-                <div class="summary-value">{{ total_count }}</div>
+    <section>
+        <h3>Executive Summary</h3>
+        <div class="host-summary-grid">
+            <div class="host-summary-card">
+                <div class="host-summary-label">Total Alerts</div>
+                <div class="host-summary-value">{{ total_count }}</div>
             </div>
-            <div class="summary-card">
-                <div class="summary-label">High Risk</div>
-                <div class="summary-value">
-                    {% if high_count > 0 %}
-                        <span class="badge risk-high">{{ high_count }} HIGH</span>
-                    {% else %}
-                        <span class="badge risk-low">None</span>
-                    {% endif %}
-                </div>
+            <div class="host-summary-card">
+                <div class="host-summary-label">High Risk</div>
+                <div class="host-summary-value" style="color: var(--risk-high);">{{ high_count }}</div>
             </div>
-            <div class="summary-card">
-                <div class="summary-label">Medium &amp; Low Risk</div>
-                <div class="summary-value">
-                    {{ medium_count }} Medium / {{ low_count }} Low
-                </div>
+            <div class="host-summary-card">
+                <div class="host-summary-label">Medium Risk</div>
+                <div class="host-summary-value" style="color: var(--risk-medium);">{{ medium_count }}</div>
+            </div>
+            <div class="host-summary-card">
+                <div class="host-summary-label">Low / Info</div>
+                <div class="host-summary-value">{{ low_count }}</div>
             </div>
         </div>
-
-        <p class="section-note" style="margin-top: 10px;">
-            Prioritize remediation of <strong>High</strong> and <strong>Medium</strong> risk findings first,
-            then address Low and Informational issues as part of hardening.
-        </p>
-
-        <!-- Numeric summary table -->
-        <table class="summary-table" style="margin-top: 15px;">
-            <thead>
-                <tr>
-                    <th>Risk Level</th>
-                    <th>Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="risk-high">
-                    <td>High</td>
-                    <td>{{ high_count }}</td>
-                </tr>
-                <tr class="risk-medium">
-                    <td>Medium</td>
-                    <td>{{ medium_count }}</td>
-                </tr>
-                <tr class="risk-low">
-                    <td>Low</td>
-                    <td>{{ low_count }}</td>
-                </tr>
-                <tr class="risk-info">
-                    <td>Informational</td>
-                    <td>{{ info_count }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Total</strong></td>
-                    <td><strong>{{ total_count }}</strong></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <!-- Legend -->
-        <h4 style="margin-top: 18px; font-size: 0.95em;">Risk &amp; Score Legend</h4>
-        <table class="legend-table">
-            <thead>
-                <tr>
-                    <th>Badge</th>
-                    <th>Meaning</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><span class="badge risk-high">High Risk</span></td>
-                    <td>Issues that can lead to compromise of data, authentication, or full system control.</td>
-                </tr>
-                <tr>
-                    <td><span class="badge risk-medium">Medium Risk</span></td>
-                    <td>Exposures that may enable privilege escalation or sensitive information leakage.</td>
-                </tr>
-                <tr>
-                    <td><span class="badge risk-low">Low Risk</span></td>
-                    <td>Minor weaknesses or best-practice deviations with limited impact.</td>
-                </tr>
-                <tr>
-                    <td><span class="badge risk-info">Informational</span></td>
-                    <td>Non-exploit issues that still provide useful security context.</td>
-                </tr>
-                <tr>
-                    <td><span class="badge predicted-score">Predicted Score</span></td>
-                    <td>Model-based severity estimate based on vulnerability features and context.</td>
-                </tr>
-            </tbody>
-        </table>
     </section>
 
-    <!-- Detailed findings -->
-    <section class="findings" style="page-break-before: always;">
+    <section>
         <h3>Detailed Findings</h3>
-        <p class="section-note">
-            Each card represents one ZAP alert. Use the Description and Solution sections to understand
-            the impact and remediation steps. References may include external standards or documentation.
-        </p>
-        
         {% if data.findings %}
             {% for finding in data.findings %}
-            {% set risk_class = 'risk-info' %}
-            {% if finding.risk and finding.risk|lower == 'high' %}
-                {% set risk_class = 'risk-high' %}
-            {% elif finding.risk and finding.risk|lower == 'medium' %}
-                {% set risk_class = 'risk-medium' %}
-            {% elif finding.risk and finding.risk|lower == 'low' %}
-                {% set risk_class = 'risk-low' %}
-            {% endif %}
+            {% set risk = finding.risk | lower %}
+            {% set badge_cls = 'badge-info' %}
+            {% if risk == 'high' %}{% set badge_cls = 'badge-high' %}
+            {% elif risk == 'medium' %}{% set badge_cls = 'badge-medium' %}
+            {% elif risk == 'low' %}{% set badge_cls = 'badge-low' %}{% endif %}
 
             <div class="finding-card">
                 <div class="finding-header">
                     <h4>{{ finding.name }}</h4>
-                    <span class="badge {{ risk_class }}">{{ finding.risk | default('Info') }} Risk</span>
+                    <span class="badge {{ badge_cls }}">{{ finding.risk }} Risk</span>
                 </div>
                 
                 <div class="finding-meta">
-                    {# Predicted risk score #}
-                    {% set pred = finding.predicted_risk_score | default('Unmapped') %}
-                    {% set pred_cls = 'predicted-score' %}
-                    {% if pred in ['Unmapped', 'Unprofiled', 'N/A (Model not loaded)'] %}
-                        {% set pred_cls = pred_cls ~ ' predicted-unmapped' %}
-                    {% endif %}
-                    <span class="badge {{ pred_cls }}">
-                        Predicted Score: {{ pred }}
-                    </span>
-
-                    {# Confidence badge based on numeric value #}
-                    {% if finding.confidence == '3' %}
-                        <span class="badge confidence-3">Confidence: High</span>
-                    {% elif finding.confidence == '2' %}
-                        <span class="badge confidence-2">Confidence: Medium</span>
-                    {% elif finding.confidence == '1' %}
-                        <span class="badge confidence-1">Confidence: Low</span>
-                    {% elif finding.confidence == '0' %}
-                        <span class="badge confidence-0">Confidence: False Positive</span>
-                    {% else %}
-                        <span class="badge confidence-other">Confidence: {{ finding.confidence }}</span>
-                    {% endif %}
+                    <div class="grid-item">
+                        <span class="grid-label">Confidence</span>
+                        <span class="grid-value">
+                            {% if finding.confidence == '3' %}High
+                            {% elif finding.confidence == '2' %}Medium
+                            {% elif finding.confidence == '1' %}Low
+                            {% else %}N/A{% endif %}
+                        </span>
+                    </div>
+                    <div class="grid-item">
+                        <span class="grid-label">Predicted Score</span>
+                        <span class="grid-value">{{ finding.predicted_risk_score | default('N/A') }}</span>
+                    </div>
+                    <div class="grid-item">
+                        <span class="grid-label">Target URL</span>
+                        <span class="grid-value" style="font-size: 0.7rem; color: var(--neo-blue-accent);">{{ finding.url | truncate(40) }}</span>
+                    </div>
                 </div>
 
-                <div class="finding-details">
-                    <p><strong>URL:</strong> <span>{{ finding.url }}</span></p>
-
-                    <p><strong>Description:</strong></p>
-                    <div class="finding-text">{{ finding.description | safe }}</div>
-                    
-                    <p><strong>Solution:</strong></p>
-                    <div class="finding-text">{{ finding.solution | safe }}</div>
-
-                    {% if finding.reference %}
-                    <p><strong>Reference:</strong></p>
-                    <div class="finding-text">{{ finding.reference | safe }}</div>
-                    {% endif %}
+                <div class="finding-text-block">
+                    <strong style="font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-sub);">Description</strong>
+                    <div class="code-box" style="background: #fff; border-left: 3px solid var(--neo-blue);">{{ finding.description | safe }}</div>
                 </div>
+
+                <div class="finding-text-block">
+                    <strong style="font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-sub);">Remediation Solution</strong>
+                    <div class="code-box" style="background: #fff; border-left: 3px solid var(--risk-low);">{{ finding.solution | safe }}</div>
+                </div>
+
+                {% if finding.reference %}
+                <div class="finding-text-block">
+                    <strong style="font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-sub);">References</strong>
+                    <div style="font-size: 0.7rem; color: var(--neo-text-sub); margin-top: 5px;">{{ finding.reference | safe }}</div>
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         {% else %}
-            <div class="finding-card" style="padding: 20px; text-align: center; color: #166534;">
-                <h4>✅ No Vulnerabilities Found</h4>
-                <p>
-                    ZAP did not report any security alerts for the scanned target using the configured scan profile.
-                </p>
+            <div style="text-align: center; padding: 40px; border: 1px dashed var(--neo-border); border-radius: var(--radius); color: var(--neo-text-sub);">
+                No web vulnerabilities detected during this scan session.
             </div>
         {% endif %}
     </section>
 
-    <footer style="margin-top: 40px; text-align: center; font-size: 0.8em; color: #777;">
-        <p>Generated by NetShieldAI Reporting Engine</p>
+    <footer>
+        <img src="file:///D:/NetShieldAI/static/images/NS_Logo_pdf.png" alt="NS Logo" class="footer-logo">
+        <div class="footer-text">
+            NetShieldAI Reporting Engine // ZAP Scanner // Generated {{ data.generation_date }}
+        </div>
     </footer>
 
 </body>

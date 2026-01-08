@@ -3,20 +3,6 @@ import os
 import time
 from pathlib import Path
 
-def silence_low_level_noise():
-    """
-    MODIFIED: Only silence noise if NOT in debug mode.
-    While fixing crashes, we NEED to see the stderr.
-    """
-    try:
-        if os.name == 'nt':
-            devnull = os.open(os.devnull, os.O_RDWR)
-            os.dup2(devnull, 2)
-        os.environ["G_MESSAGES_DEBUG"] = "none"
-    except Exception:
-        pass
-
-silence_low_level_noise()
 
 from flask import Flask, render_template, jsonify, request
 from flask_login import current_user
@@ -35,6 +21,7 @@ from routes.auth_bp import auth_bp
 from routes.packet_sniffer_bp import packet_sniffer_bp
 from routes.dashboard_bp import dashboard_bp
 from routes.killchain_bp import killchain_bp
+from routes.sql_scanner_bp import sql_scanner_bp
 from Services.network_scanner import ensure_admin_privileges
 
 app = Flask(__name__)
@@ -56,6 +43,7 @@ app.register_blueprint(chatbot_bp, url_prefix='/chatbot')
 app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 app.register_blueprint(killchain_bp, url_prefix='/killchain')
+app.register_blueprint(sql_scanner_bp, url_prefix='/sql_scanner')
 
 def print_banner():
     banner = fr"""

@@ -1,230 +1,160 @@
-.
-|-- Services
-|   |-- __pycache__
-|   |   |-- network_scanner.cpython-313.pyc
-|   |   |-- ssl_scanner.cpython-313.pyc
-|   |   `-- zap_scanner.cpython-313.pyc
-|   |-- network_scanner.py
-|   |-- results
-|   |   |-- network_scanner
-|   |   |   |-- scan_result_aggressive.txt
-|   |   |   |-- scan_result_fragmented.txt
-|   |   |   |-- scan_result_os.txt
-|   |   |   |-- scan_result_tcp.txt
-|   |   |   |-- scan_result_tcp_syn.txt
-|   |   |   `-- whitelisted_ports.json
-|   |   |-- sql_scanner
-|   |   |   `-- sqlmap_output
-|   |   |-- ssl_scanner
-|   |   |   `-- ssl_report.xml
-|   |   `-- zap_scanner
-|   |       |-- zap.yaml
-|   |       |-- zap_baseline_report.html
-|   |       `-- zap_baseline_report.json
-|   |-- ssl_scanner.py
-|   `-- zap_scanner.py
-|-- __init__.py
-|-- __pycache__
-|   |-- agent_logic.cpython-313.pyc
-|   `-- app.cpython-313.pyc
-|-- app.py
-|-- logs
-|   |-- chatbot_logs.txt
-|   |-- network_agent_log.txt
-|   |-- sql_agent_log.txt
-|   |-- ssl_agent_log.txt
-|   `-- zap_agent_log.txt
-|-- project_structure.txt
-|-- routes
-|   |-- __init__.py
-|   |-- __pycache__
-|   |   |-- __init__.cpython-313.pyc
-|   |   |-- chatbot_bp.cpython-313.pyc
-|   |   |-- network_scanner_bp.cpython-313.pyc
-|   |   |-- ssl_scanner_bp.cpython-313.pyc
-|   |   `-- zap_scanner_bp.cpython-313.pyc
-|   |-- chatbot_bp.py
-|   |-- network_scanner_bp.py
-|   |-- ssl_scanner_bp.py
-|   `-- zap_scanner_bp.py
-|-- static
-|   |-- css
-|   |   `-- style.css
-|   `-- js
-|       |-- chatbot.js
-|       |-- network_scanner.js
-|       |-- script.js
-|       |-- ssl_scanner.js
-|       `-- zap_scanner.js
-|-- templates
-|   |-- chatbot.html
-|   |-- home.html
-|   |-- network_scanner.html
-|   |-- ssl_scanner.html
-|   `-- zap_scanner.html
-`-- uploads
+1. The Grand Architecture
+We will move away from "one file per scanner" and move toward a Plugin Architecture. Your Flask app will act as the "General," and the tools are the "Soldiers."
+
+The Pipeline Flow:
+
+Input: User creates a "Project" (URL + Source Code + Cloud Creds).
+
+Orchestration: The System spawns independent threads for each tool.
+
+Normalization: A specialized "Parser" converts every tool's weird JSON output into a single standard format.
+
+Compliance Engine: Maps the Normalized Findings to PCI/ISO/GDPR.
+
+Reporting: Generates the Master Audit PDF.
+
+2. System Prerequisites (The Installation List)
+Before writing code, your server needs these tools installed. You cannot run subprocess if the binary isn't there.
+
+The "apt-get" / Install List:
+
+Semgrep: pip install semgrep
+
+Checkov: pip install checkov
+
+Gitleaks: Download binary (Go-based) or brew install gitleaks (Linux/Mac).
+
+Nmap: sudo apt-get install nmap
+
+Prowler: pip install prowler (Requires AWS CLI configured).
+
+ZAP: Already installed.
+
+3. Database Design (The Backbone)
+We need a robust schema to handle this. We shouldn't store 6 different types of results. We store Raw Reports and Normalized Findings.
+
+New Models (extensions.py):
+
+AuditProject: Represents the target (e.g., "E-commerce V1").
+
+id, name, target_url, source_code_path, cloud_provider.
+
+AuditRun: A specific execution time.
+
+id, project_id, timestamp, status (Running/Completed).
+
+ScanResult: The raw output file from a specific tool.
+
+id, run_id, tool_name (e.g., 'Semgrep'), raw_json_path.
+
+Finding: The normalized vulnerability.
+
+id, run_id, tool_source, severity (Critical/High...), cwe_id, description, file_location.
+
+ComplianceReport: The final score.
+
+id, run_id, standard (PCI/GDPR), score, compliance_data_json.
+
+4. The "Unified Scanner" Service
+We will create a Service Manager that knows how to run every tool.
+
+File Structure:
+
+Plaintext
+
+/Services
+  /scanners
+     __init__.py
+     zap_runner.py       # Existing
+     semgrep_runner.py   # New
+     checkov_runner.py   # New
+     gitleaks_runner.py  # New
+     nmap_runner.py      # New
+     prowler_runner.py   # New
+  compliance_engine.py   # The Logic Brain
+  orchestrator.py        # The General (runs them all)
+  normalizer.py          # The Translator
+The orchestrator.py logic: It will look something like this (pseudo-code):
+
+Python
+
+def start_full_audit(project_id):
+    # 1. Start Nmap & ZAP on the URL
+    thread1 = threading.Thread(target=nmap_runner.scan, args=(url,))
+    thread2 = threading.Thread(target=zap_runner.scan, args=(url,))
+    
+    # 2. Start Static Analysis on the Uploaded Code
+    thread3 = threading.Thread(target=semgrep_runner.scan, args=(code_path,))
+    thread4 = threading.Thread(target=checkov_runner.scan, args=(code_path,))
+    thread5 = threading.Thread(target=gitleaks_runner.scan, args=(code_path,))
+    
+    # 3. (Optional) Start Cloud Scan if creds exist
+    # thread6 = threading.Thread(target=prowler_runner.scan, args=(aws_profile,))
+    
+    # Wait for all...
+    # Run Normalizer...
+    # Run Compliance Engine...
+5. The "Normalizer" (Crucial Step)
+Every tool speaks a different language. We need a translator.
+
+Semgrep outputs: {"results": [{"check_id": "...", "path": "..."}]}
+
+Gitleaks outputs: [{"Description": "...", "File": "..."}]
+
+Nmap outputs: XML (usually).
+
+We will create Services/normalizer.py:
+
+Python
+
+def normalize_finding(tool_name, raw_data):
+    # Returns a standard object:
+    return {
+        "tool": tool_name,
+        "name": raw_data['title'],
+        "severity": map_severity(raw_data['severity']), # Map all to HIGH/MED/LOW
+        "cwe": raw_data.get('cwe', 'Unknown'),
+        "description": raw_data['message']
+    }
+6. Execution Plan (Step-by-Step)
+We cannot code this all at once. It will break. Here is the sprint plan:
+
+Phase 1: The Foundation (Day 1-2)
+
+Create the Database Models.
+
+Create the New Route (/audit) and UI Page (audit_dashboard.html).
+
+Build the File Uploader (User must be able to upload a .zip of source code).
+
+Phase 2: The Static Bundle (Day 3-4)
+
+Implement Semgrep, Checkov, and Gitleaks.
+
+Why? They all scan local files. They are easier to test than ZAP/Nmap.
+
+Write the normalizer.py for these three.
+
+Phase 3: The Network Bundle (Day 5)
+
+Integrate Nmap.
+
+Refine the ZAP integration to feed into the central database instead of being standalone.
+
+Phase 4: The Compliance Brain (Day 6)
+
+Update compliance_engine.py to map findings from all 5 tools to PCI-DSS/ISO.
+
+"If Nmap finds Port 23 (Telnet) -> Fail PCI Req 1."
+
+"If Gitleaks finds AWS Key -> Fail ISO A.9."
+
+Phase 5: The Cloud (Day 7 - Hardest)
+
+Integrate Prowler.
+
+Note: This requires handling AWS Keys securely. For MVP, we might ask the user to upload a Prowler JSON report manually instead of running it, to avoid liability of holding their root keys.
 
 
 
-pyinstaller app.spec
-
-Action: Run these commands from your project root (~/Desktop/NetShield/):
-# 1. Create the main staging directories
-mkdir -p pkg_root/opt/vulnscanai
-mkdir -p pkg_root/etc/systemd/system
-mkdir -p pkg_root/etc/sudoers.d
-
-# 2. Copy your PyInstaller executable into the application directory
-cp dist/app pkg_root/opt/vulnscanai/
-
-# 3. Copy your web application assets
-cp -r templates pkg_root/opt/vulnscanai/
-cp -r static pkg_root/opt/vulnscanai/
-cp -r logs pkg_root/opt/vulnscanai/
-cp -r uploads pkg_root/opt/vulnscanai/
-cp -r routes pkg_root/opt/vulnscanai/
-cp -r Services pkg_root/opt/vulnscanai/
-
-
-
-# 5. Copy the Systemd service file into its correct Systemd location within the staging area
-cp vulnscanai.service pkg_root/etc/systemd/system/
-
-
-fpm -s dir -t deb \
-  -n vulnscanai-app \
-  -v 1.0.0 \
-  --iteration 1 \
-  --description "VulnScanAI: A Flask-based Port Scanner and Blocker" \
-  --url "https://github.com/DivyViradiya07/NetShield" \
-  --license "MIT" \
-  --vendor "Your Name/Organization" \
-  --maintainer "Divya Viradiya <divya.viradiya.7@gmail.com>" \
-  --deb-systemd vulnscanai.service \
-  --deb-user vulnscanai \
-  --deb-group vulnscanai \
-  -d 'docker.io' \
-  -d 'nmap' \
-  -d 'ufw' \
-  -d 'lsof' \
-  -d 'net-tools' \
-  --before-install preinst.sh \
-  --after-install postinst.sh \
-  --after-remove postrm.sh \
-  -C pkg_root .
-
-
-sudo dpkg -i vulnscanai-app_1.0.0-1_amd64.deb || sudo apt --fix-broken install
-
-systemctl status vulnscanai.service
-journalctl -u vulnscanai.service -f
-
-id vulnscanai
-ls -l /opt/vulnscanai/
-ls -l /var/log/vulnscanai/
-ls -l /var/lib/vulnscanai/
-cat /etc/sudoers.d/vulnscanai
-
-sudo apt purge vulnscanai-app
-
-
-
-
-User oriented planning:
-Phase 1: The Foundation (Database & Auth)
-Focus: root directory and models.py We need to set up the database and the user model before we touch any scanning logic.
-Create models.py: Define the User table (id, username, password, is_admin).
-Create routes/auth_bp.py: Implement Login, Register, Logout, and Admin Dashboard routes.
-Update run.py: Initialize Flask-SQLAlchemy and Flask-Login here.
-
-Phase 2: Service Refactoring (Dynamic Paths)
-Focus: Services/ directory Currently, your scripts hardcode paths like D:\NetShieldAI\Services\results. We must change them to accept a dynamic path.
-Modify network_scanner.py: Update functions to accept a output_dir argument.
-Modify packet_sniffer.py: Ensure PCAP and JSON files are saved to results/<user_id>/packet_sniffer/.
-Modify zap_scanner.py & ssl_scanner.py: Same dynamic path logic.
-Modify pdf_generator.py: Ensure it reads/writes PDFs from the specific user's folder.
-
-Phase 3: The Glue (Blueprints)
-Focus: routes/ directory The blueprints act as the bridge. They need to know who is logged in and tell the Services where to save the files.
-Update network_scanner_bp.py (and others):
-Get current_user.id.
-Construct the path: base_path / str(user_id) / 'network_scanner'.
-Pass this path to the Service functions.
-Secure Endpoints: Add @login_required decorators to all scanning routes.
-
-Phase 4: The Interface (Frontend)
-Focus: templates/ directory
-Create login.html & register.html: Beautiful, dark-mode auth pages.
-Update home.html: Show "Login" button if guest, "Dashboard/Logout" if user.
-Create admin_dashboard.html: A table for the admin to see/delete users.
-
-
-
-1. Create The Master Template (base.html)
-Goal: Remove code duplication. Currently, every one of your files contains the full <head>, <style>, <nav>, and <footer>.
-Action: We will extract the common CSS (Tailwind + your custom dark theme styles), the Navbar logic (which needs to switch between "Login" and "Logout" buttons), and the Footer into a single file.
-Result: If you want to change the navbar later, you only do it in one place.
-
-2. Create Authentication Pages
-Goal: Allow users to sign up and sign in.
-templates/login.html: A clean, centered card for username/password entry.
-templates/register.html: A registration form.
-templates/admin_dashboard.html: A simple view for the admin to see registered users (since we added that route in Phase 1).
-
-3. Refactor Existing Templates
-Goal: Update your 6 existing files to "extend" the new base.html instead of repeating code.
-home.html: We will strip the <html>, <head>, and <nav> tags and just keep the Hero Section and Feature Cards.
-network_scanner.html, packet_sniffer.html, etc.: We will strip the outer HTML shell and keep only the Control Panel and Results Panel grids. We will also ensure they retain their specific Page Titles and custom scripts.
-
-
-
-
-Step 1: The Foundation (base.html)
-We will create the master layout file that acts as the skeleton for every page.
-Action: Extract all common CSS (Tailwind + your custom dark theme), Google Fonts, and FontAwesome links into this file.
-New Navbar: Implement the 4-item structure you requested:
-Cyber Arsenal (Link to Tools Hub)
-NetShield AI (Link to Chatbot)
-Command Center (Link to Home/Dashboard)
-Dynamic Auth Button:
-If Logged Out: Shows "Login / Register".
-If Logged In: Shows User Profile button (Dropdown with "My Dashboard" & "Logout").
-Flash Messages: Add a block to display alerts (like "Login Failed" or "Scan Started") automatically.
-
-Step 2: Authentication Pages
-We need clean, professional pages for user entry.
-login.html: A centered, glass-morphism card for users to sign in.
-register.html: A registration form.
-admin_dashboard.html: A table view for the Admin to see all registered users (matching your auth_bp.py logic).
-
-Step 3: The User Dashboard (user_dashboard.html)
-New Requirement: You asked for a place to see "all scan information and PDFs".
-Action: Create a personal dashboard for the standard user.
-Features:
-A summary of recent activities.
-"My Reports" Section: A list of generated PDF reports (Nmap, ZAP, SSL, Sniffer) pulled from their user folder, available for download.
-
-Step 4: The Cyber Arsenal (tools_hub.html)
-We will create the dedicated "Tools" page.
-Action: Move the "Powerful Scanning Tools" grid from your current home.html to this file.
-Purpose: This becomes the launchpad for your 4 scanners.
-
-Step 5: Refactor the "Command Center" (home.html)
-Your home.html will become a lightweight landing page/overview.
-Action: Strip the navbar, footer, and tools grid.
-Content: Keep the Hero section and "How It Works" (or convert "How It Works" into a "System Status" view later). It will extend base.html.
-
-Step 6: Refactor Scanner Interfaces
-We will strip the heavy HTML shell from your 4 scanner pages and the chatbot.
-Action: Convert network_scanner.html, packet_sniffer.html, zap_scanner.html, ssl_scanner.html, and chatbot.html to simple templates that:
-{% extends "base.html" %}
-Fill the {% block content %} with their specific panels.
-Load their specific JS files.
-
-Step 7: Backend Wiring
-We need to ensure run.py or a new blueprint handles the new routes.
-Action:
-Add @app.route('/arsenal') -> Renders tools_hub.html.
-Add @app.route('/dashboard') -> Renders user_dashboard.html (We will need to write the logic to list the user's PDF files here).
-
-    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/NS_Logo.png') }}">
+Semgrep + Checkov + Gitleaks + Prowler + SQLmap

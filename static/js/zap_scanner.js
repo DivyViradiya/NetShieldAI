@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 row.innerHTML = `
                     <td style="color: ${riskColor}; font-weight: 700;">${risk}</td>
-                    <td style="font-weight: 600;">${alert.confidence || 'N/A'}</td>
+                    <td style="font-weight: 600;">${alert.predicted_risk_score || 'N/A'}</td>
                     <td>${alert.name || alert.alert}</td>
                     <td style="font-family: monospace; font-size: 0.8rem; color: #a1a1aa;">${alert.url || (alert.method + ' ' + alert.path)}</td>
                     <td style="font-size: 0.8rem; opacity: 0.8;">${description}</td>

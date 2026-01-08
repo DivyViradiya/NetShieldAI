@@ -320,6 +320,37 @@
 
     <div class="neo-grid fade-in-element">
       
+      <a href="{{ url_for('killchain_bp.killchain_page') }}" class="neo-card polyhedron-card">
+        <div class="card-top">
+          <div class="card-icon-box">
+            <span class="material-symbols-outlined">view_in_ar</span>
+          </div>
+          
+          <span class="status-badge status-suite">
+            Integrated Suite
+          </span>
+        </div>
+
+        <h3>Kill Chain Audit</h3>
+
+        <p>
+          Full-spectrum security validation. Orchestrates all modules into a unified, sequential penetration testing workflow.
+          <br><br>
+          <span style="font-family: 'Fira Code', monospace; font-size: 0.7rem; color: #71717a; display: block; padding-top: 4px; border-top: 1px dashed #333;">
+            <span style="color: var(--neo-violet);">01.</span> DISCOVERY &rarr; 
+            <span style="color: var(--neo-violet);">02.</span> AUDIT &rarr; 
+            <span style="color: var(--neo-violet);">03.</span> REPORT
+          </span>
+        </p>
+
+        <div class="action-row">
+          <span class="text-xs text-[#555]">Orchestration</span>
+          <div class="launch-btn">
+            Run Simulation <span class="material-symbols-outlined">double_arrow</span>
+          </div>
+        </div>
+      </a>
+
       <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="neo-card">
         <div class="card-top">
           <div class="card-icon-box">
@@ -388,53 +419,22 @@
         </div>
       </a>
 
-      <a href="{{ url_for('killchain_bp.killchain_page') }}" class="neo-card polyhedron-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">view_in_ar</span>
-          </div>
-          
-          <span class="status-badge status-suite">
-            Integrated Suite
-          </span>
-        </div>
-
-        <h3>POLYHEDRON</h3>
-
-        <p>
-          Full-spectrum security validation. Orchestrates all modules into a unified, sequential penetration testing workflow.
-          <br><br>
-          <span style="font-family: 'Fira Code', monospace; font-size: 0.7rem; color: #71717a; display: block; padding-top: 4px; border-top: 1px dashed #333;">
-            <span style="color: var(--neo-violet);">01.</span> DISCOVERY &rarr; 
-            <span style="color: var(--neo-violet);">02.</span> AUDIT &rarr; 
-            <span style="color: var(--neo-violet);">03.</span> REPORT
-          </span>
-        </p>
-
-        <div class="action-row">
-          <span class="text-xs text-[#555]">Orchestration</span>
-          <div class="launch-btn">
-            Run Simulation <span class="material-symbols-outlined">double_arrow</span>
-          </div>
-        </div>
-      </a>
-
-      <div class="neo-card disabled">
+      <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="neo-card">
         <div class="card-top">
           <div class="card-icon-box">
             <span class="material-symbols-outlined">database</span>
           </div>
-          <span class="status-badge status-dev">In Development</span>
+          <span class="status-badge status-active">Operational</span>
         </div>
         <h3>SQL Injection (SQLMap)</h3>
-        <p>Advanced database penetration testing. This module allows deep inspection of injection points but is currently offline for upgrades.</p>
+        <p>Advanced database penetration testing. Detect and exploit SQL injection flaws to audit database security and extract sensitive data.</p>
         <div class="action-row">
           <span class="text-xs text-[#555]">Database Security</span>
           <div class="launch-btn">
-            Locked <span class="material-symbols-outlined">lock</span>
+            Inject <span class="material-symbols-outlined">arrow_forward</span>
           </div>
         </div>
-      </div>
+      </a>
 
     </div>
   </div>

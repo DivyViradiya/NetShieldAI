@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scanTcpBtn: document.getElementById('scanTcpBtn'),
         scanVulnBtn: document.getElementById('scanVulnBtn'),
         
-        // Advanced Config (Settings)
+        // Advanced Config (Modes Dropdown)
         advancedScanToggle: document.getElementById('advancedScanToggle'),
         advancedScanOptions: document.getElementById('advancedScanOptions'),
         whitelistPortsInput: document.getElementById('whitelistPorts'),
@@ -90,28 +90,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // --- UPDATED MINIMAL LOG APPEND FUNCTION ---
     function appendLog(message) {
         if (!elements.logOutput) return;
 
-        // Get Timestamp
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        // Determine Color Style
-        let contentStyle = 'color:#d4d4d8'; // Default grey-white
+        let contentStyle = 'color:#d4d4d8'; 
         
         if (message.includes('[!]') || message.includes('[x]')) {
-            contentStyle = 'color:#ef4444'; // Red
+            contentStyle = 'color:#ef4444'; 
         } else if (message.includes('[✓]') || message.includes('[+]')) {
-            contentStyle = 'color:#10b981'; // Green
+            contentStyle = 'color:#10b981'; 
         } else if (message.includes('[*]')) {
-            contentStyle = 'color:#3b82f6'; // Blue
+            contentStyle = 'color:#3b82f6'; 
         }
 
         const line = document.createElement('div');
         line.className = 'log-line';
-        // Flex layout: Time on left, Content on right
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
             <div class="log-content" style="${contentStyle}">${message}</div>
@@ -128,18 +124,18 @@ document.addEventListener('DOMContentLoaded', () => {
         
         switch (type) {
             case 'busy':
-                elements.scanStatus.style.color = '#eab308'; // Yellow
+                elements.scanStatus.style.color = '#eab308'; 
                 elements.scanStatus.innerHTML = `BUSY...`;
                 break;
             case 'error':
-                elements.scanStatus.style.color = '#ef4444'; // Red
+                elements.scanStatus.style.color = '#ef4444'; 
                 elements.scanStatus.textContent = text;
                 break;
             case 'success':
-                elements.scanStatus.style.color = '#10b981'; // Green
+                elements.scanStatus.style.color = '#10b981'; 
                 elements.scanStatus.textContent = text;
                 break;
-            default: // ready
+            default: 
                 elements.scanStatus.style.color = '#10b981';
                 elements.scanStatus.textContent = 'READY';
         }
@@ -309,11 +305,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!button || button.disabled) return;
         
-        // 1. UI Setup: Hide Dropdown, Show Overlay
         if (llmOptions) llmOptions.classList.add('hidden');
         if (overlay) overlay.classList.remove('hidden');
         
-        // Update text based on selection
         if (processingText) {
             processingText.textContent = llmMode === 'gemini' 
                 ? 'CONTACTING GEMINI...' 
@@ -323,7 +317,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setStatus(`Analyzing via ${llmMode}...`, 'busy');
         
         try {
-            // 2. Trigger Proxy
             let response = await fetch(`${API_BASE_URL}/trigger_ai_analysis`, {
                 method: 'POST',
                 headers: { 
@@ -336,10 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.status !== 'success') throw new Error(data.message);
             
-            // Update text for the second phase
             if (processingText) processingText.textContent = 'SYNTHESIZING REPORT...';
 
-            // 3. Call Chatbot Proxy
             response = await fetch(`${CHATBOT_REDIRECT_URL}/scanner_analysis`, {
                 method: 'POST',
                 headers: { 
@@ -355,7 +346,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (processingText) processingText.textContent = 'REDIRECTING...';
                 appendLog(`[✓] Analysis complete. Redirecting...`);
                 
-                // Small delay to let user read "Redirecting"
                 setTimeout(() => {
                     window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
                 }, 800);
@@ -365,8 +355,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             appendLog(`[x] AI Analysis Error: ${error.message}`);
             setStatus('Analysis failed', 'error');
-            
-            // Hide overlay on error so user can try again
             if (overlay) overlay.classList.add('hidden');
         } 
     }
@@ -374,8 +362,15 @@ document.addEventListener('DOMContentLoaded', () => {
     async function initiateScan(protocolType, scanType, button) {
         const targetIp = elements.targetIpInput.value.trim();
         if (!targetIp) {
-            appendLog('[!] Error: Target IP/CIDR is required.');
+            appendLog('[!] Error: Target IP or URL is required.');
             return;
+        }
+
+        // --- Multi-Mode UI Update ---
+        const originalBtnHtml = button ? button.innerHTML : null;
+        if (button && scanType !== 'default' && scanType !== 'vuln') {
+            const btnLabel = button.querySelector('span:not(.material-symbols-outlined)');
+            if (btnLabel) btnLabel.textContent = scanType.toUpperCase();
         }
         
         lastScanType = scanType === 'default' ? protocolType.toLowerCase() : scanType;
@@ -384,12 +379,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const whitelist = elements.whitelistPortsInput ? elements.whitelistPortsInput.value.split(',').map(s => s.trim()).filter(s => s) : [];
 
-        await apiPost('/scan', {
+        const result = await apiPost('/scan', {
             target_ip: targetIp,
             protocol_type: protocolType,
             scan_type: scanType,
             whitelist: whitelist
         }, button);
+
+        // Reset button text after delay if it was a special mode
+        if (button && originalBtnHtml && scanType !== 'default' && scanType !== 'vuln') {
+            setTimeout(() => { button.innerHTML = originalBtnHtml; }, 10000);
+        }
     }
     
     function initializeLogStream() {
@@ -431,6 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.portsTabBtn.addEventListener('click', () => switchTab('ports'));
         elements.rawTabBtn.addEventListener('click', () => switchTab('raw'));
 
+        // Advanced Config / Modes Toggle
         if(elements.advancedScanToggle && elements.advancedScanOptions) {
             elements.advancedScanToggle.addEventListener('click', (e) => {
                 e.stopPropagation(); 
@@ -446,14 +447,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Handling all Advanced Scan Types via delegation
         if(elements.advancedScanOptions) {
             elements.advancedScanOptions.addEventListener('click', (e) => {
-                const btn = e.target.closest('button[data-scan-type]');
-                if(btn) {
-                    const type = btn.dataset.scanType;
-                    const protocol = type === 'udp' ? 'UDP' : 'TCP';
-                    elements.advancedScanOptions.classList.add('hidden'); 
-                    initiateScan(protocol, type, null); 
+                e.preventDefault();
+                const link = e.target.closest('a[data-scan-type]');
+                if(link) {
+                    const type = link.dataset.scanType;
+                    const protocol = (type === 'udp') ? 'UDP' : 'TCP';
+                    elements.advancedScanOptions.classList.add('hidden');
+                    appendLog(`[*] Switching mode to: ${type.toUpperCase()}`);
+                    initiateScan(protocol, type, elements.advancedScanToggle); 
                 }
             });
         }
@@ -462,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.verifyPortsBtn.addEventListener('click', async () => {
                 const targetIp = elements.targetIpInput.value.trim();
                 if(!targetIp) {
-                    appendLog('[!] Enter IP before verifying.');
+                    appendLog('[!] Enter IP/URL before verifying.');
                     return;
                 }
                 appendLog('[*] Verifying closed ports...');
@@ -593,7 +597,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchAndDisplayOpenPorts();
         checkReportAvailability();
         
-        // Wait for DOM
         setTimeout(() => appendLog('System Ready. Waiting for target...'), 100);
     }
 

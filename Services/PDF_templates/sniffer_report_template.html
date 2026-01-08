@@ -2,554 +2,304 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Packet Sniffer Analysis Report</title>
-    <link rel="stylesheet" href="file:///D:/NetShieldAI/static/css/PDF_style/report_style.css">
+    <title>NetShieldAI | Packet Analysis Report</title>
     <style>
-        /* Card / badge layout (aligned with your Nmap/ZAP style) */
-        .finding-card {
-            margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            page-break-inside: avoid;
+        /* --- UNIFIED SLATE & STEEL THEME --- */
+        :root {
+            --neo-blue: #475569;
+            --neo-blue-accent: #3b82f6;
+            --neo-blue-soft: #f8fafc;
+            --neo-border: #e2e8f0;
+            --neo-text-main: #1e293b;
+            --neo-text-sub: #64748b;
+            --risk-high: #be123c;
+            --risk-medium: #d97706;
+            --risk-low: #059669;
+            --radius: 8px;
         }
-        .finding-header {
+
+        @page {
+            size: A4;
+            margin: 1cm;
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-family: 'Inter', sans-serif;
+                font-size: 8px;
+                color: #94a3b8;
+            }
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--neo-text-main);
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        /* --- HEADER --- */
+        header {
+            border-bottom: 1px solid var(--neo-border);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #f3f4f6;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .finding-header h4 {
-            margin: 0;
-            font-size: 14px;
-            color: #003366;
+            align-items: flex-end;
         }
 
-        .badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 9px;
-        }
+        .logo-container img { height: 32px; display: block; }
+        .header-right { text-align: right; }
+        h1 { font-size: 1.4rem; font-weight: 700; margin: 0; color: var(--neo-text-main); }
+        .scan-subtitle { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neo-text-sub); }
 
-        .risk-high     { background-color: #fca5a5; color: #991b1b; }
-        .risk-medium   { background-color: #fcd34d; color: #92400e; }
-        .risk-low      { background-color: #d1fae5; color: #065f46; }
-        .risk-info     { background-color: #bfdbfe; color: #1e40af; }
-        .risk-critical { background-color: #f87171; color: #7f1d1d; }
-
-        .anomaly-details-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 10px;
-            margin-top: 10px;
+        /* --- INFO BAR --- */
+        .report-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid var(--neo-border);
+            background: var(--neo-blue-soft);
             margin-bottom: 20px;
+            border-radius: var(--radius);
+            overflow: hidden;
         }
-        .anomaly-details-table th,
-        .anomaly-details-table td {
-            border: 1px solid #e5e7eb;
-            padding: 6px 8px;
-            text-align: left;
-        }
-        .anomaly-details-table th {
-            background-color: #f3f4f6;
-            font-weight: bold;
-            color: #1f2937;
+        .info-box { padding: 12px 15px; border-right: 1px solid var(--neo-border); }
+        .info-box:last-child { border-right: none; }
+        .info-box strong { display: block; font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-sub); font-weight: 700; margin-bottom: 4px; }
+        .info-box span { font-weight: 600; font-size: 0.9rem; word-break: break-all; }
+
+        /* --- HEADINGS --- */
+        h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--neo-blue-accent);
+            margin: 25px 0 10px 0;
+            letter-spacing: 0.05em;
+            border-left: 4px solid var(--neo-blue-accent);
+            padding-left: 10px;
+            font-weight: 700;
         }
 
-        .raw-block {
-            background: #0b1120;
-            color: #e5e7eb;
-            font-family: Consolas, "Courier New", monospace;
-            font-size: 9px;
-            padding: 12px 14px;
-            border-radius: 6px;
-            border-left: 4px solid #2563eb;
-            white-space: pre-wrap;
-            word-break: break-word;
-            line-height: 1.35;
-            margin-top: 10px;
-            margin-bottom: 15px;
+        /* --- CARDS & LAYOUT --- */
+        .finding-card {
+            border: 1px solid var(--neo-border);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            overflow: hidden;
+            /* CRITICAL FIX: Prevent blank pages by handling breaks better */
+            page-break-inside: avoid; 
         }
 
-        .section-note {
-            font-size: 9px;
-            color: #6b7280;
-            margin-top: 4px;
+        /* --- METRICS GRID --- */
+        .host-summary-grid { display: flex; gap: 10px; margin-bottom: 20px; }
+        .host-summary-card {
+            flex: 1;
+            padding: 12px;
+            background: var(--neo-blue-soft);
+            border: 1px solid var(--neo-border);
+            border-radius: var(--radius);
+            text-align: center;
         }
+        .host-summary-label { font-size: 0.6rem; font-weight: 700; color: var(--neo-text-sub); text-transform: uppercase; }
+        .host-summary-value { font-size: 1.1rem; font-weight: 800; color: var(--neo-text-main); margin-top: 5px; }
+
+        /* --- TABLES --- */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        .data-table th { 
+            background: #f1f5f9; 
+            text-align: left; 
+            padding: 8px 12px; 
+            font-size: 0.6rem; 
+            text-transform: uppercase; 
+            color: var(--neo-text-sub); 
+            border-bottom: 1px solid #cbd5e1;
+            font-weight: 700;
+        }
+        .data-table td { 
+            padding: 6px 12px; 
+            border-bottom: 1px solid var(--neo-border); 
+            color: var(--neo-text-main); 
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:nth-child(even) { background-color: #fafafa; }
+
+        /* --- BADGES --- */
+        .badge { padding: 3px 6px; font-size: 0.6rem; font-weight: 700; border-radius: 4px; text-transform: uppercase; display: inline-block; }
+        .badge-info { background: #e0f2fe; color: #0284c7; }
+        .badge-proto { background: #f3f4f6; color: #475569; border: 1px solid #e2e8f0; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid var(--neo-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .footer-logo { height: 16px; opacity: 0.5; }
+        .footer-text { font-size: 0.65rem; color: var(--neo-text-sub); }
+
     </style>
 </head>
 <body>
-    {# ---- BASIC CONTEXT ---- #}
-    {% set traffic    = data.traffic_summary | default({}) %}
-    {% set app_flow   = data.application_flow_analysis | default({}) %}
-    {% set sec_report = data.security_anomaly_report | default({}) %}
-    {% set dissected  = data.dissected_packets | default([]) %}
-    {% set first_packet = dissected | first %}
-
-    {% if first_packet and first_packet._source.layers.frame["frame.time"] is defined %}
-        {% set first_packet_time = first_packet._source.layers.frame["frame.time"][:19] %}
-    {% else %}
-        {% set first_packet_time = 'N/A' %}
-    {% endif %}
 
     <header>
-        <div class="header-left">
-            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="Logo" class="logo">
+        <div class="logo-container">
+            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="NetShieldAI">
         </div>
         <div class="header-right">
-            <h1>Network Assessment Report</h1>
-            <h2>Packet Sniffer Analysis (TShark)</h2>
+            <h1>Network Traffic Analysis</h1>
+            <div class="scan-subtitle">Automated Inspection Report</div>
         </div>
     </header>
 
-    <!-- HIGH-LEVEL METADATA -->
     <div class="report-info">
         <div class="info-box">
-            <strong>Target IP Analyzed</strong>
-            <span>{{ data.target_ip | default('N/A') }}</span>
+            <strong>Target Node</strong>
+            <span>{{ data.target_ip }}</span>
         </div>
         <div class="info-box">
-            <strong>Capture Start Time</strong>
-            <span>{{ first_packet_time }}Z</span>
+            <strong>Capture Timestamp</strong>
+            <span>{{ data.timestamp | default('N/A') }}</span>
         </div>
         <div class="info-box">
-            <strong>Overall Status</strong>
-            <span>{{ data.status | default('unknown') | title }}</span>
-        </div>
-        <div class="info-box">
-            <strong>Packets Analyzed</strong>
-            <span>{{ data.packets_analyzed_detail | default(0) }}</span>
-        </div>
-        <div class="info-box">
-            <strong>Analysis Time</strong>
-            <span>{{ data.analysis_time_seconds | default(0) | round(2) }} s</span>
+            <strong>Engine Version</strong>
+            <span>TShark 4.0.x</span>
         </div>
     </div>
-    
-    <!-- TRAFFIC SUMMARY -->
-    <section class="summary">
-        <h3>Traffic Summary</h3>
-        <p>
-            Overview of the captured network activity, including total packets, bytes,
-            capture duration, and average transfer rate.
-        </p>
-        <table class="summary-table">
-            <thead>
-                <tr>
-                    <th>Metric</th>
-                    <th>Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="risk-info">
-                    <td><strong>Capture Status</strong></td>
-                    <td><strong>{{ data.status | default('Failed') | title }}</strong></td>
-                </tr>
-                <tr>
-                    <td><strong>Total Packets Captured</strong></td>
-                    <td>{{ traffic.total_packets | default(0) }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Total Bytes Transferred</strong></td>
-                    <td>
-                        {{ (traffic.total_bytes | default(0) | float / 1024) | round(2) }} KB
-                        ({{ traffic.total_bytes | default(0) }} bytes)
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Effective Capture Duration</strong></td>
-                    <td>{{ traffic.effective_capture_duration_seconds | default(0) | round(3) }} s</td>
-                </tr>
-                <tr>
-                    <td><strong>Average Rate</strong></td>
-                    <td>{{ traffic.average_rate_bps | default(0) | round(2) }} bps</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
 
-    <!-- PROTOCOL HIERARCHY & TCP CONVERSATIONS AS TABLES + RAW -->
-    <section class="findings" style="page-break-before: always;">
-        <h3>Protocol Hierarchy &amp; TCP Conversation Summary</h3>
-        <p>
-            This section shows how traffic is organized across protocols and summarizes
-            the TCP conversation statistics from the capture.
-        </p>
-
-        <!-- Protocol Hierarchy as Table -->
-        <div class="finding-card">
-            <div class="finding-header">
-                <h4>Protocol Hierarchy (Tabular View)</h4>
-                <span class="badge risk-medium">TShark SUMMARY</span>
+    <section>
+        <h3>Traffic Overview</h3>
+        <div class="host-summary-grid">
+            <div class="host-summary-card">
+                <div class="host-summary-label">Total Packets</div>
+                <div class="host-summary-value">{{ data.metrics.total_packets }}</div>
             </div>
-            {% if traffic.protocol_hierarchy_stats is defined and traffic.protocol_hierarchy_stats %}
-                <table class="anomaly-details-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 6%;">Line</th>
-                            <th>Content</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for line in traffic.protocol_hierarchy_stats %}
-                            {% if line is string and line|trim != "" %}
-                            <tr>
-                                <td>{{ loop.index }}</td>
-                                <td>{{ line }}</td>
-                            </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <p class="section-note">
-                    Above table mirrors the original TShark protocol hierarchy statistics,
-                    preserving all details while organizing them into a structured format.
-                </p>
-            {% else %}
-                <p>No protocol hierarchy statistics were available.</p>
-            {% endif %}
-        </div>
-
-        <!-- TCP Conversation stats as Table -->
-        <div class="finding-card">
-            <div class="finding-header">
-                <h4>TCP Conversation Summary (Tabular View)</h4>
-                <span class="badge risk-medium">CONVERSATION STATS</span>
+            <div class="host-summary-card">
+                <div class="host-summary-label">Data Volume</div>
+                <div class="host-summary-value">{{ data.metrics.total_bytes }}</div>
             </div>
-            {% if traffic.tcp_conversation_stats is defined and traffic.tcp_conversation_stats %}
-                <table class="anomaly-details-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 6%;">Line</th>
-                            <th>Content</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for line in traffic.tcp_conversation_stats %}
-                            {% if line is string and line|trim != "" %}
-                            <tr>
-                                <td>{{ loop.index }}</td>
-                                <td>{{ line }}</td>
-                            </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <p class="section-note">
-                    This table lists all TCP conversation output lines as reported by TShark,
-                    including per-flow frame counts, byte counts, and duration.
-                </p>
-            {% else %}
-                <p>No TCP conversation statistics were available.</p>
-            {% endif %}
+            <div class="host-summary-card">
+                <div class="host-summary-label">Duration</div>
+                <div class="host-summary-value">{{ data.metrics.duration }}</div>
+            </div>
+            <div class="host-summary-card">
+                <div class="host-summary-label">Throughput</div>
+                <div class="host-summary-value">{{ data.metrics.avg_rate }}</div>
+            </div>
         </div>
     </section>
 
-    <!-- APPLICATION / HTTP FLOW ANALYSIS -->
-    <section class="findings" style="page-break-before: always;">
-        <h3>Application Flow Analysis (HTTP)</h3>
-        <p>
-            Application-level HTTP flows detected in the capture. Each row represents
-            a single HTTP request.
-        </p>
-
-        {% set flows = app_flow.flows | default([]) %}
-        {% if flows %}
-            <div class="finding-card">
-                <div class="finding-header">
-                    <h4>Extracted HTTP Flows</h4>
-                    <span class="badge risk-info">APPLICATION LAYER</span>
-                </div>
-                <table class="anomaly-details-table">
-                    <thead>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>Source IP</th>
-                            <th>Destination IP</th>
-                            <th>Method</th>
-                            <th>Request URI</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for f in flows %}
-                        <tr>
-                            <td>{{ f.timestamp | default('N/A') }}</td>
-                            <td>{{ f.src_ip | default('N/A') }}</td>
-                            <td>{{ f.dst_ip | default('N/A') }}</td>
-                            <td>{{ f.method | default('N/A') }}</td>
-                            <td>{{ f.uri | default('N/A') }}</td>
-                            <td>
-                                {% if f.response_code %}
-                                    {{ f.response_code }} {{ f.response_phrase | default('') }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% if app_flow.summary %}
-                    <p><strong>Summary:</strong> {{ app_flow.summary }}</p>
-                {% endif %}
-            </div>
-        {% else %}
-            <p>No HTTP or application-level flows were extracted from the capture.</p>
-        {% endif %}
+    <section>
+        <h3>Protocol Hierarchy</h3>
+        <div class="finding-card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Protocol Layer</th>
+                        <th style="width: 30%;">Frame Count</th>
+                        <th style="width: 30%;">Bytes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for proto in data.hierarchy %}
+                    <tr>
+                        <td style="font-weight: 600; color: var(--neo-blue);">{{ proto.proto }}</td>
+                        <td>{{ proto.frames }}</td>
+                        <td>{{ proto.bytes }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #94a3b8; padding: 15px;">No hierarchy data available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </section>
 
-    <!-- PACKET-BY-PACKET CARDS WITH DETAILED INFO -->
-    <section class="findings" style="page-break-before: always;">
-        <h3>Per-Packet Detailed Dissection</h3>
-        <p>
-            Each card below represents one packet from the capture, including
-            frame, Ethernet, IP, and TCP header information, plus protocol-specific
-            details where available (HTTP, PKIX-CRL, etc.).
-        </p>
-
-        {% if dissected %}
-            {% for pkt in dissected %}
-                {% set layers = pkt._source.layers %}
-                {% set frame = layers.frame if layers.frame is defined else {} %}
-                {% set eth   = layers.eth   if layers.eth   is defined else {} %}
-                {% set ip    = layers.ip    if layers.ip    is defined else {} %}
-                {% set tcp   = layers.tcp   if layers.tcp   is defined else {} %}
-                {% set http  = layers.http  if layers.http  is defined else {} %}
-                {% set pkix  = layers["pkix-crl"] if "pkix-crl" in layers else {} %}
-
-                {% set frame_no  = frame["frame.number"] if "frame.number" in frame else "?" %}
-                {% set rel_time  = frame["frame.time_relative"] if "frame.time_relative" in frame else "0.000000000" %}
-                {% set length    = frame["frame.len"] if "frame.len" in frame else "?" %}
-
-                {% set src_ip    = ip["ip.src"] if "ip.src" in ip else "N/A" %}
-                {% set dst_ip    = ip["ip.dst"] if "ip.dst" in ip else "N/A" %}
-
-                {% if tcp %}
-                    {% set src_port = tcp["tcp.srcport"] if "tcp.srcport" in tcp else "?" %}
-                    {% set dst_port = tcp["tcp.dstport"] if "tcp.dstport" in tcp else "?" %}
-                {% else %}
-                    {% set src_port = "-" %}
-                    {% set dst_port = "-" %}
-                {% endif %}
-
-                {% if http %}
-                    {% set proto = "HTTP" %}
-                {% elif pkix %}
-                    {% set proto = "PKIX-CRL" %}
-                {% elif tcp %}
-                    {% set proto = "TCP" %}
-                {% else %}
-                    {% set proto = (frame["frame.protocols"] if "frame.protocols" in frame else "N/A") %}
-                {% endif %}
-
-                {% if http and "http.request.method" in http %}
-                    {% set summary = http["http.request.method"] ~ " " ~ (http["http.request.uri"] if "http.request.uri" in http else "") %}
-                {% elif http and "http.response.code" in http %}
-                    {% set summary = "HTTP " ~ http["http.response.code"] ~ " " ~ (http["http.response.phrase"] if "http.response.phrase" in http else "") %}
-                {% elif pkix %}
-                    {% set summary = "Certificate Revocation List" %}
-                {% elif tcp and "tcp.flags.str" in tcp %}
-                    {% set summary = tcp["tcp.flags.str"] %}
-                {% else %}
-                    {% set summary = frame["frame.protocols"] if "frame.protocols" in frame else "" %}
-                {% endif %}
-
-                <div class="finding-card">
-                    <div class="finding-header">
-                        <h4>
-                            Frame {{ frame_no }}:
-                            {{ src_ip }}{% if src_port != "-" %}:{{ src_port }}{% endif %}
-                            &rarr;
-                            {{ dst_ip }}{% if dst_port != "-" %}:{{ dst_port }}{% endif %}
-                        </h4>
-                        <span class="badge risk-info">{{ proto }}</span>
-                    </div>
-
-                    <table class="anomaly-details-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 25%;">Category</th>
-                                <th>Field</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Frame-level fields -->
-                            <tr>
-                                <td rowspan="6"><strong>Frame</strong></td>
-                                <td>Time (Relative)</td>
-                                <td>{{ rel_time }} s</td>
-                            </tr>
-                            <tr>
-                                <td>Length</td>
-                                <td>{{ length }} bytes</td>
-                            </tr>
-                            <tr>
-                                <td>Captured Length</td>
-                                <td>{{ frame["frame.cap_len"] if "frame.cap_len" in frame else "N/A" }} bytes</td>
-                            </tr>
-                            <tr>
-                                <td>Protocols</td>
-                                <td>{{ frame["frame.protocols"] if "frame.protocols" in frame else "N/A" }}</td>
-                            </tr>
-                            <tr>
-                                <td>Marked / Ignored</td>
-                                <td>{{ frame["frame.marked"] if "frame.marked" in frame else "0" }} / {{ frame["frame.ignored"] if "frame.ignored" in frame else "0" }}</td>
-                            </tr>
-                            <tr>
-                                <td>Encapsulation</td>
-                                <td>{{ frame["frame.encap_type"] if "frame.encap_type" in frame else "N/A" }}</td>
-                            </tr>
-
-                            <!-- Ethernet -->
-                            <tr>
-                                <td rowspan="3"><strong>Ethernet</strong></td>
-                                <td>Source MAC</td>
-                                <td>{{ eth["eth.src"] if "eth.src" in eth else "N/A" }}</td>
-                            </tr>
-                            <tr>
-                                <td>Destination MAC</td>
-                                <td>{{ eth["eth.dst"] if "eth.dst" in eth else "N/A" }}</td>
-                            </tr>
-                            <tr>
-                                <td>Type</td>
-                                <td>{{ eth["eth.type"] if "eth.type" in eth else "N/A" }}</td>
-                            </tr>
-
-                            <!-- IP -->
-                            <tr>
-                                <td rowspan="8"><strong>IP</strong></td>
-                                <td>Source IP</td>
-                                <td>{{ src_ip }}</td>
-                            </tr>
-                            <tr>
-                                <td>Destination IP</td>
-                                <td>{{ dst_ip }}</td>
-                            </tr>
-                            <tr>
-                                <td>Version</td>
-                                <td>{{ ip["ip.version"] if "ip.version" in ip else "N/A" }}</td>
-                            </tr>
-                            <tr>
-                                <td>Header Length</td>
-                                <td>{{ ip["ip.hdr_len"] if "ip.hdr_len" in ip else "N/A" }}</td>
-                            </tr>
-                            <tr>
-                                <td>Total Length</td>
-                                <td>{{ ip["ip.len"] if "ip.len" in ip else "N/A" }}</td>
-                            </tr>
-                            <tr>
-                                <td>Identification</td>
-                                <td>{{ ip["ip.id"] if "ip.id" in ip else "N/A" }}</td>
-                            </tr>
-                            <tr>
-                                <td>Flags / Fragment Offset</td>
-                                <td>
-                                    {{ ip["ip.flags"] if "ip.flags" in ip else "N/A" }}
-                                    {% if "ip.frag_offset" in ip %} (Offset: {{ ip["ip.frag_offset"] }}){% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>TTL / Protocol</td>
-                                <td>
-                                    TTL: {{ ip["ip.ttl"] if "ip.ttl" in ip else "N/A" }},
-                                    Proto: {{ ip["ip.proto"] if "ip.proto" in ip else "N/A" }}
-                                </td>
-                            </tr>
-
-                            <!-- TCP -->
-                            {% if tcp %}
-                                <tr>
-                                    <td rowspan="9"><strong>TCP</strong></td>
-                                    <td>Source Port</td>
-                                    <td>{{ src_port }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Destination Port</td>
-                                    <td>{{ dst_port }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Sequence / Ack</td>
-                                    <td>
-                                        Seq: {{ tcp["tcp.seq"] if "tcp.seq" in tcp else "N/A" }},
-                                        Ack: {{ tcp["tcp.ack"] if "tcp.ack" in tcp else "N/A" }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Header Length</td>
-                                    <td>{{ tcp["tcp.hdr_len"] if "tcp.hdr_len" in tcp else "N/A" }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Window Size</td>
-                                    <td>{{ tcp["tcp.window_size_value"] if "tcp.window_size_value" in tcp else "N/A" }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Checksum / Status</td>
-                                    <td>
-                                        {{ tcp["tcp.checksum"] if "tcp.checksum" in tcp else "N/A" }}
-                                        (status: {{ tcp["tcp.checksum.status"] if "tcp.checksum.status" in tcp else "N/A" }})
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Flags</td>
-                                    <td>{{ tcp["tcp.flags"] if "tcp.flags" in tcp else "N/A" }} {% if "tcp.flags.str" in tcp %} ({{ tcp["tcp.flags.str"] }}){% endif %}</td>
-                                </tr>
-                                <tr>
-                                    <td>Options</td>
-                                    <td>{{ tcp["tcp.options"] if "tcp.options" in tcp else "N/A" }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Timing</td>
-                                    <td>
-                                        Rel: {{ tcp.Timestamps["tcp.time_relative"] if tcp.Timestamps is defined and "tcp.time_relative" in tcp.Timestamps else "N/A" }},
-                                        Δ: {{ tcp.Timestamps["tcp.time_delta"] if tcp.Timestamps is defined and "tcp.time_delta" in tcp.Timestamps else "N/A" }}
-                                    </td>
-                                </tr>
-                            {% endif %}
-
-                            <!-- Application / higher-level info -->
-                            {% if http or pkix %}
-                                <tr>
-                                    <td rowspan="3"><strong>Application</strong></td>
-                                    <td>Protocol</td>
-                                    <td>{{ proto }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Summary</td>
-                                    <td>{{ summary }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Details</td>
-                                    <td>
-                                        {% if http and "http.user_agent" in http %}
-                                            User-Agent: {{ http["http.user_agent"] }}
-                                        {% elif pkix %}
-                                            Certificate Revocation List payload
-                                        {% else %}
-                                            -
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="finding-card" style="padding: 20px; text-align: center; color: #555;">
-                <h4>⚠️ No Dissected Packet Data</h4>
-                <p>No low-level packet details were available in the input JSON.</p>
-            </div>
-        {% endif %}
+    <section>
+        <h3>Active Conversations</h3>
+        <div class="finding-card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 45%;">Source Endpoint</th>
+                        <th style="width: 10%; text-align: center;"></th>
+                        <th style="width: 45%;">Destination Endpoint</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for conv in data.tcp_conversations %}
+                    <tr>
+                        <td style="font-family: monospace;">{{ conv.src }}</td>
+                        <td style="text-align: center; color: var(--neo-blue-accent); font-weight: bold;">&harr;</td>
+                        <td style="font-family: monospace;">{{ conv.dst }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: #94a3b8; padding: 15px;">No conversation data captured.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </section>
 
-    <footer style="margin-top: 50px; text-align: center; font-size: 0.8em; color: #777;">
-        <p>Generated by NetShieldAI Reporting Engine</p>
+    <section>
+        <h3>Packet Inspection (Sample)</h3>
+        <div class="finding-card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">Time</th>
+                        <th style="width: 30%;">Source</th>
+                        <th style="width: 30%;">Destination</th>
+                        <th style="width: 15%;">Protocol</th>
+                        <th style="width: 15%; text-align: right;">Len</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pkt in data.packet_samples %}
+                    <tr>
+                        <td>{{ pkt.time }}s</td>
+                        <td style="font-family: monospace; font-size: 0.7rem;">{{ pkt.src }}</td>
+                        <td style="font-family: monospace; font-size: 0.7rem;">{{ pkt.dst }}</td>
+                        <td><span class="badge badge-proto">{{ pkt.protocol }}</span></td>
+                        <td style="text-align: right;">{{ pkt.len }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 15px; color: #94a3b8;">No packets available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h3>Security Insights</h3>
+        <div class="finding-card" style="padding: 15px;">
+             <p style="font-size: 0.8rem; margin-bottom: 5px;"><strong>Analysis Summary:</strong></p>
+             <p style="font-size: 0.75rem; color: var(--neo-text-sub);">{{ data.anomalies }}</p>
+             
+             {% if data.anomaly_details.scans %}
+                <p style="margin-top: 10px; font-weight: bold; font-size: 0.7rem; color: var(--risk-medium);">Scan Activity:</p>
+                <ul style="font-size: 0.7rem;">
+                {% for scan in data.anomaly_details.scans %}<li>{{ scan }}</li>{% endfor %}
+                </ul>
+             {% endif %}
+        </div>
+    </section>
+
+    <footer>
+        <img src="file:///D:/NetShieldAI/static/images/NS_Logo_pdf.png" alt="NS Logo" class="footer-logo">
+        <div class="footer-text">
+            NetShieldAI Reporting Engine // Generated {{ data.generation_date }}
+        </div>
     </footer>
 
 </body>

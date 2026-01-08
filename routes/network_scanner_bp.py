@@ -8,6 +8,7 @@ import queue
 import requests
 import uuid 
 from werkzeug.utils import secure_filename
+import re
 
 # [NEW] Import db to update user stats
 from extensions import db
@@ -52,6 +53,15 @@ PDF_REPORT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 
 SERVER_PROXY_URL = "http://localhost:5100" 
 # ==========================================
 
+def is_valid_hostname(hostname):
+    if len(hostname) > 255:
+        return False
+    # Strip protocol for validation
+    hostname = hostname.replace("https://", "").replace("http://", "").split('/')[0]
+    if all(re.match(r"^[a-zA-Z0-9-]*$", part) for part in hostname.split(".")):
+        return True
+    return False
+
 @network_scanner_bp.route('/')
 @login_required
 def network_scanner_page():
@@ -91,10 +101,11 @@ def scan_ports():
             return jsonify({"status": "error", "message": "No target IP/range provided and local IP not detected."}), 400
         network_scanner.log(f"[*] Target IP/Range not specified, defaulting to local IP: {target_ip}")
 
-    if not network_scanner.is_valid_ip_or_range(target_ip):
+    # Updated to allow URLs/Domains as well as IPs
+    if not network_scanner.is_valid_ip_or_range(target_ip) and not network_scanner.is_valid_hostname(target_ip):
         network_scanner.log(f"[!] Invalid target input: {target_ip}")
-        return jsonify({"status": "error", "message": "Please enter a valid IP address, CIDR range, or IP range."}), 400
-
+        return jsonify({"status": "error", "message": "Please enter a valid IP address, Domain (URL), or IP range."}), 400
+    
     if not network_scanner.is_nmap_installed():
         network_scanner.log("[!] Nmap is not installed or not in PATH.")
         return jsonify({"status": "error", "message": "Nmap is not installed."}), 500
@@ -116,7 +127,7 @@ def scan_ports():
     # --- Threaded Scan Task ---
     def scan_task():
         # Use the captured identifier variable
-        network_scanner.log(f"[*] Starting {scan_type.upper()} {protocol_type} scan for {target_ip} (User {current_user_identifier})...")
+        network_scanner.log(f"[*] Preparing {scan_type.upper()} scan for target: {target_ip}...")        
         
         # 1. Run the Scan (Pass user directory to service)
         result_file = network_scanner.run_nmap_scan(

@@ -2,6 +2,8 @@ import os
 import subprocess
 import time
 import psutil
+import socket
+import shutil  # Added for directory cleanup
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import json
@@ -24,7 +26,6 @@ if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR)
 
 # --- USER ISOLATION: Dictionary to hold a queue for each user_id ---
-# Structure: { '1': <Queue object>, '2': <Queue object> }
 user_queues = {}
 
 def get_user_queue(user_id):
@@ -240,6 +241,15 @@ ZAP_TO_CWE_MAP = {
     'NoSQL Injection - MongoDB (Time Based)': 'CWE-943',
 }
 
+# --- HELPER: Find a Free Port ---
+def get_free_port():
+    """Finds an available port on the host machine to avoid conflicts."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('', 0)) # Bind to port 0 lets the OS select a free port
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        port = s.getsockname()[1]
+        return port
+
 # --- LOGGING FUNCTIONS (USER-AWARE) ---
 
 def log(message, user_id=None):
@@ -300,8 +310,8 @@ def clear_log_file(user_id):
 def kill_zap_processes(user_id=None):
     """
     Terminates ZAP processes. 
-    NOTE: ZAP is often global on the server. Killing it might affect others. 
-    For single-server setups, this resets the engine.
+    NOTE: CAUTION. This kills global ZAP processes. 
+    Do NOT use this during simultaneous scanning unless doing a full system reset.
     """
     log("Checking for and terminating existing ZAP processes...", user_id)
     killed_a_process = False
@@ -364,30 +374,49 @@ def get_output_paths(output_dir=None):
         "pdf_report": base / "zap_report.pdf"
     }
 
-# --- Core Scan Logic ---
+# --- Core Scan Logic (Simultaneous Support) ---
 def run_zap_scan(target_url, report_path, user_id):
-    """Launches ZAP and streams output to user specific log."""
-    kill_zap_processes(user_id)
+    """
+    Launches ZAP and streams output to user specific log.
+    Supports simultaneous execution by assigning unique ports and directories.
+    """
+    
+    # 1. REMOVED kill_zap_processes to prevent stopping other concurrent scans.
+    
     if not os.path.exists(ZAP_EXECUTABLE_PATH):
         log(f"Error: ZAP executable not found at '{ZAP_EXECUTABLE_PATH}'", user_id)
         return False
 
-    log(f"\n--- Starting ZAP Quick Scan ---", user_id)
-    log(f"Target: {target_url}", user_id)
-    log(f"Report will be saved to: {report_path}", user_id)
-
-    report_dir = os.path.dirname(report_path)
-    if not os.path.exists(report_dir):
-        os.makedirs(report_dir)
-
-    command = [
-        ZAP_EXECUTABLE_PATH, '-cmd',
-        '-quickurl', target_url,
-        '-quickout', str(report_path),
-        '-quickprogress'
-    ]
-
+    # 2. Assign Unique Resources
+    unique_zap_dir = ""
     try:
+        assigned_port = get_free_port()
+        
+        # Create a unique directory for this specific scan instance/user
+        # This prevents the "HSQLDB Lock" error
+        unique_zap_dir = os.path.join(BASE_DIR, "zap_instances", f"user_{user_id}_{assigned_port}")
+        if not os.path.exists(unique_zap_dir):
+            os.makedirs(unique_zap_dir)
+
+        log(f"\n--- Starting ZAP Quick Scan (Isolated Instance) ---", user_id)
+        log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_id)
+        log(f"Target: {target_url}", user_id)
+        log(f"Report will be saved to: {report_path}", user_id)
+
+        report_dir = os.path.dirname(report_path)
+        if not os.path.exists(report_dir):
+            os.makedirs(report_dir)
+
+        # 3. Construct Command with Isolation Flags (-port and -dir)
+        command = [
+            ZAP_EXECUTABLE_PATH, '-cmd',
+            '-port', str(assigned_port),
+            '-dir', unique_zap_dir,
+            '-quickurl', target_url,
+            '-quickout', str(report_path),
+            '-quickprogress'
+        ]
+
         log(f"Executing command: {' '.join(command)}", user_id)
         zap_directory = os.path.dirname(ZAP_EXECUTABLE_PATH)
         
@@ -408,24 +437,35 @@ def run_zap_scan(target_url, report_path, user_id):
         for line in iter(process.stdout.readline, ''):
             if line:
                 stripped_line = line.strip()
-                print(stripped_line) 
-                
-                # Push to User Queue
+                # Optional: Filter basic INFO lines if noisy, but keep important ones
                 log(stripped_line, user_id)
+                # print(stripped_line) # Uncomment for global console debug
 
         process.wait()
         log("--- End of ZAP Output ---", user_id)
 
+        success = False
         if process.returncode == 0 and os.path.exists(report_path):
             log(f"Scan completed successfully!", user_id)
-            return True
+            success = True
         else:
             log(f"Error: ZAP process failed. Return code: {process.returncode}.", user_id)
-            return False
+            success = False
             
+        return success
+
     except Exception as e:
         log(f"An unexpected error occurred: {e}", user_id)
         return False
+        
+    finally:
+        # 4. CLEANUP: Remove the temporary directory to save space
+        if unique_zap_dir and os.path.exists(unique_zap_dir):
+            try:
+                log(f"Cleaning up temporary ZAP directory: {unique_zap_dir}", user_id)
+                shutil.rmtree(unique_zap_dir, ignore_errors=True)
+            except Exception as cleanup_error:
+                log(f"Warning: Failed to clean up temp dir: {cleanup_error}", user_id)
 
 def parse_zap_xml_report(report_file, user_id=None):
     """Parses ZAP XML and enriches with ML."""
@@ -450,65 +490,9 @@ def parse_zap_xml_report(report_file, user_id=None):
             riskdesc = alertitem.find('riskdesc').text
             risk = riskdesc.split(' ')[0] # Extracts "High", "Medium", "Low", "Informational"
             
-            # --- FIX STARTS HERE ---
-            # Normalize "Informational" to "Info" so it matches your summary key
+            # Normalize "Informational" to "Info"
             if risk == "Informational": 
                 risk = "Info"
-            # --- FIX ENDS HERE ---
-
-            finding_name = alertitem.find('alert').text
-            predicted_score = predict_risk(finding_name)
-
-            finding = {
-                "name": finding_name,
-                "risk": risk, # Now this will be "Info"
-                "predicted_risk_score": predicted_score,
-                "confidence": alertitem.find('confidence').text,
-                "url": alertitem.find('.//uri').text,
-                "description": get_inner_html(alertitem.find('desc')),
-                "solution": get_inner_html(alertitem.find('solution')),
-                "reference": get_inner_html(alertitem.find('reference'))
-            }
-            
-            # Now this check will PASS because "Info" exists in summary
-            if risk in report_data["summary"]:
-                report_data["summary"][risk] += 1
-                report_data["summary"]["Total"] += 1
-            
-            report_data["findings"].append(finding)
-            
-        # Sort by predicted score
-        report_data["findings"].sort(
-            key=lambda x: x['predicted_risk_score'] if isinstance(x['predicted_risk_score'], (int, float)) else -1,
-            reverse=True
-        )
-
-        log("Report parsed and enriched successfully.", user_id)
-        return report_data
-    except Exception as e:
-        log(f"An error occurred during report parsing: {e}", user_id)
-        return None
-    """Parses ZAP XML and enriches with ML."""
-    if not os.path.exists(report_file):
-        log(f"Error: ZAP report file not found for parsing: {report_file}", user_id)
-        return None
-    
-    log(f"Parsing ZAP report: {report_file}", user_id)
-    
-    report_data = {
-        "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "summary": {"High": 0, "Medium": 0, "Low": 0, "Info": 0, "Total": 0},
-        "findings": []
-    }
-    
-    try:
-        tree = ET.parse(report_file)
-        root = tree.getroot()
-        
-        for alertitem in root.findall('.//alertitem'):
-            riskdesc = alertitem.find('riskdesc').text
-            risk = riskdesc.split(' ')[0]
-            if risk == "Info": risk = "Info"
 
             finding_name = alertitem.find('alert').text
             predicted_score = predict_risk(finding_name)

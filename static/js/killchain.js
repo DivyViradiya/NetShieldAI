@@ -84,11 +84,23 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- LOGGING LOGIC ---
   function appendLog(msg) {
     if (!msg) return;
-    
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-    let style = "color: #d4d4d8;"; 
+    // [FIX] Strip timestamps from the incoming message
+    // Matches "[15:19:56] " or "15:19:56 " at the start of the line
+    msg = msg.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '').trim();
+
+    // [FIX] If the line was *only* a timestamp, it's now empty, so we skip it
+    if (!msg) return;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+
+    let style = "color: #d4d4d8;";
     if (msg.includes("[x]") || msg.includes("CRITICAL") || msg.includes("ERROR") || msg.includes("Failed")) {
       style = "color: #ef4444;";
     } else if (msg.includes("[+]") || msg.includes("SUCCESS") || msg.includes("Complete")) {

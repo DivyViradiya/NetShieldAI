@@ -1,4 +1,0 @@
-# Nmap 7.97 scan initiated Fri Nov 28 20:52:08 2025 as: nmap --exclude-ports 5000 -sS -T4 -oG D:\\NetShieldAI\\Services\\results\\network_scanner\\scan_result_tcp_syn.txt 192.168.29.48
-Host: 192.168.29.48 ()	Status: Up
-Host: 192.168.29.48 ()	Ports: 135/open/tcp//msrpc///, 139/open/tcp//netbios-ssn///, 445/open/tcp//microsoft-ds///, 5100/open/tcp//admd///	Ignored State: closed (996)
-# Nmap done at Fri Nov 28 20:52:09 2025 -- 1 IP address (1 host up) scanned in 1.25 seconds

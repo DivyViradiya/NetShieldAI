@@ -390,11 +390,19 @@
         width: 100%;
         margin-bottom: 2rem;
       }
-      
+            
+      /*******************************************/
+      /* --- FINAL REFINED FOOTER STYLES --- */
+      /*******************************************/
+
       footer {
-        background-color: var(--surface-color); 
+        /* Match navbar background exactly */
+        background-color: rgba(5, 5, 5, 0.95); 
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        
         color: var(--text-muted);
-        padding: 2rem 0;
+        padding: 1.5rem 0; /* Slightly tighter padding for a sleeker look */
         width: 100%;
         margin-top: auto;
         flex-shrink: 0;
@@ -403,6 +411,7 @@
         position: relative;
       }
 
+      /* Subtle gradient line on top of footer */
       footer::before {
         content: '';
         position: absolute;
@@ -413,7 +422,7 @@
         background: linear-gradient(90deg, transparent, var(--border-color), transparent);
         opacity: 0.5;
       }
-      
+
       .footer-content {
         max-width: 1200px;
         margin: 0 auto;
@@ -421,18 +430,29 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.5rem;
+        gap: 1rem;
         text-align: center;
       }
 
-      @media (min-width: 768px) {
-        .footer-content {
-          flex-direction: row;
-          justify-content: space-between;
-          text-align: left;
-        }
+      /* Container for Logo + Copyright */
+      .footer-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem; /* Tight spacing between logo and "© 2026..." */
       }
-      
+
+      .footer-logo-img {
+        width: 24px; /* Reduced slightly to match text height better */
+        height: 24px;
+        object-fit: contain;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+      }
+
+      .footer-logo-img:hover {
+        opacity: 1;
+      }
+
       footer p {
         margin: 0;
         opacity: 0.7;
@@ -443,6 +463,15 @@
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+      }
+
+      /* Desktop Layout: Logo/Copyright on left, Brand on right */
+      @media (min-width: 768px) {
+        .footer-content {
+          flex-direction: row;
+          justify-content: space-between;
+          text-align: left;
+        }
       }
       
       .section-card {
@@ -602,10 +631,15 @@
 
     <footer>
       <div class="footer-content">
-        <p>&copy; 2026 NetShieldAI. All rights reserved.</p>
-        <p class="footer-brand">NetShield Pvt. Ltd. // Empowering Digital Trust</p>
+        <div class="footer-left">
+          <img src="{{ url_for('static', filename='images/NS_Logo.png') }}" alt="NS Logo" class="footer-logo-img" />
+          <p>&copy; 2026 NetShieldAI. All rights reserved.</p>
         </div>
+        
+        <p class="footer-brand">NetShield Pvt. Ltd. // Empowering Digital Trust</p>
+      </div>
     </footer>
+
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {

@@ -61,6 +61,20 @@ def send_sse_event(event_name, data=""):
 
     sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
     log_queue.put(sse_message)
+def is_valid_hostname(hostname):
+    """
+    Validates if a string is a valid hostname/domain.
+    """
+    if not hostname or len(hostname) > 255:
+        return False
+    
+    # Remove protocol if present for validation purposes
+    clean_host = hostname.replace("https://", "").replace("http://", "").split('/')[0].split(':')[0]
+    
+    # Regex for valid domain names
+    hostname_regex = r"^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$"
+    
+    return re.match(hostname_regex, clean_host) is not None
 
 # --- PHASE 2: Dynamic Path Helper ---
 def get_output_paths(output_dir=None):
@@ -233,6 +247,32 @@ def get_local_ip():
                            (ip.startswith("172.") and 16 <= int(ip.split('.')[1]) <= 31):
                             return ip
         return "127.0.0.1"
+    
+def resolve_to_ip(target_input):
+    """
+    Checks if input is an IP/Range or a URL. 
+    If it's a URL, it extracts the hostname and resolves it to an IP.
+    Returns the IP string if successful, or the original string if it's already an IP/Range.
+    """
+    # If it's already a valid IP or CIDR range, return it as is
+    if is_valid_ip_or_range(target_input):
+        return target_input
+    
+    try:
+        # Clean the URL: strip protocol (http/https) and any trailing paths/slashes
+        # Example: https://www.google.com/search -> www.google.com
+        clean_host = target_input.replace("https://", "").replace("http://", "").split('/')[0].split(':')[0]
+        
+        log(f"[*] Attempting to resolve hostname: {clean_host}")
+        resolved_ip = socket.gethostbyname(clean_host)
+        log(f"[+] Resolved {clean_host} to {resolved_ip}")
+        return resolved_ip
+    except socket.gaierror:
+        log(f"[!] DNS Resolution failed for: {target_input}")
+        return None
+    except Exception as e:
+        log(f"[!] Unexpected error during resolution: {e}")
+        return None
 
 def is_valid_ip_or_range(target):
     """
@@ -522,12 +562,22 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     """
     Runs an Nmap scan with the specified parameters using local Nmap installation.
     Triggers both SSE updates and JSON file generation.
-    Updated for Phase 2 to accept dynamic output directory.
     """
     if not is_admin():
-        log(f"[!] Nmap scans require administrator privileges. This should have been handled on startup.")
+        log(f"[!] Nmap scans require administrator privileges.")
+        return None
+
+    # --- NEW: URL RESOLUTION LOGIC ---
+    original_input = target_ip
+    resolved_ip = resolve_to_ip(target_ip)
+    
+    if not resolved_ip:
+        log(f"[!] Invalid target or resolution failed: {original_input}")
         return None
     
+    # Switch the target_ip to the resolved IP for the Nmap command
+    target_ip = resolved_ip
+
     # Get Dynamic Paths
     paths = get_output_paths(output_dir)
 

@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NetShieldAI | SSL/TLS Assessment Report</title>
+    <title>NetShieldAI | SQL Injection Assessment Report</title>
     <style>
-        /* --- UNIFIED SLATE & STEEL THEME --- */
+        /* --- UNIFIED SLATE & STEEL THEME (IDENTICAL TO SSL REPORT) --- */
         :root {
             --neo-blue: #475569;
             --neo-blue-accent: #3b82f6;
@@ -116,15 +116,16 @@
         .finding-text-block { padding: 15px 18px; font-size: 1rem; }
 
         .code-box {
-            background: var(--neo-blue-soft);
+            background: #1e293b; /* Darker background for SQL payloads */
+            color: #e2e8f0;       /* Light text */
             border: 1px solid var(--neo-border);
             padding: 12px;
             font-family: 'Consolas', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-radius: 4px;
             margin-top: 8px;
             white-space: pre-wrap;
-            color: var(--neo-text-main);
+            word-break: break-all;
         }
 
         /* --- TABLES --- */
@@ -161,7 +162,7 @@
             margin-bottom: 4px;
         }
 
-        /* --- CONFIG GRID --- */
+        /* --- CONFIG GRID (Used for Fingerprinting) --- */
         .config-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -172,11 +173,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 12px;
+            padding: 10px 14px;
             background: #fff;
             border: 1px solid var(--neo-border);
             border-radius: 4px;
         }
+        .config-value { font-weight: 600; color: var(--neo-text-main); }
     </style>
 </head>
 <body>
@@ -186,23 +188,23 @@
             <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="NetShieldAI">
         </div>
         <div class="header-right">
-            <h1>SSL/TLS Security Audit</h1>
-            <div class="scan-subtitle">// Cryptographic Assessment Engine</div>
+            <h1>SQL Injection Security Audit</h1>
+            <div class="scan-subtitle">// Database Assessment Engine</div>
         </div>
     </header>
 
     <div class="report-info">
         <div class="info-box">
-            <strong>Target Host</strong>
+            <strong>Target URL</strong>
             <span>{{ data.target | default('N/A') }}</span>
         </div>
         <div class="info-box">
-            <strong>IP Address</strong>
-            <span>{{ data.ip | default('N/A') }}</span>
+            <strong>Scan Date</strong>
+            <span>{{ data.scan_time }}</span>
         </div>
         <div class="info-box">
-            <strong>Port</strong>
-            <span>{{ data.port | default('443') }}</span>
+            <strong>Detected DBMS</strong>
+            <span>{{ data.db_info.dbms | default('Unknown') }}</span>
         </div>
     </div>
 
@@ -210,56 +212,54 @@
         <h3>Executive Summary</h3>
         <div class="host-summary-grid">
             <div class="host-summary-card">
-                <div class="host-summary-label">Vulnerabilities</div>
-                <div class="host-summary-value">{{ data.vulnerabilities | length }}</div>
+                <div class="host-summary-label">Vulnerabilities Found</div>
+                <div class="host-summary-value" style="color: {{ 'var(--risk-high)' if data.stats.total_vulns > 0 else 'var(--risk-low)' }};">
+                    {{ data.stats.total_vulns }}
+                </div>
             </div>
             <div class="host-summary-card">
-                <div class="host-summary-label">Security Grade</div>
-                <div class="host-summary-value" style="color: var(--risk-low);">{{ data.grade | default('A+') }}</div>
+                <div class="host-summary-label">Injection Types</div>
+                <div class="host-summary-value">{{ data.stats.types | length }}</div>
             </div>
             <div class="host-summary-card">
-                <div class="host-summary-label">Expiry Status</div>
-                <div class="host-summary-value">Valid</div>
+                <div class="host-summary-label">Database Status</div>
+                <div class="host-summary-value" style="font-size: 1.1rem;">
+                    {{ 'Exposed' if data.stats.total_vulns > 0 else 'Secure' }}
+                </div>
             </div>
             <div class="host-summary-card">
-                <div class="host-summary-label">Active Protocols</div>
+                <div class="host-summary-label">Data Extraction</div>
                 <div class="host-summary-value">
-                    {% set active_count = 0 %}
-                    {% for p in data.protocols if p.enabled %}{% set active_count = active_count + 1 %}{% endfor %}
-                    {{ active_count }}
+                    {{ 'Yes' if data.dumped_data else 'No' }}
                 </div>
             </div>
         </div>
     </section>
 
     <section>
-        <h3>Server Configuration Assessment</h3>
+        <h3>Database Fingerprinting</h3>
         <div class="finding-card">
+            <div class="finding-header">
+                <h4>Backend Configuration</h4>
+                <span class="badge badge-info">Reconnaissance</span>
+            </div>
             <div class="finding-text-block">
                 <div class="config-grid">
                     <div class="config-item">
-                        <span class="label-sm" style="margin:0;">TLS Compression</span>
-                        <span class="badge {{ 'badge-high' if data.configs.tls_compression.supported else 'badge-low' }}">
-                            {{ 'Enabled (Risky)' if data.configs.tls_compression.supported else 'Disabled (Secure)' }}
-                        </span>
+                        <span class="label-sm" style="margin:0;">DBMS Technology</span>
+                        <span class="config-value">{{ data.db_info.dbms | default('Not Detected') }}</span>
                     </div>
                     <div class="config-item">
-                        <span class="label-sm" style="margin:0;">Secure Renegotiation</span>
-                        <span class="badge {{ 'badge-low' if data.configs.renegotiation.secure else 'badge-high' }}">
-                            {{ 'Supported' if data.configs.renegotiation.secure else 'Unsupported' }}
-                        </span>
+                        <span class="label-sm" style="margin:0;">Database Version</span>
+                        <span class="config-value">{{ data.db_info.version | default('Unknown') }}</span>
                     </div>
                     <div class="config-item">
-                        <span class="label-sm" style="margin:0;">OCSP Stapling</span>
-                        <span class="badge {{ 'badge-low' if data.configs.ocsp_stapling else 'badge-medium' }}">
-                            {{ 'Active' if data.configs.ocsp_stapling else 'Inactive' }}
-                        </span>
+                        <span class="label-sm" style="margin:0;">Current User</span>
+                        <span class="config-value">{{ data.db_info.user | default('Unknown') }}</span>
                     </div>
                     <div class="config-item">
-                        <span class="label-sm" style="margin:0;">Fallback SCSV</span>
-                        <span class="badge {{ 'badge-low' if data.configs.fallback_scsv_supported else 'badge-medium' }}">
-                            {{ 'Supported' if data.configs.fallback_scsv_supported else 'Unsupported' }}
-                        </span>
+                        <span class="label-sm" style="margin:0;">Current Database</span>
+                        <span class="config-value">{{ data.db_info.current_db | default('Unknown') }}</span>
                     </div>
                 </div>
             </div>
@@ -268,91 +268,66 @@
 
     <section>
         <h3>Vulnerability Analysis</h3>
-        {% for vuln in data.vulnerabilities %}
-        <div class="finding-card">
-            <div class="finding-header">
-                <h4>{{ vuln.name }}</h4>
-                <span class="badge badge-{{ vuln.severity | lower }}">{{ vuln.severity }} Risk</span>
-            </div>
-            <div class="finding-text-block">
-                <span class="label-sm">Description</span>
-                <div class="code-box" style="background: #fff; border-left: 4px solid var(--neo-blue);">{{ vuln.description }}</div>
-                
-                <div style="margin-top: 15px;">
-                    <span class="label-sm">Remediation</span>
-                    <div style="margin-top: 5px; color: var(--neo-text-main); font-size: 1rem;">{{ vuln.solution | default('Disable weak cipher suites and upgrade to TLS 1.2/1.3.') }}</div>
+        {% if data.vulnerabilities %}
+            {% for vuln in data.vulnerabilities %}
+            <div class="finding-card">
+                <div class="finding-header">
+                    <h4>{{ vuln.title | default('SQL Injection Detected') }}</h4>
+                    <span class="badge badge-high">High Risk</span>
                 </div>
-            </div>
-        </div>
-        {% endfor %}
-    </section>
-
-    <section>
-        <h3>Protocol & Cipher Support</h3>
-        <div class="finding-card">
-            <div class="finding-text-block">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Protocol</th>
-                            <th>Status</th>
-                            <th>Ciphers Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for proto, ciphers in data.grouped_ciphers.items() %}
-                        <tr>
-                            <td><strong>{{ proto }}</strong></td>
-                            <td>
-                                <span class="badge {{ 'badge-low' if 'TLSv1.2' in proto or 'TLSv1.3' in proto else 'badge-high' }}">
-                                    {{ 'Secure' if 'TLSv1.2' in proto or 'TLSv1.3' in proto else 'Legacy' }}
-                                </span>
-                            </td>
-                            <td>{{ ciphers | length }} ciphers supported</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <h3>Certificate Details</h3>
-        {% for cert in data.certificates %}
-        <div class="finding-card">
-            <div class="finding-header">
-                <h4>{{ cert.level | title }} Certificate</h4>
-                <span class="badge badge-info">Verified</span>
-            </div>
-            <div class="finding-text-block">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
-                    <div>
-                        <span class="label-sm">Subject / CN</span>
-                        <div style="font-weight: 600; font-size: 1.05rem;">{{ cert.common_name }}</div>
+                <div class="finding-text-block">
+                    <div style="margin-bottom: 12px;">
+                        <span class="label-sm">Injection Type</span>
+                        <div style="font-size: 1rem; font-weight: 500;">{{ vuln.type }}</div>
                     </div>
+                    
                     <div>
-                        <span class="label-sm">Issuer</span>
-                        <div style="font-weight: 600; font-size: 1.05rem;">{{ cert.issuer }}</div>
+                        <span class="label-sm">Injection Payload</span>
+                        <div class="code-box">{{ vuln.payload }}</div>
                     </div>
-                    <div>
-                        <span class="label-sm">Algorithm</span>
-                        <div style="font-size: 1rem;">{{ cert.signature_algorithm }} ({{ cert.key_size }} {{ cert.key_type }})</div>
-                    </div>
-                    <div>
-                        <span class="label-sm">Valid Until</span>
-                        <div style="font-size: 1rem;">{{ cert.not_after }}</div>
+                    
+                    <div style="margin-top: 15px;">
+                        <span class="label-sm">Remediation</span>
+                        <div style="margin-top: 5px; color: var(--neo-text-sub); font-size: 0.95rem;">
+                            Use parameterized queries (Prepared Statements) to prevent SQL injection. sanitize all user inputs.
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <div class="finding-card" style="border-left: 5px solid var(--risk-low);">
+                <div class="finding-text-block">
+                    <h4 style="color: var(--risk-low);">No SQL Injection Vulnerabilities Found</h4>
+                    <p style="color: var(--neo-text-sub);">The target URL appears to be secure against common SQL injection techniques based on the scan parameters used.</p>
+                </div>
+            </div>
+        {% endif %}
     </section>
+
+    {% if data.dumped_data %}
+    <section>
+        <h3>Extracted Data</h3>
+        <div class="finding-card">
+            <div class="finding-header">
+                <h4>Database Tables & Entries</h4>
+                <span class="badge badge-medium">Evidence</span>
+            </div>
+            <div class="finding-text-block">
+                <ul>
+                    {% for item in data.dumped_data %}
+                        <li style="margin-bottom: 5px;">{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <footer>
         <img src="file:///D:/NetShieldAI/static/images/NS_Logo_pdf.png" alt="NS Logo" class="footer-logo">
         <div class="footer-text">
-            NetShieldAI Reporting Engine // SSL Audit // Generated {{ data.generation_date }}
+            NetShieldAI Reporting Engine // SQL Audit // Generated {{ data.generation_date }}
         </div>
     </footer>
 

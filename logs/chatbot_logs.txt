@@ -1837,3 +1837,101 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5
 2026-01-05 16:14:46 - chatbot - INFO - Chatbot Blueprint initialized
 2026-01-05 16:14:51 - chatbot - INFO - Chatbot Blueprint initialized
 2026-01-05 16:14:55 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:15:23 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:20:24 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:20:29 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:20:34 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:25:14 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:26:30 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:27:15 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:30:29 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:31:04 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:41:37 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:46:03 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:46:08 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:46:12 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:52:48 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 16:53:37 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 17:03:15 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 17:03:20 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 17:03:26 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 18:50:31 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 19:09:00 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 19:15:09 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 19:23:01 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 19:23:17 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 19:23:31 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 20:20:29 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 20:20:52 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 20:21:06 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 20:23:43 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 20:23:51 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-05 20:23:59 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 13:35:11 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 13:35:24 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 13:42:19 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 13:42:26 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 13:51:12 - chatbot - INFO - Sending zap report to server proxy (gemini mode) for User meghansh_2
+2026-01-06 13:51:28 - chatbot - INFO - Stored session ID from server: 78460b42-9851-4463-a9e4-bcdb1f5c895b
+2026-01-06 13:55:19 - chatbot - INFO - Sending zap report to server proxy (gemini mode) for User meghansh_2
+2026-01-06 13:55:32 - chatbot - INFO - Stored session ID from server: eab7ca05-672d-42f0-b6d9-5dabbfe5a41e
+2026-01-06 14:17:44 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 14:17:52 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 14:18:04 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 14:39:53 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 14:40:09 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 14:40:26 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 14:48:59 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 14:49:58 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 16:09:34 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 16:09:47 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 16:10:03 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 21:30:40 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 21:31:06 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 21:31:16 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 21:48:59 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 21:49:16 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 21:49:32 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-06 22:01:19 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 14:51:51 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 14:52:07 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 14:52:23 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 15:00:55 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 15:01:26 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 16:12:10 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 16:19:05 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 16:21:14 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 19:53:35 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 19:53:47 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 19:53:57 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 20:00:28 - chatbot - INFO - Sending nmap report to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-07 20:01:06 - chatbot - INFO - Stored session ID from server: fca0a754-4f57-4b17-a857-5d0f0c6d2631
+2026-01-07 20:01:38 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session fca0a754-4f57-4b17-a857-5d0f0c6d2631
+2026-01-07 20:02:32 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session fca0a754-4f57-4b17-a857-5d0f0c6d2631
+2026-01-07 20:03:38 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session fca0a754-4f57-4b17-a857-5d0f0c6d2631
+2026-01-07 20:04:37 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session fca0a754-4f57-4b17-a857-5d0f0c6d2631
+2026-01-07 20:05:02 - chatbot - INFO - Initiating stream to http://localhost:5000/chat_stream for session fca0a754-4f57-4b17-a857-5d0f0c6d2631
+2026-01-07 20:36:05 - chatbot - INFO - Sending packet_sniffer report to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-07 20:36:08 - chatbot - INFO - Stored session ID from server: 5ad27594-83a4-497d-9b8e-8533048eb2fb
+2026-01-07 20:40:57 - chatbot - INFO - Sending packet_sniffer report to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-07 20:40:59 - chatbot - INFO - Stored session ID from server: 66771021-86d2-490d-a8bf-71c4119135d9
+2026-01-07 20:44:07 - chatbot - INFO - Sending packet_sniffer report to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-07 20:44:10 - chatbot - INFO - Stored session ID from server: a4d6da52-ae90-483b-bb36-474889b64b2d
+2026-01-07 20:52:30 - chatbot - INFO - Sending packet_sniffer report to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-07 20:52:33 - chatbot - INFO - Stored session ID from server: fe46d871-03f6-4f5d-a57b-00a9418a29be
+2026-01-07 20:55:11 - chatbot - INFO - Sending packet_sniffer report to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-07 20:55:19 - chatbot - INFO - Stored session ID from server: b4b160e7-3379-498b-a341-a5c3f87f6fcf
+2026-01-07 20:57:22 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Read timed out. (read timeout=5)
+2026-01-07 20:58:59 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 20:59:13 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 20:59:27 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 20:59:40 - chatbot - INFO - Sending packet_sniffer report to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-07 21:00:03 - chatbot - INFO - Stored session ID from server: 3e0f9820-165c-431f-a8e6-537eec36dafd
+2026-01-07 22:24:21 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 22:25:12 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 22:25:48 - chatbot - INFO - Chatbot Blueprint initialized
+2026-01-07 23:12:46 - chatbot - INFO - Sending zap report to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-07 23:13:15 - chatbot - INFO - Stored session ID from server: f24ef9a2-fce7-43c9-b357-c04305bbeda4
+2026-01-07 23:18:48 - chatbot - INFO - Sending zap report to server proxy (gemini mode) for User DivyaViradiya_1
+2026-01-07 23:20:21 - chatbot - INFO - Stored session ID from server: 92bd6a05-3fdc-4442-9880-175c32ef6b5c
+2026-01-08 12:28:32 - chatbot - INFO - Chatbot Blueprint initialized
