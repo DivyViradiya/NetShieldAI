@@ -4,181 +4,227 @@
     <meta charset="UTF-8">
     <title>NetShieldAI | SQL Injection Assessment Report</title>
     <style>
-        /* --- UNIFIED SLATE & STEEL THEME (IDENTICAL TO SSL REPORT) --- */
+        /* --- GLOBAL VARIABLES & RESET --- */
         :root {
-            --neo-blue: #475569;
-            --neo-blue-accent: #3b82f6;
-            --neo-blue-soft: #f8fafc;
-            --neo-border: #e2e8f0;
-            --neo-text-main: #1e293b;
-            --neo-text-sub: #64748b;
-            --risk-high: #be123c;
-            --risk-medium: #d97706;
-            --risk-low: #059669;
-            --radius: 8px;
+            --primary: #334155;      /* Slate 700 */
+            --secondary: #64748b;    /* Slate 500 */
+            --accent: #2563eb;       /* Blue 600 */
+            --bg-light: #f8fafc;     /* Slate 50 */
+            --border: #e2e8f0;       /* Slate 200 */
+            
+            --risk-critical: #9f1239; /* Rose 800 */
+            --risk-high: #b91c1c;     /* Red 700 */
+            --risk-medium: #b45309;   /* Amber 700 */
+            --risk-low: #15803d;      /* Green 700 */
+            
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
         }
 
         @page {
             size: A4;
-            margin: 1cm;
+            margin: 1.5cm;
             @bottom-right {
                 content: "Page " counter(page) " of " counter(pages);
-                font-family: 'Inter', sans-serif;
-                font-size: 10px;
-                color: #94a3b8;
+                font-family: var(--font-main);
+                font-size: 8pt;
+                color: var(--secondary);
             }
         }
 
         body {
-            font-family: 'Inter', Arial, sans-serif;
-            color: var(--neo-text-main);
-            line-height: 1.6;
+            font-family: var(--font-main);
+            font-size: 9pt; /* Reduced from 16px to 9pt for A4 */
+            line-height: 1.5;
+            color: #1e293b; /* Slate 800 */
             margin: 0;
-            padding: 20px 30px;
-            background-color: #fff;
-            font-size: 16px;
+            padding: 0;
         }
+
+        /* --- UTILITIES --- */
+        .text-right { text-align: right; }
+        .text-uppercase { text-transform: uppercase; letter-spacing: 0.05em; }
+        .font-bold { font-weight: 700; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mt-4 { margin-top: 1rem; }
 
         /* --- HEADER --- */
         header {
-            border-bottom: 2px solid var(--neo-border);
-            padding-bottom: 20px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .logo-container img { height: 40px; display: block; }
-        .header-right { text-align: right; }
-        h1 { font-size: 1.8rem; font-weight: 700; margin: 0; color: var(--neo-text-main); }
-        .scan-subtitle { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neo-text-sub); margin-top: 4px; }
-
-        /* --- INFO BAR --- */
-        .report-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            border: 1px solid var(--neo-border);
-            background: var(--neo-blue-soft);
-            margin-bottom: 25px;
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
-
-        .info-box { padding: 15px 20px; border-right: 1px solid var(--neo-border); }
-        .info-box:last-child { border-right: none; }
-        .info-box strong { display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--neo-text-sub); font-weight: 700; margin-bottom: 3px; }
-        .info-box span { font-weight: 600; font-size: 1.1rem; word-break: break-all; }
-
-        /* --- SECTION HEADERS --- */
-        h3 {
-            font-size: 1.1rem;
-            text-transform: uppercase;
-            color: var(--neo-blue-accent);
-            margin: 30px 0 15px 0;
-            letter-spacing: 0.1em;
-            border-left: 4px solid var(--neo-blue-accent);
-            padding-left: 12px;
-            font-weight: 700;
-        }
-
-        /* --- SUMMARY GRID --- */
-        .host-summary-grid { display: flex; gap: 12px; margin-bottom: 25px; }
-        .host-summary-card {
-            flex: 1;
-            padding: 15px;
-            background: var(--neo-blue-soft);
-            border: 1px solid var(--neo-border);
-            border-radius: var(--radius);
-        }
-        .host-summary-label { font-size: 0.75rem; font-weight: 700; color: var(--neo-text-sub); text-transform: uppercase; margin-bottom: 6px; }
-        .host-summary-value { font-size: 1.4rem; font-weight: 700; color: var(--neo-text-main); }
-
-        /* --- FINDING/DATA CARDS --- */
-        .finding-card {
-            border: 1px solid var(--neo-border);
-            border-radius: var(--radius);
-            margin-bottom: 20px;
-            page-break-inside: avoid;
-            overflow: hidden;
-        }
-
-        .finding-header {
-            background: #f1f5f9;
-            padding: 12px 18px;
-            border-bottom: 1px solid var(--neo-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
         }
-
-        .finding-header h4 { margin: 0; font-size: 1.1rem; font-weight: 700; }
-        .finding-text-block { padding: 15px 18px; font-size: 1rem; }
-
-        .code-box {
-            background: #1e293b; /* Darker background for SQL payloads */
-            color: #e2e8f0;       /* Light text */
-            border: 1px solid var(--neo-border);
-            padding: 12px;
-            font-family: 'Consolas', monospace;
-            font-size: 0.85rem;
-            border-radius: 4px;
-            margin-top: 8px;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        /* --- TABLES --- */
-        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-        th { font-size: 0.75rem; text-transform: uppercase; color: var(--neo-text-sub); text-align: left; padding: 10px; border-bottom: 2px solid var(--neo-border); }
-        td { font-size: 1rem; padding: 10px; border-bottom: 1px solid var(--neo-border); }
-
-        /* --- BADGES --- */
-        .badge { padding: 4px 10px; font-size: 0.7rem; font-weight: 700; border-radius: 4px; text-transform: uppercase; }
-        .badge-high { background: #fee2e2; color: #be123c; }
-        .badge-medium { background: #fef3c7; color: #d97706; }
-        .badge-low { background: #d1fae5; color: #059669; }
-        .badge-info { background: #e0f2fe; color: #0369a1; }
-
-        /* --- FOOTER --- */
-        footer {
-            margin-top: 40px;
-            padding: 20px 0;
-            border-top: 1px solid var(--neo-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        .footer-logo { height: 22px; opacity: 0.7; }
-        .footer-text { font-size: 0.75rem; color: var(--neo-text-sub); text-transform: uppercase; }
         
-        .label-sm {
-            font-size: 0.7rem;
+        .logo-container img { height: 35px; } /* Slightly smaller logo */
+        
+        .header-title h1 {
+            font-size: 18pt;
+            margin: 0;
+            color: var(--primary);
+            font-weight: 800;
+        }
+        
+        .header-title .subtitle {
+            font-size: 8pt;
+            color: var(--secondary);
             text-transform: uppercase;
-            color: var(--neo-text-sub);
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* --- SECTIONS --- */
+        h3 {
+            font-size: 11pt;
+            text-transform: uppercase;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            margin: 25px 0 15px 0;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- GRID LAYOUTS --- */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* --- INFO CARDS (Target Info) --- */
+        .info-card {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            border-radius: 4px;
+        }
+        
+        .info-label {
+            font-size: 7pt;
+            color: var(--secondary);
+            text-transform: uppercase;
             font-weight: 700;
             display: block;
             margin-bottom: 4px;
         }
-
-        /* --- CONFIG GRID (Used for Fingerprinting) --- */
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 10px;
+        
+        .info-value {
+            font-size: 9pt;
+            font-weight: 600;
+            color: var(--primary);
+            word-break: break-all;
         }
-        .config-item {
+
+        /* --- STATS DASHBOARD --- */
+        .stat-box {
+            text-align: center;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: #fff;
+        }
+        
+        .stat-value {
+            font-size: 16pt;
+            font-weight: 800;
+            display: block;
+            line-height: 1.2;
+        }
+        
+        .stat-label {
+            font-size: 7pt;
+            color: var(--secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* --- VULNERABILITY CARDS --- */
+        .vuln-card {
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 15px;
+            page-break-inside: avoid;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+
+        .vuln-header {
+            background: var(--bg-light);
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 14px;
-            background: #fff;
-            border: 1px solid var(--neo-border);
-            border-radius: 4px;
         }
-        .config-value { font-weight: 600; color: var(--neo-text-main); }
+
+        .vuln-title {
+            font-size: 9pt;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .vuln-body {
+            padding: 12px;
+        }
+
+        /* --- PAYLOAD CODE BLOCKS --- */
+        .code-block {
+            background: #1e293b; /* Slate 800 */
+            color: #e2e8f0;       /* Slate 200 */
+            font-family: var(--font-code);
+            font-size: 7.5pt;     /* Small enough to prevent wrapping issues */
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 4px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border: 1px solid #0f172a;
+        }
+
+        /* --- BADGES --- */
+        .badge {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 6.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .badge-high { background: #fee2e2; color: var(--risk-high); border: 1px solid #fecaca; }
+        .badge-safe { background: #dcfce7; color: var(--risk-low); border: 1px solid #bbf7d0; }
+        
+        /* --- TABLES --- */
+        table { width: 100%; border-collapse: collapse; font-size: 8pt; }
+        th { text-align: left; color: var(--secondary); border-bottom: 2px solid var(--border); padding: 6px; font-size: 7pt; text-transform: uppercase; }
+        td { border-bottom: 1px solid var(--border); padding: 6px; color: var(--primary); }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 40px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .footer-text {
+            font-size: 7pt;
+            color: var(--secondary);
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -187,148 +233,158 @@
         <div class="logo-container">
             <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="NetShieldAI">
         </div>
-        <div class="header-right">
-            <h1>SQL Injection Security Audit</h1>
-            <div class="scan-subtitle">// Database Assessment Engine</div>
+        <div class="header-title text-right">
+            <h1>SQL Injection Audit</h1>
+            <div class="subtitle">Automated Security Assessment</div>
         </div>
     </header>
 
-    <div class="report-info">
-        <div class="info-box">
-            <strong>Target URL</strong>
-            <span>{{ data.target | default('N/A') }}</span>
+    <div class="grid-4 mb-4">
+        <div class="info-card">
+            <span class="info-label">Target Host</span>
+            <div class="info-value">{{ data.target | default('Unknown') }}</div>
         </div>
-        <div class="info-box">
-            <strong>Scan Date</strong>
-            <span>{{ data.scan_time }}</span>
+        <div class="info-card">
+            <span class="info-label">Scan Timestamp</span>
+            <div class="info-value">{{ data.scan_time }}</div>
         </div>
-        <div class="info-box">
-            <strong>Detected DBMS</strong>
-            <span>{{ data.db_info.dbms | default('Unknown') }}</span>
+        <div class="info-card">
+            <span class="info-label">Database Tech</span>
+            <div class="info-value">{{ data.db_info.dbms | default('Not Detected') }}</div>
+        </div>
+        <div class="info-card">
+            <span class="info-label">DB User</span>
+            <div class="info-value">{{ data.db_info.user | default('Unknown') }}</div>
         </div>
     </div>
 
-    <section>
-        <h3>Executive Summary</h3>
-        <div class="host-summary-grid">
-            <div class="host-summary-card">
-                <div class="host-summary-label">Vulnerabilities Found</div>
-                <div class="host-summary-value" style="color: {{ 'var(--risk-high)' if data.stats.total_vulns > 0 else 'var(--risk-low)' }};">
-                    {{ data.stats.total_vulns }}
-                </div>
+    <h3>Executive Summary</h3>
+    <div class="grid-4 mb-4">
+        <div class="stat-box" style="border-bottom: 3px solid {{ 'var(--risk-high)' if data.stats.total_vulns > 0 else 'var(--risk-low)' }};">
+            <span class="stat-value" style="color: {{ 'var(--risk-high)' if data.stats.total_vulns > 0 else 'var(--risk-low)' }};">
+                {{ data.stats.total_vulns }}
+            </span>
+            <span class="stat-label">Total Findings</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-value">{{ data.stats.types | length }}</span>
+            <span class="stat-label">Unique Vectors</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-value">{{ 'Yes' if data.dumped_data else 'No' }}</span>
+            <span class="stat-label">Data Exfiltration</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-value" style="font-size: 12pt; padding-top:4px;">
+                {{ 'CRITICAL' if data.stats.total_vulns > 0 else 'PASSED' }}
+            </span>
+            <span class="stat-label">Audit Status</span>
+        </div>
+    </div>
+
+    <h3>Database Fingerprint</h3>
+    <div class="grid-2 mb-4">
+        <div class="vuln-card" style="margin-bottom: 0;">
+            <div class="vuln-header">
+                <span class="vuln-title">Backend Configuration</span>
+                <span class="badge" style="background: #e0f2fe; color: #0369a1;">Recon</span>
             </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Injection Types</div>
-                <div class="host-summary-value">{{ data.stats.types | length }}</div>
-            </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Database Status</div>
-                <div class="host-summary-value" style="font-size: 1.1rem;">
-                    {{ 'Exposed' if data.stats.total_vulns > 0 else 'Secure' }}
-                </div>
-            </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Data Extraction</div>
-                <div class="host-summary-value">
-                    {{ 'Yes' if data.dumped_data else 'No' }}
-                </div>
+            <div class="vuln-body">
+                <table>
+                    <tr>
+                        <th width="30%">Parameter</th>
+                        <th>Detected Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>DBMS</strong></td>
+                        <td>{{ data.db_info.dbms | default('N/A') }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Version</strong></td>
+                        <td>{{ data.db_info.version | default('N/A') }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Current User</strong></td>
+                        <td>{{ data.db_info.user | default('N/A') }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Database</strong></td>
+                        <td>{{ data.db_info.current_db | default('N/A') }}</td>
+                    </tr>
+                </table>
             </div>
         </div>
-    </section>
-
-    <section>
-        <h3>Database Fingerprinting</h3>
-        <div class="finding-card">
-            <div class="finding-header">
-                <h4>Backend Configuration</h4>
-                <span class="badge badge-info">Reconnaissance</span>
-            </div>
-            <div class="finding-text-block">
-                <div class="config-grid">
-                    <div class="config-item">
-                        <span class="label-sm" style="margin:0;">DBMS Technology</span>
-                        <span class="config-value">{{ data.db_info.dbms | default('Not Detected') }}</span>
-                    </div>
-                    <div class="config-item">
-                        <span class="label-sm" style="margin:0;">Database Version</span>
-                        <span class="config-value">{{ data.db_info.version | default('Unknown') }}</span>
-                    </div>
-                    <div class="config-item">
-                        <span class="label-sm" style="margin:0;">Current User</span>
-                        <span class="config-value">{{ data.db_info.user | default('Unknown') }}</span>
-                    </div>
-                    <div class="config-item">
-                        <span class="label-sm" style="margin:0;">Current Database</span>
-                        <span class="config-value">{{ data.db_info.current_db | default('Unknown') }}</span>
-                    </div>
-                </div>
-            </div>
+        
+        <div class="vuln-card" style="margin-bottom: 0; display: flex; align-items: center; justify-content: center; background: var(--bg-light);">
+             <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 24pt; color: #cbd5e1; margin-bottom: 5px;">🛡️</div>
+                <div style="font-size: 8pt; color: var(--secondary);">Automated Engine v2.4</div>
+             </div>
         </div>
-    </section>
+    </div>
 
-    <section>
-        <h3>Vulnerability Analysis</h3>
-        {% if data.vulnerabilities %}
-            {% for vuln in data.vulnerabilities %}
-            <div class="finding-card">
-                <div class="finding-header">
-                    <h4>{{ vuln.title | default('SQL Injection Detected') }}</h4>
-                    <span class="badge badge-high">High Risk</span>
-                </div>
-                <div class="finding-text-block">
-                    <div style="margin-bottom: 12px;">
-                        <span class="label-sm">Injection Type</span>
-                        <div style="font-size: 1rem; font-weight: 500;">{{ vuln.type }}</div>
-                    </div>
-                    
+    <h3>Vulnerability Analysis</h3>
+    
+    {% if data.vulnerabilities %}
+        {% for vuln in data.vulnerabilities %}
+        <div class="vuln-card" style="border-left: 3px solid var(--risk-high);">
+            <div class="vuln-header">
+                <span class="vuln-title">{{ vuln.title | default('SQL Injection Detected') }}</span>
+                <span class="badge badge-high">High Risk</span>
+            </div>
+            <div class="vuln-body">
+                <div class="grid-2 mb-2">
                     <div>
-                        <span class="label-sm">Injection Payload</span>
-                        <div class="code-box">{{ vuln.payload }}</div>
+                        <span class="info-label">Attack Vector Type</span>
+                        <div style="font-size: 8.5pt;">{{ vuln.type }}</div>
                     </div>
-                    
-                    <div style="margin-top: 15px;">
-                        <span class="label-sm">Remediation</span>
-                        <div style="margin-top: 5px; color: var(--neo-text-sub); font-size: 0.95rem;">
-                            Use parameterized queries (Prepared Statements) to prevent SQL injection. sanitize all user inputs.
-                        </div>
+                    <div>
+                        <span class="info-label">Affected Parameter</span>
+                        <div style="font-size: 8.5pt;">searchFor (derived from payload)</div>
                     </div>
                 </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <div class="finding-card" style="border-left: 5px solid var(--risk-low);">
-                <div class="finding-text-block">
-                    <h4 style="color: var(--risk-low);">No SQL Injection Vulnerabilities Found</h4>
-                    <p style="color: var(--neo-text-sub);">The target URL appears to be secure against common SQL injection techniques based on the scan parameters used.</p>
+
+                <div class="mt-4">
+                    <span class="info-label">Injected Payload</span>
+                    <div class="code-block">{{ vuln.payload }}</div>
                 </div>
             </div>
-        {% endif %}
-    </section>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="vuln-card" style="border-left: 3px solid var(--risk-low);">
+            <div class="vuln-body" style="padding: 20px;">
+                <div style="color: var(--risk-low); font-weight: 700; font-size: 10pt;">No SQL Injection Vulnerabilities Detected</div>
+                <div style="color: var(--secondary); font-size: 9pt; margin-top: 5px;">
+                    The scanner did not detect any exploitable SQL injection flaws using the current payload set.
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
     {% if data.dumped_data %}
-    <section>
-        <h3>Extracted Data</h3>
-        <div class="finding-card">
-            <div class="finding-header">
-                <h4>Database Tables & Entries</h4>
-                <span class="badge badge-medium">Evidence</span>
-            </div>
-            <div class="finding-text-block">
-                <ul>
-                    {% for item in data.dumped_data %}
-                        <li style="margin-bottom: 5px;">{{ item }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+    <h3>Extracted Data Evidence</h3>
+    <div class="vuln-card">
+        <div class="vuln-header">
+            <span class="vuln-title">Exfiltrated Entries</span>
+            <span class="badge" style="background:#fff7ed; color:#c2410c; border:1px solid #ffedd5;">Proof of Concept</span>
         </div>
-    </section>
+        <div class="vuln-body">
+            <div style="font-size: 8pt; color: var(--secondary); margin-bottom: 8px;">
+                The following data was successfully retrieved from the database, confirming the vulnerability.
+            </div>
+            <ul style="margin: 0; padding-left: 20px; font-size: 8.5pt;">
+                {% for item in data.dumped_data %}
+                    <li style="margin-bottom: 4px;">{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
     {% endif %}
 
     <footer>
-        <img src="file:///D:/NetShieldAI/static/images/NS_Logo_pdf.png" alt="NS Logo" class="footer-logo">
-        <div class="footer-text">
-            NetShieldAI Reporting Engine // SQL Audit // Generated {{ data.generation_date }}
-        </div>
+        <img src="file:///D:/NetShieldAI/static/images/NS_Logo_pdf.png" alt="NS Logo" style="height: 18px; opacity: 0.6;">
+        <span class="footer-text">Generated on {{ data.generation_date }} // Confidential Security Document</span>
     </footer>
 
 </body>

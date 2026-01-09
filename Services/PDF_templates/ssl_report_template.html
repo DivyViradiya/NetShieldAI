@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NetShieldAI | SSL/TLS Assessment Report</title>
+    <title>NetShieldAI | SSL/TLS Detailed Assessment</title>
     <style>
-        /* --- UNIFIED SLATE & STEEL THEME --- */
+        /* --- UNIFIED SLATE & STEEL THEME (EXTENDED) --- */
         :root {
             --neo-blue: #475569;
             --neo-blue-accent: #3b82f6;
@@ -32,14 +32,13 @@
         body {
             font-family: 'Inter', Arial, sans-serif;
             color: var(--neo-text-main);
-            line-height: 1.6;
+            line-height: 1.5;
             margin: 0;
-            padding: 20px 30px;
-            background-color: #fff;
-            font-size: 16px;
+            padding: 20px;
+            font-size: 14px;
         }
 
-        /* --- HEADER --- */
+        /* --- HEADER & INFO --- */
         header {
             border-bottom: 2px solid var(--neo-border);
             padding-bottom: 20px;
@@ -48,29 +47,25 @@
             justify-content: space-between;
             align-items: flex-end;
         }
-
-        .logo-container img { height: 40px; display: block; }
         .header-right { text-align: right; }
         h1 { font-size: 1.8rem; font-weight: 700; margin: 0; color: var(--neo-text-main); }
         .scan-subtitle { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neo-text-sub); margin-top: 4px; }
 
-        /* --- INFO BAR --- */
         .report-info {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             border: 1px solid var(--neo-border);
             background: var(--neo-blue-soft);
             margin-bottom: 25px;
             border-radius: var(--radius);
             overflow: hidden;
         }
-
-        .info-box { padding: 15px 20px; border-right: 1px solid var(--neo-border); }
+        .info-box { padding: 12px 15px; border-right: 1px solid var(--neo-border); }
         .info-box:last-child { border-right: none; }
-        .info-box strong { display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--neo-text-sub); font-weight: 700; margin-bottom: 3px; }
-        .info-box span { font-weight: 600; font-size: 1.1rem; word-break: break-all; }
+        .info-box strong { display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--neo-text-sub); font-weight: 700; margin-bottom: 2px; }
+        .info-box span { font-weight: 600; font-size: 1rem; word-break: break-all; }
 
-        /* --- SECTION HEADERS --- */
+        /* --- HEADINGS --- */
         h3 {
             font-size: 1.1rem;
             text-transform: uppercase;
@@ -80,93 +75,33 @@
             border-left: 4px solid var(--neo-blue-accent);
             padding-left: 12px;
             font-weight: 700;
+            page-break-after: avoid;
         }
 
-        /* --- SUMMARY GRID --- */
-        .host-summary-grid { display: flex; gap: 12px; margin-bottom: 25px; }
-        .host-summary-card {
-            flex: 1;
-            padding: 15px;
-            background: var(--neo-blue-soft);
+        /* --- CARDS & BOXES --- */
+        .card {
             border: 1px solid var(--neo-border);
             border-radius: var(--radius);
-        }
-        .host-summary-label { font-size: 0.75rem; font-weight: 700; color: var(--neo-text-sub); text-transform: uppercase; margin-bottom: 6px; }
-        .host-summary-value { font-size: 1.4rem; font-weight: 700; color: var(--neo-text-main); }
-
-        /* --- FINDING/DATA CARDS --- */
-        .finding-card {
-            border: 1px solid var(--neo-border);
-            border-radius: var(--radius);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             page-break-inside: avoid;
-            overflow: hidden;
+            background: #fff;
         }
-
-        .finding-header {
+        .card-header {
             background: #f1f5f9;
-            padding: 12px 18px;
+            padding: 10px 15px;
             border-bottom: 1px solid var(--neo-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
-        .finding-header h4 { margin: 0; font-size: 1.1rem; font-weight: 700; }
-        .finding-text-block { padding: 15px 18px; font-size: 1rem; }
-
-        .code-box {
-            background: var(--neo-blue-soft);
-            border: 1px solid var(--neo-border);
-            padding: 12px;
-            font-family: 'Consolas', monospace;
-            font-size: 0.9rem;
-            border-radius: 4px;
-            margin-top: 8px;
-            white-space: pre-wrap;
-            color: var(--neo-text-main);
-        }
-
-        /* --- TABLES --- */
-        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-        th { font-size: 0.75rem; text-transform: uppercase; color: var(--neo-text-sub); text-align: left; padding: 10px; border-bottom: 2px solid var(--neo-border); }
-        td { font-size: 1rem; padding: 10px; border-bottom: 1px solid var(--neo-border); }
-
-        /* --- BADGES --- */
-        .badge { padding: 4px 10px; font-size: 0.7rem; font-weight: 700; border-radius: 4px; text-transform: uppercase; }
-        .badge-high { background: #fee2e2; color: #be123c; }
-        .badge-medium { background: #fef3c7; color: #d97706; }
-        .badge-low { background: #d1fae5; color: #059669; }
-        .badge-info { background: #e0f2fe; color: #0369a1; }
-
-        /* --- FOOTER --- */
-        footer {
-            margin-top: 40px;
-            padding: 20px 0;
-            border-top: 1px solid var(--neo-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        .footer-logo { height: 22px; opacity: 0.7; }
-        .footer-text { font-size: 0.75rem; color: var(--neo-text-sub); text-transform: uppercase; }
-        
-        .label-sm {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--neo-text-sub);
-            font-weight: 700;
-            display: block;
-            margin-bottom: 4px;
-        }
+        .card-header h4 { margin: 0; font-size: 1rem; font-weight: 700; }
+        .card-body { padding: 15px; }
 
         /* --- CONFIG GRID --- */
         .config-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 10px;
+            gap: 10px;
         }
         .config-item {
             display: flex;
@@ -177,89 +112,145 @@
             border: 1px solid var(--neo-border);
             border-radius: 4px;
         }
+
+        /* --- TABLES (CIPHERS & CERTS) --- */
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { 
+            background: #f8fafc; 
+            text-transform: uppercase; 
+            color: var(--neo-text-sub); 
+            font-size: 0.7rem; 
+            text-align: left; 
+            padding: 8px 12px; 
+            border-bottom: 1px solid var(--neo-border);
+        }
+        td { padding: 8px 12px; border-bottom: 1px solid var(--neo-border); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        
+        /* --- BADGES --- */
+        .badge { padding: 3px 8px; font-size: 0.65rem; font-weight: 700; border-radius: 4px; text-transform: uppercase; display: inline-block; }
+        .badge-high { background: #fee2e2; color: #be123c; }
+        .badge-medium { background: #fef3c7; color: #d97706; }
+        .badge-low { background: #d1fae5; color: #059669; }
+        .badge-info { background: #e0f2fe; color: #0369a1; }
+        .badge-neutral { background: #f1f5f9; color: #64748b; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--neo-border);
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--neo-text-sub);
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo-container">
-            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="NetShieldAI">
+            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="NetShieldAI" style="height: 40px;">
         </div>
         <div class="header-right">
-            <h1>SSL/TLS Security Audit</h1>
-            <div class="scan-subtitle">// Cryptographic Assessment Engine</div>
+            <h1>SSL/TLS Assessment</h1>
+            <div class="scan-subtitle">// Target: {{ data.target }}</div>
         </div>
     </header>
 
     <div class="report-info">
         <div class="info-box">
-            <strong>Target Host</strong>
-            <span>{{ data.target | default('N/A') }}</span>
-        </div>
-        <div class="info-box">
-            <strong>IP Address</strong>
-            <span>{{ data.ip | default('N/A') }}</span>
+            <strong>Target IP</strong>
+            <span>{{ data.ip }}</span>
         </div>
         <div class="info-box">
             <strong>Port</strong>
-            <span>{{ data.port | default('443') }}</span>
+            <span>{{ data.port }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Overall Grade</strong>
+            <span style="color: {{ '#059669' if 'A' in data.grade else '#be123c' }};">{{ data.grade }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Scan Date</strong>
+            <span>{{ data.generation_date.split(' ')[0] }}</span>
         </div>
     </div>
 
     <section>
-        <h3>Executive Summary</h3>
-        <div class="host-summary-grid">
-            <div class="host-summary-card">
-                <div class="host-summary-label">Vulnerabilities</div>
-                <div class="host-summary-value">{{ data.vulnerabilities | length }}</div>
-            </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Security Grade</div>
-                <div class="host-summary-value" style="color: var(--risk-low);">{{ data.grade | default('A+') }}</div>
-            </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Expiry Status</div>
-                <div class="host-summary-value">Valid</div>
-            </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Active Protocols</div>
-                <div class="host-summary-value">
-                    {% set active_count = 0 %}
-                    {% for p in data.protocols if p.enabled %}{% set active_count = active_count + 1 %}{% endfor %}
-                    {{ active_count }}
+        <h3>Vulnerability Findings</h3>
+        {% if data.vulnerabilities %}
+            {% for vuln in data.vulnerabilities %}
+            <div class="card" style="border-left: 4px solid {{ data.severity_map[vuln.severity] }};">
+                <div class="card-header">
+                    <h4>{{ vuln.name }}</h4>
+                    <span class="badge" style="background:{{ data.severity_map[vuln.severity] }}; color: #333;">
+                        {{ vuln.severity }} Severity
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div style="margin-bottom: 10px;">
+                        <strong style="font-size: 0.75rem; text-transform: uppercase; color: #64748b;">Description</strong>
+                        <div style="margin-top: 4px;">{{ vuln.description }}</div>
+                    </div>
+                    {% if vuln.solution %}
+                    <div>
+                        <strong style="font-size: 0.75rem; text-transform: uppercase; color: #64748b;">Remediation</strong>
+                        <div style="margin-top: 4px; color: #0f172a;">{{ vuln.solution }}</div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
-        </div>
+            {% endfor %}
+        {% else %}
+            <div class="card">
+                <div class="card-body" style="text-align: center; color: var(--risk-low);">
+                    <strong>No known vulnerabilities detected.</strong>
+                </div>
+            </div>
+        {% endif %}
     </section>
 
     <section>
-        <h3>Server Configuration Assessment</h3>
-        <div class="finding-card">
-            <div class="finding-text-block">
+        <h3>Server Configuration</h3>
+        <div class="card">
+            <div class="card-body">
                 <div class="config-grid">
                     <div class="config-item">
-                        <span class="label-sm" style="margin:0;">TLS Compression</span>
-                        <span class="badge {{ 'badge-high' if data.configs.tls_compression.supported else 'badge-low' }}">
-                            {{ 'Enabled (Risky)' if data.configs.tls_compression.supported else 'Disabled (Secure)' }}
-                        </span>
+                        <span>TLS Compression</span>
+                        {% if data.tls_compression.supported %}
+                            <span class="badge badge-high">Enabled (Insecure)</span>
+                        {% else %}
+                            <span class="badge badge-low">Disabled (Secure)</span>
+                        {% endif %}
                     </div>
+
                     <div class="config-item">
-                        <span class="label-sm" style="margin:0;">Secure Renegotiation</span>
-                        <span class="badge {{ 'badge-low' if data.configs.renegotiation.secure else 'badge-high' }}">
-                            {{ 'Supported' if data.configs.renegotiation.secure else 'Unsupported' }}
-                        </span>
+                        <span>Secure Renegotiation</span>
+                        {% if data.renegotiation.secure %}
+                            <span class="badge badge-low">Secure</span>
+                        {% else %}
+                            <span class="badge badge-high">Insecure</span>
+                        {% endif %}
                     </div>
+
                     <div class="config-item">
-                        <span class="label-sm" style="margin:0;">OCSP Stapling</span>
-                        <span class="badge {{ 'badge-low' if data.configs.ocsp_stapling else 'badge-medium' }}">
-                            {{ 'Active' if data.configs.ocsp_stapling else 'Inactive' }}
-                        </span>
+                        <span>OCSP Stapling</span>
+                        {% if data.ocsp_stapling %}
+                            <span class="badge badge-low">Enabled</span>
+                        {% else %}
+                            <span class="badge badge-neutral">Disabled</span>
+                        {% endif %}
                     </div>
+
                     <div class="config-item">
-                        <span class="label-sm" style="margin:0;">Fallback SCSV</span>
-                        <span class="badge {{ 'badge-low' if data.configs.fallback_scsv_supported else 'badge-medium' }}">
-                            {{ 'Supported' if data.configs.fallback_scsv_supported else 'Unsupported' }}
-                        </span>
+                        <span>Fallback SCSV</span>
+                        {% if data.fallback_scsv %}
+                            <span class="badge badge-low">Supported</span>
+                        {% else %}
+                            <span class="badge badge-medium">Unsupported</span>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -267,93 +258,104 @@
     </section>
 
     <section>
-        <h3>Vulnerability Analysis</h3>
-        {% for vuln in data.vulnerabilities %}
-        <div class="finding-card">
-            <div class="finding-header">
-                <h4>{{ vuln.name }}</h4>
-                <span class="badge badge-{{ vuln.severity | lower }}">{{ vuln.severity }} Risk</span>
+        <h3>Protocols & Cipher Suites</h3>
+        {% for proto, ciphers in data.grouped_ciphers.items() %}
+        <div class="card">
+            <div class="card-header">
+                <h4 style="color: {{ '#be123c' if proto in ['TLSv1.0', 'TLSv1.1', 'SSLv2', 'SSLv3'] else '#1e293b' }}">
+                    {{ proto }}
+                    {% if proto in ['TLSv1.0', 'TLSv1.1', 'SSLv2', 'SSLv3'] %}
+                        <span style="font-size: 0.7em; font-weight: normal; color: #64748b;">(Deprecated)</span>
+                    {% endif %}
+                </h4>
+                <span class="badge badge-neutral">{{ ciphers|length }} Ciphers</span>
             </div>
-            <div class="finding-text-block">
-                <span class="label-sm">Description</span>
-                <div class="code-box" style="background: #fff; border-left: 4px solid var(--neo-blue);">{{ vuln.description }}</div>
-                
-                <div style="margin-top: 15px;">
-                    <span class="label-sm">Remediation</span>
-                    <div style="margin-top: 5px; color: var(--neo-text-main); font-size: 1rem;">{{ vuln.solution | default('Disable weak cipher suites and upgrade to TLS 1.2/1.3.') }}</div>
-                </div>
-            </div>
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 60%;">Cipher Suite Name</th>
+                        <th style="width: 20%;">Key Size</th>
+                        <th style="width: 20%;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cipher in ciphers %}
+                    <tr>
+                        <td style="font-family: 'Consolas', monospace; font-size: 0.8rem;">
+                            {{ cipher.name }}
+                        </td>
+                        <td>
+                            {% if cipher.bits < 128 %}
+                                <span style="color: #be123c; font-weight: bold;">{{ cipher.bits }} bits</span>
+                            {% else %}
+                                {{ cipher.bits }} bits
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge badge-neutral">{{ cipher.status | default('Accepted') }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
         {% endfor %}
     </section>
 
     <section>
-        <h3>Protocol & Cipher Support</h3>
-        <div class="finding-card">
-            <div class="finding-text-block">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Protocol</th>
-                            <th>Status</th>
-                            <th>Ciphers Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for proto, ciphers in data.grouped_ciphers.items() %}
-                        <tr>
-                            <td><strong>{{ proto }}</strong></td>
-                            <td>
-                                <span class="badge {{ 'badge-low' if 'TLSv1.2' in proto or 'TLSv1.3' in proto else 'badge-high' }}">
-                                    {{ 'Secure' if 'TLSv1.2' in proto or 'TLSv1.3' in proto else 'Legacy' }}
-                                </span>
-                            </td>
-                            <td>{{ ciphers | length }} ciphers supported</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <h3>Certificate Details</h3>
+        <h3>Certificate Chain</h3>
         {% for cert in data.certificates %}
-        <div class="finding-card">
-            <div class="finding-header">
+        <div class="card">
+            <div class="card-header">
                 <h4>{{ cert.level | title }} Certificate</h4>
-                <span class="badge badge-info">Verified</span>
+                <div style="font-size: 0.7rem; color: #64748b;">
+                    Expires: {{ cert.not_after }}
+                </div>
             </div>
-            <div class="finding-text-block">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div>
-                        <span class="label-sm">Subject / CN</span>
-                        <div style="font-weight: 600; font-size: 1.05rem;">{{ cert.common_name }}</div>
+                        <strong style="font-size: 0.7rem; color: #64748b;">Subject / Common Name</strong>
+                        <div style="font-weight: 600;">{{ cert.subject }}</div>
+                        {% if cert.alt_names != "None" %}
+                            <div style="font-size: 0.7rem; color: #64748b; margin-top:2px;">SANs: {{ cert.alt_names[:60] }}...</div>
+                        {% endif %}
                     </div>
                     <div>
-                        <span class="label-sm">Issuer</span>
-                        <div style="font-weight: 600; font-size: 1.05rem;">{{ cert.issuer }}</div>
+                        <strong style="font-size: 0.7rem; color: #64748b;">Issuer</strong>
+                        <div>{{ cert.issuer }}</div>
                     </div>
                     <div>
-                        <span class="label-sm">Algorithm</span>
-                        <div style="font-size: 1rem;">{{ cert.signature_algorithm }} ({{ cert.key_size }} {{ cert.key_type }})</div>
+                        <strong style="font-size: 0.7rem; color: #64748b;">Signature Algorithm</strong>
+                        <div>{{ cert.algorithm }}</div>
                     </div>
                     <div>
-                        <span class="label-sm">Valid Until</span>
-                        <div style="font-size: 1rem;">{{ cert.not_after }}</div>
+                        <strong style="font-size: 0.7rem; color: #64748b;">Key Type</strong>
+                        <div>{{ cert.key_type }} ({{ cert.bits }} bits)</div>
                     </div>
                 </div>
             </div>
         </div>
         {% endfor %}
     </section>
+
+    {% if data.client_cas %}
+    <section>
+        <h3>Client Certification Authorities</h3>
+        <div class="card">
+            <div class="card-body">
+                <ul>
+                    {% for ca in data.client_cas %}
+                        <li>{{ ca }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <footer>
-        <img src="file:///D:/NetShieldAI/static/images/NS_Logo_pdf.png" alt="NS Logo" class="footer-logo">
-        <div class="footer-text">
-            NetShieldAI Reporting Engine // SSL Audit // Generated {{ data.generation_date }}
-        </div>
+        NetShieldAI Reporting Engine | Generated: {{ data.generation_date }} | Confidential
     </footer>
 
 </body>

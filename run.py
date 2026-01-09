@@ -26,7 +26,7 @@ from Services.network_scanner import ensure_admin_privileges
 
 app = Flask(__name__)
 app.secret_key = 'VulnScanAI' 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users_db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)

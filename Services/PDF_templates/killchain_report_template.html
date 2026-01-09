@@ -16,6 +16,7 @@
             --risk-high: #be123c;
             --risk-medium: #d97706;
             --risk-low: #059669;
+            --risk-info: #1d4ed8;
             --radius: 8px;
         }
 
@@ -79,6 +80,12 @@
             padding-left: 10px;
             font-weight: 700;
         }
+        
+        /* Secondary Header for ZAP */
+        h3.zap-header {
+            border-left-color: #d97706; /* Amber for External Tool */
+            color: #d97706;
+        }
 
         /* --- SUMMARY GRID --- */
         .host-summary-grid { display: flex; gap: 10px; margin-bottom: 25px; }
@@ -110,6 +117,7 @@
         .code-box { 
             background: var(--neo-blue-soft); border: 1px solid var(--neo-border); padding: 8px; 
             font-family: 'Consolas', monospace; font-size: 0.7rem; border-radius: 4px; margin-top: 5px; color: var(--neo-text-main);
+            word-wrap: break-word; white-space: pre-wrap;
         }
 
         /* --- BADGES --- */
@@ -119,6 +127,10 @@
         .badge-medium { background: #fef3c7; color: #92400e; }
         .badge-low { background: #dcfce7; color: #166534; }
         .badge-info { background: #dbeafe; color: #1d4ed8; }
+        .badge-version { background: #f1f5f9; color: var(--neo-text-sub); border: 1px solid var(--neo-border); text-transform: none; }
+
+        /* --- C.W.E Link --- */
+        .cwe-link { color: var(--neo-blue-accent); text-decoration: none; font-weight: bold; }
 
         footer { margin-top: 40px; padding: 15px 0; border-top: 1px solid var(--neo-border); display: flex; align-items: center; justify-content: center; gap: 10px; }
         .footer-logo { height: 18px; opacity: 0.6; }
@@ -160,7 +172,7 @@
         <h3>Risk Summary</h3>
         <div class="host-summary-grid">
             <div class="host-summary-card">
-                <div class="host-summary-label">Total Alerts</div>
+                <div class="host-summary-label">Total Findings</div>
                 <div class="host-summary-value">{{ data.stats.Total }}</div>
             </div>
             <div class="host-summary-card">
@@ -187,60 +199,149 @@
         <div class="phase-container">
             <div class="phase-card">
                 <div class="phase-title">Phase 1: Reconnaissance</div>
-                <div style="font-size: 0.75rem;">
-                    <strong>Subdomains:</strong> {{ data.recon.count }} identified<br>
-                    <strong>IP Address:</strong> {{ data.network.target }}<br>
-                    <strong>Status:</strong> {{ data.network.status | upper }}
+                <div style="font-size: 0.75rem; display: flex; flex-direction: column; gap: 4px;">
+                    <div><strong>Target IP:</strong> {{ data.network.target }}</div>
+                    <div><strong>Status:</strong> <span style="color: {{ 'green' if data.network.status == 'up' else 'red' }}">{{ data.network.status | upper }}</span></div>
+                    <div><strong>Subdomains Found:</strong> {{ data.recon.count }}</div>
+                    <div><strong>URLs Discovered:</strong> {{ data.urls_discovered }}</div>
+                    
+                    {% if data.network.ports %}
+                    <div style="margin-top: 8px;">
+                        <strong class="scan-subtitle">Open Ports:</strong>
+                        <div style="margin-top:2px;">
+                            {% for port in data.network.ports %}
+                                <span class="badge badge-info">{{ port.port }}/{{ port.protocol }} ({{ port.service }})</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
+
             <div class="phase-card">
                 <div class="phase-title">Phase 2: Weaponization (Tech)</div>
                 <div style="font-size: 0.75rem;">
-                    {% for cat, items in data.tech_stack.items() %}
-                        <strong>{{ cat }}:</strong> {{ items | join(', ') }}<br>
-                    {% endfor %}
+                    {% if data.tech_stack.technologies %}
+                        {% for cat, items in data.tech_stack.technologies.items() %}
+                            <div style="margin-bottom: 4px;">
+                                <strong>{{ cat }}:</strong> {{ items | join(', ') }}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div>No specific technologies fingerprinted.</div>
+                    {% endif %}
+
+                    {% if data.tech_stack.versions %}
+                        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--neo-border);">
+                            <strong class="scan-subtitle" style="display:block; margin-bottom: 4px;">Detected Versions:</strong>
+                            {% for soft, ver in data.tech_stack.versions.items() %}
+                                <span class="badge badge-version">{{ soft }} v{{ ver }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </section>
 
     <section>
-        <h3>Exploitation & Findings</h3>
+        <h3>NetShield Aggregated Findings</h3>
         {% for severity, findings in data.grouped_findings.items() %}
-            {% for finding in findings %}
-                {% set sev_lower = severity | lower %}
-                <div class="finding-card">
-                    <div class="finding-header">
-                        <h4>{{ finding.type }}</h4>
-                        <span class="badge badge-{{ sev_lower }}">{{ severity }}</span>
+            {% if findings|length > 0 %}
+                {% for finding in findings %}
+                    {% set sev_lower = severity | lower %}
+                    <div class="finding-card">
+                        <div class="finding-header">
+                            <h4>{{ finding.type }}</h4>
+                            <span class="badge badge-{{ sev_lower }}">{{ severity }}</span>
+                        </div>
+                        
+                        <div class="finding-text-block">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+                                <div>
+                                    <strong class="scan-subtitle">Parameter:</strong>
+                                    <span style="font-size: 0.75rem;">{{ finding.parameter | default('N/A') }}</span>
+                                </div>
+                                <div style="text-align: right;">
+                                    <strong class="scan-subtitle">Timestamp:</strong>
+                                    <span style="font-size: 0.75rem;">
+                                        {% if finding.timestamp and 'T' in finding.timestamp %}
+                                            {{ finding.timestamp.split('T')[1][:8] }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            {% if finding.payload %}
+                                <strong class="scan-subtitle">Payload</strong>
+                                <div class="code-box">{{ finding.payload }}</div>
+                            {% endif %}
+
+                            {% if finding.evidence and finding.evidence != finding.payload %}
+                                <strong class="scan-subtitle" style="margin-top: 8px; display:block;">Evidence / URL</strong>
+                                <div class="code-box">{{ finding.evidence | safe }}</div>
+                            {% endif %}
+                            
+                            {% if finding.description %}
+                            <div style="margin-top: 10px;">
+                                <strong class="scan-subtitle">Description</strong>
+                                <div style="font-size: 0.75rem; color: var(--neo-text-sub);">
+                                    {{ finding.description | striptags }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    
-                    <div class="finding-text-block">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
-                            <div>
-                                <strong class="scan-subtitle">Parameter:</strong>
-                                <span style="font-size: 0.75rem;">{{ finding.parameter | default('N/A') }}</span>
-                            </div>
-                            <div style="text-align: right;">
-                                <strong class="scan-subtitle">Timestamp:</strong>
-                                <span style="font-size: 0.75rem;">{{ finding.timestamp.split('T')[1][:8] if finding.timestamp else 'N/A' }}</span>
-                            </div>
-                        </div>
-                        
-                        <strong class="scan-subtitle">Evidence</strong>
-                        <div class="code-box">{{ finding.evidence | safe }}</div>
-                        
-                        {% if finding.description %}
-                        <div style="margin-top: 10px;">
-                            <strong class="scan-subtitle">Description</strong>
-                            <div style="font-size: 0.75rem; color: var(--neo-text-sub);">{{ finding.description | striptags }}</div>
-                        </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </section>
+
+    {% if data.zap_report.findings %}
+    <section>
+        <h3 class="zap-header">OWASP ZAP Detailed Insights</h3>
+        <div style="margin-bottom: 15px; font-size: 0.7rem; color: var(--neo-text-sub);">
+            Source: {{ data.zap_report.info.tool }} | Scanned: {{ data.zap_report.info.scan_date }}
+        </div>
+
+        {% for zap in data.zap_report.findings %}
+            <div class="finding-card">
+                <div class="finding-header">
+                    <h4>{{ zap.name }}</h4>
+                    <div style="display: flex; gap: 5px;">
+                        <span class="badge badge-{{ zap.risk | lower }}">{{ zap.risk }}</span>
+                        {% if zap.cwe %}
+                            <span class="badge badge-info">CWE-{{ zap.cwe }}</span>
                         {% endif %}
                     </div>
                 </div>
-            {% endfor %}
+                
+                <div class="finding-text-block">
+                    <strong class="scan-subtitle">Vulnerable URL</strong>
+                    <div class="code-box" style="background: #fff; border: 1px dashed var(--neo-border);">{{ zap.url }}</div>
+
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 10px;">
+                        <div>
+                            <strong class="scan-subtitle">Description</strong>
+                            <div style="font-size: 0.75rem; margin-top: 2px;">
+                                {{ zap.description | striptags | truncate(400) }}
+                            </div>
+                        </div>
+                        
+                        <div style="background: #f0fdf4; padding: 10px; border-radius: 4px; border: 1px solid #bbf7d0;">
+                            <strong class="scan-subtitle" style="color: #166534;">Suggested Remediation</strong>
+                            <div style="font-size: 0.75rem; color: #14532d; margin-top: 2px;">
+                                {{ zap.solution | striptags }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
     </section>
+    {% endif %}
 
     <footer>
         <img src="file:///D:/NetShieldAI/static/images/NS_Logo_pdf.png" alt="NS Logo" class="footer-logo">

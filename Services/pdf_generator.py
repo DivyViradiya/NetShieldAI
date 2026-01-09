@@ -126,84 +126,142 @@ def create_zap_report_pdf(source_data, pdf_path):
 def create_ssl_report_pdf(source_data, pdf_path):
     """
     Renders SSL Scan data into an HTML template and saves it as a PDF.
-    Ensures all JSON fields (certs, configs, protocols) are correctly mapped.
+    Captures all fields including Client CAs, full Cert Chain, and detailed Configs.
     """
     print(f"[*] Starting SSL PDF generation for target: {pdf_path}")
 
     # 1. Load data
     if isinstance(source_data, str):
-        with open(source_data, 'r', encoding='utf-8') as f:
-            ssl_data = json.load(f)
+        try:
+            with open(source_data, 'r', encoding='utf-8') as f:
+                ssl_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"[!] Error loading JSON source: {e}")
+            return False
     else:
         ssl_data = source_data
+
+    # --- Helper: Date Formatter for Certificates ---
+    def format_cert_date(date_str):
+        """Converts 'Dec 3 15:49:27 2025 GMT' to '2025-12-03'."""
+        try:
+            # Adjust format string matches your JSON output specifically
+            dt = datetime.strptime(date_str, "%b %d %H:%M:%S %Y GMT")
+            return dt.strftime("%Y-%m-%d")
+        except (ValueError, TypeError):
+            return date_str  # Return original if parsing fails
 
     # 2. Process Vulnerabilities
     vulns = ssl_data.get("vulnerabilities", [])
     severity_counts = {"High": 0, "Medium": 0, "Low": 0, "Info": 0}
     for v in vulns:
         sev = v.get("severity", "Info")
+        # Normalize casing (e.g. "medium" -> "Medium")
+        sev = sev.capitalize()
         if sev in severity_counts:
             severity_counts[sev] += 1
-            
-    # 3. Group Ciphers by Protocol for the Table
+        else:
+            # Handle unexpected severity labels safely
+            severity_counts.setdefault(sev, 0)
+            severity_counts[sev] += 1
+
+    # 3. Group Ciphers by Protocol (and Sort by Strength)
     grouped_ciphers = {}
-    for cipher in ssl_data.get("ciphers", []):
+    raw_ciphers = ssl_data.get("ciphers", [])
+    
+    # Sort ciphers by bit strength (descending) before grouping
+    # This ensures the report lists strongest ciphers first
+    raw_ciphers.sort(key=lambda x: int(x.get("bits", 0)), reverse=True)
+
+    for cipher in raw_ciphers:
         proto = cipher.get("protocol", "Unknown")
         if proto not in grouped_ciphers:
             grouped_ciphers[proto] = []
         grouped_ciphers[proto].append(cipher)
 
-    # 4. Extract Certificate Details (Fix for 'dict object' has no attribute 'cert')
-    # We take the leaf certificate (first in chain) for the 'Certificate Details' section
-    cert_chain = ssl_data.get("certificate_chain", [])
-    if cert_chain and len(cert_chain) > 0:
-        leaf_cert = cert_chain[0]
-        # Mapping JSON keys to Template keys
-        primary_cert = {
-            "subject": leaf_cert.get("common_name", "N/A"),
-            "issuer": leaf_cert.get("issuer", "N/A"),
-            "algorithm": leaf_cert.get("signature_algorithm", "N/A"),
-            "bits": leaf_cert.get("key_size", "N/A"),
-            "expiry": leaf_cert.get("not_after", "N/A")
-        }
-    else:
-        primary_cert = {"subject": "N/A", "issuer": "N/A", "algorithm": "N/A", "bits": "N/A", "expiry": "N/A"}
+    # 4. Process FULL Certificate Chain
+    # We create a cleaner list of dicts for the template to iterate over easily
+    processed_chain = []
+    raw_chain = ssl_data.get("certificate_chain", [])
+    
+    for cert in raw_chain:
+        processed_chain.append({
+            "level": cert.get("level", "N/A"), # leaf, intermediate, root
+            "subject": cert.get("common_name", "N/A"),
+            "issuer": cert.get("issuer", "N/A"),
+            "algorithm": cert.get("signature_algorithm", "N/A"),
+            "bits": cert.get("key_size", "N/A"),
+            "key_type": cert.get("key_type", "N/A"),
+            "not_before": format_cert_date(cert.get("not_before")),
+            "not_after": format_cert_date(cert.get("not_after")),
+            "alt_names": ", ".join(cert.get("alt_names", [])) if cert.get("alt_names") else "None"
+        })
 
-    # 5. Prepare Template Data
-    template_data = {
-        "target": ssl_data.get("target"),
-        "ip": ssl_data.get("ip", "N/A"),
-        "port": ssl_data.get("port", "443"),
-        "grade": ssl_data.get("grade", "A+"), # Ensure grade is passed for the summary card
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "configs": ssl_data.get("server_configs", {}), # Contains TLS compression, renegotiation, etc.
-        "protocols": ssl_data.get("protocols", []),
-        "grouped_ciphers": grouped_ciphers,
-        "vulnerabilities": vulns,
-        "severity_summary": severity_counts,
-        "cert": primary_cert, # The specific object your HTML template looks for
-        "certificates": cert_chain,
-        "severity_map": {"High": "#ff4d4d", "Medium": "#ffa500", "Low": "#ffff00", "Info": "#add8e6"}
+    # Extract Primary (Leaf) Cert for the Summary Header
+    primary_cert = processed_chain[0] if processed_chain else {
+        "subject": "N/A", "issuer": "N/A", "algorithm": "N/A", "bits": "N/A", "not_after": "N/A"
     }
 
-    # 6. Render HTML
+    # 5. Extract Server Configs & Client CAs
+    configs = ssl_data.get("server_configs", {})
+    client_cas = ssl_data.get("client_cas", [])
+
+    # 6. Prepare Template Data
+    template_data = {
+        # -- Target Info --
+        "target": ssl_data.get("target", "Unknown Target"),
+        "ip": ssl_data.get("ip", "N/A"),
+        "port": ssl_data.get("port", "443"),
+        "grade": ssl_data.get("grade", "N/A"), 
+        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+
+        # -- Configuration --
+        "configs": configs,
+        "tls_compression": configs.get("tls_compression", {}), # Explicit access
+        "renegotiation": configs.get("renegotiation", {}),
+        "ocsp_stapling": configs.get("ocsp_stapling", {}),     # Previously missing
+        "fallback_scsv": configs.get("fallback_scsv_supported", "N/A"),
+
+        # -- Protocols & Ciphers --
+        "protocols": ssl_data.get("protocols", []),
+        "grouped_ciphers": grouped_ciphers,
+        "client_cas": client_cas, # Previously missing
+
+        # -- Certificates --
+        "cert": primary_cert,       # For summary view
+        "certificates": processed_chain, # For detailed chain table
+
+        # -- Vulnerabilities --
+        "vulnerabilities": vulns,
+        "severity_summary": severity_counts,
+        "severity_map": {
+            "High": "#ff4d4d", 
+            "Medium": "#ffa500", 
+            "Low": "#ffff00", 
+            "Info": "#add8e6"
+        }
+    }
+
+    # 7. Render HTML
     env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     try:
         template = env.get_template(SSL_TEMPLATE_FILE)
-        # We pass template_data as 'data' to match '{{ data.target }}' in HTML
         rendered_html = template.render(data=template_data)
     except Exception as e:
-        raise RuntimeError(f"SSL Template Rendering Error: {e}")
+        print(f"[!] Template Rendering Error: {e}")
+        # Consider logging the full traceback here
+        return False
 
-    # 7. Generate PDF with WeasyPrint
+    # 8. Generate PDF with WeasyPrint
     try:
         base_url = pathlib.Path(PROJECT_ROOT).as_uri()
         html_obj = HTML(string=rendered_html, base_url=base_url)
         
-        # Apply CSS if it exists
         stylesheets = []
         if os.path.exists(CSS_FILE_PATH):
             stylesheets.append(CSS(filename=CSS_FILE_PATH))
+        else:
+            print(f"[!] Warning: CSS file not found at {CSS_FILE_PATH}")
             
         html_obj.write_pdf(pdf_path, stylesheets=stylesheets)
         print(f"[+] SSL PDF report saved successfully to: {pdf_path}")
@@ -211,9 +269,6 @@ def create_ssl_report_pdf(source_data, pdf_path):
     except Exception as e:
         print(f"[!] FAILED to generate PDF: {e}")
         return False
-
-
-
 
 def create_packet_sniffer_report_pdf(source_data, pdf_path):
     """
@@ -345,69 +400,96 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
 
 def create_killchain_report_pdf(source_data, pdf_path):
     """
-    Renders the Full-Spectrum Kill Chain Report with comprehensive data mapping.
+    Renders the Full-Spectrum Kill Chain Report aligned to the NetShieldAI JSON structure.
     """
     print(f"[*] Starting Master Kill Chain PDF generation: {pdf_path}")
 
     # 1. Data Loading
     if isinstance(source_data, str):
-        with open(source_data, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        try:
+            with open(source_data, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        except Exception as e:
+            print(f"[!] Error loading JSON file: {e}")
+            return False
     else:
         data = source_data
 
     # 2. Enhanced Stats Calculation
-    # This ensures we don't miss any category present in the data
+    # Uses 'vulns_grouped' from JSON to generate high-level stats for the dashboard
     grouped = data.get("vulns_grouped", {})
     severity_order = ["Critical", "High", "Medium", "Low", "Info"]
+    
+    # Calculate counts with a default of 0 if the category is missing
     stats = {sev: len(grouped.get(sev, [])) for sev in severity_order}
     stats["Total"] = sum(stats.values())
 
-    # 3. Technology Mapping (Preserving Categories)
-    tech_info = data.get("tech", {})
-    tech_stack = tech_info.get("technologies", {})  # Returns dict: {"Server": [...], "Language": [...]}
+    # 3. Technology Mapping
+    # Updated to capture both 'technologies' (the stack) and 'versions' (specific version numbers)
+    tech_node = data.get("tech", {})
     
     # 4. Comprehensive Template Context
     template_data = {
-        # Metadata
-        "target": data.get("target", "Unknown"),
-        "profile": data.get("profile", "full_scan").replace("_", " ").title(),
-        "scan_date": data.get("scan_date"),
+        # --- Metadata ---
+        "target": data.get("target", "Unknown Target"),
+        "profile": data.get("profile", "full_audit").replace("_", " ").title(),
+        "scan_date": data.get("scan_date", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "report_id": f"KC-{int(datetime.now().timestamp())}",
         
-        # Phase Data
+        # --- Phase 1: Recon & Discovery ---
         "recon": data.get("recon", {}),
-        "network": data.get("network", {}),
-        "tech_stack": tech_stack,  # Now a dictionary for better template formatting
-        "traffic": data.get("traffic_analysis", {}),
-        
-        # Vulnerabilities & Findings
-        "stats": stats,
-        "grouped_findings": grouped,
-        "flat_findings": data.get("vulns", []),  # Backup flat list
-        
-        # Discovery Data
         "urls_discovered": len(data.get("urls", [])),
-        "raw_urls": data.get("urls", []),
+        "raw_urls": data.get("urls", []), # List of strings from JSON
         
-        # Specific ZAP Tool Data
-        "zap_meta": data.get("zap_report", {}).get("summary", {}),
-        "zap_findings": data.get("zap_report", {}).get("findings", []) # Captured full ZAP details
+        # --- Phase 2: Network & Infrastructure ---
+        "network": data.get("network", {}), # Contains status, ports (service/version), and network vulns
+        "traffic": data.get("traffic_analysis", {}), # Stats, anomalies, credentials
+        
+        # --- Phase 3: Tech Stack & Fingerprinting ---
+        # Passing the full dictionaries so template can iterate over key/values
+        "tech_stack": {
+            "technologies": tech_node.get("technologies", {}),
+            "versions": tech_node.get("versions", {}),
+            "target_url": tech_node.get("target")
+        },
+        
+        # --- Phase 4: Vulnerabilities (The "Kill Chain") ---
+        "stats": stats,
+        "grouped_findings": grouped, # The main categorized dictionary (Critical, High, etc.)
+        "flat_findings": data.get("vulns", []), # The chronological flat list with timestamps
+        
+        # --- Phase 5: Tool Specifics (OWASP ZAP) ---
+        "zap_report": {
+            "meta": data.get("zap_report", {}).get("summary", {}), # High/Medium/Low counts specific to ZAP
+            "info": {
+                "tool": data.get("zap_report", {}).get("tool"),
+                "scan_date": data.get("zap_report", {}).get("scan_date")
+            },
+            "findings": data.get("zap_report", {}).get("findings", []) # Detailed ZAP findings with solution/CWE
+        }
     }
 
     # 5. PDF Rendering
     try:
+        # Initialize Jinja2 Environment
         env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
+        
+        # Add custom filters if needed (e.g., for date formatting)
+        # env.filters['datetime_format'] = some_filter_function
+        
         template = env.get_template(KILLCHAIN_TEMPLATE_FILE)
         
         # Render HTML
         rendered_html = template.render(data=template_data)
         
-        # Generate PDF with Assets
+        # Prepare WeasyPrint assets
         base_url = pathlib.Path(PROJECT_ROOT).as_uri()
-        stylesheets = [CSS(filename=CSS_FILE_PATH)] if os.path.exists(CSS_FILE_PATH) else []
+        stylesheets = []
+        if os.path.exists(CSS_FILE_PATH):
+            stylesheets.append(CSS(filename=CSS_FILE_PATH))
         
+        # Generate PDF
         HTML(string=rendered_html, base_url=base_url).write_pdf(
             pdf_path, 
             stylesheets=stylesheets
@@ -415,15 +497,18 @@ def create_killchain_report_pdf(source_data, pdf_path):
         
         print(f"[+] Master Kill Chain Report successfully generated at: {pdf_path}")
         return True
+        
     except Exception as e:
         print(f"[!] Error generating Master Report: {e}")
+        import traceback
+        traceback.print_exc() # Helpful for debugging template errors
         return False
     
     
 def create_sql_report_pdf(source_data, pdf_path):
     """
     Renders SQLMap Scan data into an HTML template and saves it as a PDF.
-    Extracts database fingerprints, vulnerabilities, and dumped data.
+    Optimized for specific JSON structure: extracts DB version, user, and groups vulns.
     """
     print(f"[*] Starting SQL Injection PDF generation: {pdf_path}")
 
@@ -432,49 +517,69 @@ def create_sql_report_pdf(source_data, pdf_path):
         if not os.path.exists(source_data):
             print(f"[!] JSON source not found: {source_data}")
             return False
-        with open(source_data, 'r', encoding='utf-8') as f:
-            sql_data = json.load(f)
+        try:
+            with open(source_data, 'r', encoding='utf-8') as f:
+                sql_data = json.load(f)
+        except json.JSONDecodeError as e:
+            print(f"[!] Invalid JSON format: {e}")
+            return False
     else:
         sql_data = source_data
 
     # 2. Extract & Organize Data
-    # Safely get nested dictionaries to prevent errors if keys are missing
+    # Use .get() safely to handle potential missing keys in the JSON
+    raw_vulns = sql_data.get("vulnerabilities", [])
     db_info = sql_data.get("database_info", {})
-    vulns = sql_data.get("vulnerabilities", [])
-    
-    # Calculate simple stats for the summary dashboard
+    dumped_data = sql_data.get("dumped_data", [])
+
+    # SORTING: Sort vulnerabilities by type so "boolean-based" and "error-based" 
+    # appear in contiguous blocks in the PDF, rather than mixed.
+    sorted_vulns = sorted(raw_vulns, key=lambda x: x.get("type", "Unknown"))
+
+    # STATS: Calculate overview metrics
     stats = {
-        "total_vulns": len(vulns),
-        "types": {}
+        "total_vulns": len(raw_vulns),
+        "by_type": {},
+        "unique_titles": set()
     }
-    
-    # Group vulnerabilities by type (e.g., "Boolean-based blind", "UNION query")
-    for v in vulns:
+
+    for v in raw_vulns:
+        # Count occurences of specific types (e.g., "boolean-based blind")
         v_type = v.get("type", "Unknown")
-        if v_type not in stats["types"]:
-            stats["types"][v_type] = 0
-        stats["types"][v_type] += 1
+        stats["by_type"][v_type] = stats["by_type"].get(v_type, 0) + 1
+        
+        # Track unique titles to differentiate between payload variations vs distinct flaws
+        if "title" in v:
+            stats["unique_titles"].add(v["title"])
 
     # 3. Prepare Template Context
+    # Structure this to match the specific keys in your JSON (target, scan_time, db_info)
     template_data = {
-        "target": sql_data.get("target", "Unknown Target"),
-        "scan_time": sql_data.get("scan_time", "N/A"),
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        
-        # Database Fingerprint
+        "meta": {
+            "target": sql_data.get("target", "Unknown Target"),
+            "scan_time": sql_data.get("scan_time", "N/A"),
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        },
+
+        # Database Fingerprint - Directly mapped from your JSON structure
         "db_info": {
-            "dbms": db_info.get("dbms", "Unknown"),
-            "version": db_info.get("version", "Unknown"),
-            "user": db_info.get("user", "Unknown"),
-            "current_db": db_info.get("current_db", "Unknown")
+            "dbms": db_info.get("dbms", "Not Detected"),
+            "version": db_info.get("version", "Not Detected"),
+            "user": db_info.get("user", "Not Detected"),
+            "current_db": db_info.get("current_db", "Not Detected")
         },
 
         # Findings
-        "stats": stats,
-        "vulnerabilities": vulns,
+        "stats": {
+            "total": stats["total_vulns"],
+            "types": stats["by_type"],
+            "unique_issues": len(stats["unique_titles"])
+        },
+        "vulnerabilities": sorted_vulns, 
         
-        # Data Extraction (if any tables were dumped)
-        "dumped_data": sql_data.get("dumped_data", [])
+        # Exfiltrated Data (checking length to conditionally render section in HTML)
+        "dumped_data": dumped_data,
+        "has_dumped_data": len(dumped_data) > 0
     }
 
     # 4. Render HTML using Jinja2
@@ -482,7 +587,7 @@ def create_sql_report_pdf(source_data, pdf_path):
         env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
         template = env.get_template(SQL_TEMPLATE_FILE)
         
-        # Pass 'data' context variable to match your standard pattern
+        # Render with the organized context
         rendered_html = template.render(data=template_data)
     except Exception as e:
         print(f"[!] Error rendering SQL HTML template: {e}")
@@ -492,7 +597,6 @@ def create_sql_report_pdf(source_data, pdf_path):
     try:
         base_url = pathlib.Path(PROJECT_ROOT).as_uri()
         
-        # Load CSS if available
         stylesheets = []
         if os.path.exists(CSS_FILE_PATH):
             stylesheets.append(CSS(filename=CSS_FILE_PATH))

@@ -65,9 +65,11 @@ def get_user_pdf_path(scanner_type):
         'nmap': os.path.join(results_root, 'network_scanner', 'nmap_report.pdf'),
         'zap': os.path.join(results_root, 'zap_scanner', 'zap_report.pdf'),
         'ssl': os.path.join(results_root, 'ssl_scanner', 'ssl_report.pdf'),
-        'packet_sniffer': os.path.join(results_root, 'packet_sniffer', 'pcap_analysis_report.pdf')
+        'packet_sniffer': os.path.join(results_root, 'packet_sniffer', 'pcap_analysis_report.pdf'),
+        'sql': os.path.join(results_root, 'sql_scanner', 'sql_report.pdf'),
+        'killchain': os.path.join(results_root, 'killchain', 'reports', 'killchain_report.pdf')
     }
-    
+
     return path_map.get(scanner_type)
 
 

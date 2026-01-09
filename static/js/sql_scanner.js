@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-function appendLog(message) {
+    function appendLog(message) {
         if (!elements.logOutput) return;
 
         // --- NEW: CLEANING LOGIC ---
@@ -370,13 +370,19 @@ function appendLog(message) {
             if (processingText) processingText.textContent = 'SYNTHESIZING REPORT...';
 
             // 2. Call Chatbot Analysis
+            // FIXED: Passing report_file and user_identifier to ensure Chatbot can find the file
             response = await fetch(`${CHATBOT_REDIRECT_URL}/scanner_analysis`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken 
                 },
-                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type })
+                body: JSON.stringify({ 
+                    llm_mode: llmMode, 
+                    scanner_type: data.scanner_type,
+                    report_file: data.report_file,       // [ADDED] Filename
+                    user_identifier: data.user_identifier // [ADDED] User folder ID
+                })
             });
 
             data = await response.json();

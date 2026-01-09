@@ -81,13 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateContextStatus(hasFile, title = null) {
         if (hasFile) {
-            ui.statusText.textContent = title ? `Context: ${title}` : `Context: KB + Report`;
-            ui.statusText.style.color = "var(--neo-cyan)";
-            ui.statusDot.style.background = "var(--neo-cyan)";
-            ui.statusDot.style.boxShadow = "0 0 10px rgba(0, 247, 255, 0.5)";
+            // [CHANGED] Use consistent Green/Gray theme instead of Cyan to match default page
+            ui.statusText.textContent = title ? `Active: ${title}` : `Active: KB + Report`;
+            ui.statusText.style.color = "#10b981"; // Keep Green
+            ui.statusDot.style.background = "#10b981";
+            ui.statusDot.style.boxShadow = "0 0 8px rgba(16, 185, 129, 0.5)";
         } else {
-            ui.statusText.textContent = "Context: NetShield KB";
-            ui.statusText.style.color = "#e5e5e5"; 
+            ui.statusText.textContent = "SYSTEM ONLINE";
+            ui.statusText.style.color = "#9ca3af"; // Standard gray
             ui.statusDot.style.background = "#10b981"; 
             ui.statusDot.style.boxShadow = "none";
         }
@@ -352,13 +353,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (data.session_metadata && data.session_metadata.report_type) {
                     switchView('config');
-                    ui.selectedFilename.textContent = data.session_metadata.title || "History Mode";
-                    ui.removeFileBtn.style.display = 'none'; 
+                    ui.selectedFilename.textContent = data.session_metadata.title || "Active Session";
                     
+                    // --- [CHANGED] Unify Appearance with Default Theme ---
+                    
+                    // 1. Show the 'X' button so users can close history and go back to upload
+                    ui.removeFileBtn.style.display = 'flex'; 
+                    
+                    // 2. Keep the button consistent with the Blue Theme (vs Green/History Mode)
                     ui.startBtn.disabled = true;
-                    ui.startBtn.style.background = '#10b981';
-                    ui.startBtn.querySelector('.btn-text').textContent = "HISTORY MODE";
-                    ui.startBtn.querySelector('.icon').textContent = 'history';
+                    ui.startBtn.style.background = 'var(--neo-blue)'; // Use standard theme
+                    ui.startBtn.style.opacity = '0.8'; // Slight dim to show it's state
+                    
+                    // 3. Update Text to be professional
+                    ui.startBtn.querySelector('.btn-text').textContent = "ANALYSIS LOADED";
+                    ui.startBtn.querySelector('.icon').textContent = 'inventory_2'; // Archive icon
                     
                     updateContextStatus(true, data.session_metadata.title);
                 } else {

@@ -215,7 +215,7 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick'):
         '--random-agent',
         '--forms',
         '--crawl=2',
-        '--threads=10'
+        '--threads=10',
         '--output-dir', str(output_dir) # Force output to user dir
     ]
 
