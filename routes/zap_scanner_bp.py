@@ -44,7 +44,7 @@ SERVER_PROXY_URL = "http://localhost:5100"
 @zap_scanner_bp.route('/')
 @login_required 
 def zap_scanner_page():
-    return render_template('zap_scanner.html')
+    return render_template('scanners/zap_scanner.html')
 
 
 # -----------------------------------------------

@@ -3,8 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const elements = {
         // Inputs & Controls
         targetIpInput: document.getElementById('targetIp'),
+        scanTiming: document.getElementById('scanTiming'), 
         detectIpBtn: document.getElementById('detectIpBtn'),
-        scanTcpBtn: document.getElementById('scanTcpBtn'),
+        scanTcpBtn: document.getElementById('scanTcpBtn'), // Button now serves as generic 'Start Scan'
         scanVulnBtn: document.getElementById('scanVulnBtn'),
         
         // Advanced Config (Modes Dropdown)
@@ -56,6 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastScanType = 'tcp'; 
     let isActionInProgress = false;
     let reportDownloadUrl = null;
+
+    // [NEW] Scan Mode State
+    let currentScanMode = 'default';
+    let currentProtocol = 'TCP';
 
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -361,35 +366,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function initiateScan(protocolType, scanType, button) {
         const targetIp = elements.targetIpInput.value.trim();
+        const timingVal = elements.scanTiming ? elements.scanTiming.value : 4; // Capture Timing
+
         if (!targetIp) {
             appendLog('[!] Error: Target IP or URL is required.');
             return;
         }
 
         // --- Multi-Mode UI Update ---
-        const originalBtnHtml = button ? button.innerHTML : null;
-        if (button && scanType !== 'default' && scanType !== 'vuln') {
-            const btnLabel = button.querySelector('span:not(.material-symbols-outlined)');
-            if (btnLabel) btnLabel.textContent = scanType.toUpperCase();
-        }
+        // Note: We don't change button text here anymore as it is selected beforehand,
+        // unless it is a specific separate button (like vuln scan).
         
         lastScanType = scanType === 'default' ? protocolType.toLowerCase() : scanType;
-        setStatus(`Scanning...`, 'busy');
+        setStatus(`Scanning (${scanType})...`, 'busy');
         switchTab('ports'); 
 
         const whitelist = elements.whitelistPortsInput ? elements.whitelistPortsInput.value.split(',').map(s => s.trim()).filter(s => s) : [];
 
-        const result = await apiPost('/scan', {
+        await apiPost('/scan', {
             target_ip: targetIp,
             protocol_type: protocolType,
             scan_type: scanType,
+            timing: parseInt(timingVal), // Pass timing to backend
             whitelist: whitelist
         }, button);
-
-        // Reset button text after delay if it was a special mode
-        if (button && originalBtnHtml && scanType !== 'default' && scanType !== 'vuln') {
-            setTimeout(() => { button.innerHTML = originalBtnHtml; }, 10000);
-        }
     }
     
     function initializeLogStream() {
@@ -425,7 +425,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupEventListeners() {
         if(elements.detectIpBtn) elements.detectIpBtn.addEventListener('click', fetchAndDisplayLocalIp);
 
-        if(elements.scanTcpBtn) elements.scanTcpBtn.addEventListener('click', () => initiateScan('TCP', 'default', elements.scanTcpBtn));
+        // [UPDATED] Main Scan Button Listener
+        // Triggers scan based on selected state variable
+        if(elements.scanTcpBtn) {
+            elements.scanTcpBtn.addEventListener('click', () => {
+                initiateScan(currentProtocol, currentScanMode, elements.scanTcpBtn);
+            });
+        }
+        
+        // Vuln scan has its own logic/button still
         if(elements.scanVulnBtn) elements.scanVulnBtn.addEventListener('click', () => initiateScan('TCP', 'vuln', elements.scanVulnBtn));
 
         elements.portsTabBtn.addEventListener('click', () => switchTab('ports'));
@@ -447,7 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Handling all Advanced Scan Types via delegation
+        // [UPDATED] Handling all Advanced Scan Types via delegation
+        // Instead of scanning immediately, it selects the mode.
         if(elements.advancedScanOptions) {
             elements.advancedScanOptions.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -455,9 +464,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 if(link) {
                     const type = link.dataset.scanType;
                     const protocol = (type === 'udp') ? 'UDP' : 'TCP';
+                    
+                    // Update State
+                    currentScanMode = type;
+                    currentProtocol = protocol;
+
+                    // Update UI
                     elements.advancedScanOptions.classList.add('hidden');
-                    appendLog(`[*] Switching mode to: ${type.toUpperCase()}`);
-                    initiateScan(protocol, type, elements.advancedScanToggle); 
+                    
+                    const btnText = elements.scanTcpBtn.querySelector('.button-text');
+                    if(btnText) {
+                        btnText.textContent = `START SCAN (${type.toUpperCase().replace('_', ' ')})`;
+                    }
+
+                    appendLog(`[*] Mode selected: ${type.toUpperCase()}. Click Start Scan to begin.`);
                 }
             });
         }

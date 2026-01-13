@@ -22,19 +22,15 @@ DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 LOG_FILE = Path(r"D:\NetShieldAI\logs\sql_agent_log.txt")
 LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-# Global queue for logging (consumed by the Blueprint)
+# Global queue for logging
 log_queue = queue.Queue()
 
 # --- LOGGING UTILS ---
 def log(message):
     """Logs messages to queue for SSE streaming and file."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # 1. SSE Stream Format
     full_message = f"data: [{timestamp}] {message}\n\n"
     log_queue.put(full_message)
-
-    # 2. File Log
     try:
         with open(LOG_FILE, 'a', encoding='utf-8') as f:
             f.write(f"[{timestamp}] {message}\n")
@@ -51,11 +47,9 @@ def send_sse_event(event_name, data=""):
     log_queue.put(sse_message)
 
 def get_python_executable():
-    """Returns the current python interpreter path."""
     return sys.executable
 
 def clear_log_file():
-    """Clears the content of the log output file."""
     try:
         with open(LOG_FILE, 'w', encoding='utf-8') as f:
             f.write("")
@@ -63,12 +57,8 @@ def clear_log_file():
     except Exception as e:
         log(f"[!] Error clearing SQL log file: {e}")
 
-# --- PATH & FILE HELPERS ---
-
+# --- PATH HELPERS ---
 def get_output_paths(output_dir=None):
-    """
-    Returns a dictionary of file paths based on the output directory.
-    """
     if output_dir:
         base = Path(output_dir)
     else:
@@ -83,12 +73,10 @@ def get_output_paths(output_dir=None):
     return {
         "json_report": base / "sql_report.json",
         "pdf_report": base / "sql_report.pdf",
-        # SQLMap creates its own subfolders, so we point to the base
         "sqlmap_base": base 
     }
 
 def save_sql_json(data, output_dir=None):
-    """Saves the parsed SQL scan data to a JSON file."""
     paths = get_output_paths(output_dir)
     json_file = paths["json_report"]
     try:
@@ -100,19 +88,14 @@ def save_sql_json(data, output_dir=None):
         log(f"[!] Failed to save SQL JSON report: {e}")
         return None
 
-# --- PARSING LOGIC ---
+# --- PARSING LOGIC (Targeting your specific log format) ---
 
-def parse_sqlmap_output(output_dir, captured_metadata=None):
+def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None):
     """
-    Parses the SQLMap output directory to find the 'log' file and extracting
-    vulnerability details into a structured dictionary.
-    
-    Args:
-        output_dir: The directory where SQLMap saved its results.
-        captured_metadata: A dictionary of DB info captured live from the console stream.
+    Parses the SQLMap 'log' file line-by-line to extract rich vulnerability details.
     """
     report_data = {
-        "target": "Unknown",
+        "target": target_url_hint if target_url_hint else "Unknown",
         "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "vulnerabilities": [],
         "database_info": {
@@ -121,7 +104,7 @@ def parse_sqlmap_output(output_dir, captured_metadata=None):
             "user": "Unknown",
             "current_db": "Unknown"
         },
-        "dumped_data": [] # For full scan tables
+        "dumped_data": [] 
     }
 
     # 1. Merge Captured Metadata (from Console Stream)
@@ -130,66 +113,87 @@ def parse_sqlmap_output(output_dir, captured_metadata=None):
 
     base_path = Path(output_dir)
     
-    # SQLMap creates a subdirectory based on the hostname inside the output_dir
+    # SQLMap creates a subdirectory based on the hostname
     target_subdir = None
     try:
-        # Find first subdirectory that isn't empty
-        for item in base_path.iterdir():
-            if item.is_dir():
-                target_subdir = item
-                break
+        # Find the most recently modified subdirectory
+        subdirs = [x for x in base_path.iterdir() if x.is_dir()]
+        if subdirs:
+            target_subdir = max(subdirs, key=os.path.getmtime)
     except Exception as e:
         log(f"[!] Error finding SQLMap output subdirectory: {e}")
-        return report_data
 
     if not target_subdir:
         log("[!] No results found in output directory.")
         return report_data
-
-    report_data["target"] = target_subdir.name
     
-    # 2. Parse the 'log' file (SQLMap's record of findings)
+    # 2. Parse the 'log' file
     log_file_path = target_subdir / "log"
+    
     if log_file_path.exists():
         try:
+            log(f"[INFO] Parsing log file at: {log_file_path}")
             with open(log_file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                
-            # Regex to find vulnerability blocks
-            # Blocks are usually separated by newlines
-            vuln_blocks = content.split("\n\n")
-            
-            for block in vuln_blocks:
-                # We need to strip whitespace because SQLMap logs are indented
-                if "Type:" in block and "Payload:" in block:
-                    vuln = {}
-                    for line in block.split('\n'):
-                        clean_line = line.strip() # <--- FIX: Remove indentation
+                lines = f.readlines()
+
+            current_param = "Unknown"
+            current_vuln = {}
+
+            for line in lines:
+                line = line.strip()
+
+                # --- 1. Detect Parameter ---
+                # Format: "Parameter: searchFor (POST)"
+                if line.startswith("Parameter:"):
+                    parts = line.split(":", 1)
+                    if len(parts) > 1:
+                        current_param = parts[1].strip()
+
+                # --- 2. Detect Type ---
+                # Format: "Type: boolean-based blind"
+                elif line.startswith("Type:"):
+                    # Start a new vulnerability entry
+                    current_vuln = {
+                        "type": line.split(":", 1)[1].strip(),
+                        "url": target_url_hint if target_url_hint else report_data["target"]
+                    }
+
+                # --- 3. Detect Title ---
+                # Format: "Title: MySQL AND boolean-based blind..."
+                elif line.startswith("Title:"):
+                    if current_vuln:
+                        current_vuln["title"] = line.split(":", 1)[1].strip()
+
+                # --- 4. Detect Payload ---
+                # Format: "Payload: searchFor=UFCm' AND..."
+                elif line.startswith("Payload:"):
+                    if current_vuln:
+                        current_vuln["payload"] = line.split(":", 1)[1].strip()
                         
-                        if clean_line.startswith("Type:"):
-                            vuln['type'] = clean_line.replace("Type:", "").strip()
-                        elif clean_line.startswith("Title:"):
-                            vuln['title'] = clean_line.replace("Title:", "").strip()
-                        elif clean_line.startswith("Payload:"):
-                            vuln['payload'] = clean_line.replace("Payload:", "").strip()
-                    
-                    if vuln:
-                        report_data["vulnerabilities"].append(vuln)
+                        # Add the Parameter context to the title if needed
+                        if "Parameter" not in current_vuln.get("title", ""):
+                            current_vuln["parameter"] = current_param
                         
+                        # Append and reset
+                        report_data["vulnerabilities"].append(current_vuln)
+                        current_vuln = {}
+
+                # --- 5. Detect Metadata (Footer) ---
+                elif "back-end DBMS:" in line:
+                    report_data["database_info"]["dbms"] = line.split(":", 1)[1].strip()
+                elif "banner:" in line:
+                    report_data["database_info"]["version"] = line.split(":", 1)[1].strip().strip("'")
+                elif "current user:" in line:
+                    report_data["database_info"]["user"] = line.split(":", 1)[1].strip().strip("'")
+                elif "current database:" in line:
+                    report_data["database_info"]["current_db"] = line.split(":", 1)[1].strip().strip("'")
+
             log(f"[+] Parsed {len(report_data['vulnerabilities'])} vulnerabilities from log.")
+
         except Exception as e:
             log(f"[!] Error reading SQLMap log file: {e}")
-
-    # 3. Check for Dumped Data (CSV files in 'dump' folder)
-    dump_dir = target_subdir / "dump"
-    if dump_dir.exists():
-        try:
-            # Recursively find CSV files
-            for csv_file in dump_dir.rglob("*.csv"):
-                table_name = csv_file.stem
-                report_data["dumped_data"].append(f"Table extracted: {table_name}")
-        except Exception:
-            pass
+    else:
+        log(f"[!] Log file not found at {log_file_path}. Is --flush-session enabled?")
 
     return report_data
 
@@ -197,54 +201,45 @@ def parse_sqlmap_output(output_dir, captured_metadata=None):
 
 def run_sql_scan(target_url, output_dir, scan_mode='quick'):
     """
-    Runs SQLmap with specific capabilities based on scan_mode.
-    Captures live DB metadata from stdout to ensure the report is populated.
+    Runs SQLmap with --flush-session to ensure the log file is fully populated.
     """
     if not os.path.exists(SQLMAP_PATH):
         log(f"[!] Critical: SQLmap not found at {SQLMAP_PATH}")
         return None
 
-    # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
     
-    # --- 1. BASE COMMAND ---
     cmd = [
         get_python_executable(), str(SQLMAP_PATH),
         '-u', target_url,
-        '--batch',              # Non-interactive
+        '--batch',              
         '--random-agent',
         '--forms',
         '--crawl=2',
         '--threads=10',
-        '--output-dir', str(output_dir) # Force output to user dir
+        '--output-dir', str(output_dir),
+        '--flush-session' # <--- CRITICAL: Forces SQLMap to write details to log
     ]
 
-    # --- 2. DETECTION CONFIG ---
     cmd.append('--technique=BEUSTQ') 
     
-    # --- 3. INTENSITY CONFIG ---
     if scan_mode == 'full':
         cmd.extend(['--level=3', '--risk=2']) 
-        timeout_seconds = 900  # 15 Minutes
+        timeout_seconds = 900 
         log(f"[*] Starting FULL scan (Detection + Enumeration) on {target_url}")
     else:
         cmd.extend(['--level=1', '--risk=1'])
-        timeout_seconds = 600  # 10 Minutes
+        timeout_seconds = 600
         log(f"[*] Starting QUICK scan (Detection) on {target_url}")
 
-    # --- 4. FINGERPRINTING & ENUMERATION ---
     cmd.extend(['--banner', '--current-user', '--current-db', '--is-dba'])
 
     if scan_mode == 'full':
-        cmd.extend([
-            '--dbs',        # List databases
-            '--tables',     # List tables
-            '--passwords'   # Crack passwords
-        ])
+        cmd.extend(['--dbs', '--tables', '--passwords'])
 
     log(f"[*] Executing SQLMap...")
 
-    # Dictionary to hold metadata captured from the console stream
+    # We capture metadata live, but the Parser will also try to read it from the log file
     live_metadata = {}
 
     try:
@@ -260,11 +255,10 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick'):
 
         start_time = time.time()
         
-        # --- STREAM LOGS & CAPTURE METADATA ---
         while True:
             if time.time() - start_time > timeout_seconds:
                 process.kill()
-                log(f"[!] TIME LIMIT EXCEEDED ({timeout_seconds}s). Process killed.")
+                log(f"[!] TIME LIMIT EXCEEDED ({timeout_seconds}s).")
                 break
 
             output = process.stdout.readline()
@@ -274,41 +268,29 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick'):
             if output:
                 line = output.strip()
                 if line and not line.startswith("[*] ending"):
-                    # 1. Clean Log for UI
                     if "fetched" in line or "vulnerable" in line:
                         log(f"[DATA] {line}")
                     else:
                         log(f"[SQLMap] {line}")
-
-                    # 2. Capture Metadata for Report
-                    # SQLMap outputs info like "back-end DBMS: MySQL", "banner: '8.0.22'"
+                    
+                    # Capture live metadata as backup
                     if "back-end DBMS:" in line:
                         live_metadata["dbms"] = line.split(":", 1)[1].strip()
-                    elif "banner:" in line:
-                        live_metadata["version"] = line.split(":", 1)[1].strip().strip("'")
-                    elif "current user:" in line:
-                        live_metadata["user"] = line.split(":", 1)[1].strip().strip("'")
-                    elif "current database:" in line:
-                        live_metadata["current_db"] = line.split(":", 1)[1].strip().strip("'")
 
-        # --- POST PROCESSING ---
         if process.poll() == 0 or process.poll() is None:
             log("[+] Scan Completed. Parsing results...")
             
-            # Parse results and pass the captured metadata
-            scan_data = parse_sqlmap_output(output_dir, captured_metadata=live_metadata)
+            # Pass target_url here so it appears correctly in the JSON
+            scan_data = parse_sqlmap_output(output_dir, target_url_hint=target_url, captured_metadata=live_metadata)
             
-            # Save JSON for PDF Generator
             json_path = save_sql_json(scan_data, output_dir)
             
-            # Notify Frontend via SSE
             send_sse_event("scan_complete", {
                 "status": "success",
                 "target": target_url,
                 "report_file": json_path,
                 "vulnerability_count": len(scan_data.get("vulnerabilities", []))
             })
-            
             return json_path
         else:
             log("[!] Scan finished with errors.")

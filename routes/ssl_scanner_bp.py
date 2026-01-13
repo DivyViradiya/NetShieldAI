@@ -48,7 +48,7 @@ SERVER_PROXY_URL = "http://localhost:5100"
 @login_required
 def ssl_scanner_page():
     """Renders the SSL scanner page."""
-    return render_template('ssl_scanner.html')
+    return render_template('scanners/ssl_scanner.html')
 
 @ssl_scanner_bp.route('/scan', methods=['POST'])
 @login_required

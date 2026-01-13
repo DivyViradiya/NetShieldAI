@@ -19,6 +19,7 @@ SSL_TEMPLATE_FILE = "ssl_report_template.html"
 SNIFFER_TEMPLATE_FILE = "sniffer_report_template.html"
 KILLCHAIN_TEMPLATE_FILE = "killchain_report_template.html"
 SQL_TEMPLATE_FILE = "sql_report_template.html"
+SEMGREP_TEMPLATE_FILE = "semgrep_report_template.html"
 
 
 def create_nmap_report_pdf(source_data, pdf_path):
@@ -31,7 +32,10 @@ def create_nmap_report_pdf(source_data, pdf_path):
     # 1. Handle Input
     if isinstance(source_data, str):
         if not os.path.exists(source_data):
-            raise FileNotFoundError(f"Nmap JSON file not found: {source_data}")
+            # Fail gracefully or raise error
+            print(f"[!] Error: Nmap JSON file not found at {source_data}")
+            return False
+            # raise FileNotFoundError(f"Nmap JSON file not found: {source_data}")
         with open(source_data, 'r', encoding='utf-8') as f:
             nmap_data = json.load(f)
     else:
@@ -41,10 +45,16 @@ def create_nmap_report_pdf(source_data, pdf_path):
     ports_list = nmap_data.get("ports", [])
     open_count = sum(1 for p in ports_list if p.get('state') == 'open')
     
+    # [NEW] Check if any port has vulnerability notes to toggle column visibility
+    has_vulns = any(len(p.get('vulnerability_notes', '')) > 0 for p in ports_list)
+
     duration = "N/A"
     raw_summary = nmap_data.get("raw_output_summary", "")
     if "scanned in" in raw_summary:
-        duration = raw_summary.split("scanned in")[-1].strip()
+        try:
+            duration = raw_summary.split("scanned in")[-1].strip()
+        except:
+            pass
 
     # 3. Comprehensive Template Context
     template_data = {
@@ -60,29 +70,45 @@ def create_nmap_report_pdf(source_data, pdf_path):
             "scan_duration": duration
         },
         "ports": ports_list,
-        "raw_summary": raw_summary
+        "raw_summary": raw_summary,
+        "has_vulns": has_vulns  # [NEW] Pass this flag to the template
     }
 
     # 4. Resource Validation
-    css = CSS(filename=CSS_FILE_PATH) if os.path.exists(CSS_FILE_PATH) else None
+    css = None
+    if os.path.exists(CSS_FILE_PATH):
+        css = CSS(filename=CSS_FILE_PATH)
+    else:
+        print(f"[!] Warning: CSS file not found at {CSS_FILE_PATH}. PDF will be unstyled.")
 
     # 5. Render using Jinja2
     try:
         env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
         template = env.get_template(NMAP_TEMPLATE_FILE)
-        # FIX: Pass as data=template_data to match your HTML template
-        rendered_html = template.render(data=template_data)
+        
+        # We pass context as specific variables AND 'data' dict to support both template styles
+        rendered_html = template.render(
+            data=template_data,       # For templates using data.variable
+            has_vulns=has_vulns,      # Direct access for logic
+            **template_data           # Unpack for direct access (e.g., {{ target_ip }})
+        )
     except Exception as e:
-        raise RuntimeError(f"Failed to render Nmap HTML: {e}")
+        print(f"[!] Template Rendering Error: {e}")
+        # raise RuntimeError(f"Failed to render Nmap HTML: {e}")
+        return False
 
     # 6. Generate PDF with WeasyPrint
-    base_url = pathlib.Path(PROJECT_ROOT).as_uri()
-    html = HTML(string=rendered_html, base_url=base_url)
-    html.write_pdf(pdf_path, stylesheets=[css] if css else [])
-
-    print(f"[+] Nmap PDF Report generated: {pdf_path}")
-    return True
-
+    try:
+        base_url = pathlib.Path(PROJECT_ROOT).as_uri()
+        html = HTML(string=rendered_html, base_url=base_url)
+        html.write_pdf(pdf_path, stylesheets=[css] if css else [])
+        
+        print(f"[+] Nmap PDF Report generated: {pdf_path}")
+        return True
+    except Exception as e:
+        print(f"[!] PDF Write Error: {e}")
+        return False
+    
 def create_zap_report_pdf(source_data, pdf_path):
     """
     Renders ZAP Web Vulnerability data into an HTML template and saves it as a PDF.
@@ -610,4 +636,85 @@ def create_sql_report_pdf(source_data, pdf_path):
         return True
     except Exception as e:
         print(f"[!] PDF Generation Failed: {e}")
+        return False
+        
+def create_semgrep_report_pdf(source_data, pdf_path):
+    """
+    Renders Semgrep SAST data into an HTML template and saves it as a PDF.
+    Cleans up file paths for display and sorts findings by severity.
+    """
+    print(f"[*] Starting Semgrep PDF generation: {pdf_path}")
+
+    # 1. Load Data
+    if isinstance(source_data, str):
+        if not os.path.exists(source_data):
+            print(f"[!] JSON source not found: {source_data}")
+            return False
+        try:
+            with open(source_data, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        except Exception as e:
+            print(f"[!] Invalid JSON: {e}")
+            return False
+    else:
+        data = source_data
+
+    # 2. Path Cleaning & Enhancement
+    # Semgrep paths are absolute (e.g. D:\...\source_code_temp\app.py)
+    # We want to display relative paths (e.g. app.py) in the PDF.
+    findings = data.get("findings", [])
+    
+    for f in findings:
+        full_path = f.get("path", "")
+        # Remove the temp directory prefix if present
+        if "source_code_temp" in full_path:
+            # Splits at 'source_code_temp' and takes the right side (the actual relative path)
+            clean_path = full_path.split("source_code_temp")[-1]
+            # Strip leading slashes/backslashes
+            f["display_path"] = clean_path.lstrip(os.sep).lstrip("/")
+        else:
+            # Fallback to filename if structure is unexpected
+            f["display_path"] = os.path.basename(full_path)
+
+    # 3. Sorting (Error -> Warning -> Info)
+    # Using a negative index approach or map for custom sort order
+    severity_order = {"ERROR": 0, "WARNING": 1, "INFO": 2}
+    findings.sort(key=lambda x: severity_order.get(x.get("severity", "INFO"), 3))
+
+    # 4. Prepare Template Context
+    template_data = {
+        "scan_date": data.get("scan_date"),
+        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "tool": data.get("tool", "Semgrep"),
+        "stats": {
+            "total": data.get("total_findings", 0),
+            "severity_counts": data.get("severity_counts", {})
+        },
+        "findings": findings  # Now contains 'display_path'
+    }
+
+    # 5. Render
+    try:
+        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
+        template = env.get_template(SEMGREP_TEMPLATE_FILE)
+        rendered_html = template.render(data=template_data)
+    except Exception as e:
+        print(f"[!] Semgrep Template Rendering Error: {e}")
+        return False
+
+    # 6. Write PDF
+    try:
+        base_url = pathlib.Path(PROJECT_ROOT).as_uri()
+        stylesheets = []
+        if os.path.exists(CSS_FILE_PATH):
+            stylesheets.append(CSS(filename=CSS_FILE_PATH))
+            
+        HTML(string=rendered_html, base_url=base_url).write_pdf(
+            pdf_path, 
+            stylesheets=stylesheets
+        )
+        print(f"[+] Semgrep PDF saved: {pdf_path}")
+        return True
+    except Exception as e:
+        print(f"[!] PDF Write Error: {e}")
         return False

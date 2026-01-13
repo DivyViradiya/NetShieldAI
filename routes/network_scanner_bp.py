@@ -66,7 +66,7 @@ def is_valid_hostname(hostname):
 @login_required
 def network_scanner_page():
     """Renders the network scanner page."""
-    return render_template('network_scanner.html')
+    return render_template('scanners/network_scanner.html')
 
 @network_scanner_bp.route('/local_ip', methods=['GET'])
 @login_required
@@ -87,11 +87,25 @@ def scan_ports():
     target_ip = data.get('target_ip')
     protocol_type = data.get('protocol_type', 'TCP').upper()
     scan_type = data.get('scan_type', 'default')
+    
+    # [NEW] Extract timing parameter (Default to 4 if not provided)
+    try:
+        timing = int(data.get('timing', 4))
+    except ValueError:
+        timing = 4
 
-    # Validate scan type
-    valid_scan_types = ['default', 'os', 'fragmented', 'aggressive', 'tcp_syn', 'vuln', 'udp']
+    # Validate scan type (Expanded List)
+    valid_scan_types = [
+        'default', 'os', 'fragmented', 'aggressive', 'tcp_syn', 'vuln', 'udp',
+        'ping_sweep', 'tcp_connect', 'null', 'fin', 'xmas', 'ack', 'window', 'decoy'
+    ]
+    
     if scan_type not in valid_scan_types:
         return jsonify({"status": "error", "message": "Invalid scan type specified."}), 400
+
+    # Validate timing
+    if not (0 <= timing <= 5):
+        return jsonify({"status": "error", "message": "Timing must be between 0 and 5."}), 400
 
     # If target_ip is empty, try to use local IP
     if not target_ip:
@@ -127,14 +141,15 @@ def scan_ports():
     # --- Threaded Scan Task ---
     def scan_task():
         # Use the captured identifier variable
-        network_scanner.log(f"[*] Preparing {scan_type.upper()} scan for target: {target_ip}...")        
+        network_scanner.log(f"[*] Preparing {scan_type.upper()} scan for target: {target_ip} with T{timing}...")        
         
         # 1. Run the Scan (Pass user directory to service)
         result_file = network_scanner.run_nmap_scan(
             target_ip, 
             protocol_type=protocol_type, 
             scan_type=scan_type,
-            output_dir=user_output_dir  # <--- DYNAMIC PATH PASSED HERE
+            output_dir=user_output_dir,  # <--- DYNAMIC PATH PASSED HERE
+            timing=timing # <--- PASS TIMING HERE
         )
         
         if result_file:
@@ -340,13 +355,22 @@ def get_scan_results():
     scan_type = request.args.get('type', 'tcp')
     
     # Map scan types to file names expected in the user dir
+    # [NEW] Updated map to include all new scan types
     filename_map = {
         'tcp': "scan_result_tcp.txt",
         'udp': "scan_result_udp.txt",
         'tcp_syn': "scan_result_tcp_syn.txt",
         'os': "scan_result_os.txt",
         'fragmented': "scan_result_fragmented.txt",
-        'aggressive': "scan_result_aggressive.txt"
+        'aggressive': "scan_result_aggressive.txt",
+        'ping_sweep': "scan_result_ping.txt",
+        'tcp_connect': "scan_result_connect.txt",
+        'null': "scan_result_null.txt",
+        'fin': "scan_result_fin.txt",
+        'xmas': "scan_result_xmas.txt",
+        'ack': "scan_result_ack.txt",
+        'window': "scan_result_window.txt",
+        'decoy': "scan_result_decoy.txt"
     }
     
     filename = filename_map.get(scan_type)

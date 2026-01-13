@@ -5,6 +5,7 @@ import json
 from werkzeug.utils import secure_filename
 import re  
 from datetime import datetime
+from Services import compliance_engine
 
 dashboard_bp = Blueprint('dashboard_bp', __name__)
 
@@ -41,7 +42,7 @@ def load_json_safe(path):
 @login_required
 def dashboard():
     """Renders the dashboard UI frame."""
-    return render_template('dashboard.html')
+    return render_template('dashboard/dashboard.html')
 
 # --- Modular API Endpoints ---
 
@@ -438,3 +439,22 @@ def get_usage_stats():
     }
 
     return jsonify(response)
+
+@dashboard_bp.route('/api/stats/compliance')
+@login_required
+def get_compliance_stats():
+    """
+    Generates/Retrieves the Compliance Report.
+    """
+    user_dir = get_user_results_dir()
+    if not user_dir:
+        return jsonify({"status": "error", "message": "User directory not found"})
+
+    # Check if report exists, if not, generate it on the fly
+    report_path = os.path.join(user_dir, "compliance_report.json")
+    
+    # Optional: Re-generate every time page loads, OR check timestamp
+    # For now, let's regenerate it to ensure it has the latest scan data
+    data = compliance_engine.generate_compliance_report(user_dir)
+    
+    return jsonify(data)

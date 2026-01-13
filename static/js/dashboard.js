@@ -1,17 +1,28 @@
 document.addEventListener("DOMContentLoaded", function () {
+  
+  // Helper function to safely open URLs
+  const openTargetSafe = (rawUrl) => {
+    if (!rawUrl) return;
+    let finalUrl = rawUrl;
+    // Auto-add https if missing to prevent localhost redirect errors
+    if (!finalUrl.startsWith("http")) {
+        finalUrl = "https://" + finalUrl;
+    }
+    window.open(finalUrl, "_blank");
+  };
+
   // --- 1. NETWORK (NMAP) ---
   fetch(apiEndpoints.network)
     .then((r) => r.json())
     .then((data) => {
       const available = data.status === "Scanned";
 
-      // Only update if we have data (to avoid overwriting Kill Chain if it loaded first)
       if (available) {
         const countEl = document.getElementById("nmap-count");
         if (countEl) countEl.textContent = data.open_ports_count;
 
         const targetEl = document.getElementById("nmap-target");
-        if (targetEl) targetEl.textContent = `Target: ${data.target}`;
+        if (targetEl) targetEl.textContent = data.target;
 
         const osEl = document.getElementById("nmap-os");
         if (osEl) osEl.textContent = data.os_detected || "Unknown";
@@ -21,7 +32,6 @@ document.addEventListener("DOMContentLoaded", function () {
           listEl.innerHTML = "";
           if (data.top_services && data.top_services.length > 0) {
             data.top_services.forEach((svcString) => {
-              // Parse "80: http (nginx)" string
               const firstColonIndex = svcString.indexOf(":");
               let port = "??";
               let desc = svcString;
@@ -31,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
               }
               listEl.innerHTML += `
                                 <li class="service-item">
-                                    <span class="port">PORT ${port}</span>
+                                    <span style="color:var(--neo-blue); font-weight:bold;">${port}</span>
                                     <span style="color:#aaa;">${desc}</span>
                                 </li>
                             `;
@@ -47,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function () {
           btn.href = reportUrls.network;
         }
       } else {
-        // If not scanned, set default only if empty
         const countEl = document.getElementById("nmap-count");
         if (countEl && countEl.textContent === "--") countEl.textContent = "--";
       }
@@ -68,10 +77,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const zapTargetEl = document.getElementById("zap-target");
         if (zapTargetEl) {
-          zapTargetEl.textContent = `Target: ${data.target || "Unknown"}`;
-          if (data.target && data.target.startsWith("http")) {
+          zapTargetEl.textContent = data.target || "Unknown";
+          
+          if (data.target) {
             zapTargetEl.style.cursor = "pointer";
-            zapTargetEl.onclick = () => window.open(data.target, "_blank");
+            zapTargetEl.onclick = () => openTargetSafe(data.target);
           }
         }
 
@@ -152,7 +162,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((data) => {
       const available = data.status === "Analyzed";
       const countEl = document.getElementById("sniffer-packet-count");
-      // Update only if available or if text is currently empty placeholders
       if (available && countEl) countEl.textContent = data.total_packets;
 
       if (available) {
@@ -166,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
             tbody.innerHTML += `
                             <tr>
                                 <td>${t.display}</td>
-                                <td style="text-align:right; color:var(--neo-blue);">${t.bytes} B</td>
+                                <td style="text-align:right; color:var(--neo-blue); font-family:var(--font-mono);">${t.bytes} B</td>
                             </tr>
                         `;
           });
@@ -187,16 +196,18 @@ document.addEventListener("DOMContentLoaded", function () {
       const available = data.status === "Completed";
 
       if (available) {
-        // 1. Activate Download Button
         const btn = document.getElementById("btn-killchain-pdf");
         if (btn) {
           btn.classList.remove("disabled");
           btn.href = reportUrls.killchain;
         }
 
-        // 2. Identity (Target & Tech)
         const targetEl = document.getElementById("zap-target");
-        if (targetEl) targetEl.textContent = data.target;
+        if (targetEl && data.target) {
+            targetEl.textContent = data.target; 
+            targetEl.style.cursor = "pointer";
+            targetEl.onclick = () => openTargetSafe(data.target);
+        }
 
         const techContainer = document.getElementById("tech-stack-container");
         if (techContainer && data.tech_stack) {
@@ -212,10 +223,9 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           if (!hasTech)
             techContainer.innerHTML =
-              '<span style="font-size:0.8rem; color:#666;">No specific tech detected</span>';
+              '<span style="font-size:0.75rem; color:#666;">No specific tech detected</span>';
         }
 
-        // 3. Scope Data (Recon & URLs)
         const subEl = document.getElementById("kc-subdomains");
         const urlEl = document.getElementById("kc-urls");
 
@@ -225,19 +235,16 @@ document.addEventListener("DOMContentLoaded", function () {
             : 0;
         if (subEl) subEl.textContent = subCount;
 
-        // Fallback for URLs if backend doesn't send explicit count yet
         if (urlEl && data.network_summary) {
-          urlEl.textContent = data.network_summary.urls_crawled || "15+";
+          urlEl.textContent = data.network_summary.urls_crawled || "0";
         }
 
-        // 4. Severity Matrix (Detailed Counts)
         const summary = data.vuln_summary || {};
         const c = summary.Critical || 0;
         const h = summary.High || 0;
         const m = summary.Medium || 0;
         const l = summary.Low || 0;
 
-        // Update Numbers
         if (document.getElementById("kc-count-crit"))
           document.getElementById("kc-count-crit").textContent = c;
         if (document.getElementById("kc-count-high"))
@@ -247,71 +254,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (document.getElementById("kc-count-low"))
           document.getElementById("kc-count-low").textContent = l;
 
-        // Update Visual Bar
-        const total = c + h + m + l;
-        if (total > 0) {
-          if (document.getElementById("bar-crit"))
-            document.getElementById("bar-crit").style.width = `${
-              (c / total) * 100
-            }%`;
-          if (document.getElementById("bar-high"))
-            document.getElementById("bar-high").style.width = `${
-              (h / total) * 100
-            }%`;
-          if (document.getElementById("bar-med"))
-            document.getElementById("bar-med").style.width = `${
-              (m / total) * 100
-            }%`;
-          if (document.getElementById("bar-low"))
-            document.getElementById("bar-low").style.width = `${
-              (l / total) * 100
-            }%`;
-        }
-
-        // 5. Primary Threats (Extract Names)
-        const issuesEl = document.getElementById("kc-top-issues");
-        if (issuesEl) {
-          issuesEl.innerHTML = "";
-          let issuesFound = false;
-
-          const addTag = (name, color) => {
-            issuesEl.innerHTML += `
-                            <div style="font-size:0.7rem; color:#ccc; background:rgba(255,255,255,0.05); padding:3px 8px; border-radius:4px; border-left:3px solid ${color}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                ${name}
-                            </div>`;
-            issuesFound = true;
-          };
-
-          if (data.top_risks) {
-            // Prioritize Criticals
-            data.top_risks.forEach((risk) => {
-              if (risk.severity === "Critical") addTag(risk.type, "#ff0000");
-            });
-            // Fill with Highs if space allows (limit to top 3 total for UI cleanliness)
-            let count = data.top_risks.filter(
-              (r) => r.severity === "Critical"
-            ).length;
-            if (count < 3) {
-              data.top_risks.forEach((risk) => {
-                if (risk.severity === "High" && count < 3) {
-                  addTag(risk.type, "var(--neo-red)");
-                  count++;
-                }
-              });
-            }
-          }
-
-          if (!issuesFound) {
-            issuesEl.innerHTML =
-              '<span style="font-size:0.8rem; color:#666;">No major threats identified</span>';
-          }
-        }
-
-        // 6. Update Totals for HUD (Existing)
         const countEl = document.getElementById("zap-count-total");
         if (countEl) countEl.textContent = c + h + m;
 
-        // Update ZAP List below (Existing Logic)
         const listEl = document.getElementById("zap-vuln-list");
         if (listEl && data.top_risks && data.top_risks.length > 0) {
           listEl.innerHTML = "";
@@ -347,7 +292,6 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         }
 
-        // 7. Network Fallback
         const netCountEl = document.getElementById("nmap-count");
         if (
           netCountEl &&
@@ -364,11 +308,72 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .catch(console.error);
 
-  // --- 6. OPERATOR ACTIVITY / USAGE STATS ---
+  // --- 6. COMPLIANCE (REGULATORY) ---
+  fetch(apiEndpoints.compliance)
+    .then((r) => r.json())
+    .then((data) => {
+      const container = document.getElementById('compliance-container');
+      if (!container) return;
+
+      // Handle case where no data or no standards
+      if (!data || !data.standards || Object.keys(data.standards).length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:1rem; color:#666;">No compliance data generated yet.</div>`;
+        return;
+      }
+
+      let html = '<div class="compliance-grid">';
+
+      // Python returns a Dictionary (Key=Standard Name, Value=Data)
+      // We use Object.entries to iterate.
+      for (const [stdKey, stdData] of Object.entries(data.standards)) {
+        
+        const score = stdData.score_percentage || 0;
+        const failedCount = stdData.failed_requirements || 0;
+        
+        let status = 'Pass';
+        let statusClass = 'status-pass';
+        
+        if (failedCount > 0) {
+            status = 'Fail';
+            statusClass = 'status-fail';
+        } else if (score < 100) {
+            status = 'Warn'; 
+        }
+        
+        const barColor = status === 'Pass' ? 'var(--neo-green)' : 'var(--neo-red)';
+
+        html += `
+        <div class="comp-item">
+            <div class="comp-header">
+                <span class="comp-name">${stdKey}</span> <span class="comp-status ${statusClass}">${status}</span>
+            </div>
+            <div class="comp-desc">
+                ${stdData.name} </div>
+            <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:#555; margin-bottom:4px;">
+                <span>ADHERENCE</span>
+                <span>${score}%</span>
+            </div>
+            <div class="comp-progress-bg">
+                <div class="comp-progress-fill" style="width: ${score}%; background-color: ${barColor};"></div>
+            </div>
+        </div>`;
+      }
+
+      html += '</div>';
+      container.innerHTML = html;
+    })
+    .catch((err) => {
+      console.error("Compliance Render Error:", err);
+      const container = document.getElementById('compliance-container');
+      if(container) {
+          container.innerHTML = `<div style="color:var(--neo-red); text-align:center; padding:1rem;">Error rendering compliance data.</div>`;
+      }
+    });
+
+  // --- 7. OPERATOR ACTIVITY / USAGE STATS ---
   fetch(apiEndpoints.usage)
     .then((r) => r.json())
     .then((data) => {
-      // Update Text Statistics
       const typeEl = document.getElementById("usage-account-type");
       if (typeEl)
         typeEl.textContent = `${data.organization} (${data.account_type})`;
@@ -379,10 +384,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const totalEl = document.getElementById("usage-total-scans");
       if (totalEl) totalEl.textContent = data.total_system_usage;
 
-      // Render Chart.js
       const ctx = document.getElementById("usageChart");
       if (ctx && data.scans) {
-        // Ensure text color matches theme
         const textColor = "#9ca3af";
 
         new Chart(ctx, {
@@ -405,7 +408,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   "#f59e0b", // Amber (Sniffer)
                   "#8b5cf6", // Purple (Killchain)
                 ],
-                borderColor: "#0a0a0c", // Matches Card BG for spacing effect
+                borderColor: "#0a0a0c", 
                 borderWidth: 2,
                 hoverOffset: 4,
               },
@@ -419,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 position: "right",
                 labels: {
                   color: textColor,
-                  font: { family: "'JetBrains Mono', monospace", size: 9 },
+                  font: { family: "'JetBrains Mono', monospace", size: 10 },
                   boxWidth: 8,
                   padding: 10,
                 },
@@ -436,22 +439,40 @@ document.addEventListener("DOMContentLoaded", function () {
             layout: {
               padding: 0,
             },
-            cutout: "75%", // Creates the thin ring effect
+            cutout: "70%",
           },
         });
       }
     })
     .catch(console.error);
 
-  // --- 7. AGGREGATE SYSTEM EVENTS (Populates the new Left Card) ---
-  // We use a small timeout to ensure all previous fetches have likely fired
+  // --- 8. DATABASE / SQL STATUS ---
+  fetch(apiEndpoints.databaseStatus)
+    .then(res => {
+        if (!res.ok) throw new Error('No report');
+        return res.json();
+    })
+    .then(data => {
+        // Check if status is success and pdf path is returned
+        if(data.status === 'success' && data.pdf_report) {
+            const btn = document.getElementById('btn-sql-pdf');
+            if(btn) {
+                btn.classList.remove('disabled');
+                btn.href = reportUrls.database;
+            }
+        }
+    })
+    .catch(err => {
+        // Silent catch: database scan likely not run yet
+    });
+
+  // --- 9. AGGREGATE SYSTEM EVENTS ---
   setTimeout(() => {
     const events = [];
     const logEl = document.getElementById("system-event-log");
 
     const addEvent = (source, statusId, icon, color) => {
       const el = document.getElementById(statusId);
-      // If the element has valid text (not default placeholders), add event
       if (
         el &&
         el.textContent !== "--" &&
@@ -467,13 +488,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
 
-    // Check our UI state to build the log
     addEvent("Network", "nmap-count", "dns", "#3b82f6");
     addEvent("Vulnerability", "zap-count-total", "bug_report", "#f43f5e");
     addEvent("SSL/TLS", "ssl-days", "verified_user", "#10b981");
     addEvent("Traffic", "sniffer-packet-count", "swap_horiz", "#f59e0b");
 
-    // Render
     if (logEl && events.length > 0) {
       logEl.innerHTML = "";
       events.forEach((e) => {
@@ -487,7 +506,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                 `;
       });
-      // Add a footer "Live" line
       logEl.innerHTML += `
                 <div style="margin-top:0.5rem; display:flex; gap:0.5rem; color:#444; align-items:center;">
                     <div style="width:6px; height:6px; background:#10b981; border-radius:50%; box-shadow:0 0 5px #10b981;"></div>
@@ -495,5 +513,5 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
     }
-  }, 1500); // 1.5s Delay to allow fetches to complete
+  }, 1500);
 });

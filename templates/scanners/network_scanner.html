@@ -30,6 +30,7 @@
       --neo-red: #f43f5e;
       --neo-green: #10b981;
       --neo-amber: #f59e0b;
+      --neo-purple: #8b5cf6;
     
       /* Functional Colors */
       --risk-high: var(--neo-red);
@@ -118,6 +119,9 @@
     .gap-3 {
       gap: 0.75rem;
     }
+    .flex-grow {
+        flex-grow: 1;
+    }
     
     /* --- LAYOUT GRID --- */
     .scan-overview-grid {
@@ -157,35 +161,55 @@
       z-index: 1;
     }
     
-    /* 1. Control Panel Card (Left) */
+    /* 1. Control Panel Card (Left) - RESTRUCTURED */
     .control-card {
-      padding: 1.5rem;
+      padding: 1.25rem; /* Slightly reduced padding to fit height */
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      gap: 1.25rem;
-      height: 140px;
+      /* gap: 1rem; Removed large gap, managed by flex justify */
+      height: 140px; /* Fixed height to match metrics */
       z-index: 20;
     }
-    
-    .input-group {
+
+    .control-row-top {
         display: flex;
-        align-items: center;
-        gap: 0.75rem; /* Standardized gap */
         width: 100%;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: auto; /* Pushes bottom row down */
     }
+
+    .control-row-bottom {
+        display: flex;
+        width: 100%;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+    
     .search-container {
         position: relative;
-        flex: 1 1 auto; 
-        min-width: 180px; 
+        flex: 1; /* Takes remaining space in top row */
+        min-width: 0; /* Prevents overflow */
     }
     
-    .status-row {
+    /* STATUS TEXT GROUP */
+    .status-text-group {
+      font-size: 0.8rem; 
+      color: var(--neo-text-muted); 
+      font-family: var(--font-mono); 
+      display: flex; 
+      align-items: center; 
+      gap: 8px;
+    }
+
+    /* NEW UTILITY FOR TOP BUTTONS */
+    .controls-toolbar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding-top: 1rem;
-      border-top: 1px solid var(--neo-border);
+      gap: 0.5rem;
+      flex-shrink: 0; /* Prevents buttons from shrinking */
     }
     
     /* 2. Metrics Grid (Right) */
@@ -267,6 +291,24 @@
       outline: none;
       border-color: var(--neo-blue);
       background: #000;
+    }
+
+    /* Timing Select Styling */
+    .timing-select {
+        background: var(--neo-input);
+        border: 1px solid var(--neo-border);
+        color: var(--neo-text-muted);
+        height: 42px;
+        border-radius: var(--radius-sm);
+        padding: 0 10px;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        cursor: pointer;
+        outline: none;
+    }
+    .timing-select:hover, .timing-select:focus {
+        border-color: var(--neo-blue);
+        color: white;
     }
     
     .btn-dash {
@@ -453,7 +495,7 @@
       display: flex;
       align-items: center;
       padding: 10px 12px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--neo-text-muted);
       text-decoration: none;
       border-radius: 4px;
@@ -467,6 +509,24 @@
       color: white;
       border-left-color: var(--neo-blue);
       padding-left: 16px;
+    }
+
+    .dropdown-category {
+        font-size: 0.65rem;
+        color: #555;
+        text-transform: uppercase;
+        font-weight: 700;
+        padding: 8px 12px 4px 12px;
+        letter-spacing: 0.05em;
+    }
+
+    /* Wide dropdown for scan modes */
+    .dropdown-wide {
+        width: 400px;
+        padding: 12px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
     
     @keyframes dropdownSlide {
@@ -686,6 +746,18 @@
       .control-card {
         height: auto;
       }
+      .dropdown-wide {
+          width: 280px;
+          grid-template-columns: 1fr;
+      }
+      .control-row-top, .control-row-bottom {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .controls-toolbar {
+        width: 100%;
+        justify-content: space-between;
+      }
     }
   </style>
 {% endblock %}
@@ -700,86 +772,114 @@
 
       <div>
         <h1 class="text-gradient" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-transform: uppercase;">Network <span style="color: var(--neo-blue); -webkit-text-fill-color: initial;">Scanner</span></h1>
-        <p style="color: var(--neo-text-muted); font-size: 0.8rem; margin-top: 6px; font-weight: 400; font-family: var(--font-mono);">Infrastructure Discovery & Port Analysis</p>
+        <p style="color: var(--neo-text-muted); font-size: 0.8rem; margin-top: 6px; font-weight: 400; font-family: var(--font-mono);">Infrastructure Discovery & Advanced Port Analysis</p>
       </div>
     </div>
 
     <div class="scan-overview-grid">
       <div class="control-card">
-        <div class="input-group">
-          <div class="search-container">
-            <span class="material-symbols-outlined search-icon">radar</span>
-            <input type="text" id="targetIp" class="dash-input" placeholder="ENTER IP OR URL (e.g. google.com)..." />
-          </div>
+        <div class="control-row-top">
+            <div class="search-container">
+                <span class="material-symbols-outlined search-icon">radar</span>
+                <input type="text" id="targetIp" class="dash-input" placeholder="ENTER IP OR URL..." />
+            </div>
 
-          <button id="scanTcpBtn" class="btn-dash btn-primary" title="Quick TCP Port Scan">
-            <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
-            <span class="button-text">TCP</span>
-            <span class="spinner hidden"></span>
-          </button>
+            <div class="controls-toolbar">
+                <select id="scanTiming" class="timing-select" title="Scan Speed (Timing Template)">
+                    <option value="0">T0 - Paranoid</option>
+                    <option value="1">T1 - Sneaky</option>
+                    <option value="2">T2 - Polite</option>
+                    <option value="3">T3 - Normal</option>
+                    <option value="4" selected>T4 - Aggressive</option>
+                    <option value="5">T5 - Insane</option>
+                </select>
 
-          <button id="scanVulnBtn" class="btn-dash btn-danger-outline" title="Full Vulnerability & CVE Scan">
-            <span class="material-symbols-outlined" style="font-size:1.1rem">bug_report</span>
-            <span class="button-text">VULN</span>
-            <span class="spinner hidden"></span>
-          </button>
+                <button id="scanVulnBtn" class="btn-dash btn-danger-outline btn-icon-only" title="Full Vulnerability & CVE Scan">
+                    <span class="material-symbols-outlined" style="font-size:1.1rem">bug_report</span>
+                    <span class="spinner hidden"></span>
+                </button>
 
-          <div class="relative">
-            <button id="advancedScanToggle" class="btn-dash btn-secondary" title="More Scan Modes">
-              <span class="material-symbols-outlined">layers</span>
-              <span>MODES</span>
-              <span class="material-symbols-outlined">expand_more</span>
+                <div class="relative">
+                    <button id="advancedScanToggle" class="btn-dash btn-secondary btn-icon-only" title="Advanced Scan Modes">
+                        <span class="material-symbols-outlined">layers</span>
+                    </button>
+                    
+                    <div id="advancedScanOptions" class="hidden absolute top-full right-0 mt-2 custom-dropdown dropdown-wide">
+                        <div class="flex flex-col gap-1">
+                            <div class="dropdown-category">Discovery</div>
+                            <a href="#" data-scan-type="ping_sweep" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">notifications_active</span>
+                            Ping Sweep (-sn)
+                            </a>
+                            
+                            <div class="dropdown-category">Standard</div>
+                            <a href="#" data-scan-type="aggressive" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">rocket_launch</span>
+                            Aggressive (-A)
+                            </a>
+                            <a href="#" data-scan-type="os" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">devices</span>
+                            OS Detection
+                            </a>
+                            <a href="#" data-scan-type="udp" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">directions_run</span>
+                            UDP Scan
+                            </a>
+                            <a href="#" data-scan-type="tcp_connect" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">link</span>
+                            TCP Connect
+                            </a>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <div class="dropdown-category">Stealth / Evasion</div>
+                            <a href="#" data-scan-type="tcp_syn" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">visibility_off</span>
+                            SYN Stealth
+                            </a>
+                            <a href="#" data-scan-type="decoy" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">theater_comedy</span>
+                            Decoy (RND)
+                            </a>
+                            <a href="#" data-scan-type="fragmented" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">grid_view</span>
+                            Fragmented
+                            </a>
+                            <a href="#" data-scan-type="fin" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">flag</span>
+                            FIN Scan
+                            </a>
+                            <a href="#" data-scan-type="null" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">do_not_disturb_on</span>
+                            Null Scan
+                            </a>
+                            <a href="#" data-scan-type="xmas" class="dropdown-link">
+                            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">forest</span>
+                            Xmas Scan
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-row-bottom">
+            <button id="scanTcpBtn" class="btn-dash btn-primary" title="Start Scan (Selected Mode)" style="min-width: 140px;">
+                <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+                <span class="button-text">START SCAN</span>
+                <span class="spinner hidden"></span>
             </button>
-            
-            <div id="advancedScanOptions" class="hidden absolute top-full right-0 mt-2 custom-dropdown" style="width: 200px;">
-              <a href="#" data-scan-type="aggressive" class="dropdown-link">
-                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">rocket_launch</span>
-                Aggressive (-A)
-              </a>
-              <a href="#" data-scan-type="os" class="dropdown-link">
-                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">devices</span>
-                OS Detection
-              </a>
-              <a href="#" data-scan-type="tcp_syn" class="dropdown-link">
-                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">visibility_off</span>
-                SYN Stealth
-              </a>
-              <a href="#" data-scan-type="fragmented" class="dropdown-link">
-                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">grid_view</span>
-                Fragmented
-              </a>
-              <a href="#" data-scan-type="udp" class="dropdown-link">
-                <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">directions_run</span>
-                UDP Scan
-              </a>
-            </div>
-          </div>
-        </div>
-        
-        <div class="status-row">
-          <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;">
-            TARGET: <span id="localIpDisplay" style="color: white;">---</span>
-          </div>
-          <div class="badge-pill">
-            <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
-            <span id="scanStatus">READY</span>
-          </div>
-        </div>
 
-        <div id="advancedScanOptions" class="hidden" style="position: absolute; top: 110%; left: 0; width: 100%; background: #0a0a0c; border: 1px solid var(--neo-border); padding: 1.5rem; border-radius: 8px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.9);">
-          <h4 style="color:white; margin-bottom:1rem; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em;">Scan Configuration</h4>
-          <div style="display:flex; flex-direction:column; gap:1.25rem;">
-            <div>
-              <label style="color:#666; font-size:0.7rem; font-weight: 600; text-transform: uppercase; font-family: var(--font-mono);">Mode</label>
-              <div class="grid grid-cols-2 gap-2 mt-2" style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                <button data-scan-type="tcp_syn" class="btn-dash btn-secondary w-full justify-center" style="height: 36px; font-size: 0.7rem;">SYN STEALTH</button>
-                <button data-scan-type="udp" class="btn-dash btn-secondary w-full justify-center" style="height: 36px; font-size: 0.7rem;">UDP SCAN</button>
-              </div>
+            <div class="status-text-group">
+                TARGET: <span id="localIpDisplay" style="color: white;">---</span>
+                <div class="badge-pill" style="margin-left: 8px;">
+                    <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
+                    <span id="scanStatus">READY</span>
+                </div>
             </div>
-          </div>
         </div>
       </div>
-
+      
       <div class="metrics-grid">
         <div class="metric-card card-status">
           <span class="metric-label">Target Status</span>
@@ -790,7 +890,7 @@
         <div class="metric-card card-ports">
           <span class="metric-label" style="color: var(--risk-med);">Open Ports</span>
           <span id="portCountDisplay" class="metric-value" style="color: var(--risk-med);">0</span>
-          <span class="metric-info">TCP Services Detected</span>
+          <span class="metric-info">Services Detected</span>
         </div>
 
         <div class="metric-card card-vulns">

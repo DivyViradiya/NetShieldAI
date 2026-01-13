@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NetShieldAI | SAST Code Analysis</title>
+    <style>
+        /* --- UNIFIED SLATE & STEEL THEME (EXTENDED) --- */
+        :root {
+            --neo-blue: #475569;
+            --neo-blue-accent: #3b82f6;
+            --neo-blue-soft: #f8fafc;
+            --neo-border: #e2e8f0;
+            --neo-text-main: #1e293b;
+            --neo-text-sub: #64748b;
+            --risk-high: #be123c;   /* Red */
+            --risk-medium: #d97706; /* Orange */
+            --risk-low: #059669;    /* Green */
+            --risk-info: #0369a1;   /* Blue */
+            --radius: 8px;
+        }
+
+        @page {
+            size: A4;
+            margin: 1cm;
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-family: 'Inter', sans-serif;
+                font-size: 10px;
+                color: #94a3b8;
+            }
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--neo-text-main);
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            border-bottom: 2px solid var(--neo-border);
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .header-right { text-align: right; }
+        h1 { font-size: 1.8rem; font-weight: 700; margin: 0; color: var(--neo-text-main); }
+        .scan-subtitle { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neo-text-sub); margin-top: 4px; }
+
+        /* --- INFO GRID --- */
+        .report-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid var(--neo-border);
+            background: var(--neo-blue-soft);
+            margin-bottom: 25px;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .info-box { padding: 12px 15px; border-right: 1px solid var(--neo-border); }
+        .info-box:last-child { border-right: none; }
+        .info-box strong { display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--neo-text-sub); font-weight: 700; margin-bottom: 2px; }
+        .info-box span { font-weight: 600; font-size: 1.1rem; }
+
+        /* --- SECTION HEADINGS --- */
+        h3 {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            color: var(--neo-blue-accent);
+            margin: 30px 0 15px 0;
+            letter-spacing: 0.1em;
+            border-left: 4px solid var(--neo-blue-accent);
+            padding-left: 12px;
+            font-weight: 700;
+            page-break-after: avoid;
+        }
+
+        /* --- CARDS & FINDINGS --- */
+        .card {
+            border: 1px solid var(--neo-border);
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+            page-break-inside: avoid;
+            background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            background: #f1f5f9;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--neo-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-header h4 { 
+            margin: 0; 
+            font-size: 0.9rem; 
+            font-weight: 700; 
+            font-family: 'Consolas', monospace; /* Monospace for Rule IDs */
+            color: #334155;
+            word-break: break-all;
+        }
+        .card-body { padding: 15px; }
+
+        /* --- CODE SNIPPETS --- */
+        .code-container {
+            background: #1e293b; /* Dark theme for code */
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            overflow-x: hidden; /* Prevent horizontal scroll in PDF */
+            white-space: pre-wrap; /* Wrap long lines */
+            word-wrap: break-word;
+            border-left: 4px solid var(--neo-blue-accent);
+        }
+        .file-location {
+            font-size: 0.8rem;
+            color: var(--neo-text-sub);
+            margin-bottom: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        .file-location span {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 6px;
+            color: #334155;
+        }
+
+        /* --- BADGES --- */
+        .badge { padding: 4px 8px; font-size: 0.7rem; font-weight: 700; border-radius: 4px; text-transform: uppercase; display: inline-block; letter-spacing: 0.05em; }
+        
+        /* Semgrep Severity Mapping */
+        .badge-error { background: #fee2e2; color: #be123c; border: 1px solid #fecaca; }
+        .badge-warning { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+        .badge-info { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+
+        /* Card Borders based on Severity */
+        .border-error { border-left: 4px solid #be123c; }
+        .border-warning { border-left: 4px solid #f97316; }
+        .border-info { border-left: 4px solid #3b82f6; }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--neo-border);
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--neo-text-sub);
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="NetShieldAI" style="height: 40px;">
+        </div>
+        <div class="header-right">
+            <h1>Source Code Security Analysis</h1>
+            <div class="scan-subtitle">// SAST Report - Powered by Semgrep</div>
+        </div>
+    </header>
+
+    <div class="report-info">
+        <div class="info-box">
+            <strong>Total Findings</strong>
+            <span>{{ data.stats.total }}</span>
+        </div>
+        <div class="info-box">
+            <strong>High Risk (Errors)</strong>
+            <span style="color: var(--risk-high);">{{ data.stats.severity_counts.ERROR | default(0) }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Medium Risk (Warnings)</strong>
+            <span style="color: var(--risk-medium);">{{ data.stats.severity_counts.WARNING | default(0) }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Scan Date</strong>
+            <span>{{ data.scan_date.split(' ')[0] }}</span>
+        </div>
+    </div>
+
+    <section>
+        <h3>Detailed Findings</h3>
+        
+        {% if data.findings %}
+            {% for finding in data.findings %}
+                {% set sev_lower = finding.severity | lower %}
+                {% if sev_lower == 'error' %}
+                    {% set border_class = 'border-error' %}
+                    {% set badge_class = 'badge-error' %}
+                {% elif sev_lower == 'warning' %}
+                    {% set border_class = 'border-warning' %}
+                    {% set badge_class = 'badge-warning' %}
+                {% else %}
+                    {% set border_class = 'border-info' %}
+                    {% set badge_class = 'badge-info' %}
+                {% endif %}
+
+                <div class="card {{ border_class }}">
+                    <div class="card-header">
+                        <h4>{{ finding.check_id }}</h4>
+                        <span class="badge {{ badge_class }}">
+                            {{ finding.severity }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="file-location">
+                            <span>FILE</span> {{ finding.display_path }} 
+                            <span style="margin-left: 10px;">LINE</span> {{ finding.line }}
+                        </div>
+
+                        <div style="margin-bottom: 12px; color: #334155;">
+                            <strong style="font-size: 0.7rem; text-transform: uppercase; color: #64748b;">Description:</strong><br>
+                            {{ finding.message }}
+                        </div>
+
+                        {% if finding.code_snippet and finding.code_snippet != 'N/A' %}
+                        <div>
+                            <strong style="font-size: 0.7rem; text-transform: uppercase; color: #64748b;">Vulnerable Code:</strong>
+                            <div class="code-container">{{ finding.code_snippet }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if finding.fix_suggestion and finding.fix_suggestion != 'N/A' %}
+                        <div style="margin-top: 12px; background: #ecfdf5; padding: 10px; border-radius: 4px; border: 1px solid #a7f3d0;">
+                            <strong style="font-size: 0.7rem; text-transform: uppercase; color: #047857;">Suggested Fix:</strong>
+                            <div style="font-family: 'Consolas', monospace; font-size: 0.85rem; color: #065f46; margin-top: 2px;">
+                                {{ finding.fix_suggestion }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="card" style="border-left: 4px solid var(--risk-low);">
+                <div class="card-body" style="text-align: center; padding: 40px;">
+                    <strong style="font-size: 1.2rem; color: var(--risk-low);">No Security Issues Found</strong>
+                    <p style="color: var(--neo-text-sub);">Semgrep scanned the codebase and did not detect any vulnerabilities matching the current ruleset.</p>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+
+    <footer>
+        NetShieldAI Reporting Engine | {{ data.generation_date }} | Confidential
+    </footer>
+
+</body>
+</html>

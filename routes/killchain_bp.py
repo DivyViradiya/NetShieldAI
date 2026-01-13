@@ -51,7 +51,7 @@ def get_fixed_scan_dir():
 @killchain_bp.route('/')
 @login_required
 def killchain_page():
-    return render_template('killchain.html')
+    return render_template('scanners/killchain.html')
 
 
 @killchain_bp.route('/dispatch', methods=['POST'])

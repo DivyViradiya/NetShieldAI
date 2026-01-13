@@ -27,7 +27,7 @@ def login():
             # Check if account is suspended
             if not user.is_active_account:
                 flash('Your account has been suspended. Please contact the administrator.', 'danger')
-                return render_template('login.html', form=form)
+                return render_template('base/login.html', form=form)
 
             login_user(user)
             
@@ -50,7 +50,7 @@ def login():
         else:
             flash('Invalid username or password.', 'danger')
             
-    return render_template('login.html', form=form)
+    return render_template('base/login.html', form=form)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -97,7 +97,7 @@ def register():
             db.session.rollback()
             flash(f'Database Error: {str(e)}', 'danger')
         
-    return render_template('register.html', form=form)
+    return render_template('base/register.html', form=form)
 
 
 @auth_bp.route('/logout')
@@ -154,7 +154,7 @@ def admin_dashboard():
     top_users_labels = [u.username for u in sorted_users]
     top_users_data = [u.total_scans for u in sorted_users]
 
-    return render_template('admin_dashboard.html', 
+    return render_template('dashboard/admin_dashboard.html', 
                            users=users,
                            total_users=total_users,
                            active_users=active_users,

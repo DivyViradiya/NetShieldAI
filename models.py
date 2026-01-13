@@ -44,6 +44,7 @@ class User(UserMixin, db.Model):
 
     # [NEW] Track Kill Chain Usage
     scan_count_killchain = db.Column(db.Integer, default=0)
+    scan_count_semgrep = db.Column(db.Integer, default=0)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

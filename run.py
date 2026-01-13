@@ -22,7 +22,9 @@ from routes.packet_sniffer_bp import packet_sniffer_bp
 from routes.dashboard_bp import dashboard_bp
 from routes.killchain_bp import killchain_bp
 from routes.sql_scanner_bp import sql_scanner_bp
+from routes.semgrep_scanner_bp import semgrep_bp
 from Services.network_scanner import ensure_admin_privileges
+
 
 app = Flask(__name__)
 app.secret_key = 'VulnScanAI' 
@@ -44,6 +46,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 app.register_blueprint(killchain_bp, url_prefix='/killchain')
 app.register_blueprint(sql_scanner_bp, url_prefix='/sql_scanner')
+app.register_blueprint(semgrep_bp, url_prefix='/semgrep_scanner')
 
 def print_banner():
     banner = fr"""
@@ -65,11 +68,11 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    return render_template('home.html')
+    return render_template('base/home.html')
 
 @app.route('/arsenal')
 def tools_hub():
-    return render_template('tools_hub.html')
+    return render_template('base/tools_hub.html')
 
 # --- REVISED MAIN BLOCK ---
 if __name__ == '__main__':

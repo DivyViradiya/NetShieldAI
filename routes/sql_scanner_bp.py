@@ -48,7 +48,7 @@ PDF_FILENAME = "sql_report.pdf"
 @login_required
 def sql_scanner_page():
     """Renders the SQL scanner page."""
-    return render_template('sql_scanner.html')
+    return render_template('scanners/sql_scanner.html')
 
 @sql_scanner_bp.route('/scan', methods=['POST'])
 @login_required

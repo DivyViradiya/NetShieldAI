@@ -53,7 +53,7 @@ SERVER_PROXY_URL = "http://localhost:5100"
 @login_required
 def packet_sniffer_page():
     """Renders the packet sniffer page."""
-    return render_template('packet_sniffer.html')
+    return render_template('scanners/packet_sniffer.html')
 
 
 # --- Interface Listing ---

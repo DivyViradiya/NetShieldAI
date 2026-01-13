@@ -61,6 +61,7 @@ def send_sse_event(event_name, data=""):
 
     sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
     log_queue.put(sse_message)
+
 def is_valid_hostname(hostname):
     """
     Validates if a string is a valid hostname/domain.
@@ -103,7 +104,16 @@ def get_output_paths(output_dir=None):
         "fragmented": base / "scan_result_fragmented.txt",
         "aggressive": base / "scan_result_aggressive.txt",
         "tcp_syn": base / "scan_result_tcp_syn.txt",
-        "vuln": base / "scan_result_vuln.txt"
+        "vuln": base / "scan_result_vuln.txt",
+        # --- NEW PATHS FOR ADVANCED SCANS ---
+        "connect": base / "scan_result_connect.txt",
+        "null": base / "scan_result_null.txt",
+        "fin": base / "scan_result_fin.txt",
+        "xmas": base / "scan_result_xmas.txt",
+        "ack": base / "scan_result_ack.txt",
+        "window": base / "scan_result_window.txt",
+        "ping": base / "scan_result_ping.txt",
+        "decoy": base / "scan_result_decoy.txt"
     }
 
 # --- Whitelist Persistence Functions (Updated for Phase 2) ---
@@ -176,8 +186,7 @@ def is_admin():
 def ensure_admin_privileges():
     """
     Checks for admin privileges. If not present, it attempts to re-launch the script
-    with elevated permissions. This will trigger a UAC prompt on Windows or a sudo
-    password request on Linux/macOS. If successful, the original script exits.
+    with elevated permissions.
     """
     if is_admin():
         return True # We are already admin, continue execution.
@@ -204,7 +213,6 @@ def ensure_admin_privileges():
             
         else:
             print(f"[ERROR] Automatic privilege elevation not supported on this OS: {platform.system()}")
-            # Hold the window open for a moment so the user can read the error
             time.sleep(5)
             return False
 
@@ -221,7 +229,7 @@ def ensure_admin_privileges():
 def get_local_ip():
     """Detects and returns the local IP address."""
     try:
-        # Simplified logic to act as a fallback if psutil logic is too complex for context
+        # Simplified logic to act as a fallback
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
@@ -252,15 +260,13 @@ def resolve_to_ip(target_input):
     """
     Checks if input is an IP/Range or a URL. 
     If it's a URL, it extracts the hostname and resolves it to an IP.
-    Returns the IP string if successful, or the original string if it's already an IP/Range.
     """
     # If it's already a valid IP or CIDR range, return it as is
     if is_valid_ip_or_range(target_input):
         return target_input
     
     try:
-        # Clean the URL: strip protocol (http/https) and any trailing paths/slashes
-        # Example: https://www.google.com/search -> www.google.com
+        # Clean the URL
         clean_host = target_input.replace("https://", "").replace("http://", "").split('/')[0].split(':')[0]
         
         log(f"[*] Attempting to resolve hostname: {clean_host}")
@@ -395,8 +401,6 @@ def get_process_info_for_port(port_num, protocol="TCP"):
 def parse_nmap_grepable_output(file_path):
     """
     Parses the Nmap -oG (Grepable) text file into a Python Dictionary.
-    This creates the structure required for the PDF generator, extracting
-    max detail, including vulnerability notes from script output.
     """
     parsed_data = {
         "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -405,15 +409,13 @@ def parse_nmap_grepable_output(file_path):
         "host_status": "Down",
         "os_guess": "Unknown / Not Detected",
         "ports": [],
-        "raw_output_summary": "" # New field for general host info/summary
+        "raw_output_summary": "" 
     }
 
     if not os.path.exists(file_path):
         return parsed_data
 
     # Step 1: Pre-process the file to gather port-specific vulnerability notes
-    # This uses a similar, but more robust parsing method than the one inside
-    # extract_open_ports to ensure we capture all data for the final PDF.
     port_vuln_notes = {}
     current_port_key = None
     general_notes = []
@@ -422,21 +424,17 @@ def parse_nmap_grepable_output(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
         
-        # Determine if it was a VULN scan
         is_vuln_scan = "vuln" in str(file_path)
 
         for line in lines:
             line = line.strip()
             
-            # Capture general Nmap info for report summary
             if line.startswith("# Nmap") or line.startswith("Host:") or line.startswith("Stats:"):
                 general_notes.append(line)
 
-            # 1. Capture Scan Arguments/Metadata
             if line.startswith("# Nmap") and "scan initiated" in line and "as:" in line:
                 parsed_data["scan_args"] = line.split("as:", 1)[1].strip()
 
-            # 2. Capture Host Info (IP, Status, OS)
             if line.startswith("Host:"):
                 ip_match = re.search(r"Host: ([\d\.]+)", line)
                 if ip_match: parsed_data["target_ip"] = ip_match.group(1)
@@ -444,9 +442,7 @@ def parse_nmap_grepable_output(file_path):
                 os_match = re.search(r"OS: ([^;]+)", line)
                 if os_match: parsed_data["os_guess"] = os_match.group(1).strip()
             
-            # 3. Handle Port Lines
             if "Ports:" in line:
-                # Ports line resets the current port context for script output parsing
                 current_port_key = None
                 
                 ports_section = line.split("Ports:")[1].strip()
@@ -465,28 +461,17 @@ def parse_nmap_grepable_output(file_path):
                         if current_port_key not in port_vuln_notes:
                              port_vuln_notes[current_port_key] = []
 
-            # 4. Capture NSE Script Output
-            # NSE output in -oG format often appears immediately after the ports line,
-            # or simply as text that doesn't fit the structured format. We must 
-            # infer its association.
-            # We look for lines containing script-specific keywords (e.g., 'http-title', 'CVE', 'VULNERABLE')
-            # and assume they belong to the last captured current_port_key if they follow.
-            
             if current_port_key and is_vuln_scan and (
                 'CVE' in line or 'VULNERABLE' in line or 'risk' in line.lower() or 'exploit' in line.lower()
             ):
-                # Try to clean the note: remove initial markers/whitespace
                 note = line.split("Host:")[0].strip()
                 if note and note not in port_vuln_notes[current_port_key]:
                     port_vuln_notes[current_port_key].append(note)
             
-            # Reset current_port_key after processing the block to avoid associating unrelated lines
             if line.endswith(")") and not line.startswith("Host:") and not line.startswith("# Nmap"):
                  current_port_key = None
 
-
-        # Step 2: Extract structured port data and merge notes
-        # Re-read the file or process the lines again to find the Ports: line for final structured data
+        # Step 2: Extract structured port data
         for line in lines:
             line = line.strip()
             if "Ports:" in line:
@@ -502,10 +487,8 @@ def parse_nmap_grepable_output(file_path):
                         port_num = parts[0].strip()
                         protocol = parts[2].strip().upper()
                         
-                        # Get comprehensive process info
                         proc_name = get_process_info_for_port(port_num, protocol)
 
-                        # Get collected vulnerability notes, joining them for the report
                         vuln_key = f"{port_num}/{protocol}"
                         vulnerability_notes = "\n---\n".join(port_vuln_notes.get(vuln_key, []))
 
@@ -514,11 +497,10 @@ def parse_nmap_grepable_output(file_path):
                             "state": parts[1].strip(),
                             "protocol": protocol,
                             "service": parts[4].strip() if len(parts) > 4 else "unknown",
-                            # Use full string from parts[6] if available
                             "version": parts[6].strip() if len(parts) > 6 else "", 
                             "process_name": proc_name,
-                            "vulnerability_notes": vulnerability_notes, # <--- NEW DETAILED VULN FIELD
-                            "cpe": parts[8].strip() if len(parts) > 8 else "N/A" # Capture CPE if Nmap provides it
+                            "vulnerability_notes": vulnerability_notes,
+                            "cpe": parts[8].strip() if len(parts) > 8 else "N/A"
                         }
                         parsed_data["ports"].append(port_obj)
 
@@ -557,17 +539,52 @@ def run_tcp_syn_scan(target_ip, output_dir=None):
 def run_vulnerability_scan(target_ip, output_dir=None):
     return run_nmap_scan(target_ip, scan_type="vuln", output_dir=output_dir)
 
+# --- NEW SCAN WRAPPERS FOR PHASE 2 ---
+def run_ping_sweep(target_ip, output_dir=None):
+    """Host Discovery only (-sn)."""
+    return run_nmap_scan(target_ip, scan_type="ping_sweep", output_dir=output_dir)
 
-def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_dir=None):
+def run_tcp_connect_scan(target_ip, output_dir=None):
+    """TCP Connect Scan (-sT)."""
+    return run_nmap_scan(target_ip, scan_type="tcp_connect", output_dir=output_dir)
+
+def run_null_scan(target_ip, output_dir=None):
+    """TCP Null Scan (-sN)."""
+    return run_nmap_scan(target_ip, scan_type="null", output_dir=output_dir)
+
+def run_fin_scan(target_ip, output_dir=None):
+    """TCP FIN Scan (-sF)."""
+    return run_nmap_scan(target_ip, scan_type="fin", output_dir=output_dir)
+
+def run_xmas_scan(target_ip, output_dir=None):
+    """TCP Xmas Scan (-sX)."""
+    return run_nmap_scan(target_ip, scan_type="xmas", output_dir=output_dir)
+
+def run_ack_scan(target_ip, output_dir=None):
+    """TCP ACK Scan (-sA)."""
+    return run_nmap_scan(target_ip, scan_type="ack", output_dir=output_dir)
+
+def run_window_scan(target_ip, output_dir=None):
+    """TCP Window Scan (-sW)."""
+    return run_nmap_scan(target_ip, scan_type="window", output_dir=output_dir)
+
+def run_decoy_scan(target_ip, output_dir=None):
+    """Decoy Scan (-D) with Random Decoys."""
+    return run_nmap_scan(target_ip, scan_type="decoy", output_dir=output_dir)
+
+
+def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_dir=None, timing=4):
     """
     Runs an Nmap scan with the specified parameters using local Nmap installation.
-    Triggers both SSE updates and JSON file generation.
+    Supports extended mechanics (Timing, Evasion, Scan Techniques).
+    
+    timing: Integer 0-5 (default 4 - Aggressive).
     """
     if not is_admin():
         log(f"[!] Nmap scans require administrator privileges.")
         return None
 
-    # --- NEW: URL RESOLUTION LOGIC ---
+    # URL RESOLUTION LOGIC
     original_input = target_ip
     resolved_ip = resolve_to_ip(target_ip)
     
@@ -575,44 +592,90 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         log(f"[!] Invalid target or resolution failed: {original_input}")
         return None
     
-    # Switch the target_ip to the resolved IP for the Nmap command
     target_ip = resolved_ip
 
     # Get Dynamic Paths
     paths = get_output_paths(output_dir)
 
-    # Handle special scan types to determine flags and output file
+    # Handle scan types and flags
     flags = []
     output_file = paths["tcp"] # Default
     
+    # Ensure timing is within bounds
+    if timing < 0: timing = 0
+    if timing > 5: timing = 5
+    
+    timing_flag = f"-T{timing}"
+    
+    # Base flags common to most port scans (Skip host discovery for speed unless specified)
+    base_flags = [timing_flag, '-Pn'] 
+
     if scan_type == "os":
-        flags = ['-O', '--osscan-limit']
+        flags = base_flags + ['-O', '--osscan-limit']
         output_file = paths["os"]
+        
     elif scan_type == "fragmented":
-        flags = ['-f', '-sS']
+        flags = base_flags + ['-f', '-sS']
         output_file = paths["fragmented"]
+        
     elif scan_type == "aggressive":
-        flags = ['-A']
+        flags = ['-A', timing_flag] # -A includes OS detection, version, script scanning, traceroute
         output_file = paths["aggressive"]
+        
     elif scan_type == "tcp_syn":
-        flags = ['-sS']
+        flags = base_flags + ['-sS']
         output_file = paths["tcp_syn"]
-    elif scan_type == "vuln": # <--- NEW VULNERABILITY SCAN LOGIC
-        # Use -sC to run default scripts, -sV for version detection, and --script vuln
-        # We also add -Pn to skip host discovery if it's slow, and -T4 for speed.
-        flags = ['-sC', '-sV', '--script', 'vuln', '-Pn'] 
+        
+    elif scan_type == "vuln":
+        flags = [timing_flag, '-sC', '-sV', '--script', 'vuln', '-Pn'] 
         output_file = paths["vuln"]
+        
     elif protocol_type == "UDP":
-        flags = ['-sU', '--top-ports', '1000', '-sV', '-Pn']
+        flags = [timing_flag, '-sU', '--top-ports', '1000', '-sV', '-Pn']
         output_file = paths["udp"]
+        
+    # --- NEW SCAN TYPE MAPPINGS ---
+    elif scan_type == "ping_sweep":
+        # -sn: Ping Scan - disable port scan. -Pn is NOT used here as we want discovery.
+        flags = [timing_flag, '-sn'] 
+        output_file = paths["ping"]
+        
+    elif scan_type == "tcp_connect":
+        flags = base_flags + ['-sT']
+        output_file = paths["connect"]
+        
+    elif scan_type == "null":
+        flags = base_flags + ['-sN']
+        output_file = paths["null"]
+        
+    elif scan_type == "fin":
+        flags = base_flags + ['-sF']
+        output_file = paths["fin"]
+        
+    elif scan_type == "xmas":
+        flags = base_flags + ['-sX']
+        output_file = paths["xmas"]
+        
+    elif scan_type == "ack":
+        flags = base_flags + ['-sA']
+        output_file = paths["ack"]
+        
+    elif scan_type == "window":
+        flags = base_flags + ['-sW']
+        output_file = paths["window"]
+        
+    elif scan_type == "decoy":
+        # Uses -D RND:10 to spawn 10 random decoy IPs + SYN scan
+        flags = base_flags + ['-D', 'RND:10', '-sS']
+        output_file = paths["decoy"]
+        
     else: # Default TCP
-        flags = ['-sS', '--top-ports', '1000', '-sV', '-Pn']
+        flags = base_flags + ['-sS', '--top-ports', '1000', '-sV']
         output_file = paths["tcp"]
 
     scan_type_display = scan_type.upper() if scan_type != "default" else f"{protocol_type} (Top 1000)"
-    log(f"[+] Running {scan_type_display} scan on {target_ip}...")
+    log(f"[+] Running {scan_type_display} scan on {target_ip} with timing {timing_flag}...")
 
-    # Ensure output directory exists (handled by get_output_paths but good safety)
     if not os.path.exists(os.path.dirname(output_file)):
         os.makedirs(os.path.dirname(output_file))
     
@@ -620,13 +683,11 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         return None
 
     # Construct Command
-    base_cmd = ['nmap', '-T4'] + flags
-    
-    # For vulnerability scan, we use the explicit set of flags
+    # For vulnerability scan, we use the explicit set of flags defined above
     if scan_type == "vuln":
-        cmd = ['nmap', '-T4', '-sC', '-sV', '--script', 'vuln', '-Pn', '-oG', str(output_file), target_ip]
+         cmd = ['nmap'] + flags + ['-oG', str(output_file), target_ip]
     else:
-        cmd = base_cmd + ['-oG', str(output_file), target_ip]
+         cmd = ['nmap'] + flags + ['-oG', str(output_file), target_ip]
 
     # Add exclusion for Flask app port (5000) if scanning local IP
     local_ips = [get_local_ip(), "127.0.0.1"]
@@ -635,7 +696,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
             og_index = cmd.index('-oG')
             cmd.insert(og_index, '--exclude-ports')
             cmd.insert(og_index + 1, '5000')
-        else: # Should not happen, but for safety
+        else:
             cmd.insert(1, '--exclude-ports')
             cmd.insert(2, '5000')
 
@@ -656,14 +717,18 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
             
         log(f"[+] {scan_type_display} scan complete. Results saved to {output_file}")
         
-        # 1. Update UI (SSE) - Retained functionality
-        open_ports_list = extract_open_ports(output_file, protocol_type="TCP" if protocol_type == "TCP" or scan_type == "vuln" else protocol_type)
-        send_sse_event("scan_complete", {
-            "target": target_ip, "protocol": protocol_type,
-            "scan_type": scan_type, "open_ports": open_ports_list
-        })
+        # 1. Update UI (SSE)
+        # Ping sweeps don't return standard "open ports", so we handle them carefully
+        if scan_type != "ping_sweep":
+            open_ports_list = extract_open_ports(output_file, protocol_type="TCP" if protocol_type == "TCP" or scan_type == "vuln" else protocol_type)
+            send_sse_event("scan_complete", {
+                "target": target_ip, "protocol": protocol_type,
+                "scan_type": scan_type, "open_ports": open_ports_list
+            })
+        else:
+             log(f"[*] Ping sweep complete. Check log or JSON report for host details.")
 
-        # 2. Generate JSON Report (PDF) - NEW functionality
+        # 2. Generate JSON Report (PDF)
         log(f"[+] Processing results for PDF report...")
         scan_data = parse_nmap_grepable_output(output_file)
         save_nmap_json(scan_data, output_dir=output_dir)
@@ -677,9 +742,8 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
 def extract_open_ports(filename, protocol_type):
     """
     Parses Nmap greppable output to extract open ports, process info, and
-    (NEW) associated vulnerability notes for UI update.
+    associated vulnerability notes for UI update.
     """
-    # Note: For Vuln scans, we force TCP protocol update as it's a TCP-based scan
     target_protocol = "TCP" if "vuln" in str(filename).lower() or protocol_type == "TCP" else "UDP"
 
     if target_protocol == "UDP":
@@ -697,7 +761,7 @@ def extract_open_ports(filename, protocol_type):
             
         is_vuln_scan = "vuln" in str(filename).lower()
         
-        # Step 1: Pre-parse for vulnerability notes (Heuristic for -oG)
+        # Step 1: Pre-parse for vulnerability notes
         for line in lines:
             line = line.strip()
             
@@ -717,17 +781,14 @@ def extract_open_ports(filename, protocol_type):
             if current_port_key and is_vuln_scan and (
                 'CVE' in line or 'VULNERABLE' in line or 'http-title' in line or 'risk' in line.lower()
             ):
-                # Simple summary of the vulnerability line for UI display
                 note = line.split("Host:")[0].strip()
                 if note and len(port_vuln_notes[current_port_key]) == 0:
-                    # Only take the first note/title for the UI column for brevity
                     port_vuln_notes[current_port_key].append(note[:50].replace('\t', ' ') + "...") 
             
-            # Reset port key on new host or end of entry
             if line.startswith("Host:"):
                  current_port_key = None
 
-        # Step 2: Extract final port list and merge vulnerability data
+        # Step 2: Extract final port list
         for line in lines:
             if 'Ports:' in line and 'open' in line:
                 port_details_str = line.split('Ports:')[1].strip()
@@ -738,6 +799,10 @@ def extract_open_ports(filename, protocol_type):
                     if 'open' in p_str.lower():
                         parts = p_str.split('/')
                         
+                        # [FIXED] Safety check for malformed lines to prevent list index out of range
+                        if len(parts) < 3:
+                            continue
+
                         port_num = parts[0]
                         protocol = parts[2].upper() 
                         service = parts[4].strip() if len(parts) > 4 and parts[4].strip() else 'unknown'
@@ -747,7 +812,6 @@ def extract_open_ports(filename, protocol_type):
                         
                         vuln_key = f"{port_num}/{protocol}"
                         vulnerability_summary = " | ".join(port_vuln_notes.get(vuln_key, []))
-                        # Default to "N/A" if no summary was found
                         if not vulnerability_summary and is_vuln_scan:
                             vulnerability_summary = "No immediate CVE/Risk found."
                         elif not is_vuln_scan:
@@ -757,7 +821,7 @@ def extract_open_ports(filename, protocol_type):
                             'port': port_num, 'protocol': protocol,
                             'service': service, 'version': version,
                             'process_name': process_name,
-                            'vulnerability': vulnerability_summary # <--- NEW FIELD FOR UI
+                            'vulnerability': vulnerability_summary
                         }
                         
                         if protocol == target_protocol:
@@ -946,14 +1010,22 @@ def main_test():
     target_ip = "192.168.29.48"
     print(f"\n[INFO] This test will perform scans on {target_ip}.")
     
-    # --- Test 1: TCP Scan ---
-    print(f"\n--- [TEST 1] Performing TCP scan on {target_ip} ---")
-    run_nmap_scan(target_ip, protocol_type="TCP")
-    time.sleep(1)  # Brief pause to allow logs to process
+    # --- Test 1: Standard TCP Scan ---
+    print(f"\n--- [TEST 1] Performing Default TCP scan on {target_ip} ---")
+    run_nmap_scan(target_ip, protocol_type="TCP", timing=4)
     
+    # --- Test 2: Stealth FIN Scan (New Feature) ---
+    print(f"\n--- [TEST 2] Performing Stealth FIN scan on {target_ip} ---")
+    run_fin_scan(target_ip)
+    
+    # --- Test 3: Decoy Scan (New Feature) ---
+    print(f"\n--- [TEST 3] Performing Decoy scan (Evasion) on {target_ip} ---")
+    run_decoy_scan(target_ip)
+
+    time.sleep(1)  # Brief pause to allow logs to process
 
     # --- Display Final Results ---
-    print("\n--- [RESULTS] All detected open ports ---")
+    print("\n--- [RESULTS] All detected open ports (Accumulated) ---")
     all_open = get_current_open_ports()
     if all_open:
         print(f"Found {len(all_open)} open port(s):")

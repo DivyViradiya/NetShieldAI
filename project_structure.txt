@@ -155,6 +155,72 @@ Integrate Prowler.
 
 Note: This requires handling AWS Keys securely. For MVP, we might ask the user to upload a Prowler JSON report manually instead of running it, to avoid liability of holding their root keys.
 
+Here is the strategy to stop that from happening. We will use a Three-Layer Defense.
 
+Layer 1: The "Bouncer" (Hard Size Limit)
+This is the simplest and most effective fix. Dependencies are heavy; source code is light.
+
+If we set a strict upload limit of 15MB in Flask, any zip file containing node_modules or venv will likely get rejected immediately before it even finishes uploading.
+
+In config.py or your main app setup:
+
+Python
+
+# Reject any upload larger than 15MB
+app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024 
+User Experience: If they try to upload a bloated zip, the upload fails instantly, and you show a flash message: "File too large (Max 15MB). Please delete 'node_modules' or 'venv' and try again."
+
+Layer 2: The "Surgeon" (Smart Unzipping)
+Even if a small node_modules folder sneaks past the size limit (e.g., a small project), we do not have to extract it.
+
+We can write our Python unzip function to "peek" inside the zip file first. It will look at the file names and skip anything that looks like a dependency folder.
+
+Here is the "Smart Unzip" code for your InputManager:
+
+Python
+
+import zipfile
+import os
+
+def smart_unzip(zip_path, extract_to):
+    # Folders we absolutely refuse to extract
+    IGNORE_FOLDERS = {'node_modules', 'venv', '.env', '.git', '__pycache__', 'dist', 'build'}
+    
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        # Get list of all files inside without extracting yet
+        all_files = zip_ref.namelist()
+        
+        for file in all_files:
+            # Check if file is inside a forbidden folder
+            # e.g. "my_app/node_modules/library/index.js" -> parts=['my_app', 'node_modules', ...]
+            path_parts = file.split('/')
+            
+            # If any part of the path is in our ignore list, SKIP IT.
+            if any(part in IGNORE_FOLDERS for part in path_parts):
+                continue 
+            
+            # If it's safe, extract only that file
+            zip_ref.extract(file, extract_to)
+Result: Even if the user uploads a zip full of junk, your server only writes the actual source code to the disk.
+
+Layer 3: The "Git" Advantage
+This is why the Git URL method I mentioned earlier is superior.
+
+When users push code to GitHub/GitLab, they (should) use a .gitignore file. This means node_modules and venv strictly do not exist in the repository.
+
+If your tool clones the repo, you automatically get clean code without dependencies.
+
+Recommendation: In your UI, make the "Git URL" option the default/primary choice, and "Upload Zip" the secondary choice.
+
+Revised Plan Summary
+With these protections, the load on your device remains minimal:
+
+Flask blocks huge uploads instantly.
+
+Python filters out junk folders during extraction.
+
+Semgrep only scans clean source code.
+
+Does this "Smart Unzip" approach sound safe enough for your device? If so, we can move to Step 3: Creating the Semgrep Service Wrapper.
 
 Semgrep + Checkov + Gitleaks + Prowler + SQLmap
