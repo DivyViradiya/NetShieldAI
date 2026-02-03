@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
         var cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "").trim();
 
-        var contentStyle = 'color:#d4d4d8';
+        var contentStyle = 'color:var(--neo-text-muted)';
         var lowerMsg = cleanedMessage.toLowerCase();
         
         if (cleanedMessage.includes('[!]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {

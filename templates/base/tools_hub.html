@@ -10,10 +10,39 @@
     :root {
       --neo-bg: #050505;
       --neo-card: #0f0f11;
+      --neo-card-hover: #0e0e11;
       --neo-border: #27272a;
+      --neo-text-primary: #ffffff;
+      --neo-text-secondary: #94a3b8;
+      --neo-text-tertiary: #555555;
       --neo-accent: #f8fafc;
       --neo-blue: #3b82f6;
-      --neo-violet: #8b5cf6; /* Polyhedron Theme Color */
+      --neo-violet: #8b5cf6; 
+      --grid-line-color: #222;
+      --grid-static-color: #111;
+      --poly-card-hover-bg: #0c0a13;
+      --action-row-border: #1a1a1a;
+      --card-icon-bg: #151518;
+      --card-icon-color: #666;
+    }
+    
+    body.light-mode {
+      --neo-bg: #f8fafc;
+      --neo-card: #ffffff;
+      --neo-card-hover: #f1f5f9;
+      --neo-border: #e2e8f0;
+      --neo-text-primary: #0f172a;
+      --neo-text-secondary: #475569;
+      --neo-text-tertiary: #64748b;
+      --neo-accent: #0f172a;
+      --neo-blue: #2563eb;
+      --neo-violet: #7c3aed;
+      --grid-line-color: #e2e8f0;
+      --grid-static-color: #f1f5f9;
+      --poly-card-hover-bg: #f5f3ff;
+      --action-row-border: #e2e8f0;
+      --card-icon-bg: #f8fafc;
+      --card-icon-color: #94a3b8;
     }
     
     /* Ensure content sits above the grid */
@@ -29,7 +58,7 @@
       position: relative;
       z-index: 10;
       background-color: var(--neo-bg); 
-      border-top: 1px solid #27272a;
+      border-top: 1px solid var(--neo-border);
     }
 
     /* --- INTERACTIVE GRID BACKGROUND --- */
@@ -51,8 +80,8 @@
       width: 100%;
       height: 100%;
       background-image: 
-        linear-gradient(to right, #222 1px, transparent 1px),
-        linear-gradient(to bottom, #222 1px, transparent 1px);
+        linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
       background-size: 50px 50px;
       mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 400px);
       -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 400px);
@@ -64,8 +93,8 @@
       position: absolute;
       inset: 0;
       background-image: 
-        linear-gradient(to right, #111 1px, transparent 1px),
-        linear-gradient(to bottom, #111 1px, transparent 1px);
+        linear-gradient(to right, var(--grid-static-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-static-color) 1px, transparent 1px);
       background-size: 50px 50px;
       opacity: 0.3;
     }
@@ -84,13 +113,13 @@
       font-size: 3rem;
       text-transform: uppercase;
       font-weight: 800;
-      color: white;
+      color: var(--neo-text-primary);
       letter-spacing: -0.03em;
       margin-bottom: 1rem;
     }
     
     .section-sub {
-      color: #94a3b8;
+      color: var(--neo-text-secondary);
       max-width: 600px;
       margin: 0 auto;
       font-size: 1.1rem;
@@ -106,8 +135,8 @@
     
     /* --- CARD STYLES --- */
     .neo-card {
-      background-color: #0a0a0c;
-      border: 1px solid #27272a;
+      background-color: var(--neo-card);
+      border: 1px solid var(--neo-border);
       border-radius: 8px;
       padding: 2rem;
       display: flex;
@@ -134,9 +163,13 @@
 
     .neo-card:hover {
       transform: translateY(-5px);
-      background-color: #0e0e11;
-      border-color: #3f3f46;
+      background-color: var(--neo-card-hover);
+      border-color: var(--neo-text-tertiary);
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+    
+    body.light-mode .neo-card:hover {
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
     }
 
     .neo-card:hover::after {
@@ -153,8 +186,8 @@
     .card-icon-box {
       width: 48px;
       height: 48px;
-      background: #151518;
-      border: 1px solid #27272a;
+      background: var(--card-icon-bg);
+      border: 1px solid var(--neo-border);
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -164,7 +197,7 @@
     
     .card-icon-box span {
       font-size: 1.5rem;
-      color: #666;
+      color: var(--card-icon-color);
       transition: color 0.3s ease;
     }
     
@@ -175,19 +208,19 @@
     }
     
     .neo-card:hover .card-icon-box span {
-      color: white;
+      color: var(--neo-text-primary);
     }
     
     .neo-card h3 {
       font-size: 1.3rem;
-      color: white;
+      color: var(--neo-text-primary);
       margin-bottom: 0.75rem;
       font-weight: 700;
     }
     
     .neo-card p {
       font-size: 0.9rem;
-      color: #94a3b8;
+      color: var(--neo-text-secondary);
       line-height: 1.6;
       flex-grow: 1;
       margin-bottom: 1.5rem;
@@ -197,7 +230,7 @@
     /* Clean Violet Theme - Removes the messy background text */
     .polyhedron-card:hover {
       border-color: var(--neo-violet); 
-      background-color: #0c0a13; /* Deep violet tint */
+      background-color: var(--poly-card-hover-bg); /* Deep violet tint or light violet */
       box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.25); /* Violet Glow */
     }
 
@@ -212,7 +245,7 @@
     }
 
     .polyhedron-card:hover .card-icon-box span {
-      color: white !important;
+      color: var(--neo-text-primary) !important;
     }
     
     /* STATUS BADGES */
@@ -245,7 +278,7 @@
     }
 
     .status-soon {
-      color: #94a3b8;
+      color: var(--neo-text-secondary);
       border-color: rgba(148, 163, 184, 0.2);
       background: rgba(148, 163, 184, 0.05);
     }
@@ -254,7 +287,7 @@
     .action-row {
       margin-top: auto;
       padding-top: 1.25rem;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid var(--action-row-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -288,12 +321,12 @@
     }
     .neo-card.disabled:hover {
       transform: none;
-      background-color: #0a0a0c;
-      border-color: #27272a;
+      background-color: var(--neo-card);
+      border-color: var(--neo-border);
       box-shadow: none;
     }
     .neo-card.disabled .launch-btn {
-      color: #555;
+      color: var(--neo-text-tertiary);
     }
     .neo-card.disabled:hover .launch-btn {
       transform: none;
@@ -344,7 +377,7 @@
         </p>
 
         <div class="action-row">
-          <span class="text-xs text-[#555]">Orchestration</span>
+          <span class="text-xs" style="color: var(--neo-text-tertiary);">Orchestration</span>
           <div class="launch-btn">
             Run Simulation <span class="material-symbols-outlined">double_arrow</span>
           </div>
@@ -361,7 +394,7 @@
         <h3>Network Scanner</h3>
         <p>Powered by Nmap. Map your attack surface by discovering open ports, running services, and OS versions across your network infrastructure.</p>
         <div class="action-row">
-          <span class="text-xs text-[#555]">Infrastructure</span>
+          <span class="text-xs" style="color: var(--neo-text-tertiary);">Infrastructure</span>
           <div class="launch-btn">
             Execute <span class="material-symbols-outlined">arrow_forward</span>
           </div>
@@ -378,7 +411,7 @@
         <h3>Network Monitor</h3>
         <p>Powered by TShark. Capture live network traffic to analyze packet headers, detect anomalies, and inspect payload data for threats.</p>
         <div class="action-row">
-          <span class="text-xs text-[#555]">Traffic Analysis</span>
+          <span class="text-xs" style="color: var(--neo-text-tertiary);">Traffic Analysis</span>
           <div class="launch-btn">
             Monitor <span class="material-symbols-outlined">arrow_forward</span>
           </div>
@@ -395,7 +428,7 @@
         <h3>Web Vulnerability</h3>
         <p>Powered by OWASP ZAP. Deep crawl your web applications to detect SQL Injection, XSS, and misconfigurations using AI reranking.</p>
         <div class="action-row">
-          <span class="text-xs text-[#555]">Application Security</span>
+          <span class="text-xs" style="color: var(--neo-text-tertiary);">Application Security</span>
           <div class="launch-btn">
             Audit <span class="material-symbols-outlined">arrow_forward</span>
           </div>
@@ -412,7 +445,7 @@
         <h3>API Security</h3>
         <p>OpenAPI & Swagger assessment. Scan REST API endpoints for broken authentication, injection flaws, and data exposure vulnerabilities.</p>
         <div class="action-row">
-          <span class="text-xs text-[#555]">Endpoint Security</span>
+          <span class="text-xs" style="color: var(--neo-text-tertiary);">Endpoint Security</span>
           <div class="launch-btn">
             Scan <span class="material-symbols-outlined">arrow_forward</span>
           </div>
@@ -429,7 +462,7 @@
         <h3>SQL Injection (SQLMap)</h3>
         <p>Advanced database penetration testing. Detect and exploit SQL injection flaws to audit database security and extract sensitive data.</p>
         <div class="action-row">
-          <span class="text-xs text-[#555]">Database Security</span>
+          <span class="text-xs" style="color: var(--neo-text-tertiary);">Database Security</span>
           <div class="launch-btn">
             Inject <span class="material-symbols-outlined">arrow_forward</span>
           </div>
@@ -446,7 +479,7 @@
         <h3>Source Code (SAST)</h3>
         <p>Powered by Semgrep. Scan your source code repositories or uploads for vulnerabilities, hardcoded secrets, and logic flaws.</p>
         <div class="action-row">
-          <span class="text-xs text-[#555]">Code Analysis</span>
+          <span class="text-xs" style="color: var(--neo-text-tertiary);">Code Analysis</span>
           <div class="launch-btn">
             Analyze <span class="material-symbols-outlined">arrow_forward</span>
           </div>
@@ -463,7 +496,7 @@
         <h3>SSL/TLS Encryption</h3>
         <p>Analyze SSL certificates for weak ciphers, expired chains, and protocol vulnerabilities (like Heartbleed) to ensure data transit security.</p>
         <div class="action-row">
-          <span class="text-xs text-[#555]">Encryption</span>
+          <span class="text-xs" style="color: var(--neo-text-tertiary);">Encryption</span>
           <div class="launch-btn">
             Scan <span class="material-symbols-outlined">arrow_forward</span>
           </div>

@@ -14,13 +14,33 @@
       --neo-accent: #f8fafc;
       --neo-blue: #3b82f6;
       --neo-red: #ef4444;
+      --input-bg: #111;
+      --input-border: #333;
+      --input-text: #fff;
+      --input-placeholder: #333;
+      --header-text: #fff;
+      --section-header-border: #1a1a1a;
+    }
+    
+    body.light-mode {
+      --neo-bg: #f8fafc;
+      --neo-card: #ffffff;
+      --neo-border: #e2e8f0;
+      --neo-accent: #0f172a;
+      --neo-blue: #2563eb;
+      --neo-red: #e11d48;
+      --input-bg: #f8fafc;
+      --input-border: #cbd5e1;
+      --input-text: #0f172a;
+      --input-placeholder: #94a3b8;
+      --header-text: #0f172a;
+      --section-header-border: #e2e8f0;
     }
     
     .main-content {
       max-width: 1400px;
       padding: 0 4rem;
       min-height: 100vh;
-      background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 60%);
     }
 
     /* --- PAGE HEADER --- */
@@ -44,7 +64,7 @@
 
     .header-tagline::before {
       content: '//';
-      color: white;
+      color: var(--neo-text-primary);
       opacity: 0.5;
     }
 
@@ -53,11 +73,11 @@
       line-height: 1;
       font-weight: 800;
       text-transform: uppercase;
-      color: white;
+      color: var(--header-text);
     }
 
     .header-title span {
-      color: #444; /* Dimmed "Settings" text */
+      color: var(--neo-text-secondary); /* Dimmed "Settings" text */
     }
 
     /* --- LAYOUT GRID --- */
@@ -76,6 +96,10 @@
       padding: 2.5rem;
       position: relative;
     }
+    
+    body.light-mode .form-card {
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+    }
 
     /* Card Header */
     .card-head {
@@ -84,7 +108,7 @@
       gap: 1rem;
       margin-bottom: 2.5rem;
       padding-bottom: 1.5rem;
-      border-bottom: 1px solid #1a1a1a;
+      border-bottom: 1px solid var(--section-header-border);
     }
 
     .card-icon {
@@ -94,7 +118,7 @@
 
     .card-head h2 {
       font-size: 1.25rem;
-      color: white;
+      color: var(--header-text);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -104,7 +128,7 @@
     .card-head p {
       margin: 0;
       font-size: 0.8rem;
-      color: #666;
+      color: var(--neo-text-secondary);
       display: block;
       margin-top: 0.25rem;
     }
@@ -126,16 +150,16 @@
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: #666;
+      color: var(--neo-text-tertiary);
       margin-bottom: 0.5rem;
       font-weight: 700;
     }
 
     .neo-input {
       width: 100%;
-      background: #111; /* Slightly lighter than card */
-      border: 1px solid #333;
-      color: white;
+      background: var(--input-bg); /* Slightly lighter than card */
+      border: 1px solid var(--input-border);
+      color: var(--input-text);
       padding: 0.9rem 1rem;
       border-radius: 6px;
       font-family: inherit;
@@ -147,11 +171,11 @@
       outline: none;
       border-color: var(--neo-blue);
       box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
-      background: #151518;
+      background: var(--input-bg);
     }
 
     .neo-input::placeholder {
-      color: #333;
+      color: var(--input-placeholder);
     }
 
     /* Read Only Styling */
@@ -190,14 +214,15 @@
     }
 
     .btn-submit.security-btn {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      color: #fff;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--neo-text-primary);
     }
     
     .btn-submit.security-btn:hover {
       background: var(--neo-red);
       border-color: var(--neo-red);
+      color: white;
       box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
     }
 

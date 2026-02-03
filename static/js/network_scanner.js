@@ -101,7 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        let contentStyle = 'color:#d4d4d8'; 
+        const isLight = document.body.classList.contains("light-mode");
+        let contentStyle = isLight ? 'color:#334155' : 'color:#d4d4d8'; 
         
         if (message.includes('[!]') || message.includes('[x]')) {
             contentStyle = 'color:#ef4444'; 
@@ -111,10 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
             contentStyle = 'color:#3b82f6'; 
         }
 
+        const timeColor = isLight ? "#64748b" : "#555";
+
         const line = document.createElement('div');
         line.className = 'log-line';
         line.innerHTML = `
-            <div class="log-time">${timeStr}</div>
+            <div class="log-time" style="color:${timeColor}">${timeStr}</div>
             <div class="log-content" style="${contentStyle}">${message}</div>
         `;
         

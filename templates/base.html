@@ -31,6 +31,17 @@
         --accent-blue: #3b82f6; /* Vibrant Blue */
         --accent-hover: #2563eb;
       }
+
+      /* LIGHT MODE OVERRIDES */
+      body.light-mode {
+        --bg-color: #f8fafc;
+        --surface-color: #ffffff;
+        --border-color: #e2e8f0;
+        --text-light: #0f172a;
+        --text-muted: #475569;
+        --accent-blue: #2563eb;
+        --accent-hover: #1d4ed8;
+      }
       
       body {
         font-family: 'Inter', sans-serif;
@@ -45,7 +56,17 @@
         color: var(--text-muted);
         position: relative;
         overflow-x: hidden; 
+        transition: background-color 0.3s ease, color 0.3s ease;
       }
+
+      body.light-mode {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+      }
+
+      /* Logo Visibility Logic */
+      .light-logo { display: none !important; }
+      body.light-mode .dark-logo { display: none !important; }
+      body.light-mode .light-logo { display: block !important; }
       
       /*******************************************/
       /* --- ELEGANT OVERLAY SCROLLBAR --- */
@@ -126,6 +147,11 @@
         top: 0;
         left: 0;
         z-index: 1000;
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-mode .navbar {
+        background-color: rgba(255, 255, 255, 0.95);
       }
       
       .navbar-container {
@@ -225,7 +251,7 @@
         position: absolute;
         right: 0;
         top: 150%; /* Pushed down slightly for better separation */
-        background-color: #0f0f11; /* Solid surface color */
+        background-color: var(--surface-color); /* Use variable */
         min-width: 280px; /* Wider to fit emails */
         box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.6);
         z-index: 1001;
@@ -233,6 +259,10 @@
         border-radius: 12px; /* Modern rounded corners */
         animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         padding: 0.5rem; /* Inner padding */
+      }
+
+      body.light-mode .profile-dropdown-content {
+        box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.1);
       }
       
       /* New: User Header (Name & Email) */
@@ -263,6 +293,10 @@
         border-bottom: 1px solid var(--border-color);
       }
 
+      body.light-mode .profile-dropdown-content .meta-data {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+
       .meta-row {
         display: flex;
         align-items: center;
@@ -285,6 +319,10 @@
         margin-top: 0.5rem;
         font-family: monospace; /* Security tool aesthetic */
         color: #71717a; /* Slightly darker gray */
+      }
+
+      body.light-mode .meta-row.audit-text {
+        color: #52525b;
       }
       
       /* Link Styling */
@@ -309,6 +347,10 @@
       .profile-dropdown-content a.details:hover {
         background-color: rgba(255, 255, 255, 0.05);
         color: var(--text-light);
+      }
+
+      body.light-mode .profile-dropdown-content a.details:hover {
+        background-color: rgba(0, 0, 0, 0.05);
       }
       
       .profile-dropdown-content a.logout-link {
@@ -409,6 +451,11 @@
         font-size: 0.8rem;
         border-top: 1px solid var(--border-color);
         position: relative;
+        transition: background-color 0.3s ease;
+      }
+
+      body.light-mode footer {
+        background-color: rgba(255, 255, 255, 0.95);
       }
 
       /* Subtle gradient line on top of footer */
@@ -505,10 +552,19 @@
     {% endblock %}
   </head>
   <body class="dark-mode">
+    <script>
+      (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') {
+          document.body.classList.add('light-mode');
+        }
+      })();
+    </script>
     <nav class="navbar">
       <div class="navbar-brand">
         <a href="{{ url_for('index') }}">
-          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="navbar-logo-img" />
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="navbar-logo-img dark-logo" />
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo_PDF.png') }}" alt="NetShieldAI Logo" class="navbar-logo-img light-logo" />
         </a>
       </div>
 
@@ -586,6 +642,11 @@
                 </a>
               {% endif %}
 
+              <a href="javascript:void(0)" class="details" onclick="toggleTheme()">
+                <span class="material-symbols-outlined" id="theme-icon">light_mode</span>
+                <span id="theme-text">Light Mode</span>
+              </a>
+
               <a href="{{ url_for('auth.account_settings') }}" class="details">
                 <span class="material-symbols-outlined">manage_accounts</span>
                 Account Settings
@@ -632,7 +693,8 @@
     <footer>
       <div class="footer-content">
         <div class="footer-left">
-          <img src="{{ url_for('static', filename='images/NS_Logo.png') }}" alt="NS Logo" class="footer-logo-img" />
+          <img src="{{ url_for('static', filename='images/NS_Logo.png') }}" alt="NS Logo" class="footer-logo-img dark-logo" />
+          <img src="{{ url_for('static', filename='images/NS_Logo_pdf.png') }}" alt="NS Logo" class="footer-logo-img light-logo" />
           <p>&copy; 2026 NetShieldAI. All rights reserved.</p>
         </div>
         
@@ -642,7 +704,26 @@
 
 
     <script>
+      function updateThemeUI() {
+        const isLight = document.body.classList.contains('light-mode');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+        
+        if (themeIcon && themeText) {
+          themeIcon.textContent = isLight ? 'dark_mode' : 'light_mode';
+          themeText.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+        }
+      }
+
+      function toggleTheme() {
+        const isLight = document.body.classList.toggle('light-mode');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        updateThemeUI();
+        window.dispatchEvent(new Event('themeChanged'));
+      }
+
       document.addEventListener('DOMContentLoaded', function () {
+        updateThemeUI();
         // Dropdown Logic
         const profileButton = document.getElementById('profile-button')
         const dropdownContent = document.getElementById('profile-dropdown-content')

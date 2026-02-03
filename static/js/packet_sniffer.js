@@ -111,7 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cleanedMessage = cleanedMessage.trim();
 
         // 3. Determine Color Style
-        let contentStyle = 'color:#d4d4d8'; 
+        const isLight = document.body.classList.contains("light-mode");
+        let contentStyle = isLight ? 'color:#334155' : 'color:#d4d4d8'; 
         
         const lowerMsg = cleanedMessage.toLowerCase();
         if (cleanedMessage.includes('[x]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {
@@ -124,10 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
              contentStyle = 'color:#3b82f6'; 
         }
 
+        const timeColor = isLight ? "#64748b" : "#555";
+
         const line = document.createElement('div');
         line.className = 'log-line';
         line.innerHTML = `
-            <div class="log-time">${timeStr}</div>
+            <div class="log-time" style="color:${timeColor}">${timeStr}</div>
             <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
         `;
         
@@ -146,6 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const icon = document.createElement('i');
         let iconClass = '';
         let textColorClass = '';
+        
+        const isLight = document.body.classList.contains("light-mode");
 
         switch (type) {
             case 'busy':
@@ -161,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 iconClass = 'fas fa-check-circle';
                 break;
             default: // ready
-                textColorClass = 'text-slate-400';
+                textColorClass = isLight ? 'text-slate-500' : 'text-slate-400';
                 iconClass = ''; 
                 break;
         }
@@ -362,9 +367,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderProtocolTable(lines) {
         if (!elements.protocolStatsBody) return;
         elements.protocolStatsBody.innerHTML = '';
+        const isLight = document.body.classList.contains("light-mode");
+        const textPrimary = isLight ? 'text-slate-700' : 'text-slate-300';
+        const textSecondary = isLight ? 'text-slate-500' : 'text-slate-400';
+        const hoverBg = isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/50';
 
         if (!Array.isArray(lines) || lines.length === 0) {
-            elements.protocolStatsBody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center text-slate-500">No data available.</td></tr>`;
+            elements.protocolStatsBody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center ${textSecondary}">No data available.</td></tr>`;
             return;
         }
 
@@ -381,10 +390,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const indent = Math.max(0, (leadingSpaces / 2) * 10); 
 
                 elements.protocolStatsBody.insertAdjacentHTML('beforeend', 
-                    `<tr class="hover:bg-slate-800/50 transition-colors">
+                    `<tr class="${hoverBg} transition-colors">
                         <td class="px-4 py-2 text-xs font-mono text-blue-400" style="padding-left: ${indent + 16}px">${name}</td>
-                        <td class="px-4 py-2 text-xs font-mono text-slate-300 text-right">${frames}</td>
-                        <td class="px-4 py-2 text-xs font-mono text-slate-400 text-right">${(bytes/1024).toFixed(1)} KB</td>
+                        <td class="px-4 py-2 text-xs font-mono ${textPrimary} text-right">${frames}</td>
+                        <td class="px-4 py-2 text-xs font-mono ${textSecondary} text-right">${(bytes/1024).toFixed(1)} KB</td>
                     </tr>`
                 );
             }
@@ -394,11 +403,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderConversationTable(lines) {
         if (!elements.conversationStatsBody) return;
         elements.conversationStatsBody.innerHTML = '';
+        const isLight = document.body.classList.contains("light-mode");
+        const textPrimary = isLight ? 'text-slate-700' : 'text-slate-300';
+        const textSecondary = isLight ? 'text-slate-500' : 'text-slate-500'; // Icon color
+        const hoverBg = isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/50';
 
         const validLines = (lines || []).filter(l => l.includes('<->'));
 
         if (validLines.length === 0) {
-            elements.conversationStatsBody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-slate-500">No conversations recorded.</td></tr>`;
+            elements.conversationStatsBody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center ${textSecondary}">No conversations recorded.</td></tr>`;
             return;
         }
 
@@ -421,11 +434,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             elements.conversationStatsBody.insertAdjacentHTML('beforeend',
-                `<tr class="hover:bg-slate-800/50 transition-colors">
+                `<tr class="${hoverBg} transition-colors">
                     <td class="px-4 py-2 text-xs font-mono text-emerald-400 truncate max-w-[150px]" title="${leftSide}">${leftSide}</td>
-                    <td class="px-4 py-2 text-center"><i class="fas fa-exchange-alt text-[10px] text-slate-600"></i></td>
+                    <td class="px-4 py-2 text-center"><i class="fas fa-exchange-alt text-[10px] ${textSecondary}"></i></td>
                     <td class="px-4 py-2 text-xs font-mono text-blue-400 truncate max-w-[150px]" title="${rightSide}">${rightSide}</td>
-                    <td class="px-4 py-2 text-xs font-mono text-slate-300 text-right">${displayBytes}</td>
+                    <td class="px-4 py-2 text-xs font-mono ${textPrimary} text-right">${displayBytes}</td>
                 </tr>`
             );
         });
@@ -438,9 +451,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const flows = flowsObj.flows || [];
         
         elements.flowsTableBody.innerHTML = '';
+        const isLight = document.body.classList.contains("light-mode");
+        const textPrimary = isLight ? 'text-slate-700' : 'text-slate-300';
+        const textSecondary = isLight ? 'text-slate-500' : 'text-slate-400';
+        const hoverBg = isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/50';
 
         if (!flows.length) {
-            elements.flowsTableBody.innerHTML = `<tr><td colspan="6" class="p-12 text-center text-slate-500 text-sm">No HTTP/Application flows recorded.</td></tr>`;
+            elements.flowsTableBody.innerHTML = `<tr><td colspan="6" class="p-12 text-center ${textSecondary} text-sm">No HTTP/Application flows recorded.</td></tr>`;
             return;
         }
 
@@ -448,13 +465,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const resp = (flow.response_code || flow.response_phrase) ? `${flow.response_code || ''} ${flow.response_phrase || ''}`.trim() : '-';
 
             elements.flowsTableBody.insertAdjacentHTML('beforeend',
-                `<tr class="hover:bg-slate-800/50 transition-colors">
-                    <td class="px-6 py-3 text-xs font-mono text-slate-400">${flow.timestamp || ''}</td>
+                `<tr class="${hoverBg} transition-colors">
+                    <td class="px-6 py-3 text-xs font-mono ${textSecondary}">${flow.timestamp || ''}</td>
                     <td class="px-6 py-3 text-xs font-mono text-blue-400">${flow.src_ip || '-'}</td>
                     <td class="px-6 py-3 text-xs font-mono text-emerald-400">${flow.dst_ip || '-'}</td>
-                    <td class="px-6 py-3 text-xs text-slate-300 font-bold">${flow.method || '-'}</td>
-                    <td class="px-6 py-3 text-xs text-slate-300 truncate max-w-[200px]" title="${flow.uri}">${flow.uri || '-'}</td>
-                    <td class="px-6 py-3 text-xs text-slate-300">${resp}</td>
+                    <td class="px-6 py-3 text-xs ${textPrimary} font-bold">${flow.method || '-'}</td>
+                    <td class="px-6 py-3 text-xs ${textPrimary} truncate max-w-[200px]" title="${flow.uri}">${flow.uri || '-'}</td>
+                    <td class="px-6 py-3 text-xs ${textPrimary}">${resp}</td>
                 </tr>`
             );
         });
@@ -463,13 +480,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderAnomalies(report) {
         const ar = report.security_anomaly_report || {};
         if (elements.anomalySummaryText) elements.anomalySummaryText.textContent = ar.summary || 'No anomalies detected.';
+        
+        const isLight = document.body.classList.contains("light-mode");
+        const textSecondary = isLight ? 'text-slate-500' : 'text-slate-500';
+        const textCode = isLight ? 'text-slate-700' : 'text-slate-300';
+        const bgCode = isLight ? 'bg-slate-100' : 'bg-slate-950/50';
+        const borderCode = isLight ? 'border-slate-200' : 'border-slate-800';
 
         function renderList(bodyEl, arr) {
             if (!bodyEl) return;
             bodyEl.innerHTML = '';
             
             if (!arr || !arr.length) {
-                bodyEl.innerHTML = `<tr><td class="px-4 py-4 text-center text-slate-500">None detected.</td></tr>`;
+                bodyEl.innerHTML = `<tr><td class="px-4 py-4 text-center ${textSecondary}">None detected.</td></tr>`;
                 return;
             }
             
@@ -478,8 +501,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 bodyEl.insertAdjacentHTML('beforeend',
                     `<tr>
                         <td class="px-4 py-3 align-top">
-                            <div class="text-[10px] text-slate-500 mb-1 font-mono">EVENT #${idx + 1}</div>
-                            <pre class="text-[11px] font-mono whitespace-pre-wrap text-slate-300 bg-slate-950/50 p-2 rounded border border-slate-800">${jsonStr}</pre>
+                            <div class="text-[10px] ${textSecondary} mb-1 font-mono">EVENT #${idx + 1}</div>
+                            <pre class="text-[11px] font-mono whitespace-pre-wrap ${textCode} ${bgCode} p-2 rounded border ${borderCode}">${jsonStr}</pre>
                         </td>
                     </tr>`
                 );
@@ -495,13 +518,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const packets = report.dissected_packets || [];
         elements.packetsTableBody.innerHTML = '';
+        
+        const isLight = document.body.classList.contains("light-mode");
+        const textPrimary = isLight ? 'text-slate-700' : 'text-slate-300';
+        const textSecondary = isLight ? 'text-slate-500' : 'text-slate-500';
+        const textMuted = isLight ? 'text-slate-400' : 'text-slate-400';
+        const hoverBg = isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/50';
 
         if (!packets.length) {
             elements.packetsTableBody.innerHTML = `
                 <tr>
                     <td colspan="6" class="p-12 text-center">
                         <div class="text-slate-600 mb-2"><i class="fas fa-network-wired text-4xl opacity-20"></i></div>
-                        <p class="text-slate-500">Start a capture to view dissected packets.</p>
+                        <p class="${textSecondary}">Start a capture to view dissected packets.</p>
                     </td>
                 </tr>`;
             return;
@@ -529,20 +558,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             elements.packetsTableBody.insertAdjacentHTML('beforeend',
-                `<tr class="hover:bg-slate-800/50 transition-colors">
-                    <td class="px-6 py-2 text-xs font-mono text-slate-500">${frameNum}</td>
-                    <td class="px-6 py-2 text-xs font-mono text-slate-400">${parseFloat(timeRel).toFixed(4)}</td>
+                `<tr class="${hoverBg} transition-colors">
+                    <td class="px-6 py-2 text-xs font-mono ${textSecondary}">${frameNum}</td>
+                    <td class="px-6 py-2 text-xs font-mono ${textMuted}">${parseFloat(timeRel).toFixed(4)}</td>
                     <td class="px-6 py-2 text-xs font-mono text-blue-400">${src}</td>
                     <td class="px-6 py-2 text-xs font-mono text-emerald-400">${dst}</td>
-                    <td class="px-6 py-2 text-xs font-bold text-slate-300">${proto}</td>
-                    <td class="px-6 py-2 text-xs font-mono text-slate-400">${len}</td>
+                    <td class="px-6 py-2 text-xs font-bold ${textPrimary}">${proto}</td>
+                    <td class="px-6 py-2 text-xs font-mono ${textMuted}">${len}</td>
                 </tr>`
             );
         });
         
         if (packets.length > 500) {
             elements.packetsTableBody.insertAdjacentHTML('beforeend', 
-                `<tr><td colspan="6" class="p-2 text-center text-xs text-slate-500 italic">... ${packets.length - 500} more packets not shown ...</td></tr>`
+                `<tr><td colspan="6" class="p-2 text-center text-xs ${textSecondary} italic">... ${packets.length - 500} more packets not shown ...</td></tr>`
             );
         }
     }

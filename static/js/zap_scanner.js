@@ -66,7 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateScanStatus(message, type = 'info') {
         scanStatus.textContent = message;
-        scanStatus.style.color = '#a1a1aa'; // Default gray
+        const isLight = document.body.classList.contains("light-mode");
+        scanStatus.style.color = isLight ? '#64748b' : '#a1a1aa'; // Slate-500 / Zinc-400
         
         if (type === 'success') scanStatus.style.color = '#10b981'; // Green
         else if (type === 'error') scanStatus.style.color = '#ef4444'; // Red
@@ -86,7 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
         cleanedMessage = cleanedMessage.trim();
 
         // 3. Determine Color Style
-        let contentStyle = 'color:#d4d4d8'; // Default grey-white
+        const isLight = document.body.classList.contains("light-mode");
+        let contentStyle = isLight ? 'color:#334155' : 'color:#d4d4d8'; // Slate-700 / Zinc-300
         
         const lowerMsg = cleanedMessage.toLowerCase();
         if (cleanedMessage.includes('[!]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {
@@ -97,11 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
             contentStyle = 'color:#3b82f6'; // Blue
         }
 
+        const timeColor = isLight ? "#64748b" : "#555";
+
         const line = document.createElement('div');
         line.className = 'log-line';
         // Flex layout: Time on left, Content on right
         line.innerHTML = `
-            <div class="log-time">${timeStr}</div>
+            <div class="log-time" style="color:${timeColor}">${timeStr}</div>
             <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
         `;
         

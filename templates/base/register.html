@@ -4,18 +4,15 @@
 
 {% block content %}
   <div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
-    <div
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[120px] pointer-events-none">
-    </div>
     
     <div
-      class="relative z-10 flex w-full max-w-[1000px] min-h-[600px] bg-[#0a0a0c] rounded-2xl border border-[#27272a] shadow-2xl overflow-hidden transition-all duration-500">
+      class="relative z-10 flex w-full max-w-[1000px] min-h-[600px] bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden transition-all duration-500">
     
-      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[#0a0a0c] flex flex-col justify-center relative">
+      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[var(--neo-card)] flex flex-col justify-center relative">
     
         <div class="mb-8">
-          <h3 class="text-2xl font-bold text-white mb-2" id="step-title">Identity</h3>
-          <p class="text-gray-500 text-sm" id="step-desc">Establish your primary access credentials.</p>
+          <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2" id="step-title">Identity</h3>
+          <p class="text-[var(--neo-text-secondary)] text-sm" id="step-desc">Establish your primary access credentials.</p>
         </div>
 
         {% with messages=get_flashed_messages(with_categories=true) %}
@@ -41,16 +38,16 @@
           <div class="form-step transition-opacity duration-300" id="step1">
             <div class="space-y-4">
               <div>
-                {{ form.username.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-                {{ form.username(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
-                placeholder-gray-700 req-input') }}
+                {{ form.username.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+                {{ form.username(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
+                placeholder-[var(--neo-text-label)] req-input') }}
                 {% for error in form.username.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
                 </div>
               <div>
-                {{ form.email.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-                {{ form.email(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1 focus:outline-none
-                focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300 placeholder-gray-700 req-input')
+                {{ form.email.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+                {{ form.email(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none
+                focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)] req-input')
                 }}
                 {% for error in form.email.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
                 </div>
@@ -60,16 +57,16 @@
           <div class="form-step hidden opacity-0 transition-opacity duration-300" id="step2">
             <div class="space-y-4">
               <div>
-                {{ form.full_name.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-                {{ form.full_name(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
-                placeholder-gray-700 req-input') }}
+                {{ form.full_name.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+                {{ form.full_name(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
+                placeholder-[var(--neo-text-label)] req-input') }}
               </div>
               <div>
-                {{ form.phone_number.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-                {{ form.phone_number(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
-                placeholder-gray-700 req-input') }}
+                {{ form.phone_number.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+                {{ form.phone_number(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
+                placeholder-[var(--neo-text-label)] req-input') }}
               </div>
             </div>
           </div>
@@ -77,16 +74,16 @@
           <div class="form-step hidden opacity-0 transition-opacity duration-300" id="step3">
             <div class="space-y-4">
               <div>
-                {{ form.organization.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-                {{ form.organization(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
-                placeholder-gray-700 req-input') }}
+                {{ form.organization.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+                {{ form.organization(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
+                placeholder-[var(--neo-text-label)] req-input') }}
                 </div>
                 <div>
-                  {{ form.job_title.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-                  {{ form.job_title(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
-                  focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
-                  placeholder-gray-700 req-input') }}
+                  {{ form.job_title.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+                  {{ form.job_title(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
+                  focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
+                  placeholder-[var(--neo-text-label)] req-input') }}
                 </div>
                 </div>
           </div>
@@ -94,17 +91,17 @@
           <div class="form-step hidden opacity-0 transition-opacity duration-300" id="step4">
             <div class="space-y-4">
               <div>
-                {{ form.password.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-                {{ form.password(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
-                placeholder-gray-700 req-input') }}
+                {{ form.password.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+                {{ form.password(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
+                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
+                placeholder-[var(--neo-text-label)] req-input') }}
                 {% for error in form.password.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
                 </div>
                 <div>
-                  {{ form.confirm_password.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-                  {{ form.confirm_password(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1
-                  focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300
-                  placeholder-gray-700 req-input') }}
+                  {{ form.confirm_password.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+                  {{ form.confirm_password(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
+                  focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
+                  placeholder-[var(--neo-text-label)] req-input') }}
                   {% for error in form.confirm_password.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{%
                   endfor %}
                 </div>
@@ -113,7 +110,7 @@
 
           <div class="flex gap-3 mt-8">
             <button type="button" id="prevBtn"
-              class="w-1/3 bg-[#121214] border border-[#27272a] text-gray-400 font-bold py-3 rounded-lg hidden hover:text-white transition">Back</button>
+              class="w-1/3 bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-label)] font-bold py-3 rounded-lg hidden hover:text-[var(--neo-text-primary)] transition">Back</button>
             <button type="button" id="nextBtn"
               class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5">Next
               Step</button>
@@ -123,35 +120,34 @@
           </div>
         </form>
 
-        <p class="text-sm text-gray-500 mt-6 text-center">
+        <p class="text-sm text-[var(--neo-text-secondary)] mt-6 text-center">
           Already have an account? <a href="{{ url_for('auth.login') }}"
-            class="text-blue-500 hover:text-blue-400 font-medium transition">Log in</a>
+            class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] font-medium transition opacity-80 hover:opacity-100">Log in</a>
         </p>
       </div>
 
       <div
-        class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[#050505] bg-[radial-gradient(#1d4ed833_1px,transparent_1px)] [background-size:20px_20px]">
+        class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[var(--bg-color)] bg-[radial-gradient(var(--neo-text-label)_1px,transparent_1px)] [background-size:20px_20px] border-l border-[var(--neo-border)]">
       
-        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
-        <div class="absolute inset-0 bg-blue-900/5"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-color)] via-transparent to-transparent"></div>
 
         <div class="relative z-10">
-          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo"
-            class="h-12 w-auto drop-shadow-lg" />
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg dark-logo" />
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo_PDF.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg light-logo" />
         </div>
 
         <div class="relative z-10 mb-8">
           <div id="dynamic-text">
-            <h2 class="text-3xl font-bold text-white mb-4 leading-tight drop-shadow-md">Step 1: Identity</h2>
-            <p class="text-gray-400 text-sm leading-relaxed border-l-2 border-blue-500 pl-4">
+            <h2 class="text-3xl font-bold text-[var(--neo-text-primary)] mb-4 leading-tight drop-shadow-md">Step 1: Identity</h2>
+            <p class="text-[var(--neo-text-secondary)] text-sm leading-relaxed border-l-2 border-[var(--neo-blue)] pl-4">
               Initializing secure handshake. Please provide valid identification parameters to begin the registration sequence.
             </p>
           </div>
           <div class="flex gap-2 mt-6 pl-4" id="step-indicators">
-            <div class="w-8 h-1 bg-blue-500 rounded-full transition-all duration-300"></div>
-            <div class="w-2 h-1 bg-gray-700 rounded-full transition-all duration-300"></div>
-            <div class="w-2 h-1 bg-gray-700 rounded-full transition-all duration-300"></div>
-            <div class="w-2 h-1 bg-gray-700 rounded-full transition-all duration-300"></div>
+            <div class="w-8 h-1 bg-[var(--neo-blue)] rounded-full transition-all duration-300"></div>
+            <div class="w-2 h-1 bg-[var(--neo-text-label)] rounded-full transition-all duration-300"></div>
+            <div class="w-2 h-1 bg-[var(--neo-text-label)] rounded-full transition-all duration-300"></div>
+            <div class="w-2 h-1 bg-[var(--neo-text-label)] rounded-full transition-all duration-300"></div>
           </div>
         </div>
       </div>

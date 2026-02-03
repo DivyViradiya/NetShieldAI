@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        let contentStyle = 'color:#d4d4d8'; 
+        let contentStyle = 'color:var(--neo-text-muted)'; 
         
         // Parse SQLMap specific logs for styling
         if (message.includes('[!]') || message.includes('CRITICAL')) {
@@ -291,14 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const row = `
                 <tr>
-                    <td style="color: white; font-weight:600;">${v.type || 'Unknown'}</td>
+                    <td style="color: var(--neo-text-main); font-weight:600;">${v.type || 'Unknown'}</td>
                     <td>
-                        <div style="font-family: monospace; font-size: 0.75rem; color: #a1a1aa; background: #111; padding: 4px; border-radius: 4px; max-width: 300px; overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${v.payload}">
+                        <div style="font-family: monospace; font-size: 0.75rem; color: var(--neo-text-muted); background: var(--neo-input); padding: 4px; border-radius: 4px; max-width: 300px; overflow-x: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${v.payload}">
                             ${v.payload || 'N/A'}
                         </div>
                     </td>
                     <td>${riskBadge}</td>
-                    <td style="color: #71717a; font-size: 0.75rem;">${v.title || 'SQL Injection Detected'}</td>
+                    <td style="color: var(--neo-text-muted); font-size: 0.75rem;">${v.title || 'SQL Injection Detected'}</td>
                 </tr>`;
                 elements.vulnTableBody.insertAdjacentHTML('beforeend', row);
             });

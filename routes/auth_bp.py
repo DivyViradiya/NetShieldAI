@@ -268,6 +268,6 @@ def account_settings():
             flash('Your password has been changed successfully.', 'success')
             return redirect(url_for('auth.account_settings'))
 
-    return render_template('account_settings.html', 
+    return render_template('base/account_settings.html', 
                            profile_form=profile_form, 
                            security_form=security_form)

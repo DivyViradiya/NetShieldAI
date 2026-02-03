@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
 
   <style>
-    /* --- NEO-TECH THEME VARIABLES (Identical to Network Scanner) --- */
+    /* --- NEO-TECH THEME VARIABLES --- */
     :root {
       /* Palette */
       --neo-bg: #050505;
@@ -41,6 +41,22 @@
       --radius-card: 8px;
       --radius-sm: 6px;
     }
+
+    body.light-mode {
+      --neo-bg: #f8fafc;
+      --neo-card: #ffffff;
+      --neo-card-hover: #f1f5f9;
+      --neo-input: #f1f5f9;
+      --neo-border: #e2e8f0;
+      
+      --neo-text-main: #0f172a;
+      --neo-text-muted: #64748b;
+      
+      --neo-blue: #2563eb;
+      --neo-red: #e11d48;
+      --neo-green: #059669;
+      --neo-amber: #d97706;
+    }
     
     /* Nav Link Adjustment */
     .nav-back {
@@ -57,7 +73,7 @@
       font-weight: 600;
     }
     .nav-back:hover {
-      color: white;
+      color: var(--neo-text-main);
     }
     
     /* --- GLOBAL BASE --- */
@@ -174,7 +190,7 @@
     }
     
     .metric-card:hover {
-      border-color: #444;
+      border-color: var(--neo-text-muted);
       transform: translateY(-2px);
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     }
@@ -194,14 +210,14 @@
       font-size: 2rem;
       font-weight: 700;
       line-height: 1;
-      color: white;
+      color: var(--neo-text-main);
       z-index: 2;
     }
     
     .metric-info {
       margin-top: 6px;
       font-size: 0.7rem;
-      color: #666;
+      color: var(--neo-text-muted);
       font-weight: 400;
       z-index: 2;
     }
@@ -219,7 +235,7 @@
       width: 100%;
       background: var(--neo-input);
       border: 1px solid var(--neo-border);
-      color: white;
+      color: var(--neo-text-main);
       padding: 0 12px 0 40px;
       border-radius: var(--radius-sm);
       height: 42px;
@@ -227,10 +243,15 @@
       font-family: var(--font-mono);
       transition: all 0.2s;
     }
+    
+    body.light-mode .dash-input:focus {
+        background: #ffffff;
+    }
+
     .dash-input:focus {
       outline: none;
       border-color: var(--neo-blue);
-      background: #000;
+      background: var(--neo-bg);
     }
     
     .btn-dash {
@@ -254,7 +275,7 @@
       justify-content: center;
     }
     .btn-dash:hover:not(:disabled) {
-      color: white;
+      color: var(--neo-text-main);
       border-color: var(--neo-blue);
       background: var(--neo-card-hover);
     }
@@ -292,6 +313,12 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
+    body.light-mode .text-gradient {
+      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
     .badge-pill {
       display: inline-flex;
       align-items: center;
@@ -348,7 +375,7 @@
     .panel-title {
       font-size: 0.9rem;
       font-weight: 700;
-      color: white;
+      color: var(--neo-text-main);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -372,15 +399,15 @@
     }
     .dash-table td {
       padding: 0.75rem 1.5rem;
-      color: #e4e4e7;
-      border-bottom: 1px solid #1a1a1a;
+      color: var(--neo-text-main);
+      border-bottom: 1px solid var(--neo-border);
       font-size: 0.8rem;
       font-family: var(--font-mono);
     }
     
     /* --- DROPDOWNS --- */
     .custom-dropdown {
-      background: #0a0a0c;
+      background: var(--neo-card);
       border: 1px solid var(--neo-border);
       border-radius: var(--radius-sm);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
@@ -389,6 +416,10 @@
       z-index: 999;
       animation: dropdownSlide 0.2s ease-out forwards;
       transform-origin: top;
+    }
+
+    body.light-mode .custom-dropdown {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
     
     .dropdown-link {
@@ -405,8 +436,8 @@
     }
     
     .dropdown-link:hover {
-      background: #151515;
-      color: white;
+      background: var(--neo-card-hover);
+      color: var(--neo-text-main);
       border-left-color: var(--neo-blue);
       padding-left: 16px;
     }
@@ -491,7 +522,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #080808;
+      background: var(--neo-card);
       flex-shrink: 0;
       height: 36px;
     }
@@ -511,7 +542,7 @@
     .term-window {
       flex: 1;
       padding: 0.75rem 1.5rem;
-      background: #050505;
+      background: var(--neo-input);
       overflow-y: auto;
     }
     
@@ -526,7 +557,7 @@
       font-size: 0.75rem;
       line-height: 1.5;
       padding: 2px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--neo-border);
     }
     .log-line:last-child { border-bottom: none; }
     
@@ -553,7 +584,7 @@
     .tab-pills {
       display: flex;
       gap: 4px;
-      background: #000;
+      background: var(--neo-input);
       padding: 4px;
       border-radius: 6px;
       border: 1px solid var(--neo-border);
@@ -570,7 +601,7 @@
       letter-spacing: 0.05em;
     }
     .tab-pill.active { background: var(--neo-blue); color: black; }
-    .tab-pill:hover:not(.active) { color: white; }
+    .tab-pill:hover:not(.active) { color: var(--neo-text-main); }
     
     /* Mobile Responsive */
     @media (max-width: 1200px) {
@@ -641,7 +672,7 @@
         
         <div class="status-row">
           <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono); display: flex; align-items: center; gap: 8px;">
-            TARGET: <span id="targetDisplay" style="color: white;">---</span>
+            TARGET: <span id="targetDisplay" style="color: var(--neo-text-main);">---</span>
           </div>
           <div class="badge-pill">
             <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
@@ -694,7 +725,7 @@
               </thead>
               <tbody id="vulnTableBody">
                 <tr>
-                  <td colspan="4" style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono);">
+                  <td colspan="4" style="text-align:center; padding: 3rem; color: var(--neo-text-muted); font-family: var(--font-mono);">
                     INITIATE A SCAN TO VIEW RESULTS...
                   </td>
                 </tr>
@@ -702,12 +733,12 @@
             </table>
           </div>
 
-          <div id="rawContent" class="hidden absolute inset-0 flex flex-col p-4 bg-black">
+          <div id="rawContent" class="hidden absolute inset-0 flex flex-col p-4" style="background: var(--neo-input);">
             <div class="flex justify-between items-center mb-2">
-              <span style="font-size:0.75rem; color:#666; font-weight:700; font-family:var(--font-mono);" id="rawScanTypeDisplay">RAW OUTPUT</span>
+              <span style="font-size:0.75rem; color:var(--neo-text-muted); font-weight:700; font-family:var(--font-mono);" id="rawScanTypeDisplay">RAW OUTPUT</span>
               <button id="copyResultsBtn" class="btn-dash btn-secondary" style="height:28px; font-size:0.7rem;">COPY</button>
             </div>
-            <div id="resultsContent" class="term-text" style="flex:1; border:1px solid #333; padding:1rem; border-radius:8px; font-family: var(--font-mono); font-size:0.75rem; color:#aaa; overflow:auto; white-space: pre;">
+            <div id="resultsContent" class="term-text" style="flex:1; border:1px solid var(--neo-border); padding:1rem; border-radius:8px; font-family: var(--font-mono); font-size:0.75rem; color:var(--neo-text-muted); overflow:auto; white-space: pre;">
               // Buffer Empty
             </div>
           </div>
@@ -775,20 +806,20 @@
           <h5 class="panel-title" style="margin-bottom: 1rem; font-size: 0.8rem;">Risk Distribution</h5>
           <div class="flex flex-col gap-4">
             <div>
-              <div class="flex justify-between text-xs" style="color:#a1a1aa; margin-bottom:4px; font-family: var(--font-mono);">
+              <div class="flex justify-between text-xs" style="color:var(--neo-text-muted); margin-bottom:4px; font-family: var(--font-mono);">
                 <span style="color: var(--neo-red); font-weight:600;">CRITICAL</span>
                 <span id="criticalCount">0</span>
               </div>
-              <div style="height:4px; background:#222; border-radius:2px;">
+              <div style="height:4px; background:var(--neo-border); border-radius:2px;">
                 <div id="criticalBar" style="width:0%; height:100%; background:var(--neo-red); border-radius:2px; transition: width 0.5s;"></div>
               </div>
             </div>
             <div>
-              <div class="flex justify-between text-xs" style="color:#a1a1aa; margin-bottom:4px; font-family: var(--font-mono);">
+              <div class="flex justify-between text-xs" style="color:var(--neo-text-muted); margin-bottom:4px; font-family: var(--font-mono);">
                 <span style="color: var(--neo-amber); font-weight:600;">HIGH</span>
                 <span id="highCount">0</span>
               </div>
-              <div style="height:4px; background:#222; border-radius:2px;">
+              <div style="height:4px; background:var(--neo-border); border-radius:2px;">
                 <div id="highBar" style="width:0%; height:100%; background:var(--neo-amber); border-radius:2px; transition: width 0.5s;"></div>
               </div>
             </div>

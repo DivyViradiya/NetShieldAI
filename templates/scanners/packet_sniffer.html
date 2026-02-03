@@ -41,6 +41,22 @@
       --radius-card: 8px;
       --radius-sm: 6px;
     }
+
+    body.light-mode {
+      --neo-bg: #f8fafc;
+      --neo-card: #ffffff;
+      --neo-card-hover: #f1f5f9;
+      --neo-input: #ffffff;
+      --neo-border: #e2e8f0;
+      
+      --neo-text-main: #0f172a;
+      --neo-text-muted: #64748b;
+      
+      --neo-blue: #2563eb;
+      --neo-red: #e11d48;
+      --neo-green: #059669;
+      --neo-amber: #d97706;
+    }
     
     /* --- GLOBAL BASE --- */
     body {
@@ -201,9 +217,13 @@
     
     .dash-input {
       width: 100%; background: var(--neo-input); border: 1px solid var(--neo-border);
-      color: white; padding: 0 12px 0 40px; border-radius: var(--radius-sm);
+      color: var(--neo-text-main); padding: 0 12px 0 40px; border-radius: var(--radius-sm);
       height: 42px;
       font-size: 0.85rem; transition: border-color 0.2s; font-family: var(--font-mono);
+    }
+
+    body.light-mode .dash-input:focus {
+        background: #ffffff;
     }
 
     /* Stop white background on autofill */
@@ -212,10 +232,10 @@
     .dash-input:-webkit-autofill:focus, 
     .dash-input:-webkit-autofill:active {
         -webkit-box-shadow: 0 0 0 30px var(--neo-input) inset !important;
-        -webkit-text-fill-color: white !important;
+        -webkit-text-fill-color: var(--neo-text-main) !important;
         transition: background-color 5000s ease-in-out 0s;
     }
-    .dash-input:focus { outline: none; border-color: var(--neo-blue); background: #000; }
+    .dash-input:focus { outline: none; border-color: var(--neo-blue); background: var(--neo-bg); }
     
     /* Buttons */
     .btn-dash {
@@ -226,7 +246,7 @@
       white-space: nowrap; text-transform: uppercase; letter-spacing: 0.05em;
       background: var(--neo-input);
     }
-    .btn-dash:hover:not(:disabled) { color: white; border-color: var(--neo-blue); background: var(--neo-card-hover); }
+    .btn-dash:hover:not(:disabled) { color: var(--neo-text-main); border-color: var(--neo-blue); background: var(--neo-card-hover); }
     .btn-icon-only { padding: 0; width: 42px; justify-content: center; }
     
     .btn-primary {
@@ -273,13 +293,13 @@
       height: 50px;
     }
     .panel-title { 
-      font-size: 0.9rem; font-weight: 700; color: white; 
+      font-size: 0.9rem; font-weight: 700; color: var(--neo-text-main); 
       text-transform: uppercase; letter-spacing: 0.05em;
     }
     
     /* Tab Pills */
     .tab-pills {
-      display: flex; gap: 4px; background: #000;
+      display: flex; gap: 4px; background: var(--neo-input);
       padding: 4px; border-radius: 6px; border: 1px solid var(--neo-border);
     }
     .tab-pill {
@@ -290,7 +310,8 @@
     .tab-pill.active {
       background: var(--neo-blue); color: black;
     }
-    .tab-pill:hover:not(.active) { color: white; }
+    body.light-mode .tab-pill.active { color: white; }
+    .tab-pill:hover:not(.active) { color: var(--neo-text-main); }
     
     .panel-content { position: relative; flex: 1; overflow: hidden; width: 100%; height: 100%; }
     
@@ -304,15 +325,15 @@
       position: sticky; top: 0; z-index: 5;
     }
     .dash-table td {
-      padding: 0.75rem 1.5rem; color: #e4e4e7;
-      border-bottom: 1px solid #1a1a1a; font-size: 0.8rem;
+      padding: 0.75rem 1.5rem; color: var(--neo-text-main);
+      border-bottom: 1px solid var(--neo-border); font-size: 0.8rem;
       font-family: var(--font-mono);
     }
     .dash-table tr:last-child td { border-bottom: none; }
 
     /* --- DROPDOWNS --- */
     .custom-dropdown {
-      background: #0a0a0c;
+      background: var(--neo-card);
       border: 1px solid var(--neo-border);
       border-radius: var(--radius-sm);
       box-shadow: 0 10px 30px rgba(0,0,0,0.9);
@@ -321,6 +342,10 @@
       z-index: 999;
       animation: dropdownSlide 0.2s ease-out forwards;
       transform-origin: top;
+    }
+
+    body.light-mode .custom-dropdown {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
     .dropdown-link {
@@ -337,8 +362,8 @@
     }
 
     .dropdown-link:hover {
-      background: #151515;
-      color: white;
+      background: var(--neo-card-hover);
+      color: var(--neo-text-main);
       border-left-color: var(--neo-blue);
       padding-left: 16px; 
     }
@@ -422,7 +447,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #080808;
+      background: var(--neo-card);
       flex-shrink: 0;
       height: 36px;
     }
@@ -442,7 +467,7 @@
     .term-window { 
       flex: 1;
       padding: 0.75rem 1.5rem;
-      background: #050505;
+      background: var(--neo-input);
       overflow-y: auto; 
     }
 
@@ -459,7 +484,7 @@
         font-size: 0.75rem;
         line-height: 1.5;
         padding: 2px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid var(--neo-border);
     }
     .log-line:last-child { border-bottom: none; }
     
@@ -479,6 +504,11 @@
     .text-gradient {
       /* Simplified solid or subtle gradient for high contrast */
       background: linear-gradient(180deg, #fff 0%, #ccc 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    body.light-mode .text-gradient {
+      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     

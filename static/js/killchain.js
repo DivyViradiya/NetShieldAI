@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- UI HELPERS ---
 
   function updateStatus(text, type = "idle") {
-    let color = "#52525b"; // Default gray
+    let color = document.body.classList.contains("light-mode") ? "#64748b" : "#52525b"; // Default Slate/Gray
     if (type === "busy") color = "#eab308";
     if (type === "success") color = "#10b981";
     if (type === "error") color = "#ef4444";
@@ -100,7 +100,9 @@ document.addEventListener("DOMContentLoaded", () => {
       second: '2-digit'
     });
 
-    let style = "color: #d4d4d8;";
+    const isLight = document.body.classList.contains("light-mode");
+    let style = isLight ? "color: #334155;" : "color: #d4d4d8;"; // Slate-700 / Zinc-300
+    
     if (msg.includes("[x]") || msg.includes("CRITICAL") || msg.includes("ERROR") || msg.includes("Failed")) {
       style = "color: #ef4444;";
     } else if (msg.includes("[+]") || msg.includes("SUCCESS") || msg.includes("Complete")) {
@@ -110,13 +112,15 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (msg.includes("[*]") || msg.includes("PHASE")) {
       style = "color: #3b82f6;";
     } else if (msg.includes("[>]")) {
-      style = "color: #a1a1aa;";
+      style = isLight ? "color: #64748b;" : "color: #a1a1aa;";
     }
+
+    const timeColor = isLight ? "#64748b" : "#555";
 
     const line = document.createElement("div");
     line.className = "log-line";
     line.innerHTML = `
-        <div style="color: #555; width: 70px; flex-shrink: 0;">${timeStr}</div>
+        <div style="color: ${timeColor}; width: 70px; flex-shrink: 0;">${timeStr}</div>
         <div class="log-content" style="${style} flex: 1; white-space: pre-wrap;">${msg}</div>
     `;
     els.logOutput.appendChild(line);

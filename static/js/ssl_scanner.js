@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateStatus(msg, type) {
         if (!elements.scanStatus) return;
         elements.scanStatus.textContent = msg;
-        elements.scanStatus.style.color = '#a1a1aa';
+        elements.scanStatus.style.color = 'var(--neo-text-muted)';
         if (type === 'success') elements.scanStatus.style.color = '#10b981';
         if (type === 'error') elements.scanStatus.style.color = '#ef4444';
         if (type === 'busy') elements.scanStatus.style.color = '#eab308';
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
         var cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "").trim();
 
-        var contentStyle = 'color:#d4d4d8';
+        var contentStyle = 'color:var(--neo-text-muted)';
         var lowerMsg = cleanedMessage.toLowerCase();
         
         if (cleanedMessage.includes('[!]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {
@@ -107,10 +107,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if(elements.summaryRenegotiation) elements.summaryRenegotiation.textContent = '---';
         
         if(elements.serverConfigDetails) elements.serverConfigDetails.innerHTML = 'Waiting for scan...';
-        if(elements.certificateChainContainer) elements.certificateChainContainer.innerHTML = '<div style="text-align:center; color: #555; padding: 2rem;">Waiting for scan...</div>';
-        if(elements.protocolsTableBody) elements.protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: #555; padding: 2rem;">Waiting for scan...</td></tr>';
-        if(elements.ciphersTableBody) elements.ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #555; padding: 2rem;">Waiting for scan...</td></tr>';
-        if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = '<li style="color: #666;">Waiting for scan...</li>';
+        if(elements.certificateChainContainer) elements.certificateChainContainer.innerHTML = '<div style="text-align:center; color: var(--neo-text-muted); padding: 2rem;">Waiting for scan...</div>';
+        if(elements.protocolsTableBody) elements.protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: var(--neo-text-muted); padding: 2rem;">Waiting for scan...</td></tr>';
+        if(elements.ciphersTableBody) elements.ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: var(--neo-text-muted); padding: 2rem;">Waiting for scan...</td></tr>';
+        if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = '<li style="color: var(--neo-text-muted);">Waiting for scan...</li>';
         if(elements.resultsContent) elements.resultsContent.textContent = '// Raw JSON report';
         
         [elements.downloadReportBtn, elements.analyzeReportDropdown].forEach(function(btn) {
@@ -230,22 +230,22 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderVulnerabilities(vulnerabilities) {
         elements.vulnerabilitiesList.innerHTML = '';
         if (!vulnerabilities || vulnerabilities.length === 0) {
-            elements.vulnerabilitiesList.innerHTML = '<li style="color: #10b981; font-weight: 500;">No vulnerabilities detected.</li>';
+            elements.vulnerabilitiesList.innerHTML = '<li style="color: var(--neo-green); font-weight: 500;">No vulnerabilities detected.</li>';
             return;
         }
 
         var riskColors = {
-            'Critical': 'border-left: 3px solid #ef4444; color: #fca5a5;',
-            'High': 'border-left: 3px solid #ef4444; color: #fca5a5;',
-            'Medium': 'border-left: 3px solid #f97316; color: #fdba74;',
-            'Low': 'border-left: 3px solid #eab308; color: #fde047;'
+            'Critical': 'border-left: 3px solid var(--neo-red); color: var(--neo-red);',
+            'High': 'border-left: 3px solid var(--neo-red); color: var(--neo-red);',
+            'Medium': 'border-left: 3px solid var(--neo-amber); color: var(--neo-amber);',
+            'Low': 'border-left: 3px solid #eab308; color: #eab308;'
         };
 
         vulnerabilities.forEach(function(vuln) {
             var li = document.createElement('li');
             li.className = 'vuln-item';
-            var style = riskColors[vuln.severity] || 'border-left: 3px solid #3b82f6; color: #93c5fd;';
-            li.style.cssText = style + ' padding: 0.75rem; background: rgba(255,255,255,0.05); margin-bottom: 0.5rem; list-style:none;';
+            var style = riskColors[vuln.severity] || 'border-left: 3px solid var(--neo-blue); color: var(--neo-blue);';
+            li.style.cssText = style + ' padding: 0.75rem; background: var(--neo-card-hover); margin-bottom: 0.5rem; list-style:none;';
             
             li.innerHTML = 
                 '<div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 4px;">' + vuln.name + '</div>' +
@@ -258,8 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.serverConfigDetails.innerHTML = '';
         
         function createItem(label, val, isBad) {
-            var color = isBad ? '#ef4444' : '#10b981';
-            return '<div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">' +
+            var color = isBad ? 'var(--neo-red)' : 'var(--neo-green)';
+            return '<div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px solid var(--neo-border);">' +
                    '<span>' + label + '</span>' +
                    '<span style="color: ' + color + '; font-weight:600;">' + val + '</span>' +
                    '</div>';
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderCertificateChain(chain) {
         elements.certificateChainContainer.innerHTML = '';
         if (!chain || chain.length === 0) {
-            elements.certificateChainContainer.innerHTML = '<div style="text-align:center; color: #555;">No certificate info.</div>';
+            elements.certificateChainContainer.innerHTML = '<div style="text-align:center; color: var(--neo-text-muted);">No certificate info.</div>';
             return;
         }
         chain.forEach(function(cert, index) {
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var card = document.createElement('div');
             card.className = 'cert-card';
             
-            var titleColor = isLeaf ? '#10b981' : '#a1a1aa';
+            var titleColor = isLeaf ? 'var(--neo-green)' : 'var(--neo-text-muted)';
             var titleText = isLeaf ? 'Leaf Certificate' : 'Intermediate #' + index;
 
             card.innerHTML = 
@@ -316,19 +316,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderProtocols(protocols) {
         elements.protocolsTableBody.innerHTML = '';
         if (!protocols || protocols.length === 0) {
-            elements.protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:1rem; color:#555;">None detected</td></tr>';
+            elements.protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:1rem; color:var(--neo-text-muted);">None detected</td></tr>';
             return;
         }
         protocols.forEach(function(p) {
             var row = elements.protocolsTableBody.insertRow();
             row.className = "hover:bg-slate-800/50 transition-colors";
             
-            var color = p.enabled ? '#10b981' : '#52525b';
+            var color = p.enabled ? 'var(--neo-green)' : 'var(--neo-text-muted)';
             var weight = p.enabled ? '600' : '400';
             var status = p.enabled ? 'Enabled' : 'Disabled';
 
             row.innerHTML = 
-                '<td style="color: #e4e4e7;">' + p.name + '</td>' +
+                '<td style="color: var(--neo-text-main);">' + p.name + '</td>' +
                 '<td style="color: ' + color + '; font-weight: ' + weight + '">' + status + '</td>';
         });
     }
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderCiphers(ciphers) {
         elements.ciphersTableBody.innerHTML = '';
         if (!ciphers || ciphers.length === 0) {
-            elements.ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:1rem; color:#555;">None detected</td></tr>';
+            elements.ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:1rem; color:var(--neo-text-muted);">None detected</td></tr>';
             return;
         }
         ciphers.forEach(function(c) {
@@ -344,12 +344,12 @@ document.addEventListener('DOMContentLoaded', function() {
             var weak = c.bits < 128;
             row.className = "hover:bg-slate-800/50 transition-colors";
             
-            var color = weak ? '#ef4444' : '#10b981';
+            var color = weak ? 'var(--neo-red)' : 'var(--neo-green)';
 
             row.innerHTML = 
-                '<td style="color: #a1a1aa; font-size: 0.75rem;">' + c.protocol + '</td>' +
+                '<td style="color: var(--neo-text-muted); font-size: 0.75rem;">' + c.protocol + '</td>' +
                 '<td style="color: ' + color + '; font-weight: 600;">' + c.bits + '</td>' +
-                '<td style="font-family: monospace; font-size: 0.75rem; color: #e4e4e7;">' + c.name + '</td>';
+                '<td style="font-family: monospace; font-size: 0.75rem; color: var(--neo-text-main);">' + c.name + '</td>';
         });
     }
 

@@ -2381,3 +2381,14 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5
 2026-02-03 19:21:36 - chatbot - INFO - Chatbot Blueprint initialized
 2026-02-03 19:22:10 - chatbot - INFO - Chatbot Blueprint initialized
 2026-02-03 19:22:54 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-03 19:27:56 - chatbot - INFO - New local chat session started for user 1: 9f89ee66-6893-4a83-a5f6-0a8fbb735f0a
+2026-02-03 19:28:00 - chatbot - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='localhost', port=5000) at 0x24b7867c6e0>, 'Connection to localhost timed out. (connect timeout=2)'))
+2026-02-03 19:47:31 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-03 19:47:45 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-03 19:47:56 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-03 20:01:51 - chatbot - INFO - New local chat session started for user 1: 56ea6e9f-a70f-48ac-a39a-1d4ceb68e393
+2026-02-03 20:01:55 - chatbot - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='localhost', port=5000) at 0x1d686144980>, 'Connection to localhost timed out. (connect timeout=2)'))
+2026-02-03 20:02:00 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=56ea6e9f-a70f-48ac-a39a-1d4ceb68e393 (Caused by NewConnectionError("HTTPConnection(host='localhost', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-03 20:11:58 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-03 20:51:44 - chatbot - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='localhost', port=5000) at 0x183205e0c20>, 'Connection to localhost timed out. (connect timeout=2)'))
+2026-02-03 20:51:49 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=56ea6e9f-a70f-48ac-a39a-1d4ceb68e393 (Caused by NewConnectionError("HTTPConnection(host='localhost', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))

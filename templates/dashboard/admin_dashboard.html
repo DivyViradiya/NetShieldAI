@@ -26,11 +26,21 @@
       --neo-purple: #8b5cf6;
       --font-mono: 'JetBrains Mono', monospace;
     }
+
+    body.light-mode {
+      --neo-bg: #f8fafc;
+      --neo-card: #ffffff;
+      --neo-card-hover: #f1f5f9;
+      --neo-border: #e2e8f0;
+      --neo-text-main: #0f172a;
+      --neo-text-muted: #64748b;
+    }
     
     body {
       background-color: var(--neo-bg);
       color: var(--neo-text-main);
       font-family: 'Inter', system-ui, sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
     
     .dashboard-container {
@@ -55,6 +65,7 @@
       font-weight: 800;
       letter-spacing: 0.05em;
       margin: 0;
+      color: var(--neo-text-main);
     }
     .hud-title span {
       color: var(--neo-red); /* Red for Admin Context */
@@ -94,9 +105,13 @@
     }
     
     .hud-card:hover {
-      border-color: #444;
+      border-color: var(--neo-text-muted);
       transform: translateY(-2px);
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    body.light-mode .hud-card:hover {
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
     }
     
     .hud-card::before {
@@ -124,13 +139,13 @@
       font-family: var(--font-mono);
       font-size: 2.2rem;
       font-weight: 700;
-      color: white;
+      color: var(--neo-text-main);
       margin-bottom: 0.25rem;
     }
     
     .metric-sub {
       font-size: 0.8rem;
-      color: #666;
+      color: var(--neo-text-muted);
     }
     
     /* --- MAIN GRID --- */
@@ -157,7 +172,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.5rem;
-      border-bottom: 1px solid #1a1a1a;
+      border-bottom: 1px solid var(--neo-border);
       padding-bottom: 1rem;
     }
     
@@ -169,6 +184,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      color: var(--neo-text-main);
     }
     
     /* --- USER TABLE --- */
@@ -193,8 +209,8 @@
     }
     .mono-table td {
       padding: 0.75rem 0.5rem;
-      border-bottom: 1px solid #1a1a1a;
-      color: #e4e4e7;
+      border-bottom: 1px solid var(--neo-border);
+      color: var(--neo-text-main);
       font-family: var(--font-mono);
       vertical-align: middle;
     }
@@ -202,6 +218,10 @@
       border-bottom: none;
     }
     .mono-table tr:hover td {
+        background: rgba(0,0,0,0.02);
+    }
+
+    body:not(.light-mode) .mono-table tr:hover td {
         background: rgba(255,255,255,0.02);
     }
     
@@ -229,8 +249,8 @@
     
     .action-btn {
         background: transparent;
-        border: 1px solid #333;
-        color: #666;
+        border: 1px solid var(--neo-border);
+        color: var(--neo-text-muted);
         width: 28px;
         height: 28px;
         border-radius: 4px;
@@ -240,7 +260,7 @@
         cursor: pointer;
         transition: all 0.2s;
     }
-    .action-btn:hover { color: white; border-color: white; }
+    .action-btn:hover { color: var(--neo-text-main); border-color: var(--neo-text-main); }
     
     .btn-suspend:hover { border-color: var(--neo-amber); color: var(--neo-amber); }
     .btn-delete:hover { border-color: var(--neo-red); color: var(--neo-red); }
@@ -262,12 +282,12 @@
         display: flex;
         justify-content: space-between;
         padding: 0.75rem 0;
-        border-bottom: 1px solid #1a1a1a;
+        border-bottom: 1px solid var(--neo-border);
         font-size: 0.85rem;
     }
     .power-user-item:last-child { border-bottom: none; }
     .power-user-rank { color: var(--neo-text-muted); width: 20px; }
-    .power-user-name { font-family: var(--font-mono); color: white; }
+    .power-user-name { font-family: var(--font-mono); color: var(--neo-text-main); }
     .power-user-score { color: var(--neo-blue); font-weight: bold; }
 
   </style>
@@ -450,82 +470,99 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('toolUsageChart').getContext('2d');
-        
-        // Data injected from Flask
-        // We use 'or 0' to prevent crashing if the key doesn't exist yet
-        const usageData = {
-            nmap: {{ tool_usage_stats.get('Nmap', 0) }},
-            zap: {{ tool_usage_stats.get('ZAP', 0) }},
-            ssl: {{ tool_usage_stats.get('SSL', 0) }},
-            sniffer: {{ tool_usage_stats.get('Sniffer', 0) }},
-            killchain: {{ tool_usage_stats.get('Kill Chain', 0) }}, 
-            ai: {{ tool_usage_stats.get('AI Analyst', 0) }}
-        };
+        let chart;
 
-        // Theme Colors
-        const colors = {
-            blue: '#3b82f6',
-            red: '#f43f5e',
-            green: '#10b981',
-            amber: '#f59e0b',
-            purple: '#8b5cf6', // Used for Kill Chain (Standard)
-            cyan: '#06b6d4',   // Used for AI (Distinct)
-            bg: '#0a0a0c'
-        };
+        function getThemeColors() {
+            const isLight = document.body.classList.contains('light-mode');
+            return {
+                blue: '#3b82f6',
+                red: '#f43f5e',
+                green: '#10b981',
+                amber: '#f59e0b',
+                purple: '#8b5cf6',
+                cyan: '#06b6d4',
+                bg: isLight ? '#ffffff' : '#0a0a0c',
+                text: isLight ? '#64748b' : '#9ca3af',
+                tooltipBg: isLight ? '#ffffff' : '#111',
+                tooltipBorder: isLight ? '#e2e8f0' : '#333'
+            };
+        }
 
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Network', 'Web Vuln', 'SSL/TLS', 'Traffic', 'Kill Chain', 'AI Analysis'],
-                datasets: [{
-                    data: [
-                        usageData.nmap, 
-                        usageData.zap, 
-                        usageData.ssl, 
-                        usageData.sniffer, 
-                        usageData.killchain, // Added Kill Chain
-                        usageData.ai
-                    ],
-                    backgroundColor: [
-                        colors.blue,
-                        colors.red,
-                        colors.green,
-                        colors.amber,
-                        colors.purple, // Purple for Kill Chain
-                        colors.cyan    // Cyan for AI
-                    ],
-                    borderColor: colors.bg,
-                    borderWidth: 2,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '75%', // Thinner ring to match User Dashboard style
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            color: '#9ca3af',
-                            font: { family: "'JetBrains Mono', monospace", size: 10 },
-                            boxWidth: 10,
+        function createChart() {
+            const theme = getThemeColors();
+            
+            // Data injected from Flask
+            const usageData = {
+                nmap: {{ tool_usage_stats.get('Nmap', 0) }},
+                zap: {{ tool_usage_stats.get('ZAP', 0) }},
+                ssl: {{ tool_usage_stats.get('SSL', 0) }},
+                sniffer: {{ tool_usage_stats.get('Sniffer', 0) }},
+                killchain: {{ tool_usage_stats.get('Kill Chain', 0) }}, 
+                ai: {{ tool_usage_stats.get('AI Analyst', 0) }}
+            };
+
+            if (chart) chart.destroy();
+
+            chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Network', 'Web Vuln', 'SSL/TLS', 'Traffic', 'Kill Chain', 'AI Analysis'],
+                    datasets: [{
+                        data: [
+                            usageData.nmap, 
+                            usageData.zap, 
+                            usageData.ssl, 
+                            usageData.sniffer, 
+                            usageData.killchain,
+                            usageData.ai
+                        ],
+                        backgroundColor: [
+                            theme.blue,
+                            theme.red,
+                            theme.green,
+                            theme.amber,
+                            theme.purple,
+                            theme.cyan
+                        ],
+                        borderColor: theme.bg,
+                        borderWidth: 2,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: theme.text,
+                                font: { family: "'JetBrains Mono', monospace", size: 10 },
+                                boxWidth: 10,
+                                padding: 10,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: theme.tooltipBg,
+                            titleColor: theme.text,
+                            bodyColor: theme.text,
+                            borderColor: theme.tooltipBorder,
+                            borderWidth: 1,
                             padding: 10,
-                            usePointStyle: true // Circular points for cleaner look
+                            displayColors: true,
+                            boxPadding: 4
                         }
-                    },
-                    tooltip: {
-                        backgroundColor: '#111',
-                        titleColor: '#fff',
-                        bodyColor: '#ccc',
-                        borderColor: '#333',
-                        borderWidth: 1,
-                        padding: 10,
-                        displayColors: true,
-                        boxPadding: 4
                     }
                 }
-            }
+            });
+        }
+
+        createChart();
+
+        window.addEventListener('themeChanged', () => {
+            createChart();
         });
     });
   </script>

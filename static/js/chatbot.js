@@ -80,6 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateContextStatus(hasFile, title = null) {
+        const isLight = document.body.classList.contains('light-mode');
+        
         if (hasFile) {
             // [CHANGED] Use consistent Green/Gray theme instead of Cyan to match default page
             ui.statusText.textContent = title ? `Active: ${title}` : `Active: KB + Report`;
@@ -88,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.statusDot.style.boxShadow = "0 0 8px rgba(16, 185, 129, 0.5)";
         } else {
             ui.statusText.textContent = "SYSTEM ONLINE";
-            ui.statusText.style.color = "#9ca3af"; // Standard gray
+            ui.statusText.style.color = isLight ? "#64748b" : "#9ca3af"; // Slate in light, Gray in dark
             ui.statusDot.style.background = "#10b981"; 
             ui.statusDot.style.boxShadow = "none";
         }

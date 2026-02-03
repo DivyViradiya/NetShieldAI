@@ -5,31 +5,30 @@
 {% block content %}
   <div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
     
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-900/20 rounded-full blur-[120px] pointer-events-none"></div>
-
-    <div id="login-card" class="relative z-10 flex w-full max-w-[1000px] h-[600px] bg-[#0a0a0c] rounded-2xl border border-[#27272a] shadow-2xl overflow-hidden transition-all duration-700 ease-in-out">
+    <div id="login-card" class="relative z-10 flex w-full max-w-[1000px] h-[600px] bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden transition-all duration-700 ease-in-out">
       
-      <div class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[#050505] bg-[radial-gradient(#1d4ed833_1px,transparent_1px)] [background-size:20px_20px]">
-        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
+      <div class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[var(--bg-color)] bg-[radial-gradient(var(--neo-text-label)_1px,transparent_1px)] [background-size:20px_20px] border-r border-[var(--neo-border)]">
+        <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-color)] via-transparent to-transparent"></div>
 
         <div class="relative z-10">
-          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg" />
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg dark-logo" />
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo_PDF.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg light-logo" />
         </div>
 
         <div class="relative z-10 mb-8">
-          <h2 class="text-3xl font-bold text-white mb-4 tracking-tight drop-shadow-md">
+          <h2 class="text-3xl font-bold text-[var(--neo-text-primary)] mb-4 tracking-tight drop-shadow-md">
             Secure.<br />Autonomous.<br />Verified.
           </h2>
-          <p class="text-gray-400 text-sm max-w-xs border-l-2 border-blue-500 pl-4">
+          <p class="text-[var(--neo-text-secondary)] text-sm max-w-xs border-l-2 border-[var(--neo-blue)] pl-4">
             Monitor threats, analyze vulnerabilities, and secure infrastructure in real time.
           </p>
         </div>
       </div>
 
-      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[#0a0a0c] flex flex-col justify-center relative">
+      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[var(--neo-card)] flex flex-col justify-center relative">
         
-        <h3 class="text-2xl font-bold text-white mb-2">Welcome back</h3>
-        <p class="text-gray-500 text-sm mb-8">Please enter your details to sign in.</p>
+        <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2">Welcome back</h3>
+        <p class="text-[var(--neo-text-secondary)] text-sm mb-8">Please enter your details to sign in.</p>
 
         {% with messages=get_flashed_messages(with_categories=true) %}
           {% if messages %}
@@ -54,21 +53,21 @@
           <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
 
           <div>
-            {{ form.username.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-            {{ form.username(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300 placeholder-gray-700', placeholder='Enter your ID') }}
+            {{ form.username.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+            {{ form.username(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='Enter your ID') }}
           </div>
 
           <div>
-            {{ form.password.label(class='text-xs font-bold text-gray-500 uppercase ml-1 tracking-wider') }}
-            {{ form.password(class='w-full bg-[#121214] border border-[#27272a] text-white rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors duration-300 placeholder-gray-700', placeholder='••••••••') }}
+            {{ form.password.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+            {{ form.password(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='••••••••') }}
           </div>
 
           <div class="flex items-center justify-between text-xs pt-1">
-            <label class="flex items-center gap-2 text-gray-400 cursor-pointer hover:text-white transition">
-              <input type="checkbox" class="rounded border-gray-700 bg-[#121214] text-blue-600 focus:ring-0 focus:ring-offset-0" />
+            <label class="flex items-center gap-2 text-[var(--neo-text-secondary)] cursor-pointer hover:text-[var(--neo-text-primary)] transition">
+              <input type="checkbox" class="rounded border-[var(--neo-border)] bg-[var(--bg-color)] text-[var(--neo-blue)] focus:ring-0 focus:ring-offset-0" />
               Remember me
             </label>
-            <a href="#" class="text-blue-500 hover:text-blue-400 transition">Forgot password?</a>
+            <a href="#" class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] transition opacity-80 hover:opacity-100">Forgot password?</a>
           </div>
 
           <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
@@ -76,18 +75,18 @@
           </button>
           
           <div class="relative py-4">
-            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-[#27272a]"></span></div>
-            <div class="relative flex justify-center text-xs uppercase"><span class="bg-[#0a0a0c] px-2 text-gray-600 font-medium">Or continue with</span></div>
+            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-[var(--neo-border)]"></span></div>
+            <div class="relative flex justify-center text-xs uppercase"><span class="bg-[var(--neo-card)] px-2 text-[var(--neo-text-label)] font-medium">Or continue with</span></div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <button type="button" class="bg-[#121214] border border-[#27272a] text-white py-2.5 rounded-lg hover:bg-[#1a1a1e] hover:border-gray-600 transition">Google</button>
-            <button type="button" class="bg-[#121214] border border-[#27272a] text-white py-2.5 rounded-lg hover:bg-[#1a1a1e] hover:border-gray-600 transition">GitHub</button>
+            <button type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition">Google</button>
+            <button type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition">GitHub</button>
           </div>
         </form>
         
-        <p class="text-sm text-gray-500 mt-8 text-center">
-          Don’t have an account? <a href="{{ url_for('auth.register') }}" class="text-blue-500 hover:text-blue-400 font-medium transition">Create account</a>
+        <p class="text-sm text-[var(--neo-text-secondary)] mt-8 text-center">
+          Don’t have an account? <a href="{{ url_for('auth.register') }}" class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] font-medium transition opacity-80 hover:opacity-100">Create account</a>
         </p>
       </div>
     </div>

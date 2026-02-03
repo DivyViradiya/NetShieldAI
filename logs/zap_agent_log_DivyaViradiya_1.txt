@@ -2050,3 +2050,49 @@
 [2026-01-13 12:35:01] [=======             ] 39% -
 [2026-01-13 12:35:01] [=======             ] 39% \
 [2026-01-13 12:35:02] [=======             ] 39% |
+[2026-02-03 21:09:43] [*] Starting ZAP Quick Scan for http://example.com (User: DivyaViradiya_1)...
+[2026-02-03 21:09:43] 
+--- Starting ZAP Quick Scan (Isolated Instance) ---
+[2026-02-03 21:09:43] Instance Config -> Port: 10306 | Dir: D:\NetShieldAI\Services\zap_instances\user_DivyaViradiya_1_10306
+[2026-02-03 21:09:43] Target: http://example.com
+[2026-02-03 21:09:43] Report will be saved to: D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-02-03 21:09:43] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 10306 -dir D:\NetShieldAI\Services\zap_instances\user_DivyaViradiya_1_10306 -quickurl http://example.com -quickout D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml -quickprogress
+[2026-02-03 21:09:43] --- ZAP Output Stream Started ---
+[2026-02-03 21:09:43] 
+[2026-02-03 21:09:43] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-02-03 21:09:43] 
+[2026-02-03 21:09:43] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 10306 -dir D:\NetShieldAI\Services\zap_instances\user_DivyaViradiya_1_10306 -quickurl http://example.com -quickout D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml -quickprogress
+[2026-02-03 21:09:44] 665 [main] INFO  org.parosproxy.paros.Constant - Copying default configuration to D:\NetShieldAI\Services\zap_instances\user_DivyaViradiya_1_10306\config.xml
+[2026-02-03 21:09:44] 841 [main] INFO  org.parosproxy.paros.Constant - Creating directory D:\NetShieldAI\Services\zap_instances\user_DivyaViradiya_1_10306\session
+[2026-02-03 21:09:44] 843 [main] INFO  org.parosproxy.paros.Constant - Creating directory D:\NetShieldAI\Services\zap_instances\user_DivyaViradiya_1_10306\dirbuster
+[2026-02-03 21:09:44] 844 [main] INFO  org.parosproxy.paros.Constant - Creating directory D:\NetShieldAI\Services\zap_instances\user_DivyaViradiya_1_10306\fuzzers
+[2026-02-03 21:09:44] 845 [main] INFO  org.parosproxy.paros.Constant - Creating directory D:\NetShieldAI\Services\zap_instances\user_DivyaViradiya_1_10306\plugin
+[2026-02-03 21:10:12] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-02-03 21:10:12] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-02-03 21:10:12] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-02-03 21:10:12] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-02-03 21:10:14] Accessing URL
+[2026-02-03 21:10:15] Using traditional spider
+[2026-02-03 21:10:18] Active scanning
+[2026-02-03 21:10:19] [====                ] 22% |
+[2026-02-03 21:10:20] [=======             ] 37% /
+[2026-02-03 21:10:20] [========            ] 42% -
+[2026-02-03 21:10:21] [==============      ] 74% \
+[2026-02-03 21:10:21] [================    ] 84% |
+[2026-02-03 21:10:22] [================    ] 84% /
+[2026-02-03 21:10:22] [================    ] 84% -
+[2026-02-03 21:10:23] [==================  ] 93% \
+[2026-02-03 21:10:23] [====================] 100%
+[2026-02-03 21:10:23] Attack complete
+[2026-02-03 21:10:23] Writing results to D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-02-03 21:10:32] --- End of ZAP Output ---
+[2026-02-03 21:10:32] Scan completed successfully!
+[2026-02-03 21:10:32] Cleaning up temporary ZAP directory: D:\NetShieldAI\Services\zap_instances\user_DivyaViradiya_1_10306
+[2026-02-03 21:10:32] [+] ZAP scan command finished. Parsing...
+[2026-02-03 21:10:32] Parsing ZAP report: D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-02-03 21:10:32] Report parsed and enriched successfully.
+[2026-02-03 21:10:32] JSON report saved to: D:\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.json
+[2026-02-03 21:10:32] [+] JSON report saved.
+[2026-02-03 21:10:32] [*] Generating PDF report...
+[2026-02-03 21:10:34] [+] PDF generated successfully.
+[2026-02-03 21:10:34] [*] Scan, analysis, and prediction complete.

@@ -38,6 +38,22 @@
       --radius-card: 8px;
       --radius-sm: 6px;
     }
+
+    body.light-mode {
+      --neo-bg: #f8fafc;
+      --neo-card: #ffffff;
+      --neo-card-hover: #f1f5f9;
+      --neo-input: #ffffff;
+      --neo-border: #e2e8f0;
+      
+      --neo-text-main: #0f172a;
+      --neo-text-muted: #64748b;
+      
+      --neo-blue: #2563eb;
+      --neo-red: #e11d48;
+      --neo-green: #059669;
+      --neo-amber: #d97706;
+    }
     
     body {
       background-color: var(--neo-bg);
@@ -86,9 +102,8 @@
     /* --- LAYOUT GRIDS (BALANCED) --- */
     .scan-overview-grid {
       display: grid; 
-      /* CHANGED: Flexible Ratio instead of fixed pixel width */
-      /* 1fr for controls vs 1.25fr for metrics -> Approx 45% vs 55% */
-      grid-template-columns: 1fr 1.25fr; 
+      /* CHANGED: Adjusted for wider metrics row */
+      grid-template-columns: 0.8fr 1.2fr; 
       gap: 1.5rem;
       margin-bottom: 0.5rem; width: 100%;
     }
@@ -100,10 +115,10 @@
 
     /* --- CONTROL PANEL --- */
     .control-card {
-      padding: 1.75rem; /* Increased padding for better proportion */
+      padding: 1.5rem;
       display: flex; flex-direction: column;
       justify-content: center; 
-      gap: 1.25rem; 
+      gap: 1rem; 
       height: auto; 
       min-height: 100%; 
       z-index: 20;
@@ -117,11 +132,11 @@
       padding-top: 1rem; border-top: 1px solid var(--neo-border); margin-top: 0.5rem;
     }
 
-    /* --- METRICS (2x2 GRID) --- */
+    /* --- METRICS (1x4 GRID) --- */
     .metrics-grid {
       display: grid; 
-      grid-template-columns: repeat(2, 1fr); 
-      gap: 1.25rem; /* Increased gap slightly to match proportions */
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 1rem;
       height: 100%; 
       width: 100%;
     }
@@ -143,12 +158,17 @@
     }
     .dash-input {
       width: 100%; background: var(--neo-input); border: 1px solid var(--neo-border);
-      color: white; padding: 0 12px 0 44px; border-radius: var(--radius-sm);
+      color: var(--neo-text-main); padding: 0 12px 0 44px; border-radius: var(--radius-sm);
       height: 46px; /* Slightly taller inputs for better proportion */
       font-size: 0.9rem; font-family: var(--font-mono);
       transition: border-color 0.2s;
     }
-    .dash-input:focus { outline: none; border-color: var(--neo-blue); background: #000; }
+
+    body.light-mode .dash-input:focus {
+        background: #ffffff;
+    }
+
+    .dash-input:focus { outline: none; border-color: var(--neo-blue); background: var(--neo-bg); }
 
     /* Buttons */
     .btn-dash {
@@ -159,7 +179,7 @@
       border: 1px solid var(--neo-border); color: var(--neo-text-muted);
       background: var(--neo-input); text-transform: uppercase; letter-spacing: 0.05em;
     }
-    .btn-dash:hover:not(:disabled) { color: white; border-color: var(--neo-blue); background: var(--neo-card-hover); }
+    .btn-dash:hover:not(:disabled) { color: var(--neo-text-main); border-color: var(--neo-blue); background: var(--neo-card-hover); }
     .btn-primary:hover { box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
     .btn-icon-only { padding: 0; width: 42px; }
 
@@ -170,7 +190,7 @@
       display: flex; justify-content: space-between; align-items: center;
       background: var(--neo-card); height: 50px; flex-shrink: 0;
     }
-    .panel-title { font-size: 0.9rem; font-weight: 700; color: white; text-transform: uppercase; }
+    .panel-title { font-size: 0.9rem; font-weight: 700; color: var(--neo-text-main); text-transform: uppercase; }
     .panel-content { position: relative; flex: 1; overflow: hidden; width: 100%; }
 
     .dash-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -181,7 +201,7 @@
       position: sticky; top: 0; z-index: 5;
     }
     .dash-table td {
-      padding: 0.75rem 1rem; color: #e4e4e7; border-bottom: 1px solid #1a1a1a;
+      padding: 0.75rem 1rem; color: var(--neo-text-main); border-bottom: 1px solid var(--neo-border);
       font-size: 0.8rem; font-family: var(--font-mono); vertical-align: top;
     }
     
@@ -192,15 +212,20 @@
 
     /* --- DROPDOWNS & OVERLAYS --- */
     .custom-dropdown {
-      background: #0a0a0c; border: 1px solid var(--neo-border); border-radius: var(--radius-sm);
+      background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: var(--radius-sm);
       box-shadow: 0 10px 30px rgba(0,0,0,0.9); padding: 4px; min-width: 100%; z-index: 999;
     }
+
+    body.light-mode .custom-dropdown {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
     .dropdown-link {
       display: flex; align-items: center; padding: 10px 12px; font-size: 0.8rem;
       color: var(--neo-text-muted); text-decoration: none; border-radius: 4px;
       font-family: var(--font-mono); transition: all 0.2s;
     }
-    .dropdown-link:hover { background: #151515; color: white; border-left: 2px solid var(--neo-blue); }
+    .dropdown-link:hover { background: var(--neo-card-hover); color: var(--neo-text-main); border-left: 2px solid var(--neo-blue); }
 
     .processing-overlay {
       position: absolute; inset: 0; background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(2px);
@@ -220,10 +245,10 @@
     .terminal-header {
       padding: 0.5rem 1.5rem; border-bottom: 1px solid var(--neo-border);
       display: flex; justify-content: space-between; align-items: center;
-      background: #080808; height: 36px;
+      background: var(--neo-card); height: 36px;
     }
-    .term-window { flex: 1; padding: 0.75rem 1.5rem; background: #050505; overflow-y: auto; }
-    .log-line { display: flex; gap: 1.5rem; font-family: var(--font-mono); font-size: 0.75rem; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .term-window { flex: 1; padding: 0.75rem 1.5rem; background: var(--neo-input); overflow-y: auto; }
+    .log-line { display: flex; gap: 1.5rem; font-family: var(--font-mono); font-size: 0.75rem; padding: 2px 0; border-bottom: 1px solid var(--neo-border); }
     .log-time { color: #555; width: 70px; flex-shrink: 0; }
     .log-content { color: #ccc; word-break: break-all; }
 
@@ -232,6 +257,12 @@
       background: linear-gradient(180deg, #fff 0%, #ccc 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
+
+    body.light-mode .text-gradient {
+      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
     .badge-pill {
       display: inline-flex; align-items: center; padding: 4px 10px;
       border-radius: 4px; background: rgba(16, 185, 129, 0.1);
@@ -280,14 +311,16 @@
     <div class="scan-overview-grid">
       <div class="control-card">
         <div class="input-group">
-          <div class="search-container">
-            <span class="material-symbols-outlined search-icon">api</span>
-            <input type="url" id="targetUrl" class="dash-input" placeholder="ENTER API BASE URL..." />
-          </div>
-          
-          <div class="search-container">
-            <span class="material-symbols-outlined search-icon">description</span>
-            <input type="url" id="definitionUrl" class="dash-input" placeholder="ENTER SWAGGER JSON URL..." />
+          <div class="flex gap-4 w-full">
+            <div class="search-container" style="flex: 1;">
+              <span class="material-symbols-outlined search-icon">api</span>
+              <input type="url" id="targetUrl" class="dash-input" placeholder="ENTER API BASE URL..." />
+            </div>
+            
+            <div class="search-container" style="flex: 1;">
+              <span class="material-symbols-outlined search-icon">description</span>
+              <input type="url" id="definitionUrl" class="dash-input" placeholder="ENTER SWAGGER JSON URL..." />
+            </div>
           </div>
 
           <button id="startScanBtn" class="btn-dash btn-primary w-full">
@@ -415,8 +448,8 @@
             <span class="panel-title" style="font-size: 0.85rem;">Raw JSON</span>
             <button id="copyResultsBtn" class="btn-text-glow" style="font-size: 0.7rem;">COPY</button>
           </div>
-          <div class="panel-content" style="background: #000;">
-            <div id="resultsContent" style="font-family: var(--font-mono); font-size: 0.75rem; color: #a1a1aa; padding: 1rem; white-space: pre-wrap; overflow: auto; height: 100%;">// WAITING FOR SCAN...</div>
+          <div class="panel-content" style="background: var(--neo-input);">
+            <div id="resultsContent" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); padding: 1rem; white-space: pre-wrap; overflow: auto; height: 100%;">// WAITING FOR SCAN...</div>
           </div>
         </div>
       </div>

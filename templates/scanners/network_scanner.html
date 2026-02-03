@@ -42,6 +42,22 @@
       --radius-card: 8px;
       --radius-sm: 6px;
     }
+
+    body.light-mode {
+      --neo-bg: #f8fafc;
+      --neo-card: #ffffff;
+      --neo-card-hover: #f1f5f9;
+      --neo-input: #ffffff;
+      --neo-border: #e2e8f0;
+      
+      --neo-text-main: #0f172a;
+      --neo-text-muted: #64748b;
+      
+      --neo-blue: #2563eb;
+      --neo-red: #e11d48;
+      --neo-green: #059669;
+      --neo-amber: #d97706;
+    }
     
    
     /* Nav Link Adjustment */
@@ -59,7 +75,7 @@
       font-weight: 600;
     }
     .nav-back:hover {
-      color: white;
+      color: var(--neo-text-main);
     }
     
     /* --- GLOBAL BASE --- */
@@ -279,7 +295,7 @@
       width: 100%;
       background: var(--neo-input);
       border: 1px solid var(--neo-border);
-      color: white;
+      color: var(--neo-text-main);
       padding: 0 12px 0 40px;
       border-radius: var(--radius-sm);
       height: 42px;
@@ -290,7 +306,11 @@
     .dash-input:focus {
       outline: none;
       border-color: var(--neo-blue);
-      background: #000;
+      background: var(--neo-bg);
+    }
+
+    body.light-mode .dash-input:focus {
+        background: #ffffff;
     }
 
     /* Timing Select Styling */
@@ -308,7 +328,7 @@
     }
     .timing-select:hover, .timing-select:focus {
         border-color: var(--neo-blue);
-        color: white;
+        color: var(--neo-text-main);
     }
     
     .btn-dash {
@@ -332,7 +352,7 @@
       justify-content: center;
     }
     .btn-dash:hover:not(:disabled) {
-      color: white;
+      color: var(--neo-text-main);
       border-color: var(--neo-blue);
       background: var(--neo-card-hover);
     }
@@ -378,6 +398,12 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
+    body.light-mode .text-gradient {
+      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
     .badge-pill {
       display: inline-flex;
       align-items: center;
@@ -437,7 +463,7 @@
     .panel-title {
       font-size: 0.9rem;
       font-weight: 700;
-      color: white;
+      color: var(--neo-text-main);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -472,15 +498,15 @@
     }
     .dash-table td {
       padding: 0.75rem 1.5rem;
-      color: #e4e4e7;
-      border-bottom: 1px solid #1a1a1a;
+      color: var(--neo-text-main);
+      border-bottom: 1px solid var(--neo-border);
       font-size: 0.8rem;
       font-family: var(--font-mono);
     }
     
     /* --- DROPDOWNS --- */
     .custom-dropdown {
-      background: #0a0a0c;
+      background: var(--neo-card);
       border: 1px solid var(--neo-border);
       border-radius: var(--radius-sm);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
@@ -489,6 +515,10 @@
       z-index: 999;
       animation: dropdownSlide 0.2s ease-out forwards;
       transform-origin: top;
+    }
+
+    body.light-mode .custom-dropdown {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
     
     .dropdown-link {
@@ -505,8 +535,8 @@
     }
     
     .dropdown-link:hover {
-      background: #151515;
-      color: white;
+      background: var(--neo-card-hover);
+      color: var(--neo-text-main);
       border-left-color: var(--neo-blue);
       padding-left: 16px;
     }
@@ -629,7 +659,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #080808;
+      background: var(--neo-card);
       flex-shrink: 0;
       height: 36px;
     }
@@ -649,7 +679,7 @@
     .term-window {
       flex: 1;
       padding: 0.75rem 1.5rem;
-      background: #050505;
+      background: var(--neo-input);
       overflow-y: auto;
     }
     
@@ -673,7 +703,7 @@
       font-size: 0.75rem;
       line-height: 1.5;
       padding: 2px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--neo-border);
     }
     .log-line:last-child {
       border-bottom: none;
@@ -709,7 +739,7 @@
     .tab-pills {
       display: flex;
       gap: 4px;
-      background: #000;
+      background: var(--neo-input);
       padding: 4px;
       border-radius: 6px;
       border: 1px solid var(--neo-border);
@@ -729,8 +759,11 @@
       background: var(--neo-blue);
       color: black;
     }
+    body.light-mode .tab-pill.active {
+        color: white;
+    }
     .tab-pill:hover:not(.active) {
-      color: white;
+      color: var(--neo-text-main);
     }
     
     /* Mobile Responsive */
@@ -930,12 +963,12 @@
             </table>
           </div>
 
-          <div id="rawContent" class="hidden absolute inset-0 flex flex-col p-4 bg-black">
+          <div id="rawContent" class="hidden absolute inset-0 flex flex-col p-4" style="background-color: var(--neo-bg);">
             <div class="flex justify-between items-center mb-2">
-              <span style="font-size:0.75rem; color:#666; font-weight:700; font-family:var(--font-mono);" id="rawScanTypeDisplay">RAW OUTPUT</span>
+              <span style="font-size:0.75rem; color:var(--neo-text-muted); font-weight:700; font-family:var(--font-mono);" id="rawScanTypeDisplay">RAW OUTPUT</span>
               <button id="copyResultsBtn" class="btn-dash btn-secondary" style="height:28px; font-size:0.7rem;">COPY</button>
             </div>
-            <div id="resultsContent" class="term-text" style="flex:1; border:1px solid #333; padding:1rem; border-radius:8px; font-family: var(--font-mono); font-size:0.75rem; color:#aaa; overflow:auto;">// Buffer Empty</div>
+            <div id="resultsContent" class="term-text" style="flex:1; border:1px solid var(--neo-border); padding:1rem; border-radius:8px; font-family: var(--font-mono); font-size:0.75rem; color:var(--neo-text-muted); overflow:auto; background-color: var(--neo-input);">// Buffer Empty</div>
           </div>
         </div>
       </div>

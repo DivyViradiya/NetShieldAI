@@ -10,9 +10,35 @@
     :root {
       --neo-bg: #050505;
       --neo-card: #0f0f11;
+      --neo-card-hover: #0e0e11;
       --neo-border: #27272a;
       --neo-accent: #f8fafc;
+      --neo-text-primary: #ffffff;
+      --neo-text-secondary: #94a3b8;
+      --neo-text-tertiary: #555555;
       --neo-blue: #3b82f6;
+      --neo-hero-gradient: radial-gradient(circle at 70% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
+      --neo-card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      --chat-bg: rgba(20, 20, 23, 0.6);
+      --chat-user-bg: #27272a;
+      --code-bg: #111;
+    }
+
+    body.light-mode {
+      --neo-bg: #ffffff;
+      --neo-card: #f8fafc; /* Subtle grey for cards */
+      --neo-card-hover: #f1f5f9;
+      --neo-border: #cbd5e1; /* More defined border */
+      --neo-accent: #0f172a;
+      --neo-text-primary: #0f172a;
+      --neo-text-secondary: #475569;
+      --neo-text-tertiary: #64748b;
+      --neo-blue: #2563eb;
+      --neo-hero-gradient: radial-gradient(circle at 70% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 60%);
+      --neo-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      --chat-bg: #ffffff;
+      --chat-user-bg: #2563eb;
+      --code-bg: #f1f5f9;
     }
    
     .main-content {
@@ -32,7 +58,7 @@
       padding-bottom: 4rem;
       position: relative;
       border-bottom: 1px solid var(--neo-border);
-      background: radial-gradient(circle at 70% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
+      background: var(--neo-hero-gradient);
     }
     
     .hero-content {
@@ -54,7 +80,7 @@
     
     .hero-tagline::before {
       content: '//';
-      color: white;
+      color: var(--neo-text-primary);
       font-weight: 800;
       opacity: 0.5;
     }
@@ -70,13 +96,13 @@
     }
     
     .hero-title span {
-      color: #333;
+      color: var(--neo-text-tertiary);
       display: block;
     }
     
     .hero-sub {
       font-size: 1rem;
-      color: #94a3b8;
+      color: var(--neo-text-secondary);
       max-width: 600px;
       margin-bottom: 2rem;
       line-height: 1.6;
@@ -91,14 +117,14 @@
     
     .btn-neo-primary {
       background: var(--neo-accent);
-      color: black;
+      color: var(--bg-color); /* Adapts to theme bg */
       padding: 0.8rem 2rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       font-size: 0.85rem;
       transition: all 0.3s ease;
-      border: 1px solid white;
+      border: 1px solid var(--neo-accent);
       text-decoration: none;
       display: inline-flex;
       align-items: center;
@@ -107,8 +133,8 @@
     
     .btn-neo-primary:hover {
       background: transparent;
-      color: white;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      color: var(--neo-accent);
+      box-shadow: 0 0 20px rgba(125, 125, 125, 0.1);
     }
     
     /* --- STATUS BAR (Compressed) --- */
@@ -130,14 +156,14 @@
     .status-item span {
       display: block;
       font-size: 0.65rem;
-      color: #555;
+      color: var(--neo-text-tertiary);
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 0.25rem;
     }
     .status-item strong {
       font-size: 1.2rem;
-      color: white;
+      color: var(--neo-text-primary);
       font-weight: 500;
     }
     .status-item strong i {
@@ -154,7 +180,7 @@
     .section-label {
       font-size: 0.75rem;
       text-transform: uppercase;
-      color: #555;
+      color: var(--neo-text-tertiary);
       letter-spacing: 0.1em;
       margin-bottom: 0.5rem;
       display: block;
@@ -163,13 +189,13 @@
       font-size: 2.5rem;
       text-transform: uppercase;
       font-weight: 300;
-      color: white;
+      color: var(--neo-text-primary);
       line-height: 1.1;
     }
     .section-title b {
       font-weight: 800;
       display: block;
-      color: white;
+      color: var(--neo-text-primary);
     }
     
     .neo-grid {
@@ -180,8 +206,8 @@
     }
     
     .neo-card {
-      background-color: #0a0a0c;
-      border: 1px solid #222;
+      background-color: var(--neo-card);
+      border: 1px solid var(--neo-border);
       border-radius: 8px;
       padding: 1.5rem;
       display: flex;
@@ -194,9 +220,9 @@
     
     .neo-card:hover {
       transform: translateY(-5px);
-      background-color: #0e0e11;
-      border-color: #333;
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      background-color: var(--neo-card-hover);
+      border-color: var(--neo-text-tertiary);
+      box-shadow: var(--neo-card-shadow);
     }
     
     /* Glowing Corner Accents */
@@ -225,8 +251,8 @@
     .card-icon-box {
       width: 40px;
       height: 40px;
-      background: #151518;
-      border: 1px solid #27272a;
+      background: var(--bg-color);
+      border: 1px solid var(--neo-border);
       border-radius: 6px;
       display: flex;
       align-items: center;
@@ -236,7 +262,7 @@
     
     .card-icon-box span {
       font-size: 1.25rem;
-      color: #666;
+      color: var(--neo-text-tertiary);
       transition: color 0.3s ease;
     }
     
@@ -247,12 +273,12 @@
     }
     
     .neo-card:hover .card-icon-box span {
-      color: white;
+      color: #fff;
     }
     
     .neo-card h3 {
       font-size: 1.1rem;
-      color: white;
+      color: var(--neo-text-primary);
       margin-bottom: 0.5rem;
       font-weight: 600;
       letter-spacing: 0.01em;
@@ -260,7 +286,7 @@
     
     .neo-card p {
       font-size: 0.85rem;
-      color: #888;
+      color: var(--neo-text-secondary);
       line-height: 1.5;
       flex-grow: 1;
       margin-bottom: 1rem;
@@ -275,15 +301,15 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: #444;
+      color: var(--neo-text-tertiary);
       transition: all 0.3s ease;
       padding-top: 1rem;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid var(--neo-border);
     }
     
     .neo-card:hover .card-action {
       color: var(--neo-blue);
-      border-top-color: #333;
+      border-top-color: var(--neo-text-tertiary);
     }
     
     /* --- DISABLED STATE --- */
@@ -320,9 +346,9 @@
       gap: 4rem;
       align-items: center;
       margin-bottom: 4rem;
-      border: 1px solid #27272a;
+      border: 1px solid var(--neo-border);
       padding: 0;
-      background: #0a0a0c;
+      background: var(--neo-card);
       border-radius: 12px;
       overflow: hidden;
       position: relative;
@@ -336,7 +362,7 @@
       top: 0;
       width: 60%;
       height: 100%;
-      background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+      background: var(--neo-hero-gradient);
       pointer-events: none;
     }
     
@@ -354,8 +380,8 @@
     }
     
     .chat-interface {
-      background: rgba(20, 20, 23, 0.6);
-      border: 1px solid #27272a;
+      background: var(--chat-bg);
+      border: 1px solid var(--neo-border);
       border-radius: 12px;
       padding: 2rem;
       display: flex;
@@ -376,8 +402,8 @@
     
     .chat-msg.user {
       align-self: flex-end;
-      background: #27272a;
-      color: white;
+      background: var(--chat-user-bg);
+      color: #fff; /* Always white for user msg on blue/dark bg */
       padding: 0.8rem 1.2rem;
       border-radius: 12px 12px 0 12px;
       margin-left: auto;
@@ -385,17 +411,17 @@
     
     .chat-msg.ai {
       align-self: flex-start;
-      color: #94a3b8; /* Slate-400 */
+      color: var(--neo-text-secondary); /* Slate-400 */
     }
     
     /* CODE BLOCK - Minimal */
     .code-snippet {
-      background: #111;
-      border: 1px solid #27272a;
+      background: var(--code-bg);
+      border: 1px solid var(--neo-border);
       border-radius: 6px;
       padding: 1rem;
       margin-top: 0.8rem;
-      color: #a5b4fc; /* Indigo-300 */
+      color: var(--neo-blue);
       font-family: 'Courier New', monospace;
       font-size: 0.8rem;
       position: relative;
@@ -408,7 +434,7 @@
       right: 0;
       font-size: 0.6rem;
       padding: 4px 8px;
-      color: #555;
+      color: var(--neo-text-tertiary);
       font-weight: bold;
     }
     
@@ -417,7 +443,7 @@
       display: inline-block;
       width: 4px;
       height: 4px;
-      background: #555;
+      background: var(--neo-text-tertiary);
       border-radius: 50%;
       animation: typing 1.4s infinite ease-in-out both;
       margin-right: 2px;
@@ -490,7 +516,7 @@
 
       <div class="hero-actions">
         <a href="{{ url_for('tools_hub') }}" class="btn-neo-primary">Launch Arsenal <span class="material-symbols-outlined">arrow_forward</span></a>
-        <a href="{{ url_for('dashboard_bp.dashboard') }}" class="btn-neo-primary" style="background: transparent; border-color: #333; color: white;">Security Posture</a>
+        <a href="{{ url_for('dashboard_bp.dashboard') }}" class="btn-neo-primary" style="background: transparent; border-color: var(--neo-border); color: var(--neo-text-primary);">Security Posture</a>
       </div>
     </div>
   </div>
@@ -598,35 +624,35 @@
       </div>
     </a>
 
-    <div class="neo-card disabled">
+    <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="neo-card">
       <div class="card-top">
         <div class="card-icon-box">
           <span class="material-symbols-outlined">database</span>
         </div>
-        <span class="status-badge dev">In Development</span>
+        <span class="status-badge" style="border-color: var(--neo-blue); color: var(--neo-blue); background: rgba(59,130,246,0.1);">Active Module</span>
       </div>
       <div class="card-content">
         <h3>SQL Injection</h3>
-        <p>Deep database penetration testing to identify injection flaws. Currently offline.</p>
+        <p>Deep database penetration testing to identify injection flaws and extract database version info.</p>
       </div>
       <div class="card-action">
-        Module Offline <span class="material-symbols-outlined">lock</span>
+        Scan Database <span class="material-symbols-outlined">chevron_right</span>
       </div>
-    </div>
+    </a>
   </div>
   <div class="chatbot-banner fade-in-element">
     <div class="banner-content">
       <h2 class="section-title" style="font-size: 2rem; margin-bottom: 1rem;">Security Insights, <br /><b>Decoded.</b></h2>
-      <p style="color: #888; margin-bottom: 2rem; line-height: 1.6; font-size: 0.95rem;">Don't just stare at logs. NetShieldAI analyzes scan results in real-time, explains vulnerabilities in plain English, and generates patch code automatically.</p>
+      <p style="color: var(--neo-text-secondary); margin-bottom: 2rem; line-height: 1.6; font-size: 0.95rem;">Don't just stare at logs. NetShieldAI analyzes scan results in real-time, explains vulnerabilities in plain English, and generates patch code automatically.</p>
 
       <div style="display: flex; gap: 2rem; margin-bottom: 2rem;">
         <div>
-          <strong style="color: white; font-size: 1.2rem; display: block;">24/7</strong>
-          <span style="font-size: 0.7rem; color: #555; text-transform: uppercase;">Availability</span>
+          <strong style="color: var(--neo-text-primary); font-size: 1.2rem; display: block;">24/7</strong>
+          <span style="font-size: 0.7rem; color: var(--neo-text-tertiary); text-transform: uppercase;">Availability</span>
         </div>
         <div>
-          <strong style="color: white; font-size: 1.2rem; display: block;">Zero</strong>
-          <span style="font-size: 0.7rem; color: #555; text-transform: uppercase;">False Positives*</span>
+          <strong style="color: var(--neo-text-primary); font-size: 1.2rem; display: block;">Zero</strong>
+          <span style="font-size: 0.7rem; color: var(--neo-text-tertiary); text-transform: uppercase;">False Positives*</span>
         </div>
       </div>
       <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="btn-neo-primary">Initialize Chat <span class="material-symbols-outlined">chat</span></a>

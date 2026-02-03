@@ -18,3 +18,19 @@
 [2026-01-13 12:50:00] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
 [2026-01-13 12:50:03] [+] Nmap PDF Report generated: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
 [2026-01-13 12:50:03] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-03 19:58:37] [*] Local IP requested: 192.168.29.48
+[2026-02-03 19:58:37] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-03 21:00:10] [*] Local IP requested: 192.168.29.48
+[2026-02-03 21:00:10] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-03 21:02:27] [*] Local IP requested: 192.168.29.48
+[2026-02-03 21:02:28] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-03 21:04:16] [*] Local IP requested: 192.168.29.48
+[2026-02-03 21:04:16] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-03 21:05:16] [*] Local IP requested: 192.168.29.48
+[2026-02-03 21:05:16] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-03 21:05:25] [*] Local IP requested: 192.168.29.48
+[2026-02-03 21:05:25] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-03 21:07:21] [*] Local IP requested: 192.168.29.48
+[2026-02-03 21:07:21] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-03 22:15:09] [*] Local IP requested: 192.168.29.48
+[2026-02-03 22:15:09] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.

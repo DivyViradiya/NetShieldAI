@@ -371,6 +371,33 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
   // --- 7. OPERATOR ACTIVITY / USAGE STATS ---
+  let usageChartInstance = null;
+
+  const getThemeColor = (varName) => {
+    return getComputedStyle(document.body).getPropertyValue(varName).trim();
+  };
+
+  const updateChartTheme = () => {
+    if (!usageChartInstance) return;
+    
+    const textColor = getThemeColor('--neo-text-muted');
+    const tooltipBg = getThemeColor('--neo-card');
+    const tooltipText = getThemeColor('--neo-text-main');
+    const borderColor = getThemeColor('--neo-bg'); // Gap color matches background
+
+    usageChartInstance.options.plugins.legend.labels.color = textColor;
+    usageChartInstance.options.plugins.tooltip.backgroundColor = tooltipBg;
+    usageChartInstance.options.plugins.tooltip.titleColor = tooltipText;
+    usageChartInstance.options.plugins.tooltip.bodyColor = textColor;
+    usageChartInstance.options.plugins.tooltip.borderColor = getThemeColor('--neo-border');
+    usageChartInstance.data.datasets[0].borderColor = borderColor;
+    
+    usageChartInstance.update();
+  };
+
+  // Listen for custom event from base.html
+  window.addEventListener('themeChanged', updateChartTheme);
+
   fetch(apiEndpoints.usage)
     .then((r) => r.json())
     .then((data) => {
@@ -386,9 +413,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const ctx = document.getElementById("usageChart");
       if (ctx && data.scans) {
-        const textColor = "#9ca3af";
-
-        new Chart(ctx, {
+        
+        usageChartInstance = new Chart(ctx, {
           type: "doughnut",
           data: {
             labels: ["Network", "Web", "SSL", "Sniffer", "Kill Chain"],
@@ -408,7 +434,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   "#f59e0b", // Amber (Sniffer)
                   "#8b5cf6", // Purple (Killchain)
                 ],
-                borderColor: "#0a0a0c", 
+                borderColor: getThemeColor('--neo-bg'), 
                 borderWidth: 2,
                 hoverOffset: 4,
               },
@@ -421,17 +447,17 @@ document.addEventListener("DOMContentLoaded", function () {
               legend: {
                 position: "right",
                 labels: {
-                  color: textColor,
+                  color: getThemeColor('--neo-text-muted'),
                   font: { family: "'JetBrains Mono', monospace", size: 10 },
                   boxWidth: 8,
                   padding: 10,
                 },
               },
               tooltip: {
-                backgroundColor: "#111",
-                titleColor: "#fff",
-                bodyColor: "#ccc",
-                borderColor: "#333",
+                backgroundColor: getThemeColor('--neo-card'),
+                titleColor: getThemeColor('--neo-text-main'),
+                bodyColor: getThemeColor('--neo-text-muted'),
+                borderColor: getThemeColor('--neo-border'),
                 borderWidth: 1,
                 padding: 10,
               },
