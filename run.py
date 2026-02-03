@@ -23,6 +23,7 @@ from routes.dashboard_bp import dashboard_bp
 from routes.killchain_bp import killchain_bp
 from routes.sql_scanner_bp import sql_scanner_bp
 from routes.semgrep_scanner_bp import semgrep_bp
+from routes.api_scanner_bp import api_scanner_bp
 from Services.network_scanner import ensure_admin_privileges
 
 
@@ -47,6 +48,7 @@ app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 app.register_blueprint(killchain_bp, url_prefix='/killchain')
 app.register_blueprint(sql_scanner_bp, url_prefix='/sql_scanner')
 app.register_blueprint(semgrep_bp, url_prefix='/semgrep_scanner')
+app.register_blueprint(api_scanner_bp, url_prefix='/api_scanner')
 
 def print_banner():
     banner = fr"""

@@ -402,7 +402,24 @@
         </div>
       </a>
 
-            <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="neo-card">
+      <a href="{{ url_for('api_scanner_bp.api_scanner_page') }}" class="neo-card">
+        <div class="card-top">
+          <div class="card-icon-box">
+            <span class="material-symbols-outlined">api</span>
+          </div>
+          <span class="status-badge status-active">Operational</span>
+        </div>
+        <h3>API Security</h3>
+        <p>OpenAPI & Swagger assessment. Scan REST API endpoints for broken authentication, injection flaws, and data exposure vulnerabilities.</p>
+        <div class="action-row">
+          <span class="text-xs text-[#555]">Endpoint Security</span>
+          <div class="launch-btn">
+            Scan <span class="material-symbols-outlined">arrow_forward</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="neo-card">
         <div class="card-top">
           <div class="card-icon-box">
             <span class="material-symbols-outlined">database</span>

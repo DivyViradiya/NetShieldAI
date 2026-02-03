@@ -5,6 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML, CSS
 import pathlib
 import re
+from Services.network_scanner import log
 
 # --- Path Configuration ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -27,15 +28,16 @@ def create_nmap_report_pdf(source_data, pdf_path):
     Renders Nmap data into an HTML template and saves it as a PDF.
     Designed to handle the specific NetShieldAI JSON structure.
     """
-    print(f"[*] Starting Detailed PDF generation for Nmap Target: {pdf_path}")
+    # Import log locally to avoid circular import issues if placed at top
+    from Services.network_scanner import log 
+
+    log(f"[*] Starting Detailed PDF generation for Nmap Target: {pdf_path}")
 
     # 1. Handle Input
     if isinstance(source_data, str):
         if not os.path.exists(source_data):
-            # Fail gracefully or raise error
-            print(f"[!] Error: Nmap JSON file not found at {source_data}")
+            log(f"[!] Error: Nmap JSON file not found at {source_data}")
             return False
-            # raise FileNotFoundError(f"Nmap JSON file not found: {source_data}")
         with open(source_data, 'r', encoding='utf-8') as f:
             nmap_data = json.load(f)
     else:
@@ -45,7 +47,7 @@ def create_nmap_report_pdf(source_data, pdf_path):
     ports_list = nmap_data.get("ports", [])
     open_count = sum(1 for p in ports_list if p.get('state') == 'open')
     
-    # [NEW] Check if any port has vulnerability notes to toggle column visibility
+    # Check if any port has vulnerability notes
     has_vulns = any(len(p.get('vulnerability_notes', '')) > 0 for p in ports_list)
 
     duration = "N/A"
@@ -71,7 +73,7 @@ def create_nmap_report_pdf(source_data, pdf_path):
         },
         "ports": ports_list,
         "raw_summary": raw_summary,
-        "has_vulns": has_vulns  # [NEW] Pass this flag to the template
+        "has_vulns": has_vulns  # It is defined here in the dictionary
     }
 
     # 4. Resource Validation
@@ -79,23 +81,22 @@ def create_nmap_report_pdf(source_data, pdf_path):
     if os.path.exists(CSS_FILE_PATH):
         css = CSS(filename=CSS_FILE_PATH)
     else:
-        print(f"[!] Warning: CSS file not found at {CSS_FILE_PATH}. PDF will be unstyled.")
+        log(f"[!] Warning: CSS file not found at {CSS_FILE_PATH}. PDF will be unstyled.")
 
     # 5. Render using Jinja2
     try:
         env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
         template = env.get_template(NMAP_TEMPLATE_FILE)
         
-        # We pass context as specific variables AND 'data' dict to support both template styles
+        # --- FIX IS HERE ---
+        # We removed 'has_vulns=has_vulns' because it is already in **template_data
         rendered_html = template.render(
-            data=template_data,       # For templates using data.variable
-            has_vulns=has_vulns,      # Direct access for logic
-            **template_data           # Unpack for direct access (e.g., {{ target_ip }})
+            data=template_data,       
+            **template_data           
         )
     except Exception as e:
-        print(f"[!] Template Rendering Error: {e}")
-        # raise RuntimeError(f"Failed to render Nmap HTML: {e}")
-        return False
+        log(f"[!] PDF Template Error: {e}")
+        raise e 
 
     # 6. Generate PDF with WeasyPrint
     try:
@@ -103,11 +104,13 @@ def create_nmap_report_pdf(source_data, pdf_path):
         html = HTML(string=rendered_html, base_url=base_url)
         html.write_pdf(pdf_path, stylesheets=[css] if css else [])
         
-        print(f"[+] Nmap PDF Report generated: {pdf_path}")
+        log(f"[+] Nmap PDF Report generated: {pdf_path}")
         return True
     except Exception as e:
-        print(f"[!] PDF Write Error: {e}")
-        return False
+        log(f"[!] WeasyPrint PDF Generation Error: {e}")
+        if "dlopen" in str(e) or "dll" in str(e).lower():
+            log(f"[HINT] This is likely a missing GTK3 dependency. Please install GTK3 for Windows.")
+        raise e
     
 def create_zap_report_pdf(source_data, pdf_path):
     """
