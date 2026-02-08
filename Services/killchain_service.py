@@ -145,7 +145,7 @@ class KillChainService:
         """
         Setup paths.
         1. Reports go to the user directory (e.g. .../killchain/reports)
-        2. Artifacts (pcap) go to the global pentest_modules/scan_results directory
+        2. Artifacts (pcap) go to the centralized temp directory
         """
         # User Output: We assume user_output_dir is the full path (e.g., .../DivyViradiya_1/killchain)
         base = Path(user_output_dir)
@@ -154,19 +154,20 @@ class KillChainService:
         reports_dir = base / "reports"
         reports_dir.mkdir(parents=True, exist_ok=True)
 
-        # Global Artifacts: Locate Services/pentest_modules/scan_results relative to this script
+        # Centralized Temp Artifacts
         service_dir = Path(__file__).parent.resolve()
-        artifacts_dir = service_dir / "pentest_modules" / "scan_results"
-        artifacts_dir.mkdir(parents=True, exist_ok=True)
+        project_root = service_dir.parent
+        temp_dir = project_root / "Services" / "temp" / "killchain"
+        temp_dir.mkdir(parents=True, exist_ok=True)
 
         return {
             "root": base,
-            "pcaps": artifacts_dir, # Updated to point to global artifacts
+            "pcaps": temp_dir,
             "reports": reports_dir,
             "json_report": reports_dir / "killchain_report.json",
             "pdf_report": reports_dir / "killchain_report.pdf",
-            # This ensures capture.pcap is saved in pentest_modules/scan_results
-            "pcap_file": artifacts_dir / "capture.pcap" 
+            # This ensures capture.pcap is saved in the centralized temp directory
+            "pcap_file": temp_dir / "capture.pcap" 
         }
 
     def run_job(self, target, profile_name, aggression_level, queue_id, user_output_dir):
@@ -369,11 +370,19 @@ class KillChainService:
             if 'tools' in locals() and "traffic" in tools:
                 tools["traffic"].stop_capture()
                 if paths["pcap_file"].exists():
-                    analysis = tools["traffic"].analyze_capture(target_ip)
-                    results["traffic_analysis"] = analysis
-                    if analysis.get("anomalies"):
-                        log(queue_id, f"Traffic Analysis detected {len(analysis['anomalies'])} anomalies.", "WARNING")
-                        results["vulns"].extend(analysis["anomalies"])
+                    try:
+                        analysis = tools["traffic"].analyze_capture(target_ip)
+                        results["traffic_analysis"] = analysis
+                        if analysis.get("anomalies"):
+                            log(queue_id, f"Traffic Analysis detected {len(analysis['anomalies'])} anomalies.", "WARNING")
+                            results["vulns"].extend(analysis["anomalies"])
+                    finally:
+                        # CLEANUP: Delete the PCAP after analysis
+                        try:
+                            paths["pcap_file"].unlink()
+                            log(queue_id, "Cleanup: Temporary PCAP file removed.")
+                        except Exception as e:
+                            log(queue_id, f"Warning: Failed to delete temporary PCAP: {e}")
             
             # Save JSON
             try:

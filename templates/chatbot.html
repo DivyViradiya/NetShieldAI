@@ -207,7 +207,7 @@
     }
     
     body.light-mode .section-label {
-        color: #94a3b8;
+        color: #64748b;
     }
 
     /* Workflow Panel */
@@ -349,7 +349,7 @@
       padding: 0.8rem 1rem;
       font-size: 0.8rem;
       font-weight: 500;
-      color: #aaa;
+      color: white;
       background: #131316;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 8px;
@@ -360,14 +360,13 @@
     body.light-mode .custom-select-trigger {
         background: #ffffff;
         border-color: var(--neo-border);
-        color: #64748b;
+        color: #0f172a;
     }
 
-    .custom-select-trigger:hover { border-color: #444; color: #fff; }
+    .custom-select-trigger:hover { border-color: #444; }
     
     body.light-mode .custom-select-trigger:hover { 
         border-color: #94a3b8; 
-        color: #0f172a; 
     }
     
     .custom-select.open .custom-select-trigger {
@@ -416,13 +415,27 @@
         color: #64748b;
         border-top-color: #f1f5f9;
     }
-    body.light-mode .custom-option span[style*="color:white"] {
-        color: #0f172a !important;
+
+    .option-title {
+        color: white;
+        font-weight: 500;
+        display: block;
     }
 
-    .custom-option:hover { background: rgba(59, 130, 246, 0.1); color: white; }
-    body.light-mode .custom-option:hover { color: var(--neo-blue); }
-    .custom-option.selected { color: var(--neo-blue); }
+    .option-desc {
+        display: block;
+        font-size: 0.65rem;
+        color: #666;
+    }
+
+    body.light-mode .option-title {
+        color: #0f172a;
+    }
+
+    .custom-option:hover { background: rgba(59, 130, 246, 0.1); }
+    .custom-option:hover .option-title { color: white; }
+    body.light-mode .custom-option:hover .option-title { color: var(--neo-blue); }
+    .custom-option.selected .option-title { color: var(--neo-blue); }
 
     /* Action Button */
     .btn-neo-action {
@@ -871,7 +884,7 @@
     /* Specific Hierarchy Colors for Security Report look */
     .markdown-content h1, .msg-bubble h1 { font-size: 1.5rem; border-bottom: 1px solid var(--neo-border); padding-bottom: 0.5rem; }
     .markdown-content h2, .msg-bubble h2 { font-size: 1.3rem; color: var(--neo-cyan); }
-    .markdown-content h3, .msg-bubble h3 { font-size: 1.1rem; color: var(--neo-white); }
+    .markdown-content h3, .msg-bubble h3 { font-size: 1.1rem; color: white; }
     
     body.light-mode .markdown-content h2, 
     body.light-mode .msg-bubble h2 { color: #0284c7; }
@@ -1089,12 +1102,12 @@
                 </div>
                 <div class="custom-options">
                   <div class="custom-option" data-value="local">
-                    <span style="color:white; font-weight:500;">NetShield Local</span>
-                    <span style="display:block; font-size:0.65rem; color:#666;">Offline / Privacy First</span>
+                    <span class="option-title">NetShield Local</span>
+                    <span class="option-desc">Offline / Privacy First</span>
                   </div>
                   <div class="custom-option" data-value="gemini">
-                    <span style="color:white; font-weight:500;">Google Gemini</span>
-                    <span style="display:block; font-size:0.65rem; color:#666;">Cloud / Advanced Reasoning</span>
+                    <span class="option-title">Google Gemini</span>
+                    <span class="option-desc">Cloud / Advanced Reasoning</span>
                   </div>
                 </div>
               </div>

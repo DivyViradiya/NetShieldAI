@@ -17,13 +17,17 @@ ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
 
 # --- Path and Logging Setup ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_RESULTS_DIR = r"D:\NetShieldAI\Services\results\zap_scanner"
-if not os.path.exists(DEFAULT_RESULTS_DIR):
-    os.makedirs(DEFAULT_RESULTS_DIR)
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
-LOGS_DIR = r"D:\NetShieldAI\logs"
+DEFAULT_RESULTS_DIR = os.path.join(BASE_DIR, "results", "zap_scanner")
+
+LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
 if not os.path.exists(LOGS_DIR):
-    os.makedirs(LOGS_DIR)
+    os.makedirs(LOGS_DIR, exist_ok=True)
+
+TEMP_DIR = os.path.join(BASE_DIR, "temp", "zap")
+if not os.path.exists(TEMP_DIR):
+    os.makedirs(TEMP_DIR, exist_ok=True)
 
 # --- USER ISOLATION: Dictionary to hold a queue for each user_id ---
 user_queues = {}
@@ -35,8 +39,8 @@ def get_user_queue(user_id):
     return user_queues[user_id]
 
 # --- ML Model Setup ---
-MODELS_DIR = r"D:\NetShieldAI\models"
-DATA_DIR = r"D:\NetShieldAI\Data"
+MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
+DATA_DIR = os.path.join(PROJECT_ROOT, "Data")
 MODEL_PATH = Path(MODELS_DIR) / 'vulnerability_ranker.joblib'
 PROFILES_PATH = Path(DATA_DIR) / 'cwe_profiles.csv'
 TRAINING_COLUMNS_PATH = Path(MODELS_DIR) / 'training_columns.joblib'
@@ -392,11 +396,11 @@ def run_zap_scan(target_url, report_path, user_id):
     try:
         assigned_port = get_free_port()
         
-        # Create a unique directory for this specific scan instance/user
+        # Create a unique directory for this specific scan instance/user in the central temp folder
         # This prevents the "HSQLDB Lock" error
-        unique_zap_dir = os.path.join(BASE_DIR, "zap_instances", f"user_{user_id}_{assigned_port}")
+        unique_zap_dir = os.path.join(TEMP_DIR, f"user_{user_id}_{assigned_port}")
         if not os.path.exists(unique_zap_dir):
-            os.makedirs(unique_zap_dir)
+            os.makedirs(unique_zap_dir, exist_ok=True)
 
         log(f"\n--- Starting ZAP Quick Scan (Isolated Instance) ---", user_id)
         log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_id)

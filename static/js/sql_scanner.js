@@ -65,6 +65,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Helper Functions ---
     
+    function setButtonsDisabled(isDisabled) {
+        // 1. Always manageable buttons (Control/Refresh)
+        const controlBtns = [
+            elements.scanQuickBtn,
+            elements.scanFullBtn,
+            elements.advancedScanToggle,
+            elements.checkWafBtn,
+            elements.refreshResultsBtn
+        ];
+
+        // 2. Report-dependent buttons
+        const reportBtns = [
+            elements.dumpSchemaBtn,
+            elements.analyzeReportDropdown,
+            elements.downloadReportBtn
+        ];
+
+        controlBtns.forEach(btn => {
+            if (btn) {
+                btn.disabled = isDisabled;
+                btn.style.opacity = isDisabled ? '0.5' : '1';
+                if (isDisabled) btn.classList.add('cursor-not-allowed');
+                else btn.classList.remove('cursor-not-allowed');
+            }
+        });
+
+        // For report buttons, if enabling, only do it if we have a report
+        reportBtns.forEach(btn => {
+            if (btn) {
+                if (isDisabled) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    btn.classList.add('cursor-not-allowed');
+                } else {
+                    // Only re-enable if there is a valid report URL found previously
+                    const hasReport = !!reportDownloadUrl;
+                    btn.disabled = !hasReport;
+                    btn.style.opacity = hasReport ? '1' : '0.5';
+                    btn.classList.toggle('cursor-not-allowed', !hasReport);
+                }
+            }
+        });
+        
+        if (elements.targetUrlInput) {
+            elements.targetUrlInput.disabled = isDisabled;
+        }
+    }
+
     function toggleSpinner(button, isLoading) {
         if (!button) return;
         const spinner = button.querySelector('.spinner');
@@ -176,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             appendLog('[!] Error: CSRF Token missing. Refresh page.');
             isActionInProgress = false;
             if (button) toggleSpinner(button, false);
+            setButtonsDisabled(false); // Enable back if CSRF fails
             return null;
         }
 
@@ -190,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await response.json();
             if (!response.ok) {
+                setButtonsDisabled(false); // Enable back on 4xx/5xx errors
                 throw new Error(data.message || `Request failed with status ${response.status}`);
             }
             if(data.message) appendLog(`[✓] ${data.message}`);
@@ -197,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             appendLog(`[!] Error: ${error.message}`);
             setStatus('Error', 'error');
+            setButtonsDisabled(false); // Enable back on network/system errors
             return null;
         } finally {
             if (button) toggleSpinner(button, false);
@@ -417,6 +468,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        setButtonsDisabled(true); // LOCK UI
         setStatus(`Scanning (${scanMode})...`, 'busy');
         switchTab('findings'); 
         
@@ -438,7 +490,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (message.toLowerCase().includes("scan complete") || message.toLowerCase().includes("finished")) {
                 setStatus('Scan Complete', 'success');
-                fetchReportData(); // Reload UI with new data
+                fetchReportData().then(() => {
+                    setButtonsDisabled(false); // UNLOCK UI
+                });
             }
         };
         eventSource.onerror = () => {

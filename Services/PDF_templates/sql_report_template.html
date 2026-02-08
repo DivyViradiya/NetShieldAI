@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="file:///D:/NetShieldAI/static/images/NS_Logo.png">
     <title>NetShieldAI | SQL Injection Assessment Report</title>
     <style>
         /* --- GLOBAL VARIABLES & RESET --- */
@@ -340,7 +341,7 @@
                     </div>
                     <div>
                         <span class="info-label">Affected Parameter</span>
-                        <div style="font-size: 8.5pt;">searchFor (derived from payload)</div>
+                        <div style="font-size: 8.5pt;">{{ vuln.parameter | default('Unknown') }}</div>
                     </div>
                 </div>
 

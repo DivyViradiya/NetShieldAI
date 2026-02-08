@@ -13,17 +13,19 @@ import time
 import json
 from pathlib import Path
 
-BASE_DIR = Path(__file__).parent.parent.parent
-
 # --- PHASE 2: Dynamic Path Setup ---
+# BASE_DIR should be at the root of the project (one level up from Services/network_scanner.py)
+BASE_DIR = Path(__file__).parent.parent
+
 # We keep the default global path for backward compatibility or system-wide actions.
-DEFAULT_RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\network_scanner")
-DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+DEFAULT_RESULTS_DIR = BASE_DIR / "Services" / "results" / "network_scanner"
 
 # Ensure logs directory exists
-LOG_DIR = Path(r"D:\NetShieldAI\logs")
-LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_DIR = BASE_DIR / "logs"
 LOG_FILE = LOG_DIR / "network_agent_log.txt"
+
+TEMP_DIR = BASE_DIR / "Services" / "temp" / "nmap"
+TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # Global queue for logging messages to be consumed by Flask
 log_queue = queue.Queue()
@@ -95,25 +97,26 @@ def get_output_paths(output_dir=None):
         except Exception as e:
             log(f"[!] Error creating output directory {base}: {e}")
 
+    # Raw results go to TEMP_DIR for processing, only JSON/Whitelist stays in 'base'
     return {
         "whitelist": base / "whitelisted_ports.json",
         "json_report": base / "nmap_report.json",
-        "tcp": base / "scan_result_tcp.txt",
-        "udp": base / "scan_result_udp.txt",
-        "os": base / "scan_result_os.txt",
-        "fragmented": base / "scan_result_fragmented.txt",
-        "aggressive": base / "scan_result_aggressive.txt",
-        "tcp_syn": base / "scan_result_tcp_syn.txt",
-        "vuln": base / "scan_result_vuln.txt",
+        "tcp": TEMP_DIR / "scan_result_tcp.txt",
+        "udp": TEMP_DIR / "scan_result_udp.txt",
+        "os": TEMP_DIR / "scan_result_os.txt",
+        "fragmented": TEMP_DIR / "scan_result_fragmented.txt",
+        "aggressive": TEMP_DIR / "scan_result_aggressive.txt",
+        "tcp_syn": TEMP_DIR / "scan_result_tcp_syn.txt",
+        "vuln": TEMP_DIR / "scan_result_vuln.txt",
         # --- NEW PATHS FOR ADVANCED SCANS ---
-        "connect": base / "scan_result_connect.txt",
-        "null": base / "scan_result_null.txt",
-        "fin": base / "scan_result_fin.txt",
-        "xmas": base / "scan_result_xmas.txt",
-        "ack": base / "scan_result_ack.txt",
-        "window": base / "scan_result_window.txt",
-        "ping": base / "scan_result_ping.txt",
-        "decoy": base / "scan_result_decoy.txt"
+        "connect": TEMP_DIR / "scan_result_connect.txt",
+        "null": TEMP_DIR / "scan_result_null.txt",
+        "fin": TEMP_DIR / "scan_result_fin.txt",
+        "xmas": TEMP_DIR / "scan_result_xmas.txt",
+        "ack": TEMP_DIR / "scan_result_ack.txt",
+        "window": TEMP_DIR / "scan_result_window.txt",
+        "ping": TEMP_DIR / "scan_result_ping.txt",
+        "decoy": TEMP_DIR / "scan_result_decoy.txt"
     }
 
 # --- Whitelist Persistence Functions (Updated for Phase 2) ---
@@ -738,6 +741,19 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     except Exception as e:
         log(f"[!] Error during {scan_type_display} scan: {str(e)}")
         return None
+    finally:
+        # CLEANUP: Remove the temporary .txt file with retries
+        if output_file.exists():
+            for i in range(5): # Try up to 5 times
+                try:
+                    output_file.unlink()
+                    # log(f"[*] Cleanup: Temporary scan file {output_file.name} removed.")
+                    break
+                except Exception as e:
+                    if i == 4: # Last attempt
+                        log(f"[!] Warning: Failed to delete temporary scan file {output_file}: {e}")
+                    else:
+                        time.sleep(1) # Wait 1 second before retrying
 
 def extract_open_ports(filename, protocol_type):
     """

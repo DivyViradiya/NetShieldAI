@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 import time
 import psutil
 import socket
@@ -19,13 +20,17 @@ ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
 
 # --- Path and Logging Setup ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_RESULTS_DIR = os.path.join(BASE_DIR, "results", "api_scanner")
-if not os.path.exists(DEFAULT_RESULTS_DIR):
-    os.makedirs(DEFAULT_RESULTS_DIR)
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
-LOGS_DIR = os.path.join(os.path.dirname(BASE_DIR), "logs") # Adjust to root logs folder
+DEFAULT_RESULTS_DIR = os.path.join(BASE_DIR, "results", "api_scanner")
+
+LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
 if not os.path.exists(LOGS_DIR):
-    os.makedirs(LOGS_DIR)
+    os.makedirs(LOGS_DIR, exist_ok=True)
+
+TEMP_DIR = os.path.join(BASE_DIR, "temp", "api_scanner")
+if not os.path.exists(TEMP_DIR):
+    os.makedirs(TEMP_DIR, exist_ok=True)
 
 # --- USER ISOLATION ---
 user_queues = {}
@@ -36,9 +41,8 @@ def get_user_queue(user_id):
     return user_queues[user_id]
 
 # --- ML Model Setup (Reused from zap_scanner) ---
-# Adjust these paths to point to where your models actually live
-MODELS_DIR = r"D:\NetShieldAI\models"
-DATA_DIR = r"D:\NetShieldAI\Data"
+MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
+DATA_DIR = os.path.join(PROJECT_ROOT, "Data")
 MODEL_PATH = Path(MODELS_DIR) / 'vulnerability_ranker.joblib'
 PROFILES_PATH = Path(DATA_DIR) / 'cwe_profiles.csv'
 TRAINING_COLUMNS_PATH = Path(MODELS_DIR) / 'training_columns.joblib'
@@ -259,7 +263,7 @@ def get_output_paths(user_output_dir):
     """Helper for the Blueprint to find files."""
     base = Path(user_output_dir)
     return {
-        "xml_report": base / "api_scan_report.xml",
+        "xml_report": Path(TEMP_DIR) / "api_scan_report.xml",
         "json_report": base / "api_scan_report.json",
         "pdf_report": base / "api_scan_report.pdf"
     }
@@ -310,7 +314,7 @@ def predict_risk(vulnerability_name: str):
 
 # --- CORE API SCAN LOGIC ---
 
-def wait_for_zap(port, timeout=60):
+def wait_for_zap(port, timeout=120):
     """Waits for ZAP to start listening on the specified port."""
     start_time = time.time()
     while time.time() - start_time < timeout:
@@ -335,9 +339,9 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
         return False
 
     assigned_port = get_free_port()
-    # Create a unique temp directory for this specific scan instance
-    unique_zap_dir = os.path.join(BASE_DIR, "temp_zap_instances", f"user_{user_id}_{assigned_port}")
-    if not os.path.exists(unique_zap_dir): os.makedirs(unique_zap_dir)
+    # Create a unique temp directory for this specific scan instance in the centralized temp folder
+    unique_zap_dir = os.path.join(TEMP_DIR, f"user_{user_id}_{assigned_port}")
+    if not os.path.exists(unique_zap_dir): os.makedirs(unique_zap_dir, exist_ok=True)
 
     log(f"--- Initializing API Scanner (Port: {assigned_port}) ---", user_id)
     log(f"Target API: {target_url}", user_id)
@@ -359,11 +363,13 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
 
     try:
         log("Launching ZAP engine...", user_id)
+        zap_dir = os.path.dirname(ZAP_EXECUTABLE_PATH)
         process = subprocess.Popen(
             command, 
             stdout=subprocess.DEVNULL, 
             stderr=subprocess.STDOUT,
-            cwd=os.path.dirname(ZAP_EXECUTABLE_PATH)
+            cwd=zap_dir,
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == 'win32' else 0
         )
 
         if not wait_for_zap(assigned_port):
@@ -388,11 +394,42 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
 
         # 5. Start Active Scan
         log(f"Starting Active Scan on {target_url}...", user_id)
+        
+        # Optimize Scan Speed
+        try:
+            # Set number of threads per host
+            zap.ascan.set_option_thread_per_host(10)
+            # Disable host-specific concurrent scan limit to speed up
+            zap.ascan.set_option_host_per_scan(1)
+            # Ensure no artificial delay
+            zap.ascan.set_option_delay_in_ms(0)
+            log("[*] Scan parameters optimized for speed.", user_id)
+        except Exception as e:
+            log(f"Warning: Failed to optimize scan parameters: {e}", user_id)
+
         scan_id = zap.ascan.scan(target_url)
         
-        while int(zap.ascan.status(scan_id)) < 100:
-            progress = zap.ascan.status(scan_id)
-            log(f"Scan Progress: {progress}%", user_id)
+        last_progress = -1
+        stuck_counter = 0
+        
+        while True:
+            progress = int(zap.ascan.status(scan_id))
+            if progress != last_progress:
+                log(f"Scan Progress: {progress}%", user_id)
+                last_progress = progress
+                stuck_counter = 0
+            else:
+                stuck_counter += 1
+                
+            if progress >= 100:
+                break
+                
+            # If stuck for more than 5 minutes (60 * 5 / 5 = 60 iterations), move on
+            if stuck_counter > 60:
+                log("[!] Scan seems stuck at certain point. Finishing early to preserve results...", user_id)
+                zap.ascan.stop(scan_id)
+                break
+                
             time.sleep(5)
         
         log("Scan complete. Generating report...", user_id)
@@ -491,6 +528,13 @@ def parse_xml_report(report_file, user_id=None):
     except Exception as e:
         log(f"Parsing Error: {e}", user_id)
         return None
+    finally:
+        # CLEANUP: Remove temporary XML report
+        if os.path.exists(report_file):
+            try:
+                os.remove(report_file)
+            except Exception as e:
+                log(f"[!] Warning: Failed to delete temporary API report {report_file}: {e}")
 
 def get_inner_html(element):
     if element is None: return ""

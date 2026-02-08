@@ -85,6 +85,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "").trim();
 
+        // --- In-Place Update Logic for Progress Bars ---
+        const isProgressBar = cleanedMessage.startsWith('[') && cleanedMessage.includes('%');
+        if (isProgressBar) {
+            const lastLine = logOutput.lastElementChild;
+            if (lastLine && lastLine.querySelector('.log-content').getAttribute('data-is-progress') === 'true') {
+                lastLine.querySelector('.log-time').textContent = timeStr;
+                lastLine.querySelector('.log-content').textContent = cleanedMessage;
+                return;
+            }
+        }
+
         let contentStyle = 'color:#d4d4d8';
         const lowerMsg = cleanedMessage.toLowerCase();
         
@@ -100,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         line.className = 'log-line';
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+            <div class="log-content" style="${contentStyle}" ${isProgressBar ? 'data-is-progress="true"' : ''}>${cleanedMessage}</div>
         `;
         
         logOutput.appendChild(line);

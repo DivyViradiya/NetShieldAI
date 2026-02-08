@@ -246,55 +246,146 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderFindingsCards(findings) {
-        elements.vulnerabilitiesContainer.innerHTML = '';
+        var listSide = document.getElementById('findingsListSide');
+        var detailSide = document.getElementById('findingsDetailSide');
+        if(!listSide || !detailSide) return;
+
+        listSide.innerHTML = '';
+        var filterText = document.getElementById('findingsSearch')?.value.toLowerCase() || '';
         
-        if (!findings || findings.length === 0) {
-            elements.vulnerabilitiesContainer.innerHTML = '<div style="text-align:center; padding: 2rem; color: #10b981;">No vulnerabilities found. Code looks clean!</div>';
+        var filteredFindings = findings.filter(function(f) {
+            return f.check_id.toLowerCase().includes(filterText) || 
+                   f.path.toLowerCase().includes(filterText) || 
+                   f.message.toLowerCase().includes(filterText);
+        });
+
+        var countBadge = document.getElementById('filteredCountBadge');
+        if(countBadge) countBadge.textContent = filteredFindings.length + ' FINDING' + (filteredFindings.length !== 1 ? 'S' : '');
+
+        if (!filteredFindings || filteredFindings.length === 0) {
+            listSide.innerHTML = '<div style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono); font-size: 0.75rem;">' + (filterText ? 'NO MATCHES.' : 'NO VULNERABILITIES.') + '</div>';
+            resetDetailView();
             return;
         }
 
         // Helper for severity styles
-        var getStyles = function(sev) {
-            if (sev === 'ERROR') return { border: '#ef4444', badgeBg: '#fee2e2', badgeCol: '#be123c' };
-            if (sev === 'WARNING') return { border: '#f97316', badgeBg: '#ffedd5', badgeCol: '#c2410c' };
-            return { border: '#3b82f6', badgeBg: '#e0f2fe', badgeCol: '#0369a1' };
+        var getColors = function(sev) {
+            if (sev === 'ERROR') return { dot: '#ef4444', text: '#ef4444' };
+            if (sev === 'WARNING') return { dot: '#f97316', text: '#f97316' };
+            return { dot: '#3b82f6', text: '#3b82f6' };
         };
 
-        findings.forEach(function(f) {
-            var styles = getStyles(f.severity);
-            
-            // Clean path
-            var cleanPath = f.path;
-            if (cleanPath.includes("source_code_temp")) {
-                cleanPath = cleanPath.split("source_code_temp")[1].replace(/^[\\/]/, "");
-            }
+        filteredFindings.forEach(function(f, index) {
+            var colors = getColors(f.severity);
+            var cleanPath = f.path.includes("source_code_temp") ? f.path.split("source_code_temp")[1].replace(/^[\\/]/, "") : f.path;
 
-            var card = document.createElement('div');
-            card.className = 'vuln-item'; // Reuse base class for some padding
-            card.style.cssText = `border-left: 3px solid ${styles.border}; background: rgba(255,255,255,0.03); border-radius: 6px; padding: 0; margin-bottom: 1rem; overflow: hidden;`;
+            var item = document.createElement('div');
+            item.className = 'finding-item-compact';
+            if (window.selectedFindingIndex === index) item.classList.add('active');
 
-            var headerHtml = `
-                <div style="padding: 10px 15px; background: rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <div style="font-family: monospace; font-size: 0.75rem; color: #e4e4e7; font-weight: 600;">${f.check_id}</div>
-                    <span style="background: ${styles.badgeBg}; color: ${styles.badgeCol}; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700;">${f.severity}</span>
+            item.innerHTML = `
+                <div class="compact-rule-id">${f.check_id}</div>
+                <div class="compact-file-info" title="${cleanPath}">${cleanPath}</div>
+                <div class="compact-meta">
+                    <span><span class="severity-dot" style="background: ${colors.dot}"></span>${f.severity}</span>
+                    <span>Line ${f.line}</span>
                 </div>
             `;
 
-            var bodyHtml = `
-                <div style="padding: 15px;">
-                    <div style="margin-bottom: 10px; font-size: 0.8rem; color: #a1a1aa;">
-                        <span style="color: #fff; font-weight: 600;">${cleanPath}</span> : Line ${f.line}
+            item.onclick = function() {
+                // Update active state
+                document.querySelectorAll('.finding-item-compact').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+                window.selectedFindingIndex = index;
+                renderDetailView(f, cleanPath);
+            };
+
+            listSide.appendChild(item);
+        });
+
+        // Automatically select the first finding if none selected
+        if (window.selectedFindingIndex === undefined && filteredFindings.length > 0) {
+            listSide.firstChild.click();
+        }
+    }
+
+    function resetDetailView() {
+        var detailSide = document.getElementById('findingsDetailSide');
+        if(!detailSide) return;
+        detailSide.innerHTML = `
+            <div class="empty-detail-state">
+                <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.1;">data_exploration</span>
+                <div style="font-family: var(--font-mono); font-size: 0.8rem; opacity: 0.3; letter-spacing: 0.1em;">SELECT A FINDING TO VIEW ANALYSIS</div>
+            </div>
+        `;
+    }
+
+    function renderDetailView(f, cleanPath) {
+        var detailSide = document.getElementById('findingsDetailSide');
+        if(!detailSide) return;
+
+        var severityColor = f.severity === 'ERROR' ? '#ef4444' : (f.severity === 'WARNING' ? '#f97316' : '#3b82f6');
+
+        detailSide.innerHTML = `
+            <div class="detail-header">
+                <div class="detail-rule-id">${f.check_id}</div>
+                <div class="detail-title">${cleanPath}</div>
+                <div style="display:flex; gap: 1rem; margin-top: 1rem; align-items:center;">
+                    <span class="badge-pill" style="color: ${severityColor}; border-color: ${severityColor}44; background: ${severityColor}11;">
+                        ${f.severity}
+                    </span>
+                    <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted);">
+                        Line ${f.line}:${f.column}
+                    </span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="detail-section-label">
+                    <span class="material-symbols-outlined" style="font-size: 1rem;">description</span>
+                    Issue Description
+                </div>
+                <div class="detail-box">
+                    <div class="vuln-message">${f.message}</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <div class="detail-section-label">
+                    <span class="material-symbols-outlined" style="font-size: 1rem;">code</span>
+                    Code Evidence
+                </div>
+                <div class="code-view-wrapper">
+                    <div class="code-view-header">
+                        <span>SOURCE CODE</span>
+                        <span>READ-ONLY</span>
                     </div>
-                    <div style="margin-bottom: 10px; font-size: 0.85rem; color: #d4d4d8;">${f.message}</div>
-                    
-                    ${f.code_snippet !== 'N/A' ? `
-                        <div style="background: #0f0f11; padding: 10px; border-radius: 4px; border: 1px solid #27272a; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #e4e4e7; white-space: pre-wrap; overflow-x: auto;">${f.code_snippet}</div>
-                    ` : ''}
+                    <div class="code-view-content">${f.code_snippet || 'N/A'}</div>
                 </div>
-            `;
+            </div>
 
-            card.innerHTML = headerHtml + bodyHtml;
-            elements.vulnerabilitiesContainer.appendChild(card);
+            ${f.fix_suggestion && f.fix_suggestion !== 'N/A' ? `
+                <div class="flex flex-col gap-2">
+                    <div class="detail-section-label">
+                        <span class="material-symbols-outlined" style="font-size: 1rem; color: #10b981;">lightbulb</span>
+                        Remediation Guidance
+                    </div>
+                    <div class="fix-suggestion-box">
+                        <div style="font-size: 0.85rem; color: #10b981; font-family: var(--font-mono); line-height: 1.6;">${f.fix_suggestion}</div>
+                    </div>
+                </div>
+            ` : ''}
+        `;
+    }
+
+    // Add search listener
+    var searchInput = document.getElementById('findingsSearch');
+    if(searchInput) {
+        searchInput.addEventListener('input', function() {
+            if(window.currentSemgrepReport && window.currentSemgrepReport.findings) {
+                window.selectedFindingIndex = undefined; // Reset selection on search
+                renderFindingsCards(window.currentSemgrepReport.findings);
+            }
         });
     }
 
@@ -305,6 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (data.status === 'success') {
                 var report = data.content;
+                window.currentSemgrepReport = report; // Store globally for filtering
                 
                 // Update Metrics
                 elements.metricTotal.textContent = report.total_findings;

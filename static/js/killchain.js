@@ -86,11 +86,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!msg) return;
 
     // [FIX] Strip timestamps from the incoming message
-    // Matches "[15:19:56] " or "15:19:56 " at the start of the line
     msg = msg.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '').trim();
 
-    // [FIX] If the line was *only* a timestamp, it's now empty, so we skip it
+    // [FIX] CLEANUP ZAP LOGS
+    // 1. Remove [ZAP-CLI] and [ZAP] prefixes
+    msg = msg.replace(/\[ZAP-CLI\]\s*/g, '').replace(/\[ZAP\]\s*/g, '').trim();
+
+    // [FIX] If the line was *only* a timestamp or filtered out, it's now empty
     if (!msg) return;
+
+    // 2. Filter out internal Java warnings (Keep these silent)
+    if (msg.includes('deprecated method') || msg.includes('Unsafe::objectFieldOffset')) return;
+    if (msg === '' || msg === '|') return;
 
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-US', {
@@ -99,6 +106,17 @@ document.addEventListener("DOMContentLoaded", () => {
       minute: '2-digit',
       second: '2-digit'
     });
+
+    // --- IN-PLACE UPDATE FOR PROGRESS BARS ---
+    // Detects lines like "[=====     ] 25% |"
+    const isProgress = msg.startsWith('[') && (msg.includes('%') || msg.includes('==='));
+    if (isProgress) {
+        const lastLine = els.logOutput.lastElementChild;
+        if (lastLine && lastLine.querySelector('.log-content').getAttribute('data-is-progress') === 'true') {
+            lastLine.querySelector('.log-content').textContent = msg;
+            return;
+        }
+    }
 
     const isLight = document.body.classList.contains("light-mode");
     let style = isLight ? "color: #334155;" : "color: #d4d4d8;"; // Slate-700 / Zinc-300
@@ -121,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
     line.className = "log-line";
     line.innerHTML = `
         <div style="color: ${timeColor}; width: 70px; flex-shrink: 0;">${timeStr}</div>
-        <div class="log-content" style="${style} flex: 1; white-space: pre-wrap;">${msg}</div>
+        <div class="log-content" style="${style} flex: 1; white-space: pre-wrap;" ${isProgress ? 'data-is-progress="true"' : ''}>${msg}</div>
     `;
     els.logOutput.appendChild(line);
     els.logOutput.scrollTop = els.logOutput.scrollHeight;

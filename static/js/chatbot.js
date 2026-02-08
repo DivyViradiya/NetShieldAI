@@ -104,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Reset config inputs
             ui.hiddenModelInput.value = 'local';
             ui.customTrigger.querySelector('span').textContent = 'NetShield Local';
-            ui.customTrigger.style.color = 'white';
             ui.customOptions.forEach(opt => opt.classList.remove('selected'));
             document.querySelector('.custom-option[data-value="local"]')?.classList.add('selected');
             
@@ -432,7 +431,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ensure default state is set correctly
         ui.hiddenModelInput.value = 'local';
         ui.customTrigger.querySelector('span').textContent = 'NetShield Local';
-        ui.customTrigger.style.color = 'white';
         document.querySelector('.custom-option[data-value="local"]')?.classList.add('selected');
 
         ui.customTrigger.addEventListener('click', () => ui.customSelect.classList.toggle('open'));
@@ -442,7 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.classList.add('selected');
                 const mainText = this.querySelector('span:first-child').textContent;
                 ui.customTrigger.querySelector('span').textContent = mainText;
-                ui.customTrigger.style.color = 'white';
                 ui.hiddenModelInput.value = this.getAttribute('data-value');
                 ui.customSelect.classList.remove('open');
                 ui.startBtn.disabled = false;

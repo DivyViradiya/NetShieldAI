@@ -31,6 +31,7 @@ app = Flask(__name__)
 app.secret_key = 'VulnScanAI' 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users_db.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  # 1GB limit for uploads
 
 db.init_app(app)
 login_manager.init_app(app)

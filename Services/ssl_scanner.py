@@ -10,17 +10,17 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 # MODIFIED: Define path to the local sslscan.exe
-BASE_DIR = Path(__file__).parent.parent.parent
+BASE_DIR = Path(__file__).parent.parent
 SSLSCAN_EXECUTABLE = Path(r"C:\Program Files\sslscan\sslscan.exe")
 
 # Define default paths for storing results (Fallback)
-DEFAULT_RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\ssl_scanner")
-DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+DEFAULT_RESULTS_DIR = BASE_DIR / "Services" / "results" / "ssl_scanner"
 
 # Logs (Shared)
-LOG_FILE = Path(r"D:\NetShieldAI\logs\ssl_agent_log.txt")
-# Ensure logs directory exists
-LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+LOG_FILE = BASE_DIR / "logs" / "ssl_agent_log.txt"
+
+TEMP_DIR = BASE_DIR / "Services" / "temp" / "sslscan"
+TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # Global queue for logging messages to be consumed by Flask (or similar)
 log_queue = queue.Queue()
@@ -79,7 +79,7 @@ def get_output_paths(output_dir=None):
             log(f"[!] Error creating directory {base}: {e}")
 
     return {
-        "xml_report": base / "ssl_report.xml",
+        "xml_report": TEMP_DIR / "ssl_report.xml",
         "json_report": base / "ssl_report.json",
         "pdf_report": base / "ssl_report.pdf"
     }
@@ -295,6 +295,13 @@ def parse_ssl_report(report_file, output_dir=None):
     except Exception as e:
         log(f"[!] Unexpected error parsing SSLScan report '{report_file}': {e}")
         return None
+    finally:
+        # CLEANUP: Remove the temporary XML report
+        if os.path.exists(report_file):
+            try:
+                os.remove(report_file)
+            except Exception as e:
+                log(f"[!] Warning: Failed to delete temporary SSL report {report_file}: {e}")
 
 def clear_log_file():
     """Clears the content of the log output file."""

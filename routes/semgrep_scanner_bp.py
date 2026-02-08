@@ -19,7 +19,7 @@ from Services import pdf_generator
 semgrep_bp = Blueprint('semgrep_bp', __name__)
 
 # --- CONFIGURATION ---
-MAX_UPLOAD_SIZE = 100 * 1024 * 1024  # 100 MB limit to prevent server overload
+MAX_UPLOAD_SIZE = 1024 * 1024 * 1024  # 1 GB limit
 
 # --- User-Specific Directory Helper ---
 def get_user_results_dir():
@@ -70,7 +70,7 @@ def scan_code():
         file.seek(0)
         
         if size > MAX_UPLOAD_SIZE:
-             return jsonify({"status": "error", "message": "File too large (Max 15MB). Please remove node_modules/venv."}), 400
+             return jsonify({"status": "error", "message": "File too large (Max 1GB). Please remove extremely large binary files or datasets if possible."}), 400
         
         # Save temp file securely so the thread can access it
         temp_filename = f"upload_temp_{secure_filename(file.filename)}"

@@ -584,11 +584,9 @@ def create_sql_report_pdf(source_data, pdf_path):
     # 3. Prepare Template Context
     # Structure this to match the specific keys in your JSON (target, scan_time, db_info)
     template_data = {
-        "meta": {
-            "target": sql_data.get("target", "Unknown Target"),
-            "scan_time": sql_data.get("scan_time", "N/A"),
-            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        },
+        "target": sql_data.get("target", "Unknown Target"),
+        "scan_time": sql_data.get("scan_time", "N/A"),
+        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
 
         # Database Fingerprint - Directly mapped from your JSON structure
         "db_info": {
@@ -600,7 +598,7 @@ def create_sql_report_pdf(source_data, pdf_path):
 
         # Findings
         "stats": {
-            "total": stats["total_vulns"],
+            "total_vulns": stats["total_vulns"],
             "types": stats["by_type"],
             "unique_issues": len(stats["unique_titles"])
         },
@@ -644,68 +642,77 @@ def create_sql_report_pdf(source_data, pdf_path):
 def create_semgrep_report_pdf(source_data, pdf_path):
     """
     Renders Semgrep SAST data into an HTML template and saves it as a PDF.
-    Cleans up file paths for display and sorts findings by severity.
+    Optimized for large reports: limits findings and truncates snippets.
     """
-    print(f"[*] Starting Semgrep PDF generation: {pdf_path}")
+    log(f"[*] Starting Semgrep PDF generation: {pdf_path}")
 
     # 1. Load Data
     if isinstance(source_data, str):
         if not os.path.exists(source_data):
-            print(f"[!] JSON source not found: {source_data}")
+            log(f"[!] JSON source not found: {source_data}")
             return False
         try:
             with open(source_data, 'r', encoding='utf-8') as f:
                 data = json.load(f)
         except Exception as e:
-            print(f"[!] Invalid JSON: {e}")
+            log(f"[!] Invalid JSON: {e}")
             return False
     else:
         data = source_data
 
-    # 2. Path Cleaning & Enhancement
-    # Semgrep paths are absolute (e.g. D:\...\source_code_temp\app.py)
-    # We want to display relative paths (e.g. app.py) in the PDF.
+    # 2. Path Cleaning, Sorting & Truncation
     findings = data.get("findings", [])
     
-    for f in findings:
-        full_path = f.get("path", "")
-        # Remove the temp directory prefix if present
-        if "source_code_temp" in full_path:
-            # Splits at 'source_code_temp' and takes the right side (the actual relative path)
-            clean_path = full_path.split("source_code_temp")[-1]
-            # Strip leading slashes/backslashes
-            f["display_path"] = clean_path.lstrip(os.sep).lstrip("/")
-        else:
-            # Fallback to filename if structure is unexpected
-            f["display_path"] = os.path.basename(full_path)
-
-    # 3. Sorting (Error -> Warning -> Info)
-    # Using a negative index approach or map for custom sort order
+    # Sorting (Error -> Warning -> Info)
     severity_order = {"ERROR": 0, "WARNING": 1, "INFO": 2}
     findings.sort(key=lambda x: severity_order.get(x.get("severity", "INFO"), 3))
 
-    # 4. Prepare Template Context
+    # LIMIT: Only show top 200 findings in PDF to prevent massive files/hangs
+    total_findings_count = len(findings)
+    if len(findings) > 200:
+        log(f"[*] Warning: Large report ({total_findings_count} findings). Truncating to 200 for PDF.")
+        findings = findings[:200]
+
+    for f in findings:
+        # Clean Path
+        full_path = f.get("path", "")
+        if "source_code_temp" in full_path:
+            clean_path = full_path.split("source_code_temp")[-1]
+            f["display_path"] = clean_path.lstrip(os.sep).lstrip("/")
+        else:
+            f["display_path"] = os.path.basename(full_path)
+            
+        # TRUNCATE SNIPPET: Limit snippet size to prevent template bloating
+        snippet = f.get("code_snippet", "")
+        if len(snippet) > 1000:
+            f["code_snippet"] = snippet[:1000] + "\n... [TRUNCATED FOR REPORT] ..."
+
+    # 3. Prepare Template Context
+    logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
+    
     template_data = {
         "scan_date": data.get("scan_date"),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "tool": data.get("tool", "Semgrep"),
+        "logo_path": pathlib.Path(logo_path).as_uri(),
         "stats": {
-            "total": data.get("total_findings", 0),
+            "total": total_findings_count,
             "severity_counts": data.get("severity_counts", {})
         },
-        "findings": findings  # Now contains 'display_path'
+        "findings": findings,
+        "is_truncated": total_findings_count > 200
     }
 
-    # 5. Render
+    # 4. Render
     try:
         env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
         template = env.get_template(SEMGREP_TEMPLATE_FILE)
         rendered_html = template.render(data=template_data)
     except Exception as e:
-        print(f"[!] Semgrep Template Rendering Error: {e}")
+        log(f"[!] Semgrep Template Rendering Error: {e}")
         return False
 
-    # 6. Write PDF
+    # 5. Write PDF
     try:
         base_url = pathlib.Path(PROJECT_ROOT).as_uri()
         stylesheets = []
@@ -716,8 +723,8 @@ def create_semgrep_report_pdf(source_data, pdf_path):
             pdf_path, 
             stylesheets=stylesheets
         )
-        print(f"[+] Semgrep PDF saved: {pdf_path}")
+        log(f"[+] Semgrep PDF saved: {pdf_path}")
         return True
     except Exception as e:
-        print(f"[!] PDF Write Error: {e}")
+        log(f"[!] PDF Write Error: {e}")
         return False

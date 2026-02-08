@@ -11,14 +11,17 @@ from datetime import datetime
 from pathlib import Path
 
 # --- Configuration ---
+# BASE_DIR should be at the root of the project (one level up from Services folder)
 BASE_DIR = Path(__file__).parent.parent
+
 # Default results path (Fallback)
 DEFAULT_RESULTS_DIR = BASE_DIR / "Services" / "results" / "semgrep_scanner"
-DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Logs
 LOG_FILE = BASE_DIR / "logs" / "semgrep_agent_log.txt"
-LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+TEMP_DIR = BASE_DIR / "Services" / "temp" / "semgrep"
+TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # Global queue for logging messages (Consumed by Flask)
 log_queue = queue.Queue()
@@ -119,9 +122,9 @@ def get_output_paths(output_dir=None):
             log(f"[!] Error creating directory {base}: {e}")
 
     return {
-        "raw_json": base / "semgrep_raw.json",
+        "raw_json": TEMP_DIR / "semgrep_raw.json",
         "parsed_json": base / "semgrep_report.json",  # Cleaned for UI/PDF
-        "source_code": base / "source_code_temp"       # Temp extraction folder
+        "source_code": TEMP_DIR / "source_code_temp"   # Temp extraction folder
     }
 
 def smart_unzip(zip_path, extract_to):
@@ -185,11 +188,13 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None):
     # Ensure clean slate for source code
     if source_dir.exists():
         try:
+            log(f"[*] Clearing previous temporary source directory...")
             # [FIXED] Force delete previous temp folder if it exists
             def on_rm_error(func, path, exc_info):
                 os.chmod(path, 0o777)
                 func(path)
             shutil.rmtree(source_dir, onerror=on_rm_error)
+            log(f"[+] Temporary directory cleared.")
         except Exception as e:
             log(f"[!] Warning: Could not clear previous source dir: {e}")
             
@@ -204,7 +209,9 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None):
             
             log(f"[*] Extracting {zip_path.name} (Smart Unzip)...")
             if not smart_unzip(zip_path, source_dir):
+                log(f"[!] Failed to extract ZIP file.")
                 return None
+            log(f"[+] Extraction complete.")
 
         elif input_type == "git":
             log(f"[*] Cloning Git repository: {target_input}...")
@@ -271,7 +278,7 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None):
         log(f"[!] Unexpected error during Semgrep scan: {e}")
         return None
     finally:
-        # 4. Cleanup Source Code (Save disk space)
+        # 4. Cleanup Source Code & Raw Report (Save disk space)
         if source_dir.exists():
             try:
                 # [FIXED] Force delete even read-only files (common with Git)
@@ -284,6 +291,13 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None):
                 log("[*] Cleanup: Temporary source code directory removed.")
             except Exception as e:
                 log(f"[!] Warning: Failed to cleanup temp dir: {e}")
+        
+        if raw_report_path.exists():
+            try:
+                raw_report_path.unlink()
+                log("[*] Cleanup: Temporary raw report removed.")
+            except Exception as e:
+                log(f"[!] Warning: Failed to cleanup raw report: {e}")
 
 
 def parse_semgrep_results(raw_json_path, output_dir=None):

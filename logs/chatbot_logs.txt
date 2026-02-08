@@ -2392,3 +2392,66 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=5
 2026-02-03 20:11:58 - chatbot - INFO - Chatbot Blueprint initialized
 2026-02-03 20:51:44 - chatbot - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='localhost', port=5000) at 0x183205e0c20>, 'Connection to localhost timed out. (connect timeout=2)'))
 2026-02-03 20:51:49 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=56ea6e9f-a70f-48ac-a39a-1d4ceb68e393 (Caused by NewConnectionError("HTTPConnection(host='localhost', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-05 09:24:18 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 09:24:39 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 09:24:53 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 09:28:45 - chatbot - INFO - New local chat session started for user 1: 6728e061-7c2b-447c-b5b5-e781f2ffc029
+2026-02-05 09:42:30 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 09:46:50 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 09:47:15 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 09:47:58 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 09:48:06 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 09:48:13 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 09:51:27 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 13:23:46 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 13:23:58 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 13:24:04 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 18:41:19 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 18:41:36 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 18:41:51 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-05 18:47:10 - chatbot - INFO - New local chat session started for user 1: 0bfab6d1-cfe1-4944-9ca3-c59120d70ec3
+2026-02-05 18:47:15 - chatbot - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='localhost', port=5000) at 0x28f82cdcc20>, 'Connection to localhost timed out. (connect timeout=2)'))
+2026-02-05 18:47:19 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=0bfab6d1-cfe1-4944-9ca3-c59120d70ec3 (Caused by NewConnectionError("HTTPConnection(host='localhost', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-06 17:55:02 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-06 17:55:09 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-06 17:55:15 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-06 18:13:57 - chatbot - INFO - New local chat session started for user 1: d3200292-b0b2-44b2-9550-4133ab3640da
+2026-02-06 18:14:01 - chatbot - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='localhost', port=5000) at 0x2e65aa7b8c0>, 'Connection to localhost timed out. (connect timeout=2)'))
+2026-02-06 18:14:23 - chatbot - INFO - New local chat session started for user 1: 96337bd1-0f88-4c7a-bfa6-00c9aef649b4
+2026-02-06 18:14:27 - chatbot - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='localhost', port=5000) at 0x2e65a816350>, 'Connection to localhost timed out. (connect timeout=2)'))
+2026-02-06 18:14:32 - chatbot - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=96337bd1-0f88-4c7a-bfa6-00c9aef649b4 (Caused by NewConnectionError("HTTPConnection(host='localhost', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-07 12:00:53 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-07 12:01:20 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-07 12:01:44 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-07 18:43:47 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-07 18:44:05 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-07 18:44:21 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-07 19:51:20 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 10:33:16 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 10:33:32 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 10:33:42 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 10:37:13 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 10:37:37 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 10:41:31 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 10:42:13 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 10:42:33 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 11:28:30 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 11:30:05 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 11:31:23 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 11:39:45 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 11:46:24 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 11:48:25 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 11:48:32 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 11:48:39 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 11:51:19 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 12:09:33 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 12:20:07 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 12:20:14 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 12:20:20 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 12:23:34 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 12:27:57 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 12:33:28 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 12:35:30 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 13:03:37 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 13:03:48 - chatbot - INFO - Chatbot Blueprint initialized
+2026-02-08 13:03:55 - chatbot - INFO - Chatbot Blueprint initialized

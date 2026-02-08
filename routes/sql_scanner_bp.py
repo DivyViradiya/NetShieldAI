@@ -4,6 +4,8 @@ import threading
 import json
 import time
 import os
+import shutil
+from datetime import datetime
 from queue import Empty
 import requests
 import uuid
@@ -18,6 +20,11 @@ from Services import sql_scanner
 from Services import pdf_generator
 
 sql_scanner_bp = Blueprint('sql_scanner_bp', __name__)
+
+# --- GLOBAL LOCK STATE ---
+# Track active scans per user to prevent concurrent conflicting processes
+active_user_scans = set()
+scan_lock = threading.Lock()
 
 # --- PHASE 3: User-Specific Directory Helper ---
 def get_user_results_dir():
@@ -70,7 +77,6 @@ def scan_sql():
         return jsonify({"status": "error", "message": "Invalid URL. Must start with http:// or https://"}), 400
 
     # Check if SQLMap is configured correctly
-    # (Assuming the service has a path check, usually handled inside run_sql_scan too)
     if not os.path.exists(sql_scanner.SQLMAP_PATH):
         sql_scanner.log("[!] SQLMap script not found. Cannot perform scan.")
         return jsonify({
@@ -78,11 +84,21 @@ def scan_sql():
             "message": "SQLMap not found. Please check server configuration."
         }), 500
     
+    # --- CONCURRENCY CHECK ---
+    with scan_lock:
+        if current_user.id in active_user_scans:
+            return jsonify({
+                "status": "error",
+                "message": "A scan is already in progress. Please wait for it to complete."
+            }), 429
+        active_user_scans.add(current_user.id)
+
     # Determine User Directory for this scan
-    user_output_dir = get_user_results_dir()
+    user_base_dir = get_user_results_dir()
 
     # Capture User Info for Logging
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_id = current_user.id # Capture ID for the thread
 
     # [NEW] Increment Database Counter for Stats
     try:
@@ -95,41 +111,48 @@ def scan_sql():
 
     # Function to run in a separate thread
     def scan_task():
-        sql_scanner.log(f"[*] Starting {scan_mode.upper()} SQL scan for {target_url} (User: {current_user_identifier})...")
-        
-        # 1. Run the Scan (Returns path to JSON report if successful)
-        json_report_path = sql_scanner.run_sql_scan(
-            target_url, 
-            output_dir=user_output_dir, 
-            scan_mode=scan_mode
-        )
-        
-        if json_report_path and os.path.exists(json_report_path):
-            sql_scanner.log(f"[+] SQL scan complete. Generating PDF report...")
+        try:
+            sql_scanner.log(f"[*] Starting {scan_mode.upper()} SQL scan for {target_url} (User: {current_user_identifier})...")
             
-            # 2. Generate PDF Report
-            try:
-                # Define PDF path
-                pdf_path = os.path.join(user_output_dir, PDF_FILENAME)
+            # 1. Run the Scan (Returns path to JSON report if successful)
+            # We now run it directly in user_base_dir instead of a timestamped subfolder
+            json_report_path = sql_scanner.run_sql_scan(
+                target_url, 
+                output_dir=user_base_dir, 
+                scan_mode=scan_mode
+            )
+            
+            if json_report_path and os.path.exists(json_report_path):
+                sql_scanner.log(f"[+] SQL scan complete. Generating PDF report...")
                 
-                # Create the directory for PDFs if it doesn't exist (safety check)
-                os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
-                
-                # Check if the PDF generator has the SQL function implemented
-                if hasattr(pdf_generator, 'create_sql_report_pdf'):
-                    pdf_generator.create_sql_report_pdf(str(json_report_path), str(pdf_path))
+                # 2. Generate PDF Report
+                try:
+                    # PDF path is now directly in user_base_dir
+                    pdf_path = os.path.join(user_base_dir, PDF_FILENAME)
                     
-                    if os.path.exists(pdf_path):
-                        sql_scanner.log(f"[+] PDF report generated successfully: {pdf_path}")
+                    # Check if the PDF generator has the SQL function implemented
+                    if hasattr(pdf_generator, 'create_sql_report_pdf'):
+                        pdf_generator.create_sql_report_pdf(str(json_report_path), str(pdf_path))
+                        
+                        if os.path.exists(pdf_path):
+                            sql_scanner.log(f"[+] PDF report generated and updated in user dashboard: {pdf_path}")
+                        else:
+                            sql_scanner.log("[!] PDF generation ran but file not found.")
                     else:
-                        sql_scanner.log("[!] PDF generation ran but file not found.")
-                else:
-                    sql_scanner.log("[!] PDF Generator missing 'create_sql_report_pdf' function.")
-            
-            except Exception as e:
-                sql_scanner.log(f"[!] FAILED to generate PDF: {str(e)}")
-        else:
-            sql_scanner.log(f"[!] SQL scan failed or produced no results for {target_url}.")
+                        sql_scanner.log("[!] PDF Generator missing 'create_sql_report_pdf' function.")
+                
+                except Exception as e:
+                    sql_scanner.log(f"[!] FAILED to generate PDF: {str(e)}")
+            else:
+                sql_scanner.log(f"[!] SQL scan failed or produced no results for {target_url}.")
+        
+        except Exception as e:
+             sql_scanner.log(f"[!] Unexpected error in scan thread: {str(e)}")
+
+        finally:
+            # RELEASE LOCK
+            with scan_lock:
+                active_user_scans.discard(user_id)
 
     threading.Thread(target=scan_task).start()
     return jsonify({"status": "success", "message": f"SQL scan for {target_url} initiated."})

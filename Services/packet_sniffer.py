@@ -24,19 +24,24 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 # --- Configuration Paths ---
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent.parent.parent
+
 # Default global path (fallback)
-DEFAULT_RESULTS_DIR = Path(r"D:\NetShieldAI\Services\results\packet_sniffer")
+DEFAULT_RESULTS_DIR = BASE_DIR / "Services" / "results" / "packet_sniffer"
 DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Logs (Shared)
-LOG_DIR = Path(r"D:\NetShieldAI\logs")
-LOG_FILE = LOG_DIR / "packet_sniffer_log.txt"
+LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_FILE = LOG_DIR / "packet_sniffer_log.txt"
+
+# Centralized Temp
+TEMP_DIR = BASE_DIR / "Services" / "temp" / "sniffer"
+TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # Note: PDF output dir is now handled dynamically per user in the blueprint, 
 # but we keep a reference here if needed for defaults.
-PDF_OUTPUT_DIR = Path(r"D:\NetShieldAI\Services\PDFs")
+PDF_OUTPUT_DIR = DEFAULT_RESULTS_DIR
 PDF_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- Global State for Threading Control ---
@@ -253,7 +258,7 @@ def get_output_paths(output_dir=None):
             log(f"[!] Error creating directory {base}: {e}")
 
     return {
-        "pcap": base / "capture.pcap",
+        "pcap": TEMP_DIR / "capture.pcap",
         "json_report": base / "pcap_analysis_report.json",
         "pdf_report": base / "pcap_analysis_report.pdf" 
     }
@@ -1183,13 +1188,20 @@ def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, int
                 # 5. Save the enriched report
                 save_json_report(report_data, output_dir=output_dir)
 
-                # 6. Summarize Report and Log
+                # 6. Move PCAP to final results directory for persistence
+                final_pcap_path = Path(output_dir) / "capture.pcap" if output_dir else DEFAULT_RESULTS_DIR / "capture.pcap"
+                try:
+                    import shutil
+                    shutil.move(str(pcap_path), str(final_pcap_path))
+                    log(f"[+] PCAP moved to final destination: {final_pcap_path}")
+                except Exception as e:
+                    log(f"[!] Warning: Failed to move PCAP to final directory: {e}")
+
+                # 7. Summarize Report and Log
                 log(f"Extracted Features Sample: {report_data.get('extracted_features', [])[:5]}")
                 log(f"Application Flow Summary: {report_data['application_flow_analysis'].get('summary', 'N/A')}")
                 anomaly_summary = report_data['security_anomaly_report'].get('summary', 'N/A')
                 log(f"Security Anomaly Summary: {anomaly_summary}")
-                if anomaly_summary != "No anomalies detected.":
-                    log(f"Full Anomaly Report: {json.dumps(report_data['security_anomaly_report'], indent=2)}")
             else:
                 save_json_report(report_data, output_dir=output_dir)
 
@@ -1199,6 +1211,13 @@ def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, int
         except Exception as e:
             log(f"[FATAL] Analysis failed: {e}")
             return {"status": "error", "message": f"Analysis failed: {str(e)}"}
+        finally:
+            # Cleanup temp PCAP if it still exists (e.g. if analysis failed before move)
+            if pcap_path.exists():
+                try:
+                    pcap_path.unlink()
+                except:
+                    pass
     else:
         log("[!!!] PCAP file was not created. Check administrator privileges, TShark installation, or interface selection.")
         return {"status": "error", "message": "PCAP file creation failed."}

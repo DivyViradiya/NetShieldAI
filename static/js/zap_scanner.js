@@ -86,7 +86,19 @@ document.addEventListener('DOMContentLoaded', () => {
         let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
         cleanedMessage = cleanedMessage.trim();
 
-        // 3. Determine Color Style
+        // 3. In-Place Update Logic for Progress Bars (e.g. [===== ] 28%)
+        const isProgressBar = cleanedMessage.startsWith('[') && cleanedMessage.includes('%');
+        if (isProgressBar) {
+            const lastLine = logOutput.lastElementChild;
+            if (lastLine && lastLine.querySelector('.log-content').getAttribute('data-is-progress') === 'true') {
+                // Update existing progress bar line
+                lastLine.querySelector('.log-time').textContent = timeStr;
+                lastLine.querySelector('.log-content').textContent = cleanedMessage;
+                return;
+            }
+        }
+
+        // 4. Determine Color Style
         const isLight = document.body.classList.contains("light-mode");
         let contentStyle = isLight ? 'color:#334155' : 'color:#d4d4d8'; // Slate-700 / Zinc-300
         
@@ -106,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Flex layout: Time on left, Content on right
         line.innerHTML = `
             <div class="log-time" style="color:${timeColor}">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+            <div class="log-content" style="${contentStyle}" ${isProgressBar ? 'data-is-progress="true"' : ''}>${cleanedMessage}</div>
         `;
         
         logOutput.appendChild(line);
