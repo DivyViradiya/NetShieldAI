@@ -4,8 +4,12 @@ import os
 import json
 from werkzeug.utils import secure_filename
 import re  
+import logging
 from datetime import datetime
 from Services import compliance_engine
+
+# --- Logging Setup ---
+logger = logging.getLogger(__name__)
 
 dashboard_bp = Blueprint('dashboard_bp', __name__)
 
@@ -42,6 +46,7 @@ def load_json_safe(path):
 @login_required
 def dashboard():
     """Renders the dashboard UI frame."""
+    logger.info(f"\033[34m[*] Accessing Security Posture Dashboard (User: {current_user.username})\033[0m")
     return render_template('dashboard/dashboard.html')
 
 # --- Modular API Endpoints ---
@@ -54,6 +59,7 @@ def get_killchain_stats():
     Parses the massive killchain_report.json to provide a high-level 
     security posture overview for the Dashboard.
     """
+    logger.info(f"\033[34m[*] Fetching Kill Chain Stats for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
     
     response = {
@@ -139,6 +145,7 @@ def get_killchain_stats():
 @login_required
 def get_network_stats():
     """Returns aggregated stats for Nmap/Network Scanner."""
+    logger.info(f"\033[34m[*] Fetching Network Stats for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
     
     response = {
@@ -192,6 +199,7 @@ def get_network_stats():
 @login_required
 def get_zap_stats():
     """Returns aggregated stats for ZAP Web Scanner."""
+    logger.info(f"\033[34m[*] Fetching ZAP Web Scanner Stats for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
     
     response = {
@@ -261,6 +269,7 @@ def get_zap_stats():
 @login_required
 def get_ssl_stats():
     """Returns aggregated stats for SSL Scanner."""
+    logger.info(f"\033[34m[*] Fetching SSL Scanner Stats for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
     
     response = {
@@ -329,6 +338,7 @@ def get_ssl_stats():
 @login_required
 def get_sniffer_stats():
     """Returns aggregated stats for Packet Sniffer."""
+    logger.info(f"\033[34m[*] Fetching Packet Sniffer Stats for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
     
     response = {
@@ -403,6 +413,7 @@ def get_sniffer_stats():
 @login_required
 def get_api_stats():
     """Returns aggregated stats for API Scanner."""
+    logger.info(f"\033[34m[*] Fetching API Scanner Stats for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
     
     response = {
@@ -464,6 +475,7 @@ def get_api_stats():
 @login_required
 def get_sql_stats():
     """Returns aggregated stats for SQL Scanner."""
+    logger.info(f"\033[34m[*] Fetching SQL Scanner Stats for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
     
     response = {
@@ -515,6 +527,7 @@ def get_sql_stats():
 @login_required
 def get_semgrep_stats():
     """Returns aggregated stats for Semgrep SAST Scanner."""
+    logger.info(f"\033[34m[*] Fetching Semgrep SAST Stats for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
     
     response = {
@@ -559,6 +572,7 @@ def get_usage_stats():
     Returns the usage metrics recorded in the User database model.
     This powers the 'Usage Statistics' section of the dashboard.
     """
+    logger.info(f"\033[34m[*] Fetching System Usage Telemetry for {current_user.username}\033[0m")
     # current_user is a proxy for the User model record defined in models.py
     user = current_user
     
@@ -604,6 +618,7 @@ def get_compliance_stats():
     """
     Generates/Retrieves the Compliance Report.
     """
+    logger.info(f"\033[34m[*] Evaluating Compliance Frameworks for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
     if not user_dir:
         return jsonify({"status": "error", "message": "User directory not found"})

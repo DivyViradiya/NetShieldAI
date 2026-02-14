@@ -11,7 +11,11 @@ import queue as _queue_module
 import uuid
 import re
 from pathlib import Path
+import logging
 from werkzeug.utils import secure_filename 
+
+# --- Logging Setup ---
+logger = logging.getLogger(__name__)
 
 # [NEW] Import db to update user stats
 from extensions import db
@@ -55,6 +59,7 @@ SERVER_PROXY_URL = "http://localhost:5100"
 @login_required
 def packet_sniffer_page():
     """Renders the packet sniffer page."""
+    logger.info(f"\033[36m[*] Accessing Network Monitor Page (User: {current_user.username})\033[0m")
     return render_template('scanners/packet_sniffer.html')
 
 
@@ -77,8 +82,12 @@ def start_capture_route():
     """
     API endpoint to initiate packet capture and analysis.
     """
+    # Define user_identifier early for logging
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+
     data = request.get_json(force=True, silent=True) or {}
     target_ip = data.get('target_ip')
+    logger.info(f"\033[36m[*] Packet Capture requested for {target_ip} by {current_user.username}\033[0m")
     duration = int(data.get('duration', 30))
     max_packets = int(data.get('max_packets', 50))
 
@@ -110,7 +119,6 @@ def start_capture_route():
 
     # --- Capture Context for Thread ---
     app = current_app._get_current_object()
-    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_id_for_log = current_user.id
 
     # [NEW] Increment Database Counter for Stats
@@ -118,11 +126,11 @@ def start_capture_route():
         current_user.scan_count_sniffer += 1
         db.session.commit()
     except Exception as e:
-        packet_sniffer.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
+        packet_sniffer.log(f"[!] Failed to update user stats: {e}", user_identifier)
 
     def scan_task(interface_id_local, custom_bpf_filter_local):
-        # Use the captured 'current_user_identifier' here
-        packet_sniffer.log(f"[*] Starting capture for {target_ip} ({duration}s) User: {current_user_identifier}...", current_user_identifier)
+        # Use the captured 'user_identifier' here
+        packet_sniffer.log(f"[*] Starting capture for {target_ip} ({duration}s) User: {user_identifier}...", user_identifier, to_console=True)
         
         start_time = time.time()
 
@@ -140,7 +148,7 @@ def start_capture_route():
         actual_duration = time.time() - start_time
 
         if not pcap_file:
-            packet_sniffer.log("[!] Packet capture failed.", current_user_identifier)
+            packet_sniffer.log("[!] Packet capture failed.", user_identifier, to_console=True)
             packet_sniffer.send_sse_event("analysis_complete", {"target_ip": target_ip, "status": "capture_failed"})
             
             # Log failure (Inside App Context)
@@ -156,7 +164,7 @@ def start_capture_route():
                 )
             return
 
-        packet_sniffer.log("[*] Capture complete. Starting JSON analysis...", current_user_identifier)
+        packet_sniffer.log("[*] Capture complete. Starting JSON analysis...", user_identifier, to_console=True)
 
         # Analyze
         analysis_data = packet_sniffer.analyze_pcap_to_json(
@@ -182,7 +190,7 @@ def start_capture_route():
             # Generate PDF report in user directory
             if json_path:
                 try:
-                    packet_sniffer.log("[*] Analysis complete. Generating PDF report...", current_user_identifier)
+                    packet_sniffer.log("[*] Analysis complete. Generating PDF report...", user_identifier, to_console=True)
 
                     # Get user-specific PDF path
                     user_paths = packet_sniffer.get_output_paths(user_output_dir)
@@ -195,17 +203,17 @@ def start_capture_route():
                     pdf_generator.create_packet_sniffer_report_pdf(analysis_data, str(pdf_path))
 
                     if pdf_path.exists():
-                        packet_sniffer.log(f"[+] PDF report generated successfully: {pdf_path}", current_user_identifier)
+                        packet_sniffer.log(f"[+] PDF report generated successfully: {pdf_path}", user_identifier, to_console=True)
                     else:
-                        packet_sniffer.log("[!] PDF generation ran but file not found.", current_user_identifier)
+                        packet_sniffer.log("[!] PDF generation ran but file not found.", user_identifier, to_console=True)
 
                 except ImportError:
-                    packet_sniffer.log("[!] Error: PDF generator dependencies missing.", current_user_identifier)
+                    packet_sniffer.log("[!] Error: PDF generator dependencies missing.", user_identifier, to_console=True)
                 except Exception as e:
-                    packet_sniffer.log(f"[!] FAILED to generate PDF: {str(e)}", current_user_identifier)
+                    packet_sniffer.log(f"[!] FAILED to generate PDF: {str(e)}", user_identifier, to_console=True)
 
         else:
-            packet_sniffer.log(f"[!] JSON Analysis failed: {analysis_data.get('message', 'Unknown error')}", current_user_identifier)
+            packet_sniffer.log(f"[!] JSON Analysis failed: {analysis_data.get('message', 'Unknown error')}", user_identifier, to_console=True)
             packet_sniffer.send_sse_event("analysis_complete", {"target_ip": target_ip, "status": "analysis_failed"})
             
             # Log failure (Analysis phase - Inside App Context)
@@ -339,7 +347,8 @@ def get_json_report_file():
 @packet_sniffer_bp.route('/clear_log', methods=['POST'])
 @login_required
 def clear_log_route():
-    # If a clear_log_file function exists in packet_sniffer, call it here.
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    packet_sniffer.clear_log_file(user_identifier)
     return jsonify({"status": "success", "message": "Log cleared."})
 
 

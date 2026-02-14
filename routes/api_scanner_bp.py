@@ -43,6 +43,7 @@ def get_user_results_dir():
 @api_scanner_bp.route('/')
 @login_required 
 def api_scanner_page():
+    print(f"\033[34m[*] Accessing API Security Scanner Page (User: {current_user.username})\033[0m")
     # You will need a distinct HTML template for this
     return render_template('scanners/api_scanner.html')
 
@@ -56,6 +57,7 @@ def api_scanner_page():
 def initiate_api_scan():
     data = request.get_json()
     target_url = data.get('target_url')
+    print(f"\033[34m[*] API Scan requested for {target_url} by {current_user.username}\033[0m")
     # [NEW] API Scans require a definition (Swagger/OpenAPI)
     definition_url = data.get('definition_url') 
 
@@ -89,8 +91,8 @@ def initiate_api_scan():
         api_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     def scan_and_process_task():
-        api_scanner.log(f"[*] Starting API Scan for {target_url}...", current_user_identifier)
-        api_scanner.log(f"[*] Using Definition: {definition_url}", current_user_identifier)
+        api_scanner.log(f"[*] Starting API Scan for {target_url}...", current_user_identifier, to_console=True)
+        api_scanner.log(f"[*] Using Definition: {definition_url}", current_user_identifier, to_console=True)
         
         paths = api_scanner.get_output_paths(user_output_dir)
         xml_path = paths["xml_report"]
@@ -124,29 +126,29 @@ def initiate_api_scan():
                 json_report_path = api_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier)
                 
                 if json_report_path:
-                    api_scanner.log(f"[+] JSON report saved.", current_user_identifier)
+                    api_scanner.log(f"[+] JSON report saved.", current_user_identifier, to_console=True)
                     
                     # 4. Generate PDF
                     try:
-                        api_scanner.log("[*] Generating PDF report...", current_user_identifier)
+                        api_scanner.log("[*] Generating PDF report...", current_user_identifier, to_console=True)
                         # Reusing the generator, assuming it handles generic JSON data structure
                         pdf_generator.create_zap_report_pdf(json_report_path, str(pdf_path))
                         
                         if pdf_path.exists():
-                            api_scanner.log(f"[+] PDF generated successfully.", current_user_identifier)
-                            api_scanner.log(f"[*] API Scan complete.", current_user_identifier)
+                            api_scanner.log(f"[+] PDF generated successfully.", current_user_identifier, to_console=True)
+                            api_scanner.log(f"[*] API Scan complete.", current_user_identifier, to_console=True)
                         else:
-                             api_scanner.log("[!] PDF generation failed (file missing).", current_user_identifier)
+                             api_scanner.log("[!] PDF generation failed (file missing).", current_user_identifier, to_console=True)
                              
                     except Exception as e:
-                        api_scanner.log(f"[!] FAILED to generate PDF report: {e}", current_user_identifier)
+                        api_scanner.log(f"[!] FAILED to generate PDF report: {e}", current_user_identifier, to_console=True)
 
                 else:
-                    api_scanner.log("[!] Failed to save JSON report.", current_user_identifier)
+                    api_scanner.log("[!] Failed to save JSON report.", current_user_identifier, to_console=True)
             else:
-                api_scanner.log("[!] Failed to parse API scan report.", current_user_identifier)
+                api_scanner.log("[!] Failed to parse API scan report.", current_user_identifier, to_console=True)
         else:
-            api_scanner.log(f"[!] API scan failed for target: {target_url}.", current_user_identifier)
+            api_scanner.log(f"[!] API scan failed for target: {target_url}.", current_user_identifier, to_console=True)
 
         # Log to Database (Inside App Context)
         with app.app_context():

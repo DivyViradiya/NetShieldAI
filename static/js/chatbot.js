@@ -27,7 +27,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. UI Elements Map ---
     const ui = {
-        // Status & Workflow
+        // Layout
+        layout: document.querySelector('.app-layout'),
+        sidebarToggle: document.getElementById('sidebar-toggle'),
+        commandCenter: document.getElementById('command-center'),
+        ccToggle: document.getElementById('cc-toggle'),
+        ccClose: document.getElementById('cc-close'),
+        
+        // Settings Inputs
+        settingVerbosity: document.getElementById('setting-verbosity'),
+        settingSpeed: document.getElementById('setting-speed'),
+        settingIncognito: document.getElementById('setting-incognito'),
+        
+        // CC Actions
+        btnClearContext: document.getElementById('cc-clear-context'),
+        btnDeleteSession: document.getElementById('cc-delete-session'),
+        btnWipeAll: document.getElementById('cc-wipe-all'),
+        btnDownloadTranscript: document.getElementById('cc-download-transcript'),
+
+        // Status & Workflow ... (remaining keep same)
         statusText: document.getElementById('status-text'),
         statusDot: document.getElementById('status-dot'),
         workflowPanel: document.getElementById('workflow-panel'),
@@ -55,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sendBtn: document.getElementById('send-btn'),
         suggestionGrid: document.getElementById('suggestion-grid'),
         sessionList: document.getElementById('session-list'),
+        sessionSearch: document.getElementById('session-search'),
         newChatBtn: document.getElementById('new-chat-btn'),
 
         // Modal Elements
@@ -70,8 +89,148 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSessionId = null; 
     let sessionToRename = null;
     let isPinning = false;
+    let allSessions = []; 
+    let lastUserMessage = ""; 
 
-    // --- 4. Helper Functions ---
+    // --- 4. Command Center & Settings Logic ---
+
+    ui.ccToggle.onclick = () => ui.commandCenter.classList.add('open');
+    ui.ccClose.onclick = () => ui.commandCenter.classList.remove('open');
+
+    // Clear Context (Keep session, wipe UI and backend history)
+    ui.btnClearContext.onclick = async () => {
+        if (confirm("Clear current analysis history? The AI context will be reset.")) {
+            try {
+                await fetchWithAuth('/chatbot/clear_history', { method: 'POST' });
+                ui.chatHistory.innerHTML = '';
+                ui.welcomeState.style.display = 'block';
+                ui.commandCenter.classList.remove('open');
+            } catch (e) { console.error(e); }
+        }
+    };
+
+    // Delete Active Session
+    ui.btnDeleteSession.onclick = async () => {
+        if (currentSessionId && confirm("Permanently delete this session?")) {
+            await deleteSession(currentSessionId);
+            ui.commandCenter.classList.remove('open');
+        }
+    };
+
+    // Nuclear Wipe
+    ui.btnWipeAll.onclick = async () => {
+        if (confirm("DANGER: This will delete ALL past analysis sessions. This cannot be undone. Proceed?")) {
+            try {
+                await fetchWithAuth('/chatbot/delete_all_sessions', { method: 'POST' });
+                clearView();
+                loadSessionList();
+                ui.commandCenter.classList.remove('open');
+            } catch (e) { console.error(e); }
+        }
+    };
+
+    // Export Transcript
+    ui.btnDownloadTranscript.onclick = () => {
+        const rows = document.querySelectorAll('.msg-row');
+        let transcript = `NetShield AI Analysis Transcript\nDate: ${new Date().toLocaleString()}\n\n`;
+        
+        rows.forEach(row => {
+            const role = row.classList.contains('user') ? 'HUMAN' : 'AI';
+            const bubble = row.querySelector('.msg-bubble');
+            const text = bubble.innerText.replace(/content_copyrefreshthumb_upthumb_down/g, ''); // Clean actions
+            transcript += `[${role}]: ${text}\n\n`;
+        });
+
+        const blob = new Blob([transcript], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `NetShield_Transcript_${new Date().getTime()}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    // Helper Functions ... (keep existing)
+
+    // Collapsible Section Logic
+    const ingestionHeader = document.getElementById('data-ingestion-header');
+    const ingestionSection = document.getElementById('sidebar-main-content');
+    if (ingestionHeader && ingestionSection) {
+        ingestionHeader.addEventListener('click', () => {
+            ingestionSection.classList.toggle('collapsed');
+        });
+    }
+
+    // Toggle Sidebar
+    ui.sidebarToggle.addEventListener('click', () => {
+        ui.layout.classList.toggle('sidebar-collapsed');
+        ui.sidebarToggle.querySelector('span').textContent = 
+            ui.layout.classList.contains('sidebar-collapsed') ? 'chevron_right' : 'chevron_left';
+    });
+
+    // File Upload Functionality
+    if (ui.uploadZone && ui.fileInput) {
+        ui.uploadZone.addEventListener('click', () => ui.fileInput.click());
+        
+        ui.uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            ui.uploadZone.style.borderColor = 'var(--neo-blue)';
+            ui.uploadZone.style.background = 'rgba(59, 130, 246, 0.05)';
+        });
+
+        ui.uploadZone.addEventListener('dragleave', () => {
+            ui.uploadZone.style.borderColor = '';
+            ui.uploadZone.style.background = '';
+        });
+
+        ui.uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            ui.uploadZone.style.borderColor = '';
+            ui.uploadZone.style.background = '';
+            if (e.dataTransfer.files.length > 0) {
+                ui.fileInput.files = e.dataTransfer.files;
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+
+        ui.fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+    }
+
+    function handleFileSelect(file) {
+        selectedFile = file;
+        ui.selectedFilename.textContent = file.name;
+        switchView('config');
+        ui.removeFileBtn.style.display = 'flex'; 
+        if (ui.hiddenModelInput.value) {
+            ui.startBtn.disabled = false;
+        }
+    }
+
+    if (ui.removeFileBtn) {
+        ui.removeFileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedFile = null;
+            if (ui.fileInput) ui.fileInput.value = '';
+            switchView('upload');
+            updateContextStatus(false);
+        });
+    }
+
+    // Mini Rail Listeners
+    document.getElementById('mini-new-chat').onclick = () => ui.newChatBtn.click();
+    document.getElementById('mini-history').onclick = () => {
+        ui.layout.classList.remove('sidebar-collapsed');
+        ui.sidebarToggle.querySelector('span').textContent = 'chevron_left';
+        setTimeout(() => ui.sessionList.scrollIntoView({ behavior: 'smooth' }), 400);
+    };
+    document.getElementById('mini-settings').onclick = () => {
+        ui.layout.classList.remove('sidebar-collapsed');
+        ui.sidebarToggle.querySelector('span').textContent = 'chevron_left';
+    };
 
     function scrollToBottom() {
         requestAnimationFrame(() => {
@@ -79,37 +238,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function updateContextStatus(hasFile, title = null) {
-        const isLight = document.body.classList.contains('light-mode');
+    function highlightThreats(text) {
+        const patterns = {
+            'CRITICAL': /critical/gi,
+            'HIGH': /high/gi,
+            'MEDIUM': /medium/gi,
+            'LOW': /low/gi,
+            'INFO': /info/gi
+        };
         
-        if (hasFile) {
-            // [CHANGED] Use consistent Green/Gray theme instead of Cyan to match default page
-            ui.statusText.textContent = title ? `Active: ${title}` : `Active: KB + Report`;
-            ui.statusText.style.color = "#10b981"; // Keep Green
-            ui.statusDot.style.background = "#10b981";
-            ui.statusDot.style.boxShadow = "0 0 8px rgba(16, 185, 129, 0.5)";
-        } else {
-            ui.statusText.textContent = "SYSTEM ONLINE";
-            ui.statusText.style.color = isLight ? "#64748b" : "#9ca3af"; // Slate in light, Gray in dark
-            ui.statusDot.style.background = "#10b981"; 
-            ui.statusDot.style.boxShadow = "none";
-        }
+        let highlighted = text;
+        // Simple word replacement for common security terms
+        highlighted = highlighted.replace(/\b(critical|high|medium|low|info)\b/gi, (match) => {
+            const cls = `threat-${match.toLowerCase()}`;
+            return `<span class="${cls}">${match}</span>`;
+        });
+        return highlighted;
     }
 
-    function switchView(mode) {
-        if (mode === 'config') {
-            ui.workflowPanel.classList.add('mode-config');
-        } else {
-            ui.workflowPanel.classList.remove('mode-config');
-            // Reset config inputs
-            ui.hiddenModelInput.value = 'local';
-            ui.customTrigger.querySelector('span').textContent = 'NetShield Local';
-            ui.customOptions.forEach(opt => opt.classList.remove('selected'));
-            document.querySelector('.custom-option[data-value="local"]')?.classList.add('selected');
-            
-            ui.startBtn.disabled = true;
-            ui.uploadStatus.textContent = '';
-        }
+    // Custom Markdown parsing with threat highlighting
+    function parseContent(text) {
+        let html = marked.parse(text);
+        return highlightThreats(html);
     }
 
     function addMessage(role, text, animate = true) {
@@ -119,14 +269,51 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const bubble = document.createElement('div');
         bubble.className = 'msg-bubble';
+        bubble.setAttribute('data-label', role === 'user' ? 'Human Analyst' : 'NetShield AI');
         
-        if (role === 'ai' || role === 'assistant') {
+        if (role === 'ai' || role === 'assistant' || role === 'system') {
             const contentDiv = document.createElement('div');
             contentDiv.className = 'markdown-content';
-            contentDiv.innerHTML = marked.parse(text);
+            contentDiv.innerHTML = parseContent(text);
             bubble.appendChild(contentDiv);
+
+            // Add Actions
+            const actions = document.createElement('div');
+            actions.className = 'msg-actions';
+            actions.innerHTML = `
+                <button class="action-btn copy-btn" title="Copy response"><span class="material-symbols-outlined" style="font-size:14px">content_copy</span></button>
+                <button class="action-btn regen-btn" title="Regenerate"><span class="material-symbols-outlined" style="font-size:14px">refresh</span></button>
+                <button class="action-btn feedback-btn up" title="Helpful"><span class="material-symbols-outlined" style="font-size:14px">thumb_up</span></button>
+                <button class="action-btn feedback-btn down" title="Not helpful"><span class="material-symbols-outlined" style="font-size:14px">thumb_down</span></button>
+            `;
+            
+            actions.querySelector('.copy-btn').onclick = () => {
+                navigator.clipboard.writeText(text);
+                const icon = actions.querySelector('.copy-btn span');
+                icon.textContent = 'check';
+                setTimeout(() => icon.textContent = 'content_copy', 2000);
+            };
+
+            actions.querySelector('.regen-btn').onclick = () => {
+                if (lastUserMessage) {
+                    ui.userInput.value = lastUserMessage;
+                    sendMessage();
+                }
+            };
+
+            actions.querySelectorAll('.feedback-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const isUp = btn.classList.contains('up');
+                    btn.style.color = isUp ? '#10b981' : '#ef4444';
+                    btn.parentElement.style.opacity = '1';
+                    submitFeedback(currentSessionId, isUp);
+                };
+            });
+
+            bubble.appendChild(actions);
         } else {
             bubble.textContent = text;
+            lastUserMessage = text;
         }
         
         row.appendChild(bubble);
@@ -137,24 +324,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 5. Session List & Context Menu Logic ---
 
-    // [NEW] Helper function to render the session list DOM elements
-    // This allows us to reuse the logic for both pre-loaded data and fetched data
+    function groupSessions(sessions) {
+        const now = new Date();
+        const groups = {
+            'Pinned': [],
+            'Today': [],
+            'Yesterday': [],
+            'Previous 7 Days': [],
+            'Older': []
+        };
+
+        sessions.forEach(sess => {
+            if (sess.is_pinned) {
+                groups['Pinned'].push(sess);
+                return;
+            }
+
+            // subtitle is usually "14 Feb 2026, 12:30 PM"
+            // We need a proper date for grouping. If backend doesn't provide it, we guess from subtitle or just don't group.
+            // Assuming subtitle format: "DD MMM YYYY, ..."
+            const sessDate = new Date(sess.subtitle);
+            const diffDays = Math.floor((now - sessDate) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) groups['Today'].push(sess);
+            else if (diffDays === 1) groups['Yesterday'].push(sess);
+            else if (diffDays < 8) groups['Previous 7 Days'].push(sess);
+            else groups['Older'].push(sess);
+        });
+
+        return groups;
+    }
+
     function renderSessionList(sessions) {
         ui.sessionList.innerHTML = ''; 
-        
-        if (sessions && sessions.length > 0) {
-            sessions.forEach(sess => {
+        if (!sessions || sessions.length === 0) {
+            ui.sessionList.innerHTML = '<p style="color:#444; font-size:0.7rem; padding:0.5rem; font-style:italic;">No results found.</p>';
+            return;
+        }
+
+        const groups = groupSessions(sessions);
+
+        Object.keys(groups).forEach(groupName => {
+            if (groups[groupName].length === 0) return;
+
+            const groupEl = document.createElement('div');
+            groupEl.className = 'session-group';
+            groupEl.innerHTML = `<div class="group-label">${groupName}</div>`;
+
+            groups[groupName].forEach(sess => {
                 const item = document.createElement('div');
                 item.className = `session-item ${sess.is_pinned ? 'pinned' : ''} ${sess.session_id === currentSessionId ? 'active' : ''}`;
                 item.dataset.id = sess.session_id;
                 
                 item.innerHTML = `
+                    <div class="session-icon-box">
+                        <span class="material-symbols-outlined" style="font-size: 1.1rem;">${sess.is_pinned ? 'push_pin' : 'chat_bubble'}</span>
+                    </div>
                     <div class="session-info">
                         <span class="session-title">${sess.title}</span>
                         <span class="session-date">${sess.subtitle}</span>
                     </div>
-                    <span class="pin-icon material-symbols-outlined" style="font-size:14px; ${sess.is_pinned ? '' : 'display:none'}">push_pin</span>
-                    <button class="session-menu-btn"><span class="material-symbols-outlined" style="font-size:16px">more_vert</span></button>
+                    <button class="session-menu-btn" title="Actions"><span class="material-symbols-outlined" style="font-size:16px">more_horiz</span></button>
                     
                     <div class="context-menu" id="menu-${sess.session_id}">
                         <div class="menu-item action-pin">
@@ -170,129 +400,176 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
 
-                // Click Logic: Switch Session
+                // Event listeners for session items... (Same as before)
                 item.addEventListener('click', (e) => {
                     if (!e.target.closest('.session-menu-btn') && !e.target.closest('.context-menu')) {
                         switchSession(sess.session_id);
                     }
                 });
 
-                // Menu Toggle Logic
                 const menuBtn = item.querySelector('.session-menu-btn');
                 const menu = item.querySelector('.context-menu');
-                
                 menuBtn.addEventListener('click', (e) => {
                     e.stopPropagation(); 
+                    const alreadyOpen = menu.classList.contains('show');
+                    
+                    // Close all other menus
                     document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('show'));
-                    menu.classList.toggle('show');
+                    document.querySelectorAll('.session-item').forEach(si => si.classList.remove('menu-open'));
+                    
+                    if (!alreadyOpen) {
+                        menu.classList.add('show');
+                        item.classList.add('menu-open');
+                    }
                 });
 
-                // Action Listeners
+                // Prevent click on menu from selecting the chat
+                menu.addEventListener('click', (e) => e.stopPropagation());
+
                 item.querySelector('.action-pin').addEventListener('click', (e) => {
                     e.stopPropagation();
                     menu.classList.remove('show');
+                    item.classList.remove('menu-open');
                     togglePin(sess.session_id, !sess.is_pinned);
                 });
                 
                 item.querySelector('.action-rename').addEventListener('click', (e) => {
                     e.stopPropagation();
-                    openRenameModal(sess.session_id, sess.title);
                     menu.classList.remove('show');
+                    item.classList.remove('menu-open');
+                    openRenameModal(sess.session_id, sess.title);
                 });
                 
                 item.querySelector('.action-delete').addEventListener('click', (e) => {
                     e.stopPropagation();
                     menu.classList.remove('show');
-                    // [CHANGED] Removed confirm() check for instant deletion
+                    item.classList.remove('menu-open');
                     deleteSession(sess.session_id);
                 });
 
-                ui.sessionList.appendChild(item);
+                groupEl.appendChild(item);
             });
-        } else {
-            ui.sessionList.innerHTML = '<p style="color:#444; font-size:0.7rem; padding:0.5rem; font-style:italic;">No history available.</p>';
-        }
+            ui.sessionList.appendChild(groupEl);
+        });
     }
+
+    // Search Logic
+    ui.sessionSearch.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allSessions.filter(s => 
+            s.title.toLowerCase().includes(term) || 
+            s.subtitle.toLowerCase().includes(term)
+        );
+        renderSessionList(filtered);
+    });
 
     async function loadSessionList() {
         try {
-            // [NEW] Check for Server-Side Pre-loaded Data
-            // If the window variable exists, use it immediately to avoid network lag.
             if (window.PRELOADED_SESSIONS) {
-                renderSessionList(window.PRELOADED_SESSIONS);
-                
-                // Clear the variable so subsequent updates (like after a pin/delete)
-                // perform a fresh network fetch to get the latest state.
+                allSessions = window.PRELOADED_SESSIONS;
+                renderSessionList(allSessions);
                 window.PRELOADED_SESSIONS = null;
                 return;
             }
 
-            // Fallback: Standard Network Fetch
             const response = await fetchWithAuth('/chatbot/get_sessions');
             const data = await response.json();
-            renderSessionList(data.sessions);
+            allSessions = data.sessions || [];
+            renderSessionList(allSessions);
 
         } catch (e) { console.error("Error loading sessions:", e); }
     }
 
-    window.addEventListener('click', () => {
-        document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('show'));
+    // --- Keyboard Shortcuts ---
+    window.addEventListener('keydown', (e) => {
+        // Ctrl + K to focus search
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            if (ui.layout.classList.contains('sidebar-collapsed')) {
+                ui.sidebarToggle.click();
+            }
+            ui.sessionSearch.focus();
+        }
+        
+        // Ctrl + B to toggle sidebar
+        if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+            e.preventDefault();
+            ui.sidebarToggle.click();
+        }
+
+        // Ctrl + M for new chat
+        if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+            e.preventDefault();
+            ui.newChatBtn.click();
+        }
+
+        // Cmd/Ctrl + Enter to send
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && document.activeElement === ui.userInput) {
+            sendMessage();
+        }
     });
 
-    // --- 6. Session Actions (Optimistic Updates) ---
+    async function submitFeedback(sessId, isHelpful) {
+        try {
+            await fetchWithAuth('/chatbot/submit_feedback', {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    session_id: sessId, 
+                    is_helpful: isHelpful 
+                })
+            });
+        } catch (e) { console.error("Feedback error:", e); }
+    }
+
+    function updateContextStatus(hasFile, title = null) {
+        const isLight = document.body.classList.contains('light-mode');
+        if (hasFile) {
+            ui.statusText.textContent = title ? `Active: ${title}` : `Active: KB + Report`;
+            ui.statusText.style.color = "#10b981";
+            ui.statusDot.style.background = "#10b981";
+        } else {
+            ui.statusText.textContent = "SYSTEM ONLINE";
+            ui.statusText.style.color = isLight ? "#64748b" : "#9ca3af";
+            ui.statusDot.style.background = "#10b981"; 
+        }
+    }
+
+    function switchView(mode) {
+        if (mode === 'config') {
+            ui.workflowPanel.classList.add('mode-config');
+        } else {
+            ui.workflowPanel.classList.remove('mode-config');
+            ui.hiddenModelInput.value = 'local';
+            ui.customTrigger.querySelector('span').textContent = 'NetShield Local';
+            ui.customOptions.forEach(opt => opt.classList.remove('selected'));
+            document.querySelector('.custom-option[data-value="local"]')?.classList.add('selected');
+            ui.startBtn.disabled = true;
+            ui.uploadStatus.textContent = '';
+        }
+    }
 
     async function togglePin(sessionId, newStatus) {
         if (isPinning) return; 
         isPinning = true;
-
-        const item = document.querySelector(`.session-item[data-id="${sessionId}"]`);
-        if (item) {
-            if (newStatus) {
-                item.classList.add('pinned');
-                item.querySelector('.pin-icon').style.display = 'inline-block';
-            } else {
-                item.classList.remove('pinned');
-                item.querySelector('.pin-icon').style.display = 'none';
-            }
-        }
-
         try {
             await fetchWithAuth('/chatbot/toggle_pin', {
                 method: 'POST',
                 body: JSON.stringify({ session_id: sessionId, is_pinned: newStatus })
             });
-            setTimeout(() => loadSessionList(), 300);
+            await loadSessionList();
         } catch (e) { console.error(e); } 
         finally { isPinning = false; }
     }
 
-    // [NEW] Optimistic Delete Function
     async function deleteSession(sessionId) {
-        // 1. Instant UI Update: Remove from DOM immediately
-        const item = document.querySelector(`.session-item[data-id="${sessionId}"]`);
-        if (item) {
-            item.remove(); // Removes element instantly
-        }
-
-        // 2. If deleting the current active session, clear the chat view immediately
-        if (sessionId === currentSessionId) {
-            clearView();
-        }
-
-        // 3. Send Network Request in Background
+        if (sessionId === currentSessionId) clearView();
         try {
             await fetchWithAuth('/chatbot/delete_session', {
                 method: 'POST',
                 body: JSON.stringify({ session_id: sessionId })
             });
-            // We do NOT reload the list here to keep the UI stable.
-            // If the delete succeeded, the item is already gone.
-        } catch (e) { 
-            console.error("Delete failed:", e); 
-            // Only if it FAILS do we reload the list to restore the item (sync with server)
-            loadSessionList();
-            alert("Failed to delete session due to a network error.");
-        }
+            await loadSessionList();
+        } catch (e) { console.error("Delete failed:", e); }
     }
 
     function openRenameModal(sessionId, currentTitle) {
@@ -303,7 +580,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     ui.cancelRenameBtn.addEventListener('click', () => ui.renameModal.classList.remove('show'));
-    
     ui.confirmRenameBtn.addEventListener('click', async () => {
         const newTitle = ui.renameInput.value.trim();
         if (newTitle && sessionToRename) {
@@ -313,19 +589,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({ session_id: sessionToRename, new_title: newTitle })
                 });
                 ui.renameModal.classList.remove('show');
-                loadSessionList();
+                await loadSessionList();
             } catch (e) { console.error(e); }
         }
     });
 
-    // --- 7. Core Workflows ---
-
     async function switchSession(sessionId) {
         if (sessionId === currentSessionId) return;
-        
         ui.chatHistory.innerHTML = '';
         ui.welcomeState.style.display = 'block';
-        
         try {
             await fetchWithAuth('/chatbot/switch_session', {
                 method: 'POST',
@@ -333,7 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             currentSessionId = sessionId;
             await restoreSession();
-            loadSessionList(); 
+            await loadSessionList(); 
         } catch (e) { console.error("Failed to switch:", e); }
     }
 
@@ -341,35 +613,20 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetchWithAuth('/chatbot/get_history');
             const data = await response.json();
-
             if (data.chat_history && data.chat_history.length > 0) {
                 ui.welcomeState.style.display = 'none';
                 ui.chatHistory.innerHTML = ''; 
-                
                 data.chat_history.forEach(msg => {
                     const role = msg.role === 'assistant' ? 'ai' : msg.role;
                     addMessage(role, msg.content, false); 
                 });
                 scrollToBottom();
-
                 if (data.session_metadata && data.session_metadata.report_type) {
                     switchView('config');
                     ui.selectedFilename.textContent = data.session_metadata.title || "Active Session";
-                    
-                    // --- [CHANGED] Unify Appearance with Default Theme ---
-                    
-                    // 1. Show the 'X' button so users can close history and go back to upload
                     ui.removeFileBtn.style.display = 'flex'; 
-                    
-                    // 2. Keep the button consistent with the Blue Theme (vs Green/History Mode)
                     ui.startBtn.disabled = true;
-                    ui.startBtn.style.background = 'var(--neo-blue)'; // Use standard theme
-                    ui.startBtn.style.opacity = '0.8'; // Slight dim to show it's state
-                    
-                    // 3. Update Text to be professional
                     ui.startBtn.querySelector('.btn-text').textContent = "ANALYSIS LOADED";
-                    ui.startBtn.querySelector('.icon').textContent = 'inventory_2'; // Archive icon
-                    
                     updateContextStatus(true, data.session_metadata.title);
                 } else {
                     switchView('upload');
@@ -379,157 +636,84 @@ document.addEventListener('DOMContentLoaded', () => {
                 ui.welcomeState.style.display = 'block';
                 updateContextStatus(false);
             }
-        } catch (err) {
-            console.error("Failed to restore session:", err);
-        }
+        } catch (err) { console.error("Failed to restore session:", err); }
     }
 
     function clearView() {
         currentSessionId = null;
         ui.chatHistory.innerHTML = '';
         ui.welcomeState.style.display = 'block';
-        
         switchView('upload');
         selectedFile = null;
         ui.fileInput.value = '';
-        ui.removeFileBtn.style.display = 'flex'; 
-        
-        ui.startBtn.style.background = 'var(--neo-blue)';
-        ui.startBtn.querySelector('.btn-text').textContent = "Analyze";
-        ui.startBtn.querySelector('.icon').textContent = 'bolt';
         ui.startBtn.disabled = true; 
-        
-        document.querySelectorAll('.session-item').forEach(i => i.classList.remove('active'));
         updateContextStatus(false);
     }
 
-    // --- 8. Event Listeners ---
-
-    // === CRITICAL FIX: ENABLE BUTTON ON FILE SELECT ===
-    ui.fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            selectedFile = e.target.files[0];
-            ui.selectedFilename.textContent = selectedFile.name;
-            switchView('config');
-            ui.removeFileBtn.style.display = 'flex'; 
-            
-            // Check if default model ('local') is present and enable button immediately
-            if (ui.hiddenModelInput.value) {
-                ui.startBtn.disabled = false;
-            }
-        }
-    });
-
-    ui.removeFileBtn.addEventListener('click', () => {
-        selectedFile = null;
-        ui.fileInput.value = '';
-        switchView('upload');
-        updateContextStatus(false);
-    });
-
+    // --- Select Model Logic ---
     if(ui.customSelect) {
         // Ensure default state is set correctly
         ui.hiddenModelInput.value = 'local';
         ui.customTrigger.querySelector('span').textContent = 'NetShield Local';
         document.querySelector('.custom-option[data-value="local"]')?.classList.add('selected');
 
-        ui.customTrigger.addEventListener('click', () => ui.customSelect.classList.toggle('open'));
+        ui.customTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            ui.customSelect.classList.toggle('open');
+        });
+
         ui.customOptions.forEach(option => {
-            option.addEventListener('click', function() {
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
                 ui.customOptions.forEach(opt => opt.classList.remove('selected'));
                 this.classList.add('selected');
-                const mainText = this.querySelector('span:first-child').textContent;
+                const mainText = this.querySelector('.option-title').textContent;
                 ui.customTrigger.querySelector('span').textContent = mainText;
                 ui.hiddenModelInput.value = this.getAttribute('data-value');
                 ui.customSelect.classList.remove('open');
                 ui.startBtn.disabled = false;
             });
         });
+
         window.addEventListener('click', (e) => {
-            if (!ui.customSelect.contains(e.target)) ui.customSelect.classList.remove('open');
+            if (ui.customSelect && !ui.customSelect.contains(e.target)) {
+                ui.customSelect.classList.remove('open');
+            }
+            document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('show'));
+            document.querySelectorAll('.session-item').forEach(si => si.classList.remove('menu-open'));
         });
     }
-
-    ui.startBtn.addEventListener('click', async () => {
-        const modelValue = ui.hiddenModelInput.value;
-        if (!selectedFile || !modelValue) return;
-
-        // Visual Feedback for User
-        ui.startBtn.disabled = true;
-        ui.startBtn.querySelector('.btn-text').textContent = "ANALYZING...";
-        ui.startBtn.querySelector('.icon').style.display = 'none';
-        ui.startBtn.querySelector('.spinner').style.display = 'block';
-        ui.uploadStatus.textContent = "Processing packet stream...";
-        ui.uploadStatus.style.color = "var(--neo-blue)";
-
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        formData.append('llm_mode', modelValue);
-
-        try {
-            const headers = {'X-CSRFToken': csrfToken};
-            const response = await fetch('/chatbot/upload_report', { 
-                method: 'POST', 
-                body: formData,
-                headers: headers
-            });
-            const data = await response.json();
-
-            if (response.ok && !data.error) {
-                ui.uploadStatus.textContent = "ANALYSIS COMPLETE";
-                ui.uploadStatus.style.color = "#10b981";
-                
-                ui.startBtn.querySelector('.btn-text').textContent = "ACTIVE";
-                ui.startBtn.querySelector('.spinner').style.display = 'none';
-                ui.startBtn.querySelector('.icon').style.display = 'block';
-                ui.startBtn.querySelector('.icon').textContent = 'check_circle';
-                ui.startBtn.style.background = '#10b981';
-                
-                updateContextStatus(true, selectedFile.name);
-                
-                ui.chatHistory.innerHTML = ''; 
-                addMessage('ai', `**Analysis Protocol Initiated**\n\nTarget: \`${selectedFile.name}\`\nCore: \`${modelValue.toUpperCase()}\`\n\n${data.message || 'System ready.'}\n\n${data.summary || ''}`);
-                
-                currentSessionId = data.session_id; 
-                loadSessionList(); 
-            } else {
-                throw new Error(data.error || 'Upload failed');
-            }
-        } catch (err) {
-            ui.uploadStatus.textContent = "ERROR: " + err.message;
-            ui.uploadStatus.style.color = "#ef4444";
-            ui.startBtn.disabled = false;
-            ui.startBtn.querySelector('.btn-text').textContent = "RETRY";
-            ui.startBtn.querySelector('.spinner').style.display = 'none';
-            ui.startBtn.querySelector('.icon').style.display = 'block';
-        }
-    });
 
     // --- 9. STREAMING MESSAGE LOGIC (WITH VISUAL SMOOTHING) ---
     async function sendMessage() {
         const text = ui.userInput.value.trim();
         if (!text || isProcessing) return;
         
+        const verbosity = ui.settingVerbosity.value;
+        const isIncognito = ui.settingIncognito.checked;
+        const typeSpeed = parseInt(ui.settingSpeed.value);
+
         ui.userInput.value = '';
         addMessage('user', text); 
         isProcessing = true;
         
-        // SHOW DOTS IMMEDIATELY
         ui.typingIndicator.style.display = 'block';
         scrollToBottom();
 
         let aiRow = null;
         let contentDiv = null;
-        
-        // State for Visual Smoothing
-        let fullMarkdownText = ""; // The complete text received from server so far
-        let displayedText = "";    // The text currently shown on screen
-        let isStreamActive = true; // Flag to track if network is still sending
+        let fullMarkdownText = "";
+        let displayedText = "";
+        let isStreamActive = true;
 
         try {
             const response = await fetchWithAuth('/chatbot/chat_stream', {
                 method: 'POST',
-                body: JSON.stringify({ message: text })
+                body: JSON.stringify({ 
+                    message: text,
+                    verbosity: verbosity,
+                    is_incognito: isIncognito
+                })
             });
 
             if (!response.body) throw new Error('ReadableStream not supported.');
@@ -537,60 +721,74 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
 
-            // 1. START THE NETWORK LOOP (Background)
             const networkLoop = async () => {
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
                     const chunk = decoder.decode(value, { stream: true });
-                    fullMarkdownText += chunk; // Just append to buffer, don't render yet
+                    fullMarkdownText += chunk;
                     
-                    // Initialize bubble on first chunk
                     if (!aiRow) {
                         ui.typingIndicator.style.display = 'none';
                         aiRow = document.createElement('div');
                         aiRow.className = 'msg-row ai';
                         const aiBubble = document.createElement('div');
                         aiBubble.className = 'msg-bubble';
+                        aiBubble.setAttribute('data-label', 'NetShield AI');
                         contentDiv = document.createElement('div');
                         contentDiv.className = 'markdown-content';
                         aiBubble.appendChild(contentDiv);
+                        
+                        // Action buttons... (Add them here as well for streaming messages)
+                        const actions = document.createElement('div');
+                        actions.className = 'msg-actions';
+                        actions.innerHTML = `
+                            <button class="action-btn copy-btn" title="Copy response"><span class="material-symbols-outlined" style="font-size:14px">content_copy</span></button>
+                            <button class="action-btn regen-btn" title="Regenerate"><span class="material-symbols-outlined" style="font-size:14px">refresh</span></button>
+                            <button class="action-btn feedback-btn up" title="Helpful"><span class="material-symbols-outlined" style="font-size:14px">thumb_up</span></button>
+                            <button class="action-btn feedback-btn down" title="Not helpful"><span class="material-symbols-outlined" style="font-size:14px">thumb_down</span></button>
+                        `;
+                        aiBubble.appendChild(actions);
+
                         aiRow.appendChild(aiBubble);
                         ui.chatHistory.appendChild(aiRow);
+
+                        // Attach listeners
+                        actions.querySelector('.copy-btn').onclick = () => {
+                            navigator.clipboard.writeText(fullMarkdownText);
+                            const icon = actions.querySelector('.copy-btn span');
+                            icon.textContent = 'check';
+                            setTimeout(() => icon.textContent = 'content_copy', 2000);
+                        };
+                        actions.querySelector('.regen-btn').onclick = () => {
+                            ui.userInput.value = text;
+                            sendMessage();
+                        };
                     }
                 }
-                isStreamActive = false; // Network finished
+                isStreamActive = false;
             };
 
             networkLoop();
 
-            // 2. START THE RENDER LOOP (Foreground - Typewriter Effect)
-            const typeSpeed = 10; // ms per character (Lower = Faster)
-            
             const renderLoop = () => {
-                // If displayed text is shorter than received text, "type" the next characters
                 if (displayedText.length < fullMarkdownText.length) {
-                    
-                    // Calculate how many chars to add this frame (speed up if behind)
                     const lag = fullMarkdownText.length - displayedText.length;
-                    const step = lag > 50 ? 5 : (lag > 20 ? 2 : 1); 
-                    
+                    const step = lag > 50 ? 8 : (lag > 20 ? 4 : 2); 
                     displayedText = fullMarkdownText.substring(0, displayedText.length + step);
                     
                     if (contentDiv) {
-                        contentDiv.innerHTML = marked.parse(displayedText);
+                        contentDiv.innerHTML = parseContent(displayedText);
                         scrollToBottom();
                     }
                 }
 
-                // Continue loop if network is active OR we still have text to type
                 if (isStreamActive || displayedText.length < fullMarkdownText.length) {
                     setTimeout(renderLoop, typeSpeed);
                 } else {
-                    // Final pass to ensure everything matches exactly
                     if (contentDiv) {
-                        contentDiv.innerHTML = marked.parse(fullMarkdownText);
-                        loadSessionList(); // Refresh sidebar when done
+                        contentDiv.innerHTML = parseContent(fullMarkdownText);
+                        if (!isIncognito) loadSessionList(); // Don't refresh sidebar in incognito
                         isProcessing = false;
                         ui.userInput.focus();
                     }
@@ -602,7 +800,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             ui.typingIndicator.style.display = 'none';
             if(!aiRow) addMessage('ai', `_Error: ${err.message}_`);
-            else if(contentDiv) contentDiv.innerHTML += `<br><em style="color:red">[Error: ${err.message}]</em>`;
             isProcessing = false;
             ui.userInput.focus();
         }

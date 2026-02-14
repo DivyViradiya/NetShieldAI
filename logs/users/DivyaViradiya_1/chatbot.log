@@ -2,3 +2,20 @@
 2026-02-13 21:00:51 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='localhost', port=5000) at 0x2943fa0c690>, 'Connection to localhost timed out. (connect timeout=2)'))
 2026-02-13 21:00:55 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=ced8678b-4471-485c-bdff-c2cdf4d1e7dc (Caused by NewConnectionError("HTTPConnection(host='localhost', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
 2026-02-13 21:12:52 - INFO - New local chat session started: a8ad7a26-b1d9-44a1-bc0f-0ea9227884e9
+2026-02-14 10:38:09 - INFO - New local chat session started: 5f4fbe46-fc65-48b2-bbc5-4cbcd6447fb0
+2026-02-14 10:38:27 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d9369b11-cbbf-406b-a7fe-bbf85b79c1b1
+2026-02-14 10:51:11 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d9369b11-cbbf-406b-a7fe-bbf85b79c1b1
+2026-02-14 10:57:45 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d9369b11-cbbf-406b-a7fe-bbf85b79c1b1
+2026-02-14 11:04:50 - INFO - New local chat session started: 06f5a60a-28c9-4614-8bf7-606db52f5336
+2026-02-14 11:14:01 - INFO - Feedback received: {'session_id': 'd9369b11-cbbf-406b-a7fe-bbf85b79c1b1', 'is_helpful': True}
+2026-02-14 11:14:03 - INFO - Feedback received: {'session_id': 'd9369b11-cbbf-406b-a7fe-bbf85b79c1b1', 'is_helpful': False}
+2026-02-14 11:14:04 - INFO - Feedback received: {'session_id': 'd9369b11-cbbf-406b-a7fe-bbf85b79c1b1', 'is_helpful': False}
+2026-02-14 11:14:05 - INFO - Feedback received: {'session_id': 'd9369b11-cbbf-406b-a7fe-bbf85b79c1b1', 'is_helpful': True}
+2026-02-14 11:14:07 - INFO - Feedback received: {'session_id': 'd9369b11-cbbf-406b-a7fe-bbf85b79c1b1', 'is_helpful': False}
+2026-02-14 11:14:08 - INFO - Feedback received: {'session_id': 'd9369b11-cbbf-406b-a7fe-bbf85b79c1b1', 'is_helpful': True}
+2026-02-14 11:51:27 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1dbef73cad0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-14 14:53:14 - INFO - New local chat session started: 6beefa4b-d638-4bbe-863d-55d4ceefd5c2
+2026-02-14 16:23:04 - INFO - New local chat session started: b90d29e2-dc9d-49fc-a3c7-e19ee71df602
+2026-02-14 16:40:58 - INFO - New local chat session started: 1ec78c55-9851-480e-a424-33331282c40b
+2026-02-14 16:41:00 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-14 16:41:05 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)

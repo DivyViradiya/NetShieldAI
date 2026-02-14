@@ -46,6 +46,7 @@ def get_user_results_dir():
 @login_required
 def semgrep_scanner_page():
     """Renders the Semgrep scanner page."""
+    print(f"\033[32m[*] Accessing Source Code Scanner Page (User: {current_user.username})\033[0m")
     return render_template('scanners/semgrep_scanner.html')
 
 @semgrep_bp.route('/scan', methods=['POST'])
@@ -56,6 +57,7 @@ def scan_code():
     Handles both File Uploads (Zip) and Git URLs.
     Runs the scan in a separate thread.
     """
+    print(f"\033[32m[*] Semgrep SAST Scan requested by {current_user.username}\033[0m")
     user_output_dir = get_user_results_dir()
     
     target_input = None
@@ -115,7 +117,7 @@ def scan_code():
 
     # 3. Define Background Task
     def scan_task():
-        semgrep_scanner.log(f"[*] Starting Semgrep SAST scan on {target_display} (User: {current_user_identifier})...", user_id=current_user_identifier)
+        semgrep_scanner.log(f"[*] Starting Semgrep SAST scan on {target_display} (User: {current_user_identifier})...", user_id=current_user_identifier, to_console=True)
         
         start_time = time.time()
         
@@ -140,7 +142,7 @@ def scan_code():
 
         if report_file:
             status = "Completed"
-            semgrep_scanner.log(f"[+] Semgrep scan complete. Generating PDF report...", user_id=current_user_identifier)
+            semgrep_scanner.log(f"[+] Semgrep scan complete. Generating PDF report...", user_id=current_user_identifier, to_console=True)
             
             # Extract finding count from saved JSON
             try:
@@ -166,16 +168,16 @@ def scan_code():
                     pdf_generator.create_semgrep_report_pdf(str(json_path), str(pdf_path))
                     
                     if pdf_path.exists():
-                        semgrep_scanner.log(f"[+] PDF report generated: {pdf_path.name}", user_id=current_user_identifier)
+                        semgrep_scanner.log(f"[+] PDF report generated: {pdf_path.name}", user_id=current_user_identifier, to_console=True)
                     else:
-                        semgrep_scanner.log("[!] PDF generation ran but file not found.", user_id=current_user_identifier)
+                        semgrep_scanner.log("[!] PDF generation ran but file not found.", user_id=current_user_identifier, to_console=True)
                 else:
-                    semgrep_scanner.log("[!] PDF Generator function 'create_semgrep_report_pdf' missing.", user_id=current_user_identifier)
+                    semgrep_scanner.log("[!] PDF Generator function 'create_semgrep_report_pdf' missing.", user_id=current_user_identifier, to_console=True)
 
             except Exception as e:
-                semgrep_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", user_id=current_user_identifier)
+                semgrep_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", user_id=current_user_identifier, to_console=True)
         else:
-            semgrep_scanner.log(f"[!] Semgrep scan failed for {target_display}.", user_id=current_user_identifier)
+            semgrep_scanner.log(f"[!] Semgrep scan failed for {target_display}.", user_id=current_user_identifier, to_console=True)
 
         # Log to Database (Inside App Context)
         with app.app_context():

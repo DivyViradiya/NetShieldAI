@@ -95,6 +95,19 @@
       html {
         scrollbar-width: thin;
         scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+        font-size: 16px;
+        overflow-x: hidden;
+      }
+
+      /* Fluid Typography Base */
+      @media screen and (min-width: 1600px) {
+        html { font-size: 18px; }
+      }
+      @media screen and (min-width: 2000px) {
+        html { font-size: 20px; }
+      }
+      @media screen and (max-width: 768px) {
+        html { font-size: 14px; }
       }
 
       /* 2. WebKit approach (Chrome, Edge, Safari) */
@@ -162,7 +175,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 100%;
+        width: 100vw;
         position: fixed;
         top: 0;
         left: 0;
@@ -177,6 +190,7 @@
         display: flex;
         align-items: center;
         gap: 3rem;
+        margin-left: auto;
       }
       
       .navbar-links {
@@ -197,9 +211,11 @@
         font-size: 0.8rem;
         transition: color 0.3s ease;
         position: relative;
+        white-space: nowrap;
       }
       
-      .navbar-links li a:hover {
+      .navbar-links li a:hover,
+      .navbar-links li a.active {
         color: var(--text-light);
       }
       
@@ -213,7 +229,9 @@
         background-color: var(--accent-blue);
         transition: width 0.3s ease-out;
       }
-      .navbar-links li a:hover::after {
+      
+      .navbar-links li a:hover::after,
+      .navbar-links li a.active::after {
         width: 100%;
       }
       
@@ -470,6 +488,7 @@
         font-size: 0.8rem;
         border-top: 1px solid var(--border-color);
         position: relative;
+        z-index: 10;
         transition: background-color 0.3s ease;
       }
 
@@ -590,20 +609,21 @@
       <div class="navbar-container">
         <ul class="navbar-links">
           <li>
-            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
           </li>
           <li>
-            <a href="{{ url_for('tools_hub') }}">Security Hub</a>
+            {% set hub_blueprints = ['network_scanner_bp', 'zap_scanner_bp', 'ssl_scanner_bp', 'packet_sniffer_bp', 'sql_scanner_bp', 'semgrep_bp', 'api_scanner_bp', 'killchain_bp'] %}
+            <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">Security Hub</a>
           </li>
 
           {% if current_user.is_authenticated %}
             <li>
-              <a href="{{ url_for('dashboard_bp.dashboard') }}">Security Posture</a>
+              <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">Security Posture</a>
             </li>
           {% endif %}
 
           <li>
-            <a href="{{ url_for('chatbot_bp.chatbot_page') }}">AI Analyzer</a>
+            <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="{% if request.blueprint == 'chatbot_bp' %}active{% endif %}">AI Analyzer</a>
           </li>
         </ul>
 
@@ -680,10 +700,10 @@
         {% else %}
           <ul class="navbar-links" style="gap: 1.5rem;">
             <li>
-              <a href="{{ url_for('auth.login') }}">Login</a>
+              <a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active{% endif %}">Login</a>
             </li>
             <li>
-              <a href="{{ url_for('auth.register') }}" class="highlight-link">Register</a>
+              <a href="{{ url_for('auth.register') }}" class="highlight-link {% if request.endpoint == 'auth.register' %}active{% endif %}">Register</a>
             </li>
           </ul>
         {% endif %}

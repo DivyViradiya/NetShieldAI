@@ -49,7 +49,6 @@ try:
     model = joblib.load(MODEL_PATH)
     cwe_profiles = pd.read_csv(PROFILES_PATH, index_col='cwe_id')
     training_columns = joblib.load(TRAINING_COLUMNS_PATH)
-    print("✅ ML Model and data artifacts loaded successfully.")
 except FileNotFoundError as e:
     print(f"FATAL: Could not load ML model or data files: {e}")
     model = None
@@ -256,10 +255,10 @@ def get_free_port():
 
 # --- LOGGING FUNCTIONS (USER-AWARE) ---
 
-def log(message, user_id=None):
+def log(message, user_id=None, to_console=False):
     """
     Logs messages to:
-    1. System Console
+    1. System Console (optional)
     2. User-specific log file (logs/users/{user_id}/zap_agent_log.txt)
     3. User-specific Memory Queue (for real-time frontend)
     """
@@ -267,7 +266,8 @@ def log(message, user_id=None):
     log_message = f"[{timestamp}] {message}"
     
     # 1. System Console
-    print(log_message)
+    if to_console:
+        print(log_message)
     
     # If a specific user is targeted
     if user_id:
@@ -410,10 +410,10 @@ def run_zap_scan(target_url, report_path, user_id):
         if not os.path.exists(unique_zap_dir):
             os.makedirs(unique_zap_dir, exist_ok=True)
 
-        log(f"\n--- Starting ZAP Quick Scan (Isolated Instance) ---", user_id)
-        log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_id)
-        log(f"Target: {target_url}", user_id)
-        log(f"Report will be saved to: {report_path}", user_id)
+        log(f"\n--- Starting ZAP Quick Scan (Isolated Instance) ---", user_id, to_console=True)
+        log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_id, to_console=True)
+        log(f"Target: {target_url}", user_id, to_console=True)
+        log(f"Report will be saved to: {report_path}", user_id, to_console=True)
 
         report_dir = os.path.dirname(report_path)
         if not os.path.exists(report_dir):
@@ -429,7 +429,7 @@ def run_zap_scan(target_url, report_path, user_id):
             '-quickprogress'
         ]
 
-        log(f"Executing command: {' '.join(command)}", user_id)
+        log(f"Executing command: {' '.join(command)}", user_id, to_console=True)
         zap_directory = os.path.dirname(ZAP_EXECUTABLE_PATH)
         
         process = subprocess.Popen(
@@ -449,8 +449,8 @@ def run_zap_scan(target_url, report_path, user_id):
         for line in iter(process.stdout.readline, ''):
             if line:
                 stripped_line = line.strip()
-                # Optional: Filter basic INFO lines if noisy, but keep important ones
-                log(stripped_line, user_id)
+                # We log to file/queue but NOT to console to avoid terminal clutter
+                log(stripped_line, user_id, to_console=False)
                 # print(stripped_line) # Uncomment for global console debug
 
         process.wait()
@@ -458,10 +458,10 @@ def run_zap_scan(target_url, report_path, user_id):
 
         success = False
         if process.returncode == 0 and os.path.exists(report_path):
-            log(f"Scan completed successfully!", user_id)
+            log(f"Scan completed successfully!", user_id, to_console=True)
             success = True
         else:
-            log(f"Error: ZAP process failed. Return code: {process.returncode}.", user_id)
+            log(f"Error: ZAP process failed. Return code: {process.returncode}.", user_id, to_console=True)
             success = False
             
         return success

@@ -40,6 +40,65 @@ def get_user_queue(user_id):
         user_queues[user_id] = queue.Queue()
     return user_queues[user_id]
 
+# --- LOGGING FUNCTIONS ---
+def log(message, user_id=None, to_console=False):
+    """
+    Logs messages to an in-memory queue and to a file.
+    Organized Path: logs/users/{user_id}/api_agent_log.txt
+    """
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    log_message = f"[{timestamp}] {message}"
+    
+    if to_console:
+        print(log_message)
+    
+    if user_id:
+        user_id = str(user_id)
+        # Organized Path: logs/users/{user_id}/
+        user_dir = os.path.join(LOGS_DIR, "users", user_id)
+        if not os.path.exists(user_dir):
+            os.makedirs(user_dir, exist_ok=True)
+            
+        user_log_file = os.path.join(user_dir, "api_agent_log.txt")
+        try:
+            with open(user_log_file, 'a', encoding='utf-8') as f:
+                f.write(log_message + "\n")
+        except Exception as e:
+            print(f"FATAL: Failed to write to user log file {user_log_file}: {e}")
+
+        uq = get_user_queue(user_id)
+        uq.put(log_message)
+    else:
+        # Fallback to general system log
+        system_dir = os.path.join(LOGS_DIR, "system")
+        if not os.path.exists(system_dir):
+            os.makedirs(system_dir, exist_ok=True)
+            
+        try:
+            with open(os.path.join(system_dir, "api_system_log.txt"), 'a', encoding='utf-8') as f:
+                f.write(log_message + "\n")
+        except:
+            pass
+
+def clear_log_file(user_id):
+    """Clears the log file and queue for a specific user."""
+    if not user_id: return
+    user_id = str(user_id)
+    user_log_file = os.path.join(LOGS_DIR, "users", user_id, "api_agent_log.txt")
+    
+    try:
+        if os.path.exists(user_log_file):
+            with open(user_log_file, 'w', encoding='utf-8') as f:
+                f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+        
+        # Clear Queue
+        uq = get_user_queue(user_id)
+        with uq.mutex:
+            uq.queue.clear()
+            
+    except Exception as e:
+        print(f"FATAL: Could not clear log file for user {user_id}: {e}")
+
 # --- ML Model Setup (Reused from zap_scanner) ---
 MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
 DATA_DIR = os.path.join(PROJECT_ROOT, "Data")
@@ -52,12 +111,12 @@ try:
         model = joblib.load(MODEL_PATH)
         cwe_profiles = pd.read_csv(PROFILES_PATH, index_col='cwe_id')
         training_columns = joblib.load(TRAINING_COLUMNS_PATH)
-        print("✅ ML Model loaded for API Scanner.")
+        log("✅ ML Model loaded for API Scanner.", to_console=False)
     else:
-        print(f"⚠️  ML Model not found at {MODEL_PATH}. Scoring will be skipped.")
+        log(f"⚠️  ML Model not found at {MODEL_PATH}. Scoring will be skipped.", to_console=False)
         model = None
 except Exception as e:
-    print(f"⚠️  ML Model Load Error: {e}")
+    log(f"⚠️  ML Model Load Error: {e}", to_console=False)
     model = None
 
 # --- ZAP to CWE Mapping (Subset for brevity, keep your full list) ---
@@ -268,63 +327,6 @@ def get_output_paths(user_output_dir):
         "pdf_report": base / "api_scan_report.pdf"
     }
 
-# --- LOGGING FUNCTIONS ---
-def log(message, user_id=None):
-    """
-    Logs messages to an in-memory queue and to a file.
-    Organized Path: logs/users/{user_id}/api_agent_log.txt
-    """
-    timestamp = datetime.now().strftime("%H:%M:%S")
-    log_message = f"[{timestamp}] {message}"
-    print(log_message)
-    
-    if user_id:
-        user_id = str(user_id)
-        # Organized Path: logs/users/{user_id}/
-        user_dir = os.path.join(LOGS_DIR, "users", user_id)
-        if not os.path.exists(user_dir):
-            os.makedirs(user_dir, exist_ok=True)
-            
-        user_log_file = os.path.join(user_dir, "api_agent_log.txt")
-        try:
-            with open(user_log_file, 'a', encoding='utf-8') as f:
-                f.write(log_message + "\n")
-        except Exception as e:
-            print(f"FATAL: Failed to write to user log file {user_log_file}: {e}")
-
-        uq = get_user_queue(user_id)
-        uq.put(log_message)
-    else:
-        # Fallback to general system log
-        system_dir = os.path.join(LOGS_DIR, "system")
-        if not os.path.exists(system_dir):
-            os.makedirs(system_dir, exist_ok=True)
-            
-        try:
-            with open(os.path.join(system_dir, "api_system_log.txt"), 'a', encoding='utf-8') as f:
-                f.write(log_message + "\n")
-        except:
-            pass
-
-def clear_log_file(user_id):
-    """Clears the log file and queue for a specific user."""
-    if not user_id: return
-    user_id = str(user_id)
-    user_log_file = os.path.join(LOGS_DIR, "users", user_id, "api_agent_log.txt")
-    
-    try:
-        if os.path.exists(user_log_file):
-            with open(user_log_file, 'w', encoding='utf-8') as f:
-                f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
-        
-        # Clear Queue
-        uq = get_user_queue(user_id)
-        with uq.mutex:
-            uq.queue.clear()
-            
-    except Exception as e:
-        print(f"FATAL: Could not clear log file for user {user_id}: {e}")
-
 # --- ML Prediction ---
 def predict_risk(vulnerability_name: str):
     if model is None: return "N/A"
@@ -378,9 +380,9 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
     unique_zap_dir = os.path.join(TEMP_DIR, f"user_{user_id}_{assigned_port}")
     if not os.path.exists(unique_zap_dir): os.makedirs(unique_zap_dir, exist_ok=True)
 
-    log(f"--- Initializing API Scanner (Port: {assigned_port}) ---", user_id)
-    log(f"Target API: {target_url}", user_id)
-    log(f"Definition: {definition_url}", user_id)
+    log(f"--- Initializing API Scanner (Port: {assigned_port}) ---", user_id, to_console=True)
+    log(f"Target API: {target_url}", user_id, to_console=True)
+    log(f"Definition: {definition_url}", user_id, to_console=True)
 
     # 1. Start ZAP in DAEMON mode
     command = [
@@ -397,7 +399,7 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
     zap = None
 
     try:
-        log("Launching ZAP engine...", user_id)
+        log("Launching ZAP engine...", user_id, to_console=True)
         zap_dir = os.path.dirname(ZAP_EXECUTABLE_PATH)
         process = subprocess.Popen(
             command, 
@@ -408,27 +410,27 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
         )
 
         if not wait_for_zap(assigned_port):
-            log("Error: ZAP failed to start within timeout.", user_id)
+            log("Error: ZAP failed to start within timeout.", user_id, to_console=True)
             return False
         
-        log("Engine started. Connecting...", user_id)
+        log("Engine started. Connecting...", user_id, to_console=True)
         
         # Connect to ZAP
         zap = ZAPv2(proxies={'http': f'http://127.0.0.1:{assigned_port}', 'https': f'http://127.0.0.1:{assigned_port}'})
         
         # 4. Import OpenAPI Definition
-        log("Importing OpenAPI Definition...", user_id)
+        log("Importing OpenAPI Definition...", user_id, to_console=True)
         try:
             # This requires the 'openapi' addon in ZAP
             zap.openapi.import_url(definition_url)
         except Exception as e:
-            log(f"Error importing OpenAPI: {e}. Check if URL is valid/reachable.", user_id)
+            log(f"Error importing OpenAPI: {e}. Check if URL is valid/reachable.", user_id, to_console=True)
             return False
 
         time.sleep(5) # Allow import to populate the tree
 
         # 5. Start Active Scan
-        log(f"Starting Active Scan on {target_url}...", user_id)
+        log(f"Starting Active Scan on {target_url}...", user_id, to_console=True)
         
         # Optimize Scan Speed
         try:
@@ -438,9 +440,9 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
             zap.ascan.set_option_host_per_scan(1)
             # Ensure no artificial delay
             zap.ascan.set_option_delay_in_ms(0)
-            log("[*] Scan parameters optimized for speed.", user_id)
+            log("[*] Scan parameters optimized for speed.", user_id, to_console=True)
         except Exception as e:
-            log(f"Warning: Failed to optimize scan parameters: {e}", user_id)
+            log(f"Warning: Failed to optimize scan parameters: {e}", user_id, to_console=True)
 
         scan_id = zap.ascan.scan(target_url)
         
@@ -450,7 +452,7 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
         while True:
             progress = int(zap.ascan.status(scan_id))
             if progress != last_progress:
-                log(f"Scan Progress: {progress}%", user_id)
+                log(f"Scan Progress: {progress}%", user_id, to_console=True)
                 last_progress = progress
                 stuck_counter = 0
             else:
@@ -461,13 +463,13 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
                 
             # If stuck for more than 5 minutes (60 * 5 / 5 = 60 iterations), move on
             if stuck_counter > 60:
-                log("[!] Scan seems stuck at certain point. Finishing early to preserve results...", user_id)
+                log("[!] Scan seems stuck at certain point. Finishing early to preserve results...", user_id, to_console=True)
                 zap.ascan.stop(scan_id)
                 break
                 
             time.sleep(5)
         
-        log("Scan complete. Generating report...", user_id)
+        log("Scan complete. Generating report...", user_id, to_console=True)
 
         # 6. Save XML Report
         xml_report = zap.core.xmlreport()
@@ -477,12 +479,12 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
         return True
 
     except Exception as e:
-        log(f"Critical Scan Error: {e}", user_id)
+        log(f"Critical Scan Error: {e}", user_id, to_console=True)
         return False
 
     finally:
         # 7. Cleanup
-        log("Shutting down ZAP engine...", user_id)
+        log("Shutting down ZAP engine...", user_id, to_console=True)
         if zap:
             try: zap.core.shutdown()
             except: pass

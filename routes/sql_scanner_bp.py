@@ -9,7 +9,11 @@ from datetime import datetime
 from queue import Empty
 import requests
 import uuid
+import logging
 from werkzeug.utils import secure_filename 
+
+# --- Logging Setup ---
+logger = logging.getLogger(__name__)
 
 # Import db to update user stats
 from extensions import db
@@ -57,6 +61,7 @@ PDF_FILENAME = "sql_report.pdf"
 @login_required
 def sql_scanner_page():
     """Renders the SQL scanner page."""
+    logger.info(f"\033[33m[*] Accessing SQL Scanner Page (User: {current_user.username})\033[0m")
     return render_template('scanners/sql_scanner.html')
 
 @sql_scanner_bp.route('/scan', methods=['POST'])
@@ -68,6 +73,7 @@ def scan_sql():
     """
     data = request.get_json()
     target_url = data.get('target_url')
+    logger.info(f"\033[33m[*] SQL Injection Scan requested for {target_url} by {current_user.username}\033[0m")
     scan_mode = data.get('scan_mode', 'quick') # Default to 'quick'
 
     if not target_url:
@@ -115,7 +121,7 @@ def scan_sql():
     # Function to run in a separate thread
     def scan_task():
         try:
-            sql_scanner.log(f"[*] Starting {scan_mode.upper()} SQL scan for {target_url} (User: {current_user_identifier})...", current_user_identifier)
+            sql_scanner.log(f"[*] Starting {scan_mode.upper()} SQL scan for {target_url} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
             
             start_time = time.time()
             
@@ -142,7 +148,7 @@ def scan_sql():
                 except:
                     pass
 
-                sql_scanner.log(f"[+] SQL scan complete. Generating PDF report...", current_user_identifier)
+                sql_scanner.log(f"[+] SQL scan complete. Generating PDF report...", current_user_identifier, to_console=True)
                 
                 # 2. Generate PDF Report
                 try:
@@ -154,16 +160,16 @@ def scan_sql():
                         pdf_generator.create_sql_report_pdf(str(json_report_path), str(pdf_path))
                         
                         if os.path.exists(pdf_path):
-                            sql_scanner.log(f"[+] PDF report generated and updated in user dashboard: {pdf_path}", current_user_identifier)
+                            sql_scanner.log(f"[+] PDF report generated and updated in user dashboard: {pdf_path}", current_user_identifier, to_console=True)
                         else:
-                            sql_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier)
+                            sql_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier, to_console=True)
                     else:
-                        sql_scanner.log("[!] PDF Generator missing 'create_sql_report_pdf' function.", current_user_identifier)
+                        sql_scanner.log("[!] PDF Generator missing 'create_sql_report_pdf' function.", current_user_identifier, to_console=True)
                 
                 except Exception as e:
-                    sql_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", current_user_identifier)
+                    sql_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", current_user_identifier, to_console=True)
             else:
-                sql_scanner.log(f"[!] SQL scan failed or produced no results for {target_url}.", current_user_identifier)
+                sql_scanner.log(f"[!] SQL scan failed or produced no results for {target_url}.", current_user_identifier, to_console=True)
             
             # Log to Database (Inside App Context)
             with app.app_context():

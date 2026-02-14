@@ -1,0 +1,36 @@
+[2026-02-14 12:18:44] [*] Local IP requested: 192.168.29.48
+[2026-02-14 14:49:16] [*] Local IP requested: 192.168.29.48
+[2026-02-14 14:49:23] [*] Preparing DEFAULT scan for target: 192.168.29.1 with T4...
+[2026-02-14 14:50:50] [*] Scan complete. Generating PDF report...
+[2026-02-14 14:50:55] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-14 14:52:26] [*] Local IP requested: 192.168.29.48
+[2026-02-14 15:11:26] [*] Local IP requested: 192.168.29.48
+[2026-02-14 15:44:54] [*] Local IP requested: 192.168.29.48
+[2026-02-14 15:44:57] [*] Preparing DEFAULT scan for target: 192.168.29.1 with T4...
+[2026-02-14 15:46:22] [*] Scan complete. Generating PDF report...
+[2026-02-14 15:46:24] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-14 15:48:18] [*] Local IP requested: 192.168.29.48
+[2026-02-14 16:47:50] [*] Local IP requested: 192.168.29.48
+[2026-02-14 16:48:18] [*] Local IP requested: 192.168.29.48
+[2026-02-14 16:51:47] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:01:51] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:02:57] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:03:16] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:04:39] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:04:42] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:06:15] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:06:26] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:07:12] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:09:08] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:12:03] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:13:10] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:15] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:15] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:15] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:15] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:15] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:42] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:42] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:42] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:42] [*] Local IP requested: 192.168.29.48
+[2026-02-14 17:15:42] [*] Local IP requested: 192.168.29.48

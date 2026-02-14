@@ -5,7 +5,12 @@ import time
 import uuid
 import re
 import json
+import logging
 from pathlib import Path
+
+# --- Logging Setup ---
+logger = logging.getLogger(__name__)
+
 from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory, current_app
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -53,6 +58,7 @@ def get_fixed_scan_dir():
 @killchain_bp.route('/')
 @login_required
 def killchain_page():
+    logger.info(f"\033[35m[*] Accessing Kill Chain Audit Page (User: {current_user.username})\033[0m")
     return render_template('scanners/killchain.html')
 
 
@@ -65,6 +71,7 @@ def dispatch_scan():
     """
     data = request.get_json()
     target = data.get('target', '').strip()
+    logger.info(f"\033[35m[*] Kill Chain Audit requested for {target} by {current_user.username}\033[0m")
     profile = data.get('profile', 'full_audit')
     aggression = data.get('aggression', 'normal')
 

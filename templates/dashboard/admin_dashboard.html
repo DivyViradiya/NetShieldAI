@@ -29,11 +29,75 @@
 
     body.light-mode {
       --neo-bg: #f8fafc;
-      --neo-card: #ffffff;
-      --neo-card-hover: #f1f5f9;
-      --neo-border: #e2e8f0;
+      --neo-card: rgba(255, 255, 255, 0.8);
+      --neo-card-hover: rgba(241, 245, 249, 0.9);
+      --neo-border: rgba(226, 232, 240, 0.8);
       --neo-text-main: #0f172a;
-      --neo-text-muted: #64748b;
+      --neo-text-muted: #475569;
+    }
+
+    /* Light Mode Specific Overrides */
+    body.light-mode .metric-value {
+      color: #0f172a;
+    }
+
+    body.light-mode .metric-sub {
+      color: #64748b;
+    }
+
+    body.light-mode .panel {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    body.light-mode .panel-title {
+      color: #0f172a;
+    }
+
+    body.light-mode .mono-table th {
+      background: #f1f5f9;
+      color: #64748b;
+      border-bottom-color: #e2e8f0;
+    }
+
+    body.light-mode .mono-table td {
+      color: #334155;
+      border-bottom-color: #f1f5f9;
+    }
+
+    body.light-mode .mono-table tr:hover td {
+      background: #f8fafc;
+    }
+
+    body.light-mode .power-user-name {
+      color: #0f172a;
+    }
+
+    body.light-mode .power-user-rank {
+      color: #94a3b8;
+    }
+
+    body.light-mode .admin-profile-badge {
+      background: #ffffff !important;
+      border-color: rgba(220, 38, 38, 0.2) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body.light-mode .admin-profile-badge span:first-child {
+      color: #0f172a !important;
+    }
+
+    body.light-mode .hud-card::before {
+      background: linear-gradient(90deg, transparent, #dc2626, transparent);
+    }
+
+    body.light-mode .power-user-item {
+      border-bottom-color: #f1f5f9;
+    }
+
+    body.light-mode .scan-feed-scroll::-webkit-scrollbar-thumb {
+      background-color: #e2e8f0;
     }
     
     body {
@@ -44,7 +108,7 @@
     }
     
     .dashboard-container {
-      max-width: 1600px;
+      width: 100%;
       margin: 0 auto;
       padding: 2rem;
     }
@@ -60,7 +124,7 @@
     }
     
     .hud-title h1 {
-      font-size: 1.5rem;
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
       text-transform: uppercase;
       font-weight: 800;
       letter-spacing: 0.05em;
@@ -137,7 +201,7 @@
     
     .metric-value {
       font-family: var(--font-mono);
-      font-size: 2.2rem;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
       font-weight: 700;
       color: var(--neo-text-main);
       margin-bottom: 0.25rem;
@@ -317,13 +381,24 @@
     
     <div class="hud-header">
       <div class="hud-title">
-        <h1>Admin <span>Overwatch</span></h1>
-        <div style="font-size: 0.8rem; color: var(--neo-text-muted);">System Administration & Telemetry</div>
+        <h1 style="font-size: clamp(1.5rem, 4vw, 2.25rem); font-weight: 900; letter-spacing: -0.05em; line-height: 1; text-transform: uppercase;">Admin <span>Overwatch</span></h1>
+        <div style="color: var(--neo-text-muted); font-size: clamp(0.7rem, 1.5vw, 0.85rem); margin-top: 10px; font-weight: 500; font-family: var(--font-mono); display: flex; align-items: center; gap: 12px;">
+          <span style="width: 24px; height: 1px; background: var(--neo-red); opacity: 0.5;"></span>
+          System Administration & Telemetry
+        </div>
       </div>
       <div class="hud-actions">
-        <div class="admin-chip">
-          <span class="material-symbols-outlined" style="font-size:1.1rem;">security</span>
-          <span>Root Access</span>
+        <div class="admin-profile-badge" style="background: var(--neo-card); border: 1px solid var(--neo-red); padding: 0.4rem 1rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+            <div style="position: relative;">
+              <div style="width: 36px; height: 36px; background: linear-gradient(135deg, var(--neo-red), #991b1b); border-radius: 10px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">security</span>
+              </div>
+              <div style="position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; background: var(--neo-green); border: 2px solid var(--neo-card); border-radius: 50%;"></div>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-size: 0.85rem; color: var(--neo-text-main); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.2;">Root Access</span>
+              <span style="font-size: 0.65rem; color: var(--neo-red); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Super Administrator</span>
+            </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,7 @@
-{% extends 'base.html' %}
+Security Posture
+Security Overview & Regulatory Compliance
+D
+DivyaViradiya{% extends 'base.html' %}
 
 {% block title %}
   NetShieldAI - Source Code Scanner
@@ -50,21 +53,131 @@
 
     body.light-mode {
       --neo-bg: #f8fafc;
-      --neo-card: #ffffff;
-      --neo-card-hover: #f1f5f9;
+      --neo-card: rgba(255, 255, 255, 0.8);
+      --neo-card-hover: rgba(241, 245, 249, 0.9);
       --neo-input: #ffffff;
-      --neo-border: #e2e8f0;
+      --neo-border: rgba(226, 232, 240, 0.8);
       
       --neo-text-main: #0f172a;
-      --neo-text-muted: #64748b;
+      --neo-text-muted: #475569;
       
       --neo-blue: #2563eb;
-      --neo-red: #e11d48;
-      --neo-green: #059669;
+      --neo-red: #dc2626;
+      --neo-green: #16a34a;
       --neo-amber: #d97706;
       
-      --accent-primary: var(--neo-green);
+      --accent-primary: #16a34a;
       --risk-low: #d97706;
+    }
+
+    /* Light Mode Specific Overrides */
+    body.light-mode .text-gradient {
+      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    body.light-mode .dash-table th {
+      background: rgba(241, 245, 249, 0.9);
+      color: #0f172a;
+      border-bottom-color: #e2e8f0;
+    }
+
+    body.light-mode .dash-table td {
+      color: #334155;
+      border-bottom-color: #f1f5f9;
+    }
+
+    body.light-mode .panel-header {
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom-color: #e2e8f0;
+    }
+
+    body.light-mode .terminal-header {
+      background: rgba(241, 245, 249, 0.9);
+      border-bottom-color: #e2e8f0;
+    }
+
+    body.light-mode .term-window {
+      background: #ffffff;
+    }
+
+    body.light-mode .metric-value {
+      color: #0f172a;
+    }
+
+    body.light-mode .metric-info {
+      color: #64748b;
+    }
+
+    body.light-mode .dash-input {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #e2e8f0 !important;
+    }
+
+    body.light-mode .btn-dash {
+      background: #ffffff;
+      color: #475569;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .btn-dash:hover:not(:disabled) {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+
+    body.light-mode .custom-dropdown {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    body.light-mode .dropdown-link {
+      color: #475569;
+    }
+
+    body.light-mode .dropdown-link:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    body.light-mode .term-title {
+      color: #64748b;
+    }
+
+    body.light-mode .badge-pill {
+      background: rgba(22, 163, 74, 0.1);
+      color: #16a34a;
+      border-color: rgba(22, 163, 74, 0.2);
+    }
+
+    body.light-mode .processing-text {
+      color: #0f172a !important;
+    }
+
+    body.light-mode #resultsContent {
+      background-color: #f8fafc !important;
+      color: #334155 !important;
+    }
+
+    body.light-mode .vuln-item {
+      background: rgba(217, 119, 6, 0.05);
+      border-color: rgba(217, 119, 6, 0.1);
+    }
+
+    body.light-mode .btn-ghost:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #0f172a;
+    }
+
+    body.light-mode #serverConfigDetails {
+      color: #475569 !important;
+    }
+
+    body.light-mode #serverConfigDetails span[style*="color: var(--neo-text-main)"] {
+      color: #0f172a !important;
     }
     
     /* --- 3. GLOBAL BASE --- */
@@ -77,10 +190,9 @@
     }
     
     .dashboard-wrapper {
-      max-width: 1600px;
+      width: 100%;
       margin: 0 auto;
       padding: 2rem;
-      width: 100%;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -145,25 +257,31 @@
 
     .main-grid {
       display: grid;
-      grid-template-columns: 1fr 350px;
+      grid-template-columns: 2.5fr 1fr;
       gap: 1.5rem;
       /* Ensures grid items stretch to fill height */
       align-items: stretch;
       min-height: 600px;
-      width: 100%;
-    }
-
-    .main-grid > div {
-      min-width: 0;
     }
     
     /* --- CARDS --- */
     .control-card, .metric-card, .dash-panel, .terminal-footer {
-      background: var(--neo-card);
-      border: 1px solid var(--neo-border);
+      background: rgba(10, 10, 12, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--radius-card);
       position: relative;
-      min-width: 0;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    body.light-mode .control-card, 
+    body.light-mode .metric-card, 
+    body.light-mode .dash-panel, 
+    body.light-mode .terminal-footer {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
     }
 
     .control-card {
@@ -215,10 +333,28 @@
     }
     
     .metric-value {
-      font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700;
+      font-family: var(--font-mono); font-size: clamp(1rem, 2.5vw, 1.5rem); font-weight: 700;
       line-height: 1.2; color: var(--neo-text-main); position: relative; z-index: 2;
       margin-bottom: 8px; display: block; overflow: hidden; text-overflow: ellipsis;
       white-space: nowrap; width: 100%;
+    }
+
+    /* --- SCANNER TITLE AREA --- */
+    .scanner-title-area h1 {
+      font-size: clamp(1.75rem, 4vw, 2.75rem) !important;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .scanner-title-area p {
+      font-size: clamp(0.7rem, 1.5vw, 0.85rem) !important;
+    }
+
+    .scanner-title-area p span {
+      width: clamp(12px, 3vw, 24px) !important;
     }
     
     .metric-info {
@@ -349,168 +485,14 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* --- SEMGREP MASTER-DETAIL LAYOUT --- */
-    .findings-master-detail {
-      display: flex;
-      height: 100%;
-      overflow: hidden;
-      width: 100%;
+    /* --- SEMGREP SPECIFIC --- */
+    .vuln-item {
+      padding: 1rem; border-left: 3px solid var(--risk-med);
+      background: rgba(249, 115, 22, 0.05); border: 1px solid rgba(249, 115, 22, 0.1);
+      border-left-width: 3px; margin-bottom: 0.5rem; border-radius: 0 4px 4px 0;
+      font-family: var(--font-mono); font-size: 0.8rem;
     }
-
-    .findings-list-side {
-      width: 300px;
-      flex-shrink: 0;
-      border-right: 1px solid var(--neo-border);
-      display: flex;
-      flex-direction: column;
-      background: rgba(255, 255, 255, 0.01);
-    }
-
-    .findings-detail-side {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1.5rem;
-      background: #050505;
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-      min-width: 0;
-    }
-
-    .finding-item-compact {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--neo-border);
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      position: relative;
-    }
-
-    .finding-item-compact:hover {
-      background: var(--neo-card-hover);
-    }
-
-    .finding-item-compact.active {
-      background: rgba(59, 130, 246, 0.1);
-      border-left: 3px solid var(--neo-blue);
-    }
-
-    .compact-rule-id {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--neo-blue);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .compact-file-info {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--neo-text-main);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .compact-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.7rem;
-      color: var(--neo-text-muted);
-    }
-
-    .severity-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 6px;
-    }
-
-    .detail-header {
-      border-bottom: 1px solid var(--neo-border);
-      padding-bottom: 1rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .detail-rule-id {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: var(--neo-blue);
-      margin-bottom: 0.25rem;
-      word-break: break-all;
-    }
-
-    .detail-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: white;
-      line-height: 1.3;
-      word-break: break-all;
-    }
-
-    .detail-section-label {
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: var(--neo-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .detail-box {
-      background: var(--neo-card);
-      border: 1px solid var(--neo-border);
-      border-radius: var(--radius-card);
-      padding: 1.5rem;
-    }
-
-    .code-view-wrapper {
-      background: #000;
-      border: 1px solid var(--neo-border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      font-family: var(--font-mono);
-    }
-
-    .code-view-header {
-      padding: 8px 16px;
-      background: var(--neo-input);
-      border-bottom: 1px solid var(--neo-border);
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.7rem;
-      color: #555;
-    }
-
-    .code-view-content {
-      padding: 1.25rem;
-      font-size: 0.85rem;
-      color: #e4e4e7;
-      white-space: pre-wrap;
-      word-break: break-all;
-      line-height: 1.6;
-    }
-
-    .empty-detail-state {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #333;
-      text-align: center;
-      gap: 1rem;
-    }
-
+    
     .status-row {
       display: flex; justify-content: space-between; align-items: center;
       padding-top: 1rem; border-top: 1px solid var(--neo-border);
@@ -621,9 +603,12 @@
         <span>Security Hub</span>
       </a>
 
-      <div>
-        <h1 class="text-gradient" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-transform: uppercase;">Semgrep <span style="color: var(--accent-primary); -webkit-text-fill-color: initial;">Scanner</span></h1>
-        <p style="color: var(--neo-text-muted); font-size: 0.8rem; margin-top: 6px; font-weight: 400; font-family: var(--font-mono);">Static Application Security Testing (SAST) & Code Analysis</p>
+      <div class="scanner-title-area" style="margin-top: 0.5rem;">
+        <h1 class="text-gradient">Semgrep <span style="color: var(--accent-primary); -webkit-text-fill-color: initial;">Scanner</span></h1>
+        <p style="color: var(--neo-text-muted); font-weight: 500; font-family: var(--font-mono); display: flex; align-items: center; gap: 12px;">
+          <span style="height: 1px; background: var(--accent-primary); opacity: 0.5;"></span>
+          Static Application Security Testing (SAST) & Code Analysis
+        </p>
       </div>
     </div>
 
@@ -637,15 +622,15 @@
             <input type="text" id="gitUrlInput" class="dash-input" placeholder="ENTER GIT URL (OR UPLOAD ZIP)..." />
           </div>
           
-          <button id="resetScanBtn" type="button" class="btn-dash btn-secondary btn-icon-only" title="Reset Input & Findings">
+          <button id="resetScanBtn" class="btn-dash btn-secondary btn-icon-only" title="Reset Input & Findings">
             <span class="material-symbols-outlined" style="font-size:1.1rem">restart_alt</span>
           </button>
 
-          <button id="triggerUploadBtn" type="button" class="btn-dash btn-secondary" title="Upload Zip File" style="padding: 0 1rem;">
+          <button id="triggerUploadBtn" class="btn-dash btn-secondary" title="Upload Zip File" style="padding: 0 1rem;">
             <span class="material-symbols-outlined" style="font-size:1.1rem">folder_open</span>
           </button>
 
-          <button id="initiateScanBtn" type="button" class="btn-dash btn-primary" title="Start Code Scan" style="padding: 0 1.5rem;">
+          <button id="initiateScanBtn" class="btn-dash btn-primary" title="Start Code Scan" style="padding: 0 1.5rem;">
             <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
             <span>START SCAN</span>
             <span class="spinner hidden"></span>
@@ -705,32 +690,14 @@
     <div class="main-grid">
       <div class="flex flex-col gap-6">
         
-        <div class="dash-panel" style="height: 650px; display: flex; flex-direction: column;">
+        <div class="dash-panel" style="height: 600px; display: flex; flex-direction: column;">
           <div class="panel-header" style="flex-shrink: 0;">
             <span class="panel-title">Security Findings</span>
-            <div class="flex items-center gap-3">
-                <input type="text" id="findingsSearch" class="filter-input" placeholder="FILTER RULE OR FILE..." style="width: 220px; background: var(--neo-input); border: 1px solid var(--neo-border); border-radius: 4px; height: 30px; padding: 0 10px; color: white; font-size: 0.7rem;">
-                <span class="badge-pill" id="filteredCountBadge">0 FINDINGS</span>
-            </div>
           </div>
-          
-          <div class="panel-content" style="padding: 0;">
-            <div class="findings-master-detail">
-              <!-- Left: Scrollable List -->
-              <div id="findingsListSide" class="findings-list-side overflow-auto">
-                <div style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono); font-size: 0.8rem;">
-                  WAITING FOR SCAN...
-                </div>
-              </div>
-
-              <!-- Right: Detail View -->
-              <div id="findingsDetailSide" class="findings-detail-side">
-                <div class="empty-detail-state">
-                  <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.1;">data_exploration</span>
-                  <div style="font-family: var(--font-mono); font-size: 0.8rem; opacity: 0.3; letter-spacing: 0.1em;">SELECT A FINDING TO VIEW ANALYSIS</div>
-                </div>
-              </div>
-            </div>
+          <div class="panel-content p-content" id="vulnerabilitiesContainer" style="overflow-y: auto; flex: 1;">
+            <ul id="vulnerabilitiesList" style="list-style: none; padding: 0;">
+              <li style="color: var(--neo-text-muted); font-size: 0.8rem; font-family: var(--font-mono); text-align: center; padding: 2rem;">WAITING FOR CODE SCAN...</li>
+            </ul>
           </div>
         </div>
 

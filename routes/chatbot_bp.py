@@ -55,9 +55,11 @@ logger.info("Chatbot Blueprint initialized")
 # =======================================================================
 # Proxy Configuration
 # =======================================================================
-# This points to the AI Backend Service.
-# NOTE: Ensure your AI Backend (FastAPI/Flask) is running on this specific port.
-SERVER_PROXY_URL = "http://localhost:5000"
+# Use 127.0.0.1 to bypass DNS lookup for "localhost"
+SERVER_PROXY_URL = "http://127.0.0.1:5000"
+
+# Persistent Session for HTTP Keep-Alive
+http_session = requests.Session()
 
 MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024  # 100 MB
 
@@ -92,6 +94,7 @@ def get_user_pdf_path(scanner_type):
 @login_required
 def chatbot_page():
     """Renders the chatbot UI page with PRE-LOADED session data to prevent UI lag."""
+    print(f"\033[35m[*] Accessing AI Analyst Page (User: {current_user.username})\033[0m")
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     
@@ -105,7 +108,7 @@ def chatbot_page():
         initial_sessions = []
         try:
             proxy_url = f"{SERVER_PROXY_URL}/get_user_sessions"
-            resp = requests.get(proxy_url, params={'user_id': user_identifier}, timeout=2)
+            resp = http_session.get(proxy_url, params={'user_id': user_identifier}, timeout=2)
             
             if resp.status_code == 200:
                 data = resp.json()
@@ -137,6 +140,7 @@ def upload_report():
         if file.filename == '':
             return jsonify({'error': 'No selected file'}), 400
 
+        print(f"\033[35m[*] Manual Report Upload: {file.filename} (User: {current_user.username})\033[0m")
         llm_mode_param = request.form.get('llm_mode', 'local')
 
         if file and file.filename.endswith('.pdf'):
@@ -163,8 +167,8 @@ def upload_report():
                 
                 user_logger.info(f"Sending file to server proxy ({llm_mode_param} mode)")
                 
-                # Send request
-                response = requests.post(proxy_upload_url, files=files_to_send, params=params)
+                # Send request using persistent session
+                response = http_session.post(proxy_upload_url, files=files_to_send, params=params)
                 response.raise_for_status()
 
                 analysis_result = response.json()
@@ -197,31 +201,39 @@ def upload_report():
 def chat_with_ai():
     """
     Standard (Blocking) Chat Endpoint.
-    Sends a chat message to the central server proxy and waits for full response.
+    Updated to handle options like verbosity and incognito mode.
     """
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
-        user_message = request.json.get('message')
+        data = request.json
+        user_message = data.get('message')
+        print(f"\033[35m[*] AI Chat Request from {current_user.username}: {user_message[:50]}...\033[0m")
+        verbosity = data.get('verbosity', 'standard')
+        is_incognito = data.get('is_incognito', False)
+        
         current_session_id = session.get('chatbot_session_id')
 
-        # [NEW] Increment AI Usage Counter
-        try:
-            current_user.scan_count_ai += 1
-            db.session.commit()
-        except Exception as e:
-            user_logger.error(f"Failed to update AI stats: {e}")
+        # Increment AI Usage Counter (Only if not incognito)
+        if not is_incognito:
+            try:
+                current_user.scan_count_ai += 1
+                db.session.commit()
+            except Exception as e:
+                user_logger.error(f"Failed to update AI stats: {e}")
 
         payload_to_server = {
             'message': user_message,
             'session_id': current_session_id,
-            'user_id': user_identifier
+            'user_id': user_identifier,
+            'verbosity': verbosity,
+            'is_incognito': is_incognito
         }
 
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat"
         
-        # Make the request to the server proxy
-        response = requests.post(proxy_chat_url, json=payload_to_server)
+        # Make the request using persistent session
+        response = http_session.post(proxy_chat_url, json=payload_to_server)
         response.raise_for_status()
 
         result_from_server = response.json()
@@ -250,26 +262,32 @@ def chat_with_ai():
 @login_required
 def chat_with_ai_stream():
     """
-    Proxies the streaming chat request to the backend.
-    Forwards chunks of data immediately to the client as they arrive from FastAPI.
+    Proxies the streaming chat request to the backend with options.
     """
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
-        user_message = request.json.get('message')
+        data = request.json
+        user_message = data.get('message')
+        verbosity = data.get('verbosity', 'standard')
+        is_incognito = data.get('is_incognito', False)
+        
         current_session_id = session.get('chatbot_session_id')
 
-        # [NEW] Increment AI Usage Counter
-        try:
-            current_user.scan_count_ai += 1
-            db.session.commit()
-        except Exception as e:
-            user_logger.error(f"Failed to update AI stats: {e}")
+        # [NEW] Increment AI Usage Counter (Only if not incognito)
+        if not is_incognito:
+            try:
+                current_user.scan_count_ai += 1
+                db.session.commit()
+            except Exception as e:
+                user_logger.error(f"Failed to update AI stats: {e}")
 
         payload_to_server = {
             'message': user_message,
             'session_id': current_session_id,
-            'user_id': user_identifier
+            'user_id': user_identifier,
+            'verbosity': verbosity,
+            'is_incognito': is_incognito
         }
 
         # Point to the NEW FastAPI endpoint
@@ -277,7 +295,8 @@ def chat_with_ai_stream():
         
         user_logger.info(f"Initiating stream to {proxy_chat_url} for session {current_session_id}")
         
-        req = requests.post(proxy_chat_url, json=payload_to_server, stream=True)
+        # Use persistent session for streaming too
+        req = http_session.post(proxy_chat_url, json=payload_to_server, stream=True)
         
         new_sess_id = req.headers.get("X-Session-ID")
         if new_sess_id and new_sess_id != current_session_id:
@@ -308,8 +327,8 @@ def chat_with_ai_stream():
 @login_required
 def scanner_analysis_proxy():
     """
-    Handles PDF analysis requests initiated by the scanner pages. 
-    Reads the specific scanner's PDF file from the USER's directory and proxies it.
+    Optimized PDF analysis: Sends the FILE PATH instead of the full BYTES.
+    FastAPI will read the file directly from the local disk.
     """
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
@@ -321,7 +340,7 @@ def scanner_analysis_proxy():
         if not scanner_type:
             return jsonify({'error': 'Missing scanner type'}), 400
 
-        # Dynamically resolve the PDF path for the current logged-in user
+        # Dynamically resolve the absolute PDF path
         pdf_path = get_user_pdf_path(scanner_type)
 
         if not pdf_path:
@@ -331,30 +350,24 @@ def scanner_analysis_proxy():
             return jsonify({'error': f'PDF report for {scanner_type} not found. Please run a scan first.'}), 404
         
         try:
-            # [NEW] Increment AI Usage Counter
             current_user.scan_count_ai += 1
             db.session.commit()
         except Exception as e:
             user_logger.error(f"Failed to update AI stats: {e}")
 
-        # 1. Read the file content
-        with open(pdf_path, 'rb') as f:
-            pdf_content = f.read()
-
-        # 2. Prepare the request
-        filename = os.path.basename(pdf_path)
-        files_to_send = {'file': (filename, pdf_content, 'application/pdf')}
-        
+        # Optimization: We only send the path string, not the file content
         params = {
             'llm_mode': llm_mode,
-            'user_id': user_identifier
+            'user_id': user_identifier,
+            'file_path': pdf_path # Send the path to backend
         }
         
         proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
         
-        user_logger.info(f"Sending {scanner_type} report to server proxy ({llm_mode} mode)")
+        user_logger.info(f"Sending {scanner_type} path-based analysis request to backend")
         
-        response = requests.post(proxy_upload_url, files=files_to_send, params=params)
+        # Use session and send without multipart files
+        response = http_session.post(proxy_upload_url, params=params)
         response.raise_for_status()
 
         analysis_result = response.json()
@@ -363,12 +376,9 @@ def scanner_analysis_proxy():
             session['chatbot_session_id'] = analysis_result['session_id'] 
             user_logger.info(f"Stored session ID from server: {analysis_result['session_id']}")
 
-        if "error" in analysis_result:
-            return jsonify(analysis_result), response.status_code
-        
         return jsonify({
             'status': 'success',
-            'summary': analysis_result.get('summary', 'Report uploaded and processed.'),
+            'summary': analysis_result.get('summary', 'Report processed via shared storage.'),
             'llm_mode': llm_mode
         })
 
@@ -378,6 +388,48 @@ def scanner_analysis_proxy():
     except Exception as e:
         user_logger.error(f"An unexpected error occurred during scanner analysis: {e}", exc_info=True)
         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
+
+
+@chatbot_bp.route('/clear_history', methods=['POST'])
+@login_required
+def clear_history_proxy():
+    """
+    Wipes the chat history for the active session but keeps the report context.
+    """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
+    try:
+        session_id = session.get('chatbot_session_id')
+        if not session_id:
+             return jsonify({'error': 'No active session'}), 400
+
+        proxy_url = f"{SERVER_PROXY_URL}/clear_history"
+        response = http_session.post(proxy_url, json={'session_id': session_id})
+        return jsonify(response.json())
+    except Exception as e:
+        user_logger.error(f"Error in clear_history: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+@chatbot_bp.route('/delete_all_sessions', methods=['POST'])
+@login_required
+def delete_all_sessions_proxy():
+    """
+    Master Reset: Deletes EVERYTHING for the current user.
+    """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
+    try:
+        proxy_url = f"{SERVER_PROXY_URL}/delete_all_sessions"
+        response = http_session.post(proxy_url, json={'user_id': user_identifier})
+        
+        # Clear local session
+        session.pop('chatbot_session_id', None)
+        
+        return jsonify(response.json())
+    except Exception as e:
+        user_logger.error(f"Error in delete_all_sessions: {e}")
+        return jsonify({'error': str(e)}), 500
 
 
 @chatbot_bp.route('/clear_chat', methods=['POST'])

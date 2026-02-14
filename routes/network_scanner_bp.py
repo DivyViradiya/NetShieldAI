@@ -9,9 +9,13 @@ import requests
 import uuid 
 from werkzeug.utils import secure_filename
 import re
+import logging
 
 # [NEW] Import db to update user stats
 from extensions import db
+
+# --- Logging Setup ---
+logger = logging.getLogger(__name__)
 
 # Import the updated network_scanner module
 from Services import network_scanner
@@ -68,6 +72,7 @@ def is_valid_hostname(hostname):
 @login_required
 def network_scanner_page():
     """Renders the network scanner page."""
+    logger.info(f"\033[34m[*] Accessing Network Scanner Page (User: {current_user.username})\033[0m")
     return render_template('scanners/network_scanner.html')
 
 @network_scanner_bp.route('/local_ip', methods=['GET'])
@@ -76,7 +81,8 @@ def get_local_ip_route():
     """API endpoint to detect and return the local IP address."""
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     local_ip = network_scanner.get_local_ip()
-    network_scanner.log(f"[*] Local IP requested: {local_ip}", user_identifier)
+    logger.info(f"\033[34m[*] Local IP Detection requested by {current_user.username}\033[0m")
+    network_scanner.log(f"[*] Local IP requested: {local_ip}", user_identifier, to_console=True)
     return jsonify({"local_ip": local_ip})
 
 @network_scanner_bp.route('/scan', methods=['POST'])
@@ -86,9 +92,10 @@ def scan_ports():
     API endpoint to initiate all types of port scans.
     Runs the scan in a separate thread and generates a PDF report upon completion.
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     data = request.get_json()
     target_ip = data.get('target_ip')
+    logger.info(f"\033[34m[*] Network Scan requested for {target_ip} by {current_user.username}\033[0m")
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     protocol_type = data.get('protocol_type', 'TCP').upper()
     scan_type = data.get('scan_type', 'default')
     
@@ -146,7 +153,7 @@ def scan_ports():
     # --- Threaded Scan Task ---
     def scan_task():
         # Use the captured identifier variable
-        network_scanner.log(f"[*] Preparing {scan_type.upper()} scan for target: {target_ip} with T{timing}...", user_identifier)        
+        network_scanner.log(f"[*] Preparing {scan_type.upper()} scan for target: {target_ip} with T{timing}...", user_identifier, to_console=True)        
         
         start_time = time.time()
         
@@ -185,7 +192,7 @@ def scan_ports():
             # 2. Generate PDF Report
             try:
                 if os.path.exists(user_json_path):
-                    network_scanner.log("[*] Scan complete. Generating PDF report...", user_identifier)
+                    network_scanner.log("[*] Scan complete. Generating PDF report...", user_identifier, to_console=True)
                     
                     # Ensure PDF output directory exists (needed by WeasyPrint)
                     os.makedirs(os.path.dirname(user_pdf_path), exist_ok=True)
@@ -194,11 +201,11 @@ def scan_ports():
                     pdf_generator.create_nmap_report_pdf(str(user_json_path), str(user_pdf_path))
                     
                     if os.path.exists(user_pdf_path):
-                        network_scanner.log(f"[+] PDF report generated successfully: {user_pdf_path}", user_identifier)
+                        network_scanner.log(f"[+] PDF report generated successfully: {user_pdf_path}", user_identifier, to_console=True)
                     else:
-                        network_scanner.log("[!] PDF generation ran but file not found (unknown error).", user_identifier)
+                        network_scanner.log("[!] PDF generation ran but file not found (unknown error).", user_identifier, to_console=True)
                 else:
-                    network_scanner.log("[!] JSON report not found. Cannot generate PDF.", user_identifier)
+                    network_scanner.log("[!] JSON report not found. Cannot generate PDF.", user_identifier, to_console=True)
             
             except ImportError:
                 network_scanner.log("[!] Error: GTK3 Runtime missing or WeasyPrint not installed properly.", user_identifier)
@@ -435,6 +442,6 @@ def log_stream():
             try:
                 message = user_queue.get(timeout=10)
                 yield message
-            except _queue_module.Empty:
+            except queue.Empty:
                 yield ": keep-alive\n\n"
     return Response(generate_logs(), mimetype='text/event-stream')

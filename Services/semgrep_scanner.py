@@ -39,13 +39,16 @@ SEMGREP_RULES = ["p/security-audit", "p/secrets", "p/python", "p/javascript", "p
 
 
 # --- Logging & Events ---
-def log(message, user_id=None):
+def log(message, user_id=None, to_console=False):
     """
     Logs messages to an in-memory queue and to a file.
     Organized Path: logs/users/{user_id}/semgrep_agent_log.txt
     """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     full_message = f"data: [{timestamp}] {message}\n\n"  # SSE format
+    
+    if to_console:
+        print(f"[{timestamp}] {message}")
     
     # Put message into the user-specific queue if provided
     if user_id:
@@ -229,7 +232,7 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
     raw_report_path = paths["raw_json"]
 
     # 1. Prepare Source Code
-    log(f"[*] Preparing source code for analysis...", user_id)
+    log(f"[*] Preparing source code for analysis...", user_id, to_console=True)
     
     # Ensure clean slate for source code
     if source_dir.exists():
@@ -250,17 +253,17 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
         if input_type == "zip":
             zip_path = Path(target_input)
             if not zip_path.exists():
-                log(f"[!] Input zip file not found: {zip_path}", user_id)
+                log(f"[!] Input zip file not found: {zip_path}", user_id, to_console=True)
                 return None
             
-            log(f"[*] Extracting {zip_path.name} (Smart Unzip)...", user_id)
+            log(f"[*] Extracting {zip_path.name} (Smart Unzip)...", user_id, to_console=True)
             if not smart_unzip(zip_path, source_dir, user_id=user_id):
-                log(f"[!] Failed to extract ZIP file.", user_id)
+                log(f"[!] Failed to extract ZIP file.", user_id, to_console=True)
                 return None
-            log(f"[+] Extraction complete.", user_id)
+            log(f"[+] Extraction complete.", user_id, to_console=True)
 
         elif input_type == "git":
-            log(f"[*] Cloning Git repository: {target_input}...", user_id)
+            log(f"[*] Cloning Git repository: {target_input}...", user_id, to_console=True)
             # [FIXED] Added encoding='utf-8' to prevent crashes on Windows
             subprocess.run(
                 ["git", "clone", "--depth", "1", target_input, str(source_dir)],
@@ -268,12 +271,12 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
                 creationflags=_get_subprocess_creation_flags()
             )
         else:
-            log(f"[!] Unknown input type: {input_type}", user_id)
+            log(f"[!] Unknown input type: {input_type}", user_id, to_console=True)
             return None
 
         # 2. Run Semgrep
-        log(f"[+] Starting Semgrep analysis on {source_dir.name}...", user_id)
-        log(f"[*] Using rulesets: {', '.join(SEMGREP_RULES)}", user_id)
+        log(f"[+] Starting Semgrep analysis on {source_dir.name}...", user_id, to_console=True)
+        log(f"[*] Using rulesets: {', '.join(SEMGREP_RULES)}", user_id, to_console=True)
 
         # [FIXED] Use the absolute path to semgrep we found earlier
         cmd = [semgrep_cmd, "scan", "--json", "--output", str(raw_report_path)]
@@ -285,7 +288,7 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
         # Target the source directory
         cmd.append(str(source_dir))
 
-        log(f"[*] Executing Semgrep command...", user_id)
+        log(f"[*] Executing Semgrep command...", user_id, to_console=True)
         
         # [FIXED] Added encoding='utf-8' here to fix the UnicodeDecodeError
         process = subprocess.run(
@@ -295,10 +298,10 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
         )
 
         if not raw_report_path.exists() or raw_report_path.stat().st_size == 0:
-            log(f"[!] Semgrep finished but produced no output. Error: {process.stderr}", user_id)
+            log(f"[!] Semgrep finished but produced no output. Error: {process.stderr}", user_id, to_console=True)
             return None
 
-        log(f"[+] Scan complete. Raw results saved to {raw_report_path.name}", user_id)
+        log(f"[+] Scan complete. Raw results saved to {raw_report_path.name}", user_id, to_console=True)
 
         # 3. Parse and Save Final Report
         final_report = parse_semgrep_results(raw_report_path, output_dir, user_id=user_id)

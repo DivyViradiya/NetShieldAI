@@ -15,9 +15,9 @@
     /* --- THEME VARIABLES --- */
     :root {
       --neo-bg: #050505;
-      --neo-card: #0a0a0c;
-      --neo-card-hover: #0e0e11;
-      --neo-border: #27272a;
+      --neo-card: rgba(10, 10, 12, 0.7);
+      --neo-card-hover: rgba(14, 14, 17, 0.8);
+      --neo-border: rgba(255, 255, 255, 0.08);
       --neo-text-main: #ffffff;
       --neo-text-muted: #9ca3af;
       --neo-text-label: #555555;
@@ -31,36 +31,205 @@
       --radius-lg: 12px;
       --radius-md: 8px;
       
-      --kc-hero-bg: linear-gradient(180deg, var(--neo-card) 0%, rgba(10,10,12,0.8) 100%);
-      --radar-bg: #050505;
+      --glass-blur: blur(12px);
+      --neo-card-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+      
+      --kc-hero-bg: linear-gradient(180deg, var(--neo-card) 0%, rgba(10,10,12,0.4) 100%);
+      --radar-bg: rgba(0, 0, 0, 0.2);
       --panel-header-border: rgba(255,255,255,0.05);
-      --table-border: #1a1a1a;
-      --hud-card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-      --dl-item-bg: #0c0c0e;
-      --dl-item-hover: #151515;
+      --table-border: rgba(255,255,255,0.05);
+      --hud-card-shadow: var(--neo-card-shadow);
+      --dl-item-bg: rgba(12, 12, 14, 0.6);
+      --dl-item-hover: rgba(21, 21, 21, 0.8);
     }
 
     body.light-mode {
-      --neo-bg: #f4f7fe;
-      --neo-card: #ffffff;
-      --neo-card-hover: #eef2ff;
-      --neo-border: #e0e5f2;
-      --neo-text-main: #1b2559;
-      --neo-text-muted: #707eae;
-      --neo-text-label: #a3aed0;
-      --neo-blue: #4318ff;
-      --neo-red: #e31a1a;
-      --neo-green: #05cd99;
-      --neo-amber: #ffb547;
+      --neo-bg: #f8fafc;
+      --neo-card: rgba(255, 255, 255, 0.8);
+      --neo-card-hover: rgba(255, 255, 255, 0.95);
+      --neo-border: rgba(226, 232, 240, 0.8);
+      --neo-text-main: #0f172a;
+      --neo-text-muted: #475569;
+      --neo-text-label: #94a3b8;
+      --neo-blue: #2563eb;
+      --neo-red: #dc2626;
+      --neo-green: #16a34a;
+      --neo-amber: #d97706;
       --neo-purple: #7c3aed;
       
-      --kc-hero-bg: linear-gradient(180deg, #ffffff 0%, #f4f7fe 100%);
-      --radar-bg: #f4f7fe;
-      --panel-header-border: rgba(163, 174, 208, 0.2);
-      --table-border: #e0e5f2;
-      --hud-card-shadow: 0 18px 40px rgba(112, 144, 176, 0.12);
+      --kc-hero-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.6) 100%);
+      --radar-bg: rgba(241, 245, 249, 0.5);
+      --panel-header-border: #f1f5f9;
+      --table-border: #f1f5f9;
+      --hud-card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
       --dl-item-bg: #ffffff;
-      --dl-item-hover: #eef2ff;
+      --dl-item-hover: #f8fafc;
+    }
+
+    /* Light Mode Specific Overrides */
+    body.light-mode .hud-title h1 {
+      color: #0f172a;
+    }
+
+    body.light-mode .metric-value {
+      color: #0f172a;
+    }
+
+    body.light-mode .metric-sub {
+      color: #64748b;
+    }
+
+    body.light-mode .panel {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    body.light-mode .panel-title {
+      color: #0f172a;
+    }
+
+    body.light-mode .kc-target {
+      color: #0f172a;
+    }
+
+    body.light-mode .tech-badge {
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+      color: #475569;
+    }
+
+    body.light-mode .standard-btn {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      color: #475569;
+    }
+
+    body.light-mode .standard-btn:hover:not(.disabled) {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+
+    body.light-mode .mono-table td {
+      color: #334155;
+      border-bottom-color: #f1f5f9;
+    }
+
+    body.light-mode .mono-table th {
+      color: #64748b;
+    }
+
+    body.light-mode .dl-item {
+      background: #ffffff;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .dl-item:hover:not(.disabled) {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    body.light-mode .dl-name {
+      color: #475569;
+    }
+
+    body.light-mode .vuln-header {
+      color: #0f172a;
+    }
+
+    body.light-mode .vuln-item {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .comp-item {
+      background: #ffffff;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .comp-name {
+      color: #0f172a;
+    }
+
+    body.light-mode .comp-desc {
+      color: #475569;
+    }
+
+    body.light-mode .comp-progress-bg {
+      background: #f1f5f9;
+    }
+
+    body.light-mode .comp-tab-btn {
+      border-color: #e2e8f0;
+      color: #64748b;
+    }
+
+    body.light-mode .comp-tab-btn:hover {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    body.light-mode .user-profile-badge {
+      background: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body.light-mode .user-profile-badge span:first-child {
+      color: #0f172a !important;
+    }
+
+    body.light-mode .user-profile-badge .kc-stat-label {
+      color: #64748b !important;
+    }
+
+    /* --- BACKGROUND ENHANCEMENTS --- */
+    .bg-master-container {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      background: var(--neo-bg);
+      pointer-events: none;
+    }
+    .bg-noise {
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.04; mix-blend-mode: overlay;
+    }
+    .nebula { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.15; animation: drift 25s infinite ease-in-out; }
+    .nebula-blue { width: 60vw; height: 60vw; background: radial-gradient(circle, var(--neo-blue), transparent 70%); top: -10%; left: -10%; }
+    .nebula-indigo { width: 50vw; height: 50vw; background: radial-gradient(circle, #4f46e5, transparent 70%); bottom: -10%; right: -5%; animation-delay: -5s; }
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(5%, 10%) scale(1.1); }
+      66% { transform: translate(-5%, 5%) scale(0.9); }
+    }
+    .active-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+      background-size: 60px 60px; animation: grid-pulse 8s infinite alternate;
+    }
+    @keyframes grid-pulse { from { opacity: 0.3; } to { opacity: 0.7; } }
+    .circuit-lines {
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 H90 V90 H10 Z' fill='none' stroke='rgba(59,130,246,0.03)' stroke-width='0.5'/%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(59,130,246,0.1)'/%3E%3Ccircle cx='90' cy='10' r='1' fill='rgba(59,130,246,0.1)'/%3E%3Ccircle cx='90' cy='90' r='1' fill='rgba(59,130,246,0.1)'/%3E%3Ccircle cx='10' cy='90' r='1' fill='rgba(59,130,246,0.1)'/%3E%3C/svg%3E");
+      background-size: 200px 200px; opacity: 0.5;
+    }
+
+    /* --- LIGHT MODE SPECIFIC OVERRIDES --- */
+    body.light-mode .bg-master-container { background: #ffffff; }
+    body.light-mode .bg-noise { opacity: 0.02; }
+    body.light-mode .nebula-blue { background: radial-gradient(circle, rgba(37, 99, 235, 0.15), transparent 70%); opacity: 0.5; }
+    body.light-mode .nebula-indigo { background: radial-gradient(circle, rgba(124, 58, 237, 0.1), transparent 70%); opacity: 0.4; }
+    body.light-mode .active-grid { 
+      background-image: linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+      background-size: 50px 50px; opacity: 0.6;
+    }
+    body.light-mode .circuit-lines { 
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 H90 V90 H10 Z' fill='none' stroke='rgba(37,99,235,0.08)' stroke-width='0.5'/%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(37,99,235,0.15)'/%3E%3Ccircle cx='90' cy='10' r='1' fill='rgba(37,99,235,0.15)'/%3E%3Ccircle cx='90' cy='90' r='1' fill='rgba(37,99,235,0.15)'/%3E%3Ccircle cx='10' cy='90' r='1' fill='rgba(37,99,235,0.15)'/%3E%3C/svg%3E");
+      opacity: 0.5; 
     }
     
     body {
@@ -71,10 +240,10 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
     .dashboard-container {
-      max-width: 1920px;
       margin: 0 auto;
       padding: 1.5rem;
       width: 100%;
@@ -83,6 +252,8 @@
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
+      position: relative;
+      z-index: 10;
     }
 
     /* --- HUD HEADER --- */
@@ -113,14 +284,20 @@
       gap: 1.5rem;
     }
     
-    .hud-card {
+    .hud-card, .panel, .killchain-hero {
       background: var(--neo-card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
       border: 1px solid var(--neo-border);
       border-radius: 8px;
-      padding: 1.5rem;
       position: relative;
       overflow: hidden;
       transition: all 0.3s ease;
+      box-shadow: var(--neo-card-shadow);
+    }
+
+    .hud-card {
+      padding: 1.5rem;
       display: flex; 
       flex-direction: column; 
       justify-content: space-between;
@@ -159,7 +336,7 @@
     
     .metric-value {
       font-family: var(--font-mono);
-      font-size: 2.2rem;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
       font-weight: 700;
       color: var(--neo-text-main);
       margin-bottom: 0.25rem;
@@ -280,7 +457,7 @@
     
     .kc-target {
         font-family: var(--font-mono); 
-        font-size: 1.35rem; 
+        font-size: clamp(1rem, 2.5vw, 1.35rem); 
         font-weight: 700; 
         color: var(--neo-text-main); 
         line-height: 1.2;
@@ -310,7 +487,7 @@
 
     .kc-stats-section {
         display: flex; 
-        gap: 3.5rem; 
+        gap: clamp(1rem, 5vw, 3.5rem); 
         flex: 2; 
         justify-content: center;
         border-left: 1px solid var(--neo-border); 
@@ -329,7 +506,7 @@
     
     .kc-stat-val { 
         font-family: var(--font-sans); 
-        font-size: 1.75rem; 
+        font-size: clamp(1.2rem, 3vw, 1.75rem); 
         font-weight: 800; 
         line-height: 1; 
         margin-bottom: 4px; 
@@ -494,19 +671,34 @@
 {% endblock %}
 
 {% block content %}
+<div class="bg-master-container">
+  <div class="bg-noise"></div>
+  <div class="active-grid" id="grid-bg"></div>
+  <div class="circuit-lines"></div>
+</div>
+
 <div class="dashboard-container fade-in-element">
 
   <div class="hud-header">
       <div class="hud-title">
-        <h1>Security <span>Posture</span></h1>
-        <div style="font-size: 0.8rem; color: var(--neo-text-muted);">Security Overview & Regulatory Compliance</div>
+        <h1 style="font-size: clamp(1.5rem, 4vw, 2.25rem); font-weight: 900; letter-spacing: -0.05em; line-height: 1; text-transform: uppercase;">Security <span>Posture</span></h1>
+        <div style="color: var(--neo-text-muted); font-size: clamp(0.7rem, 1.5vw, 0.85rem); margin-top: 10px; font-weight: 500; font-family: var(--font-mono); display: flex; align-items: center; gap: 12px;">
+          <span style="width: 24px; height: 1px; background: var(--neo-blue); opacity: 0.5;"></span>
+          Security Overview & Regulatory Compliance
+        </div>
       </div>
     <div class="hud-actions">
-        <div class="user-chip" style="background: rgba(59,130,246,0.1); padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--neo-blue); display: flex; align-items: center; gap: 0.75rem;">
-            <div style="width: 20px; height: 20px; background: var(--neo-blue); border-radius: 3px; color: black; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.75rem;">
-              {{ current_user.username.0|upper }}
+        <div class="user-profile-badge" style="background: var(--neo-card); border: 1px solid var(--neo-border); padding: 0.4rem 1rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem; box-shadow: var(--neo-card-shadow); backdrop-filter: var(--glass-blur);">
+            <div style="position: relative;">
+              <div style="width: 36px; height: 36px; background: linear-gradient(135deg, var(--neo-blue), var(--neo-purple)); border-radius: 10px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                {{ current_user.username.0|upper }}
+              </div>
+              <div style="position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; background: var(--neo-green); border: 2px solid var(--neo-card); border-radius: 50%;"></div>
             </div>
-            <span style="font-size: 0.85rem; color: var(--neo-blue); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">{{ current_user.username }}</span>
+            <div style="display: flex; flex-direction: column;">
+              <span style="font-size: 0.85rem; color: var(--neo-text-main); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.2;">{{ current_user.username }}</span>
+              <span style="font-size: 0.65rem; color: var(--neo-text-label); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">System Operator</span>
+            </div>
         </div>
     </div>
   </div>

@@ -24,21 +24,61 @@
     
     body.light-mode {
       --neo-bg: #f8fafc;
-      --neo-card: #ffffff;
-      --neo-border: #e2e8f0;
+      --neo-card: rgba(255, 255, 255, 0.8);
+      --neo-border: rgba(226, 232, 240, 0.8);
       --neo-accent: #0f172a;
       --neo-blue: #2563eb;
-      --neo-red: #e11d48;
-      --input-bg: #f8fafc;
-      --input-border: #cbd5e1;
+      --neo-red: #dc2626;
+      --input-bg: #ffffff;
+      --input-border: #e2e8f0;
       --input-text: #0f172a;
       --input-placeholder: #94a3b8;
       --header-text: #0f172a;
-      --section-header-border: #e2e8f0;
+      --section-header-border: #f1f5f9;
+    }
+
+    /* Light Mode Specific Overrides */
+    body.light-mode .header-title {
+      color: #0f172a;
+    }
+
+    body.light-mode .card-head h2 {
+      color: #0f172a;
+    }
+
+    body.light-mode .form-label {
+      color: #64748b;
+    }
+
+    body.light-mode .neo-input {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      color: #0f172a;
+    }
+
+    body.light-mode .neo-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.1);
+    }
+
+    body.light-mode .btn-submit.security-btn {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      color: #475569;
+    }
+
+    body.light-mode .btn-submit.security-btn:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #ffffff;
+    }
+
+    body.light-mode .settings-header {
+      border-bottom-color: #f1f5f9;
     }
     
     .main-content {
-      max-width: 1400px;
+      width: 100%;
       padding: 0 4rem;
       min-height: 100vh;
     }
@@ -69,7 +109,7 @@
     }
 
     .header-title {
-      font-size: 3rem;
+      font-size: clamp(2rem, 6vw, 3rem);
       line-height: 1;
       font-weight: 800;
       text-transform: uppercase;

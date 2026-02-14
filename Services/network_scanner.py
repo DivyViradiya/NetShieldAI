@@ -40,13 +40,16 @@ def get_user_queue(user_id):
 open_ports = {"TCP": [], "UDP": []}
 whitelisted_ports = set()
 
-def log(message, user_id=None):
+def log(message, user_id=None, to_console=False):
     """
     Logs messages to an in-memory queue and to a file.
     Organized Path: logs/users/{user_id}/network_agent_log.txt
     """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     full_message = f"data: [{timestamp}] {message}\n\n" # SSE format
+    
+    if to_console:
+        print(f"[{timestamp}] {message}")
     
     # Put message into the user-specific queue for Flask to stream
     if user_id:
@@ -701,7 +704,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         output_file = paths["tcp"]
 
     scan_type_display = scan_type.upper() if scan_type != "default" else f"{protocol_type} (Top 1000)"
-    log(f"[+] Running {scan_type_display} scan on {target_ip} with timing {timing_flag}...", user_id)
+    log(f"[+] Running {scan_type_display} scan on {target_ip} with timing {timing_flag}...", user_id, to_console=True)
 
     if not os.path.exists(os.path.dirname(output_file)):
         os.makedirs(os.path.dirname(output_file))
@@ -727,7 +730,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
             cmd.insert(1, '--exclude-ports')
             cmd.insert(2, '5000')
 
-    log(f"[*] Executing: {' '.join(cmd)}", user_id)
+    log(f"[*] Executing: {' '.join(cmd)}", user_id, to_console=True)
     
     try:
         result = subprocess.run(
@@ -736,13 +739,13 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         )
 
         if result.returncode != 0:
-            log(f"[!] Nmap scan failed with error: {result.stderr.strip()}", user_id)
+            log(f"[!] Nmap scan failed with error: {result.stderr.strip()}", user_id, to_console=True)
             return None
 
         if not output_file.exists() or output_file.stat().st_size == 0:
-            log(f"[!] Nmap scan completed but no results were saved to {output_file}. This may be normal if no ports are open.", user_id)
+            log(f"[!] Nmap scan completed but no results were saved to {output_file}. This may be normal if no ports are open.", user_id, to_console=True)
             
-        log(f"[+] {scan_type_display} scan complete. Results saved to {output_file}", user_id)
+        log(f"[+] {scan_type_display} scan complete. Results saved to {output_file}", user_id, to_console=True)
         
         # 1. Update UI (SSE)
         # Ping sweeps don't return standard "open ports", so we handle them carefully

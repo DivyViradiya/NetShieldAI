@@ -59,13 +59,16 @@ def get_user_queue(user_id):
 
 # --- Logging and SSE Helpers ---
 
-def log(message, user_id=None):
+def log(message, user_id=None, to_console=False):
     """
     Logs messages to queue and file.
     Organized Path: logs/users/{user_id}/packet_sniffer_log.txt
     """
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     full_message = f"data: [{timestamp}] {message}\n\n"
+    
+    if to_console:
+        print(f"[{timestamp}] {message}")
     
     if user_id:
         user_id = str(user_id)
@@ -101,6 +104,25 @@ def send_sse_event(event_name, data="", user_id=None):
         user_id = str(user_id)
         uq = get_user_queue(user_id)
         uq.put(sse_message)
+
+def clear_log_file(user_id):
+    """Clears the log file and queue for a specific user."""
+    if not user_id: return
+    user_id = str(user_id)
+    user_log_file = LOG_DIR / "users" / user_id / "packet_sniffer_log.txt"
+    
+    try:
+        if user_log_file.exists():
+            with open(user_log_file, 'w', encoding='utf-8') as f:
+                f.write(f"--- Log cleared at {time.strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+        
+        # Clear Queue
+        uq = get_user_queue(user_id)
+        with uq.mutex:
+            uq.queue.clear()
+            
+    except Exception as e:
+        print(f"FATAL: Could not clear log file for user {user_id}: {e}")
 
 # --- OS-Specific and Network Helpers ---
 
@@ -242,7 +264,7 @@ def get_selected_interface(interface_id=None):
 
     if interface_id and str(interface_id) in interface_list:
         selected_if = interface_list[str(interface_id)]
-        log(f"[*] User selected interface ID {interface_id}: {selected_if['description']}")
+        log(f"[*] User selected interface ID {interface_id}: {selected_if['description']}", to_console=True)
         return selected_if['name']
 
     local_ip = get_local_ip()
@@ -324,7 +346,7 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
         '-f', filter_expression,
     ]
 
-    log(f"[+] Starting packet capture for host {target_ip} on '{interface_name}'...")
+    log(f"[+] Starting packet capture for host {target_ip} on '{interface_name}'...", to_console=True)
 
     TCPDUMP_STOP_EVENT.clear()
     try:
@@ -355,7 +377,7 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
                 TCPDUMP_PROCESS.kill()
                 log("[!] Forced termination of tshark process.")
 
-        log(f"[+] Packet capture finished. Data saved to {pcap_file_path}.")
+        log(f"[+] Packet capture finished. Data saved to {pcap_file_path}.", to_console=True)
         return str(pcap_file_path)
 
     except Exception as e:
@@ -698,9 +720,9 @@ def detect_anomalies(analysis_report_data, target_ip):
     total_anomalies = sum(len(v) for k, v in anomalies.items() if isinstance(v, list))
     if total_anomalies > 0:
         anomalies['summary'] = f"Detected {total_anomalies} anomalies across {len(anomalies) - 1} categories."
-        log(f"[!!!] ANOMALIES DETECTED: {anomalies['summary']}")
+        log(f"[!!!] ANOMALIES DETECTED: {anomalies['summary']}", to_console=True)
     else:
-        log("[+] No security anomalies detected.")
+        log("[+] No security anomalies detected.", to_console=True)
 
     return anomalies
 
@@ -756,7 +778,7 @@ def analyze_pcap_to_json(pcap_path, target_ip, max_packets=50):
             get_packet_capture_cmd(), '-r', pcap_path, '-T', 'json',
             '-Y', display_filter, '-c', str(max_packets)
         ]
-        log(f"[*] Running TShark packet dissection command...")
+        log(f"[*] Running TShark packet dissection command...", to_console=True)
 
         result = subprocess.run(
             cmd, capture_output=True, text=True, check=True,
@@ -1170,15 +1192,15 @@ def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, int
     The primary function to execute the full packet sniffer and analyzer workflow.
     Updated to accept output_dir for Phase 2 dynamic paths.
     """
-    log("--- STARTING PACKET ANALYZER SERVICE ---")
+    log("--- STARTING PACKET ANALYZER SERVICE ---", to_console=True)
 
     # 1. Check for TShark and Admin Privileges
     if not get_packet_capture_cmd():
-        log("[FATAL] TShark not found. Aborting service.")
+        log("[FATAL] TShark not found. Aborting service.", to_console=True)
         return {"status": "error", "message": "TShark executable not found."}
     
     if not is_admin():
-        log("[WARNING] Running without confirmed admin rights. Attempting elevation now...")
+        log("[WARNING] Running without confirmed admin rights. Attempting elevation now...", to_console=True)
         # Note: If elevation fails, the whole process will exit inside ensure_admin_privileges()
 
     # Determine BPF filter
@@ -1199,7 +1221,7 @@ def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, int
 
     # 3. Analyze the PCAP file
     if pcap_path.exists():
-        log("--- STARTING PCAP ANALYSIS ---")
+        log("--- STARTING PCAP ANALYSIS ---", to_console=True)
         try:
             report_data = analyze_pcap_to_json(str(pcap_path), target_ip, max_packets=max_packets_for_detail)
             
@@ -1217,23 +1239,23 @@ def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, int
                 try:
                     import shutil
                     shutil.move(str(pcap_path), str(final_pcap_path))
-                    log(f"[+] PCAP moved to final destination: {final_pcap_path}")
+                    log(f"[+] PCAP moved to final destination: {final_pcap_path}", to_console=True)
                 except Exception as e:
-                    log(f"[!] Warning: Failed to move PCAP to final directory: {e}")
+                    log(f"[!] Warning: Failed to move PCAP to final directory: {e}", to_console=True)
 
                 # 7. Summarize Report and Log
                 log(f"Extracted Features Sample: {report_data.get('extracted_features', [])[:5]}")
                 log(f"Application Flow Summary: {report_data['application_flow_analysis'].get('summary', 'N/A')}")
                 anomaly_summary = report_data['security_anomaly_report'].get('summary', 'N/A')
-                log(f"Security Anomaly Summary: {anomaly_summary}")
+                log(f"Security Anomaly Summary: {anomaly_summary}", to_console=True)
             else:
                 save_json_report(report_data, output_dir=output_dir)
 
-            log("--- SERVICE COMPLETED ---")
+            log("--- SERVICE COMPLETED ---", to_console=True)
             return report_data
         
         except Exception as e:
-            log(f"[FATAL] Analysis failed: {e}")
+            log(f"[FATAL] Analysis failed: {e}", to_console=True)
             return {"status": "error", "message": f"Analysis failed: {str(e)}"}
         finally:
             # Cleanup temp PCAP if it still exists (e.g. if analysis failed before move)
@@ -1243,7 +1265,7 @@ def run_analyzer_service(target_ip: str, capture_duration_seconds: int = 10, int
                 except:
                     pass
     else:
-        log("[!!!] PCAP file was not created. Check administrator privileges, TShark installation, or interface selection.")
+        log("[!!!] PCAP file was not created. Check administrator privileges, TShark installation, or interface selection.", to_console=True)
         return {"status": "error", "message": "PCAP file creation failed."}
 
 

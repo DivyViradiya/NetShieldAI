@@ -7,7 +7,11 @@ from flask import Blueprint, render_template, jsonify, request, Response, send_f
 from flask_login import login_required, current_user
 import requests
 import uuid 
+import logging
 from werkzeug.utils import secure_filename 
+
+# --- Logging Setup ---
+logger = logging.getLogger(__name__)
 
 # [NEW] Import db to update user stats
 from extensions import db
@@ -46,6 +50,7 @@ SERVER_PROXY_URL = "http://localhost:5100"
 @zap_scanner_bp.route('/')
 @login_required 
 def zap_scanner_page():
+    logger.info(f"\033[34m[*] Accessing Web App Scanner Page (User: {current_user.username})\033[0m")
     return render_template('scanners/zap_scanner.html')
 
 
@@ -58,6 +63,7 @@ def zap_scanner_page():
 def initiate_zap_scan():
     data = request.get_json()
     target_url = data.get('target_url')
+    logger.info(f"\033[34m[*] ZAP Scan requested for {target_url} by {current_user.username}\033[0m")
 
     if not target_url:
         return jsonify({"status": "error", "message": "Target URL is required."}), 400
@@ -85,7 +91,7 @@ def initiate_zap_scan():
 
     def scan_and_process_task():
         # Pass composite ID to log function
-        zap_scanner.log(f"[*] Starting ZAP Quick Scan for {target_url} (User: {current_user_identifier})...", current_user_identifier)
+        zap_scanner.log(f"[*] Starting ZAP Quick Scan for {target_url} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
         
         paths = zap_scanner.get_output_paths(user_output_dir)
         xml_path = paths["xml_report"]
@@ -117,21 +123,21 @@ def initiate_zap_scan():
                 json_report_path = zap_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier)
                 
                 if json_report_path:
-                    zap_scanner.log(f"[+] JSON report saved.", current_user_identifier)
+                    zap_scanner.log(f"[+] JSON report saved.", current_user_identifier, to_console=True)
                     
                     # 4. Generate PDF
                     try:
-                        zap_scanner.log("[*] Generating PDF report...", current_user_identifier)
+                        zap_scanner.log("[*] Generating PDF report...", current_user_identifier, to_console=True)
                         pdf_generator.create_zap_report_pdf(json_report_path, str(pdf_path))
                         
                         if pdf_path.exists():
-                            zap_scanner.log(f"[+] PDF generated successfully.", current_user_identifier)
-                            zap_scanner.log(f"[*] Scan, analysis, and prediction complete.", current_user_identifier)
+                            zap_scanner.log(f"[+] PDF generated successfully.", current_user_identifier, to_console=True)
+                            zap_scanner.log(f"[*] Scan, analysis, and prediction complete.", current_user_identifier, to_console=True)
                         else:
-                             zap_scanner.log("[!] PDF generation failed (file missing).", current_user_identifier)
+                             zap_scanner.log("[!] PDF generation failed (file missing).", current_user_identifier, to_console=True)
                              
                     except Exception as e:
-                        zap_scanner.log(f"[!] FAILED to generate PDF report: {e}", current_user_identifier)
+                        zap_scanner.log(f"[!] FAILED to generate PDF report: {e}", current_user_identifier, to_console=True)
 
                 else:
                     zap_scanner.log("[!] Failed to save JSON report.", current_user_identifier)

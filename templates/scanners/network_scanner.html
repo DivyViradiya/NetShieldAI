@@ -45,18 +45,144 @@
 
     body.light-mode {
       --neo-bg: #f8fafc;
-      --neo-card: #ffffff;
-      --neo-card-hover: #f1f5f9;
+      --neo-card: rgba(255, 255, 255, 0.8);
+      --neo-card-hover: rgba(241, 245, 249, 0.9);
       --neo-input: #ffffff;
-      --neo-border: #e2e8f0;
+      --neo-border: rgba(226, 232, 240, 0.8);
       
       --neo-text-main: #0f172a;
-      --neo-text-muted: #64748b;
+      --neo-text-muted: #475569;
       
       --neo-blue: #2563eb;
-      --neo-red: #e11d48;
-      --neo-green: #059669;
+      --neo-red: #dc2626;
+      --neo-green: #16a34a;
       --neo-amber: #d97706;
+      --neo-purple: #7c3aed;
+    }
+
+    /* Light Mode Specific Overrides */
+    body.light-mode .text-gradient {
+      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    body.light-mode .dash-table th {
+      background: rgba(241, 245, 249, 0.9);
+      color: #0f172a;
+      border-bottom-color: #e2e8f0;
+    }
+
+    body.light-mode .dash-table td {
+      color: #334155;
+      border-bottom-color: #f1f5f9;
+    }
+
+    body.light-mode .panel-header {
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom-color: #e2e8f0;
+    }
+
+    body.light-mode .terminal-header {
+      background: rgba(241, 245, 249, 0.9);
+      border-bottom-color: #e2e8f0;
+    }
+
+    body.light-mode .term-window {
+      background: #ffffff;
+    }
+
+    body.light-mode .log-time {
+      color: #94a3b8;
+    }
+
+    body.light-mode .log-content {
+      color: #334155;
+    }
+
+    body.light-mode .tab-pills {
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .tab-pill:not(.active):hover {
+      color: #0f172a;
+      background: #e2e8f0;
+    }
+
+    body.light-mode .metric-value {
+      color: #0f172a;
+    }
+
+    body.light-mode .metric-info {
+      color: #64748b;
+    }
+
+    body.light-mode .status-text-group {
+      color: #64748b;
+    }
+
+    body.light-mode .badge-pill {
+      background: rgba(22, 163, 74, 0.1);
+      color: #16a34a;
+      border-color: rgba(22, 163, 74, 0.2);
+    }
+
+    body.light-mode .btn-dash {
+      background: #ffffff;
+      color: #475569;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .btn-dash:hover:not(:disabled) {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+
+    body.light-mode .dash-input {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .timing-select {
+      background: #ffffff;
+      color: #475569;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .custom-dropdown {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+
+    body.light-mode .dropdown-link {
+      color: #475569;
+    }
+
+    body.light-mode .dropdown-link:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    body.light-mode .term-title {
+      color: #64748b;
+    }
+
+    body.light-mode .processing-text {
+      color: #0f172a;
+    }
+
+    body.light-mode #rawContent {
+      background-color: #ffffff !important;
+    }
+
+    body.light-mode #resultsContent {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+      color: #334155 !important;
     }
     
    
@@ -86,7 +212,7 @@
     }
     
     .dashboard-wrapper {
-      max-width: 1600px;
+      width: 100%;
       margin: 0 auto;
       padding: 2rem;
       min-height: 100vh;
@@ -154,10 +280,22 @@
     .metric-card,
     .dash-panel,
     .terminal-footer {
-      background: var(--neo-card);
-      border: 1px solid var(--neo-border);
+      background: rgba(10, 10, 12, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--radius-card);
       position: relative;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    body.light-mode .control-card,
+    body.light-mode .metric-card,
+    body.light-mode .dash-panel,
+    body.light-mode .terminal-footer {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
     }
     
     /* The Top Glow Gradient */
@@ -267,11 +405,29 @@
     
     .metric-value {
       font-family: var(--font-mono);
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
       font-weight: 700;
       line-height: 1;
       color: white;
       z-index: 2;
+    }
+
+    /* --- SCANNER TITLE AREA --- */
+    .scanner-title-area h1 {
+      font-size: clamp(1.75rem, 4vw, 2.75rem) !important;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .scanner-title-area p {
+      font-size: clamp(0.7rem, 1.5vw, 0.85rem) !important;
+    }
+
+    .scanner-title-area p span {
+      width: clamp(12px, 3vw, 24px) !important;
     }
     
     .metric-info {
@@ -803,9 +959,12 @@
         <span>Security Hub</span>
       </a>
 
-      <div>
-        <h1 class="text-gradient" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-transform: uppercase;">Network <span style="color: var(--neo-blue); -webkit-text-fill-color: initial;">Scanner</span></h1>
-        <p style="color: var(--neo-text-muted); font-size: 0.8rem; margin-top: 6px; font-weight: 400; font-family: var(--font-mono);">Infrastructure Discovery & Advanced Port Analysis</p>
+      <div class="scanner-title-area" style="margin-top: 0.5rem;">
+        <h1 class="text-gradient">Network <span style="color: var(--neo-blue); -webkit-text-fill-color: initial;">Scanner</span></h1>
+        <p style="color: var(--neo-text-muted); font-weight: 500; font-family: var(--font-mono); display: flex; align-items: center; gap: 12px;">
+          <span style="height: 1px; background: var(--neo-blue); opacity: 0.5;"></span>
+          Infrastructure Discovery & Advanced Port Analysis
+        </p>
       </div>
     </div>
 

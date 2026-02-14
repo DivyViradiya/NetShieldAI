@@ -31,10 +31,13 @@ def get_user_queue(user_id):
         user_queues[user_id] = queue.Queue()
     return user_queues[user_id]
 
-def log(message, user_id=None):
+def log(message, user_id=None, to_console=False):
     """Logs messages to an in-memory queue and to a file."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     full_message = f"data: [{timestamp}] {message}\n\n" # SSE format
+    
+    if to_console:
+        print(f"[{timestamp}] {message}")
     
     if user_id:
         user_id = str(user_id)
@@ -131,7 +134,7 @@ def run_ssl_scan(target_host, output_dir=None):
         log("[!] Target host cannot be empty for SSL scan.", user_id)
         return None
 
-    log(f"[+] Running local SSL scan on {target_host}...", user_id)
+    log(f"[+] Running local SSL scan on {target_host}...", user_id, to_console=True)
     if not is_sslscan_available():
         return None
     
@@ -152,7 +155,7 @@ def run_ssl_scan(target_host, output_dir=None):
     ]
 
     try:
-        log(f"[*] Executing command: {' '.join(str(x) for x in local_cmd)}", user_id)
+        log(f"[*] Executing command: {' '.join(str(x) for x in local_cmd)}", user_id, to_console=True)
         process = subprocess.run(
             local_cmd,
             capture_output=True,
@@ -168,15 +171,15 @@ def run_ssl_scan(target_host, output_dir=None):
             log(f"[SSLScan STDERR]\n{process.stderr}", user_id)
 
         if process.returncode != 0 and not xml_report_path.exists():
-            log(f"[!] SSL scan failed with exit code {process.returncode} and no report was generated.", user_id)
+            log(f"[!] SSL scan failed with exit code {process.returncode} and no report was generated.", user_id, to_console=True)
             return None
         
         if xml_report_path.exists() and xml_report_path.stat().st_size > 0:
-            log(f"[+] SSL scan complete. Report saved to {xml_report_path}", user_id)
+            log(f"[+] SSL scan complete. Report saved to {xml_report_path}", user_id, to_console=True)
             send_sse_event("ssl_scan_complete", {"target_host": target_host, "report_file": str(xml_report_path)})
             return str(xml_report_path)
         else:
-            log(f"[!] SSL scan may have failed or generated an empty report: {xml_report_path}", user_id)
+            log(f"[!] SSL scan may have failed or generated an empty report: {xml_report_path}", user_id, to_console=True)
             return None
             
     except Exception as e:
@@ -310,7 +313,7 @@ def parse_ssl_report(report_file, output_dir=None):
         
         scan_summary["vulnerabilities"] = vulnerabilities
 
-        log(f"[+] SSLScan report '{os.path.basename(report_file)}' parsed successfully.", user_id)
+        log(f"[+] SSLScan report '{os.path.basename(report_file)}' parsed successfully.", user_id, to_console=True)
         
         # NEW: Save the parsed data to JSON for PDF generation
         save_ssl_json(scan_summary, output_dir=output_dir)
@@ -319,10 +322,10 @@ def parse_ssl_report(report_file, output_dir=None):
         return scan_summary
 
     except ET.ParseError as e:
-        log(f"[!] Error parsing SSLScan XML report '{report_file}': {e}", user_id)
+        log(f"[!] Error parsing SSLScan XML report '{report_file}': {e}", user_id, to_console=True)
         return None
     except Exception as e:
-        log(f"[!] Unexpected error parsing SSLScan report '{report_file}': {e}", user_id)
+        log(f"[!] Unexpected error parsing SSLScan report '{report_file}': {e}", user_id, to_console=True)
         return None
     finally:
         # CLEANUP: Remove the temporary XML report

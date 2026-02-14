@@ -34,10 +34,13 @@ def get_user_queue(user_id):
     return user_queues[user_id]
 
 # --- LOGGING UTILS ---
-def log(message, user_id=None):
+def log(message, user_id=None, to_console=False):
     """Logs messages to queue for SSE streaming and file."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     full_message = f"data: [{timestamp}] {message}\n\n"
+    
+    if to_console:
+        print(f"[{timestamp}] {message}")
     
     if user_id:
         user_id = str(user_id)
@@ -283,18 +286,18 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick'):
     if scan_mode == 'full':
         cmd.extend(['--level=3', '--risk=2', '--crawl=2', '--forms']) 
         timeout_seconds = 1800  # 30 mins
-        log(f"[*] Starting FULL scan (Detection + Enumeration) on {target_url}")
+        log(f"[*] Starting FULL scan (Detection + Enumeration) on {target_url}", to_console=True)
     else:
         cmd.extend(['--level=1', '--risk=1', '--forms']) # Quick scan avoids crawl
         timeout_seconds = 900   # 15 mins
-        log(f"[*] Starting QUICK scan (Detection) on {target_url}")
+        log(f"[*] Starting QUICK scan (Detection) on {target_url}", to_console=True)
 
     cmd.extend(['--banner', '--current-user', '--current-db', '--is-dba'])
 
     if scan_mode == 'full':
         cmd.extend(['--dbs', '--tables', '--passwords'])
 
-    log(f"[*] Executing SQLMap...")
+    log(f"[*] Executing SQLMap...", to_console=True)
 
     live_metadata = {}
 
@@ -334,7 +337,7 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick'):
                         live_metadata["dbms"] = line.split(":", 1)[1].strip()
 
         # Always attempt to parse results even if it timed out or returned error
-        log("[+] Scan finished. Processing results...")
+        log("[+] Scan finished. Processing results...", to_console=True)
         scan_data = parse_sqlmap_output(sqlmap_output_dir, target_url_hint=target_url, captured_metadata=live_metadata)
         
         json_path = save_sql_json(scan_data, output_dir)
@@ -348,7 +351,7 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick'):
         return json_path
 
     except Exception as e:
-        log(f"[!] System Error during scan: {str(e)}")
+        log(f"[!] System Error during scan: {str(e)}", to_console=True)
         return None
     finally:
         # CLEANUP: Remove SQLMap artifacts from temp within this scan's directory

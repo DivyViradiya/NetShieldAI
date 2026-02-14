@@ -2,10 +2,25 @@
 
 {% block title %}NetShieldAI - Access Control{% endblock %}
 
+{% block extra_css %}
+<style>
+  body.light-mode .alert-danger {
+    background-color: rgba(220, 38, 38, 0.05) !important;
+    color: #dc2626 !important;
+    border-color: rgba(220, 38, 38, 0.2) !important;
+  }
+  body.light-mode .alert-info {
+    background-color: rgba(37, 99, 235, 0.05) !important;
+    color: #2563eb !important;
+    border-color: rgba(37, 99, 235, 0.2) !important;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
   <div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
     
-    <div id="login-card" class="relative z-10 flex w-full max-w-[1000px] h-[600px] bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden transition-all duration-700 ease-in-out">
+    <div id="login-card" class="relative z-10 flex w-full max-w-[1000px] min-h-[600px] h-auto bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden transition-all duration-700 ease-in-out">
       
       <div class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[var(--bg-color)] bg-[radial-gradient(var(--neo-text-label)_1px,transparent_1px)] [background-size:20px_20px] border-r border-[var(--neo-border)]">
         <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-color)] via-transparent to-transparent"></div>
@@ -16,7 +31,7 @@
         </div>
 
         <div class="relative z-10 mb-8">
-          <h2 class="text-3xl font-bold text-[var(--neo-text-primary)] mb-4 tracking-tight drop-shadow-md">
+          <h2 class="text-3xl font-bold text-[var(--neo-text-primary)] mb-4 tracking-tight drop-shadow-md" style="font-size: clamp(1.5rem, 4vw, 2.5rem);">
             Secure.<br />Autonomous.<br />Verified.
           </h2>
           <p class="text-[var(--neo-text-secondary)] text-sm max-w-xs border-l-2 border-[var(--neo-blue)] pl-4">
@@ -27,7 +42,7 @@
 
       <div class="w-full md:w-1/2 p-8 md:p-12 bg-[var(--neo-card)] flex flex-col justify-center relative">
         
-        <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2">Welcome back</h3>
+        <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2" style="font-size: clamp(1.25rem, 3vw, 1.75rem);">Welcome back</h3>
         <p class="text-[var(--neo-text-secondary)] text-sm mb-8">Please enter your details to sign in.</p>
 
         {% with messages=get_flashed_messages(with_categories=true) %}
@@ -36,9 +51,9 @@
               {% for category, message in messages %}
                 <div class="p-3 rounded text-sm border 
                   {% if category == 'danger' %}
-                    bg-red-900/20 text-red-400 border-red-900
+                    bg-red-900/20 text-red-400 border-red-900 alert-danger
                   {% else %}
-                    bg-blue-900/20 text-blue-400 border-blue-900
+                    bg-blue-900/20 text-blue-400 border-blue-900 alert-info
                   {% endif %}">
                   {{ message }}
                 </div>

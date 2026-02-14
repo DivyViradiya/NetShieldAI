@@ -31,7 +31,7 @@ def create_nmap_report_pdf(source_data, pdf_path):
     # Import log locally to avoid circular import issues if placed at top
     from Services.network_scanner import log 
 
-    log(f"[*] Starting Detailed PDF generation for Nmap Target: {pdf_path}")
+    log(f"[*] Starting Detailed PDF generation for Nmap Target: {pdf_path}", to_console=True)
 
     # 1. Handle Input
     if isinstance(source_data, str):
@@ -104,7 +104,7 @@ def create_nmap_report_pdf(source_data, pdf_path):
         html = HTML(string=rendered_html, base_url=base_url)
         html.write_pdf(pdf_path, stylesheets=[css] if css else [])
         
-        log(f"[+] Nmap PDF Report generated: {pdf_path}")
+        log(f"[+] Nmap PDF Report generated: {pdf_path}", to_console=True)
         return True
     except Exception as e:
         log(f"[!] WeasyPrint PDF Generation Error: {e}")
@@ -116,7 +116,7 @@ def create_zap_report_pdf(source_data, pdf_path):
     """
     Renders ZAP Web Vulnerability data into an HTML template and saves it as a PDF.
     """
-    print(f"[*] Starting WeasyPrint PDF generation for ZAP: {pdf_path}")
+    log(f"[*] Starting WeasyPrint PDF generation for ZAP: {pdf_path}", to_console=True)
 
     if isinstance(source_data, str):
         with open(source_data, 'r', encoding='utf-8') as f:
@@ -149,7 +149,7 @@ def create_zap_report_pdf(source_data, pdf_path):
 
     base_url = pathlib.Path(PROJECT_ROOT).as_uri()
     HTML(string=rendered_html, base_url=base_url).write_pdf(pdf_path, stylesheets=[css] if css else [])
-    print(f"[+] ZAP PDF report saved successfully to: {pdf_path}")
+    log(f"[+] ZAP PDF report saved successfully to: {pdf_path}", to_console=True)
     return True
 
 def create_ssl_report_pdf(source_data, pdf_path):
@@ -157,7 +157,7 @@ def create_ssl_report_pdf(source_data, pdf_path):
     Renders SSL Scan data into an HTML template and saves it as a PDF.
     Captures all fields including Client CAs, full Cert Chain, and detailed Configs.
     """
-    print(f"[*] Starting SSL PDF generation for target: {pdf_path}")
+    log(f"[*] Starting SSL PDF generation for target: {pdf_path}", to_console=True)
 
     # 1. Load data
     if isinstance(source_data, str):
@@ -165,7 +165,7 @@ def create_ssl_report_pdf(source_data, pdf_path):
             with open(source_data, 'r', encoding='utf-8') as f:
                 ssl_data = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError) as e:
-            print(f"[!] Error loading JSON source: {e}")
+            log(f"[!] Error loading JSON source: {e}")
             return False
     else:
         ssl_data = source_data
@@ -277,7 +277,7 @@ def create_ssl_report_pdf(source_data, pdf_path):
         template = env.get_template(SSL_TEMPLATE_FILE)
         rendered_html = template.render(data=template_data)
     except Exception as e:
-        print(f"[!] Template Rendering Error: {e}")
+        log(f"[!] Template Rendering Error: {e}")
         # Consider logging the full traceback here
         return False
 
@@ -290,13 +290,13 @@ def create_ssl_report_pdf(source_data, pdf_path):
         if os.path.exists(CSS_FILE_PATH):
             stylesheets.append(CSS(filename=CSS_FILE_PATH))
         else:
-            print(f"[!] Warning: CSS file not found at {CSS_FILE_PATH}")
+            log(f"[!] Warning: CSS file not found at {CSS_FILE_PATH}")
             
         html_obj.write_pdf(pdf_path, stylesheets=stylesheets)
-        print(f"[+] SSL PDF report saved successfully to: {pdf_path}")
+        log(f"[+] SSL PDF report saved successfully to: {pdf_path}", to_console=True)
         return True
     except Exception as e:
-        print(f"[!] FAILED to generate PDF: {e}")
+        log(f"[!] FAILED to generate PDF: {e}")
         return False
 
 def create_packet_sniffer_report_pdf(source_data, pdf_path):
@@ -304,7 +304,7 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
     Renders Packet Sniffer (TShark) data into a condensed PDF report.
     Parses raw TShark strings into structured data for tables.
     """
-    print(f"[*] Starting Condensed PDF generation for Packet Sniffer...")
+    log(f"[*] Starting Condensed PDF generation for Packet Sniffer...", to_console=True)
 
     if isinstance(source_data, str):
         with open(source_data, 'r', encoding='utf-8') as f:
@@ -421,17 +421,17 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
         stylesheets = [CSS(filename=CSS_FILE_PATH)] if os.path.exists(CSS_FILE_PATH) else []
         
         HTML(string=rendered_html, base_url=base_url).write_pdf(pdf_path, stylesheets=stylesheets)
-        print(f"[+] Condensed Sniffer Report saved: {pdf_path}")
+        log(f"[+] Condensed Sniffer Report saved: {pdf_path}", to_console=True)
         return True
     except Exception as e:
-        print(f"[!] PDF Generation Error: {e}")
+        log(f"[!] PDF Generation Error: {e}")
         return False
 
 def create_killchain_report_pdf(source_data, pdf_path):
     """
     Renders the Full-Spectrum Kill Chain Report aligned to the NetShieldAI JSON structure.
     """
-    print(f"[*] Starting Master Kill Chain PDF generation: {pdf_path}")
+    log(f"[*] Starting Master Kill Chain PDF generation: {pdf_path}", to_console=True)
 
     # 1. Data Loading
     if isinstance(source_data, str):
@@ -439,7 +439,7 @@ def create_killchain_report_pdf(source_data, pdf_path):
             with open(source_data, 'r', encoding='utf-8') as f:
                 data = json.load(f)
         except Exception as e:
-            print(f"[!] Error loading JSON file: {e}")
+            log(f"[!] Error loading JSON file: {e}")
             return False
     else:
         data = source_data
@@ -524,13 +524,11 @@ def create_killchain_report_pdf(source_data, pdf_path):
             stylesheets=stylesheets
         )
         
-        print(f"[+] Master Kill Chain Report successfully generated at: {pdf_path}")
+        log(f"[+] Master Kill Chain Report successfully generated at: {pdf_path}", to_console=True)
         return True
         
     except Exception as e:
-        print(f"[!] Error generating Master Report: {e}")
-        import traceback
-        traceback.print_exc() # Helpful for debugging template errors
+        log(f"[!] Error generating Master Report: {e}")
         return False
     
     
@@ -539,18 +537,18 @@ def create_sql_report_pdf(source_data, pdf_path):
     Renders SQLMap Scan data into an HTML template and saves it as a PDF.
     Optimized for specific JSON structure: extracts DB version, user, and groups vulns.
     """
-    print(f"[*] Starting SQL Injection PDF generation: {pdf_path}")
+    log(f"[*] Starting SQL Injection PDF generation: {pdf_path}", to_console=True)
 
     # 1. Load Data
     if isinstance(source_data, str):
         if not os.path.exists(source_data):
-            print(f"[!] JSON source not found: {source_data}")
+            log(f"[!] JSON source not found: {source_data}")
             return False
         try:
             with open(source_data, 'r', encoding='utf-8') as f:
                 sql_data = json.load(f)
         except json.JSONDecodeError as e:
-            print(f"[!] Invalid JSON format: {e}")
+            log(f"[!] Invalid JSON format: {e}")
             return False
     else:
         sql_data = source_data
@@ -617,7 +615,7 @@ def create_sql_report_pdf(source_data, pdf_path):
         # Render with the organized context
         rendered_html = template.render(data=template_data)
     except Exception as e:
-        print(f"[!] Error rendering SQL HTML template: {e}")
+        log(f"[!] Error rendering SQL HTML template: {e}")
         return False
 
     # 5. Generate PDF with WeasyPrint
@@ -633,10 +631,10 @@ def create_sql_report_pdf(source_data, pdf_path):
             stylesheets=stylesheets
         )
         
-        print(f"[+] SQL PDF Report generated successfully: {pdf_path}")
+        log(f"[+] SQL PDF Report generated successfully: {pdf_path}", to_console=True)
         return True
     except Exception as e:
-        print(f"[!] PDF Generation Failed: {e}")
+        log(f"[!] PDF Generation Failed: {e}")
         return False
         
 def create_semgrep_report_pdf(source_data, pdf_path):
@@ -644,7 +642,7 @@ def create_semgrep_report_pdf(source_data, pdf_path):
     Renders Semgrep SAST data into an HTML template and saves it as a PDF.
     Optimized for large reports: limits findings and truncates snippets.
     """
-    log(f"[*] Starting Semgrep PDF generation: {pdf_path}")
+    log(f"[*] Starting Semgrep PDF generation: {pdf_path}", to_console=True)
 
     # 1. Load Data
     if isinstance(source_data, str):
@@ -723,7 +721,7 @@ def create_semgrep_report_pdf(source_data, pdf_path):
             pdf_path, 
             stylesheets=stylesheets
         )
-        log(f"[+] Semgrep PDF saved: {pdf_path}")
+        log(f"[+] Semgrep PDF saved: {pdf_path}", to_console=True)
         return True
     except Exception as e:
         log(f"[!] PDF Write Error: {e}")

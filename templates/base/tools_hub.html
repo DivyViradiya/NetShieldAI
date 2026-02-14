@@ -9,97 +9,176 @@
     /* --- NEO-FUTURISM THEME OVERRIDES --- */
     :root {
       --neo-bg: #050505;
-      --neo-card: #0f0f11;
-      --neo-card-hover: #0e0e11;
-      --neo-border: #27272a;
+      --neo-card: rgba(15, 15, 17, 0.7);
+      --neo-card-hover: rgba(20, 20, 23, 0.8);
+      --neo-border: rgba(255, 255, 255, 0.08);
+      --neo-accent: #f8fafc;
       --neo-text-primary: #ffffff;
       --neo-text-secondary: #94a3b8;
       --neo-text-tertiary: #555555;
-      --neo-accent: #f8fafc;
       --neo-blue: #3b82f6;
       --neo-violet: #8b5cf6; 
-      --grid-line-color: #222;
-      --grid-static-color: #111;
-      --poly-card-hover-bg: #0c0a13;
-      --action-row-border: #1a1a1a;
-      --card-icon-bg: #151518;
-      --card-icon-color: #666;
+      --neo-card-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+      --glass-blur: blur(12px);
     }
     
     body.light-mode {
       --neo-bg: #f8fafc;
-      --neo-card: #ffffff;
-      --neo-card-hover: #f1f5f9;
-      --neo-border: #e2e8f0;
+      --neo-card: rgba(255, 255, 255, 0.8);
+      --neo-card-hover: rgba(255, 255, 255, 0.95);
+      --neo-border: rgba(226, 232, 240, 0.8);
+      --neo-accent: #0f172a;
       --neo-text-primary: #0f172a;
       --neo-text-secondary: #475569;
-      --neo-text-tertiary: #64748b;
-      --neo-accent: #0f172a;
+      --neo-text-tertiary: #94a3b8;
       --neo-blue: #2563eb;
       --neo-violet: #7c3aed;
-      --grid-line-color: #e2e8f0;
-      --grid-static-color: #f1f5f9;
-      --poly-card-hover-bg: #f5f3ff;
-      --action-row-border: #e2e8f0;
-      --card-icon-bg: #f8fafc;
-      --card-icon-color: #94a3b8;
+      --neo-card-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.1), 0 10px 15px -5px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Light Mode Specific Overrides */
+    body.light-mode .section-title {
+      color: #0f172a;
+    }
+
+    body.light-mode .neo-card {
+      background: rgba(255, 255, 255, 0.8);
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .neo-card:hover {
+      background: #ffffff;
+      border-color: #2563eb;
+      box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.15);
+    }
+
+    body.light-mode .neo-card h3 {
+      color: #0f172a;
+    }
+
+    body.light-mode .card-icon-box {
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+    }
+
+    body.light-mode .neo-card:hover .card-icon-box {
+      background: rgba(37, 99, 235, 0.1);
+      border-color: #2563eb;
+    }
+
+    body.light-mode .status-badge {
+      background: #f8fafc;
+    }
+
+    body.light-mode .action-row {
+      border-top-color: #f1f5f9;
+    }
+
+    body.light-mode .polyhedron-card:hover .card-icon-box {
+      background: rgba(124, 58, 237, 0.1);
+      border-color: #7c3aed;
+    }
+
+    /* --- BACKGROUND ENHANCEMENTS --- */
+    .bg-master-container {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      background: var(--neo-bg);
+      pointer-events: none;
+    }
+
+    .bg-noise {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      mix-blend-mode: overlay;
+    }
+
+    .nebula {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      animation: drift 25s infinite ease-in-out;
+    }
+    .nebula-blue { width: 60vw; height: 60vw; background: radial-gradient(circle, var(--neo-blue), transparent 70%); top: -10%; left: -10%; }
+    .nebula-indigo { width: 50vw; height: 50vw; background: radial-gradient(circle, #4f46e5, transparent 70%); bottom: -10%; right: -5%; animation-delay: -5s; }
+
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(5%, 10%) scale(1.1); }
+      66% { transform: translate(-5%, 5%) scale(0.9); }
+    }
+
+    .active-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: grid-pulse 8s infinite alternate;
+    }
+
+    @keyframes grid-pulse { from { opacity: 0.3; } to { opacity: 0.7; } }
+
+    .circuit-lines {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 H90 V90 H10 Z' fill='none' stroke='rgba(59,130,246,0.03)' stroke-width='0.5'/%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(59,130,246,0.1)'/%3E%3Ccircle cx='90' cy='10' r='1' fill='rgba(59,130,246,0.1)'/%3E%3Ccircle cx='90' cy='90' r='1' fill='rgba(59,130,246,0.1)'/%3E%3Ccircle cx='10' cy='90' r='1' fill='rgba(59,130,246,0.1)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      opacity: 0.5;
+    }
+
+    /* --- LIGHT MODE SPECIFIC OVERRIDES --- */
+    body.light-mode .bg-master-container { background: #ffffff; }
+    body.light-mode .bg-noise { opacity: 0.02; }
+    body.light-mode .nebula-blue { background: radial-gradient(circle, rgba(37, 99, 235, 0.15), transparent 70%); opacity: 0.5; }
+    body.light-mode .nebula-indigo { background: radial-gradient(circle, rgba(124, 58, 237, 0.1), transparent 70%); opacity: 0.4; }
+    
+    body.light-mode .active-grid { 
+      background-image: 
+        linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.6;
+    }
+    body.light-mode .circuit-lines { 
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 H90 V90 H10 Z' fill='none' stroke='rgba(37,99,235,0.08)' stroke-width='0.5'/%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(37,99,235,0.15)'/%3E%3Ccircle cx='90' cy='10' r='1' fill='rgba(37,99,235,0.15)'/%3E%3Ccircle cx='90' cy='90' r='1' fill='rgba(37,99,235,0.15)'/%3E%3Ccircle cx='10' cy='90' r='1' fill='rgba(37,99,235,0.15)'/%3E%3C/svg%3E");
+      opacity: 0.5; 
     }
     
-    /* Ensure content sits above the grid */
-    .main-content {
-      max-width: 1400px;
-      padding: 0 4rem;
-      position: relative;
-      z-index: 10;
+    body.light-mode .neo-card {
+      background: var(--neo-card);
+      border: 1px solid rgba(37, 99, 235, 0.15);
+      box-shadow: var(--neo-card-shadow);
     }
-
-    /* --- FIX: LIFT FOOTER ABOVE GRID --- */
-    footer {
-      position: relative;
-      z-index: 10;
-      background-color: var(--neo-bg); 
-      border-top: 1px solid var(--neo-border);
-    }
-
-    /* --- INTERACTIVE GRID BACKGROUND --- */
-    .grid-background-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      background-color: var(--neo-bg);
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .grid-pattern {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background-image: 
-        linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
-      background-size: 50px 50px;
-      mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 400px);
-      -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), black 0%, transparent 400px);
-      opacity: 0.5;
-      transition: opacity 0.3s ease;
-    }
-
-    .grid-static {
-      position: absolute;
-      inset: 0;
-      background-image: 
-        linear-gradient(to right, var(--grid-static-color) 1px, transparent 1px),
-        linear-gradient(to bottom, var(--grid-static-color) 1px, transparent 1px);
-      background-size: 50px 50px;
-      opacity: 0.3;
+    body.light-mode .neo-card:hover { 
+      border-color: var(--neo-blue); 
+      background: var(--neo-card-hover);
+      box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.2);
     }
 
     /* --- HUB LAYOUT --- */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      padding: 0;
+      position: relative;
+      z-index: 5;
+    }
+
+    .page-container {
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 4rem;
+    }
+
     .hub-container {
       padding: 4rem 0;
     }
@@ -110,7 +189,7 @@
     }
     
     .section-title {
-      font-size: 3rem;
+      font-size: clamp(2rem, 6vw, 3.5rem);
       text-transform: uppercase;
       font-weight: 800;
       color: var(--neo-text-primary);
@@ -135,392 +214,304 @@
     
     /* --- CARD STYLES --- */
     .neo-card {
-      background-color: var(--neo-card);
+      background: var(--neo-card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
       border: 1px solid var(--neo-border);
-      border-radius: 8px;
-      padding: 2rem;
+      border-radius: 12px;
+      padding: 2.5rem;
       display: flex;
       flex-direction: column;
-      min-height: 280px;
+      min-height: 300px;
       position: relative;
       overflow: hidden;
       text-decoration: none;
-      transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: var(--neo-card-shadow);
     }
     
-    /* Glowing Corner Accents */
-    .neo-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border-radius: 8px;
-      box-shadow: inset 0 0 0 1px transparent;
-      transition: all 0.4s ease;
-    }
-
     .neo-card:hover {
-      transform: translateY(-5px);
-      background-color: var(--neo-card-hover);
-      border-color: var(--neo-text-tertiary);
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-    }
-    
-    body.light-mode .neo-card:hover {
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+      transform: translateY(-8px);
+      border-color: rgba(59, 130, 246, 0.3);
+      background: var(--neo-card-hover);
+      box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
     }
 
-    .neo-card:hover::after {
-      box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.3);
-    }
-    
     .card-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
     
     .card-icon-box {
-      width: 48px;
-      height: 48px;
-      background: var(--card-icon-bg);
-      border: 1px solid var(--neo-border);
-      border-radius: 8px;
+      width: 52px;
+      height: 52px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
     }
+
+    body.light-mode .card-icon-box { background: rgba(37, 99, 235, 0.05); border-color: rgba(37, 99, 235, 0.1); }
     
     .card-icon-box span {
       font-size: 1.5rem;
-      color: var(--card-icon-color);
-      transition: color 0.3s ease;
+      color: var(--neo-blue);
+      transition: all 0.3s ease;
     }
     
     .neo-card:hover .card-icon-box {
-      background: rgba(59, 130, 246, 0.1);
+      background: rgba(59, 130, 246, 0.15);
       border-color: var(--neo-blue);
-      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
     }
     
-    .neo-card:hover .card-icon-box span {
-      color: var(--neo-text-primary);
-    }
+    .neo-card:hover .card-icon-box span { color: white; transform: scale(1.1); }
     
     .neo-card h3 {
-      font-size: 1.3rem;
-      color: var(--neo-text-primary);
+      font-size: 1.4rem;
+      color: white;
       margin-bottom: 0.75rem;
       font-weight: 700;
     }
+    body.light-mode .neo-card h3 { color: #0f172a; }
     
     .neo-card p {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: var(--neo-text-secondary);
       line-height: 1.6;
       flex-grow: 1;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
     }
 
-    /* --- POLYHEDRON (Formerly Kill Chain) FIX --- */
-    /* Clean Violet Theme - Removes the messy background text */
-    .polyhedron-card:hover {
-      border-color: var(--neo-violet); 
-      background-color: var(--poly-card-hover-bg); /* Deep violet tint or light violet */
-      box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.25); /* Violet Glow */
-    }
-
-    .polyhedron-card:hover::after {
-      box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.3);
-    }
-
-    .polyhedron-card:hover .card-icon-box {
-      background: rgba(139, 92, 246, 0.1);
-      border-color: var(--neo-violet);
-      box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
-    }
-
-    .polyhedron-card:hover .card-icon-box span {
-      color: var(--neo-text-primary) !important;
-    }
+    .polyhedron-card:hover { border-color: var(--neo-violet); }
+    .polyhedron-card:hover .card-icon-box { border-color: var(--neo-violet); background: rgba(139, 92, 246, 0.1); }
+    .polyhedron-card:hover .card-icon-box span { color: var(--neo-violet); }
     
     /* STATUS BADGES */
     .status-badge {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       padding: 0.25rem 0.6rem;
-      border-radius: 4px;
+      border-radius: 20px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      font-weight: 700;
+      font-weight: 800;
       border: 1px solid;
+      background: rgba(255,255,255,0.03);
     }
     
-    .status-active {
-      color: #10b981;
-      border-color: rgba(16, 185, 129, 0.2);
-      background: rgba(16, 185, 129, 0.05);
-    }
-    
-    .status-dev {
-      color: #fbbf24;
-      border-color: rgba(251, 191, 36, 0.2);
-      background: rgba(251, 191, 36, 0.05);
-    }
-
-    .status-suite {
-      color: var(--neo-violet);
-      border-color: rgba(139, 92, 246, 0.3);
-      background: rgba(139, 92, 246, 0.05);
-    }
-
-    .status-soon {
-      color: var(--neo-text-secondary);
-      border-color: rgba(148, 163, 184, 0.2);
-      background: rgba(148, 163, 184, 0.05);
-    }
+    .status-active { color: #10b981; border-color: rgba(16, 185, 129, 0.3); }
+    .status-dev { color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); }
+    .status-suite { color: var(--neo-violet); border-color: rgba(139, 92, 246, 0.3); }
     
     /* ACTION ROW */
     .action-row {
       margin-top: auto;
-      padding-top: 1.25rem;
-      border-top: 1px solid var(--action-row-border);
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
+    body.light-mode .action-row { border-top-color: rgba(37, 99, 235, 0.05); }
     
     .launch-btn {
       color: var(--neo-blue);
-      font-size: 0.8rem;
-      font-weight: 700;
+      font-size: 0.75rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.1em;
       display: flex;
       align-items: center;
       gap: 0.5rem;
       transition: all 0.3s ease;
     }
     
-    .neo-card:hover .launch-btn {
-      transform: translateX(5px);
-    }
-
-    /* Specialized button hover for Polyhedron */
-    .polyhedron-card:hover .launch-btn {
-        color: var(--neo-violet);
-    }
+    .neo-card:hover .launch-btn { transform: translateX(5px); }
+    .polyhedron-card:hover .launch-btn { color: var(--neo-violet); }
 
     /* DISABLED STATE */
-    .neo-card.disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    .neo-card.disabled:hover {
-      transform: none;
-      background-color: var(--neo-card);
-      border-color: var(--neo-border);
-      box-shadow: none;
-    }
-    .neo-card.disabled .launch-btn {
-      color: var(--neo-text-tertiary);
-    }
-    .neo-card.disabled:hover .launch-btn {
-      transform: none;
-    }
+    .neo-card.disabled { opacity: 0.5; cursor: not-allowed; }
     
     @media (max-width: 768px) {
-      .main-content { padding: 0 2rem; }
+      .page-container { padding: 0 2rem; }
       .section-title { font-size: 2.5rem; }
     }
   </style>
 {% endblock %}
 
 {% block content %}
-  <div class="grid-background-container">
-    <div class="grid-static"></div>
-    <div class="grid-pattern"></div>
+  <div class="bg-master-container">
+    <div class="bg-noise"></div>
+    <div class="nebula nebula-blue"></div>
+    <div class="nebula nebula-indigo"></div>
+    <div class="active-grid" id="grid-bg"></div>
+    <div class="circuit-lines"></div>
   </div>
 
-  <div class="hub-container">
-    <div class="section-header fade-in-element">
-      <h1 class="section-title">Security Arsenal</h1>
-      <p class="section-sub">Deploy advanced scanning modules to analyze, detect, and fortify your digital infrastructure against emerging threats.</p>
-    </div>
+  <div class="page-container">
+    <div class="hub-container">
+      <div class="section-header fade-in-element">
+        <h1 class="section-title">Security Arsenal</h1>
+        <p class="section-sub">Deploy advanced scanning modules to analyze, detect, and fortify your digital infrastructure against emerging threats.</p>
+      </div>
 
-    <div class="neo-grid fade-in-element">
-      
-      <a href="{{ url_for('killchain_bp.killchain_page') }}" class="neo-card polyhedron-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">view_in_ar</span>
+      <div class="neo-grid fade-in-element">
+        
+        <a href="{{ url_for('killchain_bp.killchain_page') }}" class="neo-card polyhedron-card">
+          <div class="card-top">
+            <div class="card-icon-box">
+              <span class="material-symbols-outlined" style="color: var(--neo-violet);">view_in_ar</span>
+            </div>
+            
+            <span class="status-badge status-suite">
+              Integrated Suite
+            </span>
           </div>
-          
-          <span class="status-badge status-suite">
-            Integrated Suite
-          </span>
-        </div>
 
-        <h3>Kill Chain Audit</h3>
+          <h3>Kill Chain Audit</h3>
 
-        <p>
-          Full-spectrum security validation. Orchestrates all modules into a unified, sequential penetration testing workflow.
-          <br><br>
-          <span style="font-family: 'Fira Code', monospace; font-size: 0.7rem; color: #71717a; display: block; padding-top: 4px; border-top: 1px dashed #333;">
-            <span style="color: var(--neo-violet);">01.</span> DISCOVERY &rarr; 
-            <span style="color: var(--neo-violet);">02.</span> AUDIT &rarr; 
-            <span style="color: var(--neo-violet);">03.</span> REPORT
-          </span>
-        </p>
+          <p>
+            Full-spectrum security validation. Orchestrates all modules into a unified, sequential penetration testing workflow.
+          </p>
 
-        <div class="action-row">
-          <span class="text-xs" style="color: var(--neo-text-tertiary);">Orchestration</span>
-          <div class="launch-btn">
-            Run Simulation <span class="material-symbols-outlined">double_arrow</span>
+          <div class="action-row">
+            <span class="text-xs" style="color: var(--neo-text-tertiary);">Orchestration</span>
+            <div class="launch-btn">
+              Run Simulation <span class="material-symbols-outlined">double_arrow</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="neo-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">hub</span>
+        <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="neo-card">
+          <div class="card-top">
+            <div class="card-icon-box">
+              <span class="material-symbols-outlined">hub</span>
+            </div>
+            <span class="status-badge status-active">Operational</span>
           </div>
-          <span class="status-badge status-active">Operational</span>
-        </div>
-        <h3>Network Scanner</h3>
-        <p>Powered by Nmap. Map your attack surface by discovering open ports, running services, and OS versions across your network infrastructure.</p>
-        <div class="action-row">
-          <span class="text-xs" style="color: var(--neo-text-tertiary);">Infrastructure</span>
-          <div class="launch-btn">
-            Execute <span class="material-symbols-outlined">arrow_forward</span>
+          <h3>Network Scanner</h3>
+          <p>Powered by Nmap. Map your attack surface by discovering open ports, running services, and OS versions across your network infrastructure.</p>
+          <div class="action-row">
+            <span class="text-xs" style="color: var(--neo-text-tertiary);">Infrastructure</span>
+            <div class="launch-btn">
+              Execute <span class="material-symbols-outlined">arrow_forward</span>
+            </div>
           </div>
-        </div>
-      </a>
-          
-      <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="neo-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">troubleshoot</span>
+        </a>
+            
+        <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="neo-card">
+          <div class="card-top">
+            <div class="card-icon-box">
+              <span class="material-symbols-outlined">troubleshoot</span>
+            </div>
+            <span class="status-badge status-active">Real-Time</span>
           </div>
-          <span class="status-badge status-active">Real-Time</span>
-        </div>
-        <h3>Network Monitor</h3>
-        <p>Powered by TShark. Capture live network traffic to analyze packet headers, detect anomalies, and inspect payload data for threats.</p>
-        <div class="action-row">
-          <span class="text-xs" style="color: var(--neo-text-tertiary);">Traffic Analysis</span>
-          <div class="launch-btn">
-            Monitor <span class="material-symbols-outlined">arrow_forward</span>
+          <h3>Network Monitor</h3>
+          <p>Powered by TShark. Capture live network traffic to analyze packet headers, detect anomalies, and inspect payload data for threats.</p>
+          <div class="action-row">
+            <span class="text-xs" style="color: var(--neo-text-tertiary);">Traffic Analysis</span>
+            <div class="launch-btn">
+              Monitor <span class="material-symbols-outlined">arrow_forward</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="neo-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">language</span>
+        <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="neo-card">
+          <div class="card-top">
+            <div class="card-icon-box">
+              <span class="material-symbols-outlined">language</span>
+            </div>
+            <span class="status-badge status-active">Operational</span>
           </div>
-          <span class="status-badge status-active">Operational</span>
-        </div>
-        <h3>Web Vulnerability</h3>
-        <p>Powered by OWASP ZAP. Deep crawl your web applications to detect SQL Injection, XSS, and misconfigurations using AI reranking.</p>
-        <div class="action-row">
-          <span class="text-xs" style="color: var(--neo-text-tertiary);">Application Security</span>
-          <div class="launch-btn">
-            Audit <span class="material-symbols-outlined">arrow_forward</span>
+          <h3>Web Vulnerability</h3>
+          <p>Powered by OWASP ZAP. Deep crawl your web applications to detect SQL Injection, XSS, and misconfigurations using AI reranking.</p>
+          <div class="action-row">
+            <span class="text-xs" style="color: var(--neo-text-tertiary);">Application Security</span>
+            <div class="launch-btn">
+              Audit <span class="material-symbols-outlined">arrow_forward</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <a href="{{ url_for('api_scanner_bp.api_scanner_page') }}" class="neo-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">api</span>
+        <a href="{{ url_for('api_scanner_bp.api_scanner_page') }}" class="neo-card">
+          <div class="card-top">
+            <div class="card-icon-box">
+              <span class="material-symbols-outlined">api</span>
+            </div>
+            <span class="status-badge status-active">Operational</span>
           </div>
-          <span class="status-badge status-active">Operational</span>
-        </div>
-        <h3>API Security</h3>
-        <p>OpenAPI & Swagger assessment. Scan REST API endpoints for broken authentication, injection flaws, and data exposure vulnerabilities.</p>
-        <div class="action-row">
-          <span class="text-xs" style="color: var(--neo-text-tertiary);">Endpoint Security</span>
-          <div class="launch-btn">
-            Scan <span class="material-symbols-outlined">arrow_forward</span>
+          <h3>API Security</h3>
+          <p>OpenAPI & Swagger assessment. Scan REST API endpoints for broken authentication, injection flaws, and data exposure vulnerabilities.</p>
+          <div class="action-row">
+            <span class="text-xs" style="color: var(--neo-text-tertiary);">Endpoint Security</span>
+            <div class="launch-btn">
+              Scan <span class="material-symbols-outlined">arrow_forward</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="neo-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">database</span>
+        <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="neo-card">
+          <div class="card-top">
+            <div class="card-icon-box">
+              <span class="material-symbols-outlined">database</span>
+            </div>
+            <span class="status-badge status-active">Operational</span>
           </div>
-          <span class="status-badge status-active">Operational</span>
-        </div>
-        <h3>SQL Injection (SQLMap)</h3>
-        <p>Advanced database penetration testing. Detect and exploit SQL injection flaws to audit database security and extract sensitive data.</p>
-        <div class="action-row">
-          <span class="text-xs" style="color: var(--neo-text-tertiary);">Database Security</span>
-          <div class="launch-btn">
-            Inject <span class="material-symbols-outlined">arrow_forward</span>
+          <h3>SQL Injection (SQLMap)</h3>
+          <p>Advanced database penetration testing. Detect and exploit SQL injection flaws to audit database security and extract sensitive data.</p>
+          <div class="action-row">
+            <span class="text-xs" style="color: var(--neo-text-tertiary);">Database Security</span>
+            <div class="launch-btn">
+              Inject <span class="material-symbols-outlined">arrow_forward</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <a href="{{ url_for('semgrep_bp.semgrep_scanner_page') }}" class="neo-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">code</span>
+        <a href="{{ url_for('semgrep_bp.semgrep_scanner_page') }}" class="neo-card">
+          <div class="card-top">
+            <div class="card-icon-box">
+              <span class="material-symbols-outlined">code</span>
+            </div>
+            <span class="status-badge status-active">Operational</span>
           </div>
-          <span class="status-badge status-active">Operational</span>
-        </div>
-        <h3>Source Code (SAST)</h3>
-        <p>Powered by Semgrep. Scan your source code repositories or uploads for vulnerabilities, hardcoded secrets, and logic flaws.</p>
-        <div class="action-row">
-          <span class="text-xs" style="color: var(--neo-text-tertiary);">Code Analysis</span>
-          <div class="launch-btn">
-            Analyze <span class="material-symbols-outlined">arrow_forward</span>
+          <h3>Source Code (SAST)</h3>
+          <p>Powered by Semgrep. Scan your source code repositories or uploads for vulnerabilities, hardcoded secrets, and logic flaws.</p>
+          <div class="action-row">
+            <span class="text-xs" style="color: var(--neo-text-tertiary);">Code Analysis</span>
+            <div class="launch-btn">
+              Analyze <span class="material-symbols-outlined">arrow_forward</span>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-      <a href="{{ url_for('ssl_scanner_bp.ssl_scanner_page') }}" class="neo-card">
-        <div class="card-top">
-          <div class="card-icon-box">
-            <span class="material-symbols-outlined">encrypted</span>
+        <a href="{{ url_for('ssl_scanner_bp.ssl_scanner_page') }}" class="neo-card">
+          <div class="card-top">
+            <div class="card-icon-box">
+              <span class="material-symbols-outlined">encrypted</span>
+            </div>
+            <span class="status-badge status-active">Operational</span>
           </div>
-          <span class="status-badge status-active">Operational</span>
-        </div>
-        <h3>SSL/TLS Encryption</h3>
-        <p>Analyze SSL certificates for weak ciphers, expired chains, and protocol vulnerabilities (like Heartbleed) to ensure data transit security.</p>
-        <div class="action-row">
-          <span class="text-xs" style="color: var(--neo-text-tertiary);">Encryption</span>
-          <div class="launch-btn">
-            Scan <span class="material-symbols-outlined">arrow_forward</span>
+          <h3>SSL/TLS Encryption</h3>
+          <p>Analyze SSL certificates for weak ciphers, expired chains, and protocol vulnerabilities (like Heartbleed) to ensure data transit security.</p>
+          <div class="action-row">
+            <span class="text-xs" style="color: var(--neo-text-tertiary);">Encryption</span>
+            <div class="launch-btn">
+              Scan <span class="material-symbols-outlined">arrow_forward</span>
+            </div>
           </div>
-        </div>
-      </a>
-
-
+        </a>
+      </div>
     </div>
   </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script>
-  // SCRIPT FOR INTERACTIVE GRID
-  document.addEventListener('mousemove', function (e) {
-    const grid = document.querySelector('.grid-pattern');
-    if (grid) {
-      const x = e.clientX;
-      const y = e.clientY;
-
-      // Update CSS variables for the mask position
-      grid.style.setProperty('--x', x + 'px');
-      grid.style.setProperty('--y', y + 'px');
-    }
-  });
-</script>
+  <script>
+    /* No additional scripts required */
+  </script>
 {% endblock %}

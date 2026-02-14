@@ -57,23 +57,33 @@ class SmartLogger:
         self.original_stdout = original_stdout
 
     def write(self, message):
-        # 1. Print to server console as normal
-        self.original_stdout.write(message)
-        self.original_stdout.flush()
-
-        # 2. Check if this thread is part of a user scan
+        # 1. Check if this thread is part of a user scan
         # This captures prints from ALL tools running in this thread
-        if hasattr(scan_context, 'queue_id') and scan_context.queue_id:
-            # We only push if there is actual content (ignore blank newlines sometimes sent by print)
+        queue_id = getattr(scan_context, 'queue_id', None)
+        
+        if queue_id:
+            # Push to user's stream (SSE)
             if message.strip(): 
                 try:
-                    q = get_scan_queue(scan_context.queue_id)
-                    # Push as raw SSE data
-                    # We strip to avoid double newlines in the UI, then append \n\n for SSE protocol
+                    q = get_scan_queue(queue_id)
                     safe_msg = message.strip()
                     q.put(f"data: {safe_msg}\n\n")
                 except Exception:
                     pass 
+
+            # 2. Selective Console Printing (Reduce Terminal Clutter)
+            # We ONLY print to the console if it's a high-level scan log or an error/warning
+            # Essential markers: [START], [PHASE], [SUCCESS], [CRITICAL], [ERROR], [WARN], [START], [FINALIZE]
+            essential_markers = ["[START]", "[PHASE", "[SUCCESS]", "[CRITICAL]", "[ERROR]", "[WARN]", "[FINALIZE]", "KILL CHAIN AUDIT"]
+            is_essential = any(marker in message for marker in essential_markers)
+            
+            if is_essential or not message.strip().startswith(" "):
+                self.original_stdout.write(message)
+                self.original_stdout.flush()
+        else:
+            # Not in a scan thread, print everything (likely system startup or other tasks)
+            self.original_stdout.write(message)
+            self.original_stdout.flush()
 
     def flush(self):
         self.original_stdout.flush()
@@ -105,22 +115,30 @@ CONFIG_MAP = {
 # 3. LOGGING HELPERS
 # ==========================================
 
-def log(queue_id, message, level="INFO"):
+def log(queue_id, message, level="INFO", to_console=True):
     """
     Explicit logger for the service steps.
     Since we hooked sys.stdout, we just need to PRINT here.
     SmartLogger will handle sending it to the queue.
     """
     if not queue_id:
-        print(f"[{level}] {message}") 
+        if to_console:
+            print(f"[{level}] {message}") 
         return
 
     timestamp = datetime.now().strftime("%H:%M:%S")
     formatted_msg = f"[{timestamp}] [{level}] {message}"
     
     # Simple print triggers the SmartLogger logic
-    print(formatted_msg) 
-
+    if to_console:
+        print(formatted_msg) 
+    else:
+        # If not to console, we might still want it in the queue?
+        # SmartLogger currently pushes EVERYTHING to the queue if queue_id is set.
+        # But here we are using print(), which SmartLogger intercepts.
+        # If we don't want it in console, we can't use print() if SmartLogger is active.
+        # Let's adjust SmartLogger or just allow print and let SmartLogger filter.
+        print(formatted_msg) # SmartLogger will filter this based on essential_markers
 def send_sse_event(queue_id, event_name, data):
     """
     Sends structured events (like progress bars).
@@ -209,7 +227,7 @@ class KillChainService:
                 "urls": [], "tech": {}, "traffic_analysis": {}, "zap_report": {}
             }
 
-            log(queue_id, f"[START] Starting Kill Chain Audit on {target}", "START")
+            log(queue_id, f"[START] Starting Kill Chain Audit on {target}", "START", to_console=True)
             
             config = CONFIG_MAP.get(aggression_level, CONFIG_MAP["normal"])
             phases = PROFILE_PHASES.get(profile_name, PROFILE_PHASES["full_audit"])
@@ -222,9 +240,9 @@ class KillChainService:
             # --- IP Resolution ---
             try:
                 target_ip = socket.gethostbyname(domain)
-                log(queue_id, f"Resolved IP: {target_ip}")
+                log(queue_id, f"Resolved IP: {target_ip}", to_console=True)
             except:
-                log(queue_id, "Could not resolve IP address. Aborting scan.", "CRITICAL")
+                log(queue_id, "Could not resolve IP address. Aborting scan.", "CRITICAL", to_console=True)
                 send_sse_event(queue_id, "scan_failed", {"message": "DNS Resolution Failed"})
                 time.sleep(2)
                 cleanup_queue(queue_id)
@@ -242,41 +260,41 @@ class KillChainService:
             # --- PHASE 1: RECON ---
             if "recon" in phases:
                 send_sse_event(queue_id, "progress_update", {"percent": 10, "phase": "Reconnaissance"})
-                log(queue_id, "[PHASE 1] RECONNAISSANCE...")
+                log(queue_id, "[PHASE 1] RECONNAISSANCE...", to_console=True)
                 
                 # Any print() inside these tools is now captured!
                 waf_info = tools["waf"].detect(base_url)
                 if waf_info.get('has_waf'):
-                    log(queue_id, f"[WARN] WAF DETECTED: {waf_info.get('waf_name')}. Throttling requests.", "WARNING")
+                    log(queue_id, f"[WARN] WAF DETECTED: {waf_info.get('waf_name')}. Throttling requests.", "WARNING", to_console=True)
                     config["threads"] = max(2, config["threads"] // 2)
                 
                 recon_data = tools["recon"].subdomain_scan(domain)
                 results["recon"] = recon_data
-                log(queue_id, f"Recon Complete. Found {len(recon_data.get('subdomains', []))} subdomains.")
+                log(queue_id, f"Recon Complete. Found {len(recon_data.get('subdomains', []))} subdomains.", to_console=True)
 
             # --- PHASE 2: TECH ---
             if "tech" in phases:
                 send_sse_event(queue_id, "progress_update", {"percent": 25, "phase": "Tech Detection"})
-                log(queue_id, "[PHASE 2] TECH FINGERPRINTING...")
+                log(queue_id, "[PHASE 2] TECH FINGERPRINTING...", to_console=True)
                 results["tech"] = tools["tech"].detect_tech(base_url)
-                log(queue_id, f"Identified technologies: {', '.join(results['tech'].get('technologies', []))}")
+                log(queue_id, f"Identified technologies: {', '.join(results['tech'].get('technologies', []))}", to_console=True)
 
             # --- PHASE 3: NETWORK ---
             open_ports_list = []
             if "network" in phases:
                 send_sse_event(queue_id, "progress_update", {"percent": 40, "phase": "Network Scan"})
-                log(queue_id, f"[PHASE 3] NETWORK SCAN ({target_ip})...")
+                log(queue_id, f"[PHASE 3] NETWORK SCAN ({target_ip})...", to_console=True)
                 
                 net_data = tools["net"].run_scan(target_ip, scan_type=config['nmap_mode'])
                 results["network"] = net_data
                 open_ports_list = net_data.get("ports", [])
-                log(queue_id, f"Network Scan Complete. {len(open_ports_list)} ports open.")
+                log(queue_id, f"Network Scan Complete. {len(open_ports_list)} ports open.", to_console=True)
 
             # --- PHASE 4: DISCOVERY ---
             all_urls = []
             if "discovery" in phases:
                 send_sse_event(queue_id, "progress_update", {"percent": 55, "phase": "Content Discovery"})
-                log(queue_id, "[PHASE 4] DISCOVERY & CRAWLING...")
+                log(queue_id, "[PHASE 4] DISCOVERY & CRAWLING...", to_console=True)
                 
                 crawled = tools["crawler"].crawl(base_url, max_threads=config['threads'])
                 
@@ -287,18 +305,18 @@ class KillChainService:
                 
                 all_urls = list(set(crawled + [f['url'] for f in fuzzed.get('findings', [])]))
                 results["urls"] = all_urls
-                log(queue_id, f"Discovery Complete. Total URLs found: {len(all_urls)}")
+                log(queue_id, f"Discovery Complete. Total URLs found: {len(all_urls)}", to_console=True)
 
             # --- PHASE 5: VULNERABILITY ---
             if "web_exploit" in phases:
                 send_sse_event(queue_id, "progress_update", {"percent": 75, "phase": "Vulnerability Analysis"})
-                log(queue_id, "[PHASE 5] VULNERABILITY ANALYSIS...")
+                log(queue_id, "[PHASE 5] VULNERABILITY ANALYSIS...", to_console=True)
 
-                log(queue_id, "Running Python Native Deep Scan...")
+                log(queue_id, "Running Python Native Deep Scan...", to_console=True)
                 vuln_findings = tools["vuln"].run_all_checks(domain, open_ports=open_ports_list)
                 results["vulns"].extend(vuln_findings)
 
-                log(queue_id, f"Running OWASP ZAP Scan on {base_url}...")
+                log(queue_id, f"Running OWASP ZAP Scan on {base_url}...", to_console=True)
                 
                 def zap_logger(msg):
                     # We just print. SmartLogger handles the rest.
@@ -315,15 +333,15 @@ class KillChainService:
                             "evidence": finding.get('url', 'N/A'),
                             "description": finding.get('description', 'No description')
                         })
-                    log(queue_id, "ZAP Scan completed successfully.")
+                    log(queue_id, "ZAP Scan completed successfully.", to_console=True)
                 else:
-                    log(queue_id, f"ZAP Scan Failed: {zap_report['error']}", "ERROR")
+                    log(queue_id, f"ZAP Scan Failed: {zap_report['error']}", "ERROR", to_console=True)
 
                 targets = [u for u in all_urls if "?" in u]
                 if not targets: targets = [base_url]
                 if aggression_level == "stealth": targets = targets[:5]
 
-                log(queue_id, f"Testing {len(targets)} URLs for Logic/Injection flaws...")
+                log(queue_id, f"Testing {len(targets)} URLs for Logic/Injection flaws...", to_console=True)
                 for i, url in enumerate(targets):
                     if config["request_delay"] > 0: time.sleep(config["request_delay"])
                     inj_res = tools["injector"].run_scan(url)
@@ -334,7 +352,7 @@ class KillChainService:
             # --- PHASE 6: BRUTE FORCE ---
             if "brute" in phases and config["brute_force"]:
                 send_sse_event(queue_id, "progress_update", {"percent": 90, "phase": "Brute Force"})
-                log(queue_id, "[PHASE 6] BRUTE FORCE...")
+                log(queue_id, "[PHASE 6] BRUTE FORCE...", to_console=True)
                 ports = results.get("network", {}).get("ports", [])
                 if ports:
                     services = [{'port': p['port'], 'service': p['service']} for p in ports]
@@ -342,10 +360,10 @@ class KillChainService:
                     bf_res = tools["exploiter"].run_all_brute_force(target_ip, services)
                     results["vulns"].extend(bf_res)
                 else:
-                    log(queue_id, "No open ports eligible for brute force.")
+                    log(queue_id, "No open ports eligible for brute force.", to_console=True)
 
             # --- DEDUPLICATION ---
-            log(queue_id, "Processing and deduplicating findings...")
+            log(queue_id, "Processing and deduplicating findings...", to_console=True)
             unique_vulns = []
             seen_hashes = set()
             for v in results["vulns"]:
@@ -423,7 +441,7 @@ class KillChainService:
 
             send_sse_event(queue_id, "progress_update", {"percent": 100, "phase": "Complete"})
             send_sse_event(queue_id, "scan_complete", {})
-            log(queue_id, "KILL CHAIN AUDIT COMPLETED.", "SUCCESS")
+            log(queue_id, "KILL CHAIN AUDIT COMPLETED.", "SUCCESS", to_console=True)
             
             # Log completion to DB (Inside App Context)
             if log_id and app:

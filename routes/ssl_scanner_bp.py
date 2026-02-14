@@ -7,7 +7,11 @@ import os
 from queue import Empty
 import requests
 import uuid
+import logging
 from werkzeug.utils import secure_filename 
+
+# --- Logging Setup ---
+logger = logging.getLogger(__name__)
 
 # [NEW] Import db to update user stats
 from extensions import db
@@ -50,6 +54,7 @@ SERVER_PROXY_URL = "http://localhost:5100"
 @login_required
 def ssl_scanner_page():
     """Renders the SSL scanner page."""
+    logger.info(f"\033[32m[*] Accessing SSL Scanner Page (User: {current_user.username})\033[0m")
     return render_template('scanners/ssl_scanner.html')
 
 @ssl_scanner_bp.route('/scan', methods=['POST'])
@@ -61,6 +66,7 @@ def scan_ssl():
     """
     data = request.get_json()
     target_host = data.get('target_host')
+    logger.info(f"\033[32m[*] SSL Scan requested for {target_host} by {current_user.username}\033[0m")
 
     if not target_host:
         ssl_scanner.log("[!] Target host cannot be empty for SSL scan.", user_identifier)
@@ -91,7 +97,7 @@ def scan_ssl():
     # Function to run in a separate thread
     def scan_task():
         # Use captured identifier
-        ssl_scanner.log(f"[*] Starting SSL scan for {target_host} (User: {current_user_identifier})...", current_user_identifier)
+        ssl_scanner.log(f"[*] Starting SSL scan for {target_host} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
         
         start_time = time.time()
         
@@ -112,7 +118,7 @@ def scan_ssl():
                 # Count "findings" as combined weak protocols + vulnerabilities
                 finding_count = len(summary.get('protocols', [])) + len(summary.get('vulnerabilities', []))
                 
-                ssl_scanner.log(f"[+] SSL scan complete. Generating PDF report...", current_user_identifier)
+                ssl_scanner.log(f"[+] SSL scan complete. Generating PDF report...", current_user_identifier, to_console=True)
                 
                 # 3. Generate PDF Report
                 try:
@@ -128,16 +134,16 @@ def scan_ssl():
                     pdf_generator.create_ssl_report_pdf(str(json_path), str(pdf_path))
                     
                     if pdf_path.exists():
-                        ssl_scanner.log(f"[+] PDF report generated successfully: {pdf_path}", current_user_identifier)
+                        ssl_scanner.log(f"[+] PDF report generated successfully: {pdf_path}", current_user_identifier, to_console=True)
                     else:
-                        ssl_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier)
+                        ssl_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier, to_console=True)
                 
                 except Exception as e:
-                    ssl_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", current_user_identifier)
+                    ssl_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", current_user_identifier, to_console=True)
             else:
-                ssl_scanner.log(f"[!] Failed to parse SSL report for {target_host}.", current_user_identifier)
+                ssl_scanner.log(f"[!] Failed to parse SSL report for {target_host}.", current_user_identifier, to_console=True)
         else:
-            ssl_scanner.log(f"[!] SSL scan failed for {target_host}.", current_user_identifier)
+            ssl_scanner.log(f"[!] SSL scan failed for {target_host}.", current_user_identifier, to_console=True)
 
         # Log to Database (Inside App Context)
         with app.app_context():

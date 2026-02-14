@@ -1,0 +1,44 @@
+[2026-02-14 12:18:44] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 14:49:16] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 14:49:23] [+] Running TCP (Top 1000) scan on 192.168.29.1 with timing -T4...
+[2026-02-14 14:49:24] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShieldAI\Services\temp\nmap\scan_result_tcp.txt 192.168.29.1
+[2026-02-14 14:50:48] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\temp\nmap\scan_result_tcp.txt
+[2026-02-14 14:50:49] [+] Processing results for PDF report...
+[2026-02-14 14:50:50] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-14 14:50:50] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-14 14:50:55] [+] Nmap PDF Report generated: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-14 14:52:26] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 15:11:26] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 15:44:54] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 15:44:57] [+] Running TCP (Top 1000) scan on 192.168.29.1 with timing -T4...
+[2026-02-14 15:44:57] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShieldAI\Services\temp\nmap\scan_result_tcp.txt 192.168.29.1
+[2026-02-14 15:46:21] [+] TCP (Top 1000) scan complete. Results saved to D:\NetShieldAI\Services\temp\nmap\scan_result_tcp.txt
+[2026-02-14 15:46:22] [+] Processing results for PDF report...
+[2026-02-14 15:46:22] [+] JSON Scan report saved to D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-14 15:46:22] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-14 15:46:24] [+] Nmap PDF Report generated: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-14 15:48:18] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 16:47:50] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 16:48:18] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 16:51:47] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:01:51] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:02:57] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:03:16] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:04:39] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:04:42] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:06:15] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:06:26] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:07:12] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:09:08] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:12:03] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:13:10] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:15] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:15] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:15] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:15] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:15] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:42] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:42] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:42] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:42] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-14 17:15:42] [*] Whitelist file 'D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
