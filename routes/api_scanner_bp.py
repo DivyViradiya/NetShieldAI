@@ -7,10 +7,16 @@ from flask import Blueprint, render_template, jsonify, request, Response, send_f
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename 
 
+from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory, current_app
+from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename 
+
 # Import db to update user stats
 from extensions import db
 from Services import api_scanner 
 from Services import pdf_generator 
+# --- Import Scan Logger ---
+from Services import scan_logger
 
 api_scanner_bp = Blueprint('api_scanner_bp', __name__)
 
@@ -71,6 +77,8 @@ def initiate_api_scan():
     # User Context
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_output_dir = get_user_results_dir()
+    user_id_for_log = current_user.id
+    app = current_app._get_current_object()
 
     # [NEW] Increment Database Counter (assuming you want to track API scans)
     try:
@@ -90,11 +98,18 @@ def initiate_api_scan():
         
         os.makedirs(os.path.dirname(xml_path), exist_ok=True)
         
+        start_time = time.time()
+        
         # 1. Run API Scan
         # Passing definition_url is the key difference here
         scan_successful = api_scanner.run_api_scan(target_url, definition_url, str(xml_path), current_user_identifier)
 
+        duration = time.time() - start_time
+        status = "Failed"
+        finding_count = 0
+
         if scan_successful:
+            status = "Completed"
             api_scanner.log("[+] API scan command finished. Parsing...", current_user_identifier)
             
             # 2. Parse
@@ -103,6 +118,7 @@ def initiate_api_scan():
             if scan_results:
                 scan_results["target_url"] = target_url
                 scan_results["scan_type"] = "API" # Meta-data tag
+                finding_count = len(scan_results.get("findings", []))
                 
                 # 3. Save JSON
                 json_report_path = api_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier)
@@ -131,6 +147,18 @@ def initiate_api_scan():
                 api_scanner.log("[!] Failed to parse API scan report.", current_user_identifier)
         else:
             api_scanner.log(f"[!] API scan failed for target: {target_url}.", current_user_identifier)
+
+        # Log to Database (Inside App Context)
+        with app.app_context():
+            scan_logger.create_full_scan_log(
+                user_id=user_id_for_log,
+                tool_name="API Scanner",
+                target=target_url,
+                duration=duration,
+                finding_count=finding_count,
+                status=status,
+                scan_type="OpenAPI"
+            )
 
     threading.Thread(target=scan_and_process_task).start()
     

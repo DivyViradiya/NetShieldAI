@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory
+from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory, current_app
 from flask_login import login_required, current_user
 import threading
 import json
@@ -18,6 +18,8 @@ from extensions import db
 from Services import sql_scanner
 # Import the PDF generator module
 from Services import pdf_generator
+# --- Import Scan Logger ---
+from Services import scan_logger
 
 sql_scanner_bp = Blueprint('sql_scanner_bp', __name__)
 
@@ -99,6 +101,7 @@ def scan_sql():
     # Capture User Info for Logging
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_id = current_user.id # Capture ID for the thread
+    app = current_app._get_current_object()
 
     # [NEW] Increment Database Counter for Stats
     try:
@@ -107,23 +110,39 @@ def scan_sql():
             current_user.scan_count_sql += 1
             db.session.commit()
     except Exception as e:
-        sql_scanner.log(f"[!] Failed to update user stats: {e}")
+        sql_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     # Function to run in a separate thread
     def scan_task():
         try:
-            sql_scanner.log(f"[*] Starting {scan_mode.upper()} SQL scan for {target_url} (User: {current_user_identifier})...")
+            sql_scanner.log(f"[*] Starting {scan_mode.upper()} SQL scan for {target_url} (User: {current_user_identifier})...", current_user_identifier)
+            
+            start_time = time.time()
             
             # 1. Run the Scan (Returns path to JSON report if successful)
             # We now run it directly in user_base_dir instead of a timestamped subfolder
             json_report_path = sql_scanner.run_sql_scan(
                 target_url, 
                 output_dir=user_base_dir, 
-                scan_mode=scan_mode
+                scan_mode=scan_mode,
+                user_id=current_user_identifier
             )
             
+            duration = time.time() - start_time
+            finding_count = 0
+            status = "Failed"
+
             if json_report_path and os.path.exists(json_report_path):
-                sql_scanner.log(f"[+] SQL scan complete. Generating PDF report...")
+                status = "Completed"
+                # Try to count findings
+                try:
+                    with open(json_report_path, 'r', encoding='utf-8') as f:
+                        report_data = json.load(f)
+                        finding_count = len(report_data.get('vulnerabilities', []))
+                except:
+                    pass
+
+                sql_scanner.log(f"[+] SQL scan complete. Generating PDF report...", current_user_identifier)
                 
                 # 2. Generate PDF Report
                 try:
@@ -135,19 +154,31 @@ def scan_sql():
                         pdf_generator.create_sql_report_pdf(str(json_report_path), str(pdf_path))
                         
                         if os.path.exists(pdf_path):
-                            sql_scanner.log(f"[+] PDF report generated and updated in user dashboard: {pdf_path}")
+                            sql_scanner.log(f"[+] PDF report generated and updated in user dashboard: {pdf_path}", current_user_identifier)
                         else:
-                            sql_scanner.log("[!] PDF generation ran but file not found.")
+                            sql_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier)
                     else:
-                        sql_scanner.log("[!] PDF Generator missing 'create_sql_report_pdf' function.")
+                        sql_scanner.log("[!] PDF Generator missing 'create_sql_report_pdf' function.", current_user_identifier)
                 
                 except Exception as e:
-                    sql_scanner.log(f"[!] FAILED to generate PDF: {str(e)}")
+                    sql_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", current_user_identifier)
             else:
-                sql_scanner.log(f"[!] SQL scan failed or produced no results for {target_url}.")
+                sql_scanner.log(f"[!] SQL scan failed or produced no results for {target_url}.", current_user_identifier)
+            
+            # Log to Database (Inside App Context)
+            with app.app_context():
+                scan_logger.create_full_scan_log(
+                    user_id=user_id,
+                    tool_name="SQLMap",
+                    target=target_url,
+                    duration=duration,
+                    finding_count=finding_count,
+                    status=status,
+                    scan_type=f"{scan_mode.title()} Mode"
+                )
         
         except Exception as e:
-             sql_scanner.log(f"[!] Unexpected error in scan thread: {str(e)}")
+             sql_scanner.log(f"[!] Unexpected error in scan thread: {str(e)}", current_user_identifier)
 
         finally:
             # RELEASE LOCK
@@ -163,11 +194,12 @@ def trigger_ai_analysis_route():
     """
     Checks if PDF exists and returns scanner type for the AI Chatbot.
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     pdf_path = os.path.join(user_dir, PDF_FILENAME)
 
     if not os.path.exists(pdf_path):
-        sql_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}")
+        sql_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}", user_identifier)
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
@@ -272,17 +304,20 @@ def get_sql_report_content():
 @login_required
 def clear_sql_log_route():
     """API endpoint to clear the SQL scanner log file."""
-    sql_scanner.clear_log_file()
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    sql_scanner.clear_log_file(user_identifier)
     return jsonify({"status": "success", "message": "SQL log cleared."})
 
 @sql_scanner_bp.route('/log_stream')
 @login_required
 def sql_log_stream():
     """Server-Sent Events (SSE) endpoint to stream SQL scanner log messages."""
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     def generate_logs():
+        user_queue = sql_scanner.get_user_queue(user_identifier)
         while True:
             try:
-                message = sql_scanner.log_queue.get(timeout=10)
+                message = user_queue.get(timeout=10)
                 yield message
             except Empty:
                 yield ": keep-alive\n\n"

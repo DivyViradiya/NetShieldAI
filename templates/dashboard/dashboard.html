@@ -217,6 +217,36 @@
         color: var(--neo-text-main); display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.05em;
     }
 
+    /* --- COMPLIANCE TABS --- */
+    .comp-tab-btn {
+        background: transparent;
+        border: 1px solid var(--neo-border);
+        color: var(--neo-text-muted);
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-family: var(--font-mono);
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .comp-tab-btn:hover {
+        border-color: var(--neo-text-label);
+        color: var(--neo-text-main);
+    }
+    .comp-tab-btn.active {
+        border-color: var(--neo-blue) !important;
+        color: var(--neo-text-main) !important;
+        background: rgba(59, 130, 246, 0.1) !important;
+    }
+    #compliance-tabs-container::-webkit-scrollbar {
+        display: none;
+    }
+    #compliance-tabs-container {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
     /* --- KILLCHAIN HERO --- */
     .killchain-hero {
       background: var(--kc-hero-bg);
@@ -348,7 +378,7 @@
 
     /* --- DOWNLOADS --- */
     .download-grid-container { 
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; 
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; 
     }
     .dl-item {
       display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
@@ -585,6 +615,10 @@
            <div class="panel-title"><span class="material-symbols-outlined">folder_shared</span> Reports & Exports</div>
         </div>
         <div class="download-grid-container">
+           <a id="btn-killchain-pdf-grid" href="#" class="dl-item disabled">
+              <span class="material-symbols-outlined dl-icon">security</span>
+              <span class="dl-name">KILL CHAIN</span>
+           </a>
            <a id="btn-nmap-pdf" href="#" class="dl-item disabled">
               <span class="material-symbols-outlined dl-icon">hub</span>
               <span class="dl-name">NETWORK</span>
@@ -603,8 +637,29 @@
            </a>
            <a id="btn-sql-pdf" href="#" class="dl-item disabled">
               <span class="material-symbols-outlined dl-icon">database</span>
-              <span class="dl-name">DATABASE</span>
+              <span class="dl-name">SQL INJ</span>
            </a>
+           <a id="btn-api-pdf" href="#" class="dl-item disabled">
+              <span class="material-symbols-outlined dl-icon">api</span>
+              <span class="dl-name">API SCAN</span>
+           </a>
+           <a id="btn-semgrep-pdf" href="#" class="dl-item disabled">
+              <span class="material-symbols-outlined dl-icon">code</span>
+              <span class="dl-name">SAST</span>
+           </a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+           <div class="panel-title"><span class="material-symbols-outlined" style="color:var(--neo-purple);">chat_bubble</span> Recent Consultations</div>
+           <div style="font-size:0.65rem; color:var(--neo-text-label); font-family:var(--font-mono);">AI ANALYST HISTORY</div>
+        </div>
+        <div id="recent-chats-container" style="display: flex; flex-direction: column; gap: 0.75rem; flex: 1; overflow-y: auto;">
+            <!-- Chats will be injected here -->
+            <div style="text-align:center; padding:1rem; color:#444; font-size:0.75rem; font-family: var(--font-mono);">
+                Fetching history...
+            </div>
         </div>
       </div>
       
@@ -631,7 +686,7 @@
       <div class="panel">
          <div class="panel-header">
            <div class="panel-title"><span class="material-symbols-outlined">person_search</span> Activity</div>
-           <div style="font-size:0.65rem; background:var(--dl-item-bg); padding:2px 6px; border-radius:4px; border:1px solid var(--neo-border); color:var(--neo-text-muted);">ADMIN</div>
+           <div style="font-size:0.65rem; background:var(--dl-item-bg); padding:2px 6px; border-radius:4px; border:1px solid var(--neo-border); color:var(--neo-text-muted);">OPERATOR</div>
          </div>
          <div style="display:flex; justify-content: space-between; margin-bottom: 0.5rem;">
             <div>
@@ -661,22 +716,31 @@
                 </div>
             </div>
          </div>
+         <!-- Hidden containers for data tracking -->
          <span id="ssl-key-info" style="display:none;"></span>
          <span id="ssl-protocols" style="display:none;"></span>
+         <span id="sql-vuln-count" style="display:none;"></span>
+         <span id="api-vuln-count" style="display:none;"></span>
+         <span id="semgrep-vuln-count" style="display:none;"></span>
       </div>
 
     </div> 
   </div>
 
   <div class="panel" style="margin-top: 1.5rem;">
-      <div class="panel-header">
+      <div class="panel-header" style="border-bottom: none; margin-bottom: 0.5rem; align-items: center;">
           <div class="panel-title">
              <span class="material-symbols-outlined" style="color: var(--neo-green);">gavel</span> 
              Regulatory Compliance & Standards
           </div>
-          <div style="font-size: 0.7rem; color: var(--neo-text-label); font-family: var(--font-mono);">
-              FRAMEWORK ANALYSIS
+          <div style="font-size: 0.65rem; color: var(--neo-text-label); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">
+              Framework Analysis
           </div>
+      </div>
+
+      <!-- Target Selection Tabs -->
+      <div id="compliance-tabs-container" style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--neo-border); padding-bottom: 0.75rem; overflow-x: auto;">
+          <!-- Tabs will be injected here by JS -->
       </div>
 
       <div id="compliance-container">
@@ -698,6 +762,9 @@
     sniffer: "{{ url_for('dashboard_bp.get_sniffer_stats') }}",
     compliance: "{{ url_for('dashboard_bp.get_compliance_stats') }}",
     usage: "{{ url_for('dashboard_bp.get_usage_stats') }}",
+    api: "{{ url_for('dashboard_bp.get_api_stats') }}",
+    sql: "{{ url_for('dashboard_bp.get_sql_stats') }}",
+    semgrep: "{{ url_for('dashboard_bp.get_semgrep_stats') }}",
     databaseStatus: "{{ url_for('sql_scanner_bp.get_report_files') }}" 
   };
   
@@ -707,7 +774,9 @@
     zap: "{{ url_for('zap_scanner_bp.download_pdf_report') }}",
     ssl: "{{ url_for('ssl_scanner_bp.download_pdf_report') }}",
     sniffer: "{{ url_for('packet_sniffer_bp.download_pdf_report') }}",
-    database: "{{ url_for('sql_scanner_bp.download_pdf_report') }}"
+    database: "{{ url_for('sql_scanner_bp.download_pdf_report') }}",
+    api: "{{ url_for('api_scanner_bp.download_pdf_report') }}",
+    semgrep: "{{ url_for('semgrep_bp.download_pdf_report') }}"
   };
 </script>
 

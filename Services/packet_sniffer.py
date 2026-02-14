@@ -47,36 +47,60 @@ PDF_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 # --- Global State for Threading Control ---
 TCPDUMP_PROCESS = None
 TCPDUMP_STOP_EVENT = threading.Event()
-log_queue = queue.Queue()
+
+# --- USER ISOLATION ---
+user_queues = {}
+
+def get_user_queue(user_id):
+    """Ensures a queue exists for the user and returns it."""
+    if user_id not in user_queues:
+        user_queues[user_id] = queue.Queue()
+    return user_queues[user_id]
 
 # --- Logging and SSE Helpers ---
 
-def log(message):
-    """Logs messages to queue and file."""
+def log(message, user_id=None):
+    """
+    Logs messages to queue and file.
+    Organized Path: logs/users/{user_id}/packet_sniffer_log.txt
+    """
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     full_message = f"data: [{timestamp}] {message}\n\n"
-    try:
-        log_queue.put(full_message)
-    except Exception:
-        pass
+    
+    if user_id:
+        user_id = str(user_id)
+        uq = get_user_queue(user_id)
+        uq.put(full_message)
+
+    # Determine Log File Path
+    if user_id:
+        user_id = str(user_id)
+        log_dir = LOG_DIR / "users" / user_id
+        log_dir.mkdir(parents=True, exist_ok=True)
+        target_log_file = log_dir / "packet_sniffer_log.txt"
+    else:
+        system_dir = LOG_DIR / "system"
+        system_dir.mkdir(parents=True, exist_ok=True)
+        target_log_file = system_dir / "packet_sniffer_system_log.txt"
 
     try:
-        with open(LOG_FILE, 'a', encoding='utf-8') as f:
+        with open(target_log_file, 'a', encoding='utf-8') as f:
             f.write(f"[{timestamp}] {message}\n")
     except Exception as e:
-        print(f"ERROR: Failed to write log file: {e}", file=sys.stderr)
+        print(f"ERROR: Failed to write log file {target_log_file}: {e}", file=sys.stderr)
 
-def send_sse_event(event_name, data=""):
-    """Sends a custom SSE event to the log_queue."""
+def send_sse_event(event_name, data="", user_id=None):
+    """Sends a custom SSE event to the user's log_queue."""
     if isinstance(data, (dict, list)):
         data_str = json.dumps(data)
     else:
         data_str = str(data)
     sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
-    try:
-        log_queue.put(sse_message)
-    except Exception:
-        pass
+    
+    if user_id:
+        user_id = str(user_id)
+        uq = get_user_queue(user_id)
+        uq.put(sse_message)
 
 # --- OS-Specific and Network Helpers ---
 

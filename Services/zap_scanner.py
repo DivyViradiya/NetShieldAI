@@ -260,7 +260,7 @@ def log(message, user_id=None):
     """
     Logs messages to:
     1. System Console
-    2. User-specific log file (if user_id provided)
+    2. User-specific log file (logs/users/{user_id}/zap_agent_log.txt)
     3. User-specific Memory Queue (for real-time frontend)
     """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -272,9 +272,12 @@ def log(message, user_id=None):
     # If a specific user is targeted
     if user_id:
         user_id = str(user_id)
-        
-        # 2. User-Specific Log File
-        user_log_file = os.path.join(LOGS_DIR, f"zap_agent_log_{user_id}.txt")
+        # Organized Path: logs/users/{user_id}/
+        user_dir = os.path.join(LOGS_DIR, "users", user_id)
+        if not os.path.exists(user_dir):
+            os.makedirs(user_dir, exist_ok=True)
+            
+        user_log_file = os.path.join(user_dir, "zap_agent_log.txt")
         try:
             with open(user_log_file, 'a', encoding='utf-8') as f:
                 f.write(log_message + "\n")
@@ -286,9 +289,13 @@ def log(message, user_id=None):
         uq.put(log_message)
         
     else:
-        # Fallback to general system log if no user context (e.g. system errors)
+        # Fallback to general system log
+        system_dir = os.path.join(LOGS_DIR, "system")
+        if not os.path.exists(system_dir):
+            os.makedirs(system_dir, exist_ok=True)
+            
         try:
-            with open(os.path.join(LOGS_DIR, "zap_system_log.txt"), 'a', encoding='utf-8') as f:
+            with open(os.path.join(system_dir, "zap_system_log.txt"), 'a', encoding='utf-8') as f:
                 f.write(log_message + "\n")
         except:
             pass
@@ -297,11 +304,12 @@ def clear_log_file(user_id):
     """Clears the log file and queue for a specific user."""
     if not user_id: return
     user_id = str(user_id)
-    user_log_file = os.path.join(LOGS_DIR, f"zap_agent_log_{user_id}.txt")
+    user_log_file = os.path.join(LOGS_DIR, "users", user_id, "zap_agent_log.txt")
     
     try:
-        with open(user_log_file, 'w', encoding='utf-8') as f:
-            f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+        if os.path.exists(user_log_file):
+            with open(user_log_file, 'w', encoding='utf-8') as f:
+                f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
         
         # Clear Queue
         uq = get_user_queue(user_id)

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, Response, send_from_directory, Blueprint
+from flask import Flask, render_template, jsonify, request, Response, send_from_directory, Blueprint, current_app
 from flask_login import login_required, current_user
 import threading
 import json
@@ -17,6 +17,8 @@ from extensions import db
 from Services import network_scanner
 # --- Import PDF Generator ---
 from Services import pdf_generator
+# --- Import Scan Logger ---
+from Services import scan_logger
 
 network_scanner_bp = Blueprint('network_scanner_bp', __name__)
 
@@ -72,8 +74,9 @@ def network_scanner_page():
 @login_required
 def get_local_ip_route():
     """API endpoint to detect and return the local IP address."""
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     local_ip = network_scanner.get_local_ip()
-    network_scanner.log(f"[*] Local IP requested: {local_ip}")
+    network_scanner.log(f"[*] Local IP requested: {local_ip}", user_identifier)
     return jsonify({"local_ip": local_ip})
 
 @network_scanner_bp.route('/scan', methods=['POST'])
@@ -83,6 +86,7 @@ def scan_ports():
     API endpoint to initiate all types of port scans.
     Runs the scan in a separate thread and generates a PDF report upon completion.
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     data = request.get_json()
     target_ip = data.get('target_ip')
     protocol_type = data.get('protocol_type', 'TCP').upper()
@@ -111,24 +115,25 @@ def scan_ports():
     if not target_ip:
         target_ip = network_scanner.get_local_ip()
         if target_ip == "127.0.0.1" and not network_scanner.is_valid_ip_or_range(target_ip):
-            network_scanner.log("[!] No target IP/range entered and local IP not detected.")
+            network_scanner.log("[!] No target IP/range entered and local IP not detected.", user_identifier)
             return jsonify({"status": "error", "message": "No target IP/range provided and local IP not detected."}), 400
-        network_scanner.log(f"[*] Target IP/Range not specified, defaulting to local IP: {target_ip}")
+        network_scanner.log(f"[*] Target IP/Range not specified, defaulting to local IP: {target_ip}", user_identifier)
 
     # Updated to allow URLs/Domains as well as IPs
     if not network_scanner.is_valid_ip_or_range(target_ip) and not network_scanner.is_valid_hostname(target_ip):
-        network_scanner.log(f"[!] Invalid target input: {target_ip}")
+        network_scanner.log(f"[!] Invalid target input: {target_ip}", user_identifier)
         return jsonify({"status": "error", "message": "Please enter a valid IP address, Domain (URL), or IP range."}), 400
     
     if not network_scanner.is_nmap_installed():
-        network_scanner.log("[!] Nmap is not installed or not in PATH.")
+        network_scanner.log("[!] Nmap is not installed or not in PATH.", user_identifier)
         return jsonify({"status": "error", "message": "Nmap is not installed."}), 500
     
     # Determine User Directory for this scan
     user_output_dir = get_user_results_dir()
 
-    # --- FIX: Capture Composite User ID in the main thread ---
-    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    # --- Capture Context for Thread ---
+    app = current_app._get_current_object()
+    user_id_for_log = current_user.id
 
     # [NEW] Increment Database Counter for Stats
     try:
@@ -136,12 +141,14 @@ def scan_ports():
         db.session.commit()
     except Exception as e:
         # Log error but don't stop the scan
-        network_scanner.log(f"[!] Failed to update user stats: {e}")
+        network_scanner.log(f"[!] Failed to update user stats: {e}", user_identifier)
     
     # --- Threaded Scan Task ---
     def scan_task():
         # Use the captured identifier variable
-        network_scanner.log(f"[*] Preparing {scan_type.upper()} scan for target: {target_ip} with T{timing}...")        
+        network_scanner.log(f"[*] Preparing {scan_type.upper()} scan for target: {target_ip} with T{timing}...", user_identifier)        
+        
+        start_time = time.time()
         
         # 1. Run the Scan (Pass user directory to service)
         result_file = network_scanner.run_nmap_scan(
@@ -152,6 +159,24 @@ def scan_ports():
             timing=timing # <--- PASS TIMING HERE
         )
         
+        duration = time.time() - start_time
+        
+        # Determine status and count
+        status = "Completed" if result_file else "Failed"
+        finding_count = len(network_scanner.get_current_open_ports()) if result_file else 0
+
+        # Log to Database (Inside App Context)
+        with app.app_context():
+            scan_logger.create_full_scan_log(
+                user_id=user_id_for_log,
+                tool_name="Nmap",
+                target=target_ip,
+                duration=duration,
+                finding_count=finding_count,
+                status=status,
+                scan_type=scan_type
+            )
+        
         if result_file:
             # Define specific paths for this user's PDF generation
             user_json_path = os.path.join(user_output_dir, "nmap_report.json")
@@ -160,7 +185,7 @@ def scan_ports():
             # 2. Generate PDF Report
             try:
                 if os.path.exists(user_json_path):
-                    network_scanner.log("[*] Scan complete. Generating PDF report...")
+                    network_scanner.log("[*] Scan complete. Generating PDF report...", user_identifier)
                     
                     # Ensure PDF output directory exists (needed by WeasyPrint)
                     os.makedirs(os.path.dirname(user_pdf_path), exist_ok=True)
@@ -169,19 +194,19 @@ def scan_ports():
                     pdf_generator.create_nmap_report_pdf(str(user_json_path), str(user_pdf_path))
                     
                     if os.path.exists(user_pdf_path):
-                        network_scanner.log(f"[+] PDF report generated successfully: {user_pdf_path}")
+                        network_scanner.log(f"[+] PDF report generated successfully: {user_pdf_path}", user_identifier)
                     else:
-                        network_scanner.log("[!] PDF generation ran but file not found (unknown error).")
+                        network_scanner.log("[!] PDF generation ran but file not found (unknown error).", user_identifier)
                 else:
-                    network_scanner.log("[!] JSON report not found. Cannot generate PDF.")
+                    network_scanner.log("[!] JSON report not found. Cannot generate PDF.", user_identifier)
             
             except ImportError:
-                network_scanner.log("[!] Error: GTK3 Runtime missing or WeasyPrint not installed properly.")
+                network_scanner.log("[!] Error: GTK3 Runtime missing or WeasyPrint not installed properly.", user_identifier)
             except Exception as e:
                 # This captures WeasyPrint errors and sends them to the UI Log
-                network_scanner.log(f"[!] FAILED to generate PDF: {str(e)}")
+                network_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", user_identifier)
         else:
-            network_scanner.log("[!] Scan failed to produce a result file.")
+            network_scanner.log("[!] Scan failed to produce a result file.", user_identifier)
 
     threading.Thread(target=scan_task).start()
     return jsonify({"status": "success", "message": f"{scan_type.upper()} scan for {target_ip} initiated."})
@@ -193,11 +218,12 @@ def trigger_ai_analysis_route():
     Checks if PDF exists and tells the client to call the central proxy via the chatbot blueprint.
     (Proxying logic moved to chatbot_bp.py:scanner_analysis_proxy)
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     user_pdf_path = os.path.join(user_dir, PDF_FILENAME)
 
     if not os.path.exists(user_pdf_path):
-        network_scanner.log(f"[!] Analysis failed: PDF report not found at {user_pdf_path}")
+        network_scanner.log(f"[!] Analysis failed: PDF report not found at {user_pdf_path}", user_identifier)
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
@@ -282,30 +308,31 @@ def get_open_ports_route():
 @network_scanner_bp.route('/block_ports', methods=['POST'])
 @login_required
 def block_ports_route():
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     if not network_scanner.is_admin():
-        network_scanner.log("[!] Insufficient privileges to block ports.")
+        network_scanner.log("[!] Insufficient privileges to block ports.", user_identifier)
         return jsonify({"status": "error", "message": "Insufficient privileges."}), 403
 
     def block_task():
         all_ports = network_scanner.open_ports["TCP"] + network_scanner.open_ports["UDP"]
         if not all_ports:
-            network_scanner.log("[*] No open ports detected to block.")
+            network_scanner.log("[*] No open ports detected to block.", user_identifier)
             return
 
-        network_scanner.log(f"[*] Attempting to block {len(all_ports)} detected ports...")
+        network_scanner.log(f"[*] Attempting to block {len(all_ports)} detected ports...", user_identifier)
         for p_info in all_ports:
             port_str = str(p_info['port'])
             protocol = p_info['protocol']
             if port_str in network_scanner.whitelisted_ports:
-                network_scanner.log(f"[~] Skipping whitelisted {protocol} port {port_str}.")
+                network_scanner.log(f"[~] Skipping whitelisted {protocol} port {port_str}.", user_identifier)
                 continue
             
             success = network_scanner.block_port(port_str, protocol=protocol)
             if success and network_scanner.is_port_blocked(port_str, protocol=protocol):
-                network_scanner.log(f"[✓] {protocol} Port {port_str} blocked.")
+                network_scanner.log(f"[✓] {protocol} Port {port_str} blocked.", user_identifier)
             else:
-                network_scanner.log(f"[x] {protocol} Port {port_str} failed to verify as blocked.")
-        network_scanner.log("[+] Port blocking process completed.")
+                network_scanner.log(f"[x] {protocol} Port {port_str} failed to verify as blocked.", user_identifier)
+        network_scanner.log("[+] Port blocking process completed.", user_identifier)
 
     threading.Thread(target=block_task).start()
     return jsonify({"status": "success", "message": "Port blocking initiated."})
@@ -313,6 +340,7 @@ def block_ports_route():
 @network_scanner_bp.route('/verify_ports', methods=['POST'])
 @login_required
 def verify_ports_route():
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     data = request.get_json()
     target_ip = data.get('target_ip')
     if not target_ip:
@@ -320,7 +348,7 @@ def verify_ports_route():
 
     def verify_task():
         network_scanner.verify_ports_closed(target_ip)
-        network_scanner.log("[+] Port verification process completed.")
+        network_scanner.log("[+] Port verification process completed.", user_identifier)
 
     threading.Thread(target=verify_task).start()
     return jsonify({"status": "success", "message": "Port verification initiated."})
@@ -328,6 +356,7 @@ def verify_ports_route():
 @network_scanner_bp.route('/add_whitelist', methods=['POST'])
 @login_required
 def add_whitelist_route():
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     data = request.get_json()
     user_dir = get_user_results_dir()
     if network_scanner.add_to_whitelist(data.get('ports'), output_dir=user_dir):
@@ -392,17 +421,20 @@ def get_scan_results():
 @network_scanner_bp.route('/clear_log', methods=['POST'])
 @login_required
 def clear_log_route():
-    network_scanner.clear_log_file()
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    network_scanner.clear_log_file(user_identifier)
     return jsonify({"status": "success", "message": "Log cleared."})
 
 @network_scanner_bp.route('/log_stream')
 @login_required
 def log_stream():
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     def generate_logs():
+        user_queue = network_scanner.get_user_queue(user_identifier)
         while True:
             try:
-                message = network_scanner.log_queue.get(timeout=10)
+                message = user_queue.get(timeout=10)
                 yield message
-            except queue.Empty:
+            except _queue_module.Empty:
                 yield ": keep-alive\n\n"
     return Response(generate_logs(), mimetype='text/event-stream')

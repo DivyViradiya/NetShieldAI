@@ -45,6 +45,12 @@ class User(UserMixin, db.Model):
     # [NEW] Track Kill Chain Usage
     scan_count_killchain = db.Column(db.Integer, default=0)
     scan_count_semgrep = db.Column(db.Integer, default=0)
+    
+    # [NEW] Track API Scanner Usage
+    scan_count_api = db.Column(db.Integer, default=0)
+
+    # --- Relationships ---
+    scan_logs = db.relationship('ScanLog', backref='user', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -73,4 +79,33 @@ class User(UserMixin, db.Model):
                 self.scan_count_sniffer +
                 self.scan_count_sql +
                 self.scan_count_ai +
-                self.scan_count_killchain)
+                self.scan_count_killchain +
+                self.scan_count_semgrep +
+                self.scan_count_api)
+
+
+class ScanLog(db.Model):
+    """
+    Centralized log for all scan executions across the platform.
+    Used for Admin Dashboard reporting (Success rates, durations, etc.)
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    tool_name = db.Column(db.String(50), nullable=False)   # Nmap, ZAP, SQLMap, etc.
+    scan_type = db.Column(db.String(50), nullable=True)    # Quick, Full, TCP, etc.
+    target = db.Column(db.String(255), nullable=True)
+    
+    status = db.Column(db.String(20), default='Pending')   # Running, Completed, Failed
+    
+    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    end_time = db.Column(db.DateTime, nullable=True)
+    duration_seconds = db.Column(db.Float, default=0.0)
+    
+    finding_count = db.Column(db.Integer, default=0)       # High-level vuln count
+    severity_critical = db.Column(db.Integer, default=0)   # Specific critical count (optional)
+    
+    error_message = db.Column(db.Text, nullable=True)      # If status == Failed
+
+    def __repr__(self):
+        return f"<ScanLog {self.tool_name} on {self.target} - {self.status}>"

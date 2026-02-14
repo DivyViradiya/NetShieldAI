@@ -15,26 +15,41 @@ from extensions import db
 chatbot_bp = Blueprint('chatbot_bp', __name__)
 
 # --- Logging Setup ---
-log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
-os.makedirs(log_dir, exist_ok=True)
-log_file = os.path.join(log_dir, 'chatbot_logs.txt')
+BASE_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+SYSTEM_LOG_DIR = os.path.join(BASE_LOG_DIR, "system")
+USERS_LOG_DIR = os.path.join(BASE_LOG_DIR, "users")
 
-logger = logging.getLogger('chatbot')
+os.makedirs(SYSTEM_LOG_DIR, exist_ok=True)
+os.makedirs(USERS_LOG_DIR, exist_ok=True)
+
+# System Chatbot Logger
+log_file = os.path.join(SYSTEM_LOG_DIR, 'chatbot_system_logs.txt')
+logger = logging.getLogger('chatbot_system')
 logger.setLevel(logging.INFO)
 
-# Use RotatingFileHandler to prevent logs from growing indefinitely
-file_handler = RotatingFileHandler(log_file, maxBytes=1024 * 1024 * 5, backupCount=5, encoding='utf-8')
-file_handler.setLevel(logging.INFO)
+if not logger.handlers:
+    file_handler = RotatingFileHandler(log_file, maxBytes=1024 * 1024 * 5, backupCount=5, encoding='utf-8')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.ERROR)
+def get_user_logger(user_identifier):
+    """Returns a logger specifically for a user, saving to logs/users/{user_id}/chatbot.log"""
+    user_dir = os.path.join(USERS_LOG_DIR, user_identifier)
+    os.makedirs(user_dir, exist_ok=True)
+    
+    user_log_file = os.path.join(user_dir, 'chatbot.log')
+    user_logger = logging.getLogger(f'chatbot_user_{user_identifier}')
+    
+    if not user_logger.handlers:
+        user_logger.setLevel(logging.INFO)
+        handler = RotatingFileHandler(user_log_file, maxBytes=1024 * 1024 * 2, backupCount=3, encoding='utf-8')
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        handler.setFormatter(formatter)
+        user_logger.addHandler(handler)
+        
+    return user_logger
 
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-file_handler.setFormatter(formatter)
-console_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
 logger.info("Chatbot Blueprint initialized")
 
 # =======================================================================
@@ -77,39 +92,35 @@ def get_user_pdf_path(scanner_type):
 @login_required
 def chatbot_page():
     """Renders the chatbot UI page with PRE-LOADED session data to prevent UI lag."""
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
+    
     try:
         # If no session ID exists, generate one but don't persist to DB until user chats/uploads
         if 'chatbot_session_id' not in session:
             session['chatbot_session_id'] = str(uuid.uuid4())
-            logger.info(f"New local chat session started for user {current_user.id}: {session['chatbot_session_id']}")
+            user_logger.info(f"New local chat session started: {session['chatbot_session_id']}")
         
         # [NEW] Pre-fetch Sessions Server-Side
-        # This eliminates the delay ("lag") the user sees when the page loads.
         initial_sessions = []
         try:
-            current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
             proxy_url = f"{SERVER_PROXY_URL}/get_user_sessions"
-            
-            # We use a short timeout (e.g., 2s) so the main page load doesn't hang 
-            # if the AI backend is momentarily unresponsive.
-            resp = requests.get(proxy_url, params={'user_id': current_user_identifier}, timeout=2)
+            resp = requests.get(proxy_url, params={'user_id': user_identifier}, timeout=2)
             
             if resp.status_code == 200:
                 data = resp.json()
                 initial_sessions = data.get('sessions', [])
             else:
-                logger.warning(f"Backend returned status {resp.status_code} during pre-fetch.")
+                user_logger.warning(f"Backend returned status {resp.status_code} during pre-fetch.")
                 
         except Exception as e:
-            # If backend is down or times out, we just log it. 
-            # The page will still load, and the JS can try again or show an empty state.
-            logger.warning(f"Server-side session pre-fetch failed: {e}")
+            user_logger.warning(f"Server-side session pre-fetch failed: {e}")
 
         # Pass the pre-fetched data directly to the template
         return render_template('chatbot.html', initial_sessions=initial_sessions)
         
     except Exception as e:
-        logger.error(f"Error in chatbot_page: {str(e)}", exc_info=True)
+        logger.error(f"Error in chatbot_page for user {user_identifier}: {str(e)}", exc_info=True)
         return jsonify({"error": "An error occurred while loading the chatbot page"}), 500
 
 
@@ -117,6 +128,8 @@ def chatbot_page():
 @login_required
 def upload_report():
     """Handles manual file uploads by sending them to the central server proxy."""
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
     try:
         if 'file' not in request.files:
             return jsonify({'error': 'No file part'}), 400
@@ -136,23 +149,21 @@ def upload_report():
                     current_user.scan_count_ai += 1
                     db.session.commit()
                 except Exception as e:
-                    logger.error(f"Failed to update AI stats: {e}")
+                    user_logger.error(f"Failed to update AI stats: {e}")
 
                 # Read file into memory to proxy it
                 files_to_send = {'file': (file.filename, file.read(), file.content_type)}
                 
-                # Inject composite user_id into params
-                current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
                 params = {
                     'llm_mode': llm_mode_param,
-                    'user_id': current_user_identifier
+                    'user_id': user_identifier
                 }
                 
                 proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
                 
-                logger.info(f"Sending file to server proxy ({llm_mode_param} mode) for User {current_user_identifier}")
+                user_logger.info(f"Sending file to server proxy ({llm_mode_param} mode)")
                 
-                # Send request (no timeout set here to allow large file processing, but consider adding one in prod)
+                # Send request
                 response = requests.post(proxy_upload_url, files=files_to_send, params=params)
                 response.raise_for_status()
 
@@ -161,7 +172,7 @@ def upload_report():
                 # Update session ID if backend provides one
                 if 'session_id' in analysis_result:
                     session['chatbot_session_id'] = analysis_result['session_id'] 
-                    logger.info(f"Stored session ID from server: {analysis_result['session_id']}")
+                    user_logger.info(f"Stored session ID from server: {analysis_result['session_id']}")
 
                 if "error" in analysis_result:
                     return jsonify(analysis_result), response.status_code
@@ -169,15 +180,15 @@ def upload_report():
                 return jsonify({'message': analysis_result.get('summary', 'Report uploaded and processed.')})
             
             except requests.exceptions.RequestException as e:
-                logger.error(f"Error communicating with server proxy during upload: {e}", exc_info=True)
+                user_logger.error(f"Error communicating with server proxy during upload: {e}", exc_info=True)
                 return jsonify({'error': f'Error communicating with the central server: {str(e)}'}), 500
             except Exception as e:
-                logger.error(f"An unexpected error occurred during upload: {e}", exc_info=True)
+                user_logger.error(f"An unexpected error occurred during upload: {e}", exc_info=True)
                 return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
         return jsonify({'error': 'Invalid file format. Only PDF files are allowed.'}), 400
     except Exception as e:
-        logger.error(f"Error in upload_report: {str(e)}", exc_info=True)
+        user_logger.error(f"Error in upload_report: {str(e)}", exc_info=True)
         return jsonify({"error": "An error occurred while uploading the report"}), 500
 
 
@@ -188,6 +199,8 @@ def chat_with_ai():
     Standard (Blocking) Chat Endpoint.
     Sends a chat message to the central server proxy and waits for full response.
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
     try:
         user_message = request.json.get('message')
         current_session_id = session.get('chatbot_session_id')
@@ -197,14 +210,12 @@ def chat_with_ai():
             current_user.scan_count_ai += 1
             db.session.commit()
         except Exception as e:
-            logger.error(f"Failed to update AI stats: {e}")
+            user_logger.error(f"Failed to update AI stats: {e}")
 
-        # Inject composite user_id into payload
-        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
         payload_to_server = {
             'message': user_message,
             'session_id': current_session_id,
-            'user_id': current_user_identifier
+            'user_id': user_identifier
         }
 
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat"
@@ -220,15 +231,15 @@ def chat_with_ai():
             new_session_id = result_from_server['session_id']
             if new_session_id != current_session_id:
                 session['chatbot_session_id'] = new_session_id
-                logger.info(f"Local session ID updated by server to: {session['chatbot_session_id']}")
+                user_logger.info(f"Local session ID updated by server to: {session['chatbot_session_id']}")
 
         return jsonify(result_from_server)
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error communicating with server proxy chat service: {e}", exc_info=True)
+        user_logger.error(f"Error communicating with server proxy chat service: {e}", exc_info=True)
         return jsonify({'status': 'error', 'message': f'Failed to get response from server. ({e})'}), 500
     except Exception as e:
-        logger.error(f"An unexpected error occurred in chat route: {e}", exc_info=True)
+        user_logger.error(f"An unexpected error occurred in chat route: {e}", exc_info=True)
         return jsonify({'status': 'error', 'message': f'An unexpected error occurred: {e}'}), 500
 
 
@@ -242,6 +253,8 @@ def chat_with_ai_stream():
     Proxies the streaming chat request to the backend.
     Forwards chunks of data immediately to the client as they arrive from FastAPI.
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
     try:
         user_message = request.json.get('message')
         current_session_id = session.get('chatbot_session_id')
@@ -251,52 +264,43 @@ def chat_with_ai_stream():
             current_user.scan_count_ai += 1
             db.session.commit()
         except Exception as e:
-            logger.error(f"Failed to update AI stats: {e}")
+            user_logger.error(f"Failed to update AI stats: {e}")
 
-        # Inject composite user_id
-        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-        
         payload_to_server = {
             'message': user_message,
             'session_id': current_session_id,
-            'user_id': current_user_identifier
+            'user_id': user_identifier
         }
 
         # Point to the NEW FastAPI endpoint
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat_stream"
         
-        # 1. Make request with stream=True
-        # We assume the FastAPI server is running on the proxy_chat_url
-        logger.info(f"Initiating stream to {proxy_chat_url} for session {current_session_id}")
+        user_logger.info(f"Initiating stream to {proxy_chat_url} for session {current_session_id}")
         
         req = requests.post(proxy_chat_url, json=payload_to_server, stream=True)
         
-        # 2. Update Session ID if provided in headers
-        # The backend streaming endpoint should send 'X-Session-ID' in headers
         new_sess_id = req.headers.get("X-Session-ID")
         if new_sess_id and new_sess_id != current_session_id:
              session['chatbot_session_id'] = new_sess_id
-             logger.info(f"Stream updated local session ID to: {new_sess_id}")
+             user_logger.info(f"Stream updated local session ID to: {new_sess_id}")
 
         # 3. Generator to forward chunks
         def generate():
             try:
                 for chunk in req.iter_content(chunk_size=None): # None = yield as received
                     if chunk:
-                        # Yield raw bytes; Flask's stream_with_context handles the transfer
                         yield chunk
             except Exception as e:
-                logger.error(f"Stream Proxy Iteration Error: {e}")
+                user_logger.error(f"Stream Proxy Iteration Error: {e}")
                 yield b" [Connection Error during stream]"
 
-        # 4. Return Flask Response with generator
         return Response(stream_with_context(generate()), mimetype='text/plain')
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error communicating with server proxy stream: {e}", exc_info=True)
+        user_logger.error(f"Error communicating with server proxy stream: {e}", exc_info=True)
         return jsonify({'status': 'error', 'message': f'Failed to connect to AI server.'}), 500
     except Exception as e:
-        logger.error(f"Unexpected error in stream proxy: {e}", exc_info=True)
+        user_logger.error(f"Unexpected error in stream proxy: {e}", exc_info=True)
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
@@ -307,6 +311,8 @@ def scanner_analysis_proxy():
     Handles PDF analysis requests initiated by the scanner pages. 
     Reads the specific scanner's PDF file from the USER's directory and proxies it.
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
     try:
         data = request.get_json()
         scanner_type = data.get('scanner_type')
@@ -329,7 +335,7 @@ def scanner_analysis_proxy():
             current_user.scan_count_ai += 1
             db.session.commit()
         except Exception as e:
-            logger.error(f"Failed to update AI stats: {e}")
+            user_logger.error(f"Failed to update AI stats: {e}")
 
         # 1. Read the file content
         with open(pdf_path, 'rb') as f:
@@ -339,16 +345,14 @@ def scanner_analysis_proxy():
         filename = os.path.basename(pdf_path)
         files_to_send = {'file': (filename, pdf_content, 'application/pdf')}
         
-        # 3. Inject composite user_id into params
-        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
         params = {
             'llm_mode': llm_mode,
-            'user_id': current_user_identifier
+            'user_id': user_identifier
         }
         
         proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
         
-        logger.info(f"Sending {scanner_type} report to server proxy ({llm_mode} mode) for User {current_user_identifier}")
+        user_logger.info(f"Sending {scanner_type} report to server proxy ({llm_mode} mode)")
         
         response = requests.post(proxy_upload_url, files=files_to_send, params=params)
         response.raise_for_status()
@@ -357,7 +361,7 @@ def scanner_analysis_proxy():
         
         if 'session_id' in analysis_result:
             session['chatbot_session_id'] = analysis_result['session_id'] 
-            logger.info(f"Stored session ID from server: {analysis_result['session_id']}")
+            user_logger.info(f"Stored session ID from server: {analysis_result['session_id']}")
 
         if "error" in analysis_result:
             return jsonify(analysis_result), response.status_code
@@ -369,10 +373,10 @@ def scanner_analysis_proxy():
         })
 
     except requests.exceptions.RequestException as e:
-        logger.error(f"Error communicating with server proxy during scanner analysis: {e}", exc_info=True)
+        user_logger.error(f"Error communicating with server proxy during scanner analysis: {e}", exc_info=True)
         return jsonify({'error': f'Error communicating with the central server: {str(e)}'}), 500
     except Exception as e:
-        logger.error(f"An unexpected error occurred during scanner analysis: {e}", exc_info=True)
+        user_logger.error(f"An unexpected error occurred during scanner analysis: {e}", exc_info=True)
         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
 
@@ -382,6 +386,8 @@ def clear_chat():
     """
     Legacy endpoint: clears the ACTIVE session.
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
     try:
         session_id = session.get('chatbot_session_id')
         if not session_id:
@@ -401,12 +407,12 @@ def clear_chat():
             return jsonify({'status': 'success', 'message': 'Chat session has been cleared successfully.'})
             
         except requests.exceptions.RequestException as e:
-            logger.error(f"Error clearing chat via server proxy for session {session_id}: {e}")
+            user_logger.error(f"Error clearing chat via server proxy for session {session_id}: {e}")
             session.pop('chatbot_session_id', None) 
             return jsonify({'status': 'error', 'message': f'Failed to communicate with the backend service, but local session cleared.'}), 500
 
     except Exception as e:
-        logger.error(f"An unexpected error occurred in clear_chat: {str(e)}", exc_info=True)
+        user_logger.error(f"An unexpected error occurred in clear_chat: {str(e)}", exc_info=True)
         return jsonify({'status': 'error', 'message': 'An unexpected server error occurred.'}), 500
     
     
@@ -416,17 +422,17 @@ def get_chat_history_proxy():
     """
     Proxies the history fetch request to the backend.
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
     try:
         session_id = session.get('chatbot_session_id')
         
         if not session_id:
             return jsonify({'chat_history': [], 'session_metadata': None})
 
-        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-        
         proxy_url = f"{SERVER_PROXY_URL}/get_history"
         params = {
-            'user_id': current_user_identifier, 
+            'user_id': user_identifier, 
             'session_id': session_id
         }
         
@@ -435,11 +441,11 @@ def get_chat_history_proxy():
             response.raise_for_status()
             return jsonify(response.json())
         except requests.exceptions.RequestException as e:
-            logger.warning(f"Could not fetch history from backend: {e}")
+            user_logger.warning(f"Could not fetch history from backend: {e}")
             return jsonify({'chat_history': [], 'session_metadata': None})
 
     except Exception as e:
-        logger.error(f"Error in get_chat_history_proxy: {e}", exc_info=True)
+        user_logger.error(f"Error in get_chat_history_proxy: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
     
     
@@ -492,6 +498,8 @@ def delete_session_proxy():
     """
     Proxies the request to delete a SPECIFIC session (not necessarily the active one).
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
     try:
         data = request.json
         target_session_id = data.get('session_id')
@@ -508,7 +516,7 @@ def delete_session_proxy():
             
         return jsonify(response.json()), response.status_code
     except Exception as e:
-        logger.error(f"Error deleting session: {e}")
+        user_logger.error(f"Error deleting session: {e}")
         return jsonify({'error': str(e)}), 500
 
 

@@ -30,8 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
         metricDuration: document.getElementById('metricDuration'),
         
         // Dynamic Content Areas
-        vulnerabilitiesContainer: document.getElementById('vulnerabilitiesContainer'), 
-        vulnerabilitiesList: document.getElementById('vulnerabilitiesList'),
+        findingsListSide: document.getElementById('findingsListSide'),
+        findingsDetailSide: document.getElementById('findingsDetailSide'),
         findingsTableBody: document.getElementById('findingsTableBody'),
         serverConfigDetails: document.getElementById('serverConfigDetails') 
     };
@@ -119,10 +119,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if(elements.findingsTableBody) elements.findingsTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #555; padding: 2rem; font-family: monospace;">---</td></tr>';
         
-        // Reset container to initial list
-        if(elements.vulnerabilitiesContainer) {
-            elements.vulnerabilitiesContainer.innerHTML = '<ul id="vulnerabilitiesList" style="list-style: none; padding: 0;"><li style="color: #9ca3af; font-size: 0.8rem; font-family: \'JetBrains Mono\', monospace; text-align: center; padding: 2rem;">WAITING FOR CODE SCAN...</li></ul>';
+        if(elements.findingsListSide) {
+            elements.findingsListSide.innerHTML = '<div style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono); font-size: 0.8rem;">WAITING FOR CODE SCAN...</div>';
         }
+
+        resetDetailView();
 
         if(elements.resultsContent) elements.resultsContent.textContent = '// JSON OUTPUT';
         
@@ -149,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.fileUploadInput.addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 selectedFile = this.files[0];
+                appendLog('[*] Selected file: ' + selectedFile.name + ' (' + (selectedFile.size / 1024).toFixed(1) + ' KB)');
                 // Update UI to show file selected
                 elements.gitUrlInput.value = "[FILE] " + selectedFile.name;
                 elements.gitUrlInput.disabled = true; // Lock text input
@@ -246,11 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderFindingsCards(findings) {
-        var listSide = document.getElementById('findingsListSide');
-        var detailSide = document.getElementById('findingsDetailSide');
-        if(!listSide || !detailSide) return;
+        if(!elements.findingsListSide) return;
 
-        listSide.innerHTML = '';
+        elements.findingsListSide.innerHTML = '';
         var filterText = document.getElementById('findingsSearch')?.value.toLowerCase() || '';
         
         var filteredFindings = findings.filter(function(f) {
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if(countBadge) countBadge.textContent = filteredFindings.length + ' FINDING' + (filteredFindings.length !== 1 ? 'S' : '');
 
         if (!filteredFindings || filteredFindings.length === 0) {
-            listSide.innerHTML = '<div style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono); font-size: 0.75rem;">' + (filterText ? 'NO MATCHES.' : 'NO VULNERABILITIES.') + '</div>';
+            elements.findingsListSide.innerHTML = '<div style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono); font-size: 0.75rem;">' + (filterText ? 'NO MATCHES.' : 'NO VULNERABILITIES.') + '</div>';
             resetDetailView();
             return;
         }
@@ -300,19 +300,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderDetailView(f, cleanPath);
             };
 
-            listSide.appendChild(item);
+            elements.findingsListSide.appendChild(item);
         });
 
         // Automatically select the first finding if none selected
         if (window.selectedFindingIndex === undefined && filteredFindings.length > 0) {
-            listSide.firstChild.click();
+            elements.findingsListSide.firstChild.click();
         }
     }
 
     function resetDetailView() {
-        var detailSide = document.getElementById('findingsDetailSide');
-        if(!detailSide) return;
-        detailSide.innerHTML = `
+        if(!elements.findingsDetailSide) return;
+        elements.findingsDetailSide.innerHTML = `
             <div class="empty-detail-state">
                 <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.1;">data_exploration</span>
                 <div style="font-family: var(--font-mono); font-size: 0.8rem; opacity: 0.3; letter-spacing: 0.1em;">SELECT A FINDING TO VIEW ANALYSIS</div>
@@ -321,12 +320,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderDetailView(f, cleanPath) {
-        var detailSide = document.getElementById('findingsDetailSide');
-        if(!detailSide) return;
+        if(!elements.findingsDetailSide) return;
 
         var severityColor = f.severity === 'ERROR' ? '#ef4444' : (f.severity === 'WARNING' ? '#f97316' : '#3b82f6');
 
-        detailSide.innerHTML = `
+        elements.findingsDetailSide.innerHTML = `
             <div class="detail-header">
                 <div class="detail-rule-id">${f.check_id}</div>
                 <div class="detail-title">${cleanPath}</div>
@@ -477,6 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Main Scan Event Listener ---
     if(elements.initiateScanBtn) {
         elements.initiateScanBtn.addEventListener('click', async function() {
+            appendLog('[*] Start Scan button clicked.');
             var targetInput = "";
             var isFile = false;
 
@@ -500,7 +499,11 @@ document.addEventListener('DOMContentLoaded', function() {
             // Clean UI before start
             elements.resultsContent.textContent = "// Scanning...";
             elements.findingsTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem;">Scanning...</td></tr>';
-            elements.vulnerabilitiesContainer.innerHTML = '<div style="text-align:center; padding:2rem;">Scanning in progress...</div>';
+            
+            if(elements.findingsListSide) {
+                elements.findingsListSide.innerHTML = '<div style="text-align:center; padding:2rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">SCANNING IN PROGRESS...</div>';
+            }
+            resetDetailView();
 
             toggleSpinner(elements.initiateScanBtn, true);
             updateStatus('Scanning...', 'busy');

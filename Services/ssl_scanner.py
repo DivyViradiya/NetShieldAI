@@ -22,28 +22,55 @@ LOG_FILE = BASE_DIR / "logs" / "ssl_agent_log.txt"
 TEMP_DIR = BASE_DIR / "Services" / "temp" / "sslscan"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
-# Global queue for logging messages to be consumed by Flask (or similar)
-log_queue = queue.Queue()
+# --- USER ISOLATION ---
+user_queues = {}
 
-def log(message):
+def get_user_queue(user_id):
+    """Ensures a queue exists for the user and returns it."""
+    if user_id not in user_queues:
+        user_queues[user_id] = queue.Queue()
+    return user_queues[user_id]
+
+def log(message, user_id=None):
     """Logs messages to an in-memory queue and to a file."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     full_message = f"data: [{timestamp}] {message}\n\n" # SSE format
-    log_queue.put(full_message)
+    
+    if user_id:
+        user_id = str(user_id)
+        uq = get_user_queue(user_id)
+        uq.put(full_message)
+
+    # Determine Log File Path
+    log_dir = BASE_DIR / "logs"
+    if user_id:
+        user_id = str(user_id)
+        target_dir = log_dir / "users" / user_id
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target_log_file = target_dir / "ssl_agent_log.txt"
+    else:
+        system_dir = log_dir / "system"
+        system_dir.mkdir(parents=True, exist_ok=True)
+        target_log_file = system_dir / "ssl_system_log.txt"
+
     try:
-        with open(LOG_FILE, 'a', encoding='utf-8') as f:
+        with open(target_log_file, 'a', encoding='utf-8') as f:
             f.write(f"[{timestamp}] {message}\n")
     except Exception as e:
-        print(f"ERROR: Failed to write to {LOG_FILE}: {e}")
+        print(f"ERROR: Failed to write to {target_log_file}: {e}")
 
-def send_sse_event(event_name, data=""):
-    """Sends a custom SSE event to the frontend."""
+def send_sse_event(event_name, data="", user_id=None):
+    """Sends a custom SSE event to the user's log_queue."""
     if isinstance(data, (dict, list)):
         data_str = json.dumps(data)
     else:
         data_str = str(data)
     sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
-    log_queue.put(sse_message)
+    
+    if user_id:
+        user_id = str(user_id)
+        uq = get_user_queue(user_id)
+        uq.put(sse_message)
 
 def _get_subprocess_creation_flags():
     """Returns appropriate creation flags for subprocess based on OS."""
@@ -91,7 +118,7 @@ def save_ssl_json(data, output_dir=None):
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
-        log(f"[+] SSL JSON report saved to {json_file}")
+        log(f"[+] SSL JSON report saved to {json_file}", output_dir.parent.name if output_dir else None)
         return str(json_file)
     except Exception as e:
         log(f"[!] Failed to save SSL JSON report: {e}")
@@ -99,11 +126,12 @@ def save_ssl_json(data, output_dir=None):
 
 def run_ssl_scan(target_host, output_dir=None):
     """Runs an SSL/TLS scan using the local sslscan.exe."""
+    user_id = output_dir.parent.name if output_dir else None
     if not target_host:
-        log("[!] Target host cannot be empty for SSL scan.")
+        log("[!] Target host cannot be empty for SSL scan.", user_id)
         return None
 
-    log(f"[+] Running local SSL scan on {target_host}...")
+    log(f"[+] Running local SSL scan on {target_host}...", user_id)
     if not is_sslscan_available():
         return None
     
@@ -124,7 +152,7 @@ def run_ssl_scan(target_host, output_dir=None):
     ]
 
     try:
-        log(f"[*] Executing command: {' '.join(str(x) for x in local_cmd)}")
+        log(f"[*] Executing command: {' '.join(str(x) for x in local_cmd)}", user_id)
         process = subprocess.run(
             local_cmd,
             capture_output=True,
@@ -135,24 +163,24 @@ def run_ssl_scan(target_host, output_dir=None):
         )
         
         if process.stdout:
-            log(f"[SSLScan STDOUT]\n{process.stdout}")
+            log(f"[SSLScan STDOUT]\n{process.stdout}", user_id)
         if process.stderr:
-            log(f"[SSLScan STDERR]\n{process.stderr}")
+            log(f"[SSLScan STDERR]\n{process.stderr}", user_id)
 
         if process.returncode != 0 and not xml_report_path.exists():
-            log(f"[!] SSL scan failed with exit code {process.returncode} and no report was generated.")
+            log(f"[!] SSL scan failed with exit code {process.returncode} and no report was generated.", user_id)
             return None
         
         if xml_report_path.exists() and xml_report_path.stat().st_size > 0:
-            log(f"[+] SSL scan complete. Report saved to {xml_report_path}")
+            log(f"[+] SSL scan complete. Report saved to {xml_report_path}", user_id)
             send_sse_event("ssl_scan_complete", {"target_host": target_host, "report_file": str(xml_report_path)})
             return str(xml_report_path)
         else:
-            log(f"[!] SSL scan may have failed or generated an empty report: {xml_report_path}")
+            log(f"[!] SSL scan may have failed or generated an empty report: {xml_report_path}", user_id)
             return None
             
     except Exception as e:
-        log(f"[!] An unexpected error occurred during SSL scan: {e}")
+        log(f"[!] An unexpected error occurred during SSL scan: {e}", user_id)
         return None
 
 # ############################################################################
@@ -164,8 +192,9 @@ def parse_ssl_report(report_file, output_dir=None):
     specific vulnerabilities and server configuration details.
     Updated to accept output_dir for saving the JSON result.
     """
+    user_id = output_dir.parent.name if output_dir else None
     if not os.path.exists(report_file):
-        log(f"[!] SSLScan report file not found: {report_file}")
+        log(f"[!] SSLScan report file not found: {report_file}", user_id)
         return None
     
     try:
@@ -281,7 +310,7 @@ def parse_ssl_report(report_file, output_dir=None):
         
         scan_summary["vulnerabilities"] = vulnerabilities
 
-        log(f"[+] SSLScan report '{os.path.basename(report_file)}' parsed successfully.")
+        log(f"[+] SSLScan report '{os.path.basename(report_file)}' parsed successfully.", user_id)
         
         # NEW: Save the parsed data to JSON for PDF generation
         save_ssl_json(scan_summary, output_dir=output_dir)
@@ -290,10 +319,10 @@ def parse_ssl_report(report_file, output_dir=None):
         return scan_summary
 
     except ET.ParseError as e:
-        log(f"[!] Error parsing SSLScan XML report '{report_file}': {e}")
+        log(f"[!] Error parsing SSLScan XML report '{report_file}': {e}", user_id)
         return None
     except Exception as e:
-        log(f"[!] Unexpected error parsing SSLScan report '{report_file}': {e}")
+        log(f"[!] Unexpected error parsing SSLScan report '{report_file}': {e}", user_id)
         return None
     finally:
         # CLEANUP: Remove the temporary XML report
@@ -301,16 +330,24 @@ def parse_ssl_report(report_file, output_dir=None):
             try:
                 os.remove(report_file)
             except Exception as e:
-                log(f"[!] Warning: Failed to delete temporary SSL report {report_file}: {e}")
+                log(f"[!] Warning: Failed to delete temporary SSL report {report_file}: {e}", user_id)
 
-def clear_log_file():
-    """Clears the content of the log output file."""
+def clear_log_file(user_id=None):
+    """Clears the log file for a specific user or the system log."""
+    log_dir = BASE_DIR / "logs"
+    if user_id:
+        user_id = str(user_id)
+        target_log_file = log_dir / "users" / user_id / "ssl_agent_log.txt"
+    else:
+        target_log_file = log_dir / "system" / "ssl_system_log.txt"
+
     try:
-        with open(LOG_FILE, 'w', encoding='utf-8') as f:
-            f.write("")
-        log("[*] SSL log file cleared.")
+        if target_log_file.exists():
+            with open(target_log_file, 'w', encoding='utf-8') as f:
+                f.write("")
+        log("[*] SSL log file cleared.", user_id)
     except Exception as e:
-        log(f"[!] Error clearing SSL log file: {e}")
+        print(f"[!] Error clearing SSL log file: {e}")
 
 # Main execution block
 if __name__ == "__main__":

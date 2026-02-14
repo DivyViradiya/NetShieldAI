@@ -397,6 +397,161 @@ def get_sniffer_stats():
 
     return jsonify(response)
 
+
+# [NEW] --- API Scanner Stats ---
+@dashboard_bp.route('/api/stats/api')
+@login_required
+def get_api_stats():
+    """Returns aggregated stats for API Scanner."""
+    user_dir = get_user_results_dir()
+    
+    response = {
+        "status": "Not Scanned",
+        "target": "N/A",
+        "scan_date": "N/A",
+        "alerts_summary": {"High": 0, "Medium": 0, "Low": 0, "Info": 0},
+        "top_risks": []
+    }
+
+    if not user_dir: return jsonify(response)
+
+    api_path = os.path.join(user_dir, 'api_scanner', 'api_scan_report.json')
+    api_data = load_json_safe(api_path)
+
+    if api_data:
+        summary = api_data.get('summary', {})
+        findings = api_data.get('findings', [])
+        
+        # Deduplicate findings for top risks
+        seen_alerts = set()
+        processed_risks = []
+
+        for f in findings:
+            name = f.get('name')
+            risk = f.get('risk', 'Low')
+            
+            if name not in seen_alerts:
+                seen_alerts.add(name)
+                processed_risks.append({
+                    "name": name,
+                    "risk": risk,
+                    "method": f.get('method', 'N/A'),
+                    "confidence": f.get('confidence', '1')
+                })
+
+        # Sort by risk
+        risk_order = {"High": 0, "Medium": 1, "Low": 2, "Info": 3}
+        processed_risks.sort(key=lambda x: risk_order.get(x["risk"], 4))
+
+        response.update({
+            "status": "Scanned",
+            "target": "API Endpoint", # Target is not always explicitly in top-level json, usually inferred
+            "scan_date": api_data.get('scan_date', 'N/A'),
+            "alerts_summary": {
+                "High": summary.get('High', 0),
+                "Medium": summary.get('Medium', 0),
+                "Low": summary.get('Low', 0),
+                "Info": summary.get('Info', 0)
+            },
+            "top_risks": processed_risks[:5]
+        })
+
+    return jsonify(response)
+
+
+# [NEW] --- SQL Scanner Stats ---
+@dashboard_bp.route('/api/stats/sql')
+@login_required
+def get_sql_stats():
+    """Returns aggregated stats for SQL Scanner."""
+    user_dir = get_user_results_dir()
+    
+    response = {
+        "status": "Not Scanned",
+        "target": "N/A",
+        "scan_date": "N/A",
+        "vuln_count": 0,
+        "database_info": "Unknown",
+        "vulnerabilities": []
+    }
+
+    if not user_dir: return jsonify(response)
+
+    # Note: SQL Scanner uses a dynamic user-specific folder inside results/sql_scanner/ but 
+    # based on the tool code, it saves `sql_report.json` in the user_dir passed to it.
+    # We need to verify where the controller saves it. 
+    # Assuming standard pattern: Services/results/<user_id>/sql_scanner/sql_report.json
+    sql_path = os.path.join(user_dir, 'sql_scanner', 'sql_report.json')
+    sql_data = load_json_safe(sql_path)
+
+    if sql_data:
+        vulns = sql_data.get('vulnerabilities', [])
+        db_info = sql_data.get('database_info', {})
+        
+        db_label = f"{db_info.get('dbms', 'Unknown')} {db_info.get('version', '')}"
+
+        top_vulns = []
+        for v in vulns[:5]:
+            top_vulns.append({
+                "type": v.get('type', 'SQL Injection'),
+                "parameter": v.get('parameter', 'Unknown'),
+                "payload": v.get('payload', '')[:50] + "..." if len(v.get('payload', '')) > 50 else v.get('payload', '')
+            })
+
+        response.update({
+            "status": "Scanned",
+            "target": sql_data.get('target', 'Unknown'),
+            "scan_date": sql_data.get('scan_time', 'N/A'),
+            "vuln_count": len(vulns),
+            "database_info": db_label.strip(),
+            "vulnerabilities": top_vulns
+        })
+
+    return jsonify(response)
+
+
+# [NEW] --- Semgrep (SAST) Stats ---
+@dashboard_bp.route('/api/stats/semgrep')
+@login_required
+def get_semgrep_stats():
+    """Returns aggregated stats for Semgrep SAST Scanner."""
+    user_dir = get_user_results_dir()
+    
+    response = {
+        "status": "Not Scanned",
+        "scan_date": "N/A",
+        "total_findings": 0,
+        "severity_counts": {"ERROR": 0, "WARNING": 0, "INFO": 0},
+        "top_findings": []
+    }
+
+    if not user_dir: return jsonify(response)
+
+    semgrep_path = os.path.join(user_dir, 'semgrep_scanner', 'semgrep_report.json')
+    semgrep_data = load_json_safe(semgrep_path)
+
+    if semgrep_data:
+        findings = semgrep_data.get('findings', [])
+        
+        top_findings = []
+        for f in findings[:5]:
+            top_findings.append({
+                "message": f.get('message', ''),
+                "file": f.get('path', ''),
+                "severity": f.get('severity', 'INFO')
+            })
+
+        response.update({
+            "status": "Scanned",
+            "scan_date": semgrep_data.get('scan_date', 'N/A'),
+            "total_findings": semgrep_data.get('total_findings', 0),
+            "severity_counts": semgrep_data.get('severity_counts', {}),
+            "top_findings": top_findings
+        })
+
+    return jsonify(response)
+
+
 @dashboard_bp.route('/api/stats/usage')
 @login_required
 def get_usage_stats():
@@ -430,7 +585,10 @@ def get_usage_stats():
             "ssl": user.scan_count_ssl,
             "sniffer": user.scan_count_sniffer,
             "ai_analysis": user.scan_count_ai,
-            "killchain": user.scan_count_killchain
+            "killchain": user.scan_count_killchain,
+            "api": getattr(user, 'scan_count_api', 0),
+            "sql": getattr(user, 'scan_count_sql', 0),
+            "semgrep": getattr(user, 'scan_count_semgrep', 0)
         },
         
         # --- Aggregates ---

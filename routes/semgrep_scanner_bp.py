@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory
+from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory, current_app
 from flask_login import login_required, current_user
 import threading
 import json
+import time
 import os
 import shutil
 from queue import Empty
@@ -15,6 +16,8 @@ from extensions import db
 from Services import semgrep_scanner
 # Import the PDF generator module
 from Services import pdf_generator
+# --- Import Scan Logger ---
+from Services import scan_logger
 
 semgrep_bp = Blueprint('semgrep_bp', __name__)
 
@@ -102,21 +105,31 @@ def scan_code():
             current_user.scan_count += 1 
         db.session.commit()
     except Exception as e:
-        semgrep_scanner.log(f"[!] Failed to update user stats: {e}")
+        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+        semgrep_scanner.log(f"[!] Failed to update user stats: {e}", user_id=current_user_identifier)
 
     # Capture User ID for thread safety
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_id = current_user.id
+    app = current_app._get_current_object()
 
     # 3. Define Background Task
     def scan_task():
-        semgrep_scanner.log(f"[*] Starting Semgrep SAST scan on {target_display} (User: {current_user_identifier})...")
+        semgrep_scanner.log(f"[*] Starting Semgrep SAST scan on {target_display} (User: {current_user_identifier})...", user_id=current_user_identifier)
+        
+        start_time = time.time()
         
         # Run Scan
         report_file = semgrep_scanner.run_semgrep_scan(
             target_input=target_input, 
             input_type=input_type, 
-            output_dir=user_output_dir
+            output_dir=user_output_dir,
+            user_id=current_user_identifier
         )
+
+        duration = time.time() - start_time
+        status = "Failed"
+        finding_count = 0
 
         # Cleanup Temp Upload File (if zip)
         if input_type == "zip" and os.path.exists(target_input):
@@ -126,12 +139,22 @@ def scan_code():
                 pass
 
         if report_file:
-            semgrep_scanner.log(f"[+] Semgrep scan complete. Generating PDF report...")
+            status = "Completed"
+            semgrep_scanner.log(f"[+] Semgrep scan complete. Generating PDF report...", user_id=current_user_identifier)
             
-            # Generate PDF Report
+            # Extract finding count from saved JSON
             try:
                 user_paths = semgrep_scanner.get_output_paths(user_output_dir)
                 json_path = user_paths["parsed_json"]
+                
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    finding_count = data.get('total_findings', 0)
+            except:
+                pass
+
+            # Generate PDF Report
+            try:
                 # Create a specific PDF name
                 pdf_path = Path(user_output_dir) / "semgrep_report.pdf"
 
@@ -143,16 +166,28 @@ def scan_code():
                     pdf_generator.create_semgrep_report_pdf(str(json_path), str(pdf_path))
                     
                     if pdf_path.exists():
-                        semgrep_scanner.log(f"[+] PDF report generated: {pdf_path.name}")
+                        semgrep_scanner.log(f"[+] PDF report generated: {pdf_path.name}", user_id=current_user_identifier)
                     else:
-                        semgrep_scanner.log("[!] PDF generation ran but file not found.")
+                        semgrep_scanner.log("[!] PDF generation ran but file not found.", user_id=current_user_identifier)
                 else:
-                    semgrep_scanner.log("[!] PDF Generator function 'create_semgrep_report_pdf' missing.")
+                    semgrep_scanner.log("[!] PDF Generator function 'create_semgrep_report_pdf' missing.", user_id=current_user_identifier)
 
             except Exception as e:
-                semgrep_scanner.log(f"[!] FAILED to generate PDF: {str(e)}")
+                semgrep_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", user_id=current_user_identifier)
         else:
-            semgrep_scanner.log(f"[!] Semgrep scan failed for {target_display}.")
+            semgrep_scanner.log(f"[!] Semgrep scan failed for {target_display}.", user_id=current_user_identifier)
+
+        # Log to Database (Inside App Context)
+        with app.app_context():
+            scan_logger.create_full_scan_log(
+                user_id=user_id,
+                tool_name="Semgrep SAST",
+                target=target_display,
+                duration=duration,
+                finding_count=finding_count,
+                status=status,
+                scan_type="Code Audit"
+            )
 
     # 4. Start Thread
     threading.Thread(target=scan_task).start()
@@ -170,7 +205,8 @@ def trigger_ai_analysis_route():
     pdf_path = Path(user_dir) / "semgrep_report.pdf"
 
     if not pdf_path.exists():
-        semgrep_scanner.log(f"[!] Analysis failed: PDF report not found.")
+        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+        semgrep_scanner.log(f"[!] Analysis failed: PDF report not found.", user_id=current_user_identifier)
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
@@ -263,7 +299,8 @@ def get_semgrep_report():
             "report_file": json_path.name
         })
     except Exception as e:
-        semgrep_scanner.log(f"[!] Error reading Semgrep report: {e}")
+        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+        semgrep_scanner.log(f"[!] Error reading Semgrep report: {e}", user_id=current_user_identifier)
         return jsonify({
             "status": "error",
             "message": f"Failed to read report: {str(e)}"
@@ -272,17 +309,21 @@ def get_semgrep_report():
 @semgrep_bp.route('/clear_log', methods=['POST'])
 @login_required
 def clear_log_route():
-    semgrep_scanner.clear_log_file()
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    semgrep_scanner.clear_log_file(current_user_identifier)
     return jsonify({"status": "success", "message": "Log cleared."})
 
 @semgrep_bp.route('/log_stream')
 @login_required
 def log_stream():
     """Server-Sent Events (SSE) endpoint."""
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    
     def generate_logs():
+        user_queue = semgrep_scanner.get_user_queue(current_user_identifier)
         while True:
             try:
-                message = semgrep_scanner.log_queue.get(timeout=10)
+                message = user_queue.get(timeout=10)
                 yield message
             except Empty:
                 yield ": keep-alive\n\n"

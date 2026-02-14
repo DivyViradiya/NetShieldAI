@@ -1,8 +1,10 @@
+import os
+import shutil
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from urllib.parse import urlparse  
-from sqlalchemy import func # [NEW] Required for calculating total stats
-from models import User
+from sqlalchemy import func 
+from models import User, ScanLog # [UPDATED] Import ScanLog
 from extensions import db
 from forms import RegistrationForm, LoginForm, UpdateProfileForm, ChangePasswordForm
 
@@ -48,6 +50,10 @@ def login():
             
             return redirect(next_page)
         else:
+            # [NEW] Track failed login attempt
+            if user:
+                user.failed_login_attempts += 1
+                db.session.commit()
             flash('Invalid username or password.', 'danger')
             
     return render_template('base/login.html', form=form)
@@ -125,26 +131,32 @@ def admin_dashboard():
     total_users = len(users)
     active_users = User.query.filter_by(is_active_account=True).count()
     
-    # [UPDATED] Calculate Total System Scans (Sum of all users' scans INCLUDING Kill Chain)
+    # [UPDATED] Calculate Total System Scans (Sum of all users' scans)
     total_system_scans = db.session.query(
         func.sum(User.scan_count_nmap) + 
         func.sum(User.scan_count_zap) + 
         func.sum(User.scan_count_ssl) + 
         func.sum(User.scan_count_sniffer) + 
         func.sum(User.scan_count_ai) + 
-        func.sum(User.scan_count_killchain) # <--- Added Kill Chain
+        func.sum(User.scan_count_killchain) +
+        func.sum(User.scan_count_sql) +
+        func.sum(User.scan_count_api) +
+        func.sum(User.scan_count_semgrep)
     ).scalar() or 0
 
     # --- 2. Graph Data Preparation ---
     
-    # [UPDATED] Graph A: Tool Popularity (Now includes Kill Chain)
+    # [UPDATED] Graph A: Tool Popularity (Now includes all tools)
     tool_usage_stats = {
         'Nmap': db.session.query(func.sum(User.scan_count_nmap)).scalar() or 0,
         'ZAP': db.session.query(func.sum(User.scan_count_zap)).scalar() or 0,
         'SSL': db.session.query(func.sum(User.scan_count_ssl)).scalar() or 0,
         'Sniffer': db.session.query(func.sum(User.scan_count_sniffer)).scalar() or 0,
         'AI Analyst': db.session.query(func.sum(User.scan_count_ai)).scalar() or 0,
-        'Kill Chain': db.session.query(func.sum(User.scan_count_killchain)).scalar() or 0 # <--- Added Kill Chain
+        'Kill Chain': db.session.query(func.sum(User.scan_count_killchain)).scalar() or 0,
+        'SQL Map': db.session.query(func.sum(User.scan_count_sql)).scalar() or 0,
+        'API Scan': db.session.query(func.sum(User.scan_count_api)).scalar() or 0,
+        'SAST': db.session.query(func.sum(User.scan_count_semgrep)).scalar() or 0
     }
 
     # Graph B: Top Power Users (For Bar Chart)
@@ -154,6 +166,41 @@ def admin_dashboard():
     top_users_labels = [u.username for u in sorted_users]
     top_users_data = [u.total_scans for u in sorted_users]
 
+    # --- 3. [NEW] Advanced Telemetry ---
+    
+    # A. Scan Success Rates
+    total_logged_scans = ScanLog.query.count()
+    successful_scans = ScanLog.query.filter_by(status='Completed').count()
+    failed_scans = ScanLog.query.filter(ScanLog.status.like('%Failed%')).count()
+    
+    success_rate = round((successful_scans / total_logged_scans * 100), 1) if total_logged_scans > 0 else 0
+    
+    # B. Performance Metrics
+    avg_duration = db.session.query(func.avg(ScanLog.duration_seconds)).filter(ScanLog.status == 'Completed').scalar() or 0
+    avg_duration = round(avg_duration, 1)
+    
+    # C. Global Threat Summary
+    total_findings = db.session.query(func.sum(ScanLog.finding_count)).scalar() or 0
+    total_critical = db.session.query(func.sum(ScanLog.severity_critical)).scalar() or 0
+    
+    # D. System Health (Storage)
+    try:
+        # Get disk usage for the partition where the project resides
+        total, used, free = shutil.disk_usage(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        storage_info = {
+            "percent": round((used / total) * 100, 1),
+            "used_gb": round(used / (1024**3), 1),
+            "total_gb": round(total / (1024**3), 1)
+        }
+    except:
+        storage_info = {"percent": 0, "used_gb": 0, "total_gb": 0}
+
+    # E. Security Audit
+    total_failed_logins = db.session.query(func.sum(User.failed_login_attempts)).scalar() or 0
+    
+    # F. Recent Activity Feed
+    recent_scans = ScanLog.query.order_by(ScanLog.start_time.desc()).limit(15).all()
+
     return render_template('dashboard/admin_dashboard.html', 
                            users=users,
                            total_users=total_users,
@@ -161,7 +208,16 @@ def admin_dashboard():
                            total_system_scans=total_system_scans,
                            tool_usage_stats=tool_usage_stats,
                            top_users_labels=top_users_labels,
-                           top_users_data=top_users_data)
+                           top_users_data=top_users_data,
+                           # New Stats
+                           success_rate=success_rate,
+                           failed_scans=failed_scans,
+                           avg_duration=avg_duration,
+                           total_findings=total_findings,
+                           total_critical=total_critical,
+                           storage_info=storage_info,
+                           total_failed_logins=total_failed_logins,
+                           recent_scans=recent_scans)
 
 
 @auth_bp.route('/admin/toggle_status/<int:user_id>', methods=['POST'])

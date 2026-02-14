@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<config>
+    <start>
+        <checkForUpdates>true</checkForUpdates>
+        <downloadNewRelease>true</downloadNewRelease>
+        <checkAddonUpdates>true</checkAddonUpdates>
+        <installAddonUpdates>true</installAddonUpdates>
+        <installScannerRules>true</installScannerRules>
+        <reportReleaseAddons>true</reportReleaseAddons>
+        <reportBetaAddons>true</reportBetaAddons>
+        <reportAlphaAddons>true</reportAlphaAddons>
+        <dayLastChecked>2026-02-08</dayLastChecked>
+    </start>
+    <pscans version="5">
+        <autoTagScanners>
+            <scanner>
+                <name>html_tag_form</name>
+                <type>TAG</type>
+                <config>Form</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>&lt;form</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_tag_password</name>
+                <type>TAG</type>
+                <config>Password</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>&lt;password\s</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_type_password</name>
+                <type>TAG</type>
+                <config>Password</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>type\s*=\s*['"]?password['"]?</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_type_hidden</name>
+                <type>TAG</type>
+                <config>Hidden</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>type\s*=\s*['"]?hidden['"]?</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_type_upload</name>
+                <type>TAG</type>
+                <config>Upload</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>type\s*=\s*['"]?file['"]?</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_tag_object</name>
+                <type>TAG</type>
+                <config>Object</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>&lt;object\s</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_tag_script</name>
+                <type>TAG</type>
+                <config>Script</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>&lt;script</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_mailto</name>
+                <type>TAG</type>
+                <config>MailTo</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>href\s*=\s*['"]?mailto:</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_setcookie</name>
+                <type>TAG</type>
+                <config>SetCookie</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex>set-cookie</resHeadRegex>
+                <resBodyRegex/>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_comment1</name>
+                <type>TAG</type>
+                <config>Comment</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>/\*</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>html_comment2</name>
+                <type>TAG</type>
+                <config>Comment</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex/>
+                <resBodyRegex>&lt;!--</resBodyRegex>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>response_json</name>
+                <type>TAG</type>
+                <config>JSON</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex>type\s*:\s*application\/json</resHeadRegex>
+                <resBodyRegex/>
+                <enabled>true</enabled>
+            </scanner>
+            <scanner>
+                <name>json_extended</name>
+                <type>TAG</type>
+                <config>JSON</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex>content-type:\s{0,10}.{1,20}\/.{0,100}json</resHeadRegex>
+                <resBodyRegex/>
+                <enabled>false</enabled>
+            </scanner>
+            <scanner>
+                <name>response_yaml</name>
+                <type>TAG</type>
+                <config>YAML</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex>content-type:\s{0,10}.{1,20}\/.{0,100}yaml</resHeadRegex>
+                <resBodyRegex/>
+                <enabled>false</enabled>
+            </scanner>
+            <scanner>
+                <name>response_xml</name>
+                <type>TAG</type>
+                <config>XML</config>
+                <reqUrlRegex/>
+                <reqHeadRegex/>
+                <resHeadRegex>content-type:\s{0,10}.{1,20}\/.{0,100}xml</resHeadRegex>
+                <resBodyRegex/>
+                <enabled>false</enabled>
+            </scanner>
+        </autoTagScanners>
+    </pscans>
+    <version>20017000</version>
+    <api>
+        <disablekey>true</disablekey>
+        <addrs>
+            <addr>
+                <name>.*</name>
+                <regex>true</regex>
+            </addr>
+        </addrs>
+    </api>
+    <reveal version="1">
+        <enabled>false</enabled>
+    </reveal>
+    <bruteforce version="1">
+        <threadPerHost>24</threadPerHost>
+    </bruteforce>
+    <anticsrf>
+        <tokens>
+            <token>
+                <name>anticsrf</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>CSRFToken</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>__RequestVerificationToken</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>csrfmiddlewaretoken</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>authenticity_token</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>OWASP_CSRFTOKEN</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>anoncsrf</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>csrf_token</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>_csrf</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>_csrfSecret</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>__csrf_magic</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>CSRF</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>_token</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>_csrf_token</name>
+                <enabled>true</enabled>
+            </token>
+            <token>
+                <name>_csrfToken</name>
+                <enabled>true</enabled>
+            </token>
+        </tokens>
+    </anticsrf>
+    <script>
+        <console version="1"/>
+    </script>
+    <requester version="2"/>
+    <ajaxSpider version="7">
+        <allowedResources>
+            <allowedResource>
+                <regex>^http.*\.js(?:\?.*)?$</regex>
+                <enabled>true</enabled>
+            </allowedResource>
+            <allowedResource>
+                <regex>^http.*\.css(?:\?.*)?$</regex>
+                <enabled>true</enabled>
+            </allowedResource>
+        </allowedResources>
+    </ajaxSpider>
+    <selenium version="3">
+        <chromeDriver>D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\webdriver\windows\64\chromedriver.exe</chromeDriver>
+        <firefoxDriver>D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\webdriver\windows\64\geckodriver.exe</firefoxDriver>
+    </selenium>
+    <callhome version="1">
+        <tel>
+            <uuid>8f00e03a-dfbe-46eb-b4f3-17600e8e2b68</uuid>
+        </tel>
+    </callhome>
+    <network>
+        <serverCertificates version="1">
+            <rootCa>
+                <ks>MIIMSgIBAzCCC_QGCSqGSIb3DQEHAaCCC-UEggvhMIIL3TCCBcQGCSqGSIb3DQEHAaCCBbUEggWxMIIFrTCCBakGCyqGSIb3DQEMCgECoIIFQDCCBTwwZgYJKoZIhvcNAQUNMFkwOAYJKoZIhvcNAQUMMCsEFKbis0Sx90yyU2dxnmy8ri9vkahjAgInEAIBIDAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQBKgQQZFoQ_Fcg2OiOMqghpixnggSCBNCdbi3U9CM9GpHedVEEOA8JfJKcoDr8BM6WfkUkxxPr_fsUF-yU2TYxKDwD707ErrRs_6H-F-PDiC74ESzHgIFj9g6B0IZ2Iz-iHXob5VDr0ulNl_lTh6qGinlvE_YcCQI14qiwfyHWn4PL5_zVx10mekxXCodWk6piwSCFbdlZm8VKelfkT0FQptbtoBECFpSvR_TravFUU25VPEGN5N6NlwQwt-VafVDEg43RRz9Jr5AUmgGHUIDYoroDhljswqYYDqvIcEJk4zl_t3npurZxA1bFfXfmYuARz8U6Y6z0w8_VyJ2n0P-xNxsNLO7vYGRKWgl5xXEPsZxAxGQMF-UhTkOcywr7LXG2n7Wvqrk7XRlF7MpBXLtnskaD309dRSHpbDRhoEnXfQqNeyPe59-6i_gX9681qrytIYebqSqzCiE06M41br1L64njzpjoeofBhBjIgYW9hGWsE5RgbVV8BPcOg51-dykPJGpziewxGPp1J010H_XPrQF9-mWH_hmAv_k6okV2Wgyu950vumrCjFJD3qJjyow_P7ft5lEHTCfiswk9xLAL25dNZjfUv5oFsmV0tp5XgTu4jL6r_L_azDUi9PikblwPG8fm1yvPDTylfkKMjk_Y89cSvyDs1bMooQfnqpyZSFWQNf-U8lfHwf37CJd48WHuUme_8tDcjEW8AyrFgUJ1PF63e17qJdGZr2hQtlfFtgcm43tIYfqpenj549qQ7J0wXSKm6VoZfZ9c0xNJDtzO1ffIUX5Q5aBJ2Y82esnZXTSA2-w_Lv2bscDO4YJcHaUTXtEIP3lcVlS_iIXZEcosqgAoK94ZRDMFP0_C_f9HWMlv8nYph92Nt_4BzeDTwhLdIcMzYuevefpZ_shWNH49Iuxg3t3rXLOPefsR9GHBHxQ5cJDMDNwV_4pTPR3_5_TaKoAORVM-RqWZXbxsHynkVqvt9Pqn3ZZQb5MBbvrY942IsW56UmiPh-C4c4Vvch2ksfkqSVz93rZ97AOoX7aNOREjS0oJiTybJ9uzotFXSgii95Rw-kAKbyqKZ8w8shubO8H2AhFhBsTd8PTpNs_zhPo89cr5WixMpLjudpJNbJ8vSAkMYNCZgqTylV-0WuTk311oGKEDHUT--9K-GWYLHw5itXpgxyfEIOFx_0CD4Y95U2g4haeTMbk15qfet0EA45PpiXKJXxGtfALXRDAr-eeNdcvvEWRqIcHevd1eRZ2Xs_IqlZ8sEKPK83ZBuN4SSUnI5vELXiTfBintmtXh__22gLlEzLuNbq5h0v8wF0hHdP0l5LI2OP2SAdkpoPy57_-LHEGL-Vy5BITU-6utj520SYdSC1iVtHlnzYlNxelyBxV5GdbrmxkcrjOaIl9HENeEdZg1i5CHPYBdDJVG17GstcShvKVG2GvgTLwVSo7U2AuzxVfvKUsVZ8bpQYHxbDJMkfOZd9UOiK5wRu5tdfN9DCaX3QndE9IRSwi_QwzRYZ0PWh0Bm-c90KU-AbzxDCHSrYvpkIc0ygInHqVXcbFyZBVKizLN7yvd9Fo5Nc9c001-G_PpJyJopR2yPS2v1EYHUWvLj8ZhjDEOlkaVUEhanLxafnP9lEf22ha2rXy9MvjmT24gFPqQX81PnHrGAs8ApMLRPzFWMDEGCSqGSIb3DQEJFDEkHiIAbwB3AGEAcwBwAF8AegBhAHAAXwByAG8AbwB0AF8AYwBhMCEGCSqGSIb3DQEJFTEUBBJUaW1lIDE3NzA1NDg4MDI1NzgwggYRBgkqhkiG9w0BBwagggYCMIIF_gIBADCCBfcGCSqGSIb3DQEHATBmBgkqhkiG9w0BBQ0wWTA4BgkqhkiG9w0BBQwwKwQUPO2ypRs-tLHOjVV5ZIH5pqvAMYYCAicQAgEgMAwGCCqGSIb3DQIJBQAwHQYJYIZIAWUDBAEqBBB1gnTqr0GAai0hDk-D2H3ygIIFgJlMKTdJzDNv_Xvk5OBPEhON_CMk2_kyVaj88KsCMqxmcVB3cMUqYLLQTzWodJVdYDK65l6gc3exvHh1tSEysXPZaZU0OfvQ4suchc286zlpAJG5gFD4zaJnzrboILPYeitSHOXM6HM_oPYQjcZpQiwhtoAUY7fh34c1XUkxDuvuBC-ddm_guxUR3c3qolL905xclal6WljRcCQQyn1OkfuDBJMWbwX9P5rSzS0ul4iMwPdy2PrfmVsw7rYzIEXfqBrm5pX-VxPbRbsAxWn4SEKNBpXxF1CFQl5st4Qg6WPj2hEGYmq2F83rhXt0dwqi1H1aa95g_ubTrH-boatHiitJsEZbmCfAgFtxc4riP-uJQJYHTlYSJvGa5llvNi2e29o_8pA0YHSjlrPdX-slbKNMp-13fBjLzsZ_KhUeUp3Q7ZvT_7sYxh015U3fHykgzNrZcOJCxBFBtfUw8W8fx_uvni61frYUzTsriNote5E8SgIAt-OyTRbSUrPPR1QAJIc4F0BIFE3S5U4vfyCMybjBm0PCbWURgLNGLEvY8oK5pPP3zhdaEx5KDHFzio4Vxnz0CkJbmjKqX4iv18h3iyq_a_AlsUrCuKKuP0XSOUKkSVMQ_KZxw9AylbHSznw0PBZ1BLn1u2tAMCGGnrqdvgdZKjVKPeE2vMJC0P1IMxPocFhWSOGChFyCzO_W8o4jPvR8faTGA53oSFSUwuQY-1LsNz_kIKGzMwm8R_44Npovdq_8VsMzWHxP23dETAGYtsnZYbDkIAcbSSGl37oN3Ip9Fe-xTo8achsw62xp4ACc7qb2eEXXYly3sF2vWbjwcFPjZED4F7sb6gCvGu-doimxP58Co_0qepAbj0cVjpGG5Tz8dR6Nk9e8vF69ifnyR2HVDfvu8E1FxHVNItflEsuWiHZbSXfkKHsMAAUXbgPobRIzy0zbiXcRlL2D6ZUn5tSBXJd48Lmczy5Y0Xz_p96xgS6tXxlkQSVJhKPSJRRMD7_gf3dXeGmvuWQA49pHQ9M2eE2Y_-xUmz04kPpdAncvm3C-t_3sAb5IBxxFE4s0e9PI5hI7k6i-lp2bLFfV6N3_n1rx_Sfk63ItvIgOWNdM2cg30FclGkO_3nTo_z_ojz78I6gpx0v6qj6yNYPxqADdHeUc4AHmx7A4Kdg3jR8hJpzQ-jIKBNVWJwPZzOIuzhko6C9m5b1Kfpe3MVZxCjCI6Th6v4XbzyoBOKSL_Z2-yhhLfqdJ9ZLKWR9ryn0yUJf5hpf9PPkd-sOZuZtH_7pyl44wTglvnb6xELQl8CdTosjVyLcpf71pljzA2iMtPcpkQUU7SkHmrohyUuoUe2ahZYvOqnWKS4m-bsd1rnf9IOO0wzYRdY0lN55y1vrc9HS3th6Yobh-FPR1K7tIoQ_0WsU-vfF6urGO9w-yzIKyQ19Vgl-6_rCMy1rm5aZ8thgGZCmAzAvwg0hmIEaUcHZU3AJS2wzP2WPgzc-VrNB-BZtssgvEhEIVuDaTKhcNEoWFkJsYyB3zeQ5fIpD_0XxgUokbydHVZlsPHhdtwHe_1o9O5AfBHTIR6aKllw0IcfHy1PxAwXOQvmip4Z_f46lNbYv_xj1DPkjYFQNxN0XW2OrgOXK54x9mdOSeSb9UJ2jU1MS8wDzKKtMGL1cRHxTYUHdDZTiypIEkihG_XzJFKRjjFdt9CE8wUW0Txeq_N9ghks9PsLPxtx4pBkqHvsafCQUzolEQDkQ9vCQ3S6AhDSLrdU-F9mK2GHlHXfB0mOVal8NvDs5usBltGWD63kBdL75_1ltBKfWNm7E8jnAQtmJVPYDGRgIOsXlzwi5ZMo-vwSEzNjhGEYQqo_NFalGLcu62Oy4Ns8_VaW4YXqkwTTAxMA0GCWCGSAFlAwQCAQUABCAkpU5HqEjKQXPurm38f6YsAHeAfCWpnFCeE7IXKY4VbgQUO5HdPqUQNnXlIZPf_zgogXg8kgQCAicQ</ks>
+            </rootCa>
+        </serverCertificates>
+        <localServers version="1">
+            <mainProxy>
+                <enabled>true</enabled>
+                <proxy>true</proxy>
+                <api>true</api>
+                <address>localhost</address>
+                <port>54900</port>
+                <tlsProtocols>
+                    <protocol>TLSv1.2</protocol>
+                    <protocol>TLSv1.3</protocol>
+                </tlsProtocols>
+                <alpn>
+                    <enabled>true</enabled>
+                    <protocols>
+                        <protocol>http/1.1</protocol>
+                        <protocol>h2</protocol>
+                    </protocols>
+                </alpn>
+                <behindNat>false</behindNat>
+                <removeAcceptEncoding>true</removeAcceptEncoding>
+                <decodeResponse>true</decodeResponse>
+            </mainProxy>
+        </localServers>
+        <ratelimit version="1"/>
+        <globalExclusions version="2">
+            <exclusions>
+                <exclusion>
+                    <name>Extension - Image (ends with .extension)</name>
+                    <value>(?i)^.*\.(?:gif|jpe?g|png|ico|icns|bmp|svg|webp)$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Extension - Audio/Video (ends with .extension)</name>
+                    <value>(?i)^.*\.(?:mp[34]|mpe?g|m4[ap]|aac|avi|mov|wmv|og[gav]|webm)$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Extension - PDF &amp; Office (ends with .extension)</name>
+                    <value>(?i)^.*\.(?:pdf|docx?|xlsx?|pptx?)$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Extension - Stylesheet, JavaScript (ends with .extension)</name>
+                    <value>(?i)^.*\.(?:css|js)$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Extension - Flash &amp; related (ends with .extension)</name>
+                    <value>(?i)^.*\.(?:sw[fa]|flv)$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>ExtParam - Image (extension plus ?params=values)</name>
+                    <value>(?i)^[^\?]*\.(?:gif|jpe?g|png|ico|icns|bmp|svg|webp)\?.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>ExtParam - Audio/Video (extension plus ?params=values)</name>
+                    <value>(?i)^[^\?]*\.(?:mp[34]|mpe?g|m4[ap]|aac|avi|mov|wmv|og[gav]|webm)\?.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>ExtParam - PDF &amp; Office (extension plus ?params=values)</name>
+                    <value>(?i)^[^\?]*\.(?:pdf|docx?|xlsx?|pptx?)\?.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>ExtParam - Stylesheet, JavaScript (extension plus ?params=values)</name>
+                    <value>(?i)^[^\?]*\.(?:css|js)\?.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>ExtParam - Flash &amp; related (extension plus ?params=values)</name>
+                    <value>(?i)^[^\?]*\.(?:sw[fa]|flv)\?.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>ExtParam - .NET axd resources (SR/WR.axd?d=)</name>
+                    <value>(?i)^[^\?]*/(?:WebResource|ScriptResource)\.axd\?d=.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Bing API queries</name>
+                    <value>(?i)^https?://api\.bing\.com/qsml\.aspx?query=.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Google malware detector updates</name>
+                    <value>(?i)^https?://(?:safebrowsing-cache|sb-ssl|sb|safebrowsing).*\.(?:google|googleapis)\.com/.*$</value>
+                    <enabled>true</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Lastpass manager</name>
+                    <value>(?i)^https?://(?:[^/])*\.?lastpass\.com</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Firefox browser updates</name>
+                    <value>(?i)^https?://(?:.*addons|aus[0-9])\.mozilla\.(?:org|net|com)/.*$</value>
+                    <enabled>true</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Firefox extensions phoning home</name>
+                    <value>(?i)^https?://(?:[^/])*\.?(?:getfoxyproxy\.org|getfirebug\.com|noscript\.net)</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Microsoft Windows updates</name>
+                    <value>(?i)^https?://(?:.*update\.microsoft|.*\.windowsupdate)\.com/.*$</value>
+                    <enabled>true</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Google Chrome extension updates</name>
+                    <value>(?i)^https?://clients2\.google\.com/service/update2/crx.*$</value>
+                    <enabled>true</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Firefox captive portal detection</name>
+                    <value>(?i)^https?://detectportal\.firefox\.com.*$</value>
+                    <enabled>true</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Google Analytics</name>
+                    <value>(?i)^https?://www\.google-analytics\.com.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Firefox h264 codec download</name>
+                    <value>(?i)^https?://ciscobinary\.openh264\.org.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Fonts CDNs such as fonts.gstatic.com, etc.</name>
+                    <value>(?i)^https?://fonts.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Mozilla CDN (requests such as getpocket)</name>
+                    <value>(?i)^https?://.*\.cdn\.mozilla\.(?:com|org|net)/.*$</value>
+                    <enabled>true</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Firefox browser telemetry</name>
+                    <value>(?i)^https?://.*\.telemetry\.mozilla\.(?:com|org|net)/.*$</value>
+                    <enabled>true</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Adblockplus updates and notifications</name>
+                    <value>(?i)^https?://.*\.adblockplus\.org.*$</value>
+                    <enabled>false</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Firefox services</name>
+                    <value>(?i)^https?://.*\.services\.mozilla\.com.*$</value>
+                    <enabled>true</enabled>
+                </exclusion>
+                <exclusion>
+                    <name>Site - Google updates</name>
+                    <value>(?i)^https?://.*\.gvt1\.com.*$</value>
+                    <enabled>true</enabled>
+                </exclusion>
+            </exclusions>
+        </globalExclusions>
+        <connection version="6">
+            <defaultUserAgent>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36</defaultUserAgent>
+        </connection>
+        <clientCertificates version="1"/>
+    </network>
+    <rules>
+        <common>
+            <sleep>15</sleep>
+        </common>
+        <csrf>
+            <ignorelist/>
+            <ignore>
+                <attname/>
+                <attvalue/>
+            </ignore>
+        </csrf>
+        <cookie>
+            <ignorelist/>
+        </cookie>
+        <domains>
+            <trusted/>
+        </domains>
+        <domxss>
+            <browserid/>
+        </domxss>
+    </rules>
+    <globalalertfilter version="1"/>
+    <client version="1"/>
+    <formhandler version="1">
+        <fields>
+            <field>
+                <fieldId>color</fieldId>
+                <value>#ffffff</value>
+                <enabled>true</enabled>
+                <regex>false</regex>
+            </field>
+            <field>
+                <fieldId>email</fieldId>
+                <value>zaproxy@example.com</value>
+                <enabled>true</enabled>
+                <regex>false</regex>
+            </field>
+            <field>
+                <fieldId>name</fieldId>
+                <value>ZAP</value>
+                <enabled>true</enabled>
+                <regex>false</regex>
+            </field>
+            <field>
+                <fieldId>password</fieldId>
+                <value>ZAP</value>
+                <enabled>true</enabled>
+                <regex>false</regex>
+            </field>
+            <field>
+                <fieldId>phone</fieldId>
+                <value>9999999999</value>
+                <enabled>true</enabled>
+                <regex>false</regex>
+            </field>
+            <field>
+                <fieldId>url</fieldId>
+                <value>https://zap.example.com</value>
+                <enabled>true</enabled>
+                <regex>false</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?back[-_]?(?:link|uri|url)?</fieldId>
+                <value>https://zap.example.com</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?bg[-_]?colou?r</fieldId>
+                <value>#FFFFFF</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?query|find|keyword</fieldId>
+                <value>ZAP</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?search[-_]?(?:term|word|param|parameter|string|text|value|keyword|query)?</fieldId>
+                <value>ZAP</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?amount|amt|count|qty|quantity</fieldId>
+                <value>3</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?lang|language</fieldId>
+                <value>en</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?locale[-_]?(?:code)?</fieldId>
+                <value>en-IN</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?(?:comment|subject|summary)?</fieldId>
+                <value>Zaproxy dolore alias impedit expedita quisquam.</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?(?:description|message|(?:email|post)?[-_]?content)?</fieldId>
+                <value>Zaproxy alias impedit expedita quisquam pariatur exercitationem. Nemo rerum eveniet dolores rem quia dignissimos.</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?state</fieldId>
+                <value>Oklahoma</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?city</fieldId>
+                <value>East Romaineburgh</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?address[_-]?1?</fieldId>
+                <value>688 Zaproxy Ridge</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+            <field>
+                <fieldId>(?i)_?address[_-]?2</fieldId>
+                <value>Suite 473</value>
+                <enabled>true</enabled>
+                <regex>true</regex>
+            </field>
+        </fields>
+    </formhandler>
+    <fuzz version="2">
+        <defaultThreadsPerFuzzer>24</defaultThreadsPerFuzzer>
+        <defaultCategoryName/>
+        <defaultFuzzDelayInMs>0</defaultFuzzDelayInMs>
+        <customFuzzerLastSelectedDirectory/>
+    </fuzz>
+    <graphql version="2"/>
+    <hud version="4">
+        <newChangelog>true</newChangelog>
+        <tutorialUpdates>History</tutorialUpdates>
+        <tutorialUpdates>Comments</tutorialUpdates>
+        <tutorialUpdates>ToggleScript</tutorialUpdates>
+    </hud>
+    <insights version="1"/>
+    <oast version="1">
+        <boast version="2">
+            <pollingFrequency>60</pollingFrequency>
+        </boast>
+        <callback version="1"/>
+        <interactsh version="1">
+            <pollingFrequency>60</pollingFrequency>
+        </interactsh>
+    </oast>
+    <quickstart version="1"/>
+    <replacer version="1"/>
+    <spider version="3">
+        <irrelevantParameters>
+            <irrelevantParameter>
+                <name>utm_.*</name>
+                <regex>true</regex>
+                <enabled>true</enabled>
+            </irrelevantParameter>
+        </irrelevantParameters>
+        <thread>24</thread>
+    </spider>
+    <scanner>
+        <threadPerHost>10</threadPerHost>
+        <hostPerScan>1</hostPerScan>
+        <delayInMs>0</delayInMs>
+    </scanner>
+</config>

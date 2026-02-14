@@ -270,25 +270,60 @@ def get_output_paths(user_output_dir):
 
 # --- LOGGING FUNCTIONS ---
 def log(message, user_id=None):
+    """
+    Logs messages to an in-memory queue and to a file.
+    Organized Path: logs/users/{user_id}/api_agent_log.txt
+    """
     timestamp = datetime.now().strftime("%H:%M:%S")
     log_message = f"[{timestamp}] {message}"
     print(log_message)
     
     if user_id:
         user_id = str(user_id)
-        # File logging (optional)
-        # user_log_file = os.path.join(LOGS_DIR, f"api_scan_{user_id}.log")
-        # with open(user_log_file, 'a', encoding='utf-8') as f: f.write(log_message + "\n")
+        # Organized Path: logs/users/{user_id}/
+        user_dir = os.path.join(LOGS_DIR, "users", user_id)
+        if not os.path.exists(user_dir):
+            os.makedirs(user_dir, exist_ok=True)
+            
+        user_log_file = os.path.join(user_dir, "api_agent_log.txt")
+        try:
+            with open(user_log_file, 'a', encoding='utf-8') as f:
+                f.write(log_message + "\n")
+        except Exception as e:
+            print(f"FATAL: Failed to write to user log file {user_log_file}: {e}")
 
         uq = get_user_queue(user_id)
         uq.put(log_message)
+    else:
+        # Fallback to general system log
+        system_dir = os.path.join(LOGS_DIR, "system")
+        if not os.path.exists(system_dir):
+            os.makedirs(system_dir, exist_ok=True)
+            
+        try:
+            with open(os.path.join(system_dir, "api_system_log.txt"), 'a', encoding='utf-8') as f:
+                f.write(log_message + "\n")
+        except:
+            pass
 
 def clear_log_file(user_id):
+    """Clears the log file and queue for a specific user."""
     if not user_id: return
     user_id = str(user_id)
-    uq = get_user_queue(user_id)
-    with uq.mutex:
-        uq.queue.clear()
+    user_log_file = os.path.join(LOGS_DIR, "users", user_id, "api_agent_log.txt")
+    
+    try:
+        if os.path.exists(user_log_file):
+            with open(user_log_file, 'w', encoding='utf-8') as f:
+                f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+        
+        # Clear Queue
+        uq = get_user_queue(user_id)
+        with uq.mutex:
+            uq.queue.clear()
+            
+    except Exception as e:
+        print(f"FATAL: Could not clear log file for user {user_id}: {e}")
 
 # --- ML Prediction ---
 def predict_risk(vulnerability_name: str):

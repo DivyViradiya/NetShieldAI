@@ -30,6 +30,18 @@
         --text-muted: #94a3b8; /* Slate-400 */
         --accent-blue: #3b82f6; /* Vibrant Blue */
         --accent-hover: #2563eb;
+
+        /* NEO-FUTURISM ADDITIONS */
+        --neo-card: var(--surface-color);
+        --neo-border: var(--border-color);
+        --neo-blue: var(--accent-blue);
+        --neo-text-primary: var(--text-light);
+        --neo-text-secondary: var(--text-muted);
+        --neo-text-label: #64748b;
+        --neo-card-hover: #161618;
+
+        /* Standardized Heights */
+        --navbar-height: 64px;
       }
 
       /* LIGHT MODE OVERRIDES */
@@ -41,6 +53,14 @@
         --text-muted: #475569;
         --accent-blue: #2563eb;
         --accent-hover: #1d4ed8;
+
+        --neo-card: var(--surface-color);
+        --neo-border: var(--border-color);
+        --neo-blue: var(--accent-blue);
+        --neo-text-primary: var(--text-light);
+        --neo-text-secondary: var(--text-muted);
+        --neo-text-label: #94a3b8;
+        --neo-card-hover: #f1f5f9;
       }
       
       body {
@@ -52,11 +72,10 @@
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        padding-top: 5rem;
+        padding-top: var(--navbar-height);
         color: var(--text-muted);
         position: relative;
         overflow-x: hidden; 
-        transition: background-color 0.3s ease, color 0.3s ease;
       }
 
       body.light-mode {
@@ -137,7 +156,8 @@
         background-color: rgba(5, 5, 5, 0.95); 
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        padding: 1rem 2rem;
+        padding: 0 2rem;
+        height: var(--navbar-height);
         border-bottom: 1px solid var(--border-color);
         display: flex;
         justify-content: space-between;
@@ -147,7 +167,6 @@
         top: 0;
         left: 0;
         z-index: 1000;
-        transition: background-color 0.3s ease;
       }
 
       body.light-mode .navbar {

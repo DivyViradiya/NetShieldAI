@@ -25,6 +25,8 @@ from Services.pentest_modules.zap_wrapper import ZAPScanner
 from Services.pentest_modules.traffic_analyzer import TrafficAnalyzer 
 
 from Services import pdf_generator
+# --- Import Scan Logger ---
+from Services import scan_logger
 
 # ==========================================
 # 1. OUTPUT REDIRECTION (THE FIX)
@@ -170,13 +172,17 @@ class KillChainService:
             "pcap_file": temp_dir / "capture.pcap" 
         }
 
-    def run_job(self, target, profile_name, aggression_level, queue_id, user_output_dir):
+    def run_job(self, target, profile_name, aggression_level, queue_id, user_output_dir, log_id=None, app=None):
         """
         The main logic loop.
         """
         # --- CRITICAL: Set Thread Context ---
         # This tells SmartLogger that ANY print() in this thread belongs to this user.
         scan_context.queue_id = queue_id
+        
+        # Track overall status for logging
+        final_status = "Failed"
+        finding_count = 0
         
         try:
             # Instantiate tools locally
@@ -222,6 +228,10 @@ class KillChainService:
                 send_sse_event(queue_id, "scan_failed", {"message": "DNS Resolution Failed"})
                 time.sleep(2)
                 cleanup_queue(queue_id)
+                # Log Failure immediately
+                if log_id and app:
+                    with app.app_context():
+                        scan_logger.log_scan_end(log_id, status="Failed", error_msg="DNS Resolution Failed")
                 return
 
             # --- PHASE 0: TRAFFIC ---
@@ -356,8 +366,12 @@ class KillChainService:
                 if sev not in grouped_vulns: grouped_vulns[sev] = []
                 grouped_vulns[sev].append(v)
             results["vulns_grouped"] = grouped_vulns
+            
+            final_status = "Completed"
+            finding_count = len(unique_vulns)
 
         except Exception as e:
+            final_status = "Failed"
             log(queue_id, f"CRITICAL FAILURE: {str(e)}", "ERROR")
             log(queue_id, traceback.format_exc(), "DEBUG")
 
@@ -410,6 +424,11 @@ class KillChainService:
             send_sse_event(queue_id, "progress_update", {"percent": 100, "phase": "Complete"})
             send_sse_event(queue_id, "scan_complete", {})
             log(queue_id, "KILL CHAIN AUDIT COMPLETED.", "SUCCESS")
+            
+            # Log completion to DB (Inside App Context)
+            if log_id and app:
+                with app.app_context():
+                    scan_logger.log_scan_end(log_id, status=final_status, finding_count=finding_count)
             
             # Clear Thread Context so this thread can be reused safely by pool (if used later)
             scan_context.queue_id = None

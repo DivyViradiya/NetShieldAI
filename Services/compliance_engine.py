@@ -45,12 +45,19 @@ COMPLIANCE_MAP = {
     }
 }
 
+def normalize_target(target):
+    if not target: return "Global"
+    # Basic normalization to domain/IP
+    t = target.replace("http://", "").replace("https://", "").split('/')[0].split(':')[0]
+    return t
+
 class ComplianceEngine:
     def __init__(self, user_results_dir):
         self.base_dir = user_results_dir
         self.report_data = {
             "compliance_summary": {},
             "standards": {},
+            "targets": {},
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         
@@ -60,6 +67,8 @@ class ComplianceEngine:
         self.ssl = self._load_json("ssl_scanner/ssl_report.json")
         self.sql = self._load_json("sql_scanner/sql_report.json")
         self.nmap = self._load_json("network_scanner/nmap_report.json")
+        self.api = self._load_json("api_scanner/api_scan_report.json")
+        self.semgrep = self._load_json("semgrep_scanner/semgrep_report.json")
 
         # Consolidated list of all technical findings
         self.all_findings = self._consolidate_findings()
@@ -79,25 +88,28 @@ class ComplianceEngine:
 
     def _consolidate_findings(self):
         """
-        Normalizes findings from all scanners into a single list of text strings 
-        (Title/Description) to make keyword matching easier.
+        Normalizes findings from all scanners into a single list of findings with target info.
         """
         findings = []
 
         # 1. Killchain Findings
-        if self.killchain and 'vulns' in self.killchain:
-            for v in self.killchain['vulns']:
-                findings.append({
-                    "source": "Killchain",
-                    "title": v.get('type', ''),
-                    "description": v.get('description', ''),
-                    "severity": v.get('severity', 'Low')
-                })
+        if self.killchain:
+            target = self.killchain.get('target', 'Unknown')
+            if 'vulns' in self.killchain:
+                for v in self.killchain['vulns']:
+                    findings.append({
+                        "target": target,
+                        "source": "Killchain",
+                        "title": v.get('type', ''),
+                        "description": v.get('description', ''),
+                        "severity": v.get('severity', 'Low')
+                    })
 
         # 2. ZAP Findings
-        if self.zap and 'findings' in self.zap:
-            for f in self.zap['findings']:
+        if self.zap:
+            for f in self.zap.get('findings', []):
                 findings.append({
+                    "target": f.get('url', 'Unknown'),
                     "source": "ZAP Scanner",
                     "title": f.get('name', ''),
                     "description": f.get('description', ''),
@@ -105,33 +117,72 @@ class ComplianceEngine:
                 })
 
         # 3. SQLMap Findings
-        if self.sql and 'vulnerabilities' in self.sql:
-            for s in self.sql['vulnerabilities']:
+        if self.sql:
+            target = self.sql.get('target', 'Unknown')
+            for s in self.sql.get('vulnerabilities', []):
                 findings.append({
+                    "target": target,
                     "source": "SQL Scanner",
                     "title": s.get('title', 'SQL Injection'),
                     "description": f"Payload: {s.get('payload', '')}",
                     "severity": "Critical"
                 })
 
-        # 4. SSL Findings (Protocols & Vulnerabilities)
+        # 4. SSL Findings
         if self.ssl:
-            # Check Protocols
+            target = self.ssl.get('target', 'Unknown')
             for proto in self.ssl.get('protocols', []):
                 if proto.get('enabled') and proto.get('name') in ['SSLv2', 'SSLv3', 'TLSv1.0', 'TLSv1.1', '1.0', '1.1']:
                     findings.append({
+                        "target": target,
                         "source": "SSL Scanner",
                         "title": f"Weak Protocol Enabled: {proto.get('name')}",
                         "description": "Legacy SSL/TLS protocol detected.",
                         "severity": "High"
                     })
-            # Check Vulns
             for v in self.ssl.get('vulnerabilities', []):
                 findings.append({
+                    "target": target,
                     "source": "SSL Scanner",
                     "title": v.get('name', ''),
                     "description": v.get('description', ''),
                     "severity": v.get('severity', 'Medium')
+                })
+        
+        # 5. Nmap Findings
+        if self.nmap:
+            target = self.nmap.get('target_ip', 'Unknown')
+            for port in self.nmap.get('ports', []):
+                vuln_notes = port.get('vulnerability_notes', '')
+                if vuln_notes:
+                     findings.append({
+                        "target": target,
+                        "source": "Network Scanner",
+                        "title": f"Vulnerability on Port {port.get('port')}",
+                        "description": vuln_notes,
+                        "severity": "High"
+                    })
+
+        # 6. API Scanner Findings
+        if self.api:
+            for f in self.api.get('findings', []):
+                findings.append({
+                    "target": f.get('url', 'API Endpoint'),
+                    "source": "API Scanner",
+                    "title": f.get('name', ''),
+                    "description": f.get('description', ''),
+                    "severity": f.get('risk', 'Low')
+                })
+
+        # 7. Semgrep SAST Findings
+        if self.semgrep:
+            for f in self.semgrep.get('findings', []):
+                findings.append({
+                    "target": "Source Code",
+                    "source": "Semgrep SAST",
+                    "title": f.get('check_id', ''),
+                    "description": f.get('message', ''),
+                    "severity": f.get('severity', 'INFO')
                 })
 
         return findings
@@ -139,9 +190,38 @@ class ComplianceEngine:
     def run_assessment(self):
         """
         Main logic: Iterates through standards, checks requirements against findings, 
-        and calculates scores.
+        and calculates scores, grouped by target.
         """
+        # Group findings by target
+        findings_by_target = {}
+        for f in self.all_findings:
+            t = normalize_target(f['target'])
+            if t not in findings_by_target:
+                findings_by_target[t] = []
+            findings_by_target[t].append(f)
+            
+        self.report_data["targets"] = {}
+        
+        if not findings_by_target:
+             # Just run global assessment with empty findings if none found
+             self.report_data["targets"]["Global"] = self._assess_findings([])
+        else:
+            for target, target_findings in findings_by_target.items():
+                self.report_data["targets"][target] = self._assess_findings(target_findings)
+            
+        # Global Aggregate for backwards compatibility
+        global_results = self._assess_findings(self.all_findings)
+        self.report_data["standards"] = global_results["standards"]
+        self.report_data["compliance_summary"] = global_results["compliance_summary"]
+        
+        # Save the report
+        self._save_report()
+        return self.report_data
+
+    def _assess_findings(self, findings):
+        """Helper to run assessment against a specific set of findings."""
         summary_scores = {}
+        standards_report = {}
 
         for std_key, std_data in COMPLIANCE_MAP.items():
             std_report = {
@@ -157,20 +237,21 @@ class ComplianceEngine:
 
             # Check each requirement in the standard
             for req_id, req_info in std_data["requirements"].items():
-                
                 status = "PASS"
                 evidence = []
 
                 # Scan consolidated findings for keywords
-                for finding in self.all_findings:
-                    # Check if any keyword matches the finding title or description
-                    # Using case-insensitive matching
-                    title_match = any(k.lower() in finding['title'].lower() for k in req_info['keywords'])
+                for finding in findings:
+                    title = str(finding.get('title', '') or '')
+                    description = str(finding.get('description', '') or '')
                     
-                    if title_match:
+                    title_match = any(k.lower() in title.lower() for k in req_info['keywords'])
+                    desc_match = any(k.lower() in description.lower() for k in req_info['keywords'])
+                    
+                    if title_match or desc_match:
                         status = "FAIL"
                         evidence.append({
-                            "issue": finding['title'],
+                            "issue": title,
                             "source": finding['source'],
                             "severity": finding['severity']
                         })
@@ -199,14 +280,13 @@ class ComplianceEngine:
                 score = ((std_report["total_requirements"] - failures) / std_report["total_requirements"]) * 100
                 std_report["score_percentage"] = round(score, 1)
             
-            self.report_data["standards"][std_key] = std_report
+            standards_report[std_key] = std_report
             summary_scores[std_key] = std_report["score_percentage"]
 
-        self.report_data["compliance_summary"] = summary_scores
-        
-        # Save the report
-        self._save_report()
-        return self.report_data
+        return {
+            "compliance_summary": summary_scores,
+            "standards": standards_report
+        }
 
     def _save_report(self):
         """Saves the generated compliance report to disk."""
@@ -217,7 +297,6 @@ class ComplianceEngine:
             with open(output_path, 'w', encoding='utf-8') as f:
                 json.dump(self.report_data, f, indent=4)
         except Exception as e:
-            # In a production app, use logging instead of print
             print(f"Error saving compliance report: {e}")
 
 # --- Standalone Execution Helper ---

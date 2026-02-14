@@ -3,7 +3,7 @@ import threading
 import json
 import time
 import queue # Import queue to handle empty exception
-from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory
+from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory, current_app
 from flask_login import login_required, current_user
 import requests
 import uuid 
@@ -15,7 +15,9 @@ from extensions import db
 # Import the new zap_scanner module
 from Services import zap_scanner
 # --- NEW: Import the PDF generator ---
-from Services import pdf_generator 
+from Services import pdf_generator
+# --- Import Scan Logger ---
+from Services import scan_logger
 
 zap_scanner_bp = Blueprint('zap_scanner_bp', __name__)
 
@@ -71,6 +73,8 @@ def initiate_zap_scan():
     # Capture User Context for Thread using Composite ID
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_output_dir = get_user_results_dir()
+    user_id_for_log = current_user.id
+    app = current_app._get_current_object()
 
     # [NEW] Increment Database Counter for Stats
     try:
@@ -89,10 +93,17 @@ def initiate_zap_scan():
         
         os.makedirs(os.path.dirname(xml_path), exist_ok=True)
         
+        start_time = time.time()
+        
         # 1. Run Scan (Pass composite ID)
         scan_successful = zap_scanner.run_zap_scan(target_url, str(xml_path), current_user_identifier)
 
+        duration = time.time() - start_time
+        finding_count = 0
+        status = "Failed"
+
         if scan_successful:
+            status = "Completed"
             zap_scanner.log("[+] ZAP scan command finished. Parsing...", current_user_identifier)
             
             # 2. Parse (Pass composite ID)
@@ -100,6 +111,8 @@ def initiate_zap_scan():
             
             if scan_results:
                 scan_results["target_url"] = target_url
+                finding_count = len(scan_results.get("findings", []))
+                
                 # 3. Save JSON (Pass composite ID to logging inside save function if needed, usually directory is enough)
                 json_report_path = zap_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier)
                 
@@ -126,6 +139,18 @@ def initiate_zap_scan():
                 zap_scanner.log("[!] Failed to parse ZAP XML report.", current_user_identifier)
         else:
             zap_scanner.log(f"[!] ZAP scan failed for target: {target_url}.", current_user_identifier)
+
+        # Log to Database (Inside App Context)
+        with app.app_context():
+            scan_logger.create_full_scan_log(
+                user_id=user_id_for_log,
+                tool_name="ZAP",
+                target=target_url,
+                duration=duration,
+                finding_count=finding_count,
+                status=status,
+                scan_type="Quick Scan"
+            )
 
     threading.Thread(target=scan_and_process_task).start()
     

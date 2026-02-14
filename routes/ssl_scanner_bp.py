@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory
+from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory, current_app
 from flask_login import login_required, current_user
 import threading
 import json
@@ -16,6 +16,8 @@ from extensions import db
 from Services import ssl_scanner
 # Import the PDF generator module
 from Services import pdf_generator
+# --- Import Scan Logger ---
+from Services import scan_logger
 
 ssl_scanner_bp = Blueprint('ssl_scanner_bp', __name__)
 
@@ -61,11 +63,11 @@ def scan_ssl():
     target_host = data.get('target_host')
 
     if not target_host:
-        ssl_scanner.log("[!] Target host cannot be empty for SSL scan.")
+        ssl_scanner.log("[!] Target host cannot be empty for SSL scan.", user_identifier)
         return jsonify({"status": "error", "message": "Target host is required."}), 400
 
     if not ssl_scanner.is_sslscan_available():
-        ssl_scanner.log("[!] sslscan.exe is not available. Cannot perform scan.")
+        ssl_scanner.log("[!] sslscan.exe is not available. Cannot perform scan.", user_identifier)
         return jsonify({
             "status": "error",
             "message": "sslscan.exe not found. Please check server configuration and logs."
@@ -74,31 +76,43 @@ def scan_ssl():
     # Determine User Directory for this scan
     user_output_dir = get_user_results_dir()
 
-    # --- FIX: Capture Composite User ID in the main thread ---
+    # --- Capture Context for Thread ---
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_id = current_user.id
+    app = current_app._get_current_object()
 
     # [NEW] Increment Database Counter for Stats
     try:
         current_user.scan_count_ssl += 1
         db.session.commit()
     except Exception as e:
-        ssl_scanner.log(f"[!] Failed to update user stats: {e}")
+        ssl_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     # Function to run in a separate thread
     def scan_task():
         # Use captured identifier
-        ssl_scanner.log(f"[*] Starting SSL scan for {target_host} (User: {current_user_identifier})...")
+        ssl_scanner.log(f"[*] Starting SSL scan for {target_host} (User: {current_user_identifier})...", current_user_identifier)
+        
+        start_time = time.time()
         
         # 1. Run the Scan (Generates XML) - Pass user directory
         report_file = ssl_scanner.run_ssl_scan(target_host, output_dir=user_output_dir)
         
+        duration = time.time() - start_time
+        status = "Failed"
+        finding_count = 0
+
         if report_file:
+            status = "Completed"
             # 2. Parse XML and Save JSON
             # Pass user directory so JSON is saved there
             summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_output_dir)
             
             if summary:
-                ssl_scanner.log(f"[+] SSL scan complete. Generating PDF report...")
+                # Count "findings" as combined weak protocols + vulnerabilities
+                finding_count = len(summary.get('protocols', [])) + len(summary.get('vulnerabilities', []))
+                
+                ssl_scanner.log(f"[+] SSL scan complete. Generating PDF report...", current_user_identifier)
                 
                 # 3. Generate PDF Report
                 try:
@@ -114,16 +128,28 @@ def scan_ssl():
                     pdf_generator.create_ssl_report_pdf(str(json_path), str(pdf_path))
                     
                     if pdf_path.exists():
-                        ssl_scanner.log(f"[+] PDF report generated successfully: {pdf_path}")
+                        ssl_scanner.log(f"[+] PDF report generated successfully: {pdf_path}", current_user_identifier)
                     else:
-                        ssl_scanner.log("[!] PDF generation ran but file not found.")
+                        ssl_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier)
                 
                 except Exception as e:
-                    ssl_scanner.log(f"[!] FAILED to generate PDF: {str(e)}")
+                    ssl_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", current_user_identifier)
             else:
-                ssl_scanner.log(f"[!] Failed to parse SSL report for {target_host}.")
+                ssl_scanner.log(f"[!] Failed to parse SSL report for {target_host}.", current_user_identifier)
         else:
-            ssl_scanner.log(f"[!] SSL scan failed for {target_host}.")
+            ssl_scanner.log(f"[!] SSL scan failed for {target_host}.", current_user_identifier)
+
+        # Log to Database (Inside App Context)
+        with app.app_context():
+            scan_logger.create_full_scan_log(
+                user_id=user_id,
+                tool_name="SSLScan",
+                target=target_host,
+                duration=duration,
+                finding_count=finding_count,
+                status=status,
+                scan_type="Standard"
+            )
 
     threading.Thread(target=scan_task).start()
     return jsonify({"status": "success", "message": f"SSL scan for {target_host} initiated."})
@@ -134,12 +160,13 @@ def trigger_ai_analysis_route():
     """
     Checks if PDF exists and returns scanner type. 
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     paths = ssl_scanner.get_output_paths(user_dir)
     pdf_path = paths["pdf_report"]
 
     if not pdf_path.exists():
-        ssl_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}")
+        ssl_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}", user_identifier)
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
@@ -237,7 +264,7 @@ def get_ssl_report():
             "report_file": json_path.name
         })
     except Exception as e:
-        ssl_scanner.log(f"[!] Error reading or parsing SSL scan report: {e}")
+        ssl_scanner.log(f"[!] Error reading or parsing SSL scan report: {e}", user_identifier)
         return jsonify({
             "status": "error",
             "message": f"Failed to read or parse SSL scan report: {str(e)}"
@@ -247,17 +274,20 @@ def get_ssl_report():
 @login_required
 def clear_ssl_log_route():
     """API endpoint to clear the SSL scanner log file."""
-    ssl_scanner.clear_log_file()
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    ssl_scanner.clear_log_file(user_identifier)
     return jsonify({"status": "success", "message": "SSL log cleared."})
 
 @ssl_scanner_bp.route('/log_stream')
 @login_required
 def ssl_log_stream():
     """Server-Sent Events (SSE) endpoint to stream SSL scanner log messages."""
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     def generate_logs():
+        user_queue = ssl_scanner.get_user_queue(user_identifier)
         while True:
             try:
-                message = ssl_scanner.log_queue.get(timeout=10)
+                message = user_queue.get(timeout=10)
                 yield message
             except Empty:
                 yield ": keep-alive\n\n"

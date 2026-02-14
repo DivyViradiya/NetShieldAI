@@ -151,7 +151,7 @@
     /* --- MAIN GRID --- */
     .main-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
       align-items: start;
     }
@@ -192,6 +192,21 @@
         overflow-x: auto;
     }
     
+    .scan-feed-scroll {
+        max-height: 350px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+
+    .scan-feed-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scan-feed-scroll::-webkit-scrollbar-thumb {
+        background-color: var(--neo-border);
+        border-radius: 10px;
+    }
+    
     .mono-table {
       width: 100%;
       border-collapse: collapse;
@@ -206,6 +221,10 @@
         text-transform: uppercase;
         font-size: 0.75rem;
         letter-spacing: 0.05em;
+        position: sticky;
+        top: 0;
+        background: var(--neo-card);
+        z-index: 10;
     }
     .mono-table td {
       padding: 0.75rem 0.5rem;
@@ -319,30 +338,84 @@
       </div>
       <div class="hud-card">
         <div class="metric-label">
-          Active Sessions <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-green);">person_check</span>
+          Success Rate <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-green);">verified</span>
         </div>
-        <div class="metric-value">{{ active_users }}</div>
-        <div class="metric-sub">Online / Enabled</div>
+        <div class="metric-value">{{ success_rate }}%</div>
+        <div class="metric-sub">{{ total_system_scans }} Executed Scans</div>
       </div>
       <div class="hud-card">
         <div class="metric-label">
-          Total Scans <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-amber);">radar</span>
+          Avg Duration <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-amber);">timer</span>
         </div>
-        <div class="metric-value">{{ total_system_scans }}</div>
-        <div class="metric-sub">Global Executions</div>
+        <div class="metric-value">{{ avg_duration }}s</div>
+        <div class="metric-sub">Mean Completion Time</div>
       </div>
       <div class="hud-card">
         <div class="metric-label">
-          AI Queries <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-purple);">psychology</span>
+          Global Threats <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-purple);">pest_control</span>
         </div>
-        <div class="metric-value">{{ tool_usage_stats['AI Analyst'] }}</div>
-        <div class="metric-sub">Neural Processing</div>
+        <div class="metric-value">{{ total_findings }}</div>
+        <div class="metric-sub">{{ total_critical }} Critical Findings</div>
       </div>
     </div>
 
     <div class="main-grid">
       
-      <div>
+      <div class="left-column">
+        
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="material-symbols-outlined" style="color:var(--neo-blue);">history</span> Recent Scan Feed
+            </div>
+            <div style="font-size:0.75rem; color: #555;">Live System Activity</div>
+          </div>
+          
+          <div class="table-container scan-feed-scroll">
+            <table class="mono-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Operator</th>
+                  <th>Tool</th>
+                  <th>Target</th>
+                  <th>Duration</th>
+                  <th>Findings</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for log in recent_scans %}
+                <tr>
+                  <td style="font-size:0.7rem; color:#666;">{{ log.start_time.strftime('%H:%M:%S') }}</td>
+                  <td style="color:var(--neo-blue);">{{ log.user.username }}</td>
+                  <td>{{ log.tool_name }}</td>
+                  <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis;">{{ log.target }}</td>
+                  <td>{{ log.duration_seconds|round(1) }}s</td>
+                  <td>
+                    {% if log.finding_count > 0 %}
+                      <span style="color:var(--neo-red);">{{ log.finding_count }}</span>
+                    {% else %}
+                      <span style="color:#444;">0</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if log.status == 'Completed' %}
+                      <span class="status-badge status-active" style="font-size:0.6rem;">OK</span>
+                    {% else %}
+                      <span class="status-badge status-suspended" style="font-size:0.6rem;">FAIL</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+                {% if recent_scans|length == 0 %}
+                <tr><td colspan="7" style="text-align:center; padding:2rem; color:#444;">No scan activity recorded yet.</td></tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">
@@ -351,7 +424,7 @@
             <div style="font-size:0.8rem; color: #555;">{{ users|length }} Records Found</div>
           </div>
           
-          <div class="table-container">
+          <div class="table-container scan-feed-scroll">
             <table class="mono-table">
               <thead>
                 <tr>
@@ -429,7 +502,7 @@
         </div>
       </div>
 
-      <div style="display:flex; flex-direction:column;">
+      <div class="right-column">
         
         <div class="panel">
           <div class="panel-header">
@@ -439,6 +512,38 @@
           </div>
           <div class="chart-wrapper">
              <canvas id="toolUsageChart"></canvas>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="material-symbols-outlined" style="color:var(--neo-green);">inventory_2</span> System Health
+            </div>
+          </div>
+          <div style="margin-bottom:1rem;">
+             <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:0.5rem;">
+                <span style="color:var(--neo-text-muted);">DISK STORAGE</span>
+                <span style="font-family:var(--font-mono); color:white;">{{ storage_info.percent }}%</span>
+             </div>
+             <div style="height:6px; background:var(--neo-border); border-radius:3px; overflow:hidden;">
+                <div style="width:{{ storage_info.percent }}%; height:100%; background:var(--neo-blue);"></div>
+             </div>
+             <div style="font-size:0.65rem; color:#555; margin-top:4px;">
+                Using {{ storage_info.used_gb }}GB of {{ storage_info.total_gb }}GB total
+             </div>
+          </div>
+          
+          <div style="padding-top:1rem; border-top:1px solid var(--neo-border);">
+             <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                   <div style="font-size:0.6rem; color:var(--neo-text-muted);">FAILED LOGINS</div>
+                   <div style="font-family:var(--font-mono); font-size:1.2rem; color:{{ 'var(--neo-red)' if total_failed_logins > 0 else 'white' }};">
+                      {{ total_failed_logins }}
+                   </div>
+                </div>
+                <span class="material-symbols-outlined" style="color:var(--neo-red); opacity:0.5;">warning</span>
+             </div>
           </div>
         </div>
 
@@ -498,7 +603,10 @@
                 ssl: {{ tool_usage_stats.get('SSL', 0) }},
                 sniffer: {{ tool_usage_stats.get('Sniffer', 0) }},
                 killchain: {{ tool_usage_stats.get('Kill Chain', 0) }}, 
-                ai: {{ tool_usage_stats.get('AI Analyst', 0) }}
+                ai: {{ tool_usage_stats.get('AI Analyst', 0) }},
+                sql: {{ tool_usage_stats.get('SQL Map', 0) }},
+                api: {{ tool_usage_stats.get('API Scan', 0) }},
+                sast: {{ tool_usage_stats.get('SAST', 0) }}
             };
 
             if (chart) chart.destroy();
@@ -506,7 +614,7 @@
             chart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Network', 'Web Vuln', 'SSL/TLS', 'Traffic', 'Kill Chain', 'AI Analysis'],
+                    labels: ['Network', 'Web Vuln', 'SSL/TLS', 'Traffic', 'Kill Chain', 'AI Analysis', 'SQL Injection', 'API Scan', 'SAST (Semgrep)'],
                     datasets: [{
                         data: [
                             usageData.nmap, 
@@ -514,7 +622,10 @@
                             usageData.ssl, 
                             usageData.sniffer, 
                             usageData.killchain,
-                            usageData.ai
+                            usageData.ai,
+                            usageData.sql,
+                            usageData.api,
+                            usageData.sast
                         ],
                         backgroundColor: [
                             theme.blue,
@@ -522,7 +633,10 @@
                             theme.green,
                             theme.amber,
                             theme.purple,
-                            theme.cyan
+                            theme.cyan,
+                            '#0ea5e9', // Sky (SQL)
+                            '#ec4899', // Pink (API)
+                            '#6366f1'  // Indigo (SAST)
                         ],
                         borderColor: theme.bg,
                         borderWidth: 2,

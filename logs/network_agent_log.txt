@@ -1,3 +1,0 @@
-[2026-02-08 10:43:13] [*] Log file cleared.
-[2026-02-08 12:36:52] [*] Starting Semgrep PDF generation: D:\NetShieldAI\Services\results\DivyaViradiya_1\semgrep_scanner\semgrep_report.pdf
-[2026-02-08 12:37:02] [+] Semgrep PDF saved: D:\NetShieldAI\Services\results\DivyaViradiya_1\semgrep_scanner\semgrep_report.pdf

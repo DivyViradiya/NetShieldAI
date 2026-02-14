@@ -24,40 +24,76 @@ LOG_FILE = BASE_DIR / "logs" / "sql_agent_log.txt"
 TEMP_DIR = BASE_DIR / "Services" / "temp" / "sqlmap"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
-# Global queue for logging
-log_queue = queue.Queue()
+# --- USER ISOLATION ---
+user_queues = {}
+
+def get_user_queue(user_id):
+    """Ensures a queue exists for the user and returns it."""
+    if user_id not in user_queues:
+        user_queues[user_id] = queue.Queue()
+    return user_queues[user_id]
 
 # --- LOGGING UTILS ---
-def log(message):
+def log(message, user_id=None):
     """Logs messages to queue for SSE streaming and file."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     full_message = f"data: [{timestamp}] {message}\n\n"
-    log_queue.put(full_message)
+    
+    if user_id:
+        user_id = str(user_id)
+        uq = get_user_queue(user_id)
+        uq.put(full_message)
+
+    # Determine Log File Path
+    log_dir = BASE_DIR / "logs"
+    if user_id:
+        user_id = str(user_id)
+        target_dir = log_dir / "users" / user_id
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target_log_file = target_dir / "sql_agent_log.txt"
+    else:
+        system_dir = log_dir / "system"
+        system_dir.mkdir(parents=True, exist_ok=True)
+        target_log_file = system_dir / "sql_system_log.txt"
+
     try:
-        with open(LOG_FILE, 'a', encoding='utf-8') as f:
+        with open(target_log_file, 'a', encoding='utf-8') as f:
             f.write(f"[{timestamp}] {message}\n")
     except Exception as e:
-        print(f"ERROR: Failed to write to {LOG_FILE}: {e}")
+        print(f"ERROR: Failed to write to {target_log_file}: {e}")
 
-def send_sse_event(event_name, data=""):
-    """Sends a custom SSE event to the frontend."""
+def send_sse_event(event_name, data="", user_id=None):
+    """Sends a custom SSE event to the user's log_queue."""
     if isinstance(data, (dict, list)):
         data_str = json.dumps(data)
     else:
         data_str = str(data)
     sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
-    log_queue.put(sse_message)
+    
+    if user_id:
+        user_id = str(user_id)
+        uq = get_user_queue(user_id)
+        uq.put(sse_message)
 
 def get_python_executable():
     return sys.executable
 
-def clear_log_file():
+def clear_log_file(user_id=None):
+    """Clears the log file for a specific user or the system log."""
+    log_dir = BASE_DIR / "logs"
+    if user_id:
+        user_id = str(user_id)
+        target_log_file = log_dir / "users" / user_id / "sql_agent_log.txt"
+    else:
+        target_log_file = log_dir / "system" / "sql_system_log.txt"
+
     try:
-        with open(LOG_FILE, 'w', encoding='utf-8') as f:
-            f.write("")
-        log("[*] SQL log file cleared.")
+        if target_log_file.exists():
+            with open(target_log_file, 'w', encoding='utf-8') as f:
+                f.write("")
+        log("[*] SQL log file cleared.", user_id)
     except Exception as e:
-        log(f"[!] Error clearing SQL log file: {e}")
+        log(f"[!] Error clearing SQL log file: {e}", user_id)
 
 # --- PATH HELPERS ---
 def get_output_paths(output_dir=None):

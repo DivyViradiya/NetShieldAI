@@ -1,0 +1,453 @@
+2026-02-08 16:36:04,923 [main ] INFO  Constant - Copying default configuration to D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\config.xml
+2026-02-08 16:36:05,064 [main ] INFO  Constant - Creating directory D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\session
+2026-02-08 16:36:05,065 [main ] INFO  Constant - Creating directory D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\dirbuster
+2026-02-08 16:36:05,066 [main ] INFO  Constant - Creating directory D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\fuzzers
+2026-02-08 16:36:05,066 [main ] INFO  Constant - Creating directory D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\plugin
+2026-02-08 16:36:05,171 [main ] INFO  DaemonBootstrap - ZAP 2.17.0 started 08/02/2026, 16:36:05 with home: D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\ cores: 12 maxMemory: 512 MB
+2026-02-08 16:36:05,202 [main ] INFO  AbstractParam - Setting config api.disablekey = true was null
+2026-02-08 16:36:05,202 [main ] INFO  AbstractParam - Setting config api.addrs.addr.name = .* was null
+2026-02-08 16:36:05,202 [main ] INFO  AbstractParam - Setting config api.addrs.addr.regex = true was null
+2026-02-08 16:36:20,773 [ZAP-daemon] INFO  ExtensionFactory - Installed add-ons: [[id=alertFilters, version=26.0.0], [id=ascanrules, version=78.0.0], [id=authhelper, version=0.34.0], [id=automation, version=0.58.0], [id=bruteforce, version=20.0.0], [id=callhome, version=0.20.0], [id=client, version=0.20.0], [id=commonlib, version=1.39.0], [id=database, version=0.9.0], [id=diff, version=18.0.0], [id=directorylistv1, version=9.0.0], [id=domxss, version=23.0.0], [id=encoder, version=1.8.0], [id=exim, version=0.16.0], [id=formhandler, version=6.8.0], [id=fuzz, version=13.16.0], [id=gettingStarted, version=20.0.0], [id=graaljs, version=0.12.0], [id=graphql, version=0.29.0], [id=help, version=22.0.0], [id=hud, version=0.19.0], [id=insights, version=0.0.1], [id=invoke, version=17.0.0], [id=network, version=0.25.0], [id=oast, version=0.24.0], [id=onlineMenu, version=15.0.0], [id=openapi, version=48.0.0], [id=postman, version=0.9.0], [id=pscan, version=0.6.0], [id=pscanrules, version=70.0.0], [id=quickstart, version=53.0.0], [id=replacer, version=21.0.0], [id=reports, version=0.43.0], [id=requester, version=7.9.0], [id=retest, version=0.11.0], [id=retire, version=0.52.0], [id=reveal, version=10.0.0], [id=scanpolicies, version=0.7.0], [id=scripts, version=45.17.0], [id=selenium, version=15.43.0], [id=sequence, version=9.0.0], [id=soap, version=29.0.0], [id=spider, version=0.18.0], [id=spiderAjax, version=23.29.0], [id=tips, version=16.0.0], [id=webdriverwindows, version=170.0.0], [id=websocket, version=35.0.0], [id=zest, version=48.11.0]]
+2026-02-08 16:36:20,775 [ZAP-daemon] INFO  ExtensionFactory - Loading extensions
+2026-02-08 16:36:21,996 [ZAP-daemon] INFO  TlsUtils - Using supported SSL/TLS protocols: [TLSv1.2, TLSv1.3]
+2026-02-08 16:36:23,288 [ZAP-daemon] INFO  ExtensionFactory - Extensions loaded
+2026-02-08 16:36:24,722 [ZAP-daemon] INFO  FlywayExecutor - Database: jdbc:hsqldb:file:D:/NetShieldAI/Services/temp/api_scanner/user_DivyaViradiya_1_54900/session/untitled1 (HSQL Database Engine 2.7)
+2026-02-08 16:36:24,941 [ZAP-daemon] INFO  JdbcTableSchemaHistory - Schema history table "PUBLIC"."AUTHHELPER_FLYWAY_SCHEMA_HISTORY" does not exist yet
+2026-02-08 16:36:24,953 [ZAP-daemon] INFO  DbValidate - Successfully validated 6 migrations (execution time 00:00.063s)
+2026-02-08 16:36:24,986 [ZAP-daemon] INFO  JdbcTableSchemaHistory - Creating Schema History table "PUBLIC"."AUTHHELPER_FLYWAY_SCHEMA_HISTORY" with baseline ...
+2026-02-08 16:36:25,149 [ZAP-daemon] INFO  DbBaseline - Successfully baselined schema with version: 0
+2026-02-08 16:36:25,332 [ZAP-daemon] INFO  DbMigrate - Current version of schema "PUBLIC": 0
+2026-02-08 16:36:25,520 [ZAP-daemon] INFO  DbMigrate - Migrating schema "PUBLIC" to version "1 - Create tables"
+2026-02-08 16:36:25,594 [ZAP-daemon] INFO  DbMigrate - Migrating schema "PUBLIC" to version "2 - Create storage tables"
+2026-02-08 16:36:25,636 [ZAP-daemon] INFO  DbMigrate - Migrating schema "PUBLIC" to version "3 - Improve diags"
+2026-02-08 16:36:25,678 [ZAP-daemon] INFO  DbMigrate - Migrating schema "PUBLIC" to version "4 - Web element selector"
+2026-02-08 16:36:25,711 [ZAP-daemon] INFO  DbMigrate - Migrating schema "PUBLIC" to version "5 - Af plan"
+2026-02-08 16:36:25,751 [ZAP-daemon] INFO  DbMigrate - Migrating schema "PUBLIC" to version "6 - Auth report data"
+2026-02-08 16:36:25,811 [ZAP-daemon] INFO  DbMigrate - Successfully applied 6 migrations to schema "PUBLIC", now at version v6 (execution time 00:00.062s)
+2026-02-08 16:36:32,014 [ZAP-daemon] INFO  ExtensionLoader - Initializing Auto-update Extension - Allows ZAP to check for updates
+2026-02-08 16:36:32,018 [ZAP-daemon] INFO  ExtensionLoader - Initializing Options Extension - Options Extension
+2026-02-08 16:36:32,018 [ZAP-daemon] INFO  ExtensionLoader - Initializing Edit Menu Extension - Edit Menu Extension
+2026-02-08 16:36:32,019 [ZAP-daemon] INFO  ExtensionLoader - Initializing API Extension - Provides a rest based API for controlling and accessing ZAP
+2026-02-08 16:36:32,031 [ZAP-daemon] INFO  ExtensionLoader - Initializing History Extension - History Extension
+2026-02-08 16:36:32,034 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionReveal - Show hidden fields and enable disabled fields
+2026-02-08 16:36:32,035 [ZAP-daemon] INFO  ExtensionLoader - Initializing Search Extension - Search messages for strings and regular expressions
+2026-02-08 16:36:32,037 [ZAP-daemon] INFO  ExtensionLoader - Initializing Breakpoint Extension - Allows you to intercept and modify requests and responses
+2026-02-08 16:36:32,039 [ZAP-daemon] INFO  ExtensionLoader - Initializing Passive Scan Extension - Passive scanner
+2026-02-08 16:36:32,039 [ZAP-daemon] INFO  ExtensionLoader - Initializing Alerts Extension - Allows you to view and manage alerts
+2026-02-08 16:36:32,041 [ZAP-daemon] INFO  ExtensionLoader - Initializing Active Scan Extension - Active scanner, heavily based on the original Paros active scanner, but with additional tests added
+2026-02-08 16:36:32,053 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionSequence - ExtensionSequence
+2026-02-08 16:36:32,055 [ZAP-daemon] INFO  ExtensionLoader - Initializing Standard Menus Extension - A set of common popup menus for miscellaneous tasks
+2026-02-08 16:36:32,055 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionBruteForce - Forced browsing of files and directories using code from the OWASP DirBuster tool
+2026-02-08 16:36:32,057 [ZAP-daemon] INFO  ExtensionLoader - Initializing Compare Extension - Compares 2 sessions and generates an HTML file showing the differences
+2026-02-08 16:36:32,057 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionInvoke - Invoke external applications passing context related information such as URLs and parameters
+2026-02-08 16:36:32,057 [ZAP-daemon] INFO  ExtensionLoader - Initializing Anti-CSRF Extension - Handles anti cross site request forgery (CSRF) tokens
+2026-02-08 16:36:32,072 [ZAP-daemon] INFO  ExtensionLoader - Initializing Authentication Extension - Authentication Extension
+2026-02-08 16:36:32,084 [ZAP-daemon] INFO  ExtensionAuthentication - Loaded authentication method types: [Form-based Authentication, HTTP/NTLM Authentication, Manual Authentication, Script-based Authentication, JSON-based Authentication]
+2026-02-08 16:36:32,087 [ZAP-daemon] INFO  ExtensionLoader - Initializing Users Extension - Users Extension
+2026-02-08 16:36:32,088 [ZAP-daemon] INFO  ExtensionLoader - Initializing Parameters Extension - Summarise and analyse FORM and URL parameters as well as cookies
+2026-02-08 16:36:32,089 [ZAP-daemon] INFO  ExtensionLoader - Initializing Script Extension - Script integration
+2026-02-08 16:36:32,107 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionScripts - Scripting console, supports all JSR 223 scripting languages
+2026-02-08 16:36:32,128 [ZAP-daemon] INFO  ExtensionLoader - Initializing Forced User Extension - Forced User Extension
+2026-02-08 16:36:32,129 [ZAP-daemon] INFO  ExtensionLoader - Initializing HTTP Sessions Extension - Extension handling HTTP sessions
+2026-02-08 16:36:32,133 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionZest - Zest is a specialized scripting language, originally, from Mozilla specifically designed to be used in security tools
+2026-02-08 16:36:32,949 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionDiff - ExtensionDiff
+2026-02-08 16:36:32,951 [ZAP-daemon] INFO  ExtensionLoader - Initializing HTTP Panel Post Table View Extension - HTTP Panel Post Table View Extension
+2026-02-08 16:36:32,952 [ZAP-daemon] INFO  ExtensionLoader - Initializing Encoder Addon - Adds support for scriptable encoders to ZAP.
+2026-02-08 16:36:32,953 [ZAP-daemon] INFO  ExtensionLoader - Initializing Session Management Extension - Session Management Extension
+2026-02-08 16:36:32,962 [ZAP-daemon] INFO  ExtensionSessionManagement - Loaded session management method types: [Cookie-based Session Management, HTTP Authentication Session Management, Script-based Session Management]
+2026-02-08 16:36:32,964 [ZAP-daemon] INFO  ExtensionLoader - Initializing HTTP Panel Form Table View Extension - HTTP Panel Form Table View Extension
+2026-02-08 16:36:32,965 [ZAP-daemon] INFO  ExtensionLoader - Initializing WebSockets Support - Capture messages from WebSockets with the ability to set breakpoints.
+2026-02-08 16:36:33,007 [ZAP-daemon] INFO  ExtensionLoader - Initializing SOAP/WSDL Support - Allows you to import a WSDL file containing operations which ZAP will access, adding them to the Sites tree.
+2026-02-08 16:36:33,012 [ZAP-daemon] INFO  ExtensionLoader - Initializing Core UI Extension - Core UI related functionality.
+2026-02-08 16:36:33,015 [ZAP-daemon] INFO  ExtensionLoader - Initializing Authorization Extension - Authorization Extension
+2026-02-08 16:36:33,017 [ZAP-daemon] INFO  ExtensionLoader - Initializing Requester - Allows to manually edit and send messages.
+2026-02-08 16:36:33,032 [ZAP-daemon] INFO  ExtensionLoader - Initializing AJAX Spider - AJAX Spider, uses Crawljax
+2026-02-08 16:36:33,042 [ZAP-daemon] INFO  ExtensionLoader - Initializing WebDriver Provider - Provides WebDrivers to control several browsers using Selenium and includes HtmlUnit browser.
+2026-02-08 16:36:33,194 [ZAP-daemon] INFO  ExtensionLoader - Initializing Refresh Sites Tree Extension - Adds menu item to refresh the Sites tree
+2026-02-08 16:36:33,197 [ZAP-daemon] INFO  ExtensionLoader - Initializing Help Extension - ZAP User Guide
+2026-02-08 16:36:33,198 [ZAP-daemon] INFO  ExtensionLoader - Initializing Call Home - Handles all of the calls to ZAP services
+2026-02-08 16:36:33,204 [ZAP-daemon] INFO  ExtensionLoader - Initializing Network Extension - Provides core networking capabilities.
+2026-02-08 16:36:33,394 [ZAP-daemon] INFO  ConnectionOptions - Unsafe SSL/TLS renegotiation disabled.
+2026-02-08 16:36:33,405 [ZAP-daemon] INFO  ExtensionLoader - Initializing Extension Configuration Extension - Allows you to configure which extensions are loaded when ZAP starts
+2026-02-08 16:36:33,408 [ZAP-daemon] INFO  ExtensionLoader - Initializing Combined HTTP Panels Extension - Combined HTTP Panels Extension
+2026-02-08 16:36:33,409 [ZAP-daemon] INFO  ExtensionLoader - Initializing HTTP Panel Hex View Extension - HTTP Panel Hex View Extension
+2026-02-08 16:36:33,410 [ZAP-daemon] INFO  ExtensionLoader - Initializing HTTP Panel Image View Extension - HTTP Panel Image View Extension
+2026-02-08 16:36:33,411 [ZAP-daemon] INFO  ExtensionLoader - Initializing HTTP Panel Query Table View Extension - HTTP Panel Query Table View Extension
+2026-02-08 16:36:33,412 [ZAP-daemon] INFO  ExtensionLoader - Initializing HTTP Panel Syntax Highlighter View Extension - HTTP Panel Syntax Highlighter View Extension
+2026-02-08 16:36:33,413 [ZAP-daemon] INFO  ExtensionLoader - Initializing Keyboard Configuration Extension - Adds support for configurable keyboard shortcuts for all of the ZAP menus.
+2026-02-08 16:36:33,413 [ZAP-daemon] INFO  ExtensionLoader - Initializing Scanner Rule Configuration Extension - Active and passive rule configuration
+2026-02-08 16:36:33,423 [ZAP-daemon] INFO  ExtensionLoader - Initializing Statistics Extension - Statistics
+2026-02-08 16:36:33,429 [ZAP-daemon] INFO  ExtensionStats - Start recording in memory stats
+2026-02-08 16:36:33,430 [ZAP-daemon] INFO  ExtensionLoader - Initializing Custom Pages Extension - Custom Pages Definition
+2026-02-08 16:36:33,431 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionAlertFilters - Context alert rules filter
+2026-02-08 16:36:33,439 [ZAP-daemon] INFO  ExtensionLoader - Initializing Alert Filters Automation - Alert Filters Automation Framework Integration
+2026-02-08 16:36:33,449 [ZAP-daemon] INFO  ExtensionLoader - Initializing Active Scan Rules - Release status active scan rules
+2026-02-08 16:36:33,452 [ZAP-daemon] INFO  ExtensionLoader - Initializing Authentication Helper - Authentication Helper
+2026-02-08 16:36:33,477 [ZAP-daemon] INFO  ExtensionLoader - Initializing Client Spider Browser Based Authentication Support - Enables browser based authentication when performing an authenticated Client Spider scan.
+2026-02-08 16:36:33,485 [ZAP-daemon] INFO  ExtensionLoader - Initializing Authentication Helper Reports - Authentication Helper Reports
+2026-02-08 16:36:33,493 [ZAP-daemon] INFO  ExtensionLoader - Initializing AJAX Spider Browser Based Authentication Support - Enables browser based authentication when performing an authenticated AJAX Spider scan.
+2026-02-08 16:36:33,498 [ZAP-daemon] INFO  ExtensionLoader - Initializing Automation Framework - Provides functionality to simplify using ZAP in an automated manner
+2026-02-08 16:36:33,507 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionClientIntegration - Client Side Integration
+2026-02-08 16:36:33,533 [ZAP-daemon] INFO  ExtensionLoader - Initializing Client Spider Automation - Client Spider Automation Framework Integration
+2026-02-08 16:36:33,549 [ZAP-daemon] INFO  ExtensionLoader - Initializing Client Zest Script Recording Support - Allows recording client events as Zest scripts.
+2026-02-08 16:36:33,559 [ZAP-daemon] INFO  ExtensionLoader - Initializing Common Library - A library of shared functionality
+2026-02-08 16:36:33,564 [ZAP-daemon] INFO  ExtensionLoader - Initializing Database Extension - Provides databases and persistence capabilities.
+2026-02-08 16:36:33,565 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionDomXSS - DOM XSS Active Scan Rule
+2026-02-08 16:36:33,958 [ZAP-daemon] INFO  ExtensionLoader - Initializing Import/Export - Import and Export functionality supporting multiple formats.
+2026-02-08 16:36:33,963 [ZAP-daemon] INFO  ExtensionLoader - Initializing Import/Export Automation - Import/Export Automation Framework Integration
+2026-02-08 16:36:33,980 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionFormHandler - This extension allows a user to change the default values used for generated content (e.g. spiders, importers).
+2026-02-08 16:36:33,993 [ZAP-daemon] INFO  ExtensionLoader - Initializing Advance Fuzzer - Provides the foundation for concrete message types (for example, HTTP, WebSockets) expose fuzzer implementations.
+2026-02-08 16:36:33,999 [ZAP-daemon] INFO  ExtensionLoader - Initializing HTTP Fuzzer - Allows to fuzz HTTP messages.
+2026-02-08 16:36:34,001 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionGettingStarted - The ZAP Getting Started Guide
+2026-02-08 16:36:34,002 [ZAP-daemon] INFO  ExtensionLoader - Initializing GraalVM JavaScript Engine Extension - Provides the GraalVM JavaScript engine for ZAP scripting.
+2026-02-08 16:36:34,861 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionGraphQl - Allows you to inspect and attack GraphQL endpoints.
+2026-02-08 16:36:34,880 [ZAP-daemon] INFO  ExtensionLoader - Initializing GraphQL Automation - GraphQL Automation Framework Integration
+2026-02-08 16:36:34,888 [ZAP-daemon] INFO  ExtensionLoader - Initializing GraphQL Spider - GraphQL Spider Integration
+2026-02-08 16:36:34,891 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionHUD - Heads Up Display
+2026-02-08 16:36:38,414 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionHUDlaunch - ExtensionHUDlaunch
+2026-02-08 16:36:38,418 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionInsights - Insights Extension
+2026-02-08 16:36:38,420 [ZAP-daemon] INFO  ExtensionLoader - Initializing Alert Filters Automation - Alert Filters Automation Framework Integration
+2026-02-08 16:36:38,424 [ZAP-daemon] INFO  ExtensionLoader - Initializing Insights Reports Extension - Adds Insights to the report data
+2026-02-08 16:36:38,425 [ZAP-daemon] INFO  ExtensionLoader - Initializing Out-of-band Application Security Testing - Adds Out-of-band Application Security Testing functionality.
+2026-02-08 16:36:38,461 [ZAP-daemon] INFO  ExtensionLoader - Initializing OAST Scripts - Adds OAST scripts.
+2026-02-08 16:36:38,461 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionOnlineMenu - The Online menu links
+2026-02-08 16:36:38,462 [ZAP-daemon] INFO  ExtensionLoader - Initializing OpenAPI Import - Allows you to spider and import OpenAPI (Swagger) definitions 
+2026-02-08 16:36:38,466 [ZAP-daemon] INFO  ExtensionLoader - Initializing OpenAPI Automation - OpenAPI Automation Framework Integration
+2026-02-08 16:36:38,470 [ZAP-daemon] INFO  ExtensionLoader - Initializing OpenAPI Spider - OpenAPI Spider Integration
+2026-02-08 16:36:38,476 [ZAP-daemon] INFO  ExtensionLoader - Initializing Postman Import - Allows you to spider and import Postman collections
+2026-02-08 16:36:38,478 [ZAP-daemon] INFO  ExtensionLoader - Initializing Postman Automation - Postman Automation Framework Integration
+2026-02-08 16:36:38,481 [ZAP-daemon] INFO  ExtensionLoader - Initializing Passive Scanner Extension - Provides core passive scanning capabilities.
+2026-02-08 16:36:38,519 [ZAP-daemon] INFO  ExtensionLoader - Initializing Passive Scanner Automation Framework Extension - Provides jobs and result data related to the passive scanner.
+2026-02-08 16:36:38,519 [ZAP-daemon] INFO  ExtensionLoader - Initializing Passive Scan Rules - Release status passive scan rules.
+2026-02-08 16:36:38,521 [ZAP-daemon] INFO  ExtensionLoader - Initializing Quick Start panel  - Adds the Quick Start panel for scanning and exploring applications
+2026-02-08 16:36:38,524 [ZAP-daemon] INFO  ExtensionLoader - Initializing Quick Start Ajax Spider integration - Add the option to use the Ajax Spider in the Quick Start scan
+2026-02-08 16:36:38,524 [ZAP-daemon] INFO  ExtensionLoader - Initializing Quick Start HUD Integration - HUD integration for the quick start panel
+2026-02-08 16:36:38,525 [ZAP-daemon] INFO  ExtensionLoader - Initializing Quick Start Browser Launcher - Launch browsers preset proxying through ZAP
+2026-02-08 16:36:38,526 [ZAP-daemon] INFO  ExtensionLoader - Initializing Quick Start Spider Integration - Adds the option to use the traditional Spider in the Quick Start scan.
+2026-02-08 16:36:38,528 [ZAP-daemon] INFO  ExtensionLoader - Initializing Match and Replace - Easy way to replace strings in requests and responses
+2026-02-08 16:36:38,535 [ZAP-daemon] INFO  ExtensionLoader - Initializing Replacer Automation - Replacer Automation Framework Integration
+2026-02-08 16:36:38,540 [ZAP-daemon] INFO  ExtensionLoader - Initializing Report Generator - Templated and themed report generation functionality
+2026-02-08 16:36:38,544 [ZAP-daemon] INFO  ExtensionLoader - Initializing Report Generation Automation Integration - Report Generation Automation Integration
+2026-02-08 16:36:38,551 [ZAP-daemon] INFO  ExtensionLoader - Initializing Retest - Facilitates the verification of presence/absence of certain alerts.
+2026-02-08 16:36:38,552 [ZAP-daemon] INFO  ExtensionLoader - Initializing Scripts Automation Framework Integration - Scripts Automation
+2026-02-08 16:36:38,575 [ZAP-daemon] INFO  ExtensionLoader - Initializing Sequence Automation - Sequence Automation Framework Integration
+2026-02-08 16:36:38,586 [ZAP-daemon] INFO  ExtensionLoader - Initializing SOAP Automation - SOAP Automation Framework Integration
+2026-02-08 16:36:38,590 [ZAP-daemon] INFO  ExtensionLoader - Initializing SOAP Spider - SOAP Spider Integration
+2026-02-08 16:36:38,591 [ZAP-daemon] INFO  ExtensionLoader - Initializing Spider Extension - Spider used for automatically finding URIs on a site.
+2026-02-08 16:36:38,640 [ZAP-daemon] INFO  ExtensionLoader - Initializing Spider Automation - Spider Automation Integration
+2026-02-08 16:36:38,656 [ZAP-daemon] INFO  ExtensionLoader - Initializing Ajax Spider Automation - Ajax Spider Automation Framework Integration
+2026-02-08 16:36:38,666 [ZAP-daemon] INFO  ExtensionLoader - Initializing ExtensionTipsAndTricks - Tips and Tricks
+2026-02-08 16:36:38,667 [ZAP-daemon] INFO  ExtensionLoader - Initializing WebSocket Fuzzer - Allows to fuzz WebSocket messages.
+2026-02-08 16:36:38,668 [ZAP-daemon] INFO  ExtensionLoader - Initializing WebSocket Message Editor - Provides the WebSocket Message Editor dialogues.
+2026-02-08 16:36:39,154 [ZAP-daemon] WARN  SeleniumManager - Unable to discover proper geckodriver version in offline mode
+2026-02-08 16:36:39,200 [ZAP-daemon] WARN  FirefoxProfileManager - Unable to find Firefox binary through SeleniumManager.
+2026-02-08 16:36:39,201 [ZAP-daemon] ERROR ExtensionClientIntegration - Failed to get or create Firefox profile zap-client-profile
+2026-02-08 16:36:39,888 [ZAP-daemon] INFO  CallbackService - Started callback service on 0.0.0.0:55101
+2026-02-08 16:36:39,931 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Authentication Request Identified
+2026-02-08 16:36:39,932 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Session Management Response Identified
+2026-02-08 16:36:39,933 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Verification Request Identified
+2026-02-08 16:36:40,158 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Anti-clickjacking Header
+2026-02-08 16:36:40,159 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Application Error Disclosure
+2026-02-08 16:36:40,159 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Big Redirect Detected (Potential Sensitive Information Leak)
+2026-02-08 16:36:40,160 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Re-examine Cache-control Directives
+2026-02-08 16:36:40,161 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Charset Mismatch
+2026-02-08 16:36:40,161 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Content Security Policy (CSP) Header Not Set
+2026-02-08 16:36:40,162 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: CSP
+2026-02-08 16:36:40,163 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Content-Type Header Missing
+2026-02-08 16:36:40,163 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Cookie No HttpOnly Flag
+2026-02-08 16:36:40,164 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Loosely Scoped Cookie
+2026-02-08 16:36:40,164 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Cookie without SameSite Attribute
+2026-02-08 16:36:40,168 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Cookie Without Secure Flag
+2026-02-08 16:36:40,169 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Cross-Domain Misconfiguration
+2026-02-08 16:36:40,170 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Cross-Domain JavaScript Source File Inclusion
+2026-02-08 16:36:40,172 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Absence of Anti-CSRF Tokens
+2026-02-08 16:36:40,173 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Directory Browsing
+2026-02-08 16:36:40,174 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Hash Disclosure
+2026-02-08 16:36:40,175 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Heartbleed OpenSSL Vulnerability (Indicative)
+2026-02-08 16:36:40,175 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: In Page Banner Information Leak
+2026-02-08 16:36:40,175 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Private IP Disclosure
+2026-02-08 16:36:40,177 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Session ID in URL Rewrite
+2026-02-08 16:36:40,177 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Information Disclosure - Debug Error Messages
+2026-02-08 16:36:40,177 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Information Disclosure - Sensitive Information in URL
+2026-02-08 16:36:40,178 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Information Disclosure - Sensitive Information in HTTP Referrer Header
+2026-02-08 16:36:40,179 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Information Disclosure - Suspicious Comments
+2026-02-08 16:36:40,180 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Weak Authentication Method
+2026-02-08 16:36:40,180 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: HTTP to HTTPS Insecure Transition in Form Post
+2026-02-08 16:36:40,181 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: HTTPS to HTTP Insecure Transition in Form Post
+2026-02-08 16:36:40,181 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Insecure JSF ViewState
+2026-02-08 16:36:40,183 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Java Serialization Object
+2026-02-08 16:36:40,183 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Reverse Tabnabbing
+2026-02-08 16:36:40,185 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Secure Pages Include Mixed Content
+2026-02-08 16:36:40,185 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Modern Web Application
+2026-02-08 16:36:40,185 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: PII Disclosure
+2026-02-08 16:36:40,186 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Script Served From Malicious Domain (polyfill)
+2026-02-08 16:36:40,187 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Retrieved from Cache
+2026-02-08 16:36:40,188 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: HTTP Server Response Header
+2026-02-08 16:36:40,188 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Strict-Transport-Security Header
+2026-02-08 16:36:40,189 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Sub Resource Integrity Attribute Missing
+2026-02-08 16:36:40,189 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Timestamp Disclosure
+2026-02-08 16:36:40,190 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: User Controllable Charset
+2026-02-08 16:36:40,190 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Cookie Poisoning
+2026-02-08 16:36:40,190 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: User Controllable HTML Element Attribute (Potential XSS)
+2026-02-08 16:36:40,191 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: User Controllable JavaScript Event (XSS)
+2026-02-08 16:36:40,193 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Off-site Redirect
+2026-02-08 16:36:40,194 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Username Hash Found
+2026-02-08 16:36:40,195 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Viewstate
+2026-02-08 16:36:40,195 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: X-AspNet-Version Response Header
+2026-02-08 16:36:40,195 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: X-Backend-Server Header Information Leak
+2026-02-08 16:36:40,197 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: X-ChromeLogger-Data (XCOLD) Header Information Leak
+2026-02-08 16:36:40,198 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: X-Content-Type-Options Header Missing
+2026-02-08 16:36:40,203 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: X-Debug-Token Information Leak
+2026-02-08 16:36:40,205 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s)
+2026-02-08 16:36:40,206 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: ZAP is Out of Date
+2026-02-08 16:36:40,210 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Vulnerable JS Library (Powered by Retire.js)
+2026-02-08 16:36:40,217 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Script Passive Scan Rules
+2026-02-08 16:36:40,219 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: WSDL File Detection
+2026-02-08 16:36:40,221 [ZAP-daemon] INFO  ScanRuleManager - Loaded passive scan rule: Stats Passive Scan Rule
+2026-02-08 16:36:40,228 [ZAP-daemon] INFO  ExtensionNetwork - Creating new root CA certificate.
+2026-02-08 16:36:42,701 [ZAP-daemon] INFO  ExtensionNetwork - New root CA certificate created.
+2026-02-08 16:36:44,785 [ZAP-daemon] INFO  ExtensionAutoUpdate - There is/are 7 newer addons
+2026-02-08 16:37:05,734 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Installing new addon graphql v0.30.0
+2026-02-08 16:37:05,911 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Finished installing new addon graphql v0.30.0
+2026-02-08 16:37:05,937 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Installing new addon retire v0.53.0
+2026-02-08 16:37:05,946 [ZAP-DownloadInstaller] INFO  ScanRuleManager - Loaded passive scan rule: Vulnerable JS Library (Powered by Retire.js)
+2026-02-08 16:37:05,974 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Finished installing new addon retire v0.53.0
+2026-02-08 16:37:06,042 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Installing new addon ascanrules v79.0.0
+2026-02-08 16:37:06,230 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Finished installing new addon ascanrules v79.0.0
+2026-02-08 16:37:06,267 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Installing new addon openapi v51.0.0
+2026-02-08 16:37:10,454 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Finished installing new addon openapi v51.0.0
+2026-02-08 16:37:10,501 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Installing new addon webdriverwindows v179.0.0
+2026-02-08 16:37:11,761 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Finished installing new addon webdriverwindows v179.0.0
+2026-02-08 16:37:12,156 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Installing new addon graaljs v0.13.0
+2026-02-08 16:37:16,216 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Finished installing new addon graaljs v0.13.0
+2026-02-08 16:37:16,239 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Installing new addon insights v0.1.0
+2026-02-08 16:37:16,297 [ZAP-DownloadInstaller] INFO  ExtensionAutoUpdate - Finished installing new addon insights v0.1.0
+2026-02-08 16:37:16,364 [ZAP-daemon] INFO  CommandLine - Add-on downloaded to: D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\plugin\insights-alpha-0.1.0.zap
+2026-02-08 16:37:16,369 [ZAP-daemon] INFO  CommandLine - Add-on downloaded to: D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\plugin\retire-release-0.53.0.zap
+2026-02-08 16:37:16,370 [ZAP-daemon] INFO  CommandLine - Add-on downloaded to: D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\plugin\graphql-alpha-0.30.0.zap
+2026-02-08 16:37:16,373 [ZAP-daemon] INFO  CommandLine - Add-on downloaded to: D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\plugin\ascanrules-release-79.zap
+2026-02-08 16:37:16,374 [ZAP-daemon] INFO  CommandLine - Add-on downloaded to: D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\plugin\openapi-beta-51.zap
+2026-02-08 16:37:16,374 [ZAP-daemon] INFO  CommandLine - Add-on downloaded to: D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\plugin\webdriverwindows-release-179.zap
+2026-02-08 16:37:16,374 [ZAP-daemon] INFO  CommandLine - Add-on downloaded to: D:\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_54900\plugin\graaljs-alpha-0.13.0.zap
+2026-02-08 16:37:16,424 [ZAP-daemon] INFO  ExtensionNetwork - ZAP is now listening on localhost:54900
+2026-02-08 16:37:58,560 [ZAP-IO-Server-1-1] INFO  Scanner - scanner with ID 0 started
+2026-02-08 16:38:03,399 [ZAP-Scanner-0] INFO  HostProcess - Scanning 33 node(s) from https://petstore.swagger.io
+2026-02-08 16:38:03,401 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | PathTraversalScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:41:13,277 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | PathTraversalScanRule in 189.875s with 1262 message(s) sent and 1 alert(s) raised.
+2026-02-08 16:41:13,279 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | RemoteFileIncludeScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:43:13,052 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | RemoteFileIncludeScanRule in 119.773s with 790 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:43:13,053 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SourceCodeDisclosureWebInfScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:43:13,055 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | ShellShockScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:43:14,146 [ZAP-ActiveScanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SourceCodeDisclosureWebInfScanRule in 1.093s with 2 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:43:35,410 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | ShellShockScanRule in 22.356s with 158 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:43:35,411 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | HeartBleedActiveScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:43:35,412 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SourceCodeDisclosureCve20121823ScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:43:46,287 [ZAP-ActiveScanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | HeartBleedActiveScanRule in 10.875s with 6 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:43:46,287 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SourceCodeDisclosureCve20121823ScanRule in 10.875s with 20 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:43:46,287 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | RemoteCodeExecutionCve20121823ScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:43:51,909 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | RemoteCodeExecutionCve20121823ScanRule in 5.622s with 66 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:43:51,909 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | ExternalRedirectScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:45:49,591 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | ExternalRedirectScanRule in 117.681s with 711 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:45:49,592 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | ServerSideIncludeScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:46:44,766 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | ServerSideIncludeScanRule in 55.173s with 316 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:46:44,773 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | CrossSiteScriptingScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:47:52,373 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | CrossSiteScriptingScanRule in 67.602s with 290 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:47:52,374 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | PersistentXssPrimeScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:48:05,355 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | PersistentXssPrimeScanRule in 12.98s with 79 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:48:05,358 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | PersistentXssSpiderScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:48:10,891 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | PersistentXssSpiderScanRule in 5.534s with 33 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:48:10,892 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | PersistentXssScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:48:13,775 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | PersistentXssScanRule in 2.883s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:48:13,776 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SqlInjectionScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:53:06,711 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionScanRule in 292.936s with 1950 message(s) sent and 1 alert(s) raised.
+2026-02-08 16:53:06,713 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SqlInjectionMySqlTimingScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:55:04,968 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionMySqlTimingScanRule in 118.255s with 790 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:55:04,969 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SqlInjectionHypersonicTimingScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:57:04,932 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionHypersonicTimingScanRule in 119.964s with 790 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:57:04,933 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SqlInjectionOracleTimingScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:58:03,604 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionOracleTimingScanRule in 58.671s with 395 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:58:03,605 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SqlInjectionPostgreSqlTimingScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:59:07,149 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionPostgreSqlTimingScanRule in 63.544s with 395 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:59:07,149 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | DomXssScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 16:59:08,711 [ZAP-ActiveScanner-5] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,711 [ZAP-ActiveScanner-4] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,711 [ZAP-ActiveScanner-0] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,711 [ZAP-ActiveScanner-8] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,711 [ZAP-ActiveScanner-2] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,714 [ZAP-ActiveScanner-7] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,711 [ZAP-ActiveScanner-9] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,713 [ZAP-ActiveScanner-6] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,711 [ZAP-ActiveScanner-3] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,715 [ZAP-ActiveScanner-1] WARN  DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line 
+Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+Build info: version: '4.39.0', revision: '126f156aee'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+Driver info: org.openqa.selenium.firefox.FirefoxDriver
+Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 58281, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 58281, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+2026-02-08 16:59:08,803 [ZAP-Scanner-0] INFO  HostProcess - skipped plugin [failed to start or connect to the browser] https://petstore.swagger.io | DomXssScanRule in 1.654s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 16:59:08,803 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SqlInjectionMsSqlTimingScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:01:28,927 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionMsSqlTimingScanRule in 140.123s with 791 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:01:28,928 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | Log4ShellScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:01:28,930 [ZAP-Scanner-0] INFO  HostProcess - skipped plugin [no Active Scan OAST service is selected] https://petstore.swagger.io | Log4ShellScanRule in 0.002s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:01:28,932 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | Spring4ShellScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:01:35,385 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | Spring4ShellScanRule in 6.454s with 66 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:01:35,385 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | React2ShellScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:01:35,387 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | CodeInjectionScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:01:35,592 [ZAP-ActiveScanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | React2ShellScanRule in 0.207s with 1 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:03:11,649 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | CodeInjectionScanRule in 96.262s with 632 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:03:11,650 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | CommandInjectionScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:06:49,776 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | CommandInjectionScanRule in 218.126s with 1501 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:06:49,778 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | XpathInjectionScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:07:24,395 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | XpathInjectionScanRule in 34.618s with 237 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:07:24,397 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | XxeScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:07:28,092 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | XxeScanRule in 3.695s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:07:28,092 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | PaddingOracleScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:07:31,403 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | PaddingOracleScanRule in 3.311s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:07:31,404 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | CloudMetadataScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:07:31,405 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SstiScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:07:33,825 [ZAP-ActiveScanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | CloudMetadataScanRule in 2.422s with 9 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:10:13,443 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SstiScanRule in 162.038s with 1106 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:10:13,445 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SstiBlindScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:12:30,293 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SstiBlindScanRule in 136.847s with 948 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:12:30,294 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | CommandInjectionTimingScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:15:31,755 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | CommandInjectionTimingScanRule in 181.461s with 1264 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:15:31,756 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | DirectoryBrowsingScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:15:37,304 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | DirectoryBrowsingScanRule in 5.548s with 33 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:15:37,304 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | HttpOnlySiteScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:15:37,306 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | BufferOverflowScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:15:37,306 [ZAP-ActiveScanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | HttpOnlySiteScanRule in 0.002s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:15:48,502 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | BufferOverflowScanRule in 11.197s with 79 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:15:48,503 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | FormatStringScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:16:18,575 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | FormatStringScanRule in 30.072s with 193 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:16:18,576 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | CrlfInjectionScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:17:37,911 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | CrlfInjectionScanRule in 79.335s with 553 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:17:37,912 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | ParameterTamperScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:17:38,673 [ZAP-ActiveScanner-0] ERROR ParameterTamperScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "String.length()" because "str" is null
+	at java.base/java.lang.AbstractStringBuilder.replace(AbstractStringBuilder.java:1019)
+	at java.base/java.lang.StringBuilder.replace(StringBuilder.java:307)
+	at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:283)
+	at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:243)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.setParameter(AbstractAppParamPlugin.java:247)
+	at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:166)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+	at java.base/java.lang.Thread.run(Thread.java:1447)
+2026-02-08 17:17:39,276 [ZAP-ActiveScanner-0] ERROR ParameterTamperScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "String.length()" because "str" is null
+	at java.base/java.lang.AbstractStringBuilder.replace(AbstractStringBuilder.java:1019)
+	at java.base/java.lang.StringBuilder.replace(StringBuilder.java:307)
+	at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:283)
+	at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:243)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.setParameter(AbstractAppParamPlugin.java:247)
+	at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:166)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+	at java.base/java.lang.Thread.run(Thread.java:1447)
+2026-02-08 17:17:39,863 [ZAP-ActiveScanner-0] ERROR ParameterTamperScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "String.length()" because "str" is null
+	at java.base/java.lang.AbstractStringBuilder.replace(AbstractStringBuilder.java:1019)
+	at java.base/java.lang.StringBuilder.replace(StringBuilder.java:307)
+	at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:283)
+	at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:243)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.setParameter(AbstractAppParamPlugin.java:247)
+	at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:166)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+	at java.base/java.lang.Thread.run(Thread.java:1447)
+2026-02-08 17:17:40,444 [ZAP-ActiveScanner-0] ERROR ParameterTamperScanRule - Error occurred while scanning a message:
+java.lang.NullPointerException: Cannot invoke "String.length()" because "str" is null
+	at java.base/java.lang.AbstractStringBuilder.replace(AbstractStringBuilder.java:1019)
+	at java.base/java.lang.StringBuilder.replace(StringBuilder.java:307)
+	at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:283)
+	at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:243)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.setParameter(AbstractAppParamPlugin.java:247)
+	at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:166)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+	at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+	at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+	at java.base/java.lang.Thread.run(Thread.java:1447)
+2026-02-08 17:18:54,012 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | ParameterTamperScanRule in 76.099s with 529 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:18:54,013 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | ElmahScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:18:54,014 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | TraceAxdScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:18:54,896 [ZAP-ActiveScanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | ElmahScanRule in 0.883s with 1 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:18:57,319 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | TraceAxdScanRule in 3.304s with 14 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:18:57,319 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | HtAccessScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:19:00,741 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | HtAccessScanRule in 3.422s with 13 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:19:00,744 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | EnvFileScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:19:03,638 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | EnvFileScanRule in 2.896s with 13 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:19:03,639 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | HiddenFilesScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:19:03,663 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SpringActuatorScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:19:03,664 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | ExponentialEntityExpansionScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:19:05,052 [ZAP-ActiveScanner-1] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SpringActuatorScanRule in 1.389s with 2 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:19:16,949 [ZAP-ActiveScanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | HiddenFilesScanRule in 13.311s with 52 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:19:16,950 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | ExponentialEntityExpansionScanRule in 13.286s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:19:16,950 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | XsltInjectionScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:19:34,616 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | XsltInjectionScanRule in 17.666s with 136 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:19:34,616 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | HttpsAsHttpScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:19:39,210 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | HttpsAsHttpScanRule in 4.594s with 20 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:19:39,211 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | GetForPostScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:19:42,778 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | GetForPostScanRule in 3.567s with 1 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:19:42,778 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | UserAgentScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:20:14,626 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | UserAgentScanRule in 31.848s with 396 message(s) sent and 55 alert(s) raised.
+2026-02-08 17:20:14,627 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | ScriptsActiveScanner strength MEDIUM threshold MEDIUM
+2026-02-08 17:20:14,630 [ZAP-Scanner-0] INFO  HostProcess - skipped plugin [no scripts enabled] https://petstore.swagger.io | ScriptsActiveScanner in 0.003s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:20:14,630 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SOAPActionSpoofingActiveScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:20:18,200 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SOAPActionSpoofingActiveScanRule in 3.57s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:20:18,200 [ZAP-Scanner-0] INFO  HostProcess - start host https://petstore.swagger.io | SOAPXMLInjectionActiveScanRule strength MEDIUM threshold MEDIUM
+2026-02-08 17:20:21,603 [ZAP-Scanner-0] INFO  HostProcess - completed host/plugin https://petstore.swagger.io | SOAPXMLInjectionActiveScanRule in 3.403s with 0 message(s) sent and 0 alert(s) raised.
+2026-02-08 17:20:21,604 [ZAP-Scanner-0] INFO  HostProcess - completed host https://petstore.swagger.io in 2542.959s with 57 alert(s) raised.
+2026-02-08 17:20:21,604 [Thread-13] INFO  Scanner - scanner with ID 0 completed in 2543.043s
+2026-02-08 17:20:30,480 [ZAP-Shutdown] INFO  CoreAPI - ZAP 2.17.0 terminated.

@@ -201,6 +201,12 @@ document.addEventListener("DOMContentLoaded", function () {
           btn.classList.remove("disabled");
           btn.href = reportUrls.killchain;
         }
+        
+        const gridBtn = document.getElementById("btn-killchain-pdf-grid");
+        if (gridBtn) {
+          gridBtn.classList.remove("disabled");
+          gridBtn.href = reportUrls.killchain;
+        }
 
         const targetEl = document.getElementById("zap-target");
         if (targetEl && data.target) {
@@ -313,54 +319,79 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((r) => r.json())
     .then((data) => {
       const container = document.getElementById('compliance-container');
-      if (!container) return;
+      const tabsContainer = document.getElementById('compliance-tabs-container');
+      if (!container || !tabsContainer) return;
 
-      // Handle case where no data or no standards
-      if (!data || !data.standards || Object.keys(data.standards).length === 0) {
+      // Handle case where no data or no targets
+      if (!data || !data.targets || Object.keys(data.targets).length === 0) {
         container.innerHTML = `<div style="text-align:center; padding:1rem; color:#666;">No compliance data generated yet.</div>`;
+        tabsContainer.style.display = 'none';
         return;
       }
 
-      let html = '<div class="compliance-grid">';
+      tabsContainer.innerHTML = '';
+      container.innerHTML = '';
+      
+      const targets = Object.keys(data.targets);
+      
+      targets.forEach((targetName, index) => {
+        // Create Tab Button
+        const btn = document.createElement('button');
+        btn.className = `comp-tab-btn ${index === 0 ? 'active' : ''}`;
+        btn.textContent = targetName;
+        
+        btn.onclick = () => {
+            // Update buttons
+            document.querySelectorAll('.comp-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
-      // Python returns a Dictionary (Key=Standard Name, Value=Data)
-      // We use Object.entries to iterate.
-      for (const [stdKey, stdData] of Object.entries(data.standards)) {
-        
-        const score = stdData.score_percentage || 0;
-        const failedCount = stdData.failed_requirements || 0;
-        
-        let status = 'Pass';
-        let statusClass = 'status-pass';
-        
-        if (failedCount > 0) {
-            status = 'Fail';
-            statusClass = 'status-fail';
-        } else if (score < 100) {
-            status = 'Warn'; 
+            // Show pane
+            document.querySelectorAll('.comp-target-pane').forEach(p => p.style.display = 'none');
+            document.getElementById(`comp-pane-${index}`).style.display = 'grid';
+        };
+        tabsContainer.appendChild(btn);
+
+        // Create Content Pane
+        const pane = document.createElement('div');
+        pane.id = `comp-pane-${index}`;
+        pane.className = 'comp-target-pane compliance-grid';
+        pane.style.display = index === 0 ? 'grid' : 'none';
+
+        const targetData = data.targets[targetName];
+        let paneHtml = '';
+
+        for (const [stdKey, stdData] of Object.entries(targetData.standards)) {
+          const score = stdData.score_percentage || 0;
+          const failedCount = stdData.failed_requirements || 0;
+          
+          let status = 'Pass';
+          let statusClass = 'status-pass';
+          if (failedCount > 0) {
+              status = 'Fail';
+              statusClass = 'status-fail';
+          }
+          
+          const barColor = status === 'Pass' ? 'var(--neo-green)' : 'var(--neo-red)';
+
+          paneHtml += `
+          <div class="comp-item">
+              <div class="comp-header">
+                  <span class="comp-name">${stdKey}</span> <span class="comp-status ${statusClass}">${status}</span>
+              </div>
+              <div class="comp-desc">
+                  ${stdData.name} </div>
+              <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:#555; margin-bottom:4px;">
+                  <span>ADHERENCE</span>
+                  <span>${score}%</span>
+              </div>
+              <div class="comp-progress-bg">
+                  <div class="comp-progress-fill" style="width: ${score}%; background-color: ${barColor};"></div>
+              </div>
+          </div>`;
         }
-        
-        const barColor = status === 'Pass' ? 'var(--neo-green)' : 'var(--neo-red)';
-
-        html += `
-        <div class="comp-item">
-            <div class="comp-header">
-                <span class="comp-name">${stdKey}</span> <span class="comp-status ${statusClass}">${status}</span>
-            </div>
-            <div class="comp-desc">
-                ${stdData.name} </div>
-            <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:#555; margin-bottom:4px;">
-                <span>ADHERENCE</span>
-                <span>${score}%</span>
-            </div>
-            <div class="comp-progress-bg">
-                <div class="comp-progress-fill" style="width: ${score}%; background-color: ${barColor};"></div>
-            </div>
-        </div>`;
-      }
-
-      html += '</div>';
-      container.innerHTML = html;
+        pane.innerHTML = paneHtml;
+        container.appendChild(pane);
+      });
     })
     .catch((err) => {
       console.error("Compliance Render Error:", err);
@@ -417,7 +448,7 @@ document.addEventListener("DOMContentLoaded", function () {
         usageChartInstance = new Chart(ctx, {
           type: "doughnut",
           data: {
-            labels: ["Network", "Web", "SSL", "Sniffer", "Kill Chain"],
+            labels: ["Network", "Web", "SSL", "Sniffer", "Kill Chain", "SQL", "API", "SAST"],
             datasets: [
               {
                 data: [
@@ -426,6 +457,9 @@ document.addEventListener("DOMContentLoaded", function () {
                   data.scans.ssl,
                   data.scans.sniffer,
                   data.scans.killchain,
+                  data.scans.sql,
+                  data.scans.api,
+                  data.scans.semgrep
                 ],
                 backgroundColor: [
                   "#3b82f6", // Blue (Network)
@@ -433,6 +467,9 @@ document.addEventListener("DOMContentLoaded", function () {
                   "#10b981", // Green (SSL)
                   "#f59e0b", // Amber (Sniffer)
                   "#8b5cf6", // Purple (Killchain)
+                  "#0ea5e9", // Sky (SQL)
+                  "#ec4899", // Pink (API)
+                  "#6366f1"  // Indigo (SAST)
                 ],
                 borderColor: getThemeColor('--neo-bg'), 
                 borderWidth: 2,
@@ -492,6 +529,117 @@ document.addEventListener("DOMContentLoaded", function () {
         // Silent catch: database scan likely not run yet
     });
 
+  // --- 8.5 NEW: SQL, API, SEMGREP STATS ---
+  fetch(apiEndpoints.sql)
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === "Scanned") {
+        const sqlCountEl = document.getElementById("sql-vuln-count");
+        if (sqlCountEl) sqlCountEl.textContent = data.vuln_count;
+        
+        const btn = document.getElementById("btn-sql-pdf");
+        if (btn) {
+          btn.classList.remove("disabled");
+          btn.href = reportUrls.database;
+        }
+      }
+    }).catch(console.error);
+
+  fetch(apiEndpoints.api)
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === "Scanned") {
+        const apiCountEl = document.getElementById("api-vuln-count");
+        if (apiCountEl) apiCountEl.textContent = data.alerts_summary.High + data.alerts_summary.Medium;
+        
+        const btn = document.getElementById("btn-api-pdf");
+        if (btn) {
+          btn.classList.remove("disabled");
+          btn.href = reportUrls.api;
+        }
+      }
+    }).catch(console.error);
+
+  fetch(apiEndpoints.semgrep)
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === "Scanned") {
+        const semgrepCountEl = document.getElementById("semgrep-vuln-count");
+        if (semgrepCountEl) semgrepCountEl.textContent = data.total_findings;
+        
+        const btn = document.getElementById("btn-semgrep-pdf");
+        if (btn) {
+          btn.classList.remove("disabled");
+          btn.href = reportUrls.semgrep;
+        }
+      }
+    }).catch(console.error);
+
+  // --- 8.6 NEW: RECENT CHATS ---
+  const continueChat = (sessionId) => {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    fetch("/chatbot/switch_session", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+        },
+        body: JSON.stringify({ session_id: sessionId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = "/chatbot/";
+        }
+    })
+    .catch(console.error);
+  };
+
+  fetch(apiEndpoints.chatbotSessions || "/chatbot/get_sessions")
+    .then(r => r.json())
+    .then(data => {
+      const container = document.getElementById("recent-chats-container");
+      if (!container) return;
+
+      if (data.sessions && data.sessions.length > 0) {
+        container.innerHTML = "";
+        // Show only the 3 most recent sessions
+        data.sessions.slice(0, 3).forEach(sess => {
+          const card = document.createElement("div");
+          card.style.cssText = `
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--neo-border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+            cursor: pointer;
+          `;
+          card.onmouseover = () => { card.style.borderColor = 'var(--neo-purple)'; card.style.background = 'rgba(139, 92, 246, 0.05)'; };
+          card.onmouseout = () => { card.style.borderColor = 'var(--neo-border)'; card.style.background = 'rgba(255, 255, 255, 0.02)'; };
+          card.onclick = () => continueChat(sess.session_id);
+
+          card.innerHTML = `
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 0.8rem; font-weight: 600; color: var(--neo-text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${sess.title}</div>
+                <div style="font-size: 0.65rem; color: var(--neo-text-label); margin-top: 2px;">${sess.subtitle}</div>
+            </div>
+            <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--neo-purple); margin-left: 1rem;">arrow_forward</span>
+          `;
+          container.appendChild(card);
+        });
+      } else {
+        container.innerHTML = '<div style="text-align:center; padding:1rem; color:#444; font-size:0.75rem;">No recent consultations found.</div>';
+      }
+    })
+    .catch(err => {
+      console.error("Chat sessions fetch error:", err);
+      const container = document.getElementById("recent-chats-container");
+      if (container) container.innerHTML = '<div style="text-align:center; padding:1rem; color:var(--neo-red); font-size:0.75rem;">Failed to load chat history.</div>';
+    });
+
   // --- 9. AGGREGATE SYSTEM EVENTS ---
   setTimeout(() => {
     const events = [];
@@ -503,7 +651,8 @@ document.addEventListener("DOMContentLoaded", function () {
         el &&
         el.textContent !== "--" &&
         el.textContent !== "0" &&
-        el.textContent !== "Unknown"
+        el.textContent !== "Unknown" &&
+        el.textContent !== ""
       ) {
         events.push({
           time: "Recent",
@@ -518,6 +667,9 @@ document.addEventListener("DOMContentLoaded", function () {
     addEvent("Vulnerability", "zap-count-total", "bug_report", "#f43f5e");
     addEvent("SSL/TLS", "ssl-days", "verified_user", "#10b981");
     addEvent("Traffic", "sniffer-packet-count", "swap_horiz", "#f59e0b");
+    addEvent("SQL Injection", "sql-vuln-count", "database", "#3b82f6");
+    addEvent("API Scan", "api-vuln-count", "api", "#8b5cf6");
+    addEvent("SAST", "semgrep-vuln-count", "code", "#f43f5e");
 
     if (logEl && events.length > 0) {
       logEl.innerHTML = "";

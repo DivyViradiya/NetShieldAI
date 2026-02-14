@@ -6,7 +6,7 @@ import uuid
 import re
 import json
 from pathlib import Path
-from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory
+from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory, current_app
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from urllib.parse import urlparse
@@ -14,6 +14,8 @@ from extensions import db
 
 # [SERVICE] Import the Singleton instance and helpers
 from Services.killchain_service import killchain_service, get_scan_queue, cleanup_queue
+# --- Import Scan Logger ---
+from Services import scan_logger
 
 killchain_bp = Blueprint('killchain_bp', __name__)
 
@@ -96,11 +98,22 @@ def dispatch_scan():
     except Exception as e:
         print(f"[!] DB Error updating killchain stats: {e}")
 
-    # 5. Launch Background Scan
+    # 5. Log Scan Start (Database)
+    log_id = scan_logger.log_scan_start(
+        user_id=current_user.id,
+        tool_name="Kill Chain",
+        target=target,
+        scan_type=f"{profile} ({aggression})"
+    )
+
+    # Capture App Object
+    app = current_app._get_current_object()
+
+    # 6. Launch Background Scan
     # We pass the FIXED scan_dir so the service writes to the same folder every time
     thread = threading.Thread(
         target=killchain_service.run_job,
-        args=(target, profile, aggression, queue_id, scan_dir),
+        args=(target, profile, aggression, queue_id, scan_dir, log_id, app), # Passed log_id and app
         daemon=True
     )
     thread.start()
