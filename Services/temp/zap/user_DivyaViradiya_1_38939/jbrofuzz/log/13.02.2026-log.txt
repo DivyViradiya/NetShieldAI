@@ -1,3 +1,0 @@
-[13.02.2026 13:27:01] [INFO] External file loaded with 48 fuzzers
-[13.02.2026 13:27:01] [INFO] Adding 5 Zero Fuzzers to the fuzzing Database
-[13.02.2026 13:27:01] [INFO] Database loaded with 53 fuzzers
