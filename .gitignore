@@ -6,5 +6,5 @@ Services/results
 scan_results
 zap_instances
 Services/scan_results
-Services/temp
+Services/temp/
 Data
