@@ -168,7 +168,10 @@ def scan_code():
                     pdf_generator.create_semgrep_report_pdf(str(json_path), str(pdf_path))
                     
                     if pdf_path.exists():
+                        # Final synchronization wait
+                        time.sleep(1.5)
                         semgrep_scanner.log(f"[+] PDF report generated: {pdf_path.name}", user_id=current_user_identifier, to_console=True)
+                        semgrep_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", user_id=current_user_identifier, to_console=True)
                     else:
                         semgrep_scanner.log("[!] PDF generation ran but file not found.", user_id=current_user_identifier, to_console=True)
                 else:
@@ -326,7 +329,10 @@ def log_stream():
         while True:
             try:
                 message = user_queue.get(timeout=10)
-                yield message
+                if message == ': keep-alive':
+                    yield f"{message}\n\n"
+                else:
+                    yield f"data: {message}\n\n"
             except Empty:
                 yield ": keep-alive\n\n"
             except GeneratorExit:

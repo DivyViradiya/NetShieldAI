@@ -203,7 +203,10 @@ def start_capture_route():
                     pdf_generator.create_packet_sniffer_report_pdf(analysis_data, str(pdf_path))
 
                     if pdf_path.exists():
+                        # Final synchronization wait
+                        time.sleep(1.5)
                         packet_sniffer.log(f"[+] PDF report generated successfully: {pdf_path}", user_identifier, to_console=True)
+                        packet_sniffer.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", user_identifier, to_console=True)
                     else:
                         packet_sniffer.log("[!] PDF generation ran but file not found.", user_identifier, to_console=True)
 
@@ -363,7 +366,10 @@ def log_stream():
             try:
                 # 10 second timeout for keep-alive
                 message = user_queue.get(timeout=10)
-                yield message
+                if message == ': keep-alive':
+                    yield f"{message}\n\n"
+                else:
+                    yield f"data: {message}\n\n"
             except _queue_module.Empty:
                 # Send a comment to keep the connection alive
                 yield ": keep-alive\n\n"

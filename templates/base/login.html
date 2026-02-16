@@ -5,14 +5,18 @@
 {% block extra_css %}
 <style>
   body.light-mode .alert-danger {
-    background-color: rgba(220, 38, 38, 0.05) !important;
-    color: #dc2626 !important;
-    border-color: rgba(220, 38, 38, 0.2) !important;
+    background-color: var(--severity-critical-bg) !important;
+    color: var(--severity-critical) !important;
+    border-color: var(--severity-critical) !important;
   }
   body.light-mode .alert-info {
-    background-color: rgba(37, 99, 235, 0.05) !important;
-    color: #2563eb !important;
-    border-color: rgba(37, 99, 235, 0.2) !important;
+    background-color: var(--severity-low-bg) !important;
+    color: var(--severity-low) !important;
+    border-color: var(--severity-low) !important;
+  }
+  body.light-mode .md\:flex.w-1/2 {
+    background-image: none !important;
+    background-color: var(--bg-secondary) !important;
   }
 </style>
 {% endblock %}

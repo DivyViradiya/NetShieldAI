@@ -10,35 +10,35 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
   <style>
-    /* --- 1. CRITICAL LAYOUT RESET (Matches SSL Scanner) --- */
+    /* --- 1. CRITICAL LAYOUT RESET --- */
     *, *::before, *::after {
-      box-sizing: border-box; /* Prevents padding from adding to width */
+      box-sizing: border-box;
     }
     
     html {
-      overflow-y: scroll; /* Forces scrollbar track to stay visible to prevent jumping */
+      overflow-y: scroll;
     }
 
     /* --- NEO-TECH THEME VARIABLES --- */
     :root {
       /* Palette */
-      --neo-bg: #050505;
-      --neo-card: #0a0a0c;
-      --neo-card-hover: #0e0e11;
-      --neo-input: #111111;
-      --neo-border: #27272a;
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-card-hover: var(--surface-elevated);
+      --neo-input: var(--surface-subtle);
+      --neo-border: var(--border-default);
       
       /* Typography */
-      --neo-text-main: #ffffff;
-      --neo-text-muted: #9ca3af;
+      --neo-text-main: var(--text-primary);
+      --neo-text-muted: var(--text-secondary);
       --font-ui: 'Inter', system-ui, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
       /* Accents */
-      --neo-blue: #3b82f6;
-      --neo-red: #f43f5e;
-      --neo-green: #10b981;
-      --neo-amber: #f59e0b;
+      --neo-blue: var(--accent-primary);
+      --neo-red: var(--severity-critical);
+      --neo-green: var(--severity-success);
+      --neo-amber: var(--severity-high);
       
       /* Risk Mapping for Scanner */
       --risk-high: var(--neo-red);
@@ -53,123 +53,123 @@
     }
 
     body.light-mode {
-      --neo-bg: #f8fafc;
-      --neo-card: rgba(255, 255, 255, 0.8);
-      --neo-card-hover: rgba(241, 245, 249, 0.9);
-      --neo-input: #ffffff;
-      --neo-border: rgba(226, 232, 240, 0.8);
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-card-hover: var(--bg-secondary);
+      --neo-input: var(--surface-primary);
+      --neo-border: var(--border-default);
       
-      --neo-text-main: #0f172a;
-      --neo-text-muted: #475569;
+      --neo-text-main: var(--text-primary);
+      --neo-text-muted: var(--text-secondary);
       
       --neo-blue: #2563eb;
-      --neo-red: #dc2626;
-      --neo-green: #16a34a;
-      --neo-amber: #d97706;
+      --neo-red: var(--severity-critical);
+      --neo-green: var(--severity-success);
+      --neo-amber: var(--severity-high);
     }
 
     /* Light Mode Specific Overrides */
     body.light-mode .text-gradient {
-      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     body.light-mode .dash-table th {
-      background: rgba(241, 245, 249, 0.9);
-      color: #0f172a;
-      border-bottom-color: #e2e8f0;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .dash-table td {
-      color: #334155;
-      border-bottom-color: #f1f5f9;
+      color: var(--text-secondary);
+      border-bottom-color: var(--border-subtle);
     }
 
     body.light-mode .panel-header {
-      background: rgba(255, 255, 255, 0.9);
-      border-bottom-color: #e2e8f0;
+      background: var(--surface-primary);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .terminal-header {
-      background: rgba(241, 245, 249, 0.9);
-      border-bottom-color: #e2e8f0;
+      background: var(--bg-secondary);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .term-window {
-      background: #ffffff;
+      background: var(--surface-primary);
     }
 
     body.light-mode .log-time {
-      color: #94a3b8;
+      color: var(--text-muted);
     }
 
     body.light-mode .log-content {
-      color: #334155;
+      color: var(--text-secondary);
     }
 
     body.light-mode .metric-value {
-      color: #0f172a;
+      color: var(--text-primary);
     }
 
     body.light-mode .metric-info {
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     body.light-mode .badge-pill {
-      background: rgba(22, 163, 74, 0.1);
-      color: #16a34a;
-      border-color: rgba(22, 163, 74, 0.2);
+      background: var(--severity-success-bg);
+      color: var(--severity-success);
+      border-color: var(--severity-success);
     }
 
     body.light-mode .btn-dash {
-      background: #ffffff;
-      color: #475569;
-      border-color: #e2e8f0;
+      background: var(--surface-primary);
+      color: var(--text-secondary);
+      border-color: var(--border-default);
     }
 
     body.light-mode .btn-dash:hover:not(:disabled) {
-      background: #f8fafc;
-      color: #0f172a;
-      border-color: #cbd5e1;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
     }
 
     body.light-mode .dash-input {
-      background: #ffffff !important;
-      color: #0f172a !important;
-      border-color: #e2e8f0 !important;
+      background: var(--surface-primary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-default) !important;
     }
 
     body.light-mode .custom-dropdown {
-      background: #ffffff;
-      border-color: #e2e8f0;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      background: var(--surface-primary);
+      border-color: var(--border-default);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     }
 
     body.light-mode .dropdown-link {
-      color: #475569;
+      color: var(--text-secondary);
     }
 
     body.light-mode .dropdown-link:hover {
-      background: #f1f5f9;
-      color: #0f172a;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
 
     body.light-mode .processing-text {
-      color: #0f172a;
+      color: var(--text-primary);
     }
 
     body.light-mode .term-title {
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     body.light-mode #resultsContent {
-      background-color: #f8fafc !important;
-      color: #334155 !important;
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-secondary) !important;
     }
 
     body.light-mode .dash-panel .panel-content[style*="background: var(--neo-input);"] {
-      background: #f8fafc !important;
+      background: var(--bg-secondary) !important;
     }
     
     /* --- GLOBAL BASE --- */
@@ -189,7 +189,6 @@
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      /* Force disable transitions on load to stop expansion effect */
       transition: none !important; 
     }
     
@@ -215,24 +214,43 @@
     .mb-4 { margin-bottom: 1rem; }
     .bg-black { background-color: #000; }
     
-    /* --- COMPONENT: CARDS (Shared Style) --- */
+    /* --- COMPONENT: HUD CARDS (Shared Style) --- */
     .control-card, .metric-card, .dash-panel, .terminal-footer {
-      background: rgba(10, 10, 12, 0.75);
+      background: linear-gradient(180deg, rgba(20,20,23,0.6) 0%, rgba(5,5,5,0) 100%);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--radius-card);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
       position: relative;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+      /* Static Design: No hover motion or transitions */
     }
 
     body.light-mode .control-card, 
     body.light-mode .metric-card, 
     body.light-mode .dash-panel, 
     body.light-mode .terminal-footer {
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+      background: var(--surface-primary);
+      border: 1px solid var(--border-default);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    /* Override hover effects */
+    .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover {
+      transform: none !important;
+      border-color: var(--neo-border) !important;
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.light-mode .control-card:hover, 
+    body.light-mode .metric-card:hover, 
+    body.light-mode .dash-panel:hover,
+    body.light-mode .terminal-footer:hover {
+      background: var(--surface-primary) !important;
+      border-color: var(--border-default) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
     }
 
     /* Top Glow Gradient */
@@ -246,6 +264,13 @@
       z-index: 1;
     }
 
+    body.light-mode .control-card::before, 
+    body.light-mode .metric-card::before, 
+    body.light-mode .dash-panel::before, 
+    body.light-mode .terminal-footer::before {
+        display: none;
+    }
+
     /* --- LAYOUT GRIDS --- */
     .scan-overview-grid {
       display: grid;
@@ -257,33 +282,40 @@
 
     .main-grid {
       display: grid;
-      grid-template-columns: 1fr 350px; /* Slightly wider right panel for JSON */
+      grid-template-columns: 1fr 350px; 
       gap: 1.5rem;
       height: 600px;
       width: 100%;
     }
 
-    /* --- CONTROL PANEL --- */
+    /* --- CONTROL CARD REFINED --- */
     .control-card {
-      padding: 1.5rem;
+      padding: 1.25rem;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      gap: 1.25rem;
-      height: 140px; 
+      min-height: 140px;
+      height: auto; 
       z-index: 20;
     }
 
-    .input-group { display: flex; gap: 0.5rem; width: 100%; }
-    .search-container { position: relative; flex: 1; }
-
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 1rem;
-      border-top: 1px solid var(--neo-border);
+    .control-row-top {
+        display: flex;
+        width: 100%;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: auto;
     }
+
+    .control-row-bottom {
+        display: flex;
+        width: 100%;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+    .search-container { position: relative; flex: 1; min-width: 0; }
 
     /* --- METRICS GRID --- */
     .metrics-grid {
@@ -306,9 +338,9 @@
     }
 
     .metric-card:hover {
-      border-color: #444;
+      border-color: var(--text-muted);
       transform: translateY(-2px);
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
     }
 
     .metric-label {
@@ -326,7 +358,7 @@
       font-size: clamp(1.5rem, 3vw, 2.2rem);
       font-weight: 700;
       line-height: 1;
-      color: white;
+      color: var(--neo-text-main);
       position: relative;
       z-index: 2;
       margin-bottom: 4px;
@@ -353,7 +385,7 @@
     .metric-info {
       margin-top: 4px;
       font-size: 0.7rem;
-      color: #666;
+      color: var(--neo-text-muted);
       font-weight: 400;
       position: relative;
       z-index: 2;
@@ -365,7 +397,7 @@
     /* --- INPUTS & BUTTONS --- */
     .search-icon {
       position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-      color: var(--neo-text-muted); font-size: 1.1rem;
+      color: var(--neo-text-muted); font-size: 1.1rem; z-index: 5;
     }
     
     .dash-input {
@@ -386,7 +418,7 @@
     .dash-input:focus { outline: none; border-color: var(--neo-blue); background: var(--neo-bg); }
 
     body.light-mode .dash-input:focus {
-        background: #ffffff;
+        background: var(--surface-primary);
     }
     
     /* Buttons */
@@ -399,7 +431,7 @@
       background: var(--neo-input);
     }
     .btn-dash:hover:not(:disabled) { color: var(--neo-text-main); border-color: var(--neo-blue); background: var(--neo-card-hover); }
-    .btn-icon-only { padding: 0; width: 42px; justify-content: center; }
+    .btn-icon-only { padding: 0; width: 42px; justify-content: center; flex-shrink: 0; }
     
     .btn-primary {
       background: var(--neo-input); color: var(--neo-text-muted); border: 1px solid var(--neo-border);
@@ -407,6 +439,12 @@
     .btn-primary:hover { 
       background: var(--neo-blue); color: white; border-color: var(--neo-blue);
       box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+
+    body.light-mode .btn-primary:hover {
+        background: var(--text-primary);
+        border-color: var(--text-primary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     
     .btn-secondary { background: var(--neo-input); }
@@ -436,7 +474,7 @@
     
     .panel-content { position: relative; flex: 1; overflow: hidden; width: 100%; height: 100%; }
     
-    /* --- TABLE STYLING (FIXED) --- */
+    /* --- TABLE STYLING --- */
     .dash-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
     
     .dash-table th {
@@ -456,15 +494,9 @@
     .dash-table tr:last-child td { border-bottom: none; }
 
     /* Specific Column Formatting */
-    .dash-table td:nth-child(1) { /* Risk */
-        white-space: nowrap; /* Prevents "High" from wrapping */
-    }
-    .dash-table td:nth-child(2), .dash-table th:nth-child(2) { /* Score */
-        text-align: center;
-    }
-    .dash-table td:nth-child(4) { /* URL */
-        word-break: break-all; /* Forces break ONLY on long URLs */
-    }
+    .dash-table td:nth-child(1) { white-space: nowrap; }
+    .dash-table td:nth-child(2), .dash-table th:nth-child(2) { text-align: center; }
+    .dash-table td:nth-child(4) { word-break: break-all; }
 
     /* Links in table */
     .dash-table a { color: var(--neo-blue); text-decoration: none; }
@@ -513,6 +545,11 @@
       transition: opacity 0.3s ease;
     }
 
+    body.light-mode .processing-overlay {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: none;
+    }
+
     .ai-pulse-container {
       position: relative; width: 48px; height: 48px;
       display: flex; align-items: center; justify-content: center;
@@ -531,7 +568,7 @@
     }
 
     .processing-text {
-      font-family: var(--font-mono); font-size: 0.8rem; color: white;
+      font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main);
       letter-spacing: 0.2em; text-transform: uppercase;
       animation: text-fade 1s ease-in-out infinite alternate;
     }
@@ -576,8 +613,12 @@
         font-size: 0.75rem; line-height: 1.5; padding: 2px 0;
         border-bottom: 1px solid var(--neo-border);
     }
-    .log-time { color: #555; font-size: 0.7rem; white-space: nowrap; width: 70px; flex-shrink: 0; }
-    .log-content { color: #ccc; word-break: break-all; white-space: pre; font-family: var(--font-mono); }
+    .log-time { color: var(--text-muted); font-size: 0.7rem; white-space: nowrap; width: 70px; flex-shrink: 0; }
+    .log-content { color: var(--text-muted); word-break: break-all; white-space: pre; font-family: var(--font-mono); }
+
+    body.light-mode .log-content {
+        color: var(--text-secondary);
+    }
 
     /* --- TYPOGRAPHY & TEXT --- */
     .text-gradient {
@@ -585,11 +626,6 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    body.light-mode .text-gradient {
-      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    
     .badge-pill {
       display: inline-flex; align-items: center; padding: 4px 10px;
       border-radius: 4px; background: rgba(16, 185, 129, 0.1);
@@ -628,6 +664,7 @@
       .control-card { height: auto; }
       .main-grid { grid-template-columns: 1fr; height: auto; }
       .dash-panel { height: 500px; }
+      .control-row-top, .control-row-bottom { flex-direction: column; align-items: stretch; }
     }
   </style>
 {% endblock %}
@@ -651,26 +688,29 @@
 
     <div class="scan-overview-grid">
       <div class="control-card">
-        <div class="input-group">
-          <div class="search-container">
-            <span class="material-symbols-outlined search-icon">link</span>
-            <input type="url" id="targetUrl" class="dash-input" placeholder="ENTER TARGET URL..." />
-          </div>
-          <button id="startScanBtn" class="btn-dash btn-primary" style="flex-shrink: 0; padding: 0 1.5rem;">
-            <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
-            <span class="button-text">START SCAN</span>
-            <span class="spinner hidden"></span>
-          </button>
+        <div class="control-row-top">
+            <div class="search-container">
+                <span class="material-symbols-outlined search-icon">link</span>
+                <input type="url" id="targetUrl" class="dash-input" placeholder="ENTER TARGET URL..." />
+            </div>
         </div>
 
-        <div class="status-row">
-          <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono);">
-            TARGET: <span id="lastScannedUrlDisplay" style="color: white; margin-left: 5px;">---</span>
-          </div>
-          <div class="badge-pill">
-            <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
-            <span id="scanStatus">READY</span>
-          </div>
+        <div class="control-row-bottom">
+            <button id="startScanBtn" class="btn-dash btn-primary" style="min-width: 140px;">
+                <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+                <span class="button-text">START SCAN</span>
+                <span class="spinner hidden"></span>
+            </button>
+
+            <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono); display: flex; align-items: center; gap: 12px;">
+                <div style="display: flex; align-items: center;">
+                    TARGET: <span id="lastScannedUrlDisplay" style="color: var(--neo-text-main); margin-left: 5px;">---</span>
+                </div>
+                <div class="badge-pill">
+                    <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
+                    <span id="scanStatus">READY</span>
+                </div>
+            </div>
         </div>
       </div>
       
@@ -733,7 +773,7 @@
               </thead>
               <tbody id="zapAlertsTableBody">
                 <tr>
-                  <td colspan="5" style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono);">
+                  <td colspan="5" style="text-align:center; padding: 3rem; color: var(--neo-text-muted); font-family: var(--font-mono);">
                     INITIATE A SCAN TO VIEW RESULTS...
                   </td>
                 </tr>
@@ -794,7 +834,7 @@
             <button id="copyResultsBtn" class="btn-text-glow" style="font-size: 0.7rem;">COPY</button>
           </div>
           <div class="panel-content" style="background: var(--neo-input);">
-            <div id="resultsContent">// WAITING FOR SCAN...</div>
+            <div id="resultsContent" style="background: var(--neo-input);">// WAITING FOR SCAN...</div>
           </div>
         </div>
       </div>

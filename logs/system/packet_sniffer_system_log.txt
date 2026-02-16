@@ -1,0 +1,14 @@
+[2026-02-15 15:17:18] [*] Auto-detected interface: Wi-Fi
+[2026-02-15 15:17:18] [+] Starting capture for host 192.168.29.1 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[2026-02-15 15:17:48] [~] Capture time limit reached.
+[2026-02-15 15:17:48] [+] Capture finished.
+[2026-02-15 15:17:49] [+] Statistics extracted. Packets: 18
+[2026-02-15 15:17:49] [*] Running Security Anomaly Detection...
+[2026-02-15 15:17:49] [+] JSON report saved: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\packet_sniffer\pcap_analysis_report.json
+[2026-02-16 11:01:07] [*] Auto-detected interface: Wi-Fi
+[2026-02-16 11:01:07] [+] Starting capture for host 192.168.29.48 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[2026-02-16 11:01:37] [~] Capture time limit reached.
+[2026-02-16 11:01:37] [+] Capture finished.
+[2026-02-16 11:01:39] [+] Statistics extracted. Packets: 30, Duration: 28.84s
+[2026-02-16 11:01:39] [*] Running Security Anomaly Detection...
+[2026-02-16 11:01:40] [+] JSON report saved: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\packet_sniffer\pcap_analysis_report.json

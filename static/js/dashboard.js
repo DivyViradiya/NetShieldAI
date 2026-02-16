@@ -8,7 +8,12 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!finalUrl.startsWith("http")) {
         finalUrl = "https://" + finalUrl;
     }
-    window.open(finalUrl, "_blank");
+    const link = document.createElement("a");
+    link.href = finalUrl;
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // --- 1. NETWORK (NMAP) ---

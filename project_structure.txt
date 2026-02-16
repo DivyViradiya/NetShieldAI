@@ -1,226 +1,67 @@
-1. The Grand Architecture
-We will move away from "one file per scanner" and move toward a Plugin Architecture. Your Flask app will act as the "General," and the tools are the "Soldiers."
+   - Current State: chatbot_bp.py is a proxy that forwards requests to a backend server at
+     http://127.0.0.1:5000. It manages session IDs and handles report uploads and chat
+     history.
+   - Missing Link: The FastAPI backend is likely a separate repository or process, as it's not
+     present in D:\NetShieldAI.
+   - Goal: Transform the chatbot into an "Action Model" (AI Agent) that can understand natural
+     language intent, gather parameters, and execute security scans.
 
-The Pipeline Flow:
+  The "Action Model" Plan
 
-Input: User creates a "Project" (URL + Source Code + Cloud Creds).
 
-Orchestration: The System spawns independent threads for each tool.
+  To achieve this, we will implement a "Tools/Functions" capability in the AI agent.
 
-Normalization: A specialized "Parser" converts every tool's weird JSON output into a single standard format.
 
-Compliance Engine: Maps the Normalized Findings to PCI/ISO/GDPR.
+  1. Core Concept
+  The AI agent will be equipped with "Tools" (definitions of our existing scanner functions).
+  When a user says, "Scan my website example.com," the LLM will:
+   1. Identify the intent: run_zap_scan.
+   2. Extract parameters: target_url="http://example.com".
+   3. If a parameter is missing (e.g., scan type), it will ask: "Would you like a Quick Scan
+      or a Full Scan?"
+   4. Once all parameters are ready, it will call a Tool Execution Endpoint on our backend.
 
-Reporting: Generates the Master Audit PDF.
+  ---
 
-2. System Prerequisites (The Installation List)
-Before writing code, your server needs these tools installed. You cannot run subprocess if the binary isn't there.
+  2. Required Updates (FastAPI Backend)
+  Since the FastAPI backend handles the LLM logic, we need to update it as follows:
 
-The "apt-get" / Install List:
 
-Semgrep: pip install semgrep
+   - Tool Definitions: Add a list of available tools (JSON schema) that the LLM can use. This
+     includes:
+       * network_scan(target_ip, scan_type)
+       * zap_scan(target_url, scan_type)
+       * ssl_scan(target_host)
+       * sql_injection_scan(target_url)
+   - System Prompt Update: Instruct the LLM that it is a "Security Orchestrator" for
+     NetShieldAI and should use tools to perform actions.
+   - Function Calling Logic: Implement logic to handle "tool_calls" from the LLM. When the LLM
+     decides to use a tool, the FastAPI backend should:
+       1. Return a "action_required" status to the Flask proxy.
+       2. OR (Better) Call the corresponding Flask endpoint internally if they share a
+          network.
 
-Checkov: pip install checkov
+  ---
 
-Gitleaks: Download binary (Go-based) or brew install gitleaks (Linux/Mac).
+  3. Required Updates (Flask `chatbot_bp.py`)
+  Since Flask owns the scanners, it must be the one to execute them.
 
-Nmap: sudo apt-get install nmap
 
-Prowler: pip install prowler (Requires AWS CLI configured).
+   - Action Execution Endpoint: Create a new endpoint /chatbot/execute_action that the AI
+     backend can call (or the frontend can call based on AI instructions).
+   - Tool Mapping: Map AI "tool names" to internal Flask functions/blueprints.
+   - Input Validation: Add a verification layer to ensure URLs and IPs provided by the AI are
+     valid before starting a scan.
 
-ZAP: Already installed.
+  ---
 
-3. Database Design (The Backbone)
-We need a robust schema to handle this. We shouldn't store 6 different types of results. We store Raw Reports and Normalized Findings.
 
-New Models (extensions.py):
+  4. Execution Strategy
 
-AuditProject: Represents the target (e.g., "E-commerce V1").
 
-id, name, target_url, source_code_path, cloud_provider.
-
-AuditRun: A specific execution time.
-
-id, project_id, timestamp, status (Running/Completed).
-
-ScanResult: The raw output file from a specific tool.
-
-id, run_id, tool_name (e.g., 'Semgrep'), raw_json_path.
-
-Finding: The normalized vulnerability.
-
-id, run_id, tool_source, severity (Critical/High...), cwe_id, description, file_location.
-
-ComplianceReport: The final score.
-
-id, run_id, standard (PCI/GDPR), score, compliance_data_json.
-
-4. The "Unified Scanner" Service
-We will create a Service Manager that knows how to run every tool.
-
-File Structure:
-
-Plaintext
-
-/Services
-  /scanners
-     __init__.py
-     zap_runner.py       # Existing
-     semgrep_runner.py   # New
-     checkov_runner.py   # New
-     gitleaks_runner.py  # New
-     nmap_runner.py      # New
-     prowler_runner.py   # New
-  compliance_engine.py   # The Logic Brain
-  orchestrator.py        # The General (runs them all)
-  normalizer.py          # The Translator
-The orchestrator.py logic: It will look something like this (pseudo-code):
-
-Python
-
-def start_full_audit(project_id):
-    # 1. Start Nmap & ZAP on the URL
-    thread1 = threading.Thread(target=nmap_runner.scan, args=(url,))
-    thread2 = threading.Thread(target=zap_runner.scan, args=(url,))
-    
-    # 2. Start Static Analysis on the Uploaded Code
-    thread3 = threading.Thread(target=semgrep_runner.scan, args=(code_path,))
-    thread4 = threading.Thread(target=checkov_runner.scan, args=(code_path,))
-    thread5 = threading.Thread(target=gitleaks_runner.scan, args=(code_path,))
-    
-    # 3. (Optional) Start Cloud Scan if creds exist
-    # thread6 = threading.Thread(target=prowler_runner.scan, args=(aws_profile,))
-    
-    # Wait for all...
-    # Run Normalizer...
-    # Run Compliance Engine...
-5. The "Normalizer" (Crucial Step)
-Every tool speaks a different language. We need a translator.
-
-Semgrep outputs: {"results": [{"check_id": "...", "path": "..."}]}
-
-Gitleaks outputs: [{"Description": "...", "File": "..."}]
-
-Nmap outputs: XML (usually).
-
-We will create Services/normalizer.py:
-
-Python
-
-def normalize_finding(tool_name, raw_data):
-    # Returns a standard object:
-    return {
-        "tool": tool_name,
-        "name": raw_data['title'],
-        "severity": map_severity(raw_data['severity']), # Map all to HIGH/MED/LOW
-        "cwe": raw_data.get('cwe', 'Unknown'),
-        "description": raw_data['message']
-    }
-6. Execution Plan (Step-by-Step)
-We cannot code this all at once. It will break. Here is the sprint plan:
-
-Phase 1: The Foundation (Day 1-2)
-
-Create the Database Models.
-
-Create the New Route (/audit) and UI Page (audit_dashboard.html).
-
-Build the File Uploader (User must be able to upload a .zip of source code).
-
-Phase 2: The Static Bundle (Day 3-4)
-
-Implement Semgrep, Checkov, and Gitleaks.
-
-Why? They all scan local files. They are easier to test than ZAP/Nmap.
-
-Write the normalizer.py for these three.
-
-Phase 3: The Network Bundle (Day 5)
-
-Integrate Nmap.
-
-Refine the ZAP integration to feed into the central database instead of being standalone.
-
-Phase 4: The Compliance Brain (Day 6)
-
-Update compliance_engine.py to map findings from all 5 tools to PCI-DSS/ISO.
-
-"If Nmap finds Port 23 (Telnet) -> Fail PCI Req 1."
-
-"If Gitleaks finds AWS Key -> Fail ISO A.9."
-
-Phase 5: The Cloud (Day 7 - Hardest)
-
-Integrate Prowler.
-
-Note: This requires handling AWS Keys securely. For MVP, we might ask the user to upload a Prowler JSON report manually instead of running it, to avoid liability of holding their root keys.
-
-Here is the strategy to stop that from happening. We will use a Three-Layer Defense.
-
-Layer 1: The "Bouncer" (Hard Size Limit)
-This is the simplest and most effective fix. Dependencies are heavy; source code is light.
-
-If we set a strict upload limit of 15MB in Flask, any zip file containing node_modules or venv will likely get rejected immediately before it even finishes uploading.
-
-In config.py or your main app setup:
-
-Python
-
-# Reject any upload larger than 15MB
-app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024 
-User Experience: If they try to upload a bloated zip, the upload fails instantly, and you show a flash message: "File too large (Max 15MB). Please delete 'node_modules' or 'venv' and try again."
-
-Layer 2: The "Surgeon" (Smart Unzipping)
-Even if a small node_modules folder sneaks past the size limit (e.g., a small project), we do not have to extract it.
-
-We can write our Python unzip function to "peek" inside the zip file first. It will look at the file names and skip anything that looks like a dependency folder.
-
-Here is the "Smart Unzip" code for your InputManager:
-
-Python
-
-import zipfile
-import os
-
-def smart_unzip(zip_path, extract_to):
-    # Folders we absolutely refuse to extract
-    IGNORE_FOLDERS = {'node_modules', 'venv', '.env', '.git', '__pycache__', 'dist', 'build'}
-    
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        # Get list of all files inside without extracting yet
-        all_files = zip_ref.namelist()
-        
-        for file in all_files:
-            # Check if file is inside a forbidden folder
-            # e.g. "my_app/node_modules/library/index.js" -> parts=['my_app', 'node_modules', ...]
-            path_parts = file.split('/')
-            
-            # If any part of the path is in our ignore list, SKIP IT.
-            if any(part in IGNORE_FOLDERS for part in path_parts):
-                continue 
-            
-            # If it's safe, extract only that file
-            zip_ref.extract(file, extract_to)
-Result: Even if the user uploads a zip full of junk, your server only writes the actual source code to the disk.
-
-Layer 3: The "Git" Advantage
-This is why the Git URL method I mentioned earlier is superior.
-
-When users push code to GitHub/GitLab, they (should) use a .gitignore file. This means node_modules and venv strictly do not exist in the repository.
-
-If your tool clones the repo, you automatically get clean code without dependencies.
-
-Recommendation: In your UI, make the "Git URL" option the default/primary choice, and "Upload Zip" the secondary choice.
-
-Revised Plan Summary
-With these protections, the load on your device remains minimal:
-
-Flask blocks huge uploads instantly.
-
-Python filters out junk folders during extraction.
-
-Semgrep only scans clean source code.
-
-Does this "Smart Unzip" approach sound safe enough for your device? If so, we can move to Step 3: Creating the Semgrep Service Wrapper.
-
-Semgrep + Checkov + Gitleaks + Prowler + SQLmap
+   1. Step 1: Define the Tool Schema. I will create a structured definition of all available
+      security tools in this project.
+   2. Step 2: Update Flask Proxy. Modify chatbot_bp.py to handle "Action Requests" from the
+      backend.
+   3. Step 3: UI Enhancement. Update chatbot.js (if necessary) to show "Action Status" (e.g.,
+      "AI is initiating a ZAP Scan...").

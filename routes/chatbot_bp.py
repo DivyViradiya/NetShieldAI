@@ -10,9 +10,34 @@ from werkzeug.utils import secure_filename
 
 # [NEW] Import db for stats tracking
 from extensions import db
+from Services import network_scanner, zap_scanner, ssl_scanner, sql_scanner, packet_sniffer, api_scanner, killchain_service, semgrep_scanner
 
 # Initialize the Flask Blueprint for chatbot-related routes
 chatbot_bp = Blueprint('chatbot_bp', __name__)
+
+def get_all_active_scans(user_identifier):
+    """Checks status across all scanner modules for a user and returns their stream endpoints."""
+    active = {}
+    try:
+        if network_scanner.is_scan_running(user_identifier): 
+            active['nmap_scan'] = {'stream_url': '/network_scanner/log_stream'}
+        if zap_scanner.is_scan_running(user_identifier): 
+            active['zap_scan'] = {'stream_url': '/zap_scanner/log_stream'}
+        if ssl_scanner.is_scan_running(user_identifier): 
+            active['ssl_scan'] = {'stream_url': '/ssl_scanner/log_stream'}
+        if sql_scanner.is_scan_running(user_identifier): 
+            active['sql_injection_scan'] = {'stream_url': '/sql_scanner/log_stream'}
+        if packet_sniffer.is_scan_running(user_identifier): 
+            active['packet_sniffer'] = {'stream_url': '/packet_sniffer/log_stream'}
+        if api_scanner.is_scan_running(user_identifier): 
+            active['api_security_scan'] = {'stream_url': '/api_scanner/log_stream'}
+        if killchain_service.is_scan_running(user_identifier): 
+            active['killchain_audit'] = {'stream_url': '/killchain/log_stream'}
+        if semgrep_scanner.is_scan_running(user_identifier): 
+            active['semgrep_sast_scan'] = {'stream_url': '/semgrep_scanner/log_stream'}
+    except Exception as e:
+        logger.error(f"Error checking active scans: {e}")
+    return active
 
 # --- Logging Setup ---
 BASE_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
@@ -98,6 +123,12 @@ def chatbot_page():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     
+    # [NEW] Handle Session ID from URL (e.g. after redirect from scanner)
+    url_session_id = request.args.get('session_id')
+    if url_session_id:
+        session['chatbot_session_id'] = url_session_id
+        user_logger.info(f"Session switched via URL parameter to: {url_session_id}")
+
     try:
         # If no session ID exists, generate one but don't persist to DB until user chats/uploads
         if 'chatbot_session_id' not in session:
@@ -141,7 +172,7 @@ def upload_report():
             return jsonify({'error': 'No selected file'}), 400
 
         print(f"\033[35m[*] Manual Report Upload: {file.filename} (User: {current_user.username})\033[0m")
-        llm_mode_param = request.form.get('llm_mode', 'local')
+        llm_mode_param = request.form.get('llm_mode', 'gemini-2.5-flash')
 
         if file and file.filename.endswith('.pdf'):
             if file.content_length > MAX_FILE_SIZE_BYTES:
@@ -158,9 +189,11 @@ def upload_report():
                 # Read file into memory to proxy it
                 files_to_send = {'file': (file.filename, file.read(), file.content_type)}
                 
+                # [FIXED] Force a new session for report uploads
                 params = {
                     'llm_mode': llm_mode_param,
-                    'user_id': user_identifier
+                    'user_id': user_identifier,
+                    'session_id': None 
                 }
                 
                 proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
@@ -211,6 +244,7 @@ def chat_with_ai():
         print(f"\033[35m[*] AI Chat Request from {current_user.username}: {user_message[:50]}...\033[0m")
         verbosity = data.get('verbosity', 'standard')
         is_incognito = data.get('is_incognito', False)
+        llm_mode = data.get('llm_mode', 'gemini-2.5-flash')
         
         current_session_id = session.get('chatbot_session_id')
 
@@ -227,7 +261,8 @@ def chat_with_ai():
             'session_id': current_session_id,
             'user_id': user_identifier,
             'verbosity': verbosity,
-            'is_incognito': is_incognito
+            'is_incognito': is_incognito,
+            'llm_mode': llm_mode
         }
 
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat"
@@ -271,6 +306,7 @@ def chat_with_ai_stream():
         user_message = data.get('message')
         verbosity = data.get('verbosity', 'standard')
         is_incognito = data.get('is_incognito', False)
+        llm_mode = data.get('llm_mode', 'gemini-2.5-flash')
         
         current_session_id = session.get('chatbot_session_id')
 
@@ -287,7 +323,8 @@ def chat_with_ai_stream():
             'session_id': current_session_id,
             'user_id': user_identifier,
             'verbosity': verbosity,
-            'is_incognito': is_incognito
+            'is_incognito': is_incognito,
+            'llm_mode': llm_mode
         }
 
         # Point to the NEW FastAPI endpoint
@@ -313,7 +350,8 @@ def chat_with_ai_stream():
                 user_logger.error(f"Stream Proxy Iteration Error: {e}")
                 yield b" [Connection Error during stream]"
 
-        return Response(stream_with_context(generate()), mimetype='text/plain')
+        headers = {"X-Session-ID": new_sess_id} if new_sess_id else {}
+        return Response(stream_with_context(generate()), mimetype='text/plain', headers=headers)
 
     except requests.exceptions.RequestException as e:
         user_logger.error(f"Error communicating with server proxy stream: {e}", exc_info=True)
@@ -335,7 +373,9 @@ def scanner_analysis_proxy():
     try:
         data = request.get_json()
         scanner_type = data.get('scanner_type')
-        llm_mode = data.get('llm_mode', 'local')
+        llm_mode = data.get('llm_mode', 'gemini-2.5-flash')
+        # [NEW] Allow caller to decide if a fresh session is needed
+        force_new_session = data.get('force_new_session', False)
 
         if not scanner_type:
             return jsonify({'error': 'Missing scanner type'}), 400
@@ -356,10 +396,14 @@ def scanner_analysis_proxy():
             user_logger.error(f"Failed to update AI stats: {e}")
 
         # Optimization: We only send the path string, not the file content
+        # [FIXED] We only force a new session if force_new_session is True (e.g. from scanner pages)
+        current_session_id = None if force_new_session else session.get('chatbot_session_id')
+
         params = {
             'llm_mode': llm_mode,
             'user_id': user_identifier,
-            'file_path': pdf_path # Send the path to backend
+            'file_path': pdf_path, # Send the path to backend
+            'session_id': current_session_id
         }
         
         proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
@@ -379,7 +423,8 @@ def scanner_analysis_proxy():
         return jsonify({
             'status': 'success',
             'summary': analysis_result.get('summary', 'Report processed via shared storage.'),
-            'llm_mode': llm_mode
+            'llm_mode': llm_mode,
+            'session_id': session.get('chatbot_session_id')
         })
 
     except requests.exceptions.RequestException as e:
@@ -468,6 +513,144 @@ def clear_chat():
         return jsonify({'status': 'error', 'message': 'An unexpected server error occurred.'}), 500
     
     
+@chatbot_bp.route('/execute_action', methods=['POST'])
+@login_required
+def execute_action():
+    """
+    Executes a security scan based on an AI-triggered action.
+    Maps tool names to the internal Flask scanner endpoints.
+    """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
+    
+    try:
+        data = request.json
+        tool = data.get('tool')
+        params = data.get('parameters', {})
+        
+        if not tool:
+            return jsonify({'error': 'No tool specified'}), 400
+
+        user_logger.info(f"AI Action Execution requested: {tool} with params {params}")
+
+        # Mapping of AI tool names to local Flask endpoints
+        # We use absolute URLs via request.host_url to call our own blueprints
+        base_url = request.host_url.rstrip('/')
+        
+        action_map = {
+            'nmap_scan': {
+                'url': f"{base_url}/network_scanner/scan",
+                'stream_url': f"{base_url}/network_scanner/log_stream",
+                'payload': {
+                    'target_ip': params.get('target_ip'),
+                    'scan_type': params.get('scan_type', 'default'),
+                    'protocol_type': params.get('protocol_type', 'TCP'),
+                    'timing': params.get('timing', 4)
+                }
+            },
+            'zap_scan': {
+                'url': f"{base_url}/zap_scanner/scan",
+                'stream_url': f"{base_url}/zap_scanner/log_stream",
+                'payload': {
+                    'target_url': params.get('target_url')
+                }
+            },
+            'ssl_scan': {
+                'url': f"{base_url}/ssl_scanner/scan",
+                'stream_url': f"{base_url}/ssl_scanner/log_stream",
+                'payload': {
+                    'target_host': params.get('target_host')
+                }
+            },
+            'sql_injection_scan': {
+                'url': f"{base_url}/sql_scanner/scan",
+                'stream_url': f"{base_url}/sql_scanner/log_stream",
+                'payload': {
+                    'target_url': params.get('target_url'),
+                    'scan_mode': params.get('scan_mode', 'quick')
+                }
+            },
+            'packet_sniffer': {
+                'url': f"{base_url}/packet_sniffer/start_capture",
+                'stream_url': f"{base_url}/packet_sniffer/log_stream",
+                'payload': {
+                    'target_ip': params.get('target_ip'),
+                    'duration': params.get('duration', 30),
+                    'max_packets': params.get('max_packets', 50)
+                }
+            },
+            'api_security_scan': {
+                'url': f"{base_url}/api_scanner/scan",
+                'stream_url': f"{base_url}/api_scanner/log_stream",
+                'payload': {
+                    'target_url': params.get('target_url'),
+                    'definition_url': params.get('definition_url')
+                }
+            },
+            'killchain_audit': {
+                'url': f"{base_url}/killchain/dispatch",
+                'stream_url': f"{base_url}/killchain/log_stream",
+                'payload': {
+                    'target': params.get('target'),
+                    'profile': params.get('profile', 'full_audit'),
+                    'aggression': params.get('aggression', 'normal')
+                }
+            },
+            'semgrep_sast_scan': {
+                'url': f"{base_url}/semgrep_scanner/scan",
+                'stream_url': f"{base_url}/semgrep_scanner/log_stream",
+                'payload': {
+                    'git_url': params.get('git_url')
+                }
+            }
+        }
+
+        if tool not in action_map:
+            return jsonify({'error': f"Unsupported tool: {tool}"}), 400
+
+        config = action_map[tool]
+        
+        # Security: Forward the session cookie so the sub-request is authenticated as the same user
+        cookies = request.cookies
+        
+        user_logger.info(f"Triggering scanner: {config['url']} for user {current_user.username}")
+        
+        # Trigger the scan as a separate POST request
+        # We don't wait for the scan to finish (they are already threaded in their bps)
+        try:
+            # Note: We use verify=False if using self-signed certs in dev, but usually not needed for localhost
+            resp = requests.post(
+                config['url'], 
+                json=config['payload'], 
+                cookies=cookies,
+                headers={'X-CSRFToken': request.headers.get('X-CSRFToken')}, # Pass CSRF if needed
+                timeout=5
+            )
+            
+            # If the scanner returned an error immediately (e.g. invalid IP)
+            if resp.status_code >= 400:
+                error_data = resp.json() if resp.headers.get('Content-Type') == 'application/json' else {'message': resp.text}
+                return jsonify({
+                    'status': 'error',
+                    'message': f"Scanner Error: {error_data.get('message', 'Unknown failure')}"
+                }), resp.status_code
+
+            return jsonify({
+                'status': 'success',
+                'tool': tool,
+                'stream_url': config.get('stream_url'),
+                'message': f"Successfully initiated {tool.replace('_', ' ').title()}.",
+                'scanner_response': resp.json()
+            })
+
+        except requests.exceptions.RequestException as e:
+            user_logger.error(f"Error calling internal scanner {tool}: {e}")
+            return jsonify({'status': 'error', 'message': f"Internal communication error: {str(e)}"}), 500
+
+    except Exception as e:
+        user_logger.error(f"Error in execute_action: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
 @chatbot_bp.route('/get_history', methods=['GET'])
 @login_required
 def get_chat_history_proxy():
@@ -491,7 +674,12 @@ def get_chat_history_proxy():
         try:
             response = requests.get(proxy_url, params=params, timeout=5)
             response.raise_for_status()
-            return jsonify(response.json())
+            history_data = response.json()
+            
+            # Inject active scan status
+            history_data['active_scans'] = get_all_active_scans(user_identifier)
+            
+            return jsonify(history_data)
         except requests.exceptions.RequestException as e:
             user_logger.warning(f"Could not fetch history from backend: {e}")
             return jsonify({'chat_history': [], 'session_metadata': None})

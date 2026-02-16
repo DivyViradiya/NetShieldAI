@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiProcessingOverlay = document.getElementById('aiProcessingOverlay');
     const aiProcessingText = document.getElementById('aiProcessingText');
 
+    const STATUS_ENDPOINT = `${API_BASE_URL}/status`;
+
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
@@ -201,7 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken
                 },
-                body: JSON.stringify({ llm_mode: llmMode, scanner_type: "api" }) // Explicit "api" type
+                body: JSON.stringify({ 
+                    llm_mode: llmMode, 
+                    scanner_type: "api",
+                    force_new_session: true // [NEW] Force a fresh chat
+                })
             });
 
             data = await response.json();
@@ -210,7 +216,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (aiProcessingText) aiProcessingText.textContent = 'REDIRECTING...';
                 updateScanStatus('Redirecting...', 'success');
                 setTimeout(() => {
-                    window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                    const params = new URLSearchParams({
+                        mode: data.llm_mode,
+                        summary: data.summary,
+                        session_id: data.session_id
+                    });
+                    window.location.href = `${CHATBOT_REDIRECT_URL}?${params.toString()}`;
                 }, 800);
             } else {
                 throw new Error(data.message || `Analysis failed`);
@@ -400,9 +411,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    async function checkScanStatus() {
+        try {
+            const response = await fetch(STATUS_ENDPOINT);
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.is_running) {
+                toggleButtonLoading(startScanBtn, true);
+                updateScanStatus(`Scanning: ${data.target}...`, 'busy');
+                if (targetUrlInput) targetUrlInput.value = data.target;
+                appendLog(`[*] Detected active API scan on ${data.target}. Re-attaching...`);
+            }
+        } catch (error) {
+            console.error("Error checking scan status:", error);
+        }
+    }
+
     // Initialize
     setTimeout(() => appendLog('System Ready. Initializing API Security Scanner...'), 100);
     checkReportStatus();
     fetchAndDisplayResults();
+    checkScanStatus();
     setupLogStream();
 });

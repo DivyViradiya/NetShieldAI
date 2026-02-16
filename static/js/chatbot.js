@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Initialize Markdown ---
     marked.setOptions({
         highlight: function(code, lang) {
-            const language = highlight.getLanguage(lang) ? lang : 'plaintext';
-            return highlight.highlight(code, { language }).value;
+            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+            return hljs.highlight(code, { language }).value;
         },
         langPrefix: 'hljs language-',
         breaks: true,
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnWipeAll: document.getElementById('cc-wipe-all'),
         btnDownloadTranscript: document.getElementById('cc-download-transcript'),
 
-        // Status & Workflow ... (remaining keep same)
+        // Status & Workflow
         statusText: document.getElementById('status-text'),
         statusDot: document.getElementById('status-dot'),
         workflowPanel: document.getElementById('workflow-panel'),
@@ -63,6 +63,11 @@ document.addEventListener('DOMContentLoaded', () => {
         customOptions: document.querySelectorAll('.custom-option'),
         startBtn: document.getElementById('start-analysis-btn'),
         uploadStatus: document.getElementById('upload-status'),
+        
+        // Compact Model Select
+        compactTrigger: document.getElementById('model-trigger-compact'),
+        compactDropdown: document.getElementById('model-dropdown-compact'),
+        compactOptions: document.querySelectorAll('.model-opt'),
         
         // Chat Interface
         chatHistory: document.getElementById('chat-history'),
@@ -220,6 +225,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // [FIXED] Analysis Start Logic
+    ui.startBtn.onclick = async () => {
+        if (!selectedFile || isProcessing) return;
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('llm_mode', ui.hiddenModelInput.value);
+
+        isProcessing = true;
+        ui.startBtn.disabled = true;
+        ui.startBtn.querySelector('.spinner').style.display = 'block';
+        ui.startBtn.querySelector('.btn-text').textContent = "UPLOADING...";
+        ui.uploadStatus.textContent = "Transmitting to Security Core...";
+
+        try {
+            const response = await fetch('/chatbot/upload_report', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.message || result.summary) {
+                // Sync session ID if returned
+                if (result.session_id) currentSessionId = result.session_id;
+
+                ui.uploadStatus.textContent = "Success. Analysis incoming.";
+                
+                // Add AI summary message
+                addMessage('ai', result.summary || result.message);
+                
+                // Reset view
+                selectedFile = null;
+                if (ui.fileInput) ui.fileInput.value = '';
+                switchView('upload');
+                updateContextStatus(true, "Report Loaded");
+                loadSessionList();
+            } else {
+                throw new Error(result.error || "Upload failed");
+            }
+        } catch (e) {
+            console.error(e);
+            ui.uploadStatus.textContent = "Error: " + e.message;
+            ui.uploadStatus.style.color = "#ef4444";
+        } finally {
+            isProcessing = false;
+            ui.startBtn.querySelector('.spinner').style.display = 'none';
+            ui.startBtn.querySelector('.btn-text').textContent = "INITIALIZE SCAN";
+            ui.startBtn.disabled = false;
+        }
+    };
+
     // Mini Rail Listeners
     document.getElementById('mini-new-chat').onclick = () => ui.newChatBtn.click();
     document.getElementById('mini-history').onclick = () => {
@@ -231,6 +289,20 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.layout.classList.remove('sidebar-collapsed');
         ui.sidebarToggle.querySelector('span').textContent = 'chevron_left';
     };
+
+    /**
+     * Triggers a file download without opening new tabs or causing page flashes.
+     * Useful for PDF reports.
+     */
+    function triggerDownload(url) {
+        if (!url) return;
+        const link = document.createElement('a');
+        link.href = url;
+        // Don't set link.download here to let the server's Content-Disposition header decide the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 
     function scrollToBottom() {
         requestAnimationFrame(() => {
@@ -258,67 +330,119 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Custom Markdown parsing with threat highlighting
     function parseContent(text) {
-        let html = marked.parse(text);
-        return highlightThreats(html);
+        if (!text) return "";
+        try {
+            let html = marked.parse(text);
+            return highlightThreats(html);
+        } catch (e) {
+            console.error("Markdown parsing error:", e);
+            return text; // Fallback to raw text
+        }
     }
 
     function addMessage(role, text, animate = true) {
         ui.welcomeState.style.display = 'none';
+
+        // Suppress the raw [ANALYSIS_TRIGGER] from being RENDERED
+        if (text === "[ANALYSIS_TRIGGER]") {
+            return; 
+        }
+        
+        // Suppress system_hidden messages (internal context only)
+        if (role === 'system_hidden') {
+            return;
+        }
+
+        // --- RESTORATION LOGIC: Check for Action Metadata ---
+        let cleanText = text;
+        let metadataAction = null;
+        if (text.includes("__METADATA_ACTION__:")) {
+            const parts = text.split("__METADATA_ACTION__:");
+            cleanText = parts[0].trim();
+            try {
+                metadataAction = JSON.parse(parts[1]);
+            } catch(e) { console.error("Restore metadata parse error:", e); }
+        }
+
+        // If the AI message is empty and it's an action, we might skip the AI bubble 
+        // and just show the action bubble, but only if it's not a restore or if we want to keep it clean.
+        if (cleanText === "" && metadataAction && !animate) {
+             handleAction(metadataAction, true);
+             return;
+        }
+
         const row = document.createElement('div');
         row.className = `msg-row ${role}`;
         
         const bubble = document.createElement('div');
         bubble.className = 'msg-bubble';
-        bubble.setAttribute('data-label', role === 'user' ? 'Human Analyst' : 'NetShield AI');
         
+        // Define labels based on role
+        let label = 'NetShield AI';
+        if (role === 'user') label = 'Human Analyst';
+        else if (role === 'system') label = 'System Core';
+
+        bubble.setAttribute('data-label', label);
+        
+        // Create content container
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'markdown-content';
+        
+        let displayContext = cleanText;
+        if (role === 'system' && displayContext.includes("SYSTEM_NOTIFICATION:")) {
+            displayContext = displayContext.replace("SYSTEM_NOTIFICATION:", "**STATUS:**")
+                                          .replace("successfully synchronized.", "Analysis Online.")
+                                          .replace("Summary: ", "\n\n---\n\n");
+        }
+
+        contentDiv.innerHTML = parseContent(displayContext);
+        bubble.appendChild(contentDiv);
+
         if (role === 'ai' || role === 'assistant' || role === 'system') {
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'markdown-content';
-            contentDiv.innerHTML = parseContent(text);
-            bubble.appendChild(contentDiv);
+            if (role !== 'system') {
+                const actions = document.createElement('div');
+                actions.className = 'msg-actions';
+                actions.innerHTML = `
+                    <button class="action-btn copy-btn" title="Copy response"><span class="material-symbols-outlined" style="font-size:14px">content_copy</span></button>
+                    <button class="action-btn regen-btn" title="Regenerate"><span class="material-symbols-outlined" style="font-size:14px">refresh</span></button>
+                    <button class="action-btn feedback-btn up" title="Helpful"><span class="material-symbols-outlined" style="font-size:14px">thumb_up</span></button>
+                    <button class="action-btn feedback-btn down" title="Not helpful"><span class="material-symbols-outlined" style="font-size:14px">thumb_down</span></button>
+                `;
+                actions.querySelector('.copy-btn').onclick = () => {
+                    navigator.clipboard.writeText(cleanText);
+                    const icon = actions.querySelector('.copy-btn span');
+                    icon.textContent = 'check';
+                    setTimeout(() => icon.textContent = 'content_copy', 2000);
+                };
 
-            // Add Actions
-            const actions = document.createElement('div');
-            actions.className = 'msg-actions';
-            actions.innerHTML = `
-                <button class="action-btn copy-btn" title="Copy response"><span class="material-symbols-outlined" style="font-size:14px">content_copy</span></button>
-                <button class="action-btn regen-btn" title="Regenerate"><span class="material-symbols-outlined" style="font-size:14px">refresh</span></button>
-                <button class="action-btn feedback-btn up" title="Helpful"><span class="material-symbols-outlined" style="font-size:14px">thumb_up</span></button>
-                <button class="action-btn feedback-btn down" title="Not helpful"><span class="material-symbols-outlined" style="font-size:14px">thumb_down</span></button>
-            `;
-            
-            actions.querySelector('.copy-btn').onclick = () => {
-                navigator.clipboard.writeText(text);
-                const icon = actions.querySelector('.copy-btn span');
-                icon.textContent = 'check';
-                setTimeout(() => icon.textContent = 'content_copy', 2000);
-            };
-
-            actions.querySelector('.regen-btn').onclick = () => {
-                if (lastUserMessage) {
+                actions.querySelector('.regen-btn').onclick = () => {
                     ui.userInput.value = lastUserMessage;
                     sendMessage();
-                }
-            };
-
-            actions.querySelectorAll('.feedback-btn').forEach(btn => {
-                btn.onclick = () => {
-                    const isUp = btn.classList.contains('up');
-                    btn.style.color = isUp ? '#10b981' : '#ef4444';
-                    btn.parentElement.style.opacity = '1';
-                    submitFeedback(currentSessionId, isUp);
                 };
-            });
 
-            bubble.appendChild(actions);
+                actions.querySelectorAll('.feedback-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        const isUp = btn.classList.contains('up');
+                        btn.style.color = isUp ? '#10b981' : '#ef4444';
+                        btn.parentElement.style.opacity = '1';
+                        submitFeedback(currentSessionId, isUp);
+                    };
+                });
+
+                bubble.appendChild(actions);
+            }
         } else {
-            bubble.textContent = text;
-            lastUserMessage = text;
+            lastUserMessage = cleanText;
         }
         
         row.appendChild(bubble);
         ui.chatHistory.appendChild(row);
         
+        // If it's a restore (not animated) and has metadata, trigger the action card
+        if (metadataAction && !animate) {
+            handleAction(metadataAction, true);
+        }
+
         if (animate) scrollToBottom();
     }
 
@@ -483,7 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Keyboard Shortcuts ---
     window.addEventListener('keydown', (e) => {
         // Ctrl + K to focus search
-        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
             e.preventDefault();
             if (ui.layout.classList.contains('sidebar-collapsed')) {
                 ui.sidebarToggle.click();
@@ -492,19 +616,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Ctrl + B to toggle sidebar
-        if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
             e.preventDefault();
             ui.sidebarToggle.click();
         }
 
         // Ctrl + M for new chat
-        if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
             e.preventDefault();
             ui.newChatBtn.click();
         }
 
         // Cmd/Ctrl + Enter to send
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && document.activeElement === ui.userInput) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'enter' && document.activeElement === ui.userInput) {
             sendMessage();
         }
     });
@@ -539,10 +663,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.workflowPanel.classList.add('mode-config');
         } else {
             ui.workflowPanel.classList.remove('mode-config');
-            ui.hiddenModelInput.value = 'local';
-            ui.customTrigger.querySelector('span').textContent = 'NetShield Local';
+            ui.hiddenModelInput.value = 'gemini';
+            ui.customTrigger.querySelector('span').textContent = 'Google Gemini';
             ui.customOptions.forEach(opt => opt.classList.remove('selected'));
-            document.querySelector('.custom-option[data-value="local"]')?.classList.add('selected');
+            document.querySelector('.custom-option[data-value="gemini"]')?.classList.add('selected');
             ui.startBtn.disabled = true;
             ui.uploadStatus.textContent = '';
         }
@@ -616,9 +740,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.chat_history && data.chat_history.length > 0) {
                 ui.welcomeState.style.display = 'none';
                 ui.chatHistory.innerHTML = ''; 
+                
+                // Store active scans dictionary for lookup
+                const activeScans = data.active_scans || {};
+
                 data.chat_history.forEach(msg => {
                     const role = msg.role === 'assistant' ? 'ai' : msg.role;
-                    addMessage(role, msg.content, false); 
+                    
+                    let cleanText = msg.content;
+                    let metadataAction = null;
+                    if (msg.content.includes("__METADATA_ACTION__:")) {
+                        const parts = msg.content.split("__METADATA_ACTION__:");
+                        cleanText = parts[0].trim();
+                        try {
+                            metadataAction = JSON.parse(parts[1]);
+                        } catch(e) {}
+                    }
+
+                    if (metadataAction) {
+                        // Check if this specific tool is currently active for this user
+                        const activeInfo = activeScans[metadataAction.tool];
+                        if (activeInfo) {
+                            if (cleanText) addMessage(role, cleanText, false);
+                            // Re-attach to the live telemetry stream
+                            handleAction(metadataAction, false, activeInfo.stream_url); 
+                        } else {
+                            // If finished, do a normal static restore
+                            addMessage(role, msg.content, false);
+                        }
+                    } else {
+                        addMessage(role, msg.content, false); 
+                    }
                 });
                 scrollToBottom();
                 if (data.session_metadata && data.session_metadata.report_type) {
@@ -651,11 +803,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Select Model Logic ---
+    
+    // Compact Model Selector Logic
+    if (ui.compactTrigger) {
+        ui.compactTrigger.onclick = (e) => {
+            e.stopPropagation();
+            ui.compactDropdown.classList.toggle('show');
+        };
+
+        ui.compactOptions.forEach(opt => {
+            opt.onclick = function(e) {
+                e.stopPropagation();
+                const val = this.getAttribute('data-value');
+                const text = this.textContent;
+                
+                // Update Compact UI
+                ui.compactOptions.forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // [NEW] Update the text inside the trigger
+                const textSpan = ui.compactTrigger.querySelector('.current-model-text');
+                if (textSpan) textSpan.textContent = text;
+                
+                ui.compactDropdown.classList.remove('show');
+                
+                // Sync with Hidden Input & Sidebar
+                ui.hiddenModelInput.value = val;
+                
+                // Update Sidebar UI if it exists
+                if (ui.customTrigger) {
+                    ui.customTrigger.querySelector('span').textContent = text.includes('Local') ? 'NetShield Local' : text;
+                    ui.customOptions.forEach(so => {
+                        so.classList.toggle('selected', so.getAttribute('data-value') === val);
+                    });
+                }
+            };
+        });
+    }
+
     if(ui.customSelect) {
         // Ensure default state is set correctly
-        ui.hiddenModelInput.value = 'local';
-        ui.customTrigger.querySelector('span').textContent = 'NetShield Local';
-        document.querySelector('.custom-option[data-value="local"]')?.classList.add('selected');
+        ui.hiddenModelInput.value = 'gemini-2.5-flash';
+        ui.customTrigger.querySelector('span').textContent = 'Gemini 2.5 Flash';
 
         ui.customTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -665,13 +854,25 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.customOptions.forEach(option => {
             option.addEventListener('click', function(e) {
                 e.stopPropagation();
+                const val = this.getAttribute('data-value');
+                const text = this.querySelector('.option-title').textContent;
+
                 ui.customOptions.forEach(opt => opt.classList.remove('selected'));
                 this.classList.add('selected');
-                const mainText = this.querySelector('.option-title').textContent;
-                ui.customTrigger.querySelector('span').textContent = mainText;
-                ui.hiddenModelInput.value = this.getAttribute('data-value');
+                ui.customTrigger.querySelector('span').textContent = text;
+                ui.hiddenModelInput.value = val;
                 ui.customSelect.classList.remove('open');
                 ui.startBtn.disabled = false;
+
+                // Sync with Compact UI
+                if (ui.compactTrigger) {
+                    const textSpan = ui.compactTrigger.querySelector('.current-model-text');
+                    if (textSpan) textSpan.textContent = text;
+                    
+                    ui.compactOptions.forEach(co => {
+                        co.classList.toggle('selected', co.getAttribute('data-value') === val);
+                    });
+                }
             });
         });
 
@@ -679,12 +880,283 @@ document.addEventListener('DOMContentLoaded', () => {
             if (ui.customSelect && !ui.customSelect.contains(e.target)) {
                 ui.customSelect.classList.remove('open');
             }
+            if (ui.compactDropdown && !ui.compactDropdown.contains(e.target)) {
+                ui.compactDropdown.classList.remove('show');
+            }
             document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('show'));
             document.querySelectorAll('.session-item').forEach(si => si.classList.remove('menu-open'));
         });
     }
 
-    // --- 9. STREAMING MESSAGE LOGIC (WITH VISUAL SMOOTHING) ---
+    // --- 9. ACTION EXECUTION LOGIC ---
+    async function handleAction(action, isRestore = false, reattachStreamUrl = null) {
+        if (!action || !action.tool) return;
+
+        const displayTool = action.tool.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        const statusMsg = isRestore ? `[HISTORY]: ${displayTool} Module was deployed.` : 
+                         (reattachStreamUrl ? `[ACTIVE]: Synchronizing ${displayTool} Telemetry...` : `[ANALYSIS]: Deploying ${displayTool} Module...`);
+        
+        // Format Parameters nicely
+        let paramsHtml = '<div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin-top: 10px;">';
+        if (action.parameters) {
+            for (const [key, value] of Object.entries(action.parameters)) {
+                paramsHtml += `
+                    <span style="color:var(--neo-blue); font-weight:700; text-transform:uppercase; font-size:0.6rem; letter-spacing:0.05em; align-self: center;">${key.replace(/_/g, ' ')}:</span>
+                    <span style="color:#adbac7; word-break:break-all; font-family:var(--font-code); font-size:0.75rem; background: rgba(255,255,255,0.03); padding: 2px 6px; border-radius: 4px;">${value}</span>
+                `;
+            }
+        }
+        paramsHtml += '</div>';
+
+        // Add a system-style message to the chat
+        const row = document.createElement('div');
+        row.className = 'msg-row system-action';
+        row.innerHTML = `
+            <div class="msg-bubble action-bubble ${isRestore ? 'success' : ''}" style="border-color: rgba(59, 130, 246, 0.5) !important;">
+                <div class="action-header" style="display: flex; align-items: center; gap: 10px; color: var(--neo-blue); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em;">
+                    <span class="material-symbols-outlined ${isRestore ? '' : 'spin'}" style="font-size: 1.2rem;">${isRestore ? 'check_circle' : 'sync'}</span>
+                    <span class="header-text">${isRestore ? `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.` : statusMsg}</span>
+                </div>
+                <div class="action-details">
+                    ${paramsHtml}
+                    <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;">
+                        <button class="action-btn btn-redirect" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px;">VIEW MODULE PAGE</button>
+                        <button class="action-btn btn-download" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; ${isRestore ? 'display: block;' : 'display: none;'}">DOWNLOAD PDF REPORT</button>
+                    </div>
+                </div>
+                <div class="terminal-container" style="${isRestore ? 'display:none;' : (reattachStreamUrl ? 'display:flex;' : 'display:none;')} margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.05);">
+                    <div class="terminal-header" style="background: rgba(255,255,255,0.05); height: 36px; display: flex; align-items: center; padding: 0 1rem; gap: 1.5rem;">
+                        <div class="terminal-title" style="flex-shrink: 0;">
+                            <span class="material-symbols-outlined" style="font-size: 0.9rem;">terminal</span>
+                            TELEMETRY
+                        </div>
+                        
+                        <div class="progress-container" style="display: none; flex: 1; align-items: center; gap: 1rem;">
+                            <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
+                                <div class="progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--neo-blue), var(--neo-cyan)); transition: width 0.4s ease;"></div>
+                            </div>
+                            <span class="progress-percent" style="font-size: 0.65rem; color: var(--neo-blue); font-weight: 700; font-family: var(--font-code); min-width: 30px; text-align: right;">0%</span>
+                        </div>
+                    </div>
+                    <div class="terminal-body"></div>
+                </div>
+                <div class="action-footer" style="${isRestore ? 'display:flex;' : 'display:none;'} margin-top:1rem; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:0.75rem;">
+                    <span class="status-badge" style="font-size:0.65rem; color:#10b981; font-family:var(--font-code); display: flex; align-items: center; gap: 6px;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">insights</span>
+                        ${isRestore ? 'DATASET LOADED FROM CACHE.' : 'SYNCHRONIZING ANALYTICS...'}
+                    </span>
+                </div>
+            </div>
+        `;
+        ui.chatHistory.appendChild(row);
+        if (!isRestore) scrollToBottom();
+
+        // Common Tool URL Maps
+        const toolUrlMap = {
+            'nmap_scan': '/network_scanner/',
+            'zap_scan': '/zap_scanner/',
+            'ssl_scan': '/ssl_scanner/',
+            'sql_injection_scan': '/sql_scanner/',
+            'packet_sniffer': '/packet_sniffer/',
+            'api_security_scan': '/api_scanner/',
+            'killchain_audit': '/killchain/',
+            'semgrep_sast_scan': '/semgrep_scanner/'
+        };
+
+        const toolDownloadMap = {
+            'nmap_scan': '/network_scanner/download_pdf',
+            'zap_scan': '/zap_scanner/download_pdf',
+            'ssl_scan': '/ssl_scanner/download_pdf',
+            'sql_injection_scan': '/sql_scanner/download_pdf',
+            'packet_sniffer': '/packet_sniffer/download_pdf',
+            'api_security_scan': '/api_scanner/download_pdf',
+            'killchain_audit': '/killchain/download_report',
+            'semgrep_sast_scan': '/semgrep_scanner/download_pdf'
+        };
+
+        const btnRedirect = row.querySelector('.btn-redirect');
+        const btnDownload = row.querySelector('.btn-download');
+
+        // Helper to attach listeners to specific buttons in this row
+        const setupButtons = () => {
+            btnRedirect.onclick = (e) => {
+                const url = toolUrlMap[action.tool];
+                if (url) window.location.href = url;
+            };
+            btnDownload.onclick = () => {
+                const url = toolDownloadMap[action.tool];
+                triggerDownload(url);
+            };
+        };
+
+        setupButtons();
+
+        if (isRestore) return;
+
+        // If we are re-attaching, we go straight to streaming
+        if (reattachStreamUrl) {
+            setupStreaming(reattachStreamUrl, row, displayTool, action.tool, btnDownload);
+            return;
+        }
+
+        try {
+            const response = await fetchWithAuth('/chatbot/execute_action', {
+                method: 'POST',
+                body: JSON.stringify(action)
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                setupStreaming(result.stream_url, row, displayTool, action.tool, btnDownload);
+            } else {
+                bubble.classList.remove('success');
+                bubble.classList.add('error');
+                icon.textContent = 'error';
+                icon.classList.remove('spin');
+                headerText.textContent = `[FAILED]: ${displayTool.toUpperCase()} CORE OFFLINE.`;
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'action-error-text';
+                errorDiv.textContent = result.message || "Unknown scanner initialization error.";
+                row.querySelector('.action-details').appendChild(errorDiv);
+            }
+        } catch (e) {
+            console.error("Action execution failed:", e);
+        }
+    }
+
+    /**
+     * Internal helper to manage the SSE stream for terminal output
+     */
+    function setupStreaming(streamUrl, row, displayTool, toolName, btnDownload) {
+        const bubble = row.querySelector('.msg-bubble');
+        const icon = row.querySelector('.action-header .material-symbols-outlined');
+        const headerText = row.querySelector('.header-text');
+        const terminalContainer = row.querySelector('.terminal-container');
+        const terminalBody = row.querySelector('.terminal-body');
+
+        bubble.classList.add('success');
+        icon.textContent = 'check_circle';
+        icon.classList.remove('spin');
+        headerText.textContent = `[SUCCESS]: ${displayTool.toUpperCase()} CORE ACTIVE.`;
+        
+        terminalContainer.style.display = 'flex';
+        const eventSource = new EventSource(streamUrl);
+        
+        eventSource.onmessage = (e) => {
+            if (e.data === ': keep-alive') return;
+
+            let isProgress = false;
+            // [NEW] Handle Progress Updates for ZAP and other scanners
+            if (e.data.includes('[PROGRESS]')) {
+                const match = e.data.match(/(\d+)%/);
+                if (match) {
+                    const percent = match[1];
+                    const progressContainer = row.querySelector('.progress-container');
+                    const progressFill = row.querySelector('.progress-fill');
+                    const progressText = row.querySelector('.progress-percent');
+                    
+                    if (progressContainer) {
+                        progressContainer.style.display = 'flex';
+                        progressFill.style.width = `${percent}%`;
+                        progressText.textContent = `${percent}%`;
+                        
+                        if (percent === "100") {
+                            progressText.style.color = "#10b981";
+                        }
+                    }
+                    isProgress = true;
+                }
+            }
+
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            if (isProgress) {
+                line.classList.add('progress-line');
+                // Remove previous progress lines to keep terminal clean
+                terminalBody.querySelectorAll('.progress-line').forEach(el => el.remove());
+            }
+            line.className = 'terminal-line';
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'term-time';
+            timeSpan.style.color = '#52525b';
+            timeSpan.textContent = new Date().toLocaleTimeString([], { hour12: false });
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'term-text';
+            
+            if (e.data.includes('[!]') || e.data.toLowerCase().includes('error')) textSpan.classList.add('error');
+            else if (e.data.includes('[+') || e.data.toLowerCase().includes('success')) textSpan.classList.add('success');
+            else if (e.data.includes('[*]')) textSpan.classList.add('info');
+            
+            // Clean up the progress prefix for terminal display
+            textSpan.textContent = e.data.replace('[PROGRESS] ', '');
+            
+            line.appendChild(timeSpan);
+            line.appendChild(textSpan);
+            terminalBody.appendChild(line);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+
+            if (e.data.includes('SYSTEM_EVENT: READY_FOR_ANALYSIS')) {
+                eventSource.close();
+                headerText.textContent = `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.`;
+                row.querySelector('.status-badge').innerHTML = `
+                    <span class="material-symbols-outlined" style="font-size: 1rem;">analytics</span>
+                    DATASET READY. INITIATING AI REASONING...
+                `;
+                row.querySelector('.action-footer').style.display = 'flex';
+                btnDownload.style.display = 'block';
+                triggerAutoAnalysis(toolName);
+            }
+        };
+
+        eventSource.onerror = () => {
+            eventSource.close();
+        };
+    }
+
+    async function triggerAutoAnalysis(tool) {
+        // Map AI tool names to scanner types for the analysis proxy
+        const toolToScannerMap = {
+            'nmap_scan': 'nmap',
+            'zap_scan': 'zap',
+            'ssl_scan': 'ssl',
+            'sql_injection_scan': 'sql',
+            'packet_sniffer': 'packet_sniffer',
+            'api_security_scan': 'api',
+            'killchain_audit': 'killchain',
+            'semgrep_sast_scan': 'semgrep'
+        };
+
+        const scannerType = toolToScannerMap[tool];
+        if (!scannerType) return;
+
+        try {
+            const response = await fetchWithAuth('/chatbot/scanner_analysis', {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    scanner_type: scannerType, 
+                    llm_mode: ui.hiddenModelInput.value,
+                    force_new_session: false // Stay in same chat if auto-triggered
+                })
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                // Sync session ID if returned
+                if (result.session_id) currentSessionId = result.session_id;
+
+                // Backend has injected the summary as a SYSTEM_NOTIFICATION in history.
+                // We send a matching trigger to get the AI to analyze it.
+                ui.userInput.value = `[ANALYSIS_TRIGGER]`;
+                sendMessage();
+            }
+        } catch (e) {
+            console.error("Auto-analysis failed:", e);
+        }
+    }
+
+    // --- 10. STREAMING MESSAGE LOGIC (WITH VISUAL SMOOTHING) ---
     async function sendMessage() {
         const text = ui.userInput.value.trim();
         if (!text || isProcessing) return;
@@ -692,9 +1164,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const verbosity = ui.settingVerbosity.value;
         const isIncognito = ui.settingIncognito.checked;
         const typeSpeed = parseInt(ui.settingSpeed.value);
+        const llmMode = ui.hiddenModelInput.value || 'local';
 
         ui.userInput.value = '';
+
         addMessage('user', text); 
+
         isProcessing = true;
         
         ui.typingIndicator.style.display = 'block';
@@ -705,6 +1180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let fullMarkdownText = "";
         let displayedText = "";
         let isStreamActive = true;
+        let metadataAction = null;
 
         try {
             const response = await fetchWithAuth('/chatbot/chat_stream', {
@@ -712,11 +1188,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ 
                     message: text,
                     verbosity: verbosity,
-                    is_incognito: isIncognito
+                    is_incognito: isIncognito,
+                    llm_mode: llmMode
                 })
             });
 
             if (!response.body) throw new Error('ReadableStream not supported.');
+
+            // [NEW] Sync Session ID from Response Headers
+            const newSessionId = response.headers.get('X-Session-ID');
+            if (newSessionId && newSessionId !== currentSessionId) {
+                console.log(`[*] Updating local session ID to: ${newSessionId}`);
+                currentSessionId = newSessionId;
+            }
 
             const reader = response.body.getReader();
             const decoder = new TextDecoder();
@@ -726,9 +1210,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     const { done, value } = await reader.read();
                     if (done) break;
                     const chunk = decoder.decode(value, { stream: true });
-                    fullMarkdownText += chunk;
                     
-                    if (!aiRow) {
+                    if (chunk.includes("__METADATA_ACTION__:")) {
+                        const parts = chunk.split("__METADATA_ACTION__:");
+                        fullMarkdownText += parts[0];
+                        try {
+                            metadataAction = JSON.parse(parts[1]);
+                        } catch(e) { console.error("Metadata parse error:", e); }
+                    } else {
+                        fullMarkdownText += chunk;
+                    }
+                    
+                    if (!aiRow && fullMarkdownText.trim().length > 0) {
                         ui.typingIndicator.style.display = 'none';
                         aiRow = document.createElement('div');
                         aiRow.className = 'msg-row ai';
@@ -739,7 +1232,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         contentDiv.className = 'markdown-content';
                         aiBubble.appendChild(contentDiv);
                         
-                        // Action buttons... (Add them here as well for streaming messages)
                         const actions = document.createElement('div');
                         actions.className = 'msg-actions';
                         actions.innerHTML = `
@@ -753,7 +1245,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         aiRow.appendChild(aiBubble);
                         ui.chatHistory.appendChild(aiRow);
 
-                        // Attach listeners
                         actions.querySelector('.copy-btn').onclick = () => {
                             navigator.clipboard.writeText(fullMarkdownText);
                             const icon = actions.querySelector('.copy-btn span');
@@ -764,9 +1255,25 @@ document.addEventListener('DOMContentLoaded', () => {
                             ui.userInput.value = text;
                             sendMessage();
                         };
+
+                        actions.querySelectorAll('.feedback-btn').forEach(btn => {
+                            btn.onclick = () => {
+                                const isUp = btn.classList.contains('up');
+                                btn.style.color = isUp ? '#10b981' : '#ef4444';
+                                btn.parentElement.style.opacity = '1';
+                                submitFeedback(currentSessionId, isUp);
+                            };
+                        });
                     }
                 }
                 isStreamActive = false;
+
+                // Check if metadata was hidden in full text
+                if (fullMarkdownText.includes("__METADATA_ACTION__:")) {
+                    const parts = fullMarkdownText.split("__METADATA_ACTION__:");
+                    fullMarkdownText = parts[0];
+                    try { metadataAction = JSON.parse(parts[1]); } catch(e) {}
+                }
             };
 
             networkLoop();
@@ -786,11 +1293,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isStreamActive || displayedText.length < fullMarkdownText.length) {
                     setTimeout(renderLoop, typeSpeed);
                 } else {
+                    // Stream finished
+                    ui.typingIndicator.style.display = 'none';
+                    isProcessing = false;
+                    ui.userInput.focus();
+
                     if (contentDiv) {
                         contentDiv.innerHTML = parseContent(fullMarkdownText);
-                        if (!isIncognito) loadSessionList(); // Don't refresh sidebar in incognito
-                        isProcessing = false;
-                        ui.userInput.focus();
+                        if (!isIncognito) loadSessionList(); 
+                    }
+                    
+                    if (metadataAction) {
+                        handleAction(metadataAction);
                     }
                 }
             };
@@ -835,6 +1349,37 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.suggestionGrid.appendChild(card);
     });
 
-    loadSessionList();
-    restoreSession();
+    // --- 11. INITIALIZATION LOGIC ---
+    async function init() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlSessionId = urlParams.get('session_id');
+        
+        if (urlSessionId) {
+            console.log(`[*] Initializing with URL Session ID: ${urlSessionId}`);
+            try {
+                // Inform backend to switch to this session
+                await fetchWithAuth('/chatbot/switch_session', {
+                    method: 'POST',
+                    body: JSON.stringify({ session_id: urlSessionId })
+                });
+                currentSessionId = urlSessionId;
+            } catch (e) { console.error("Failed to switch session on init:", e); }
+        }
+
+        await loadSessionList();
+        await restoreSession();
+        
+        // [NEW] If redirected with a summary but history is empty, show the summary
+        const urlSummary = urlParams.get('summary');
+        if (urlSummary && ui.chatHistory.children.length === 0) {
+            addMessage('ai', urlSummary, true);
+        }
+
+        // Clean up URL after successful load
+        if (urlSessionId) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
+    init();
 });

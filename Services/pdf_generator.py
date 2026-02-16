@@ -59,7 +59,12 @@ def create_nmap_report_pdf(source_data, pdf_path):
             pass
 
     # 3. Comprehensive Template Context
+    logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
+    footer_logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo_pdf.png')
+
     template_data = {
+        "logo_url": pathlib.Path(logo_path).as_uri(),
+        "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         "scan_date": nmap_data.get("scan_date"),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "scan_args": nmap_data.get("scan_args"),
@@ -128,7 +133,12 @@ def create_zap_report_pdf(source_data, pdf_path):
     risk_priority = {"High": 4, "Medium": 3, "Low": 2, "Informational": 1, "Info": 1}
     sorted_findings = sorted(findings, key=lambda x: risk_priority.get(x.get("risk"), 0), reverse=True)
 
+    logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
+    footer_logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo_pdf.png')
+
     template_data = {
+        "logo_url": pathlib.Path(logo_path).as_uri(),
+        "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         "target_url": zap_data.get("target_url"),
         "scan_date": zap_data.get("scan_date"),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -236,7 +246,12 @@ def create_ssl_report_pdf(source_data, pdf_path):
     client_cas = ssl_data.get("client_cas", [])
 
     # 6. Prepare Template Data
+    logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
+    footer_logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo_pdf.png')
+
     template_data = {
+        "logo_url": pathlib.Path(logo_path).as_uri(),
+        "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         # -- Target Info --
         "target": ssl_data.get("target", "Unknown Target"),
         "ip": ssl_data.get("ip", "N/A"),
@@ -314,16 +329,14 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
 
     traffic = sniffer_data.get("traffic_summary", {})
     anomalies = sniffer_data.get("security_anomaly_report", {})
+    summary_io = traffic.get("summary_io", {})
     
     # --- FIX 1: PARSE PROTOCOL HIERARCHY ---
     # Raw Input: "  ip    frames:111 bytes:41883"
-    # Output: {'proto': 'ip', 'frames': 111, 'bytes': 41883}
-    proto_raw = traffic.get("protocol_hierarchy_stats", [])
+    proto_raw = traffic.get("protocol_distribution", [])
     parsed_hierarchy = []
     
     for line in proto_raw:
-        # Regex to capture: (Protocol Name) (frames:Numbers) (bytes:Numbers)
-        # Handles indentation and variable whitespace
         match = re.search(r"^\s*([a-z0-9\._-]+)\s+frames:(\d+)\s+bytes:(\d+)", line.strip())
         if match:
             parsed_hierarchy.append({
@@ -332,14 +345,11 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
                 "bytes": int(match.group(3))
             })
     
-    # If regex failed (fallback), just pass raw lines to avoid empty table
     if not parsed_hierarchy and proto_raw:
-        # Create dummy dicts to prevent template crash
-        parsed_hierarchy = [{"proto": line, "frames": "-", "bytes": "-"} for line in proto_raw]
+        parsed_hierarchy = [{"proto": line, "frames": "-", "bytes": "-"} for line in proto_raw if ":" in line]
 
     # --- FIX 2: PARSE TCP CONVERSATIONS ---
-    # Raw Input: "192.168.29.48:45143 <-> 192.168.29.196:8009      38 18 kB      25 2545 bytes..."
-    tcp_raw = traffic.get("tcp_conversation_stats", [])
+    tcp_raw = traffic.get("tcp_conversations", [])
     parsed_conversations = []
     
     for line in tcp_raw:
@@ -347,7 +357,6 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
             parts = line.split("<->")
             if len(parts) >= 2:
                 src = parts[0].strip()
-                # The right side contains the IP and the stats. We split by space to get just the IP.
                 dst_parts = parts[1].strip().split()
                 dst = dst_parts[0] if dst_parts else "Unknown"
                 
@@ -357,16 +366,12 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
                 })
 
     # --- FIX 3: FLATTEN PACKET SAMPLES ---
-    # Extracts deep JSON keys into a flat dict for the HTML table
-    raw_packets = sniffer_data.get("dissected_packets", [])[:15] # Grab top 15
+    raw_packets = sniffer_data.get("dissected_packets", [])[:15] 
     processed_packets = []
     
     for p in raw_packets:
         layers = p.get("_source", {}).get("layers", {})
-        
-        # Get Protocol (safely)
         raw_proto = layers.get("frame", {}).get("frame.protocols", "Unknown")
-        # "eth:ip:tcp" -> "TCP"
         short_proto = raw_proto.split(":")[-1].upper() if ":" in raw_proto else raw_proto.upper()
 
         p_info = {
@@ -377,7 +382,6 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
             "dst": "N/A"
         }
 
-        # Address extraction logic (IP > IPv6 > Eth)
         if "ip" in layers:
             p_info["src"] = layers["ip"].get("ip.src")
             p_info["dst"] = layers["ip"].get("ip.dst")
@@ -390,17 +394,21 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
 
         processed_packets.append(p_info)
 
+    logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
+    footer_logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo_pdf.png')
+
     template_data = {
+        "logo_url": pathlib.Path(logo_path).as_uri(),
+        "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         "target_ip": sniffer_data.get("target_ip", "Unknown"),
         "timestamp": sniffer_data.get("timestamp"),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "metrics": {
-            "total_packets": traffic.get("total_packets", 0),
-            "total_bytes": f"{traffic.get('total_bytes', 0) / 1024:.2f} KB",
+            "total_packets": summary_io.get("total_packets", 0),
+            "total_bytes": f"{summary_io.get('total_bytes', 0) / 1024:.2f} KB",
             "duration": f"{traffic.get('effective_capture_duration_seconds', 0)}s",
             "avg_rate": f"{traffic.get('average_rate_bps', 0):.2f} bps"
         },
-        # Pass the PARSED data structure
         "hierarchy": parsed_hierarchy, 
         "tcp_conversations": parsed_conversations,
         "anomalies": anomalies.get("summary", "No anomalies detected."),
@@ -458,7 +466,12 @@ def create_killchain_report_pdf(source_data, pdf_path):
     tech_node = data.get("tech", {})
     
     # 4. Comprehensive Template Context
+    logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
+    footer_logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo_pdf.png')
+
     template_data = {
+        "logo_url": pathlib.Path(logo_path).as_uri(),
+        "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         # --- Metadata ---
         "target": data.get("target", "Unknown Target"),
         "profile": data.get("profile", "full_audit").replace("_", " ").title(),
@@ -581,7 +594,12 @@ def create_sql_report_pdf(source_data, pdf_path):
 
     # 3. Prepare Template Context
     # Structure this to match the specific keys in your JSON (target, scan_time, db_info)
+    logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
+    footer_logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo_pdf.png')
+
     template_data = {
+        "logo_url": pathlib.Path(logo_path).as_uri(),
+        "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         "target": sql_data.get("target", "Unknown Target"),
         "scan_time": sql_data.get("scan_time", "N/A"),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -687,12 +705,14 @@ def create_semgrep_report_pdf(source_data, pdf_path):
 
     # 3. Prepare Template Context
     logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
+    footer_logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo_pdf.png')
     
     template_data = {
         "scan_date": data.get("scan_date"),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "tool": data.get("tool", "Semgrep"),
-        "logo_path": pathlib.Path(logo_path).as_uri(),
+        "logo_url": pathlib.Path(logo_path).as_uri(),
+        "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         "stats": {
             "total": total_findings_count,
             "severity_counts": data.get("severity_counts", {})

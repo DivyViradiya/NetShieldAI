@@ -160,7 +160,10 @@ def scan_sql():
                         pdf_generator.create_sql_report_pdf(str(json_report_path), str(pdf_path))
                         
                         if os.path.exists(pdf_path):
+                            # Final synchronization wait
+                            time.sleep(1.5)
                             sql_scanner.log(f"[+] PDF report generated and updated in user dashboard: {pdf_path}", current_user_identifier, to_console=True)
+                            sql_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", current_user_identifier, to_console=True)
                         else:
                             sql_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier, to_console=True)
                     else:
@@ -324,7 +327,10 @@ def sql_log_stream():
         while True:
             try:
                 message = user_queue.get(timeout=10)
-                yield message
+                if message == ': keep-alive':
+                    yield f"{message}\n\n"
+                else:
+                    yield f"data: {message}\n\n"
             except Empty:
                 yield ": keep-alive\n\n"
             except GeneratorExit:

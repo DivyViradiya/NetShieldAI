@@ -312,8 +312,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderSummary(report) {
         const ts = report.traffic_summary || {};
-        const protoStats = ts.protocol_hierarchy_stats || [];
-        const tcpStats = ts.tcp_conversation_stats || [];
+        const protoStats = ts.protocol_hierarchy_stats || ts.protocol_distribution || [];
+        const tcpStats = ts.tcp_conversation_stats || ts.tcp_conversations || [];
 
         const totalPackets = ts.total_packets ?? (Array.isArray(report.dissected_packets) ? report.dissected_packets.length : 0);
         const totalBytes = ts.total_bytes ?? 0;
@@ -577,7 +577,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function processGraphData(report) {
-        const lines = (report.traffic_summary && report.traffic_summary.tcp_conversation_stats) ? report.traffic_summary.tcp_conversation_stats : [];
+        const ts = report.traffic_summary || {};
+        const lines = ts.tcp_conversation_stats || ts.tcp_conversations || [];
         const nodesMap = new Map(); 
         const edges = [];
 

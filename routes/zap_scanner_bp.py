@@ -131,7 +131,10 @@ def initiate_zap_scan():
                         pdf_generator.create_zap_report_pdf(json_report_path, str(pdf_path))
                         
                         if pdf_path.exists():
+                            # Final synchronization wait to ensure file handles are closed
+                            time.sleep(1.5)
                             zap_scanner.log(f"[+] PDF generated successfully.", current_user_identifier, to_console=True)
+                            zap_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", current_user_identifier, to_console=True)
                             zap_scanner.log(f"[*] Scan, analysis, and prediction complete.", current_user_identifier, to_console=True)
                         else:
                              zap_scanner.log("[!] PDF generation failed (file missing).", current_user_identifier, to_console=True)
@@ -163,6 +166,26 @@ def initiate_zap_scan():
     return jsonify({
         "status": "success",
         "message": f"ZAP Quick Scan initiated for {target_url}. Monitor the logs for progress."
+    })
+
+
+@zap_scanner_bp.route('/status', methods=['GET'])
+@login_required
+def get_zap_status():
+    """Checks if a ZAP scan is currently running for the user."""
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    is_running = zap_scanner.is_scan_running(current_user_identifier)
+    
+    # Also get the target if running
+    target = None
+    if is_running:
+        with zap_scanner.scan_lock:
+            target = zap_scanner.active_scans[current_user_identifier].get('target')
+
+    return jsonify({
+        "status": "success",
+        "is_running": is_running,
+        "target": target
     })
 
 
@@ -278,7 +301,11 @@ def zap_log_stream():
             try:
                 # Wait for message (blocking to avoid busy loop)
                 message = user_queue.get(timeout=5)
-                yield f"data: {message}\n\n"
+                # Ensure correct SSE format: data: <message>\n\n
+                if message == ': keep-alive':
+                    yield f"{message}\n\n"
+                else:
+                    yield f"data: {message}\n\n"
             except queue.Empty:
                 # Keep connection alive
                 yield ": keep-alive\n\n"

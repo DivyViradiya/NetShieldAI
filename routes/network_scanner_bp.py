@@ -201,7 +201,10 @@ def scan_ports():
                     pdf_generator.create_nmap_report_pdf(str(user_json_path), str(user_pdf_path))
                     
                     if os.path.exists(user_pdf_path):
+                        # Final synchronization wait to ensure file handles are closed
+                        time.sleep(1.5) 
                         network_scanner.log(f"[+] PDF report generated successfully: {user_pdf_path}", user_identifier, to_console=True)
+                        network_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", user_identifier, to_console=True)
                     else:
                         network_scanner.log("[!] PDF generation ran but file not found (unknown error).", user_identifier, to_console=True)
                 else:
@@ -309,8 +312,9 @@ def get_json_report_file():
 @network_scanner_bp.route('/open_ports', methods=['GET'])
 @login_required
 def get_open_ports_route():
-    ports = network_scanner.get_current_open_ports()
-    return jsonify({"open_ports": ports})
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    summary = network_scanner.get_scan_summary(user_identifier)
+    return jsonify(summary)
 
 @network_scanner_bp.route('/block_ports', methods=['POST'])
 @login_required
@@ -441,7 +445,10 @@ def log_stream():
         while True:
             try:
                 message = user_queue.get(timeout=10)
-                yield message
+                if message == ': keep-alive':
+                    yield f"{message}\n\n"
+                else:
+                    yield f"data: {message}\n\n"
             except queue.Empty:
                 yield ": keep-alive\n\n"
     return Response(generate_logs(), mimetype='text/event-stream')

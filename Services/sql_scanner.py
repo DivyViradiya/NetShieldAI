@@ -24,6 +24,10 @@ LOG_FILE = BASE_DIR / "logs" / "sql_agent_log.txt"
 TEMP_DIR = BASE_DIR / "Services" / "temp" / "sqlmap"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
+# --- Global State for Process Management (Isolated by user_id) ---
+active_scans = {} # { "user_id": {"process": Popen, "target": str, "start_time": float} }
+scan_lock = threading.Lock()
+
 # --- USER ISOLATION ---
 user_queues = {}
 
@@ -32,6 +36,11 @@ def get_user_queue(user_id):
     if user_id not in user_queues:
         user_queues[user_id] = queue.Queue()
     return user_queues[user_id]
+
+def is_scan_running(user_id):
+    """Checks if a scan is currently active for a specific user."""
+    with scan_lock:
+        return user_id in active_scans
 
 # --- LOGGING UTILS ---
 def log(message, user_id=None, to_console=False):
@@ -45,7 +54,7 @@ def log(message, user_id=None, to_console=False):
     if user_id:
         user_id = str(user_id)
         uq = get_user_queue(user_id)
-        uq.put(full_message)
+        uq.put(message)
 
     # Determine Log File Path
     log_dir = BASE_DIR / "logs"
@@ -128,21 +137,21 @@ def get_output_paths(output_dir=None):
         "sqlmap_base": sqlmap_temp 
     }
 
-def save_sql_json(data, output_dir=None):
+def save_sql_json(data, output_dir=None, user_id=None):
     paths = get_output_paths(output_dir)
     json_file = paths["json_report"]
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
-        log(f"[+] SQL JSON report saved to {json_file}")
+        log(f"[+] SQL JSON report saved to {json_file}", user_id)
         return str(json_file)
     except Exception as e:
-        log(f"[!] Failed to save SQL JSON report: {e}")
+        log(f"[!] Failed to save SQL JSON report: {e}", user_id)
         return None
 
 # --- PARSING LOGIC (Targeting your specific log format) ---
 
-def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None):
+def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None, user_id=None):
     """
     Parses the SQLMap 'log' file using regex to extract vulnerability details.
     """
@@ -172,28 +181,28 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
         if subdirs:
             # Pick the most recently modified directory
             target_subdir = max(subdirs, key=os.path.getmtime)
-            log(f"[INFO] Found SQLMap results directory: {target_subdir.name}")
+            log(f"[INFO] Found SQLMap results directory: {target_subdir.name}", user_id)
     except Exception as e:
-        log(f"[!] Error finding SQLMap output subdirectory: {e}")
+        log(f"[!] Error finding SQLMap output subdirectory: {e}", user_id)
 
     if not target_subdir:
-        log("[!] No SQLMap results directory found. The scan may not have found any vulnerabilities.")
+        log("[!] No SQLMap results directory found. The scan may not have found any vulnerabilities.", user_id)
         return report_data
     
     # 2. Parse the 'log' file
     log_file_path = target_subdir / "log"
     
     if not log_file_path.exists():
-        log(f"[!] Log file not found at {log_file_path}. SQLMap might not have flushed results yet.")
+        log(f"[!] Log file not found at {log_file_path}. SQLMap might not have flushed results yet.", user_id)
         return report_data
 
     try:
-        log(f"[INFO] Parsing log file: {log_file_path}")
+        log(f"[INFO] Parsing log file: {log_file_path}", user_id)
         with open(log_file_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
         if not content.strip():
-            log("[!] Log file is empty. No vulnerabilities were confirmed by SQLMap.")
+            log("[!] Log file is empty. No vulnerabilities were confirmed by SQLMap.", user_id)
             return report_data
 
         # --- Regex Patterns ---
@@ -249,21 +258,21 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
         if db_match:
             report_data["database_info"]["current_db"] = db_match.group(1).strip()
 
-        log(f"[+] Successfully parsed {len(report_data['vulnerabilities'])} vulnerabilities.")
+        log(f"[+] Successfully parsed {len(report_data['vulnerabilities'])} vulnerabilities.", user_id)
 
     except Exception as e:
-        log(f"[!] Error reading/parsing SQLMap log file: {e}")
+        log(f"[!] Error reading/parsing SQLMap log file: {e}", user_id)
 
     return report_data
 
 # --- MAIN SCAN FUNCTION ---
 
-def run_sql_scan(target_url, output_dir, scan_mode='quick'):
+def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None):
     """
     Runs SQLmap with optimized flags and ensures results are parsed even on partial completion.
     """
     if not os.path.exists(SQLMAP_PATH):
-        log(f"[!] Critical: SQLmap not found at {SQLMAP_PATH}")
+        log(f"[!] Critical: SQLmap not found at {SQLMAP_PATH}", user_id)
         return None
 
     os.makedirs(output_dir, exist_ok=True)
@@ -286,18 +295,18 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick'):
     if scan_mode == 'full':
         cmd.extend(['--level=3', '--risk=2', '--crawl=2', '--forms']) 
         timeout_seconds = 1800  # 30 mins
-        log(f"[*] Starting FULL scan (Detection + Enumeration) on {target_url}", to_console=True)
+        log(f"[*] Starting FULL scan (Detection + Enumeration) on {target_url}", user_id, to_console=True)
     else:
         cmd.extend(['--level=1', '--risk=1', '--forms']) # Quick scan avoids crawl
         timeout_seconds = 900   # 15 mins
-        log(f"[*] Starting QUICK scan (Detection) on {target_url}", to_console=True)
+        log(f"[*] Starting QUICK scan (Detection) on {target_url}", user_id, to_console=True)
 
     cmd.extend(['--banner', '--current-user', '--current-db', '--is-dba'])
 
     if scan_mode == 'full':
         cmd.extend(['--dbs', '--tables', '--passwords'])
 
-    log(f"[*] Executing SQLMap...", to_console=True)
+    log(f"[*] Executing SQLMap...", user_id, to_console=True)
 
     live_metadata = {}
 
@@ -312,12 +321,16 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick'):
             creationflags=creation_flags
         )
 
+        # Track this user's process
+        with scan_lock:
+            active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
+
         start_time = time.time()
         
         while True:
             if time.time() - start_time > timeout_seconds:
                 process.kill()
-                log(f"[!] TIME LIMIT EXCEEDED ({timeout_seconds}s). Parsing partial results...")
+                log(f"[!] TIME LIMIT EXCEEDED ({timeout_seconds}s). Parsing partial results...", user_id)
                 break
 
             output = process.stdout.readline()
@@ -327,37 +340,47 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick'):
             if output:
                 line = output.strip()
                 if line and not line.startswith("[*] ending"):
-                    if "fetched" in line or "vulnerable" in line:
-                        log(f"[DATA] {line}")
+                    # Categorize output for better UI visibility
+                    if "fetching" in line.lower() or "retrieved" in line.lower():
+                        log(f"[DATA] {line}", user_id)
+                    elif "testing" in line.lower() or "checking" in line.lower():
+                        log(f"[STAGE] {line}", user_id)
+                    elif "vulnerable" in line.lower() or "back-end DBMS" in line:
+                        log(f"[+] {line}", user_id)
                     else:
-                        log(f"[SQLMap] {line}")
+                        log(line, user_id)
                     
                     # Capture live metadata as backup
                     if "back-end DBMS:" in line:
                         live_metadata["dbms"] = line.split(":", 1)[1].strip()
 
         # Always attempt to parse results even if it timed out or returned error
-        log("[+] Scan finished. Processing results...", to_console=True)
-        scan_data = parse_sqlmap_output(sqlmap_output_dir, target_url_hint=target_url, captured_metadata=live_metadata)
+        log("[+] Scan finished. Processing results...", user_id, to_console=True)
+        scan_data = parse_sqlmap_output(sqlmap_output_dir, target_url_hint=target_url, captured_metadata=live_metadata, user_id=user_id)
         
-        json_path = save_sql_json(scan_data, output_dir)
+        json_path = save_sql_json(scan_data, output_dir, user_id=user_id)
         
         send_sse_event("scan_complete", {
             "status": "success",
             "target": target_url,
             "report_file": json_path,
             "vulnerability_count": len(scan_data.get("vulnerabilities", []))
-        })
+        }, user_id=user_id)
         return json_path
 
     except Exception as e:
-        log(f"[!] System Error during scan: {str(e)}", to_console=True)
+        log(f"[!] System Error during scan: {str(e)}", user_id, to_console=True)
         return None
     finally:
+        # Unregister process
+        with scan_lock:
+            if user_id in active_scans:
+                del active_scans[user_id]
+
         # CLEANUP: Remove SQLMap artifacts from temp within this scan's directory
         try:
             import shutil
             if sqlmap_output_dir.exists():
                 shutil.rmtree(sqlmap_output_dir)
         except Exception as e:
-            log(f"[!] Warning: Failed to clean up SQLMap temp artifacts: {e}")
+            log(f"[!] Warning: Failed to clean up SQLMap temp artifacts: {e}", user_id)

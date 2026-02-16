@@ -13,23 +13,23 @@
     /* --- NEO-TECH THEME VARIABLES --- */
     :root {
       /* Palette */
-      --neo-bg: #050505;
-      --neo-card: #0a0a0c;
-      --neo-card-hover: #0e0e11;
-      --neo-input: #111111;
-      --neo-border: #27272a;
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-card-hover: var(--surface-elevated);
+      --neo-input: var(--surface-subtle);
+      --neo-border: var(--border-default);
       
       /* Typography */
-      --neo-text-main: #ffffff;
-      --neo-text-muted: #9ca3af;
+      --neo-text-main: var(--text-primary);
+      --neo-text-muted: var(--text-secondary);
       --font-ui: 'Inter', system-ui, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
       /* Accents */
-      --neo-blue: #3b82f6;
-      --neo-red: #f43f5e;
-      --neo-green: #10b981;
-      --neo-amber: #f59e0b;
+      --neo-blue: var(--accent-primary);
+      --neo-red: var(--severity-critical);
+      --neo-green: var(--severity-success);
+      --neo-amber: var(--severity-high);
       
       /* Functional Mapping */
       --risk-high: var(--neo-red);
@@ -43,129 +43,129 @@
     }
 
     body.light-mode {
-      --neo-bg: #f8fafc;
-      --neo-card: rgba(255, 255, 255, 0.8);
-      --neo-card-hover: rgba(241, 245, 249, 0.9);
-      --neo-input: #ffffff;
-      --neo-border: rgba(226, 232, 240, 0.8);
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-card-hover: var(--bg-secondary);
+      --neo-input: var(--surface-primary);
+      --neo-border: var(--border-default);
       
-      --neo-text-main: #0f172a;
-      --neo-text-muted: #475569;
+      --neo-text-main: var(--text-primary);
+      --neo-text-muted: var(--text-secondary);
       
       --neo-blue: #2563eb;
-      --neo-red: #dc2626;
-      --neo-green: #16a34a;
-      --neo-amber: #d97706;
+      --neo-red: var(--severity-critical);
+      --neo-green: var(--severity-success);
+      --neo-amber: var(--severity-high);
     }
 
     /* Light Mode Specific Overrides */
     body.light-mode .text-gradient {
-      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     body.light-mode .dash-table th {
-      background: rgba(241, 245, 249, 0.9);
-      color: #0f172a;
-      border-bottom-color: #e2e8f0;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .dash-table td {
-      color: #334155;
-      border-bottom-color: #f1f5f9;
+      color: var(--text-secondary);
+      border-bottom-color: var(--border-subtle);
     }
 
     body.light-mode .panel-header {
-      background: rgba(255, 255, 255, 0.9);
-      border-bottom-color: #e2e8f0;
+      background: var(--surface-primary);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .terminal-header {
-      background: rgba(241, 245, 249, 0.9);
-      border-bottom-color: #e2e8f0;
+      background: var(--bg-secondary);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .term-window {
-      background: #ffffff;
+      background: var(--surface-primary);
     }
 
     body.light-mode .metric-value {
-      color: #0f172a;
+      color: var(--text-primary);
     }
 
     body.light-mode .metric-info {
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     body.light-mode .dash-input {
-      background: #ffffff !important;
-      color: #0f172a !important;
-      border-color: #e2e8f0 !important;
+      background: var(--surface-primary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-default) !important;
     }
 
     body.light-mode .btn-dash {
-      background: #ffffff;
-      color: #475569;
-      border-color: #e2e8f0;
+      background: var(--surface-primary);
+      color: var(--text-secondary);
+      border-color: var(--border-default);
     }
 
     body.light-mode .btn-dash:hover:not(:disabled) {
-      background: #f8fafc;
-      color: #0f172a;
-      border-color: #cbd5e1;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
     }
 
     body.light-mode .tab-pills {
-      background: #f1f5f9;
-      border-color: #e2e8f0;
+      background: var(--bg-secondary);
+      border-color: var(--border-default);
     }
 
     body.light-mode .term-title {
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     body.light-mode .badge-pill {
-      background: rgba(22, 163, 74, 0.1);
-      color: #16a34a;
-      border-color: rgba(22, 163, 74, 0.2);
+      background: var(--severity-success-bg);
+      color: var(--severity-success);
+      border-color: var(--severity-success);
     }
 
     body.light-mode .processing-text {
-      color: #0f172a !important;
+      color: var(--text-primary) !important;
     }
 
     body.light-mode #advancedScanOptions {
-      background: #ffffff !important;
-      border-color: #e2e8f0 !important;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+      background: var(--surface-primary) !important;
+      border-color: var(--border-default) !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
     }
 
     body.light-mode .custom-dropdown {
-      background: #ffffff;
-      border-color: #e2e8f0;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      background: var(--surface-primary);
+      border-color: var(--border-default);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     }
 
     body.light-mode .dropdown-link {
-      color: #475569;
+      color: var(--text-secondary);
     }
 
     body.light-mode .dropdown-link:hover {
-      background: #f1f5f9;
-      color: #0f172a;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
 
     body.light-mode #anomaliesContent {
-      background-color: #f8fafc !important;
+      background-color: var(--bg-secondary) !important;
     }
 
     body.light-mode #anomaliesContent h5, body.light-mode #anomaliesContent h6 {
-      color: #0f172a !important;
+      color: var(--text-primary) !important;
     }
 
     body.light-mode #anomalySummaryText {
-      color: #475569 !important;
+      color: var(--text-secondary) !important;
     }
     
     /* --- GLOBAL BASE --- */
@@ -221,22 +221,41 @@
 
     /* --- COMPONENT: HUD CARDS (Shared Style) --- */
     .control-card, .metric-card, .dash-panel, .terminal-footer {
-      background: rgba(10, 10, 12, 0.75);
+      background: linear-gradient(180deg, rgba(20,20,23,0.6) 0%, rgba(5,5,5,0) 100%);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--radius-card);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
       position: relative;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+      /* Static Design: No hover motion or transitions */
     }
 
     body.light-mode .control-card, 
     body.light-mode .metric-card, 
     body.light-mode .dash-panel, 
     body.light-mode .terminal-footer {
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+      background: var(--surface-primary);
+      border: 1px solid var(--border-default);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    /* Override hover effects */
+    .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover {
+      transform: none !important;
+      border-color: var(--neo-border) !important;
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.light-mode .control-card:hover, 
+    body.light-mode .metric-card:hover, 
+    body.light-mode .dash-panel:hover,
+    body.light-mode .terminal-footer:hover {
+      background: var(--surface-primary) !important;
+      border-color: var(--border-default) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
     }
 
     /* Top Glow Gradient */
@@ -250,14 +269,21 @@
       z-index: 1;
     }
 
+    body.light-mode .control-card::before, 
+    body.light-mode .metric-card::before, 
+    body.light-mode .dash-panel::before, 
+    body.light-mode .terminal-footer::before {
+        display: none;
+    }
+
     /* 1. Control Panel Card */
     .control-card {
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 1.25rem;
-      height: 140px; 
+      min-height: 140px;
+      height: auto; 
       z-index: 20; /* Keep dropdowns above */
     }
 
@@ -293,9 +319,9 @@
     }
 
     .metric-card:hover {
-      border-color: #444;
+      border-color: var(--text-muted);
       transform: translateY(-2px);
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
     }
 
     .metric-label {
@@ -313,7 +339,7 @@
       font-size: clamp(1.5rem, 3vw, 2.2rem);
       font-weight: 700;
       line-height: 1;
-      color: white;
+      color: var(--neo-text-main);
       position: relative;
       z-index: 2;
       margin-bottom: 4px;
@@ -340,7 +366,7 @@
     .metric-info {
       margin-top: 4px;
       font-size: 0.7rem;
-      color: #666;
+      color: var(--neo-text-muted);
       font-weight: 400;
       position: relative;
       z-index: 2;
@@ -363,7 +389,7 @@
     }
 
     body.light-mode .dash-input:focus {
-        background: #ffffff;
+        background: var(--surface-primary);
     }
 
     /* Stop white background on autofill */
@@ -396,6 +422,12 @@
       background: var(--neo-blue); color: white; border-color: var(--neo-blue);
       box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
     }
+
+    body.light-mode .btn-primary:hover {
+        background: var(--text-primary);
+        border-color: var(--text-primary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
     
     .btn-danger-outline {
       background: rgba(244, 63, 94, 0.05);
@@ -419,7 +451,7 @@
     .dash-panel {
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* Often good, but sometimes needs visible for dropdowns. Specific panels can override. */
+      overflow: hidden; 
     }
     .panel-header {
       padding: 0.75rem 1.5rem;
@@ -448,9 +480,14 @@
       text-transform: uppercase; letter-spacing: 0.05em;
     }
     .tab-pill.active {
-      background: var(--neo-blue); color: black;
+      background: var(--neo-blue); color: white;
     }
-    body.light-mode .tab-pill.active { color: white; }
+
+    body.light-mode .tab-pill.active {
+        background: var(--text-primary);
+        color: white;
+    }
+
     .tab-pill:hover:not(.active) { color: var(--neo-text-main); }
     
     .panel-content { position: relative; flex: 1; overflow: hidden; width: 100%; height: 100%; }
@@ -485,7 +522,7 @@
     }
 
     body.light-mode .custom-dropdown {
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     }
 
     .dropdown-link {
@@ -527,6 +564,11 @@
       transition: opacity 0.3s ease;
     }
 
+    body.light-mode .processing-overlay {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: none;
+    }
+
     .ai-pulse-container {
       position: relative;
       width: 48px;
@@ -556,7 +598,7 @@
     .processing-text {
       font-family: var(--font-mono);
       font-size: 0.8rem;
-      color: white;
+      color: var(--neo-text-main);
       letter-spacing: 0.2em;
       text-transform: uppercase;
       animation: text-fade 1s ease-in-out infinite alternate;
@@ -629,7 +671,7 @@
     .log-line:last-child { border-bottom: none; }
     
     .log-time { 
-        color: #555; 
+        color: var(--text-muted); 
         font-size: 0.7rem; 
         white-space: nowrap; 
         width: 70px;
@@ -637,18 +679,18 @@
     }
     
     .log-content {
-        color: #ccc;
+        color: var(--text-secondary);
         word-break: break-all;
     }
 
     .text-gradient {
       /* Simplified solid or subtle gradient for high contrast */
-      background: linear-gradient(180deg, #fff 0%, #ccc 100%);
+      background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
     body.light-mode .text-gradient {
-      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     
@@ -735,20 +777,20 @@
             <button id="advancedScanToggle" class="btn-dash btn-secondary btn-icon-only" title="Configuration">
               <span class="material-symbols-outlined">tune</span>
             </button>
-            <div id="advancedScanOptions" class="hidden"
-              style="position: absolute; top: 50px; right: 0; width: 300px; background: #0a0a0c; border: 1px solid var(--neo-border); padding: 1.5rem; border-radius: 8px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.9);">
-              <h4 style="color:white; margin-bottom:1rem; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em;">Scan Configuration</h4>
+            <div id="advancedScanOptions" class="hidden custom-dropdown"
+              style="position: absolute; top: 50px; right: 0; width: 300px; padding: 1.5rem;">
+              <h4 style="color:var(--neo-text-main); margin-bottom:1rem; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em;">Scan Configuration</h4>
               <div style="display:flex; flex-direction:column; gap:1rem;">
                 <div>
-                  <label style="color:#666; font-size:0.7rem; font-family: var(--font-mono); text-transform:uppercase;">Duration (sec)</label>
+                  <label style="color:var(--neo-text-label); font-size:0.7rem; font-family: var(--font-mono); text-transform:uppercase;">Duration (sec)</label>
                   <input type="number" id="captureDuration" value="30" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
                   </div>
                   <div>
-                    <label style="color:#666; font-size:0.7rem; font-family: var(--font-mono); text-transform:uppercase;">Max Packets</label>
+                    <label style="color:var(--neo-text-label); font-size:0.7rem; font-family: var(--font-mono); text-transform:uppercase;">Max Packets</label>
                   <input type="number" id="maxPackets" value="100" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
                   </div>
                   <div>
-                    <label style="color:#666; font-size:0.7rem; font-family: var(--font-mono); text-transform:uppercase;">BPF Filter</label>
+                    <label style="color:var(--neo-text-label); font-size:0.7rem; font-family: var(--font-mono); text-transform:uppercase;">BPF Filter</label>
                   <input type="text" id="bpfFilter" placeholder="tcp port 80" class="dash-input"
                     style="padding: 8px 12px; margin-top:4px;" />
                   </div>
@@ -759,7 +801,7 @@
 
         <div class="status-row">
           <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono);">
-            STATUS: <span id="snifferStatus" style="color: white; margin-left: 5px;">IDLE</span>
+            STATUS: <span id="snifferStatus" style="color: var(--neo-text-main); margin-left: 5px;">IDLE</span>
           </div>
           <div class="badge-pill">
             <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
@@ -787,7 +829,7 @@
           </span>
         </div>
         <div class="metric-card">
-          <span class="metric-label" style="color: #666;">Top Protocol</span>
+          <span class="metric-label" style="color: var(--neo-text-label);">Top Protocol</span>
           <span id="summaryPrimaryProto" class="metric-value" style="color: var(--neo-blue);">-</span>
           <span class="metric-info">
             <span class="material-symbols-outlined" style="font-size:0.9rem;">dns</span>
@@ -810,6 +852,7 @@
         <div class="panel-header">
           <span class="panel-title">Network Visualization</span>
           <div class="tab-pills">
+            <div id="summaryTabBtn" class="tab-pill">Summary</div>
             <div id="packetsTabBtn" class="tab-pill active">Packet List</div>
             <div id="graphTabBtn" class="tab-pill">Graph</div>
             <div id="flowsTabBtn" class="tab-pill">Flows</div>
@@ -818,6 +861,42 @@
         </div>
 
         <div class="panel-content">
+          <div id="summaryContent" class="hidden absolute inset-0 overflow-auto p-6" style="background: var(--neo-bg);">
+            <div class="grid grid-cols-2 gap-6">
+                <div class="dash-panel" style="background: var(--neo-input); border: 1px solid var(--neo-border); height: auto;">
+                    <div class="panel-header" style="height: 40px; background: rgba(0,0,0,0.2);"><span class="panel-title" style="font-size: 0.7rem;">Capture Metadata</span></div>
+                    <table class="dash-table">
+                        <tbody id="captureMetaBody">
+                            <tr><td colspan="2" style="text-align: center; color: var(--neo-text-muted);">NO METADATA</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="dash-panel" style="background: var(--neo-input); border: 1px solid var(--neo-border); height: auto;">
+                    <div class="panel-header" style="height: 40px; background: rgba(0,0,0,0.2);"><span class="panel-title" style="font-size: 0.7rem;">Session Status</span></div>
+                    <div class="p-4 flex flex-col items-center justify-center gap-2">
+                        <span id="summaryStatus" class="metric-value" style="font-size: 1.5rem; color: var(--neo-blue);">IDLE</span>
+                        <span class="text-[10px] font-mono" style="color: var(--neo-text-muted);">ACTIVE CAPTURE SESSION</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 dash-panel" style="background: var(--neo-input); border: 1px solid var(--neo-border); height: auto;">
+                <div class="panel-header" style="height: 40px; background: rgba(0,0,0,0.2);"><span class="panel-title" style="font-size: 0.7rem;">Traffic Distribution</span></div>
+                <table class="dash-table">
+                    <thead>
+                        <tr>
+                            <th>Conversation</th>
+                            <th style="text-align: center;">Direction</th>
+                            <th>Partner</th>
+                            <th style="text-align: right;">Volume</th>
+                        </tr>
+                    </thead>
+                    <tbody id="conversationStatsBody">
+                        <tr><td colspan="4" style="text-align: center; color: var(--neo-text-muted);">NO CONVERSATIONS</td></tr>
+                    </tbody>
+                </table>
+            </div>
+          </div>
+
           <div id="graphContent" class="hidden absolute inset-0 bg-black">
             <div id="networkGraphCanvas"></div>
             <div style="position: absolute; bottom: 16px; right: 16px; display: flex; gap: 8px;">
@@ -839,7 +918,7 @@
               </thead>
               <tbody id="packetsTableBody">
                 <tr>
-                  <td colspan="6" style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono);">WAITING FOR DATA STREAM...</td>
+                  <td colspan="6" style="text-align:center; padding: 3rem; color: var(--neo-text-muted); font-family: var(--font-mono);">WAITING FOR DATA STREAM...</td>
                 </tr>
               </tbody>
             </table>
@@ -858,21 +937,21 @@
               </thead>
               <tbody id="flowsTableBody">
                 <tr>
-                  <td colspan="5" style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono);">NO FLOWS DETECTED.</td>
+                  <td colspan="5" style="text-align:center; padding: 3rem; color: var(--neo-text-muted); font-family: var(--font-mono);">NO FLOWS DETECTED.</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <div id="anomaliesContent" class="hidden absolute inset-0 overflow-auto p-6">
+          <div id="anomaliesContent" class="hidden absolute inset-0 overflow-auto p-6" style="background: var(--neo-bg);">
             <div style="background: rgba(244, 63, 94, 0.05); border: 1px solid rgba(244, 63, 94, 0.3); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
               <h5 style="color: var(--neo-red); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 700; text-transform: uppercase;">Security Analysis</h5>
-              <p id="anomalySummaryText" style="color: #ccc; font-size: 0.8rem; font-family: var(--font-mono);">No active threats detected in current stream.</p>
+              <p id="anomalySummaryText" style="color: var(--neo-text-muted); font-size: 0.8rem; font-family: var(--font-mono);">No active threats detected in current stream.</p>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <h6 style="color: var(--neo-text-muted); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 0.1em;">Cleartext Creds</h6>
+                <h6 style="color: var(--neo-text-label); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 0.1em;">Cleartext Creds</h6>
                 <table class="dash-table">
                   <tbody id="cleartextBody">
                     <tr>
@@ -882,11 +961,11 @@
                 </table>
               </div>
               <div>
-                <h6 style="color: var(--neo-text-muted); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 0.1em;">Port Scans</h6>
+                <h6 style="color: var(--neo-text-label); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 0.1em;">Port Scans</h6>
                 <table class="dash-table">
                   <tbody id="portScansBody">
                     <tr>
-                      <td style="color: #666;">NONE</td>
+                      <td style="color: var(--neo-text-muted);">NONE</td>
                     </tr>
                   </tbody>
                 </table>
@@ -907,7 +986,7 @@
             <table class="dash-table">
               <tbody id="protocolStatsBody">
                 <tr>
-                  <td style="color:#555; font-family: var(--font-mono); text-align: center;">NO DATA</td>
+                  <td style="color:var(--neo-text-muted); font-family: var(--font-mono); text-align: center;">NO DATA</td>
                 </tr>
               </tbody>
             </table>
@@ -924,7 +1003,7 @@
           </div>
 
           <div class="flex justify-between items-center mb-4">
-            <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence</h5>
+            <h5 class="panel-title" style="font-size: 0.8rem;">Intelligence</h5>
             <button id="refreshSnifferResultsBtn" class="btn-dash btn-secondary btn-icon-only"
               style="height:32px; width:32px; border-radius: 6px;" title="Refresh Results">
               <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
@@ -982,65 +1061,4 @@
 
 {% block extra_scripts %}
   <script src="{{ url_for('static', filename='js/packet_sniffer.js') }}"></script>
-  <script>
-    // --- UI INTERACTION LOGIC ---
-    
-    // 1. Toggle Advanced Config
-    const configBtn = document.getElementById('advancedScanToggle')
-    const configMenu = document.getElementById('advancedScanOptions')
-    if (configBtn && configMenu) {
-      configBtn.addEventListener('click', (e) => {
-        configMenu.classList.toggle('hidden')
-        e.stopPropagation()
-      })
-      document.addEventListener('click', (e) => {
-        if (!configBtn.contains(e.target) && !configMenu.contains(e.target)) {
-          configMenu.classList.add('hidden')
-        }
-      })
-    }
-    
-    // 2. Tab Switcher Logic (Pills)
-    const tabs = [
-      { btn: 'graphTabBtn', content: 'graphContent' },
-      { btn: 'packetsTabBtn', content: 'packetsContent' },
-      { btn: 'flowsTabBtn', content: 'flowsContent' },
-      { btn: 'anomaliesTabBtn', content: 'anomaliesContent' }
-    ]
-    
-    function activateTab(targetBtnId) {
-      const targetTab = tabs.find((t) => t.btn === targetBtnId)
-      if (!targetTab) return
-    
-      // Hide all
-      tabs.forEach((t) => {
-        const b = document.getElementById(t.btn)
-        const c = document.getElementById(t.content)
-        if (b) b.classList.remove('active')
-        if (c) c.classList.add('hidden')
-      })
-    
-      // Show target
-      const activeBtn = document.getElementById(targetTab.btn)
-      const activeContent = document.getElementById(targetTab.content)
-      if (activeBtn) activeBtn.classList.add('active')
-      if (activeContent) activeContent.classList.remove('hidden')
-    }
-    
-    // Initialize Click Listeners
-    tabs.forEach((tab) => {
-      const btn = document.getElementById(tab.btn)
-      if (btn) {
-        btn.addEventListener('click', () => {
-          activateTab(tab.btn)
-        })
-      }
-    })
-    
-    // 3. Force "Packet List" to be visible on load
-    document.addEventListener('DOMContentLoaded', function () {
-      // Ensure Packets tab is the default active one
-      activateTab('packetsTabBtn')
-    })
-  </script>
 {% endblock %}

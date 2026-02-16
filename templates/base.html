@@ -22,64 +22,147 @@
       /* --- GLOBAL VARIABLES & THEME SETUP --- */
       /*******************************************/
       :root {
-        /* NEO-FUTURISM PALETTE */
-        --bg-color: #050505; /* Deepest Black */
-        --surface-color: #0f0f11; /* Card Background */
-        --border-color: #27272a; /* Zinc-800 for subtle borders */
-        --text-light: #f8fafc; /* Stark White */
-        --text-muted: #94a3b8; /* Slate-400 */
-        --accent-blue: #3b82f6; /* Vibrant Blue */
+        /* ARCTIC TECHNICAL MINIMALISM - DARK (Institutional) */
+        --bg-primary: #050505;
+        --bg-secondary: #0a0a0b;
+        --surface-primary: #0f0f11;
+        --surface-elevated: #161618;
+        --surface-subtle: #121214;
+        
+        --border-default: #27272a;
+        --border-subtle: #18181b;
+        
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        
+        --accent-primary: #3b82f6;
         --accent-hover: #2563eb;
 
-        /* NEO-FUTURISM ADDITIONS */
-        --neo-card: var(--surface-color);
-        --neo-border: var(--border-color);
-        --neo-blue: var(--accent-blue);
-        --neo-text-primary: var(--text-light);
+        /* Standardized Severity (Dark) */
+        --severity-critical: #ef4444;
+        --severity-high: #f59e0b;
+        --severity-medium: #fbbf24;
+        --severity-low: #60a5fa;
+        --severity-success: #10b981;
+        --severity-info: #94a3b8;
+
+        /* Compatibility Mappings */
+        --bg-color: var(--bg-primary);
+        --surface-color: var(--surface-primary);
+        --border-color: var(--border-default);
+        --text-light: var(--text-primary);
+        --text-muted-old: var(--text-muted); /* Internal mapping */
+        --accent-blue: var(--accent-primary);
+        
+        --neo-card: var(--surface-primary);
+        --neo-border: var(--border-default);
+        --neo-blue: var(--accent-primary);
+        --neo-text-primary: var(--text-primary);
         --neo-text-secondary: var(--text-muted);
         --neo-text-label: #64748b;
-        --neo-card-hover: #161618;
+        --neo-card-hover: var(--surface-elevated);
 
         /* Standardized Heights */
         --navbar-height: 64px;
+
+        /* Scrollbar */
+        --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+        --scrollbar-hover: var(--accent-primary);
       }
 
-      /* LIGHT MODE OVERRIDES */
+      /* LIGHT MODE OVERRIDES (ARCTIC TECHNICAL MINIMALISM) */
       body.light-mode {
-        --bg-color: #f8fafc;
-        --surface-color: #ffffff;
-        --border-color: #e2e8f0;
-        --text-light: #0f172a;
-        --text-muted: #475569;
-        --accent-blue: #2563eb;
-        --accent-hover: #1d4ed8;
+        --bg-primary: #f8fafc; /* Soft cool-gray structure */
+        --bg-secondary: #f1f5f9;
+        --surface-primary: #ffffff;
+        --surface-elevated: #ffffff;
+        --surface-subtle: #f8fafc;
 
-        --neo-card: var(--surface-color);
-        --neo-border: var(--border-color);
+        --border-default: #e2e8f0; /* Slate-200 - Structure over shadow */
+        --border-subtle: #f1f5f9; /* Slate-100 */
+
+        --text-primary: #0f172a; /* Slate-900 - Strong contrast */
+        --text-secondary: #334155; /* Slate-700 */
+        --text-muted: #64748b; /* Slate-500 - High readability */
+
+        --accent-primary: #0f172a; /* Institutional Slate-900 */
+        --accent-hover: #1e293b;
+
+        /* Standardized Severity (Light - Technical Tones) */
+        --severity-critical: #991b1b;
+        --severity-critical-bg: #fef2f2;
+        --severity-high: #92400e;
+        --severity-high-bg: #fffbeb;
+        --severity-medium: #854d0e;
+        --severity-medium-bg: #fefce8;
+        --severity-low: #075985;
+        --severity-low-bg: #f0f9ff;
+        --severity-success: #166534;
+        --severity-success-bg: #f0fdf4;
+        --severity-info: #475569;
+        --severity-info-bg: #f8fafc;
+
+        /* Compatibility Mappings */
+        --bg-color: var(--bg-primary);
+        --surface-color: var(--surface-primary);
+        --border-color: var(--border-default);
+        --text-light: var(--text-primary);
+        --accent-blue: #2563eb; 
+
+        --neo-card: var(--surface-primary);
+        --neo-border: var(--border-default);
         --neo-blue: var(--accent-blue);
-        --neo-text-primary: var(--text-light);
-        --neo-text-secondary: var(--text-muted);
-        --neo-text-label: #94a3b8;
-        --neo-card-hover: #f1f5f9;
+        --neo-text-primary: var(--text-primary);
+        --neo-text-secondary: var(--text-secondary);
+        --neo-text-label: var(--text-muted);
+        --neo-card-hover: var(--bg-secondary);
+
+        --scrollbar-thumb: rgba(0, 0, 0, 0.1);
+        --scrollbar-hover: var(--text-muted);
       }
       
       body {
         font-family: 'Inter', sans-serif;
         background-color: var(--bg-color);
-        background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        background-size: 50px 50px;
       
         display: flex;
         flex-direction: column;
         min-height: 100vh;
         padding-top: var(--navbar-height);
-        color: var(--text-muted);
+        color: var(--text-secondary);
         position: relative;
         overflow-x: hidden; 
       }
 
       body.light-mode {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        color: var(--text-secondary);
+      }
+
+      /* Global Link Refinement */
+      body.light-mode a:not(.btn-dash):not(.btn-neo-primary):not(.details):not(.logout-link) {
+        color: var(--accent-blue);
+        transition: color 0.2s ease;
+      }
+      body.light-mode a:not(.btn-dash):not(.btn-neo-primary):not(.details):not(.logout-link):hover {
+        color: var(--accent-hover);
+      }
+
+      /* Global Button/Input Refinements for Institutional feel */
+      body.light-mode input, 
+      body.light-mode select, 
+      body.light-mode textarea {
+        background-color: var(--surface-primary);
+        border-color: var(--border-default);
+        color: var(--text-primary);
+      }
+
+      body.light-mode input::placeholder {
+        color: var(--text-muted);
+      }
+
+      body.light-mode button:not(.alert-close):not(.profile-button-text):not(.sidebar-toggle) {
+        transition: all 0.2s ease;
       }
 
       /* Logo Visibility Logic */
@@ -94,7 +177,7 @@
       /* 1. Standard approach (Firefox) */
       html {
         scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+        scrollbar-color: var(--scrollbar-thumb) transparent;
         font-size: 16px;
         overflow-x: hidden;
       }
@@ -129,7 +212,7 @@
 
       ::-webkit-scrollbar-thumb {
         /* The thumb itself */
-        background-color: rgba(255, 255, 255, 0.15); 
+        background-color: var(--scrollbar-thumb); 
         border-radius: 20px;
         
         /* This border trick makes the visual bar thinner (6px) 
@@ -141,7 +224,7 @@
 
       ::-webkit-scrollbar-thumb:hover {
         /* On hover, make it the accent color or a brighter white */
-        background-color: var(--accent-blue); 
+        background-color: var(--scrollbar-hover); 
         border: 2px solid transparent; /* Make it slightly thicker on hover */
       }
 
@@ -180,10 +263,15 @@
         top: 0;
         left: 0;
         z-index: 1000;
+        transition: all 0.3s ease;
       }
 
       body.light-mode .navbar {
-        background-color: rgba(255, 255, 255, 0.95);
+        background-color: var(--surface-primary);
+        border-bottom: 1px solid var(--border-default);
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03); /* Subtle separation */
+        backdrop-filter: none; /* Institutional stability */
+        -webkit-backdrop-filter: none;
       }
       
       .navbar-container {
@@ -218,6 +306,11 @@
       .navbar-links li a.active {
         color: var(--text-light);
       }
+
+      body.light-mode .navbar-links li a:hover,
+      body.light-mode .navbar-links li a.active {
+        color: var(--accent-primary);
+      }
       
       .navbar-links li a::after {
         content: '';
@@ -242,9 +335,20 @@
         border-radius: 2px;
         transition: all 0.3s ease;
       }
+
+      body.light-mode .navbar-links li a.highlight-link {
+        color: var(--text-primary);
+        border-color: var(--border-default);
+      }
+
       .navbar-links li a.highlight-link:hover {
         border-color: var(--text-light);
         background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      body.light-mode .navbar-links li a.highlight-link:hover {
+        border-color: var(--accent-primary);
+        background-color: var(--bg-secondary);
       }
       
       /*******************************************/
@@ -299,7 +403,9 @@
       }
 
       body.light-mode .profile-dropdown-content {
-        box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.1);
+        background-color: var(--surface-primary);
+        border-color: var(--border-default);
+        box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.08);
       }
       
       /* New: User Header (Name & Email) */
@@ -309,6 +415,10 @@
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
+      }
+
+      body.light-mode .profile-dropdown-content .user-header {
+        border-bottom-color: var(--border-subtle);
       }
 
       .profile-dropdown-content .user-header .full-name {
@@ -331,7 +441,8 @@
       }
 
       body.light-mode .profile-dropdown-content .meta-data {
-        background-color: rgba(0, 0, 0, 0.02);
+        background-color: var(--bg-secondary);
+        border-bottom-color: var(--border-subtle);
       }
 
       .meta-row {
@@ -387,13 +498,19 @@
       }
 
       body.light-mode .profile-dropdown-content a.details:hover {
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
       }
       
       .profile-dropdown-content a.logout-link {
         color: #ef4444;
         margin-top: 0.5rem;
         border-top: 1px solid rgba(255,255,255,0.05);
+      }
+
+      body.light-mode .profile-dropdown-content a.logout-link {
+        border-top-color: var(--border-subtle);
+        color: #dc2626;
       }
       
       .profile-dropdown-content a.logout-link:hover {
@@ -429,23 +546,23 @@
         justify-content: space-between;
         align-items: center;
         font-size: 0.9rem;
+        border-radius: 4px;
       }
-      .alert-success {
-        border-left: 3px solid #10b981;
-        color: #10b981;
+      body.light-mode .alert {
+        background-color: var(--surface-primary);
+        border-color: var(--border-default);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
       }
-      .alert-danger {
-        border-left: 3px solid #ef4444;
-        color: #ef4444;
-      }
-      .alert-warning {
-        border-left: 3px solid #f59e0b;
-        color: #f59e0b;
-      }
-      .alert-info {
-        border-left: 3px solid #3b82f6;
-        color: #3b82f6;
-      }
+
+      .alert-success { border-left: 3px solid var(--severity-success); color: var(--severity-success); }
+      .alert-danger { border-left: 3px solid var(--severity-critical); color: var(--severity-critical); }
+      .alert-warning { border-left: 3px solid var(--severity-high); color: var(--severity-high); }
+      .alert-info { border-left: 3px solid var(--severity-low); color: var(--severity-low); }
+
+      body.light-mode .alert-success { background-color: var(--severity-success-bg); }
+      body.light-mode .alert-danger { background-color: var(--severity-critical-bg); }
+      body.light-mode .alert-warning { background-color: var(--severity-high-bg); }
+      body.light-mode .alert-info { background-color: var(--severity-low-bg); }
       
       .alert-close {
         background: none;
@@ -493,10 +610,13 @@
       }
 
       body.light-mode footer {
-        background-color: rgba(255, 255, 255, 0.95);
+        background-color: var(--surface-primary);
+        border-top: 1px solid var(--border-default);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
       }
 
-      /* Subtle gradient line on top of footer */
+      /* Subtle line on top of footer */
       footer::before {
         content: '';
         position: absolute;
@@ -504,8 +624,12 @@
         left: 0;
         width: 100%;
         height: 1px;
-        background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        background: var(--border-color);
         opacity: 0.5;
+      }
+
+      body.light-mode footer::before {
+        background: var(--border-default);
       }
 
       .footer-content {
@@ -564,6 +688,18 @@
         border: 1px solid var(--border-color);
         padding: 3rem;
         box-shadow: none;
+        transition: all 0.3s ease;
+      }
+
+      body.light-mode .section-card {
+        background-color: var(--surface-primary);
+        border-color: var(--border-default);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      }
+
+      body.light-mode .section-card:hover {
+        border-color: var(--text-muted);
+        background-color: var(--surface-subtle);
       }
       
       .fade-in-element {

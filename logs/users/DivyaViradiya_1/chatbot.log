@@ -19,3 +19,536 @@
 2026-02-14 16:40:58 - INFO - New local chat session started: 1ec78c55-9851-480e-a424-33331282c40b
 2026-02-14 16:41:00 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
 2026-02-14 16:41:05 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-14 19:17:22 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 1ec78c55-9851-480e-a424-33331282c40b
+2026-02-14 19:17:27 - INFO - Stream updated local session ID to: 2b36013e-cf28-4b69-ac7a-38397fa156e8
+2026-02-14 19:18:33 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 2b36013e-cf28-4b69-ac7a-38397fa156e8
+2026-02-14 19:18:59 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-14 19:18:59 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-14 19:27:48 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 2b36013e-cf28-4b69-ac7a-38397fa156e8
+2026-02-14 19:28:52 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 2b36013e-cf28-4b69-ac7a-38397fa156e8
+2026-02-14 19:29:22 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.48', 'scan_type': 'default'}
+2026-02-14 19:29:22 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 11:25:04 - INFO - New local chat session started: 7e90d812-7b24-4c51-a2f5-818d5527c01c
+2026-02-15 11:25:18 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 7e90d812-7b24-4c51-a2f5-818d5527c01c
+2026-02-15 11:25:23 - INFO - Stream updated local session ID to: 2b36013e-cf28-4b69-ac7a-38397fa156e8
+2026-02-15 11:25:27 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.48', 'scan_type': 'default'}
+2026-02-15 11:25:27 - INFO - Triggering scanner: http://localhost:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 11:25:43 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 11:26:01 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 2b36013e-cf28-4b69-ac7a-38397fa156e8
+2026-02-15 11:26:08 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.48', 'scan_type': 'default'}
+2026-02-15 11:26:08 - INFO - Triggering scanner: http://localhost:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 11:26:21 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 11:26:30 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 2b36013e-cf28-4b69-ac7a-38397fa156e8
+2026-02-15 11:26:53 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.48', 'scan_type': 'default'}
+2026-02-15 11:26:53 - INFO - Triggering scanner: http://localhost:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 11:27:06 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 11:27:08 - ERROR - Error communicating with server proxy during scanner analysis: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=local&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cnetwork_scanner%5Cnmap_report.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1037, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=local&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cnetwork_scanner%5Cnmap_report.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 370, in scanner_analysis_proxy
+    response = http_session.post(proxy_upload_url, params=params)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=local&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cnetwork_scanner%5Cnmap_report.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-15 11:30:36 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-15 11:30:41 - INFO - Stream updated local session ID to: 3d177d43-efcf-4528-8946-313411b027c7
+2026-02-15 11:31:38 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 3d177d43-efcf-4528-8946-313411b027c7
+2026-02-15 11:31:49 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.1.1', 'scan_type': 'default'}
+2026-02-15 11:31:49 - INFO - Triggering scanner: http://localhost:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 11:33:37 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 11:33:48 - INFO - Stored session ID from server: 1d0e36f4-b540-412b-a021-2353d8dbe1e3
+2026-02-15 11:33:48 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 1d0e36f4-b540-412b-a021-2353d8dbe1e3
+2026-02-15 11:44:26 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-15 11:44:30 - INFO - Stream updated local session ID to: 3d177d43-efcf-4528-8946-313411b027c7
+2026-02-15 11:46:15 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-15 11:46:20 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-15 11:46:28 - ERROR - Error deleting session: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-02-15 11:46:28 - ERROR - Error in delete_all_sessions: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-02-15 11:46:45 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 3d177d43-efcf-4528-8946-313411b027c7
+2026-02-15 11:46:53 - ERROR - Error communicating with server proxy stream: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShieldAI\routes\chatbot_bp.py", line 302, in chat_with_ai_stream
+    req = http_session.post(proxy_chat_url, json=payload_to_server, stream=True)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 682, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-02-15 11:47:29 - INFO - New local chat session started: 438b9868-36ae-4c8e-90f8-695a102ace06
+2026-02-15 11:48:20 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 438b9868-36ae-4c8e-90f8-695a102ace06
+2026-02-15 12:30:43 - INFO - New local chat session started: 0e4f7738-1256-44e6-b903-b62ad34c2373
+2026-02-15 12:30:54 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 0e4f7738-1256-44e6-b903-b62ad34c2373
+2026-02-15 12:30:57 - INFO - Stream updated local session ID to: cd655cb4-993b-4d74-b435-8f03a296f23c
+2026-02-15 12:31:31 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session cd655cb4-993b-4d74-b435-8f03a296f23c
+2026-02-15 12:31:37 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.1.1', 'scan_type': 'tcp_connect'}
+2026-02-15 12:31:37 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 12:35:00 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 12:35:09 - INFO - Stored session ID from server: cd655cb4-993b-4d74-b435-8f03a296f23c
+2026-02-15 12:35:09 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session cd655cb4-993b-4d74-b435-8f03a296f23c
+2026-02-15 12:35:17 - INFO - AI Action Execution requested: scanner_analysis with params {'file_path': 'GENERIC_PDF'}
+2026-02-15 12:39:12 - INFO - New local chat session started: a48e0f07-76b9-4a98-95d9-477bd391c0f0
+2026-02-15 12:39:29 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a48e0f07-76b9-4a98-95d9-477bd391c0f0
+2026-02-15 12:39:31 - INFO - Stream updated local session ID to: a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 12:39:55 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 12:39:58 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.48', 'scan_type': 'default'}
+2026-02-15 12:39:58 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 12:40:24 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 12:40:42 - INFO - Stored session ID from server: a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 12:52:34 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-15 12:52:39 - INFO - Stream updated local session ID to: a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 12:53:11 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 12:53:15 - INFO - AI Action Execution requested: ssl_scan with params {'target_host': 'google.com'}
+2026-02-15 12:53:15 - INFO - Triggering scanner: http://127.0.0.1:5100/ssl_scanner/scan for user DivyaViradiya
+2026-02-15 12:58:27 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 12:58:54 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:02:11 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:06:58 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1dabd66c980>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-15 13:06:58 - ERROR - Error in clear_history: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /clear_history (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-15 13:07:01 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=a417262c-d5e3-4a65-9061-ab044f97282f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-15 13:07:52 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:10:04 - ERROR - Error in clear_history: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /clear_history (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-15 13:10:06 - ERROR - Error in clear_history: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /clear_history (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-15 13:10:12 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:10:14 - ERROR - Error communicating with server proxy stream: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /chat_stream (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1037, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /chat_stream (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\routes\chatbot_bp.py", line 302, in chat_with_ai_stream
+    req = http_session.post(proxy_chat_url, json=payload_to_server, stream=True)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /chat_stream (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-15 13:10:34 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:17:00 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:20:09 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:21:49 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:31:46 - INFO - New local chat session started: fe2e377b-1756-41d7-b406-382ffee8ce3c
+2026-02-15 13:32:01 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session fe2e377b-1756-41d7-b406-382ffee8ce3c
+2026-02-15 13:32:06 - INFO - Stream updated local session ID to: a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:32:35 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:32:40 - INFO - AI Action Execution requested: ssl_scan with params {'target_host': 'google.com'}
+2026-02-15 13:32:40 - INFO - Triggering scanner: http://127.0.0.1:5100/ssl_scanner/scan for user DivyaViradiya
+2026-02-15 13:32:57 - INFO - Sending ssl path-based analysis request to backend
+2026-02-15 13:36:35 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-15 13:36:40 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-15 13:38:32 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1e2bd568980>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-15 13:38:36 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=a417262c-d5e3-4a65-9061-ab044f97282f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-15 13:39:38 - INFO - Sending ssl path-based analysis request to backend
+2026-02-15 13:39:59 - INFO - Stored session ID from server: a417262c-d5e3-4a65-9061-ab044f97282f
+2026-02-15 13:47:06 - INFO - New local chat session started: a577418b-120a-45d9-aa1e-3af79d882670
+2026-02-15 13:47:23 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a577418b-120a-45d9-aa1e-3af79d882670
+2026-02-15 13:47:29 - INFO - Stream updated local session ID to: 3a568cfc-7144-4303-bce9-08f61a300450
+2026-02-15 13:50:42 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 3a568cfc-7144-4303-bce9-08f61a300450
+2026-02-15 13:50:50 - INFO - AI Action Execution requested: ssl_scan with params {'target_host': 'google.com'}
+2026-02-15 13:50:50 - INFO - Triggering scanner: http://127.0.0.1:5100/ssl_scanner/scan for user DivyaViradiya
+2026-02-15 13:51:00 - INFO - Sending ssl path-based analysis request to backend
+2026-02-15 13:51:19 - INFO - Stored session ID from server: 3a568cfc-7144-4303-bce9-08f61a300450
+2026-02-15 13:51:19 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 3a568cfc-7144-4303-bce9-08f61a300450
+2026-02-15 13:56:25 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 3a568cfc-7144-4303-bce9-08f61a300450
+2026-02-15 13:56:37 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'google.com'}
+2026-02-15 13:56:37 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 13:57:58 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 13:58:14 - INFO - Stored session ID from server: 3a568cfc-7144-4303-bce9-08f61a300450
+2026-02-15 13:58:14 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 3a568cfc-7144-4303-bce9-08f61a300450
+2026-02-15 14:02:44 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 14:02:59 - INFO - Stored session ID from server: 25d90bb9-fc24-41f9-9069-a222fa50dbda
+2026-02-15 14:19:09 - INFO - New local chat session started: cfb30d56-87e8-4e85-a737-6f14021bb41f
+2026-02-15 14:19:43 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session cfb30d56-87e8-4e85-a737-6f14021bb41f
+2026-02-15 14:19:45 - INFO - Stream updated local session ID to: 86f5784b-615b-44f9-bc26-0a2be698096e
+2026-02-15 14:20:20 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 86f5784b-615b-44f9-bc26-0a2be698096e
+2026-02-15 14:20:23 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.1', 'scan_type': 'default'}
+2026-02-15 14:20:23 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 14:21:42 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 14:21:53 - INFO - Stored session ID from server: 86f5784b-615b-44f9-bc26-0a2be698096e
+2026-02-15 14:21:53 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 86f5784b-615b-44f9-bc26-0a2be698096e
+2026-02-15 14:23:10 - INFO - New local chat session started: 9b4f1c94-319c-4df2-8aab-1ff405eb8064
+2026-02-15 14:54:33 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-15 14:54:36 - INFO - Stream updated local session ID to: 25d86b79-11b5-4806-bc3c-58d37aa88491
+2026-02-15 14:55:07 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 25d86b79-11b5-4806-bc3c-58d37aa88491
+2026-02-15 14:55:10 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.48', 'scan_type': 'default'}
+2026-02-15 14:55:10 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-15 14:55:21 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 14:55:34 - INFO - Stored session ID from server: 25d86b79-11b5-4806-bc3c-58d37aa88491
+2026-02-15 14:55:34 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 25d86b79-11b5-4806-bc3c-58d37aa88491
+2026-02-15 15:15:52 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-15 15:15:54 - INFO - Stream updated local session ID to: f371ce74-318c-42dc-aed5-50cd601743c2
+2026-02-15 15:16:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session f371ce74-318c-42dc-aed5-50cd601743c2
+2026-02-15 15:17:11 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session f371ce74-318c-42dc-aed5-50cd601743c2
+2026-02-15 15:17:14 - INFO - AI Action Execution requested: packet_sniffer with params {'target_ip': '192.168.29.1', 'duration': 30, 'max_packets': 100}
+2026-02-15 15:17:14 - INFO - Triggering scanner: http://127.0.0.1:5100/packet_sniffer/start_capture for user DivyaViradiya
+2026-02-15 15:17:52 - INFO - Sending packet_sniffer path-based analysis request to backend
+2026-02-15 15:17:53 - INFO - Stored session ID from server: f371ce74-318c-42dc-aed5-50cd601743c2
+2026-02-15 15:17:53 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session f371ce74-318c-42dc-aed5-50cd601743c2
+2026-02-15 15:42:33 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session f371ce74-318c-42dc-aed5-50cd601743c2
+2026-02-15 15:45:20 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session f371ce74-318c-42dc-aed5-50cd601743c2
+2026-02-15 15:55:19 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session f371ce74-318c-42dc-aed5-50cd601743c2
+2026-02-15 16:15:20 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-15 16:15:23 - INFO - Stream updated local session ID to: 5c834e3e-874f-4fcc-840a-074a59350b56
+2026-02-15 16:18:16 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 5c834e3e-874f-4fcc-840a-074a59350b56
+2026-02-15 16:18:52 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 5c834e3e-874f-4fcc-840a-074a59350b56
+2026-02-15 16:19:04 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 5c834e3e-874f-4fcc-840a-074a59350b56
+2026-02-15 16:19:06 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-15 16:19:06 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-15 16:27:15 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 5c834e3e-874f-4fcc-840a-074a59350b56
+2026-02-15 16:27:18 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-15 16:27:18 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-15 16:36:32 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 5c834e3e-874f-4fcc-840a-074a59350b56
+2026-02-15 16:36:36 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-15 16:36:36 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-15 16:43:49 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 5c834e3e-874f-4fcc-840a-074a59350b56
+2026-02-15 16:44:34 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 5c834e3e-874f-4fcc-840a-074a59350b56
+2026-02-15 16:44:36 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-15 16:44:36 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-15 16:57:19 - INFO - New local chat session started: c4695264-fa40-4964-8d29-ed77b129f4bc
+2026-02-15 17:08:53 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-15 17:08:57 - INFO - Stream updated local session ID to: 578d6ecb-94bd-4406-a677-4cd9eb998af3
+2026-02-15 17:09:07 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 578d6ecb-94bd-4406-a677-4cd9eb998af3
+2026-02-15 17:09:26 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 578d6ecb-94bd-4406-a677-4cd9eb998af3
+2026-02-15 17:09:28 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-15 17:09:28 - INFO - Triggering scanner: http://localhost:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-15 17:12:00 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 578d6ecb-94bd-4406-a677-4cd9eb998af3
+2026-02-15 17:12:05 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-15 17:12:05 - INFO - Triggering scanner: http://localhost:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-15 18:01:19 - INFO - Sending zap path-based analysis request to backend
+2026-02-15 18:02:33 - INFO - Stored session ID from server: 578d6ecb-94bd-4406-a677-4cd9eb998af3
+2026-02-15 18:05:19 - INFO - Sending zap path-based analysis request to backend
+2026-02-15 18:05:38 - ERROR - Error communicating with server proxy during scanner analysis: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\routes\chatbot_bp.py", line 406, in scanner_analysis_proxy
+    response = http_session.post(proxy_upload_url, params=params)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 682, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-02-15 18:11:21 - INFO - Sending zap path-based analysis request to backend
+2026-02-15 18:13:14 - INFO - Stored session ID from server: 578d6ecb-94bd-4406-a677-4cd9eb998af3
+2026-02-15 18:17:53 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 18:18:09 - INFO - Stored session ID from server: 578d6ecb-94bd-4406-a677-4cd9eb998af3
+2026-02-15 18:18:11 - INFO - Session switched via URL parameter to: 578d6ecb-94bd-4406-a677-4cd9eb998af3
+2026-02-15 18:28:50 - INFO - Sending nmap path-based analysis request to backend
+2026-02-15 18:29:01 - INFO - Stored session ID from server: cb17d562-d6bb-4dbb-8fde-d219a044d9ac
+2026-02-15 18:29:02 - INFO - Session switched via URL parameter to: cb17d562-d6bb-4dbb-8fde-d219a044d9ac
+2026-02-15 18:35:52 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-15 18:35:54 - INFO - Stream updated local session ID to: d7bb0577-1796-491a-b3b6-35686f29da13
+2026-02-15 18:36:12 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d7bb0577-1796-491a-b3b6-35686f29da13
+2026-02-15 18:36:26 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d7bb0577-1796-491a-b3b6-35686f29da13
+2026-02-15 18:36:54 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d7bb0577-1796-491a-b3b6-35686f29da13
+2026-02-15 18:37:17 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d7bb0577-1796-491a-b3b6-35686f29da13
+2026-02-15 18:37:57 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d7bb0577-1796-491a-b3b6-35686f29da13
+2026-02-15 23:09:23 - INFO - New local chat session started: 72ed017f-0cce-4671-ad19-938a9b003d35
+2026-02-15 23:09:25 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1a9a1111940>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-15 23:09:27 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=72ed017f-0cce-4671-ad19-938a9b003d35 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-15 23:22:48 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1a9a32cb750>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-15 23:22:49 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1a9a32d2ea0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-15 23:22:51 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=72ed017f-0cce-4671-ad19-938a9b003d35 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-16 09:11:11 - INFO - New local chat session started: fed46460-addb-4ae8-ab90-2fe8684a94d9
+2026-02-16 10:23:12 - INFO - New local chat session started: c0a5678a-b068-4d24-b28a-df4bb7c56037
+2026-02-16 20:37:37 - INFO - New local chat session started: edddd776-4343-45b0-85e4-fcc2244ab022

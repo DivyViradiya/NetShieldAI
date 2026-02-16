@@ -23,6 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
         scanStatus: document.getElementById('scanStatus'),
         localIpDisplay: document.getElementById('localIpDisplay'),
         portCountDisplay: document.getElementById('portCountDisplay'),
+
+        // Target Intelligence
+        osGuessDisplay: document.getElementById('osGuessDisplay'),
+        hostStatusBadge: document.getElementById('hostStatusBadge'),
+        latencyDisplay: document.getElementById('latencyDisplay'),
+        discoveryInsights: document.getElementById('discoveryInsights'),
         
         // Toolbar
         refreshResultsBtn: document.getElementById('refreshResultsBtn'),
@@ -254,11 +260,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function updateIntelligenceUI(metadata) {
+        if (elements.osGuessDisplay) {
+            elements.osGuessDisplay.textContent = metadata.os_guess || 'UNKNOWN';
+            elements.osGuessDisplay.style.color = metadata.os_guess !== 'Unknown' ? 'var(--neo-blue)' : 'var(--neo-text-muted)';
+        }
+        
+        if (elements.hostStatusBadge) {
+            elements.hostStatusBadge.textContent = metadata.host_status || 'IDLE';
+            elements.hostStatusBadge.style.color = metadata.host_status === 'Online' ? 'var(--neo-green)' : 'var(--neo-text-muted)';
+        }
+
+        if (elements.latencyDisplay) {
+            elements.latencyDisplay.textContent = metadata.latency || '0ms';
+        }
+
+        if (elements.discoveryInsights) {
+            elements.discoveryInsights.textContent = metadata.insights || 'No infrastructure data.';
+        }
+    }
+
     async function fetchAndDisplayOpenPorts() {
         try {
             const response = await fetch(`${API_BASE_URL}/open_ports`);
             const data = await response.json();
             updateOpenPortsTable(data.open_ports);
+            if (data.metadata) updateIntelligenceUI(data.metadata);
         } catch (error) {
             console.error('Error fetching ports', error);
         }
@@ -345,7 +372,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken 
                 },
-                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type })
+                body: JSON.stringify({ 
+                    llm_mode: llmMode, 
+                    scanner_type: data.scanner_type,
+                    force_new_session: true // [NEW] Force a fresh chat
+                })
             });
 
             data = await response.json();
@@ -355,7 +386,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 appendLog(`[✓] Analysis complete. Redirecting...`);
                 
                 setTimeout(() => {
-                    window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                    const params = new URLSearchParams({
+                        mode: data.llm_mode,
+                        summary: data.summary,
+                        session_id: data.session_id
+                    });
+                    window.location.href = `${CHATBOT_REDIRECT_URL}?${params.toString()}`;
                 }, 800);
             } else {
                 throw new Error(data.message);

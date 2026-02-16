@@ -135,7 +135,10 @@ def initiate_api_scan():
                         pdf_generator.create_zap_report_pdf(json_report_path, str(pdf_path))
                         
                         if pdf_path.exists():
+                            # Final synchronization wait
+                            time.sleep(1.5)
                             api_scanner.log(f"[+] PDF generated successfully.", current_user_identifier, to_console=True)
+                            api_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", current_user_identifier, to_console=True)
                             api_scanner.log(f"[*] API Scan complete.", current_user_identifier, to_console=True)
                         else:
                              api_scanner.log("[!] PDF generation failed (file missing).", current_user_identifier, to_console=True)
@@ -167,6 +170,25 @@ def initiate_api_scan():
     return jsonify({
         "status": "success",
         "message": f"API Scan initiated for {target_url}."
+    })
+
+
+@api_scanner_bp.route('/status', methods=['GET'])
+@login_required
+def get_api_status():
+    """Checks if an API scan is currently running for the user."""
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    is_running = api_scanner.is_scan_running(current_user_identifier)
+    
+    target = None
+    if is_running:
+        with api_scanner.scan_lock:
+            target = api_scanner.active_scans[current_user_identifier].get('target')
+
+    return jsonify({
+        "status": "success",
+        "is_running": is_running,
+        "target": target
     })
 
 
@@ -254,7 +276,10 @@ def api_log_stream():
         while True:
             try:
                 message = user_queue.get(timeout=5)
-                yield f"data: {message}\n\n"
+                if message == ': keep-alive':
+                    yield f"{message}\n\n"
+                else:
+                    yield f"data: {message}\n\n"
             except queue.Empty:
                 yield ": keep-alive\n\n"
             except Exception as e:

@@ -13,91 +13,91 @@
   <style>
     /* --- THEME VARIABLES --- */
     :root {
-      --neo-bg: #050505;
-      --neo-card: #0a0a0c;
-      --neo-card-hover: #0e0e11;
-      --neo-border: #27272a;
-      --neo-text-main: #ffffff;
-      --neo-text-muted: #9ca3af;
-      --neo-blue: #3b82f6;
-      --neo-red: #f43f5e;
-      --neo-green: #10b981;
-      --neo-amber: #f59e0b;
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-card-hover: var(--surface-elevated);
+      --neo-border: var(--border-default);
+      --neo-text-main: var(--text-primary);
+      --neo-text-muted: var(--text-secondary);
+      --neo-blue: var(--accent-primary);
+      --neo-red: var(--severity-critical);
+      --neo-green: var(--severity-success);
+      --neo-amber: var(--severity-high);
       --neo-purple: #8b5cf6;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
     body.light-mode {
-      --neo-bg: #f8fafc;
-      --neo-card: rgba(255, 255, 255, 0.8);
-      --neo-card-hover: rgba(241, 245, 249, 0.9);
-      --neo-border: rgba(226, 232, 240, 0.8);
-      --neo-text-main: #0f172a;
-      --neo-text-muted: #475569;
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-card-hover: var(--bg-secondary);
+      --neo-border: var(--border-default);
+      --neo-text-main: var(--text-primary);
+      --neo-text-muted: var(--text-secondary);
     }
 
     /* Light Mode Specific Overrides */
     body.light-mode .metric-value {
-      color: #0f172a;
+      color: var(--text-primary);
     }
 
     body.light-mode .metric-sub {
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     body.light-mode .panel {
-      background: #ffffff;
-      border-color: #e2e8f0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      background: var(--surface-primary);
+      border-color: var(--border-default);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     }
 
     body.light-mode .panel-title {
-      color: #0f172a;
+      color: var(--text-primary);
     }
 
     body.light-mode .mono-table th {
-      background: #f1f5f9;
-      color: #64748b;
-      border-bottom-color: #e2e8f0;
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .mono-table td {
-      color: #334155;
-      border-bottom-color: #f1f5f9;
+      color: var(--text-secondary);
+      border-bottom-color: var(--border-subtle);
     }
 
     body.light-mode .mono-table tr:hover td {
-      background: #f8fafc;
+      background: var(--bg-secondary);
     }
 
     body.light-mode .power-user-name {
-      color: #0f172a;
+      color: var(--text-primary);
     }
 
     body.light-mode .power-user-rank {
-      color: #94a3b8;
+      color: var(--text-muted);
     }
 
     body.light-mode .admin-profile-badge {
-      background: #ffffff !important;
-      border-color: rgba(220, 38, 38, 0.2) !important;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+      background: var(--surface-primary) !important;
+      border-color: var(--severity-critical) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04) !important;
     }
 
     body.light-mode .admin-profile-badge span:first-child {
-      color: #0f172a !important;
+      color: var(--text-primary) !important;
     }
 
     body.light-mode .hud-card::before {
-      background: linear-gradient(90deg, transparent, #dc2626, transparent);
+      display: none;
     }
 
     body.light-mode .power-user-item {
-      border-bottom-color: #f1f5f9;
+      border-bottom-color: var(--border-subtle);
     }
 
     body.light-mode .scan-feed-scroll::-webkit-scrollbar-thumb {
-      background-color: #e2e8f0;
+      background-color: var(--border-default);
     }
     
     body {

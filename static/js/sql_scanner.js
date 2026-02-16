@@ -432,7 +432,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     llm_mode: llmMode, 
                     scanner_type: data.scanner_type,
                     report_file: data.report_file,       // [ADDED] Filename
-                    user_identifier: data.user_identifier // [ADDED] User folder ID
+                    user_identifier: data.user_identifier, // [ADDED] User folder ID
+                    force_new_session: true // [NEW] Force a fresh chat
                 })
             });
 
@@ -443,7 +444,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 appendLog(`[✓] Analysis complete. Redirecting...`);
                 
                 setTimeout(() => {
-                    window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                    const params = new URLSearchParams({
+                        mode: data.llm_mode,
+                        summary: data.summary,
+                        session_id: data.session_id
+                    });
+                    window.location.href = `${CHATBOT_REDIRECT_URL}?${params.toString()}`;
                 }, 800);
             } else {
                 throw new Error(data.message);

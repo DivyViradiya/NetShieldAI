@@ -134,7 +134,10 @@ def scan_ssl():
                     pdf_generator.create_ssl_report_pdf(str(json_path), str(pdf_path))
                     
                     if pdf_path.exists():
+                        # Final synchronization wait
+                        time.sleep(1.5)
                         ssl_scanner.log(f"[+] PDF report generated successfully: {pdf_path}", current_user_identifier, to_console=True)
+                        ssl_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", current_user_identifier, to_console=True)
                     else:
                         ssl_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier, to_console=True)
                 
@@ -294,7 +297,10 @@ def ssl_log_stream():
         while True:
             try:
                 message = user_queue.get(timeout=10)
-                yield message
+                if message == ': keep-alive':
+                    yield f"{message}\n\n"
+                else:
+                    yield f"data: {message}\n\n"
             except Empty:
                 yield ": keep-alive\n\n"
             except GeneratorExit:

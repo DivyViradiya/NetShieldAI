@@ -8,33 +8,33 @@
   <style>
     /* --- INHERITED THEME VARIABLES --- */
     :root {
-      --neo-bg: #050505;
-      --neo-card: #0a0a0c; /* Darker card bg */
-      --neo-border: #27272a;
-      --neo-accent: #f8fafc;
-      --neo-blue: #3b82f6;
-      --neo-red: #ef4444;
-      --input-bg: #111;
-      --input-border: #333;
-      --input-text: #fff;
-      --input-placeholder: #333;
-      --header-text: #fff;
-      --section-header-border: #1a1a1a;
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-border: var(--border-default);
+      --neo-accent: var(--text-primary);
+      --neo-blue: var(--accent-primary);
+      --neo-red: var(--severity-critical);
+      --input-bg: var(--bg-secondary);
+      --input-border: var(--border-default);
+      --input-text: var(--text-primary);
+      --input-placeholder: var(--text-muted);
+      --header-text: var(--text-primary);
+      --section-header-border: var(--border-subtle);
     }
     
     body.light-mode {
-      --neo-bg: #f8fafc;
-      --neo-card: rgba(255, 255, 255, 0.8);
-      --neo-border: rgba(226, 232, 240, 0.8);
-      --neo-accent: #0f172a;
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-border: var(--border-default);
+      --neo-accent: var(--text-primary);
       --neo-blue: #2563eb;
-      --neo-red: #dc2626;
-      --input-bg: #ffffff;
-      --input-border: #e2e8f0;
-      --input-text: #0f172a;
-      --input-placeholder: #94a3b8;
-      --header-text: #0f172a;
-      --section-header-border: #f1f5f9;
+      --neo-red: var(--severity-critical);
+      --input-bg: var(--surface-primary);
+      --input-border: var(--border-default);
+      --input-text: var(--text-primary);
+      --input-placeholder: var(--text-muted);
+      --header-text: var(--text-primary);
+      --section-header-border: var(--border-subtle);
     }
 
     /* Light Mode Specific Overrides */
@@ -138,7 +138,7 @@
     }
     
     body.light-mode .form-card {
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
     }
 
     /* Card Header */
@@ -212,6 +212,11 @@
       border-color: var(--neo-blue);
       box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
       background: var(--input-bg);
+    }
+
+    body.light-mode .neo-input:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .neo-input::placeholder {

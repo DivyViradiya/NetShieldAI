@@ -232,7 +232,7 @@
 
     <header>
         <div class="logo-container">
-            <img src="file:///D:/NetShieldAI/static/images/NetShieldAI_logo_PDF.png" alt="NetShieldAI">
+            <img src="{{ data.logo_url }}" alt="NetShieldAI">
         </div>
         <div class="header-title text-right">
             <h1>SQL Injection Audit</h1>
@@ -384,7 +384,7 @@
     {% endif %}
 
     <footer>
-        <img src="file:///D:/NetShieldAI/static/images/NS_Logo_pdf.png" alt="NS Logo" style="height: 18px; opacity: 0.6;">
+        <img src="{{ data.logo_url_small }}" alt="NS Logo" style="height: 18px; opacity: 0.6;">
         <span class="footer-text">Generated on {{ data.generation_date }} // Confidential Security Document</span>
     </footer>
 

@@ -2,9 +2,11 @@ import subprocess
 import os
 import sys
 import ctypes
+import uuid
 from datetime import datetime
 import platform
 import queue
+import threading
 import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -22,6 +24,10 @@ LOG_FILE = BASE_DIR / "logs" / "ssl_agent_log.txt"
 TEMP_DIR = BASE_DIR / "Services" / "temp" / "sslscan"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
+# --- Global State for Process Management (Isolated by user_id) ---
+active_scans = {} # { "user_id": {"process": Popen, "target": str, "start_time": float} }
+scan_lock = threading.Lock()
+
 # --- USER ISOLATION ---
 user_queues = {}
 
@@ -30,6 +36,11 @@ def get_user_queue(user_id):
     if user_id not in user_queues:
         user_queues[user_id] = queue.Queue()
     return user_queues[user_id]
+
+def is_scan_running(user_id):
+    """Checks if a scan is currently active for a specific user."""
+    with scan_lock:
+        return user_id in active_scans
 
 def log(message, user_id=None, to_console=False):
     """Logs messages to an in-memory queue and to a file."""
@@ -42,7 +53,7 @@ def log(message, user_id=None, to_console=False):
     if user_id:
         user_id = str(user_id)
         uq = get_user_queue(user_id)
-        uq.put(full_message)
+        uq.put(message)
 
     # Determine Log File Path
     log_dir = BASE_DIR / "logs"
@@ -81,21 +92,19 @@ def _get_subprocess_creation_flags():
         return subprocess.CREATE_NO_WINDOW
     return 0
 
-def is_sslscan_available():
+def is_sslscan_available(user_id=None):
     """Checks if the local sslscan.exe is found at the expected path."""
     if not SSLSCAN_EXECUTABLE.exists():
-        log(f"[!] ERROR: sslscan.exe not found at {SSLSCAN_EXECUTABLE}")
-        log("[!] Please ensure it is installed and the path is correct.")
+        log(f"[!] ERROR: sslscan.exe not found at {SSLSCAN_EXECUTABLE}", user_id)
         return False
-    log("[✓] sslscan.exe found.")
     return True
 
 # --- PHASE 2: Dynamic Path Helper ---
 
-def get_output_paths(output_dir=None):
+def get_output_paths(output_dir=None, user_id=None):
     """
     Returns a dictionary of file paths based on the output directory.
-    If output_dir is None, uses the global DEFAULT_RESULTS_DIR.
+    Now supports user-specific unique temp files.
     """
     if output_dir:
         base = Path(output_dir)
@@ -106,39 +115,48 @@ def get_output_paths(output_dir=None):
         try:
             base.mkdir(parents=True, exist_ok=True)
         except Exception as e:
-            log(f"[!] Error creating directory {base}: {e}")
+            log(f"[!] Error creating directory {base}: {e}", user_id)
+
+    # Multi-user unique temp file
+    scan_uuid = str(uuid.uuid4())[:8]
+    temp_xml = TEMP_DIR / f"ssl_temp_{user_id if user_id else 'sys'}_{scan_uuid}.xml"
 
     return {
-        "xml_report": TEMP_DIR / "ssl_report.xml",
+        "xml_report": temp_xml,
         "json_report": base / "ssl_report.json",
         "pdf_report": base / "ssl_report.pdf"
     }
 
-def save_ssl_json(data, output_dir=None):
+def save_ssl_json(data, output_dir=None, user_id=None):
     """Saves the parsed SSL scan data to a JSON file."""
-    paths = get_output_paths(output_dir)
+    if output_dir and isinstance(output_dir, str):
+        output_dir = Path(output_dir)
+        
+    paths = get_output_paths(output_dir, user_id=user_id)
     json_file = paths["json_report"]
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
-        log(f"[+] SSL JSON report saved to {json_file}", output_dir.parent.name if output_dir else None)
+        log(f"[+] SSL JSON report saved to {json_file}", user_id)
         return str(json_file)
     except Exception as e:
-        log(f"[!] Failed to save SSL JSON report: {e}")
+        log(f"[!] Failed to save SSL JSON report: {e}", user_id)
         return None
 
-def run_ssl_scan(target_host, output_dir=None):
+def run_ssl_scan(target_host, output_dir=None, user_id=None):
     """Runs an SSL/TLS scan using the local sslscan.exe."""
-    user_id = output_dir.parent.name if output_dir else None
+    if output_dir and isinstance(output_dir, str):
+        output_dir = Path(output_dir)
+        
     if not target_host:
         log("[!] Target host cannot be empty for SSL scan.", user_id)
         return None
 
     log(f"[+] Running local SSL scan on {target_host}...", user_id, to_console=True)
-    if not is_sslscan_available():
+    if not is_sslscan_available(user_id=user_id):
         return None
     
-    paths = get_output_paths(output_dir)
+    paths = get_output_paths(output_dir, user_id=user_id)
     xml_report_path = paths["xml_report"]
     
     # Ensure directory exists
@@ -156,6 +174,11 @@ def run_ssl_scan(target_host, output_dir=None):
 
     try:
         log(f"[*] Executing command: {' '.join(str(x) for x in local_cmd)}", user_id, to_console=True)
+        
+        # Track this user's process
+        with scan_lock:
+            active_scans[user_id] = {"target": target_host, "start_time": time.time()}
+
         process = subprocess.run(
             local_cmd,
             capture_output=True,
@@ -164,6 +187,11 @@ def run_ssl_scan(target_host, output_dir=None):
             creationflags=_get_subprocess_creation_flags(),
             cwd=SSLSCAN_EXECUTABLE.parent 
         )
+        
+        # Unregister process
+        with scan_lock:
+            if user_id in active_scans:
+                del active_scans[user_id]
         
         if process.stdout:
             log(f"[SSLScan STDOUT]\n{process.stdout}", user_id)
@@ -175,27 +203,24 @@ def run_ssl_scan(target_host, output_dir=None):
             return None
         
         if xml_report_path.exists() and xml_report_path.stat().st_size > 0:
-            log(f"[+] SSL scan complete. Report saved to {xml_report_path}", user_id, to_console=True)
-            send_sse_event("ssl_scan_complete", {"target_host": target_host, "report_file": str(xml_report_path)})
+            log(f"[+] SSL scan complete. Report synchronized.", user_id, to_console=True)
+            send_sse_event("ssl_scan_complete", {"target_host": target_host, "report_file": str(xml_report_path)}, user_id=user_id)
             return str(xml_report_path)
         else:
-            log(f"[!] SSL scan may have failed or generated an empty report: {xml_report_path}", user_id, to_console=True)
+            log(f"[!] SSL scan failed or generated an empty report.", user_id, to_console=True)
             return None
             
     except Exception as e:
         log(f"[!] An unexpected error occurred during SSL scan: {e}", user_id)
         return None
 
-# ############################################################################
-# ## MODIFIED AND ENHANCED parse_ssl_report FUNCTION
-# ############################################################################
-def parse_ssl_report(report_file, output_dir=None):
+def parse_ssl_report(report_file, output_dir=None, user_id=None):
     """
-    Parses an SSLScan XML report file to extract maximum details, including
-    specific vulnerabilities and server configuration details.
-    Updated to accept output_dir for saving the JSON result.
+    Parses an SSLScan XML report file to extract maximum details.
     """
-    user_id = output_dir.parent.name if output_dir else None
+    if output_dir and isinstance(output_dir, str):
+        output_dir = Path(output_dir)
+        
     if not os.path.exists(report_file):
         log(f"[!] SSLScan report file not found: {report_file}", user_id)
         return None
@@ -204,7 +229,6 @@ def parse_ssl_report(report_file, output_dir=None):
         tree = ET.parse(report_file)
         root = tree.getroot()
         
-        # Initialize a more detailed summary structure
         scan_summary = {
             "target": "N/A",
             "ip": "N/A",
@@ -226,9 +250,7 @@ def parse_ssl_report(report_file, output_dir=None):
         if ssltest_elem is not None:
             scan_summary["target"] = ssltest_elem.get('host', 'N/A')
             scan_summary["port"] = ssltest_elem.get('port', 'N/A')
-            # The IP address is often not in the root element, check elsewhere if needed
 
-        # --- Server Configuration Details ---
         if (comp := root.find('.//compression')) is not None:
             scan_summary["server_configs"]["tls_compression"] = {
                 "supported": comp.get('supported', '0') == '1',
@@ -247,14 +269,12 @@ def parse_ssl_report(report_file, output_dir=None):
         if (fallback := root.find('.//fallback')) is not None:
             scan_summary["server_configs"]["fallback_scsv_supported"] = fallback.get('supported', '0') == '1'
         
-        # --- Protocols ---
         for protocol_elem in root.findall('.//protocol'):
             scan_summary["protocols"].append({
                 "name": protocol_elem.get('version', 'N/A'),
                 "enabled": protocol_elem.get('enabled', '0') == '1'
             })
 
-        # --- Ciphers ---
         for cipher_elem in root.findall('.//cipher[@status="accepted"]'):
             scan_summary["ciphers"].append({
                 "status": "accepted",
@@ -264,7 +284,6 @@ def parse_ssl_report(report_file, output_dir=None):
                 "id": cipher_elem.get('id', 'N/A')
             })
 
-        # --- Certificate Chain ---
         for i, cert_elem in enumerate(root.findall('.//certificate')):
             pk_elem = cert_elem.find('pk')
             cert_data = {
@@ -280,60 +299,45 @@ def parse_ssl_report(report_file, output_dir=None):
             }
             scan_summary["certificate_chain"].append(cert_data)
 
-        # --- Client CAs ---
         scan_summary["client_cas"] = [ca.get('name', 'N/A') for ca in root.findall('.//client-cas/ca')]
 
-        # --- Enhanced Vulnerability Detection ---
         vulnerabilities = []
-        # Heartbleed
         if (hb := root.find('.//heartbleed')) and hb.get('vulnerable') == '1':
-            vulnerabilities.append({"name": "Heartbleed", "severity": "Critical", "description": "Server is vulnerable to the Heartbleed bug (CVE-2014-0160)."})
-        # Insecure Renegotiation
+            vulnerabilities.append({"name": "Heartbleed", "severity": "Critical", "description": "Server is vulnerable to the Heartbleed bug."})
         if scan_summary["server_configs"]["renegotiation"].get("supported") and not scan_summary["server_configs"]["renegotiation"].get("secure"):
              vulnerabilities.append({"name": "Insecure TLS Renegotiation", "severity": "Medium", "description": "Server supports insecure client-initiated renegotiation."})
-        # TLS Compression (CRIME)
         if scan_summary["server_configs"]["tls_compression"].get("supported"):
-            vulnerabilities.append({"name": "TLS Compression Enabled (CRIME)", "severity": "Medium", "description": "TLS compression is enabled, which can expose the application to the CRIME attack."})
-        # Weak Protocols (SSLv2, SSLv3)
+            vulnerabilities.append({"name": "TLS Compression Enabled (CRIME)", "severity": "Medium", "description": "TLS compression is enabled."})
         for proto in scan_summary["protocols"]:
             if proto["enabled"] and ("SSLv2" in proto["name"] or "SSLv3" in proto["name"]):
-                 vulnerabilities.append({"name": f"Weak Protocol Enabled: {proto['name']}", "severity": "High", "description": f"{proto['name']} is outdated and vulnerable to attacks like POODLE."})
-        # Weak Signature Algorithm in Certificate
+                 vulnerabilities.append({"name": f"Weak Protocol Enabled: {proto['name']}", "severity": "High", "description": f"{proto['name']} is outdated."})
         for cert in scan_summary["certificate_chain"]:
             if "sha1" in cert["signature_algorithm"].lower():
-                vulnerabilities.append({"name": "Weak Certificate Signature", "severity": "Medium", "description": f"Certificate uses a SHA1 signature, which is deprecated and insecure. (Issuer: {cert['issuer']})"})
-        # Weak Ciphers (3DES, RC4, Low Bit)
+                vulnerabilities.append({"name": "Weak Certificate Signature", "severity": "Medium", "description": f"Certificate uses a SHA1 signature."})
         for c in scan_summary["ciphers"]:
             if c["bits"] < 128:
-                vulnerabilities.append({"name": "Weak Cipher Suite", "severity": "Medium", "description": f"Cipher {c['name']} uses a weak key size ({c['bits']}-bit)." })
+                vulnerabilities.append({"name": "Weak Cipher Suite", "severity": "Medium", "description": f"Cipher {c['name']} uses a weak key size." })
             if "3DES" in c["name"]:
-                vulnerabilities.append({"name": "3DES Cipher Suite", "severity": "Low", "description": f"Cipher {c['name']} is supported, which is vulnerable to Sweet32." })
+                vulnerabilities.append({"name": "3DES Cipher Suite", "severity": "Low", "description": f"Cipher {c['name']} is supported." })
             if "RC4" in c["name"]:
-                vulnerabilities.append({"name": "RC4 Cipher Suite", "severity": "Medium", "description": f"Cipher {c['name']} is supported, which is insecure."})
+                vulnerabilities.append({"name": "RC4 Cipher Suite", "severity": "Medium", "description": f"Cipher {c['name']} is supported."})
         
         scan_summary["vulnerabilities"] = vulnerabilities
 
-        log(f"[+] SSLScan report '{os.path.basename(report_file)}' parsed successfully.", user_id, to_console=True)
-        
-        # NEW: Save the parsed data to JSON for PDF generation
-        save_ssl_json(scan_summary, output_dir=output_dir)
-        
-        send_sse_event("ssl_report_parsed", scan_summary)
+        log(f"[+] SSLScan report parsed successfully.", user_id, to_console=True)
+        save_ssl_json(scan_summary, output_dir=output_dir, user_id=user_id)
+        send_sse_event("ssl_report_parsed", scan_summary, user_id=user_id)
         return scan_summary
 
-    except ET.ParseError as e:
-        log(f"[!] Error parsing SSLScan XML report '{report_file}': {e}", user_id, to_console=True)
-        return None
     except Exception as e:
-        log(f"[!] Unexpected error parsing SSLScan report '{report_file}': {e}", user_id, to_console=True)
+        log(f"[!] Unexpected error parsing SSLScan report: {e}", user_id, to_console=True)
         return None
     finally:
-        # CLEANUP: Remove the temporary XML report
         if os.path.exists(report_file):
             try:
                 os.remove(report_file)
-            except Exception as e:
-                log(f"[!] Warning: Failed to delete temporary SSL report {report_file}: {e}", user_id)
+            except:
+                pass
 
 def clear_log_file(user_id=None):
     """Clears the log file for a specific user or the system log."""
@@ -348,31 +352,11 @@ def clear_log_file(user_id=None):
         if target_log_file.exists():
             with open(target_log_file, 'w', encoding='utf-8') as f:
                 f.write("")
+        
+        if user_id:
+            uq = get_user_queue(user_id)
+            with uq.mutex: uq.queue.clear()
+            
         log("[*] SSL log file cleared.", user_id)
     except Exception as e:
         print(f"[!] Error clearing SSL log file: {e}")
-
-# Main execution block
-if __name__ == "__main__":
-    log("Starting SSL Scanner demonstration...")
-    clear_log_file()
-
-    target = "expired.badssl.com" # Using a test site with known issues
-    log(f"Attempting SSL Scan on: {target}")
-    
-    # Test using default output directory
-    report_path = run_ssl_scan(target)
-    
-    if report_path:
-        log(f"SSL Scan completed. Parsing report: {report_path}")
-        summary = parse_ssl_report(report_path)
-        if summary:
-            print("\n--- SSL Scan Summary (Max Information) ---")
-            # Using json.dumps for a clean, full view of the extracted data
-            print(json.dumps(summary, indent=4))
-        else:
-            log("[!] Failed to parse SSL report.")
-    else:
-        log("[!] SSL Scan failed.")
-
-    log("SSL Scanner demonstration finished.")

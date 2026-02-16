@@ -11,6 +11,7 @@ import threading
 import queue
 import time
 import json
+import uuid
 from pathlib import Path
 
 # --- PHASE 2: Dynamic Path Setup ---
@@ -27,6 +28,10 @@ LOG_FILE = LOG_DIR / "network_agent_log.txt"
 TEMP_DIR = BASE_DIR / "Services" / "temp" / "nmap"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
+# --- Global State for Process Management (Isolated by user_id) ---
+active_scans = {} # { "user_id": {"process": Popen, "target": str, "start_time": float} }
+scan_lock = threading.Lock()
+
 # --- USER ISOLATION: Dictionary to hold a queue for each user_id ---
 user_queues = {}
 
@@ -36,9 +41,42 @@ def get_user_queue(user_id):
         user_queues[user_id] = queue.Queue()
     return user_queues[user_id]
 
-# Globals for application state
-open_ports = {"TCP": [], "UDP": []}
-whitelisted_ports = set()
+def is_scan_running(user_id):
+    """Checks if a scan is currently active for a specific user."""
+    with scan_lock:
+        return user_id in active_scans
+
+# Globals for application state (Isolated by user_id)
+user_open_ports = {} # { "user_id": {"TCP": [], "UDP": [], "metadata": {}} }
+user_whitelisted_ports = {} # { "user_id": set() }
+
+def get_user_open_ports(user_id):
+    """Ensures open_ports structure exists for the user."""
+    user_id = str(user_id) if user_id else "system"
+    if user_id not in user_open_ports:
+        user_open_ports[user_id] = {
+            "TCP": [], 
+            "UDP": [], 
+            "metadata": {"os_guess": "Unknown", "host_status": "Unknown", "latency": "0ms", "insights": "Waiting for scan..."}
+        }
+    elif "metadata" not in user_open_ports[user_id]:
+        user_open_ports[user_id]["metadata"] = {"os_guess": "Unknown", "host_status": "Unknown", "latency": "0ms", "insights": "Waiting for scan..."}
+    return user_open_ports[user_id]
+
+def get_user_whitelisted_ports(user_id):
+    """Ensures whitelist set exists for the user."""
+    user_id = str(user_id) if user_id else "system"
+    if user_id not in user_whitelisted_ports:
+        user_whitelisted_ports[user_id] = set()
+    return user_whitelisted_ports[user_id]
+
+def get_scan_summary(user_id=None):
+    """Returns both open ports and scan metadata for the user."""
+    user_data = get_user_open_ports(user_id)
+    return {
+        "open_ports": sorted(user_data["TCP"] + user_data["UDP"], key=lambda x: int(x['port'])),
+        "metadata": user_data["metadata"]
+    }
 
 def log(message, user_id=None, to_console=False):
     """
@@ -55,7 +93,8 @@ def log(message, user_id=None, to_console=False):
     if user_id:
         user_id = str(user_id)
         uq = get_user_queue(user_id)
-        uq.put(full_message)
+        # Send raw message to UI (UI handles its own timestamps)
+        uq.put(message)
 
     # Determine Log File Path
     if user_id:
@@ -149,7 +188,7 @@ def get_output_paths(output_dir=None):
 # --- Whitelist Persistence Functions (Updated for Phase 2) ---
 def load_whitelist(output_dir=None, user_id=None):
     """Loads whitelisted ports from a JSON file."""
-    global whitelisted_ports
+    whitelisted_ports = get_user_whitelisted_ports(user_id)
     paths = get_output_paths(output_dir)
     whitelist_file = paths["whitelist"]
 
@@ -158,17 +197,18 @@ def load_whitelist(output_dir=None, user_id=None):
             with open(whitelist_file, 'r', encoding='utf-8') as f:
                 loaded_ports = json.load(f)
                 if isinstance(loaded_ports, list):
-                    whitelisted_ports = set(loaded_ports)
+                    whitelisted_ports.clear()
+                    whitelisted_ports.update(loaded_ports)
                     log(f"[+] Loaded {len(whitelisted_ports)} whitelisted ports from {whitelist_file}.", user_id)
                 else:
                     log(f"[!] Whitelist file '{whitelist_file}' contains invalid format. Starting with empty whitelist.", user_id)
-                    whitelisted_ports = set()
+                    whitelisted_ports.clear()
         except json.JSONDecodeError as e:
             log(f"[!] Error decoding whitelist file '{whitelist_file}': {e}. Starting with empty whitelist.", user_id)
-            whitelisted_ports = set()
+            whitelisted_ports.clear()
         except Exception as e:
             log(f"[!] Unexpected error loading whitelist file '{whitelist_file}': {e}. Starting with empty whitelist.", user_id)
-            whitelisted_ports = set()
+            whitelisted_ports.clear()
     else:
         log(f"[*] Whitelist file '{whitelist_file}' not found. Starting with empty whitelist.", user_id)
     
@@ -178,6 +218,7 @@ def load_whitelist(output_dir=None, user_id=None):
 
 def save_whitelist(output_dir=None, user_id=None):
     """Saves the current whitelisted ports to a JSON file."""
+    whitelisted_ports = get_user_whitelisted_ports(user_id)
     paths = get_output_paths(output_dir)
     whitelist_file = paths["whitelist"]
     try:
@@ -189,7 +230,7 @@ def save_whitelist(output_dir=None, user_id=None):
 
 def clear_whitelist(output_dir=None, user_id=None):
     """Clears the whitelisted ports and saves the empty state."""
-    global whitelisted_ports
+    whitelisted_ports = get_user_whitelisted_ports(user_id)
     whitelisted_ports.clear()
     save_whitelist(output_dir, user_id=user_id)
     log("[*] Whitelist cleared.", user_id)
@@ -554,53 +595,53 @@ def save_nmap_json(data, output_dir=None, user_id=None):
 
 # --- Nmap Scanning ---
 # Note: All scan functions implicitly require admin rights because they call run_nmap_scan
-def run_os_detection_scan(target_ip, output_dir=None):
-    return run_nmap_scan(target_ip, scan_type="os", output_dir=output_dir)
+def run_os_detection_scan(target_ip, output_dir=None, user_id=None):
+    return run_nmap_scan(target_ip, scan_type="os", output_dir=output_dir, user_id=user_id)
 
-def run_fragmented_scan(target_ip, output_dir=None):
-    return run_nmap_scan(target_ip, scan_type="fragmented", output_dir=output_dir)
+def run_fragmented_scan(target_ip, output_dir=None, user_id=None):
+    return run_nmap_scan(target_ip, scan_type="fragmented", output_dir=output_dir, user_id=user_id)
 
-def run_aggressive_scan(target_ip, output_dir=None):
-    return run_nmap_scan(target_ip, scan_type="aggressive", output_dir=output_dir)
+def run_aggressive_scan(target_ip, output_dir=None, user_id=None):
+    return run_nmap_scan(target_ip, scan_type="aggressive", output_dir=output_dir, user_id=user_id)
 
-def run_tcp_syn_scan(target_ip, output_dir=None):
-    return run_nmap_scan(target_ip, scan_type="tcp_syn", output_dir=output_dir)
+def run_tcp_syn_scan(target_ip, output_dir=None, user_id=None):
+    return run_nmap_scan(target_ip, scan_type="tcp_syn", output_dir=output_dir, user_id=user_id)
     
-def run_vulnerability_scan(target_ip, output_dir=None):
-    return run_nmap_scan(target_ip, scan_type="vuln", output_dir=output_dir)
+def run_vulnerability_scan(target_ip, output_dir=None, user_id=None):
+    return run_nmap_scan(target_ip, scan_type="vuln", output_dir=output_dir, user_id=user_id)
 
 # --- NEW SCAN WRAPPERS FOR PHASE 2 ---
-def run_ping_sweep(target_ip, output_dir=None):
+def run_ping_sweep(target_ip, output_dir=None, user_id=None):
     """Host Discovery only (-sn)."""
-    return run_nmap_scan(target_ip, scan_type="ping_sweep", output_dir=output_dir)
+    return run_nmap_scan(target_ip, scan_type="ping_sweep", output_dir=output_dir, user_id=user_id)
 
-def run_tcp_connect_scan(target_ip, output_dir=None):
+def run_tcp_connect_scan(target_ip, output_dir=None, user_id=None):
     """TCP Connect Scan (-sT)."""
-    return run_nmap_scan(target_ip, scan_type="tcp_connect", output_dir=output_dir)
+    return run_nmap_scan(target_ip, scan_type="tcp_connect", output_dir=output_dir, user_id=user_id)
 
-def run_null_scan(target_ip, output_dir=None):
+def run_null_scan(target_ip, output_dir=None, user_id=None):
     """TCP Null Scan (-sN)."""
-    return run_nmap_scan(target_ip, scan_type="null", output_dir=output_dir)
+    return run_nmap_scan(target_ip, scan_type="null", output_dir=output_dir, user_id=user_id)
 
-def run_fin_scan(target_ip, output_dir=None):
+def run_fin_scan(target_ip, output_dir=None, user_id=None):
     """TCP FIN Scan (-sF)."""
-    return run_nmap_scan(target_ip, scan_type="fin", output_dir=output_dir)
+    return run_nmap_scan(target_ip, scan_type="fin", output_dir=output_dir, user_id=user_id)
 
-def run_xmas_scan(target_ip, output_dir=None):
+def run_xmas_scan(target_ip, output_dir=None, user_id=None):
     """TCP Xmas Scan (-sX)."""
-    return run_nmap_scan(target_ip, scan_type="xmas", output_dir=output_dir)
+    return run_nmap_scan(target_ip, scan_type="xmas", output_dir=output_dir, user_id=user_id)
 
-def run_ack_scan(target_ip, output_dir=None):
+def run_ack_scan(target_ip, output_dir=None, user_id=None):
     """TCP ACK Scan (-sA)."""
-    return run_nmap_scan(target_ip, scan_type="ack", output_dir=output_dir)
+    return run_nmap_scan(target_ip, scan_type="ack", output_dir=output_dir, user_id=user_id)
 
-def run_window_scan(target_ip, output_dir=None):
+def run_window_scan(target_ip, output_dir=None, user_id=None):
     """TCP Window Scan (-sW)."""
-    return run_nmap_scan(target_ip, scan_type="window", output_dir=output_dir)
+    return run_nmap_scan(target_ip, scan_type="window", output_dir=output_dir, user_id=user_id)
 
-def run_decoy_scan(target_ip, output_dir=None):
+def run_decoy_scan(target_ip, output_dir=None, user_id=None):
     """Decoy Scan (-D) with Random Decoys."""
-    return run_nmap_scan(target_ip, scan_type="decoy", output_dir=output_dir)
+    return run_nmap_scan(target_ip, scan_type="decoy", output_dir=output_dir, user_id=user_id)
 
 
 def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_dir=None, user_id=None, timing=4):
@@ -629,7 +670,11 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
 
     # Handle scan types and flags
     flags = []
-    output_file = paths["tcp"] # Default
+    
+    # --- MULTI-USER FIX: Unique Temp Filename ---
+    scan_uuid = str(uuid.uuid4())[:8]
+    temp_prefix = f"scan_{user_id if user_id else 'sys'}_{scan_uuid}"
+    output_file = TEMP_DIR / f"{temp_prefix}.txt"
     
     # Ensure timing is within bounds
     if timing < 0: timing = 0
@@ -637,71 +682,39 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     
     timing_flag = f"-T{timing}"
     
-    # Base flags common to most port scans (Skip host discovery for speed unless specified)
+    # Base flags common to most port scans (Pn is critical for Windows local IPs)
     base_flags = [timing_flag, '-Pn'] 
 
     if scan_type == "os":
         flags = base_flags + ['-O', '--osscan-limit']
-        output_file = paths["os"]
-        
     elif scan_type == "fragmented":
         flags = base_flags + ['-f', '-sS']
-        output_file = paths["fragmented"]
-        
     elif scan_type == "aggressive":
-        flags = ['-A', timing_flag] # -A includes OS detection, version, script scanning, traceroute
-        output_file = paths["aggressive"]
-        
+        flags = ['-A', timing_flag] 
     elif scan_type == "tcp_syn":
         flags = base_flags + ['-sS']
-        output_file = paths["tcp_syn"]
-        
     elif scan_type == "vuln":
         flags = [timing_flag, '-sC', '-sV', '--script', 'vuln', '-Pn'] 
-        output_file = paths["vuln"]
-        
     elif protocol_type == "UDP":
         flags = [timing_flag, '-sU', '--top-ports', '1000', '-sV', '-Pn']
-        output_file = paths["udp"]
-        
-    # --- NEW SCAN TYPE MAPPINGS ---
     elif scan_type == "ping_sweep":
-        # -sn: Ping Scan - disable port scan. -Pn is NOT used here as we want discovery.
         flags = [timing_flag, '-sn'] 
-        output_file = paths["ping"]
-        
     elif scan_type == "tcp_connect":
         flags = base_flags + ['-sT']
-        output_file = paths["connect"]
-        
     elif scan_type == "null":
         flags = base_flags + ['-sN']
-        output_file = paths["null"]
-        
     elif scan_type == "fin":
         flags = base_flags + ['-sF']
-        output_file = paths["fin"]
-        
     elif scan_type == "xmas":
         flags = base_flags + ['-sX']
-        output_file = paths["xmas"]
-        
     elif scan_type == "ack":
         flags = base_flags + ['-sA']
-        output_file = paths["ack"]
-        
     elif scan_type == "window":
         flags = base_flags + ['-sW']
-        output_file = paths["window"]
-        
     elif scan_type == "decoy":
-        # Uses -D RND:10 to spawn 10 random decoy IPs + SYN scan
         flags = base_flags + ['-D', 'RND:10', '-sS']
-        output_file = paths["decoy"]
-        
     else: # Default TCP
         flags = base_flags + ['-sS', '--top-ports', '1000', '-sV']
-        output_file = paths["tcp"]
 
     scan_type_display = scan_type.upper() if scan_type != "default" else f"{protocol_type} (Top 1000)"
     log(f"[+] Running {scan_type_display} scan on {target_ip} with timing {timing_flag}...", user_id, to_console=True)
@@ -713,11 +726,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         return None
 
     # Construct Command
-    # For vulnerability scan, we use the explicit set of flags defined above
-    if scan_type == "vuln":
-         cmd = ['nmap'] + flags + ['-oG', str(output_file), target_ip]
-    else:
-         cmd = ['nmap'] + flags + ['-oG', str(output_file), target_ip]
+    cmd = ['nmap'] + flags + ['-oG', str(output_file), target_ip]
 
     # Add exclusion for Flask app port (5000) if scanning local IP
     local_ips = [get_local_ip(), "127.0.0.1"]
@@ -733,28 +742,37 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     log(f"[*] Executing: {' '.join(cmd)}", user_id, to_console=True)
     
     try:
+        # Use Popen to allow tracking if needed, or stick with run but register
+        with scan_lock:
+            # We use a dummy process object since run() is blocking, 
+            # but for consistency with others, we'll use a thread-local identifier
+            active_scans[user_id] = {"target": target_ip, "start_time": time.time()}
+
         result = subprocess.run(
             cmd, capture_output=True, text=True,
             creationflags=_get_subprocess_creation_flags()
         )
+
+        with scan_lock:
+            if user_id in active_scans:
+                del active_scans[user_id]
 
         if result.returncode != 0:
             log(f"[!] Nmap scan failed with error: {result.stderr.strip()}", user_id, to_console=True)
             return None
 
         if not output_file.exists() or output_file.stat().st_size == 0:
-            log(f"[!] Nmap scan completed but no results were saved to {output_file}. This may be normal if no ports are open.", user_id, to_console=True)
+            log(f"[!] Nmap scan completed but no results were saved. This may be normal if no ports are open.", user_id, to_console=True)
             
-        log(f"[+] {scan_type_display} scan complete. Results saved to {output_file}", user_id, to_console=True)
+        log(f"[+] {scan_type_display} scan complete. Results synchronized.", user_id, to_console=True)
         
         # 1. Update UI (SSE)
-        # Ping sweeps don't return standard "open ports", so we handle them carefully
         if scan_type != "ping_sweep":
             open_ports_list = extract_open_ports(output_file, protocol_type="TCP" if protocol_type == "TCP" or scan_type == "vuln" else protocol_type, user_id=user_id)
             send_sse_event("scan_complete", {
                 "target": target_ip, "protocol": protocol_type,
                 "scan_type": scan_type, "open_ports": open_ports_list
-            })
+            }, user_id=user_id)
         else:
              log(f"[*] Ping sweep complete. Check log or JSON report for host details.", user_id)
 
@@ -769,18 +787,14 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         log(f"[!] Error during {scan_type_display} scan: {str(e)}", user_id)
         return None
     finally:
-        # CLEANUP: Remove the temporary .txt file with retries
+        # CLEANUP: Remove the temporary .txt file
         if output_file.exists():
-            for i in range(5): # Try up to 5 times
+            for i in range(5): 
                 try:
                     output_file.unlink()
-                    # log(f"[*] Cleanup: Temporary scan file {output_file.name} removed.")
                     break
-                except Exception as e:
-                    if i == 4: # Last attempt
-                        log(f"[!] Warning: Failed to delete temporary scan file {output_file}: {e}", user_id)
-                    else:
-                        time.sleep(1) # Wait 1 second before retrying
+                except:
+                    time.sleep(1)
 
 def extract_open_ports(filename, protocol_type, user_id=None):
     """
@@ -788,11 +802,12 @@ def extract_open_ports(filename, protocol_type, user_id=None):
     associated vulnerability notes for UI update.
     """
     target_protocol = "TCP" if "vuln" in str(filename).lower() or protocol_type == "TCP" else "UDP"
+    user_data = get_user_open_ports(user_id)
 
     if target_protocol == "UDP":
-        open_ports["UDP"].clear()
+        user_data["UDP"].clear()
     else:
-        open_ports["TCP"].clear()
+        user_data["TCP"].clear()
 
     port_vuln_notes = {}
     current_port_key = None
@@ -804,6 +819,29 @@ def extract_open_ports(filename, protocol_type, user_id=None):
             
         is_vuln_scan = "vuln" in str(filename).lower()
         
+        # Step 0: Extract Metadata (Host Status, OS, Latency)
+        for line in lines:
+            if line.startswith("Host:"):
+                if "Status: Up" in line: user_data["metadata"]["host_status"] = "Online"
+                
+                # Extract Latency
+                latency_match = re.search(r"Status: Up\s+\(([\d\.]+s)\s+latency\)", line)
+                if latency_match: user_data["metadata"]["latency"] = latency_match.group(1)
+                
+                # Extract OS Guess
+                os_match = re.search(r"OS: ([^;]+)", line)
+                if os_match: 
+                    user_data["metadata"]["os_guess"] = os_match.group(1).strip()
+                    
+                    # Discovery Insights based on OS/Service
+                    os_str = os_match.group(1).lower()
+                    if "vmware" in os_str or "virtualbox" in os_str or "qemu" in os_str:
+                        user_data["metadata"]["insights"] = "Virtual Machine detected"
+                    elif "aws" in os_str or "azure" in os_str or "google" in os_str:
+                        user_data["metadata"]["insights"] = "Cloud Instance detected"
+                    else:
+                        user_data["metadata"]["insights"] = "Hardware/Physical Host"
+
         # Step 1: Pre-parse for vulnerability notes
         for line in lines:
             line = line.strip()
@@ -842,7 +880,6 @@ def extract_open_ports(filename, protocol_type, user_id=None):
                     if 'open' in p_str.lower():
                         parts = p_str.split('/')
                         
-                        # [FIXED] Safety check for malformed lines to prevent list index out of range
                         if len(parts) < 3:
                             continue
 
@@ -871,38 +908,38 @@ def extract_open_ports(filename, protocol_type, user_id=None):
                             all_ports_list.append(port_obj)
 
         if target_protocol == "UDP":
-            open_ports["UDP"] = all_ports_list
+            user_data["UDP"] = all_ports_list
         else:
-            open_ports["TCP"] = all_ports_list
+            user_data["TCP"] = all_ports_list
         
-        send_sse_event("ports_updated", json.dumps(get_current_open_ports()))
+        send_sse_event("ports_updated", json.dumps(get_current_open_ports(user_id)), user_id=user_id)
 
     except FileNotFoundError:
-        log(f"[!] Scan result file '{filename}' not found. Cannot extract {target_protocol} ports.", user_id)
+        log(f"[!] Scan result file '{filename}' not found.", user_id)
     except Exception as e:
-        log(f"[!] Error extracting {target_protocol} open ports from file: {e}", user_id)
+        log(f"[!] Error extracting {target_protocol} open ports: {e}", user_id)
         
-    return get_current_open_ports()
+    return get_current_open_ports(user_id)
 
 # --- Firewall Management ---
-def block_port_windows(port, protocol="TCP"):
+def block_port_windows(port, protocol="TCP", user_id=None):
     """Blocks a specified port and protocol using Windows Defender Firewall."""
-    rule_name = f"Block_VulnScanAI_{protocol}_Port_{port}"
+    rule_name = f"Block_NetShieldAI_{protocol}_Port_{port}"
     cmd = [
         "powershell", "-Command",
         f"New-NetFirewallRule -DisplayName '{rule_name}' -Direction Inbound -LocalPort {port} -Protocol {protocol} -Action Block -Enabled True"
     ]
     try:
         subprocess.run(cmd, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
-        log(f"[+] Firewall rule '{rule_name}' created to block {protocol} port {port}.")
+        log(f"[+] Firewall rule '{rule_name}' created to block {protocol} port {port}.", user_id)
         return True
     except subprocess.CalledProcessError as e:
-        log(f"[!] Failed to block {protocol} port {port}: {e.stderr.strip() if e.stderr else 'No detailed error.'}")
+        log(f"[!] Failed to block {protocol} port {port}: {e.stderr.strip() if e.stderr else 'No detailed error.'}", user_id)
         return False
 
 def is_port_blocked_windows(port, protocol="TCP"):
     """Checks if a specific firewall rule exists and is enabled on Windows."""
-    rule_name = f"Block_VulnScanAI_{protocol}_Port_{port}"
+    rule_name = f"Block_NetShieldAI_{protocol}_Port_{port}"
     cmd = ["powershell", "-Command", f"Get-NetFirewallRule -DisplayName '{rule_name}'"]
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
@@ -910,27 +947,27 @@ def is_port_blocked_windows(port, protocol="TCP"):
     except subprocess.CalledProcessError:
         return False
 
-def block_port_linux(port, protocol="TCP"):
+def block_port_linux(port, protocol="TCP", user_id=None):
     """Blocks a specified port and protocol using UFW (Uncomplicated Firewall) on Linux."""
     try:
         status_result = subprocess.run(['ufw', 'status'], capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
         if "inactive" in status_result.stdout:
-            log("[!] UFW is not active. Please enable UFW first (e.g., 'sudo ufw enable').")
+            log("[!] UFW is not active. Please enable UFW first.", user_id)
             return False
     except FileNotFoundError:
-        log("[!] UFW command not found. Please install UFW (e.g., 'sudo apt install ufw'). Cannot block ports.")
+        log("[!] UFW command not found. Cannot block ports.", user_id)
         return False
     except subprocess.CalledProcessError as e:
-        log(f"[!] Error checking UFW status: {e.stderr.strip()}")
+        log(f"[!] Error checking UFW status: {e.stderr.strip()}", user_id)
         return False
 
     rule_command = ['ufw', 'deny', f"{port}/{protocol.lower()}"]
     try:
         subprocess.run(rule_command, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
-        log(f"[+] UFW rule created to block {protocol} port {port}.")
+        log(f"[+] UFW rule created to block {protocol} port {port}.", user_id)
         return True
     except subprocess.CalledProcessError as e:
-        log(f"[!] Failed to block {protocol} port {port} with UFW: {e.stderr.strip() if e.stderr else 'No detailed error.'}")
+        log(f"[!] Failed to block {protocol} port {port} with UFW: {e.stderr.strip() if e.stderr else 'No detailed error.'}", user_id)
         return False
 
 def is_port_blocked_linux(port, protocol="TCP"):
@@ -942,18 +979,16 @@ def is_port_blocked_linux(port, protocol="TCP"):
         return f"{port}/{protocol.lower()}" in result.stdout and "DENY IN" in result.stdout
 
     except subprocess.CalledProcessError as e:
-        log(f"[!] Error checking UFW status: {e.stderr.strip() if e.stderr else 'No detailed error.'}")
         return False
     except FileNotFoundError:
-        log("[!] UFW command not found. Cannot verify port block status.")
         return False
 
-def block_port(port, protocol="TCP"):
+def block_port(port, protocol="TCP", user_id=None):
     """Calls the appropriate OS-specific port blocking function."""
     if platform.system() == "Windows":
-        return block_port_windows(port, protocol)
+        return block_port_windows(port, protocol, user_id=user_id)
     else:
-        return block_port_linux(port, protocol)
+        return block_port_linux(port, protocol, user_id=user_id)
 
 def is_port_blocked(port, protocol="TCP"):
     """Calls the appropriate OS-specific port blocked check function."""
@@ -963,28 +998,30 @@ def is_port_blocked(port, protocol="TCP"):
         return is_port_blocked_linux(port, protocol)
 
 # --- Other Helper Functions ---
-def verify_ports_closed(target_ip):
-    all_ports_to_verify_info = open_ports["TCP"] + open_ports["UDP"]
+def verify_ports_closed(target_ip, user_id=None):
+    all_ports_to_verify_info = get_current_open_ports(user_id)
+    whitelisted_ports = get_user_whitelisted_ports(user_id)
+    
     if not all_ports_to_verify_info:
-        log("[*] No ports to verify.")
+        log("[*] No ports to verify.", user_id)
         return
 
     if '-' in target_ip or '/' in target_ip:
-        log("[!] Port verification is most reliable for single IP addresses. Using primary IP from range if detectable.")
+        log("[!] Port verification is most reliable for single IP addresses.", user_id)
         try:
             target_ip = target_ip.split('/')[0].split('-')[0]
         except Exception:
             pass
 
     if not is_valid_ip_or_range(target_ip):
-        log(f"[!] Could not determine a single IP from '{target_ip}' for verification. Skipping.")
+        log(f"[!] Could not determine a single IP for verification.", user_id)
         return
 
-    log(f"[*] Verifying all detected port status on {target_ip}...")
+    log(f"[*] Verifying all detected port status on {target_ip}...", user_id)
     for p_info in all_ports_to_verify_info:
         port, protocol = p_info['port'], p_info['protocol']
         if port in whitelisted_ports:
-            log(f"[~] Skipping verification for whitelisted {protocol} port {port}.")
+            log(f"[~] Skipping verification for whitelisted {protocol} port {port}.", user_id)
             continue
         
         if protocol == "TCP":
@@ -992,18 +1029,19 @@ def verify_ports_closed(target_ip):
                 s.settimeout(1)
                 try:
                     if s.connect_ex((target_ip, int(port))) == 0:
-                        log(f"[!] TCP Port {port} (Service: {p_info['service']}) is still OPEN.")
+                        log(f"[!] TCP Port {port} (Service: {p_info['service']}) is still OPEN.", user_id)
                     else:
-                        log(f"[OK] TCP Port {port} (Service: {p_info['service']}) is CLOSED.")
+                        log(f"[OK] TCP Port {port} (Service: {p_info['service']}) is CLOSED.", user_id)
                 except Exception as e:
-                    log(f"[!] Error verifying TCP port {port}: {e}")
+                    log(f"[!] Error verifying TCP port {port}: {e}", user_id)
         else:
-            log(f"[~] UDP Port {port} (Service: {p_info['service']}) verification is limited. Re-scan to confirm status.")
+            log(f"[~] UDP Port {port} (Service: {p_info['service']}) verification is limited.", user_id)
 
 def add_to_whitelist(ports_str, output_dir=None, user_id=None):
     """
     Updated for Phase 2 to accept output_dir and user_id.
     """
+    whitelisted_ports = get_user_whitelisted_ports(user_id)
     if ports_str:
         ports = [p.strip() for p in ports_str.split(',') if p.strip().isdigit()]
         if ports:
@@ -1014,8 +1052,8 @@ def add_to_whitelist(ports_str, output_dir=None, user_id=None):
     log("[!] No valid port numbers found in whitelist input.", user_id)
     return False
 
-def get_whitelisted_ports():
-    return sorted(list(whitelisted_ports))
+def get_whitelisted_ports(user_id=None):
+    return sorted(list(get_user_whitelisted_ports(user_id)))
 
 def clear_log_file(user_id=None):
     """Clears the log file for a specific user or the system log."""
@@ -1033,8 +1071,9 @@ def clear_log_file(user_id=None):
     except Exception as e:
         print(f"[!] Error clearing log file: {e}")
 
-def get_current_open_ports():
-    return sorted(open_ports["TCP"] + open_ports["UDP"], key=lambda x: int(x['port']))
+def get_current_open_ports(user_id=None):
+    user_data = get_user_open_ports(user_id)
+    return sorted(user_data["TCP"] + user_data["UDP"], key=lambda x: int(x['port']))
 
 
 # --- Main Test Function ---

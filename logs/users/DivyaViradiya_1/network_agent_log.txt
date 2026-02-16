@@ -34,3 +34,73 @@
 [2026-02-14 17:15:42] [*] Local IP requested: 192.168.29.48
 [2026-02-14 17:15:42] [*] Local IP requested: 192.168.29.48
 [2026-02-14 17:15:42] [*] Local IP requested: 192.168.29.48
+[2026-02-14 19:29:23] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[2026-02-14 19:29:26] [*] Local IP requested: 192.168.29.48
+[2026-02-14 19:29:35] [*] Scan complete. Generating PDF report...
+[2026-02-14 19:29:39] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 11:25:30] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[2026-02-15 11:25:43] [*] Scan complete. Generating PDF report...
+[2026-02-15 11:25:49] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 11:26:10] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[2026-02-15 11:26:21] [*] Scan complete. Generating PDF report...
+[2026-02-15 11:26:26] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 11:26:55] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[2026-02-15 11:27:05] [*] Scan complete. Generating PDF report...
+[2026-02-15 11:27:07] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 11:31:51] [*] Preparing DEFAULT scan for target: 192.168.1.1 with T4...
+[2026-02-15 11:33:36] [*] Scan complete. Generating PDF report...
+[2026-02-15 11:33:39] [+] PDF report generated successfully: D:\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 12:31:37] [*] Preparing TCP_CONNECT scan for target: 192.168.1.1 with T4...
+[2026-02-15 12:35:00] [*] Scan complete. Generating PDF report...
+[2026-02-15 12:35:00] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 12:36:56] [*] Local IP requested: 192.168.29.48
+[2026-02-15 12:39:59] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[2026-02-15 12:40:06] [*] Local IP requested: 192.168.29.48
+[2026-02-15 12:40:09] [*] Scan complete. Generating PDF report...
+[2026-02-15 12:40:11] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 12:40:18] [*] Local IP requested: 192.168.29.48
+[2026-02-15 12:54:54] [*] Local IP requested: 192.168.29.48
+[2026-02-15 12:54:56] [*] Preparing DEFAULT scan for target: 192.168.29.1 with T4...
+[2026-02-15 13:56:37] [*] Preparing DEFAULT scan for target: google.com with T4...
+[2026-02-15 13:57:58] [*] Scan complete. Generating PDF report...
+[2026-02-15 13:58:00] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 14:02:40] [*] Local IP requested: 192.168.29.48
+[2026-02-15 14:20:23] [*] Preparing DEFAULT scan for target: 192.168.29.1 with T4...
+[2026-02-15 14:21:42] [*] Scan complete. Generating PDF report...
+[2026-02-15 14:21:44] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 14:45:34] [*] Local IP requested: 192.168.29.48
+[2026-02-15 14:55:11] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[2026-02-15 14:55:21] [*] Scan complete. Generating PDF report...
+[2026-02-15 14:55:23] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-15 18:17:50] [*] Local IP requested: 192.168.29.48
+[2026-02-15 18:28:46] [*] Local IP requested: 192.168.29.48
+[2026-02-15 23:09:19] [*] Local IP requested: 192.168.29.48
+[2026-02-16 10:58:58] [*] Local IP requested: 192.168.29.48
+[2026-02-16 10:59:50] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:03:48] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:42:25] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:47:45] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:49:53] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:50:12] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:50:29] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:53:06] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:53:25] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:53:49] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:57:18] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:57:21] [*] Local IP requested: 192.168.29.48
+[2026-02-16 11:57:34] [*] Local IP requested: 192.168.29.48
+[2026-02-16 12:02:43] [*] Local IP requested: 192.168.29.48
+[2026-02-16 12:08:20] [*] Local IP requested: 192.168.29.48
+[2026-02-16 14:30:43] [*] Local IP requested: 10.120.106.114
+[2026-02-16 14:57:55] [*] Local IP requested: 10.120.106.114
+[2026-02-16 14:59:26] [*] Local IP requested: 10.120.106.114
+[2026-02-16 14:59:42] [*] Local IP requested: 10.120.106.114
+[2026-02-16 15:01:17] [*] Local IP requested: 10.120.106.114
+[2026-02-16 15:06:40] [*] Local IP requested: 10.120.106.114
+[2026-02-16 15:07:34] [*] Local IP requested: 10.120.106.114
+[2026-02-16 15:09:04] [*] Local IP requested: 10.120.106.114
+[2026-02-16 15:10:27] [*] Local IP requested: 10.120.106.114
+[2026-02-16 15:13:26] [*] Local IP requested: 10.120.106.114
+[2026-02-16 15:13:34] [*] Preparing DEFAULT scan for target: 10.120.106.1 with T4...
+[2026-02-16 15:13:48] [!] Scan failed to produce a result file.
+[2026-02-16 15:34:42] [*] Local IP requested: 10.120.106.114

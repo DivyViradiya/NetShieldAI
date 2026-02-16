@@ -3,7 +3,8 @@ import subprocess
 import time
 import psutil
 import socket
-import shutil  # Added for directory cleanup
+import shutil
+import re
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import json
@@ -11,6 +12,7 @@ import pandas as pd
 import joblib
 from pathlib import Path
 import queue  # Queue for real-time streaming
+import threading
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
@@ -29,6 +31,10 @@ TEMP_DIR = os.path.join(BASE_DIR, "temp", "zap")
 if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR, exist_ok=True)
 
+# --- Global State for Process Management (Isolated by user_id) ---
+active_scans = {} # { "user_id": {"process": Popen, "target": str, "start_time": float} }
+scan_lock = threading.Lock()
+
 # --- USER ISOLATION: Dictionary to hold a queue for each user_id ---
 user_queues = {}
 
@@ -37,6 +43,11 @@ def get_user_queue(user_id):
     if user_id not in user_queues:
         user_queues[user_id] = queue.Queue()
     return user_queues[user_id]
+
+def is_scan_running(user_id):
+    """Checks if a scan is currently active for a specific user."""
+    with scan_lock:
+        return user_id in active_scans
 
 # --- ML Model Setup ---
 MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
@@ -286,7 +297,7 @@ def log(message, user_id=None, to_console=False):
 
         # 3. User-Specific Queue (Streaming)
         uq = get_user_queue(user_id)
-        uq.put(log_message)
+        uq.put(message)
         
     else:
         # Fallback to general system log
@@ -443,17 +454,43 @@ def run_zap_scan(target_url, report_path, user_id):
             bufsize=1 
         )
         
+        # Track this user's process
+        with scan_lock:
+            active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
+
         log("--- ZAP Output Stream Started ---", user_id)
         
         # Stream stdout line by line
         for line in iter(process.stdout.readline, ''):
             if line:
                 stripped_line = line.strip()
+                # --- NOISE FILTER: Extract ZAP Progress Cleanly ---
+                # Matches: [                    ] 15% /
+                if "%" in stripped_line and "[" in stripped_line and "]" in stripped_line:
+                    match = re.search(r'(\d+%)', stripped_line)
+                    if match:
+                        # Log the original line with [PROGRESS] prefix so UI can parse percent
+                        # but still show the original bracket format in terminal
+                        log(f"[PROGRESS] {stripped_line}", user_id)
+                        continue
+                
+                if not stripped_line:
+                    continue
+
+                # Skip other noisy technical messages but keep important ones
+                if any(x in stripped_line.lower() for x in ["copying default", "creating directory", "plugin"]):
+                    if "main" in stripped_line: continue
+
                 # We log to file/queue but NOT to console to avoid terminal clutter
                 log(stripped_line, user_id, to_console=False)
-                # print(stripped_line) # Uncomment for global console debug
 
         process.wait()
+        
+        # Unregister process
+        with scan_lock:
+            if user_id in active_scans:
+                del active_scans[user_id]
+
         log("--- End of ZAP Output ---", user_id)
 
         success = False

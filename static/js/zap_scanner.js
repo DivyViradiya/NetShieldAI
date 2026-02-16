@@ -212,7 +212,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken
                 },
-                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type })
+                body: JSON.stringify({ 
+                    llm_mode: llmMode, 
+                    scanner_type: data.scanner_type,
+                    force_new_session: true // [NEW] Force a fresh chat
+                })
             });
 
             data = await response.json();
@@ -222,7 +226,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateScanStatus('Redirecting...', 'success');
                 // Brief delay to let the user see the "Redirecting" state
                 setTimeout(() => {
-                    window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                    const params = new URLSearchParams({
+                        mode: data.llm_mode,
+                        summary: data.summary,
+                        session_id: data.session_id
+                    });
+                    window.location.href = `${CHATBOT_REDIRECT_URL}?${params.toString()}`;
                 }, 800);
             } else {
                 throw new Error(data.message || `Analysis failed`);
@@ -413,9 +422,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    async function checkScanStatus() {
+        try {
+            const response = await fetch(STATUS_ENDPOINT);
+            const data = await response.json();
+            
+            if (data.status === 'success' && data.is_running) {
+                toggleButtonLoading(startScanBtn, true);
+                updateScanStatus(`Scanning: ${data.target}...`, 'busy');
+                if (targetUrlInput) targetUrlInput.value = data.target;
+                appendLog(`[*] Detected active scan on ${data.target}. Re-attaching to stream...`);
+            }
+        } catch (error) {
+            console.error("Error checking scan status:", error);
+        }
+    }
+
     // Initialize
     setTimeout(() => appendLog('System Ready. Initializing ZAP Scanner interface...'), 100);
     checkReportStatus();
     fetchAndDisplayResults();
+    checkScanStatus();
     setupLogStream();
 });

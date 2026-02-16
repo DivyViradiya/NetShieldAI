@@ -1,7 +1,4 @@
-Security Posture
-Security Overview & Regulatory Compliance
-D
-DivyaViradiya{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}
   NetShieldAI - Source Code Scanner
@@ -25,24 +22,24 @@ DivyaViradiya{% extends 'base.html' %}
 
     /* --- 2. THEME VARIABLES (Matched to Original Tool) --- */
     :root {
-      --neo-bg: #050505;
-      --neo-card: #0a0a0c;
-      --neo-card-hover: #0e0e11;
-      --neo-input: #111111;
-      --neo-border: #27272a;
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-card-hover: var(--surface-elevated);
+      --neo-input: var(--surface-subtle);
+      --neo-border: var(--border-default);
       
-      --neo-text-main: #ffffff;
-      --neo-text-muted: #9ca3af;
+      --neo-text-main: var(--text-primary);
+      --neo-text-muted: var(--text-secondary);
       --font-ui: 'Inter', system-ui, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
-      --neo-blue: #3b82f6;
-      --neo-red: #f43f5e;
-      --neo-green: #10b981;
-      --neo-amber: #f59e0b;
+      --neo-blue: var(--accent-primary);
+      --neo-red: var(--severity-critical);
+      --neo-green: var(--severity-success);
+      --neo-amber: var(--severity-high);
       
       /* Standardized Colors */
-      --accent-primary: var(--neo-green);
+      --accent-primary: var(--neo-blue);
       --risk-high: var(--neo-red);
       --risk-med: var(--neo-amber);
       --risk-low: #eab308;
@@ -52,132 +49,132 @@ DivyaViradiya{% extends 'base.html' %}
     }
 
     body.light-mode {
-      --neo-bg: #f8fafc;
-      --neo-card: rgba(255, 255, 255, 0.8);
-      --neo-card-hover: rgba(241, 245, 249, 0.9);
-      --neo-input: #ffffff;
-      --neo-border: rgba(226, 232, 240, 0.8);
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-card-hover: var(--bg-secondary);
+      --neo-input: var(--surface-primary);
+      --neo-border: var(--border-default);
       
-      --neo-text-main: #0f172a;
-      --neo-text-muted: #475569;
+      --neo-text-main: var(--text-primary);
+      --neo-text-muted: var(--text-secondary);
       
       --neo-blue: #2563eb;
-      --neo-red: #dc2626;
-      --neo-green: #16a34a;
-      --neo-amber: #d97706;
+      --neo-red: var(--severity-critical);
+      --neo-green: var(--severity-success);
+      --neo-amber: var(--severity-high);
       
-      --accent-primary: #16a34a;
-      --risk-low: #d97706;
+      --accent-primary: var(--severity-success);
+      --risk-low: var(--severity-high);
     }
 
     /* Light Mode Specific Overrides */
     body.light-mode .text-gradient {
-      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     body.light-mode .dash-table th {
-      background: rgba(241, 245, 249, 0.9);
-      color: #0f172a;
-      border-bottom-color: #e2e8f0;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .dash-table td {
-      color: #334155;
-      border-bottom-color: #f1f5f9;
+      color: var(--text-secondary);
+      border-bottom-color: var(--border-subtle);
     }
 
     body.light-mode .panel-header {
-      background: rgba(255, 255, 255, 0.9);
-      border-bottom-color: #e2e8f0;
+      background: var(--surface-primary);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .terminal-header {
-      background: rgba(241, 245, 249, 0.9);
-      border-bottom-color: #e2e8f0;
+      background: var(--bg-secondary);
+      border-bottom-color: var(--border-default);
     }
 
     body.light-mode .term-window {
-      background: #ffffff;
+      background: var(--surface-primary);
     }
 
     body.light-mode .metric-value {
-      color: #0f172a;
+      color: var(--text-primary);
     }
 
     body.light-mode .metric-info {
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     body.light-mode .dash-input {
-      background: #ffffff !important;
-      color: #0f172a !important;
-      border-color: #e2e8f0 !important;
+      background: var(--surface-primary) !important;
+      color: var(--text-primary) !important;
+      border-color: var(--border-default) !important;
     }
 
     body.light-mode .btn-dash {
-      background: #ffffff;
-      color: #475569;
-      border-color: #e2e8f0;
+      background: var(--surface-primary);
+      color: var(--text-secondary);
+      border-color: var(--border-default);
     }
 
     body.light-mode .btn-dash:hover:not(:disabled) {
-      background: #f8fafc;
-      color: #0f172a;
-      border-color: #cbd5e1;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
     }
 
     body.light-mode .custom-dropdown {
-      background: #ffffff;
-      border-color: #e2e8f0;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      background: var(--surface-primary);
+      border-color: var(--border-default);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
     }
 
     body.light-mode .dropdown-link {
-      color: #475569;
+      color: var(--text-secondary);
     }
 
     body.light-mode .dropdown-link:hover {
-      background: #f1f5f9;
-      color: #0f172a;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
 
     body.light-mode .term-title {
-      color: #64748b;
+      color: var(--text-muted);
     }
 
     body.light-mode .badge-pill {
-      background: rgba(22, 163, 74, 0.1);
-      color: #16a34a;
-      border-color: rgba(22, 163, 74, 0.2);
+      background: var(--severity-success-bg);
+      color: var(--severity-success);
+      border-color: var(--severity-success);
     }
 
     body.light-mode .processing-text {
-      color: #0f172a !important;
+      color: var(--text-primary) !important;
     }
 
     body.light-mode #resultsContent {
-      background-color: #f8fafc !important;
-      color: #334155 !important;
+      background-color: var(--bg-secondary) !important;
+      color: var(--text-secondary) !important;
     }
 
     body.light-mode .vuln-item {
-      background: rgba(217, 119, 6, 0.05);
-      border-color: rgba(217, 119, 6, 0.1);
+      background: var(--bg-secondary);
+      border-color: var(--border-default);
     }
 
     body.light-mode .btn-ghost:hover {
-      background: rgba(0, 0, 0, 0.05);
-      color: #0f172a;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
     }
 
     body.light-mode #serverConfigDetails {
-      color: #475569 !important;
+      color: var(--text-muted) !important;
     }
 
     body.light-mode #serverConfigDetails span[style*="color: var(--neo-text-main)"] {
-      color: #0f172a !important;
+      color: var(--text-primary) !important;
     }
     
     /* --- 3. GLOBAL BASE --- */
@@ -266,47 +263,93 @@ DivyaViradiya{% extends 'base.html' %}
     
     /* --- CARDS --- */
     .control-card, .metric-card, .dash-panel, .terminal-footer {
-      background: rgba(10, 10, 12, 0.75);
+      background: linear-gradient(180deg, rgba(20,20,23,0.6) 0%, rgba(5,5,5,0) 100%);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--radius-card);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
       position: relative;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+      /* Static Design: No hover motion or transitions */
     }
 
     body.light-mode .control-card, 
     body.light-mode .metric-card, 
     body.light-mode .dash-panel, 
     body.light-mode .terminal-footer {
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+      background: var(--surface-primary);
+      border: 1px solid var(--border-default);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
 
-    .control-card {
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 1.25rem;
-      height: 140px;
-      overflow: hidden;
+    /* Override hover effects */
+    .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover {
+      transform: none !important;
+      border-color: var(--neo-border) !important;
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.light-mode .control-card:hover, 
+    body.light-mode .metric-card:hover, 
+    body.light-mode .dash-panel:hover,
+    body.light-mode .terminal-footer:hover {
+      background: var(--surface-primary) !important;
+      border-color: var(--border-default) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
     }
     
-    /* GLOW EFFECTS */
+    /* Top Glow Gradient */
     .control-card::before, .metric-card::before, .dash-panel::before, .terminal-footer::before {
       content: '';
       position: absolute;
       top: 0; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+      opacity: 0.6;
       pointer-events: none;
-      z-index: 1;
-      opacity: 0.4;
+      z-index: 10;
     }
-    .control-card::before { background: linear-gradient(90deg, transparent, var(--accent-primary), transparent); opacity: 0.5; }
-    .metric-card::before { background: linear-gradient(90deg, transparent, var(--neo-blue), transparent); }
-    .dash-panel::before { background: linear-gradient(90deg, transparent, var(--neo-blue), transparent); opacity: 0.3; }
-    .terminal-footer::before { background: linear-gradient(90deg, transparent, var(--neo-blue), transparent); opacity: 0.3; }
+
+    body.light-mode .control-card::before, 
+    body.light-mode .metric-card::before, 
+    body.light-mode .dash-panel::before, 
+    body.light-mode .terminal-footer::before {
+        display: none;
+    }
+
+        /* --- CONTROL CARD REFINED --- */
+        .control-card {
+          padding: 1.25rem;
+          display: flex;
+          flex-direction: column;
+          min-height: 140px;
+          height: auto; 
+          z-index: 20;
+        }
+    .control-row-top {
+        display: flex;
+        width: 100%;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: auto;
+    }
+
+    .control-row-bottom {
+        display: flex;
+        width: 100%;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+    .controls-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
 
     /* --- METRICS --- */
     .metric-card {
@@ -322,8 +365,8 @@ DivyaViradiya{% extends 'base.html' %}
 
     .metric-card:hover {
       transform: translateY(-2px);
-      border-color: var(--neo-text-muted);
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      border-color: var(--text-muted);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
     }
     
     .metric-label {
@@ -358,13 +401,12 @@ DivyaViradiya{% extends 'base.html' %}
     }
     
     .metric-info {
-      font-size: 0.75rem; color: #71717a; font-weight: 400;
+      font-size: 0.75rem; color: var(--neo-text-muted); font-weight: 400;
       position: relative; z-index: 2; display: flex; align-items: center; gap: 6px;
     }
 
     /* --- INPUTS --- */
-    .input-group { display: flex; gap: 0.5rem; width: 100%; }
-    .search-container { position: relative; flex: 1; }
+    .search-container { position: relative; flex: 1; min-width: 0; }
     
     .search-icon {
       position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
@@ -379,7 +421,7 @@ DivyaViradiya{% extends 'base.html' %}
     }
     
     body.light-mode .dash-input:focus {
-        background: #ffffff;
+        background: var(--surface-primary);
     }
 
     .dash-input:focus { outline: none; border-color: var(--accent-primary); background: var(--neo-bg); }
@@ -391,7 +433,7 @@ DivyaViradiya{% extends 'base.html' %}
     .dash-input:-webkit-autofill:focus,
     .dash-input:-webkit-autofill:active {
       -webkit-box-shadow: 0 0 0 30px var(--neo-input) inset !important;
-      -webkit-text-fill-color: white !important;
+      -webkit-text-fill-color: var(--neo-text-main) !important;
       transition: background-color 5000s ease-in-out 0s;
     }
     
@@ -405,14 +447,22 @@ DivyaViradiya{% extends 'base.html' %}
       letter-spacing: 0.05em; background: var(--neo-input);
     }
     
-    .btn-dash:hover { color: white; border-color: var(--accent-primary); background: var(--neo-card-hover); }
-    .btn-icon-only { padding: 0; width: 42px; justify-content: center; }
+    .btn-dash:hover { color: var(--neo-text-main); border-color: var(--accent-primary); background: var(--neo-card-hover); }
+    .btn-icon-only { padding: 0; width: 42px; justify-content: center; flex-shrink: 0; }
     
     .btn-primary { background: var(--neo-input); color: var(--neo-text-muted); border: 1px solid var(--neo-border); }
     .btn-primary:hover {
-      background: var(--accent-primary); color: #000; border-color: var(--accent-primary);
+      background: var(--accent-primary); color: white; border-color: var(--accent-primary);
       box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
     }
+
+    body.light-mode .btn-primary:hover {
+        background: var(--text-primary);
+        border-color: var(--text-primary);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
     .btn-secondary { background: var(--neo-input); }
     
     .btn-text-glow {
@@ -429,7 +479,7 @@ DivyaViradiya{% extends 'base.html' %}
       border-radius: 6px; text-decoration: none; transition: all 0.2s ease;
       font-weight: 700; font-size: 0.75rem; text-transform: uppercase; cursor: pointer;
     }
-    .btn-ghost:hover { color: white; background: rgba(255, 255, 255, 0.05); }
+    .btn-ghost:hover { color: var(--neo-text-main); background: rgba(255, 255, 255, 0.05); }
 
     /* --- PANELS --- */
     .dash-panel { display: flex; flex-direction: column; overflow: hidden; }
@@ -468,7 +518,7 @@ DivyaViradiya{% extends 'base.html' %}
     }
 
     body.light-mode .custom-dropdown {
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     }
 
     .dropdown-link {
@@ -493,11 +543,6 @@ DivyaViradiya{% extends 'base.html' %}
       font-family: var(--font-mono); font-size: 0.8rem;
     }
     
-    .status-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: 1rem; border-top: 1px solid var(--neo-border);
-    }
-    
     .badge-pill {
       display: inline-flex; align-items: center; padding: 4px 10px;
       border-radius: 4px; background: rgba(16, 185, 129, 0.1);
@@ -506,12 +551,7 @@ DivyaViradiya{% extends 'base.html' %}
     }
 
     .text-gradient {
-      background: linear-gradient(180deg, #fff 0%, #ccc 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-
-    body.light-mode .text-gradient {
-      background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+      background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-muted) 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
@@ -521,6 +561,12 @@ DivyaViradiya{% extends 'base.html' %}
       backdrop-filter: blur(2px); z-index: 50; display: flex; flex-direction: column;
       align-items: center; justify-content: center; transition: opacity 0.3s ease;
     }
+
+    body.light-mode .processing-overlay {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: none;
+    }
+
     .ai-pulse-container {
       position: relative; width: 48px; height: 48px; display: flex;
       align-items: center; justify-content: center; margin-bottom: 1rem;
@@ -534,7 +580,7 @@ DivyaViradiya{% extends 'base.html' %}
       animation-delay: 0.6s; border-color: var(--neo-blue); box-shadow: 0 0 10px var(--neo-blue);
     }
     .processing-text {
-      font-family: var(--font-mono); font-size: 0.8rem; color: white;
+      font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main);
       letter-spacing: 0.2em; text-transform: uppercase;
       animation: text-fade 1s ease-in-out infinite alternate;
     }
@@ -574,8 +620,12 @@ DivyaViradiya{% extends 'base.html' %}
         font-size: 0.75rem; line-height: 1.5; padding: 2px 0;
         border-bottom: 1px solid var(--neo-border);
     }
-    .log-time { color: #555; font-size: 0.7rem; white-space: nowrap; width: 70px; flex-shrink: 0; }
-    .log-content { color: #ccc; word-break: break-all; }
+    .log-time { color: var(--text-muted); font-size: 0.7rem; white-space: nowrap; width: 70px; flex-shrink: 0; }
+    .log-content { color: var(--text-muted); word-break: break-all; }
+
+    body.light-mode .log-content {
+        color: var(--text-secondary);
+    }
     
     .spinner {
       width: 14px; height: 14px; border: 2px solid rgba(255, 255, 255, 0.1);
@@ -591,6 +641,7 @@ DivyaViradiya{% extends 'base.html' %}
       .control-card { height: auto; }
       .main-grid { grid-template-columns: 1fr; height: auto; }
       .dash-panel { height: auto; min-height: 400px; }
+      .control-row-top, .control-row-bottom { flex-direction: column; align-items: stretch; }
     }
   </style>
 {% endblock %}
@@ -604,9 +655,9 @@ DivyaViradiya{% extends 'base.html' %}
       </a>
 
       <div class="scanner-title-area" style="margin-top: 0.5rem;">
-        <h1 class="text-gradient">Semgrep <span style="color: var(--accent-primary); -webkit-text-fill-color: initial;">Scanner</span></h1>
+        <h1 class="text-gradient">Semgrep <span style="color: #3b82f6; -webkit-text-fill-color: initial;">Scanner</span></h1>
         <p style="color: var(--neo-text-muted); font-weight: 500; font-family: var(--font-mono); display: flex; align-items: center; gap: 12px;">
-          <span style="height: 1px; background: var(--accent-primary); opacity: 0.5;"></span>
+          <span style="height: 1px; background: #3b82f6; opacity: 0.5;"></span>
           Static Application Security Testing (SAST) & Code Analysis
         </p>
       </div>
@@ -616,35 +667,39 @@ DivyaViradiya{% extends 'base.html' %}
       <div class="control-card">
         <input type="file" id="fileUploadInput" class="file-input-hidden" accept=".zip,.tar.gz" />
 
-        <div class="input-group">
-          <div class="search-container">
-            <span class="material-symbols-outlined search-icon">code</span>
-            <input type="text" id="gitUrlInput" class="dash-input" placeholder="ENTER GIT URL (OR UPLOAD ZIP)..." />
-          </div>
-          
-          <button id="resetScanBtn" class="btn-dash btn-secondary btn-icon-only" title="Reset Input & Findings">
-            <span class="material-symbols-outlined" style="font-size:1.1rem">restart_alt</span>
-          </button>
+        <div class="control-row-top">
+            <div class="search-container">
+                <span class="material-symbols-outlined search-icon">code</span>
+                <input type="text" id="gitUrlInput" class="dash-input" placeholder="ENTER GIT URL (OR UPLOAD ZIP)..." />
+            </div>
+            
+            <div class="controls-toolbar">
+                <button id="resetScanBtn" class="btn-dash btn-secondary btn-icon-only" title="Reset Input & Findings">
+                    <span class="material-symbols-outlined" style="font-size:1.1rem">restart_alt</span>
+                </button>
 
-          <button id="triggerUploadBtn" class="btn-dash btn-secondary" title="Upload Zip File" style="padding: 0 1rem;">
-            <span class="material-symbols-outlined" style="font-size:1.1rem">folder_open</span>
-          </button>
-
-          <button id="initiateScanBtn" class="btn-dash btn-primary" title="Start Code Scan" style="padding: 0 1.5rem;">
-            <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
-            <span>START SCAN</span>
-            <span class="spinner hidden"></span>
-          </button>
+                <button id="triggerUploadBtn" class="btn-dash btn-secondary btn-icon-only" title="Upload Zip File">
+                    <span class="material-symbols-outlined" style="font-size:1.1rem">folder_open</span>
+                </button>
+            </div>
         </div>
 
-        <div class="status-row">
-          <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono);">
-            STATUS: <span id="scanStatus" style="color: white; margin-left: 5px;">READY</span>
-          </div>
-          <div class="badge-pill">
-            <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">verified_user</span>
-            SAST Engine
-          </div>
+        <div class="control-row-bottom">
+            <button id="initiateScanBtn" class="btn-dash btn-primary" title="Start Code Scan" style="min-width: 140px;">
+                <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+                <span>START SCAN</span>
+                <span class="spinner hidden"></span>
+            </button>
+
+            <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono); display: flex; align-items: center; gap: 12px;">
+                <div style="display: flex; align-items: center;">
+                    STATUS: <span id="scanStatus" style="color: var(--neo-text-main); margin-left: 5px;">READY</span>
+                </div>
+                <div class="badge-pill">
+                    <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">verified_user</span>
+                    SAST Engine
+                </div>
+            </div>
         </div>
       </div>
 
@@ -653,7 +708,7 @@ DivyaViradiya{% extends 'base.html' %}
           <span class="metric-label" style="color: var(--accent-primary);">Target</span>
           <span id="metricTarget" class="metric-value">---</span>
           <span class="metric-info">
-            <span class="material-symbols-outlined" style="font-size:0.9rem; color: var(--neo-green);">folder_zip</span>
+            <span class="material-symbols-outlined" style="font-size:0.9rem; color: var(--neo-blue);">folder_zip</span>
             <span>Repo / File</span>
           </span>
         </div>

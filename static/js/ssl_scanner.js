@@ -201,7 +201,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken
                 },
-                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type }) 
+                body: JSON.stringify({ 
+                    llm_mode: llmMode, 
+                    scanner_type: data.scanner_type,
+                    force_new_session: true // [NEW] Force a fresh chat
+                }) 
             });
 
             data = await response.json();
@@ -210,7 +214,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 elements.aiProcessingText.textContent = 'REDIRECTING...';
                 updateStatus('Redirecting...', 'success');
                 setTimeout(function() {
-                    window.location.href = CHATBOT_REDIRECT_URL + '?mode=' + data.llm_mode + '&summary=' + encodeURIComponent(data.summary);
+                    const params = new URLSearchParams({
+                        mode: data.llm_mode,
+                        summary: data.summary,
+                        session_id: data.session_id
+                    });
+                    window.location.href = CHATBOT_REDIRECT_URL + '?' + params.toString();
                 }, 800);
             } else {
                 throw new Error(data.message || 'Analysis failed');
