@@ -75,24 +75,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var now = new Date();
         var timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
-        var cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "").trim();
 
-        var contentStyle = 'color:var(--neo-text-muted)';
-        var lowerMsg = cleanedMessage.toLowerCase();
-        
-        if (cleanedMessage.includes('[!]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {
-            contentStyle = 'color:#ef4444'; 
-        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('[✓]') || lowerMsg.includes('success') || lowerMsg.includes('complete')) {
-            contentStyle = 'color:#10b981'; 
-        } else if (cleanedMessage.includes('[*]') || lowerMsg.includes('initiating')) {
-            contentStyle = 'color:#3b82f6'; 
-        }
+        var contentStyle = 'color:#d4d4d8';
+        if (displayMessage.includes('[!]')) contentStyle = 'color:#ef4444';
+        else if (displayMessage.includes('[+]')) contentStyle = 'color:#10b981';
+        else if (displayMessage.includes('[*]')) contentStyle = 'color:#3b82f6';
 
         var line = document.createElement('div');
         line.className = 'log-line';
         line.innerHTML = 
             '<div class="log-time">' + timeStr + '</div>' +
-            '<div class="log-content" style="' + contentStyle + '">' + cleanedMessage + '</div>';
+            '<div class="log-content" style="' + contentStyle + '">' + displayMessage + '</div>';
         
         elements.logOutput.appendChild(line);
         elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
@@ -123,8 +116,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function checkReportAvailability() {
+        var target = elements.targetHostInput.value.trim();
         try {
-            var response = await fetch(REPORT_FILES_ENDPOINT);
+            var url = target ? REPORT_FILES_ENDPOINT + '?target=' + encodeURIComponent(target) : REPORT_FILES_ENDPOINT;
+            var response = await fetch(url);
             if (response.ok) {
                 var data = await response.json();
                 if (data.status === 'success' && data.pdf_report) {
@@ -162,6 +157,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function analyzeReport(llmMode) {
         if (elements.analyzeReportDropdown.disabled) return;
+        var target = elements.targetHostInput.value.trim();
+
         if (!csrfToken) {
             appendLog('[!] Error: CSRF Token missing. Refresh page.');
             return;
@@ -170,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // UI LOCKDOWN
         elements.llmAnalysisOptions.classList.add('hidden');
         elements.aiProcessingOverlay.classList.remove('hidden');
-        elements.aiProcessingText.textContent = llmMode === 'gemini' 
+        elements.aiProcessingText.textContent = llmMode.includes('gemini') 
             ? 'CONTACTING GEMINI...' 
             : 'LOADING LOCAL MODEL...';
         
@@ -185,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken 
                 },
-                body: JSON.stringify({ llm_mode: llmMode })
+                body: JSON.stringify({ llm_mode: llmMode, target: target })
             });
             var data = await response.json();
             
@@ -204,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({ 
                     llm_mode: llmMode, 
                     scanner_type: data.scanner_type,
+                    target: data.target,
                     force_new_session: true // [NEW] Force a fresh chat
                 }) 
             });
@@ -508,13 +506,15 @@ document.addEventListener('DOMContentLoaded', function() {
         eventSource.onmessage = function(event) {
             var message = event.data;
             if (message && message !== ': keep-alive\n\n') {
-                appendLog(message);
                 
                 if (message.includes("PDF report generated") || message.includes("SSL scan complete")) {
                     updateStatus('Complete', 'success');
                     toggleSpinner(elements.initiateScanBtn, false);
                     fetchAndDisplayReport(); 
                 }
+
+                if (message.includes("EVENT:") || message.startsWith("EVENT:")) return;
+                appendLog(message);
             }
         };
     }

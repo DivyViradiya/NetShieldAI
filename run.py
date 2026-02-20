@@ -13,9 +13,10 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 # --- Logging Setup ---
+# Professional SaaS-style format: [Time] [Level] [Message]
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format='[%(asctime)s] [%(levelname)-8s] %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger('NetShieldAI_Main')
@@ -52,7 +53,7 @@ login_manager.login_view = 'auth.login'
 csrf = CSRFProtect(app)
 
 # Register Blueprints
-logger.info(f"{Fore.BLUE}[*] Registering Core Modules...")
+logger.info("[*] Registering Core Modules...")
 app.register_blueprint(network_scanner_bp, url_prefix='/network_scanner')
 app.register_blueprint(zap_scanner_bp, url_prefix='/zap_scanner')
 app.register_blueprint(ssl_scanner_bp, url_prefix='/ssl_scanner')
@@ -64,7 +65,7 @@ app.register_blueprint(killchain_bp, url_prefix='/killchain')
 app.register_blueprint(sql_scanner_bp, url_prefix='/sql_scanner')
 app.register_blueprint(semgrep_bp, url_prefix='/semgrep_scanner')
 app.register_blueprint(api_scanner_bp, url_prefix='/api_scanner')
-logger.info(f"{Fore.GREEN}[+] 11 Modules Loaded Successfully.")
+logger.info("[+] 11 Modules Loaded Successfully.")
 
 def print_banner():
     banner = fr"""
@@ -78,7 +79,8 @@ def print_banner():
 {Fore.WHITE} [>] Engine Status: {Fore.GREEN}Ready
 {Fore.WHITE} {"="*55}
     """
-    logger.info(banner)
+    # Print banner directly to console to keep logs clean
+    print(banner)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -87,16 +89,17 @@ def load_user(user_id):
 @app.before_request
 def log_request_info():
     if not request.path.startswith('/static'):
-        logger.info(f"{Fore.CYAN}[>] {request.method} {request.path} from {request.remote_addr}")
+        # Clean log format without colors
+        logger.info(f"[>] {request.method} {request.path} from {request.remote_addr}")
 
 @app.route('/')
 def index():
-    logger.info(f"\033[32m[*] Accessing Home Page\033[0m")
+    logger.info("[*] Accessing Home Page")
     return render_template('base/home.html')
 
 @app.route('/arsenal')
 def tools_hub():
-    logger.info(f"\033[32m[*] Accessing Security Arsenal Hub\033[0m")
+    logger.info("[*] Accessing Security Arsenal Hub")
     return render_template('base/tools_hub.html')
 
 # --- REVISED MAIN BLOCK ---
@@ -111,21 +114,21 @@ if __name__ == '__main__':
             os.system('cls' if os.name == 'nt' else 'clear')
             print_banner()
             
-            logger.info(f"{Fore.BLUE}[*] Initializing Secure Database...")
+            logger.info("[*] Initializing Secure Database...")
             with app.app_context():
                 db.create_all()
-            logger.info(f"{Fore.GREEN}[+] Database schema verified.")
+            logger.info("[+] Database schema verified.")
             
-            logger.info(f"{Fore.GREEN}[+] System checks complete. Launching interface...\n")
+            logger.info("[+] System checks complete. Launching interface...\n")
 
         # 3. Run Flask. 
         # Tip: If it still closes, try setting use_reloader=False inside app.run
         app.run(host='0.0.0.0', port=5100, debug=True, use_reloader=True, threaded=True)
 
     except Exception as e:
-        logger.error(f"\n{Fore.RED}{Style.BRIGHT}[!] CRITICAL SYSTEM ERROR:")
-        logger.error(f"{Fore.WHITE}{str(e)}")
-        logger.info(f"\n{Fore.YELLOW}[*] Troubleshooting Steps:")
+        logger.error("[!] CRITICAL SYSTEM ERROR:")
+        logger.error(str(e))
+        logger.info("[*] Troubleshooting Steps:")
         logger.info("1. Ensure no other instance is running on port 5100.")
         logger.info("2. Try running the terminal as Administrator manually.")
-        input(f"\n{Fore.WHITE}Press ENTER to close this window...")
+        input("Press ENTER to close this window...")

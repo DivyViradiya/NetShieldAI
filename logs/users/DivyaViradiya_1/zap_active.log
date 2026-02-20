@@ -1,0 +1,7 @@
+[2026-02-20 09:42:06] Log cleared for new zap scan.
+[09:42:06] [*] Starting ZAP Quick Scan (AJAX: True, Auth: Anonymous) for http://testphp.vulnweb.com (User: DivyaViradiya_1)...
+[09:42:06] 
+--- Starting ZAP Engine (Port: 45128) ---
+[09:42:06] Mode: Quick Scan | AJAX: True | Target: http://testphp.vulnweb.com
+[09:44:07] Error: ZAP daemon failed to start within timeout.
+[09:44:12] [!] ZAP scan failed for target: http://testphp.vulnweb.com.

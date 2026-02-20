@@ -1,0 +1,37 @@
+[2026-02-20 11:12:29] Log cleared for new nmap scan.
+[11:12:29] [*] Preparing DEFAULT scan for target: 192.168.0.1 with T4...
+[11:12:29] [+] Running TCP (Top 1000) scan on 192.168.0.1 with timing -T4...
+[11:12:29] Executing Network Scan...
+[11:12:40] [+] TCP (Top 1000) scan complete. Results synchronized.
+[11:12:40] [*] Raw results persisted to: scan_result_tcp.txt
+[11:12:40] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[11:12:40] EVENT: scan_complete | PAYLOAD: {"target": "192.168.0.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[11:12:40] [+] Processing results for PDF report...
+[11:12:40] [+] JSON Scan report saved
+[11:12:40] [*] Scan complete. Generating PDF report for 192.168.0.1...
+[11:12:43] [+] PDF report generated successfully
+[11:12:43] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.0.1
+[11:13:32] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:13:32] [*] Local IP requested: 192.168.0.121
+[11:14:08] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:14:08] [*] Local IP requested: 192.168.0.121
+[11:16:17] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:16:17] [*] Local IP requested: 192.168.0.121
+[11:22:04] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:22:04] [*] Local IP requested: 192.168.0.121
+[11:24:11] [*] Local IP requested: 192.168.0.121
+[11:24:11] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:25:27] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:25:27] [*] Local IP requested: 192.168.0.121
+[11:29:20] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:29:20] [*] Local IP requested: 192.168.0.121
+[11:43:18] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:43:19] [*] Local IP requested: 192.168.0.121
+[11:49:29] [*] Local IP requested: 192.168.0.121
+[11:49:29] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[12:08:15] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[12:08:15] [*] Local IP requested: 192.168.0.121
+[12:32:27] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[12:32:28] [*] Local IP requested: 192.168.0.121
+[12:44:15] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[12:44:15] [*] Local IP requested: 192.168.0.121

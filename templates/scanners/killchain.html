@@ -387,6 +387,7 @@
       gap: 0.5rem; cursor: pointer; border: 1px solid var(--neo-border);
       color: var(--neo-text-muted); text-decoration: none; transition: all 0.2s; 
       background: var(--neo-input); text-transform: uppercase; letter-spacing: 0.05em;
+      white-space: nowrap; /* Ensure text stays on one line */
     }
     .btn-icon-only { padding: 0; width: 42px; }
     
@@ -408,10 +409,10 @@
       border: 1px solid var(--neo-border);
     }
     .btn-primary:hover {
-      background: var(--neo-red);
-      border-color: var(--neo-red);
+      background: var(--neo-blue);
+      border-color: var(--neo-blue);
       color: white;
-      box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
     }
 
     /* --- CUSTOM DROPDOWNS --- */
@@ -563,7 +564,7 @@
 
     .ai-pulse-container { position: relative; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
     .ai-pulse-ring {
-      position: absolute; width: 100%; height: 100%; border-radius: 50%;
+      position: absolute; width: 50px; height: 50px; border-radius: 50%; /* Ensure square dimensions for perfect circle */
       border: 2px solid var(--neo-blue); opacity: 0;
       box-shadow: 0 0 10px var(--neo-blue);
       animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
@@ -614,11 +615,7 @@
     }
     .dropdown-link:hover { background: var(--neo-card-hover); color: var(--neo-text-main); border-left-color: var(--neo-blue); padding-left: 16px; }
 
-    .spinner {
-      width: 14px; height: 14px; border: 2px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--neo-red); border-radius: 50%; animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
 
     pre#jsonOutput {
       background: var(--neo-input); color: var(--neo-text-muted); font-family: var(--font-mono);
@@ -661,37 +658,39 @@
         </div>
 
         <div class="control-row-bottom">
-            <button id="startScanBtn" class="btn-dash btn-primary" style="min-width: 140px;">
-                <span class="material-symbols-outlined" style="font-size:1.1rem">bolt</span>
-                <span>INITIATE SCAN</span>
+            <button id="startScanBtn" class="btn-dash btn-primary" title="Start Full Audit Scan" style="min-width: 140px;">
+                <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+                <span class="button-text">START SCAN</span>
                 <span class="spinner hidden"></span>
             </button>
 
             <div style="display: flex; gap: 0.5rem; align-items: center;">
                 <select id="profileSelect" style="display: none;">
-                    <option value="full_audit">Full Kill Chain (Recommended)</option>
-                    <option value="recon_only">Reconnaissance Only</option>
-                    <option value="web_audit">Web Application Audit</option>
-                    <option value="network_audit">Network Infrastructure Audit</option>
+                    <option value="Full Scan">Full Scan</option>
+                    <option value="Recon Only">Recon Only</option>
+                    <option value="Web Audit">Web Audit</option>
+                    <option value="Network Audit">Network Audit</option>
+                    <option value="Reconfigure">Reconfigure</option>
                 </select>
 
                 <div class="custom-select-wrapper" id="customProfileSelect" style="width: 180px;">
                     <div class="custom-select-trigger" style="height: 36px; font-size: 0.7rem; padding: 0 10px;">
-                        <span class="selected-text">Full Audit</span>
+                        <span class="selected-text">Full Scan</span>
                         <span class="material-symbols-outlined" style="font-size: 1rem;">expand_more</span>
                     </div>
                     <div class="custom-options">
-                        <div class="custom-option selected" data-value="full_audit">Full Audit</div>
-                        <div class="custom-option" data-value="recon_only">Recon Only</div>
-                        <div class="custom-option" data-value="web_audit">Web Audit</div>
-                        <div class="custom-option" data-value="network_audit">Network Audit</div>
+                        <div class="custom-option selected" data-value="Full Scan">Full Scan</div>
+                        <div class="custom-option" data-value="Recon Only">Recon Only</div>
+                        <div class="custom-option" data-value="Web Audit">Web Audit</div>
+                        <div class="custom-option" data-value="Network Audit">Network Audit</div>
+                        <div class="custom-option" data-value="Reconfigure">Reconfigure</div>
                     </div>
                 </div>
 
                 <select id="aggressionSelect" style="display: none;">
-                    <option value="normal">Normal</option>
-                    <option value="stealth">Stealth (Slow)</option>
-                    <option value="attack">Aggressive</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Stealth">Stealth</option>
+                    <option value="Attack">Attack</option>
                 </select>
 
                 <div class="custom-select-wrapper" id="customAggressionSelect" style="width: 120px;">
@@ -700,9 +699,9 @@
                         <span class="material-symbols-outlined" style="font-size: 1rem;">expand_more</span>
                     </div>
                     <div class="custom-options">
-                        <div class="custom-option selected" data-value="normal">Normal</div>
-                        <div class="custom-option" data-value="stealth">Stealth</div>
-                        <div class="custom-option" data-value="attack">Attack</div>
+                        <div class="custom-option selected" data-value="Normal">Normal</div>
+                        <div class="custom-option" data-value="Stealth">Stealth</div>
+                        <div class="custom-option" data-value="Attack">Aggressive</div>
                     </div>
                 </div>
             </div>
@@ -835,9 +834,9 @@
                             <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
                             Local LLM
                         </a>
-                        <a href="#" data-llm-mode="gemini" class="dropdown-link">
+                        <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
                              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">auto_awesome</span>
-                            Gemini AI
+                            Gemini 2.5 Flash
                         </a>
                     </div>
                 </div>
@@ -878,7 +877,6 @@
 
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='js/killchain.js') }}"></script>
-<meta name="csrf-token" content="{{ csrf_token() }}">
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         

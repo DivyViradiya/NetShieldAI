@@ -274,7 +274,7 @@
     /* --- LAYOUT GRIDS --- */
     .scan-overview-grid {
       display: grid;
-      grid-template-columns: 2fr 3fr; 
+      grid-template-columns: 1fr 1fr; 
       gap: 1.5rem;
       margin-bottom: 0.5rem;
       width: 100%;
@@ -650,12 +650,7 @@
       padding: 1rem; white-space: pre-wrap; overflow: auto; height: 100%;
     }
     
-    .spinner {
-      width: 14px; height: 14px; border: 2px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--neo-blue); border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
 
     /* Responsive */
     @media (max-width: 1200px) {
@@ -696,11 +691,56 @@
         </div>
 
         <div class="control-row-bottom">
-            <button id="startScanBtn" class="btn-dash btn-primary" style="min-width: 140px;">
-                <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
-                <span class="button-text">START SCAN</span>
-                <span class="spinner hidden"></span>
-            </button>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="startScanBtn" class="btn-dash btn-primary" title="Start Web App Scan" style="min-width: 140px;">
+                    <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+                    <span class="button-text">START SCAN</span>
+                    <span class="spinner hidden"></span>
+                </button>
+
+                <!-- Scan Options Dropdown -->
+                <div class="relative">
+                    <button id="scanOptionsBtn" class="btn-dash btn-secondary" title="Scan Options">
+                        <span class="material-symbols-outlined" style="font-size:1.1rem">settings</span>
+                    </button>
+                    
+                    <div id="scanOptionsDropdown" class="hidden absolute top-full left-0 mt-2 custom-dropdown" style="min-width: 380px; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
+                        <div>
+                            <label style="font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; display: block; letter-spacing: 0.05em;">Scan Mode</label>
+                            <select id="scanMode" class="dash-input" style="padding-left: 12px; height: 38px; border-radius: 4px; width: 100%;">
+                                <option value="Quick Scan">Quick Scan (Recommended)</option>
+                                <option value="Full Scan">Full Active Scan (Aggressive)</option>
+                                <option value="Spider Only">Spider Only (Discovery)</option>
+                                <option value="Passive Only">Passive Only (Non-Intrusive)</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; align-items: center; justify-content: space-between; background: var(--neo-bg); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--neo-border);">
+                            <label style="font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">AJAX Spider (SPA Support)</label>
+                            <input type="checkbox" id="useAjax" style="cursor: pointer; width: 16px; height: 16px;" />
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid var(--neo-border); margin: 4px 0;" />
+
+                        <div id="authConfigArea">
+                            <label style="font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 10px; display: block; letter-spacing: 0.05em;">Authenticated Scan (Form-Based)</label>
+                            <div class="flex flex-col gap-3">
+                                <div class="relative">
+                                    <input type="url" id="loginUrl" class="dash-input" placeholder="LOGIN URL (e.g. http://target.com/login)" style="padding-left: 12px; height: 36px; font-size: 0.75rem;" />
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="text" id="userField" class="dash-input" placeholder="USER FIELD NAME" style="padding-left: 10px; height: 36px; font-size: 0.7rem; flex: 1;" />
+                                    <input type="text" id="passField" class="dash-input" placeholder="PASS FIELD NAME" style="padding-left: 10px; height: 36px; font-size: 0.7rem; flex: 1;" />
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="text" id="username" class="dash-input" placeholder="USERNAME" style="padding-left: 10px; height: 36px; font-size: 0.7rem; flex: 1;" />
+                                    <input type="password" id="password" class="dash-input" placeholder="PASSWORD" style="padding-left: 10px; height: 36px; font-size: 0.7rem; flex: 1;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono); display: flex; align-items: center; gap: 12px;">
                 <div style="display: flex; align-items: center;">
@@ -814,9 +854,9 @@
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
                   Local LLM
                 </a>
-                <a href="#" data-llm-mode="gemini" class="dropdown-link">
+                <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">auto_awesome</span>
-                  Gemini AI
+                  Gemini 2.5 Flash
                 </a>
               </div>
             </div>

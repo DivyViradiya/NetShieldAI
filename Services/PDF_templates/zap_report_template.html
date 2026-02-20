@@ -252,12 +252,12 @@
             <span>{{ data.target_url | default('N/A') }}</span>
         </div>
         <div class="info-box">
-            <strong>Scan Date</strong>
-            <span>{{ data.scan_date | default('N/A') }}</span>
+            <strong>Scan Configuration</strong>
+            <span>{{ data.scan_mode | default('Quick Scan') }} {% if data.use_ajax %}(AJAX Enabled){% endif %}</span>
         </div>
         <div class="info-box">
-            <strong>Engine</strong>
-            <span>OWASP ZAP 2.15+</span>
+            <strong>Scan Date</strong>
+            <span>{{ data.scan_date | default('N/A') }}</span>
         </div>
     </div>
 
@@ -333,6 +333,27 @@
                 <div class="finding-text-block">
                     <strong style="font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-sub);">References</strong>
                     <div style="font-size: 0.7rem; color: var(--neo-text-sub); margin-top: 5px;">{{ finding.reference | safe }}</div>
+                </div>
+                {% endif %}
+
+                {# Detailed Evidence for High Risk Findings #}
+                {% if risk == 'high' and finding.evidence %}
+                <div class="finding-text-block" style="background: #fff5f5; border-top: 1px dashed #feb2b2; margin-top: 10px; padding-top: 10px;">
+                    <strong style="font-size: 0.6rem; text-transform: uppercase; color: #c53030;">Evidence (Proof of Concept)</strong>
+                    
+                    {% if finding.evidence.request_header %}
+                    <div style="margin-top: 8px;">
+                        <span style="font-size: 0.55rem; font-weight: 700; color: #e53e3e;">HTTP Request</span>
+                        <div class="code-box" style="font-size: 0.65rem; max-height: 150px; overflow: hidden; border-color: #feb2b2;">{{ finding.evidence.request_header }}{{ finding.evidence.request_body }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if finding.evidence.response_header %}
+                    <div style="margin-top: 8px;">
+                        <span style="font-size: 0.55rem; font-weight: 700; color: #e53e3e;">HTTP Response</span>
+                        <div class="code-box" style="font-size: 0.65rem; max-height: 150px; overflow: hidden; border-color: #feb2b2;">{{ finding.evidence.response_header }}{{ finding.evidence.response_body }}</div>
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>

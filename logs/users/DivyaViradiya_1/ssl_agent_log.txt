@@ -191,3 +191,110 @@ Not valid after:  [92mApr 20 08:39:19 2026 GMT[0m
 [2026-02-15 13:50:55] [+] SSL JSON report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\ssl_scanner\ssl_report.json
 [2026-02-15 13:50:55] [+] SSL scan complete. Generating PDF report...
 [2026-02-15 13:51:00] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\ssl_scanner\ssl_report.pdf
+[2026-02-17 20:15:13] [*] Starting SSL scan for google.com (User: DivyaViradiya_1)...
+[2026-02-17 20:15:13] [!] SSL scan failed for google.com.
+[2026-02-18 10:02:41] [*] Starting SSL scan for google.com (User: DivyaViradiya_1)...
+[2026-02-18 10:02:41] [!] SSL scan failed for google.com.
+[2026-02-18 10:05:45] [*] Starting SSL scan for example.com (User: DivyaViradiya_1)...
+[2026-02-18 10:05:45] [+] Running local SSL scan on example.com...
+[2026-02-18 10:05:45] [*] Executing command: C:\Program Files\sslscan\sslscan.exe --xml=D:\NetShield\NetShieldAI\Services\temp\sslscan\ssl_temp_DivyaViradiya_1_ceef81b0.xml --show-client-cas --show-cipher-ids --show-signatures example.com
+[2026-02-18 10:05:45] [!] An unexpected error occurred during SSL scan: name 'time' is not defined
+[2026-02-18 10:05:45] [!] SSL scan failed for example.com.
+[2026-02-18 10:06:23] [*] Starting SSL scan for example.com (User: DivyaViradiya_1)...
+[2026-02-18 10:06:23] [+] Running local SSL scan on example.com...
+[2026-02-18 10:06:23] [*] Executing command: C:\Program Files\sslscan\sslscan.exe --xml=D:\NetShield\NetShieldAI\Services\temp\sslscan\ssl_temp_DivyaViradiya_1_428ba3f2.xml --show-client-cas --show-cipher-ids --show-signatures example.com
+[2026-02-18 10:06:24] [SSLScan] Version: [92m2.2.0 Windows 64-bit (Mingw)[0m
+[2026-02-18 10:06:24] [SSLScan] OpenSSL 3.5.0 8 Apr 2025
+[2026-02-18 10:06:24] [SSLScan] [0m
+[2026-02-18 10:06:24] [SSLScan] [92mConnected to 104.18.26.120[0m
+[2026-02-18 10:06:24] [SSLScan] 
+[2026-02-18 10:06:24] [SSLScan] Testing SSL server [92mexample.com[0m on port [92m443[0m using SNI name [92mexample.com[0m
+[2026-02-18 10:06:24] [SSLScan] 
+[2026-02-18 10:06:24] [SSLScan] [1;36mSSL/TLS Protocols:[0m
+[2026-02-18 10:06:24] [SSLScan] SSLv2     [92mdisabled[0m
+[2026-02-18 10:06:24] [SSLScan] SSLv3     [92mdisabled[0m
+[2026-02-18 10:06:24] [SSLScan] TLSv1.0   [93menabled[0m
+[2026-02-18 10:06:24] [SSLScan] TLSv1.1   [93menabled[0m
+[2026-02-18 10:06:24] [SSLScan] TLSv1.2   enabled
+[2026-02-18 10:06:24] [SSLScan] TLSv1.3   [92menabled[0m
+[2026-02-18 10:06:24] [SSLScan] 
+[2026-02-18 10:06:24] [SSLScan] [1;36mTLS Fallback SCSV:[0m
+[2026-02-18 10:06:24] [SSLScan] Server [92msupports[0m TLS Fallback SCSV
+[2026-02-18 10:06:24] [SSLScan] 
+[2026-02-18 10:06:24] [SSLScan] [1;36mTLS renegotiation:[0m
+[2026-02-18 10:06:24] [SSLScan] [92mSecure[0m session renegotiation supported
+[2026-02-18 10:06:24] [SSLScan] 
+[2026-02-18 10:06:24] [SSLScan] [1;36mTLS Compression:[0m
+[2026-02-18 10:06:24] [SSLScan] Compression [92mdisabled[0m
+[2026-02-18 10:06:24] [SSLScan] 
+[2026-02-18 10:06:24] [SSLScan] [1;36mHeartbleed:[0m
+[2026-02-18 10:06:24] [SSLScan] TLSv1.3 [92mnot vulnerable[0m to heartbleed
+[2026-02-18 10:06:24] [SSLScan] TLSv1.2 [92mnot vulnerable[0m to heartbleed
+[2026-02-18 10:06:24] [SSLScan] TLSv1.1 [92mnot vulnerable[0m to heartbleed
+[2026-02-18 10:06:24] [SSLScan] TLSv1.0 [92mnot vulnerable[0m to heartbleed
+[2026-02-18 10:06:24] [SSLScan] 
+[2026-02-18 10:06:24] [SSLScan] [1;36mSupported Server Cipher(s):[0m
+[2026-02-18 10:06:24] [SSLScan] [92mPreferred[0m [92mTLSv1.3[0m  [92m128[0m bits    0x1301 [92mTLS_AES_128_GCM_SHA256       [0m
+[2026-02-18 10:06:24] [SSLScan] Accepted  [92mTLSv1.3[0m  [92m256[0m bits    0x1302 [92mTLS_AES_256_GCM_SHA384       [0m
+[2026-02-18 10:06:24] [SSLScan] Accepted  [92mTLSv1.3[0m  [92m256[0m bits    0x1303 [92mTLS_CHACHA20_POLY1305_SHA256 [0m
+[2026-02-18 10:06:24] [SSLScan] [92mPreferred[0m TLSv1.2  [92m256[0m bits    0xCCA9 [92mECDHE-ECDSA-CHACHA20-POLY1305[0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m128[0m bits    0xC02B [92mECDHE-ECDSA-AES128-GCM-SHA256[0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m128[0m bits    0xC009 [93mECDHE-ECDSA-AES128-SHA       [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0xC02C [92mECDHE-ECDSA-AES256-GCM-SHA384[0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0xC00A [93mECDHE-ECDSA-AES256-SHA       [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m128[0m bits    0xC023 ECDHE-ECDSA-AES128-SHA256     Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0xC024 ECDHE-ECDSA-AES256-SHA384     Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0xCCA8 [92mECDHE-RSA-CHACHA20-POLY1305  [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m128[0m bits    0xC02F [92mECDHE-RSA-AES128-GCM-SHA256  [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m128[0m bits    0x009C AES128-GCM-SHA256
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0xC030 [92mECDHE-RSA-AES256-GCM-SHA384  [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0x009D AES256-GCM-SHA384
+[2026-02-18 10:06:24] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+[2026-02-18 10:06:25] [SSLScan] Accepted  TLSv1.2  [92m128[0m bits    0xC027 ECDHE-RSA-AES128-SHA256       Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:25] [SSLScan] Accepted  TLSv1.2  [92m128[0m bits    0x003C AES128-SHA256
+[2026-02-18 10:06:25] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0xC028 ECDHE-RSA-AES256-SHA384       Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:25] [SSLScan] Accepted  TLSv1.2  [92m256[0m bits    0x003D AES256-SHA256
+[2026-02-18 10:06:25] [SSLScan] [92mPreferred[0m [93mTLSv1.1[0m  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:25] [SSLScan] Accepted  [93mTLSv1.1[0m  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+[2026-02-18 10:06:25] [SSLScan] Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:25] [SSLScan] Accepted  [93mTLSv1.1[0m  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+[2026-02-18 10:06:25] [SSLScan] [92mPreferred[0m [93mTLSv1.0[0m  [92m128[0m bits    0xC013 [93mECDHE-RSA-AES128-SHA         [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:25] [SSLScan] Accepted  [93mTLSv1.0[0m  [92m128[0m bits    0x002F [93mAES128-SHA                   [0m
+[2026-02-18 10:06:25] [SSLScan] Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0xC014 [93mECDHE-RSA-AES256-SHA         [0m Curve [92m25519[0m DHE 253
+[2026-02-18 10:06:25] [SSLScan] Accepted  [93mTLSv1.0[0m  [92m256[0m bits    0x0035 [93mAES256-SHA                   [0m
+[2026-02-18 10:06:26] [SSLScan] Accepted  [93mTLSv1.0[0m  [93m112[0m bits    0x000A [93mDES-CBC3-SHA                 [0m
+[2026-02-18 10:06:26] [SSLScan] 
+[2026-02-18 10:06:26] [SSLScan] [1;36mServer Key Exchange Group(s):[0m
+[2026-02-18 10:06:26] [SSLScan] TLSv1.3  [92m128[0m bits  secp256r1 (NIST P-256)[0m
+[2026-02-18 10:06:26] [SSLScan] TLSv1.3  [92m192[0m bits  secp384r1 (NIST P-384)[0m
+[2026-02-18 10:06:26] [SSLScan] TLSv1.3  [92m260[0m bits  secp521r1 (NIST P-521)[0m
+[2026-02-18 10:06:26] [SSLScan] TLSv1.3  [92m128[0m bits  [92mx25519[0m
+[2026-02-18 10:06:27] [SSLScan] TLSv1.3  [92m192[0m bits  [92mX25519MLKEM768[0m
+[2026-02-18 10:06:27] [SSLScan] TLSv1.2  [92m128[0m bits  secp256r1 (NIST P-256)[0m
+[2026-02-18 10:06:27] [SSLScan] TLSv1.2  [92m192[0m bits  secp384r1 (NIST P-384)[0m
+[2026-02-18 10:06:27] [SSLScan] TLSv1.2  [92m260[0m bits  secp521r1 (NIST P-521)[0m
+[2026-02-18 10:06:27] [SSLScan] TLSv1.2  [92m128[0m bits  [92mx25519[0m
+[2026-02-18 10:06:27] [SSLScan] 
+[2026-02-18 10:06:27] [SSLScan] [1;36mSSL Certificate:[0m
+[2026-02-18 10:06:27] [SSLScan] Signature Algorithm: ecdsa-with-SHA256
+[2026-02-18 10:06:27] [SSLScan] ECC Curve Name:      prime256v1
+[2026-02-18 10:06:27] [SSLScan] ECC Key Strength:    128[0m
+[2026-02-18 10:06:27] [SSLScan] 
+[2026-02-18 10:06:27] [SSLScan] Subject:  example.com
+[2026-02-18 10:06:27] [SSLScan] Altnames: DNS:example.com, DNS:*.example.com
+[2026-02-18 10:06:27] [SSLScan] Issuer:   Cloudflare TLS Issuing ECC CA 3
+[2026-02-18 10:06:27] [SSLScan] 
+[2026-02-18 10:06:27] [SSLScan] Not valid before: [92mFeb 13 18:53:48 2026 GMT[0m
+[2026-02-18 10:06:27] [SSLScan] Not valid after:  [92mMay 14 18:57:50 2026 GMT[0m
+[2026-02-18 10:06:27] [SSLScan] 
+[2026-02-18 10:06:27] [SSLScan] [1;36mAcceptable client certificate CA names:[0m
+[2026-02-18 10:06:27] [SSLScan] [93mNone defined (any)[0m
+[2026-02-18 10:06:28] [+] SSL scan complete. Report synchronized.
+[2026-02-18 10:06:28] [+] SSLScan report parsed successfully.
+[2026-02-18 10:06:28] [+] SSL JSON report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\ssl_scanner\ssl_report.json
+[2026-02-18 10:06:28] [+] SSL scan complete. Generating PDF report for example.com...
+[2026-02-18 10:06:31] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\ssl_scanner\ssl_report_example_com.pdf
+[2026-02-18 10:06:31] SYSTEM_EVENT: READY_FOR_ANALYSIS:example.com

@@ -27,11 +27,6 @@ from Services import scan_logger
 
 sql_scanner_bp = Blueprint('sql_scanner_bp', __name__)
 
-# --- GLOBAL LOCK STATE ---
-# Track active scans per user to prevent concurrent conflicting processes
-active_user_scans = set()
-scan_lock = threading.Lock()
-
 # --- PHASE 3: User-Specific Directory Helper ---
 def get_user_results_dir():
     """
@@ -84,6 +79,19 @@ def scan_sql():
     if not target_url.startswith(('http://', 'https://')):
         return jsonify({"status": "error", "message": "Invalid URL. Must start with http:// or https://"}), 400
 
+    # Capture User Info for Logging
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_id = current_user.id # Capture ID for the thread
+    app = current_app._get_current_object()
+
+    # [NEW] Prevent Multiple Concurrent Scans for the same user
+    if sql_scanner.is_scan_running(current_user_identifier):
+        logger.warning(f"[!] SQL Scan already in progress for user {current_user_identifier}")
+        return jsonify({
+            "status": "error", 
+            "message": "An SQL injection scan is already in progress. Please wait for it to complete."
+        }), 400
+
     # Check if SQLMap is configured correctly
     if not os.path.exists(sql_scanner.SQLMAP_PATH):
         sql_scanner.log("[!] SQLMap script not found. Cannot perform scan.")
@@ -91,23 +99,9 @@ def scan_sql():
             "status": "error",
             "message": "SQLMap not found. Please check server configuration."
         }), 500
-    
-    # --- CONCURRENCY CHECK ---
-    with scan_lock:
-        if current_user.id in active_user_scans:
-            return jsonify({
-                "status": "error",
-                "message": "A scan is already in progress. Please wait for it to complete."
-            }), 429
-        active_user_scans.add(current_user.id)
 
     # Determine User Directory for this scan
     user_base_dir = get_user_results_dir()
-
-    # Capture User Info for Logging
-    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    user_id = current_user.id # Capture ID for the thread
-    app = current_app._get_current_object()
 
     # [NEW] Increment Database Counter for Stats
     try:
@@ -118,10 +112,25 @@ def scan_sql():
     except Exception as e:
         sql_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
+    # [NEW] Reset Log File for this new scan session
+    scan_logger.reset_log_file(current_user_identifier, "sql")
+
     # Function to run in a separate thread
     def scan_task():
         try:
+            # Use DB Logging
+            with app.app_context():
+                log_id = scan_logger.log_scan_start(
+                    user_id=user_id,
+                    tool_name="SQLMap",
+                    target=target_url,
+                    scan_type=f"{scan_mode.title()} Mode"
+                )
+
             sql_scanner.log(f"[*] Starting {scan_mode.upper()} SQL scan for {target_url} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
+            
+            sanitized_target = scan_logger.sanitize_filename(target_url)
+            target_pdf_filename = f"sql_report_{sanitized_target}.pdf"
             
             start_time = time.time()
             
@@ -148,12 +157,12 @@ def scan_sql():
                 except:
                     pass
 
-                sql_scanner.log(f"[+] SQL scan complete. Generating PDF report...", current_user_identifier, to_console=True)
+                sql_scanner.log(f"[+] SQL scan complete. Generating PDF report for {target_url}...", current_user_identifier, to_console=True)
                 
                 # 2. Generate PDF Report
                 try:
                     # PDF path is now directly in user_base_dir
-                    pdf_path = os.path.join(user_base_dir, PDF_FILENAME)
+                    pdf_path = os.path.join(user_base_dir, target_pdf_filename)
                     
                     # Check if the PDF generator has the SQL function implemented
                     if hasattr(pdf_generator, 'create_sql_report_pdf'):
@@ -162,8 +171,8 @@ def scan_sql():
                         if os.path.exists(pdf_path):
                             # Final synchronization wait
                             time.sleep(1.5)
-                            sql_scanner.log(f"[+] PDF report generated and updated in user dashboard: {pdf_path}", current_user_identifier, to_console=True)
-                            sql_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", current_user_identifier, to_console=True)
+                            sql_scanner.log(f"[+] PDF report generated and updated in user dashboard", current_user_identifier, to_console=True)
+                            sql_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_url}", current_user_identifier, to_console=True)
                         else:
                             sql_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier, to_console=True)
                     else:
@@ -176,26 +185,49 @@ def scan_sql():
             
             # Log to Database (Inside App Context)
             with app.app_context():
-                scan_logger.create_full_scan_log(
-                    user_id=user_id,
-                    tool_name="SQLMap",
-                    target=target_url,
-                    duration=duration,
-                    finding_count=finding_count,
-                    status=status,
-                    scan_type=f"{scan_mode.title()} Mode"
-                )
+                # [FIXED] Pass error msg on failure
+                error_msg = None if status == "Completed" else "SQLMap failed to complete."
+                scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, error_msg=error_msg)
         
         except Exception as e:
              sql_scanner.log(f"[!] Unexpected error in scan thread: {str(e)}", current_user_identifier)
 
         finally:
             # RELEASE LOCK
-            with scan_lock:
-                active_user_scans.discard(user_id)
+            with sql_scanner.scan_lock:
+                 if current_user_identifier in sql_scanner.active_scans:
+                     del sql_scanner.active_scans[current_user_identifier]
 
     threading.Thread(target=scan_task).start()
     return jsonify({"status": "success", "message": f"SQL scan for {target_url} initiated."})
+
+@sql_scanner_bp.route('/check_active_scan', methods=['GET'])
+@login_required
+def check_active_scan():
+    """
+    Checks if there's an active scan running for the current user's session.
+    Prioritizes DB state (SSOT).
+    """
+    # 1. CHECK DB (Primary Source of Truth)
+    active_log = scan_logger.get_active_scan_log(current_user.id, "SQLMap")
+    
+    if active_log:
+        return jsonify({
+            "status": "active",
+            "message": "Active scan found (DB)",
+            "target": active_log.target,
+            "scan_id": active_log.id
+        }), 200
+
+    # 2. Fallback: Check Memory
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    if sql_scanner.is_scan_running(current_user_identifier):
+         return jsonify({
+            "status": "active",
+            "message": "Active scan found (Memory)"
+        }), 200
+
+    return jsonify({"status": "inactive", "message": "No active scan found"}), 200
 
 @sql_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
@@ -203,9 +235,18 @@ def trigger_ai_analysis_route():
     """
     Checks if PDF exists and returns scanner type for the AI Chatbot.
     """
+    data = request.get_json() or {}
+    target = data.get('target')
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
-    pdf_path = os.path.join(user_dir, PDF_FILENAME)
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"sql_report_{sanitized}.pdf"
+    else:
+        pdf_filename = PDF_FILENAME
+
+    pdf_path = os.path.join(user_dir, pdf_filename)
 
     if not os.path.exists(pdf_path):
         sql_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}", user_identifier)
@@ -216,22 +257,29 @@ def trigger_ai_analysis_route():
 
     return jsonify({
         "status": "success",
-        "scanner_type": "sql" 
+        "scanner_type": "sql",
+        "target": target
     })
 
 @sql_scanner_bp.route('/report_files', methods=['GET'])
 @login_required
 def get_report_files():
     """Checks availability of reports to enable the download button."""
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
     
     # We use the helper from the service to get standard paths
     paths = sql_scanner.get_output_paths(user_dir)
     json_path = paths["json_report"]
-    pdf_path = paths["pdf_report"]
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"sql_report_{sanitized}.pdf"
+    else:
+        pdf_filename = PDF_FILENAME
 
     json_exists = json_path.exists()
-    pdf_exists = pdf_path.exists()
+    pdf_exists = os.path.exists(os.path.join(user_dir, pdf_filename))
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
@@ -239,23 +287,30 @@ def get_report_files():
     return jsonify({
         "status": "success",
         "json_report": "/sql_scanner/get_json_report" if json_exists else None,
-        "pdf_report": "/sql_scanner/download_pdf" if pdf_exists else None
+        "pdf_report": f"/sql_scanner/download_pdf?target={target}" if pdf_exists else None
     })
 
 @sql_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
     """Serves the PDF report dynamically."""
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = sql_scanner.get_output_paths(user_dir)
-    pdf_path = paths["pdf_report"]
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"sql_report_{sanitized}.pdf"
+    else:
+        pdf_filename = PDF_FILENAME
 
-    if not pdf_path.exists():
+    pdf_path = os.path.join(user_dir, pdf_filename)
+
+    if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
     
     return send_from_directory(
-        directory=str(pdf_path.parent),
-        path=pdf_path.name,
+        directory=user_dir,
+        path=pdf_filename,
         as_attachment=True
     )
 
@@ -322,18 +377,7 @@ def clear_sql_log_route():
 def sql_log_stream():
     """Server-Sent Events (SSE) endpoint to stream SQL scanner log messages."""
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    def generate_logs():
-        user_queue = sql_scanner.get_user_queue(user_identifier)
-        while True:
-            try:
-                message = user_queue.get(timeout=10)
-                if message == ': keep-alive':
-                    yield f"{message}\n\n"
-                else:
-                    yield f"data: {message}\n\n"
-            except Empty:
-                yield ": keep-alive\n\n"
-            except GeneratorExit:
-                break
-
-    return Response(generate_logs(), mimetype='text/event-stream')
+    return Response(
+        scan_logger.tail_log_file(user_identifier, "sql"),
+        mimetype='text/event-stream'
+    )

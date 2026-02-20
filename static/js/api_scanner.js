@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- DOM Elements ---
     const targetUrlInput = document.getElementById('targetUrl');
-    const definitionUrlInput = document.getElementById('definitionUrl'); // [NEW]
+    const definitionUrlInput = document.getElementById('definitionUrl'); 
+    const authTokenInput = document.getElementById('authToken'); // [NEW]
     const startScanBtn = document.getElementById('startScanBtn'); 
     
     const scanStatus = document.getElementById('scanStatus');
@@ -85,7 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "").trim();
+        // [UPDATED] Robust timestamp cleanup
+        let cleanedMessage = message.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*/, "").replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "").trim();
 
         // --- In-Place Update Logic for Progress Bars ---
         const isProgressBar = cleanedMessage.startsWith('[') && cleanedMessage.includes('%');
@@ -122,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Report & Button Management ---
     async function checkReportStatus() {
+        const target = targetUrlInput.value.trim();
         if (downloadPdfBtn) {
             downloadPdfBtn.disabled = true;
             downloadPdfBtn.style.opacity = '0.5';
@@ -132,14 +135,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch(REPORT_FILES_ENDPOINT);
+            const url = target ? `${REPORT_FILES_ENDPOINT}?target=${encodeURIComponent(target)}` : REPORT_FILES_ENDPOINT;
+            const response = await fetch(url);
             if (!response.ok) return;
             const data = await response.json();
     
             if (data.status === "success" && data.pdf_report) {
                 if (downloadPdfBtn) {
                     downloadPdfBtn.href = data.pdf_report; 
-                    downloadPdfBtn.setAttribute('download', 'api_security_report.pdf'); 
+                    downloadPdfBtn.setAttribute('download', `api_report_${target.replace(/[^a-z0-9]/gi, '_')}.pdf`); 
                     downloadPdfBtn.disabled = false;
                     downloadPdfBtn.style.opacity = '1';
                     
@@ -161,6 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- AI ANALYSIS ---
     async function analyzeReport(llmMode) {
         if (analyzeReportDropdown.disabled) return;
+        const target = targetUrlInput.value.trim();
+        
         if (!csrfToken) {
             appendLog('[!] Error: CSRF Token missing. Refresh page.');
             return;
@@ -170,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (aiProcessingOverlay) {
             aiProcessingOverlay.classList.remove('hidden');
             if (aiProcessingText) {
-                aiProcessingText.textContent = llmMode === 'gemini' 
+                aiProcessingText.textContent = llmMode.includes('gemini') 
                     ? 'CONTACTING GEMINI AI...' 
                     : 'LOADING LOCAL MODEL...';
             }
@@ -187,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken
                 },
-                body: JSON.stringify({ llm_mode: llmMode })
+                body: JSON.stringify({ llm_mode: llmMode, target: target })
             });
             let data = await response.json();
             
@@ -206,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ 
                     llm_mode: llmMode, 
                     scanner_type: "api",
+                    target: data.target,
                     force_new_session: true // [NEW] Force a fresh chat
                 })
             });
@@ -302,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleScanButtonClick() {
         const targetUrl = targetUrlInput.value.trim();
         const definitionUrl = definitionUrlInput.value.trim();
+        const authToken = authTokenInput ? authTokenInput.value.trim() : null;
 
         if (!targetUrl) {
             alert("Please enter the API Base URL.");
@@ -318,9 +326,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         toggleButtonLoading(startScanBtn, true);
-        updateScanStatus(`Scanning...`, 'busy');
+        const authMsg = authToken ? 'Authenticated' : 'Anonymous';
+        updateScanStatus(`Scanning (${authMsg})...`, 'busy');
         logOutput.innerHTML = ''; 
-        appendLog(`> Initiating API Scan on ${targetUrl}...`);
+        appendLog(`> Initiating API Scan on ${targetUrl} (${authMsg})...`);
         appendLog(`> Loading Definition: ${definitionUrl}`);
 
         try {
@@ -332,7 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ 
                     target_url: targetUrl,
-                    definition_url: definitionUrl
+                    definition_url: definitionUrl,
+                    auth_token: authToken
                 })
             });
             const data = await response.json();
@@ -353,13 +363,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const eventSource = new EventSource(LOG_STREAM_ENDPOINT);
         eventSource.onmessage = function(event) {
             if (event.data === ': keep-alive') return;
-            appendLog(event.data);
-            
+
             if (event.data.includes("Scan complete")) { // Matches "API Scan complete"
                 updateScanStatus('Complete', 'success');
                 toggleButtonLoading(startScanBtn, false);
                 fetchAndDisplayResults();
             }
+            
+            if (event.data.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
+                checkReportStatus();
+            }
+
+            if (event.data.includes("EVENT:") || event.data.startsWith("EVENT:")) return;
+            appendLog(event.data);
         };
     }
 
@@ -431,6 +447,5 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => appendLog('System Ready. Initializing API Security Scanner...'), 100);
     checkReportStatus();
     fetchAndDisplayResults();
-    checkScanStatus();
     setupLogStream();
 });

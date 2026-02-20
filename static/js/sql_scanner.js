@@ -162,27 +162,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        let contentStyle = 'color:var(--neo-text-muted)'; 
+        let contentStyle = 'color:#d4d4d8';
         
-        // Parse SQLMap specific logs for styling
-        if (message.includes('[!]') || message.includes('CRITICAL')) {
-            contentStyle = 'color:#ef4444'; // Red
-        } else if (message.includes('[+]') || message.includes('vulnerable')) {
-            contentStyle = 'color:#10b981'; // Green
-        } else if (message.includes('[*]') || message.includes('Testing')) {
-            contentStyle = 'color:#3b82f6'; // Blue
-        } else if (message.includes('[DATA]')) {
-            contentStyle = 'color:#f59e0b; font-weight:bold;'; // Orange for extracted data
-            message = message.replace('[DATA]', ''); // Clean tag
-        } else if (message.includes('[SQLMap]')) {
-             contentStyle = 'color:#64748b'; // Muted for generic SQLMap output
+        if (displayMessage.includes('[!]') || displayMessage.includes('Error')) {
+            contentStyle = 'color:#ef4444'; 
+        } else if (displayMessage.includes('[+]') || displayMessage.includes('Success')) {
+            contentStyle = 'color:#10b981'; 
+        } else if (displayMessage.includes('[*]')) {
+            contentStyle = 'color:#3b82f6'; 
         }
 
         const line = document.createElement('div');
         line.className = 'log-line';
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${message}</div>
+            <div class="log-content" style="${contentStyle}">${displayMessage}</div>
         `;
         
         elements.logOutput.appendChild(line);
@@ -357,8 +351,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function checkReportAvailability() {
+        const target = elements.targetUrlInput.value.trim();
         try {
-            const response = await fetch(`${API_BASE_URL}/report_files`);
+            const url = target ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report_files`;
+            const response = await fetch(url);
             if (response.ok) {
                 const data = await response.json();
                 if (data.status === 'success' && data.pdf_report) {
@@ -390,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const overlay = elements.aiProcessingOverlay;
         const processingText = elements.aiProcessingText;
         const llmOptions = elements.llmAnalysisOptions;
+        const target = elements.targetUrlInput.value.trim();
 
         if (!button || button.disabled) return;
         
@@ -397,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (overlay) overlay.classList.remove('hidden');
         
         if (processingText) {
-            processingText.textContent = llmMode === 'gemini' 
+            processingText.textContent = llmMode.includes('gemini') 
                 ? 'CONTACTING GEMINI...' 
                 : 'LOADING LOCAL MODEL...';
         }
@@ -412,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken 
                 },
-                body: JSON.stringify({ llm_mode: llmMode })
+                body: JSON.stringify({ llm_mode: llmMode, target: target })
             });
             let data = await response.json();
             
@@ -421,7 +418,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (processingText) processingText.textContent = 'SYNTHESIZING REPORT...';
 
             // 2. Call Chatbot Analysis
-            // FIXED: Passing report_file and user_identifier to ensure Chatbot can find the file
             response = await fetch(`${CHATBOT_REDIRECT_URL}/scanner_analysis`, {
                 method: 'POST',
                 headers: { 
@@ -431,8 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ 
                     llm_mode: llmMode, 
                     scanner_type: data.scanner_type,
-                    report_file: data.report_file,       // [ADDED] Filename
-                    user_identifier: data.user_identifier, // [ADDED] User folder ID
+                    target: data.target,
                     force_new_session: true // [NEW] Force a fresh chat
                 })
             });
@@ -492,7 +487,9 @@ document.addEventListener('DOMContentLoaded', () => {
         eventSource.onmessage = (event) => {
             const message = event.data;
             if (message.startsWith(':')) return; // Ignore keep-alive
-            appendLog(message);
+            if (message.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
+                checkReportAvailability();
+            }
 
             if (message.toLowerCase().includes("scan complete") || message.toLowerCase().includes("finished")) {
                 setStatus('Scan Complete', 'success');
@@ -500,6 +497,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     setButtonsDisabled(false); // UNLOCK UI
                 });
             }
+
+            if (message.includes("EVENT:") || message.startsWith("EVENT:")) return;
+            appendLog(message);
         };
         eventSource.onerror = () => {
             // console.warn('Log stream disconnected.');

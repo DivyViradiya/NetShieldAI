@@ -32,25 +32,25 @@
       --neo-text-tertiary: var(--text-muted);
       --neo-blue: #2563eb;
       --neo-violet: #7c3aed;
-      --neo-card-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      --neo-card-shadow: 0 4px 20px rgba(99, 102, 241, 0.06); /* Frosted indigo shadow */
     }
 
     body.light-mode .neo-card {
-      background: var(--surface-primary);
+      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%); /* Ice-blue wash */
       border: 1px solid var(--border-default);
       box-shadow: var(--neo-card-shadow);
     }
     body.light-mode .neo-card:hover { 
-      border-color: var(--text-muted); 
-      background: var(--bg-secondary);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      border-color: rgba(99, 102, 241, 0.3); /* Indigo-tinted border */
+      background: linear-gradient(135deg, #ffffff 0%, #e8edff 100%);
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1); /* Deeper indigo glow */
     }
     body.light-mode .card-icon-box {
       background: var(--bg-secondary);
       border-color: var(--border-default);
     }
     body.light-mode .status-badge {
-      background: rgba(0,0,0,0.03);
+      background: rgba(99, 102, 241, 0.04); /* Match indigo tint */
       border-color: var(--border-subtle);
     }
 

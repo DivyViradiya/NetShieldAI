@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
 
   let currentScanId = null;
+  let currentQueueId = null; // New state variable for queue ID
   let eventSource = null;
   let isScanning = false;
 
@@ -43,6 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
     reconTableBody: document.getElementById("reconTableBody"),
     networkTableBody: document.getElementById("networkTableBody"),
     techStackContainer: document.getElementById("techStackContainer"),
+    
+    // Custom dropdowns for Profiles
+    customProfileSelectTrigger: document.querySelector('#customProfileSelect .custom-select-trigger .selected-text'),
+    customAggressionSelectTrigger: document.querySelector('#customAggressionSelect .custom-select-trigger .selected-text'),
   };
 
   // --- UI HELPERS ---
@@ -66,19 +71,58 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function toggleButtons(enabled) {
-    const opacity = enabled ? "1" : "0.7";
-    const cursor = enabled ? "pointer" : "not-allowed";
+  function toggleButtons(scanActive) {
+    els.startBtn.disabled = scanActive;
+    if (scanActive) {
+      els.startBtn.querySelector(".spinner").classList.remove("hidden");
+    } else {
+      els.startBtn.querySelector(".spinner").classList.add("hidden");
+    }
+
+    // Report/AI/Download buttons are enabled if scan is NOT active AND a report (currentScanId) exists
+    const reportButtonsEnabled = !scanActive && currentScanId !== null;
+    const opacity = reportButtonsEnabled ? "1" : "0.7";
+    const cursor = reportButtonsEnabled ? "pointer" : "not-allowed";
 
     [els.aiAnalysisDropdown, els.downloadPdfBtn, els.copyJsonBtn].forEach(
       (btn) => {
         if (btn) {
-          btn.disabled = !enabled;
+          btn.disabled = !reportButtonsEnabled;
           btn.style.opacity = opacity;
           btn.style.cursor = cursor;
         }
       }
     );
+  }
+
+  // Helper to select option in custom dropdown
+  function setSelectedOption(wrapperId, hiddenSelectId, valueToSelect) {
+    const wrapper = document.getElementById(wrapperId);
+    const hiddenSelect = document.getElementById(hiddenSelectId);
+    if (!wrapper || !hiddenSelect) return;
+
+    const options = wrapper.querySelectorAll('.custom-option');
+    const selectedTextSpan = wrapper.querySelector('.selected-text');
+
+    let found = false;
+    options.forEach(option => {
+      if (option.getAttribute('data-value') === valueToSelect) {
+        option.classList.add('selected');
+        selectedTextSpan.textContent = option.textContent;
+        hiddenSelect.value = valueToSelect; // Update hidden select
+        found = true;
+      } else {
+        option.classList.remove('selected');
+      }
+    });
+
+    if (!found) { // If valueToSelect isn't found in options, fallback to first option
+      if (options.length > 0) {
+        options[0].classList.add('selected');
+        selectedTextSpan.textContent = options[0].textContent;
+        hiddenSelect.value = options[0].getAttribute('data-value');
+      }
+    }
   }
 
   // --- LOGGING LOGIC ---
@@ -145,30 +189,6 @@ document.addEventListener("DOMContentLoaded", () => {
     els.logOutput.scrollTop = els.logOutput.scrollHeight;
   }
 
-  // --- HISTORY LOADING ---
-  async function loadHistory() {
-    if (isScanning) return;
-
-    try {
-      const res = await fetch(`${API_BASE}/history`);
-      const data = await res.json();
-
-      if (data.status === "success" && data.scans && data.scans.length > 0) {
-        const lastScan = data.scans[0];
-        currentScanId = lastScan.scan_id;
-
-        appendLog(`[SYSTEM] Restoring last scan on ${lastScan.target} (${lastScan.date})`);
-        if (els.targetInput) els.targetInput.value = lastScan.target;
-        
-        fetchReportData();
-        updateStatus("History Loaded", "success");
-        updateProgress(100, "Scan Complete");
-      }
-    } catch (e) {
-      console.error("Failed to load history", e);
-    }
-  }
-
   // --- MAIN SCANNING LOGIC ---
   async function startScan() {
     if (isScanning) return;
@@ -180,9 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     isScanning = true;
-    els.startBtn.disabled = true;
-    els.startBtn.querySelector(".spinner").classList.remove("hidden");
-    toggleButtons(false);
+    toggleButtons(true); // Disable start button, enable spinner, disable report/AI buttons initially
 
     // Reset Tables (Updated empty message styling)
     const emptyState = (msg) =>
@@ -215,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (data.status === "success") {
         currentScanId = data.scan_id;
+        currentQueueId = data.queue_id; // Store queue ID
         initLogStream(data.queue_id);
       } else {
         throw new Error(data.message);
@@ -222,20 +241,30 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (e) {
       appendLog(`[frontend] ERROR: Failed to start scan: ${e.message}`);
       isScanning = false;
-      els.startBtn.disabled = false;
-      els.startBtn.querySelector(".spinner").classList.add("hidden");
+      toggleButtons(false); // Re-enable start button, disable report buttons
       updateStatus("Failed", "error");
     }
   }
 
   function initLogStream(queueId) {
-    if (eventSource) eventSource.close();
+    if (eventSource) eventSource.close(); // Close any existing connection
+
+    // Only establish EventSource if queueId is valid
+    if (!queueId) {
+        appendLog("[frontend] Error: Invalid queue ID for log stream.");
+        return;
+    }
+    
     eventSource = new EventSource(`${API_BASE}/log_stream?queue_id=${queueId}`);
 
     eventSource.onmessage = (e) => {
       const msg = e.data;
       if (msg.startsWith(":")) return; 
       appendLog(msg);
+
+      if (msg.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
+          fetchReportData();
+      }
     };
 
     eventSource.addEventListener("progress_update", (e) => {
@@ -251,8 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
       appendLog("[SYSTEM] Scan Finished. Fetching report...");
       eventSource.close();
       isScanning = false;
-      els.startBtn.disabled = false;
-      els.startBtn.querySelector(".spinner").classList.add("hidden");
+      toggleButtons(false); // Enable report buttons, disable start button
       updateStatus("Complete", "success");
       updateProgress(100, "Done");
       fetchReportData();
@@ -263,29 +291,82 @@ document.addEventListener("DOMContentLoaded", () => {
       appendLog(`[ERROR] Scan Aborted: ${data.message}`);
       eventSource.close();
       isScanning = false;
-      els.startBtn.disabled = false;
-      els.startBtn.querySelector(".spinner").classList.add("hidden");
+      toggleButtons(false); // Enable start button, disable report buttons
       updateStatus("Error", "error");
     });
+    
+    eventSource.onerror = (err) => {
+        console.error("EventSource failed:", err);
+        // Attempt to reconnect after a delay, but not if scan is complete/failed
+        if (isScanning && eventSource.readyState === EventSource.CONNECTING) { // Only try to reconnect if connecting
+            appendLog("[SYSTEM] Log stream disconnected. Attempting to reconnect...");
+            setTimeout(() => initLogStream(queueId), 3000); // Try reconnecting after 3 seconds
+        } else if (eventSource.readyState === EventSource.CLOSED) {
+            appendLog("[SYSTEM] Log stream closed.");
+        } else {
+            appendLog("[SYSTEM] Log stream error or connection closed.");
+        }
+    };
   }
 
+  // --- RESUME SCAN LOGIC ---
+  async function checkActiveScan() {
+    try {
+        const res = await fetch(`${API_BASE}/check_active_scan`);
+        const data = await res.json();
+
+        if (data.status === "active") {
+            isScanning = true;
+            currentScanId = data.scan_id;
+            currentQueueId = data.queue_id;
+            
+            els.targetInput.value = data.target;
+            // Set selected options for custom dropdowns
+            setSelectedOption('customProfileSelect', 'profileSelect', data.profile);
+            setSelectedOption('customAggressionSelect', 'aggressionSelect', data.aggression);
+
+            toggleButtons(true); // Disable start button, enable spinner
+            updateStatus("Resuming Scan", "busy");
+            // No progress here, as we don't know it from backend yet
+            // updateProgress(data.progress_percent, data.current_phase); 
+
+            appendLog(`[SYSTEM] Resuming active scan for ${data.target} (ID: ${data.scan_id}, Profile: ${data.profile}, Aggression: ${data.aggression})...`);
+            initLogStream(data.queue_id);
+            fetchReportData(); // Fetch existing report data to update tables if partial report exists
+        } else {
+            // No active scan, load previous report history
+            toggleButtons(false); // Ensure start button is enabled, report buttons disabled
+            loadHistory();
+        }
+    } catch (e) {
+        console.error("Error checking active scan:", e);
+        appendLog(`[frontend] Error checking for active scan: ${e.message}`);
+        toggleButtons(false); // Ensure buttons are functional even on error
+        loadHistory(); // Attempt to load history anyway
+    }
+  }
+
+
   async function fetchReportData() {
-    if (!currentScanId) return;
+    // Prioritize currentQueueId's target or use els.targetInput
+    const target = els.targetInput.value.trim();
+    if (!target && !currentScanId) return;
 
     try {
-      const checkRes = await fetch(
-        `${API_BASE}/report_files?scan_id=${currentScanId}`
-      );
+      const url = target ? `${API_BASE}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE}/report_files?scan_id=${currentScanId}`;
+      const checkRes = await fetch(url);
       const checkData = await checkRes.json();
 
       if (checkData.status === "success") {
-        toggleButtons(true);
+        toggleButtons(false); // Enable report buttons if reports exist
 
-        const jsonRes = await fetch(
-          `${API_BASE}/get_json_report?scan_id=${currentScanId}`
-        );
+        const jsonUrl = target ? `${API_BASE}/get_json_report?target=${encodeURIComponent(target)}` : `${API_BASE}/get_json_report?scan_id=${currentScanId}`;
+        const jsonRes = await fetch(jsonUrl);
         const report = await jsonRes.json();
         renderReport(report);
+      } else if (checkData.status === "pending") {
+          // Reports not ready yet, keep reports/AI buttons disabled but scan can still be running
+          toggleButtons(true); // Keep start button disabled if scan is still active
       }
     } catch (e) {
       appendLog(`[ERROR] Failed to load report: ${e.message}`);
@@ -295,24 +376,27 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- REPORT RENDERING (MATCHING ZAP SCANNER STYLE) ---
   function renderReport(data) {
     // 1. Metrics
-    const vulns = data.vulns || [];
-    const crit = vulns.filter((v) => v.severity && v.severity.toLowerCase() === "critical").length;
-    const high = vulns.filter((v) => v.severity && v.severity.toLowerCase() === "high").length;
+    // Use data.all_findings for metrics now
+    const allFindings = data.all_findings || [];
+    const crit = allFindings.filter((v) => v.severity && v.severity.toLowerCase() === "critical").length;
+    const high = allFindings.filter((v) => v.severity && v.severity.toLowerCase() === "high").length;
+    
+    // Subdomains and Ports from specific sections
     const subs = data.recon && data.recon.subdomains ? data.recon.subdomains.length : 0;
-    const ports = data.network && data.network.ports ? data.network.ports.length : 0;
+    const openPorts = data.network && data.network.nmap_scan && data.network.nmap_scan.ports ? data.network.nmap_scan.ports.length : 0;
 
     els.metricCritical.textContent = crit;
     els.metricHigh.textContent = high;
     els.metricSubdomains.textContent = subs;
-    els.metricPorts.textContent = ports;
+    els.metricPorts.textContent = openPorts;
 
-    // 2. Vulnerabilities Table (Replaces Badge with Colored Text)
+    // 2. Vulnerabilities Table (Using data.all_findings)
     els.vulnTableBody.innerHTML = "";
-    if (vulns.length === 0) {
+    if (allFindings.length === 0) {
       els.vulnTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 3rem; color: #555;">No vulnerabilities found.</td></tr>';
     } else {
-      vulns.forEach((v) => {
-        const sev = v.severity ? v.severity.toLowerCase() : "info";
+      allFindings.forEach((v) => {
+        const sev = (v.severity || v.risk || "info").toLowerCase(); // Normalize severity
         let color = '#3b82f6'; // Default Blue
         if (sev === 'critical') color = '#ef4444'; // Red
         if (sev === 'high') color = '#f97316'; // Orange
@@ -320,9 +404,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const row = `
             <tr>
-                <td style="color: ${color}; font-weight: 700;">${v.severity ? v.severity.toUpperCase() : "INFO"}</td>
-                <td style="font-weight: 600;">${v.type}</td>
-                <td style="font-family: monospace; font-size: 0.8rem; color: #a1a1aa; word-break: break-all;">${v.evidence || v.url || "-"}</td>
+                <td style="color: ${color}; font-weight: 700;">${(v.severity || v.risk || "INFO").toUpperCase()}</td>
+                <td style="font-weight: 600;">${v.type || v.name || "Unknown"}</td>
+                <td style="font-family: monospace; font-size: 0.8rem; color: #a1a1aa; word-break: break-all;">${v.evidence || v.url || v.location || "-"}</td>
             </tr>`;
         els.vulnTableBody.insertAdjacentHTML("beforeend", row);
       });
@@ -330,8 +414,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 3. Network Table
     els.networkTableBody.innerHTML = "";
-    if (data.network && data.network.ports && data.network.ports.length > 0) {
-      data.network.ports.forEach((p) => {
+    if (data.network && data.network.nmap_scan && data.network.nmap_scan.ports && data.network.nmap_scan.ports.length > 0) {
+      data.network.nmap_scan.ports.forEach((p) => {
         const row = `
             <tr>
                 <td style="color: #3b82f6; font-family: monospace; font-weight: 700;">${p.port}/${p.protocol}</td>
@@ -346,13 +430,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 4. Recon Table
     els.reconTableBody.innerHTML = "";
+    const reconDataItems = [];
     if (data.recon && data.recon.subdomains && data.recon.subdomains.length > 0) {
-      data.recon.subdomains.forEach((sub) => {
+      data.recon.subdomains.forEach(sub => reconDataItems.push({type: "SUBDOMAIN", item: sub, details: "Discovered via OSINT"}));
+    }
+    if (data.recon && data.recon.resolved_hosts && data.recon.resolved_hosts.length > 0) {
+        data.recon.resolved_hosts.forEach(host => reconDataItems.push({type: "HOST IP", item: host.domain, details: host.ip}));
+    }
+    // Add crawled URLs and API endpoints from web_audit if available
+    if (data.web_audit && data.web_audit.crawled_urls && data.web_audit.crawled_urls.length > 0) {
+        data.web_audit.crawled_urls.slice(0, 10).forEach(url => reconDataItems.push({type: "CRAWLED URL", item: url, details: "Entry Point"}));
+    }
+    if (data.web_audit && data.web_audit.api_endpoints && data.web_audit.api_endpoints.length > 0) {
+        data.web_audit.api_endpoints.slice(0, 5).forEach(endpoint => reconDataItems.push({type: "API ENDPOINT", item: endpoint, details: "JS Discovered"}));
+    }
+
+
+    if (reconDataItems.length > 0) {
+      reconDataItems.forEach((item) => {
         const row = `
             <tr>
-                <td style="color: #a1a1aa; font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">SUBDOMAIN</td>
-                <td style="color: #10b981; font-family: monospace;">${sub}</td>
-                <td style="color: #a1a1aa;">-</td>
+                <td style="color: #a1a1aa; font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">${item.type}</td>
+                <td style="color: #10b981; font-family: monospace;">${item.item}</td>
+                <td style="color: #a1a1aa;">${item.details || "-"}</td>
             </tr>`;
         els.reconTableBody.insertAdjacentHTML("beforeend", row);
       });
@@ -360,31 +460,54 @@ document.addEventListener("DOMContentLoaded", () => {
       els.reconTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 3rem; color: #555;">No recon data found.</td></tr>';
     }
 
-    // 5. Tech Stack (Keeps simple pills, but consistent colors)
+
+    // 5. Tech Stack (Updated to render tech as structured objects)
     els.techStackContainer.innerHTML = "";
-    if (data.tech && data.tech.technologies && data.tech.technologies.length > 0) {
-      data.tech.technologies.forEach((t) => {
-        const tag = document.createElement("span");
-        // Styling manually to match Neo-Tech
-        tag.style.display = "inline-flex";
-        tag.style.alignItems = "center";
-        tag.style.padding = "4px 10px";
-        tag.style.marginRight = "6px";
-        tag.style.marginBottom = "6px";
-        tag.style.borderRadius = "4px";
-        tag.style.background = "rgba(16, 185, 129, 0.1)";
-        tag.style.border = "1px solid rgba(16, 185, 129, 0.3)";
-        tag.style.color = "#10b981";
-        tag.style.fontSize = "0.65rem";
-        tag.style.fontWeight = "700";
-        tag.style.letterSpacing = "0.05em";
-        tag.style.textTransform = "uppercase";
-        tag.textContent = t;
-        els.techStackContainer.appendChild(tag);
-      });
+    if (data.tech && data.tech.technologies) {
+        let techHtml = '<div style="margin-bottom: 1rem;">';
+        for (const category in data.tech.technologies) {
+            techHtml += `<h4 style="color: var(--neo-text-main); font-size: 0.9rem; margin-bottom: 0.5rem;">${category.toUpperCase()}</h4>`;
+            data.tech.technologies[category].forEach(tech => {
+                techHtml += `<span class="tech-tag">${tech}</span>`;
+            });
+        }
+        techHtml += '</div>';
+
+        if (data.tech.versions) {
+            techHtml += '<div style="margin-top: 1rem;">';
+            techHtml += '<h4 style="color: var(--neo-text-main); font-size: 0.9rem; margin-bottom: 0.5rem;">VERSIONS</h4>';
+            for (const software in data.tech.versions) {
+                techHtml += `<span class="tech-tag">${software} v${data.tech.versions[software]}</span>`;
+            }
+            techHtml += '</div>';
+        }
+        els.techStackContainer.innerHTML = techHtml;
+
+        // Add some basic styling for tech-tag, match Neo-Tech colors
+        const styleTag = document.createElement('style');
+        styleTag.innerHTML = `
+            .tech-tag {
+                display: inline-flex;
+                align-items: center;
+                padding: 4px 10px;
+                margin-right: 6px;
+                margin-bottom: 6px;
+                border-radius: 4px;
+                background: var(--neo-input);
+                border: 1px solid var(--neo-border);
+                color: var(--neo-text-muted);
+                font-size: 0.65rem;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+            }
+        `;
+        document.head.appendChild(styleTag);
+
     } else {
       els.techStackContainer.innerHTML = '<span style="color: #a1a1aa;">No technologies detected.</span>';
     }
+
 
     // 6. JSON Raw Data
     if (data) {
@@ -397,8 +520,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (els.refreshReportBtn) {
     els.refreshReportBtn.addEventListener("click", () => {
-      if (!currentScanId) {
-        appendLog("No active scan to refresh.");
+      if (!currentScanId && !isScanning) { // Allow refresh only if scan_id exists or scan is running
+        appendLog("No active scan or previous scan to refresh report from.");
         return;
       }
       fetchReportData();
@@ -431,8 +554,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (els.downloadPdfBtn) {
     els.downloadPdfBtn.addEventListener("click", () => {
-      if (!currentScanId) return;
-      window.location.href = `${API_BASE}/download_pdf?scan_id=${currentScanId}`;
+      const target = els.targetInput.value.trim();
+      // Use currentScanId if target input is empty, assuming we resumed a scan
+      const downloadIdentifier = target || currentScanId;
+
+      if (!downloadIdentifier) {
+        appendLog("[frontend] Error: Cannot download PDF. No target or scan ID available.");
+        return;
+      }
+      const url = `${API_BASE}/download_pdf?target=${encodeURIComponent(downloadIdentifier)}`;
+      window.location.href = url;
     });
   }
 
@@ -484,7 +615,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- AI ANALYSIS HANDLER ---
   async function analyzeReport(llmMode) {
-    if (!currentScanId) return;
+    const target = els.targetInput.value.trim();
+    if (!target && !currentScanId) return;
 
     els.aiOverlay.classList.remove("hidden");
     els.aiText.textContent = llmMode === "gemini" ? "CONTACTING GEMINI..." : "LOADING LOCAL LLM...";
@@ -496,7 +628,7 @@ document.addEventListener("DOMContentLoaded", () => {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,
         },
-        body: JSON.stringify({ scan_id: currentScanId }),
+        body: JSON.stringify({ scan_id: currentScanId, target: target }),
       });
       const data = await res.json();
 
@@ -513,7 +645,8 @@ document.addEventListener("DOMContentLoaded", () => {
             body: JSON.stringify({
               llm_mode: llmMode,
               scanner_type: "killchain",
-              scan_id: currentScanId,
+              target: data.target,
+              force_new_session: true // [NEW] Force a fresh chat
             }),
           }
         );
@@ -522,7 +655,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (chatRes.ok && chatData.status === "success") {
           els.aiText.textContent = "REDIRECTING...";
           setTimeout(() => {
-            window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${chatData.llm_mode}&summary=${encodeURIComponent(chatData.summary)}`;
+            window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${chatData.llm_mode}&summary=${encodeURIComponent(chatData.summary)}&session_id=${chatData.session_id}`;
           }, 800);
         } else {
           throw new Error(chatData.message || "Chatbot handshake failed");
@@ -538,5 +671,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- INIT ---
   updateStatus("Ready");
-  loadHistory();
+  checkActiveScan(); // Call checkActiveScan on page load
 });

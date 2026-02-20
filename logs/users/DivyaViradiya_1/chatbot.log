@@ -552,3 +552,201 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
 2026-02-16 09:11:11 - INFO - New local chat session started: fed46460-addb-4ae8-ab90-2fe8684a94d9
 2026-02-16 10:23:12 - INFO - New local chat session started: c0a5678a-b068-4d24-b28a-df4bb7c56037
 2026-02-16 20:37:37 - INFO - New local chat session started: edddd776-4343-45b0-85e4-fcc2244ab022
+2026-02-16 21:03:51 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session edddd776-4343-45b0-85e4-fcc2244ab022
+2026-02-16 21:03:54 - INFO - Stream updated local session ID to: 07f17b66-427e-4cb9-89ad-03b2c84fa59e
+2026-02-16 21:04:16 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 07f17b66-427e-4cb9-89ad-03b2c84fa59e
+2026-02-17 09:31:14 - INFO - New local chat session started: 031e34b9-0f44-4e10-b1ae-8787584b46ee
+2026-02-17 09:35:36 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 031e34b9-0f44-4e10-b1ae-8787584b46ee
+2026-02-17 09:35:42 - INFO - Stream updated local session ID to: 1af2ba80-605f-4ea5-86f4-3f2742fd2297
+2026-02-17 09:36:04 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 1af2ba80-605f-4ea5-86f4-3f2742fd2297
+2026-02-17 09:36:46 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 1af2ba80-605f-4ea5-86f4-3f2742fd2297
+2026-02-17 09:36:50 - INFO - AI Action Execution requested: nmap_scan with params {'timing': 4, 'target_ip': '192.168.29.1', 'scan_type': 'vuln'}
+2026-02-17 09:36:50 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-17 09:47:04 - INFO - Sending nmap path-based analysis request to backend
+2026-02-17 09:47:11 - INFO - Stored session ID from server: 1af2ba80-605f-4ea5-86f4-3f2742fd2297
+2026-02-17 09:47:15 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 1af2ba80-605f-4ea5-86f4-3f2742fd2297
+2026-02-17 15:22:57 - INFO - New local chat session started: 0743a19d-8813-4a8d-81ad-0037ed8eac93
+2026-02-17 15:42:57 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 0743a19d-8813-4a8d-81ad-0037ed8eac93
+2026-02-17 15:43:03 - INFO - Stream updated local session ID to: a54fd0b0-3a05-4e19-beee-227f258e2aaf
+2026-02-17 15:43:39 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a54fd0b0-3a05-4e19-beee-227f258e2aaf
+2026-02-17 15:43:59 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a54fd0b0-3a05-4e19-beee-227f258e2aaf
+2026-02-17 15:44:01 - INFO - AI Action Execution requested: zap_scan with params {'target_url': 'http://testphp.vulnweb.com'}
+2026-02-17 15:44:01 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-17 18:57:38 - INFO - New local chat session started: 9f18ce0d-2822-4919-9eef-73b64e3dac8b
+2026-02-18 10:09:01 - INFO - New local chat session started: c552938a-e09f-4d9f-847b-01f6e53aaec7
+2026-02-18 10:11:21 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session c552938a-e09f-4d9f-847b-01f6e53aaec7
+2026-02-18 10:11:24 - INFO - Stream updated local session ID to: 58d24dbc-e9d1-4708-9486-708c0352326a
+2026-02-18 10:11:40 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 58d24dbc-e9d1-4708-9486-708c0352326a
+2026-02-18 10:11:59 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 58d24dbc-e9d1-4708-9486-708c0352326a
+2026-02-18 10:12:01 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-18 10:12:01 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-18 10:15:44 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-18 10:15:45 - INFO - Stream updated local session ID to: c72086a7-7e77-4c09-9428-cb224fb7cc27
+2026-02-18 10:16:02 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session c72086a7-7e77-4c09-9428-cb224fb7cc27
+2026-02-18 10:16:04 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-18 10:16:04 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-19 09:09:53 - INFO - New local chat session started: d73f7e58-a43e-4c15-99bd-da252b3cff74
+2026-02-19 09:10:04 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d73f7e58-a43e-4c15-99bd-da252b3cff74
+2026-02-19 09:10:11 - INFO - Stream updated local session ID to: b7720ced-2512-479b-b91a-defd635670df
+2026-02-19 09:10:52 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session b7720ced-2512-479b-b91a-defd635670df
+2026-02-19 20:03:08 - INFO - New local chat session started: ec6acbbb-39b2-4d84-9e5e-c3844ace2af0
+2026-02-19 20:12:34 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session ec6acbbb-39b2-4d84-9e5e-c3844ace2af0
+2026-02-19 20:12:39 - INFO - Stream updated local session ID to: 0cc79f72-5d46-4639-86fc-12120c947a59
+2026-02-19 20:30:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-19 20:30:41 - INFO - Stream updated local session ID to: c08a874b-5cd3-4af2-a752-f5d66b2ba573
+2026-02-19 20:30:59 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session c08a874b-5cd3-4af2-a752-f5d66b2ba573
+2026-02-19 20:31:17 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session c08a874b-5cd3-4af2-a752-f5d66b2ba573
+2026-02-19 20:31:19 - INFO - AI Action Execution requested: zap_scan with params {'target_url': 'http://testphp.vulnweb.com'}
+2026-02-19 20:31:19 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-19 20:33:17 - INFO - New local chat session started: 5fdf91a8-b310-4f65-8351-9834d6be07a8
+2026-02-19 20:41:27 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 5fdf91a8-b310-4f65-8351-9834d6be07a8
+2026-02-19 20:41:30 - INFO - Stream updated local session ID to: e4a51349-9543-49e3-ad8b-b986c969c629
+2026-02-19 20:42:05 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session e4a51349-9543-49e3-ad8b-b986c969c629
+2026-02-19 20:42:08 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.48', 'scan_type': 'aggressive'}
+2026-02-19 20:42:08 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-19 21:22:02 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-19 21:22:04 - INFO - Stream updated local session ID to: a47af668-1575-41f1-9173-e20aff561e33
+2026-02-19 21:22:24 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a47af668-1575-41f1-9173-e20aff561e33
+2026-02-19 21:22:27 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-19 21:22:27 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-19 21:39:10 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-19 21:39:13 - INFO - Stream updated local session ID to: ec8a6be1-67a6-4e75-91b3-f56dc2bd2c31
+2026-02-19 21:39:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session ec8a6be1-67a6-4e75-91b3-f56dc2bd2c31
+2026-02-19 21:39:40 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-19 21:39:40 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-19 21:43:46 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session ec8a6be1-67a6-4e75-91b3-f56dc2bd2c31
+2026-02-19 21:43:50 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-19 21:43:50 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-19 21:47:04 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session ec8a6be1-67a6-4e75-91b3-f56dc2bd2c31
+2026-02-19 21:47:21 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session ec8a6be1-67a6-4e75-91b3-f56dc2bd2c31
+2026-02-19 21:47:35 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session ec8a6be1-67a6-4e75-91b3-f56dc2bd2c31
+2026-02-19 21:47:38 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.28.48'}
+2026-02-19 21:47:38 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-19 22:23:21 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-19 22:23:24 - INFO - Stream updated local session ID to: fdb67911-c105-4dde-9eb3-afa8640e16ac
+2026-02-19 22:23:42 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session fdb67911-c105-4dde-9eb3-afa8640e16ac
+2026-02-19 22:25:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session fdb67911-c105-4dde-9eb3-afa8640e16ac
+2026-02-19 22:25:44 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-19 22:25:44 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-20 09:00:24 - INFO - New local chat session started: 99d11c2e-aa80-4fa1-8213-2fef03784c56
+2026-02-20 09:00:26 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1678aec0f50>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-20 09:00:29 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=99d11c2e-aa80-4fa1-8213-2fef03784c56 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-20 09:00:59 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session fdb67911-c105-4dde-9eb3-afa8640e16ac
+2026-02-20 09:01:06 - INFO - AI Action Execution requested: zap_scan with params {'scan_type': 'Quick Scan', 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-20 09:01:06 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-20 09:37:41 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-20 09:37:47 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-20 09:41:15 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-20 09:41:21 - INFO - Stream updated local session ID to: 8e1b9ea9-355c-4dcb-bd43-b9b1a56bb8a0
+2026-02-20 09:42:03 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 8e1b9ea9-355c-4dcb-bd43-b9b1a56bb8a0
+2026-02-20 09:42:06 - INFO - AI Action Execution requested: zap_scan with params {'scan_mode': 'Quick Scan', 'use_ajax': True, 'target_url': 'http://testphp.vulnweb.com'}
+2026-02-20 09:42:06 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya
+2026-02-20 11:12:48 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 11:12:49 - INFO - Session switched via URL parameter to: null
+2026-02-20 11:13:55 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 11:13:56 - INFO - Session switched via URL parameter to: 8e1b9ea9-355c-4dcb-bd43-b9b1a56bb8a0
+2026-02-20 11:14:10 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 11:14:11 - INFO - Session switched via URL parameter to: null
+2026-02-20 11:22:12 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 11:22:12 - INFO - Stored session ID from server: b725d59a-2f0c-4ca2-8d2e-cb71875e854e
+2026-02-20 11:22:13 - INFO - Session switched via URL parameter to: b725d59a-2f0c-4ca2-8d2e-cb71875e854e
+2026-02-20 11:24:14 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 11:24:14 - INFO - Stored session ID from server: fef23bba-e627-43c5-be7d-83bcd4f03bd5
+2026-02-20 11:24:15 - INFO - Session switched via URL parameter to: fef23bba-e627-43c5-be7d-83bcd4f03bd5
+2026-02-20 11:25:30 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 11:25:30 - INFO - Stored session ID from server: cf33bf23-3462-425b-8af8-a4066358ae1a
+2026-02-20 11:25:31 - INFO - Session switched via URL parameter to: cf33bf23-3462-425b-8af8-a4066358ae1a
+2026-02-20 11:29:22 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 11:29:23 - INFO - Stored session ID from server: ccc21ba6-40bf-4dea-859e-d86c498b1405
+2026-02-20 11:29:24 - INFO - Session switched via URL parameter to: ccc21ba6-40bf-4dea-859e-d86c498b1405
+2026-02-20 11:43:22 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 11:43:43 - INFO - Stored session ID from server: 78849a8e-d014-49d0-b1cc-08a7e0b1ed43
+2026-02-20 11:49:33 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 11:49:47 - ERROR - Error communicating with server proxy during scanner analysis: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\routes\chatbot_bp.py", line 468, in scanner_analysis_proxy
+    response = http_session.post(proxy_upload_url, params=params)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 682, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-02-20 12:08:17 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 12:08:18 - INFO - Stored session ID from server: 2e600d2c-cb04-4a4e-a728-303423b062de
+2026-02-20 12:08:19 - INFO - Session switched via URL parameter to: 2e600d2c-cb04-4a4e-a728-303423b062de
+2026-02-20 12:32:30 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 12:32:31 - INFO - Session switched via URL parameter to: null

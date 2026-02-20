@@ -1,0 +1,110 @@
+[10:48:42] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[10:48:42] [INFO] [*] Local IP requested: 192.168.0.121
+[10:48:44] [INFO] [*] Preparing DEFAULT scan for target: 192.168.0.1 with T4...
+[10:48:44] [INFO] [+] Running TCP (Top 1000) scan on 192.168.0.1 with timing -T4...
+[10:48:44] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_bd622f17.txt 192.168.0.1
+[10:48:57] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[10:48:57] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[10:48:57] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[10:48:57] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.0.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[10:48:57] [INFO] [+] Processing results for PDF report...
+[10:48:57] [INFO] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[10:48:57] [INFO] [*] Scan complete. Generating PDF report for 192.168.0.1...
+[10:49:01] [INFO] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_0_1.pdf
+[10:49:01] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.0.1
+[10:53:29] [INFO] [*] Local IP requested: 192.168.0.121
+eldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[10:53:32] [INFO] [*] Preparing DEFAULT scan for target: 192.168.0.1 with T4...
+[10:53:33] [INFO] [+] Running TCP (Top 1000) scan on 192.168.0.1 with timing -T4...
+[10:53:33] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_84849abd.txt 192.168.0.1
+[10:53:41] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[10:53:41] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[10:53:41] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[10:53:41] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.0.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[10:53:41] [INFO] [+] Processing results for PDF report...
+[10:53:42] [INFO] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[10:53:42] [INFO] [*] Scan complete. Generating PDF report for 192.168.0.1...
+[10:53:45] [INFO] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_0_1.pdf
+[10:53:45] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.0.1
+[10:57:57] [INFO] [*] Local IP requested: 192.168.0.121
+[10:57:57] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[10:58:00] [INFO] [*] Log file cleared.
+[10:58:02] [INFO] [*] Preparing DEFAULT scan for target: 192.168.0.1 with T4...
+[10:58:02] [INFO] [+] Running TCP (Top 1000) scan on 192.168.0.1 with timing -T4...
+[10:58:02] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_85c98bc2.txt 192.168.0.1
+[10:58:11] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[10:58:11] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[10:58:11] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[10:58:11] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.0.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[10:58:11] [INFO] [+] Processing results for PDF report...
+[10:58:11] [INFO] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[10:58:11] [INFO] [*] Scan complete. Generating PDF report for 192.168.0.1...
+[10:58:15] [INFO] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_0_1.pdf
+[10:58:15] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.0.1
+[11:02:58] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:02:58] [INFO] [*] Local IP requested: 192.168.0.121
+[11:02:59] [INFO] [*] Preparing DEFAULT scan for target: 192.168.0.1 with T4...
+[11:02:59] [INFO] [+] Running TCP (Top 1000) scan on 192.168.0.1 with timing -T4...
+[11:02:59] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_8262352a.txt 192.168.0.1
+[11:03:15] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[11:03:15] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[11:03:15] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[11:03:15] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.0.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[11:03:15] [INFO] [+] Processing results for PDF report...
+[11:03:15] [INFO] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[11:03:15] [INFO] [*] Scan complete. Generating PDF report for 192.168.0.1...
+[11:03:18] [INFO] [+] PDF report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_0_1.pdf
+[11:03:18] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.0.1
+[11:07:20] [INFO] [*] Log file cleared.
+[11:07:23] [INFO] [*] Local IP requested: 192.168.0.121
+[11:07:23] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:07:25] [INFO] [*] Preparing DEFAULT scan for target: 192.168.0.1 with T4...
+[11:07:25] [INFO] [+] Running TCP (Top 1000) scan on 192.168.0.1 with timing -T4...
+[11:07:25] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_8b0975dc.txt 192.168.0.1
+[11:07:44] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[11:07:44] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[11:07:45] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[11:07:45] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.0.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[11:07:45] [INFO] [+] Processing results for PDF report...
+[11:07:45] [INFO] [+] JSON Scan report saved
+[11:07:45] [INFO] [*] Scan complete. Generating PDF report for 192.168.0.1...
+[11:07:49] [INFO] [+] PDF report generated successfully
+[11:07:49] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.0.1
+[11:12:28] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:12:28] [INFO] [*] Local IP requested: 192.168.0.121
+[11:12:29] [INFO] [*] Preparing DEFAULT scan for target: 192.168.0.1 with T4...
+[11:12:29] [INFO] [+] Running TCP (Top 1000) scan on 192.168.0.1 with timing -T4...
+[11:12:29] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_5925d2e1.txt 192.168.0.1
+[11:12:40] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[11:12:40] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[11:12:40] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[11:12:40] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.0.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[11:12:40] [INFO] [+] Processing results for PDF report...
+[11:12:40] [INFO] [+] JSON Scan report saved
+[11:12:40] [INFO] [*] Scan complete. Generating PDF report for 192.168.0.1...
+[11:12:43] [INFO] [+] PDF report generated successfully
+[11:12:43] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.0.1
+[11:13:32] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:13:32] [INFO] [*] Local IP requested: 192.168.0.121
+[11:14:08] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:14:08] [INFO] [*] Local IP requested: 192.168.0.121
+[11:16:17] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:16:17] [INFO] [*] Local IP requested: 192.168.0.121
+[11:22:04] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:22:04] [INFO] [*] Local IP requested: 192.168.0.121
+[11:24:11] [INFO] [*] Local IP requested: 192.168.0.121
+[11:24:11] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:25:27] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:25:27] [INFO] [*] Local IP requested: 192.168.0.121
+[11:29:20] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:29:20] [INFO] [*] Local IP requested: 192.168.0.121
+[11:43:18] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:43:19] [INFO] [*] Local IP requested: 192.168.0.121
+[11:49:29] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:49:29] [INFO] [*] Local IP requested: 192.168.0.121
+[12:08:15] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[12:08:15] [INFO] [*] Local IP requested: 192.168.0.121
+[12:32:27] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[12:32:28] [INFO] [*] Local IP requested: 192.168.0.121
+[12:44:15] [INFO] [*] Local IP requested: 192.168.0.121
+[12:44:15] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.

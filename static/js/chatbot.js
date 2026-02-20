@@ -760,12 +760,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (metadataAction) {
                         // Check if this specific tool is currently active for this user
                         const activeInfo = activeScans[metadataAction.tool];
+                        
                         if (activeInfo) {
                             if (cleanText) addMessage(role, cleanText, false);
-                            // Re-attach to the live telemetry stream
-                            handleAction(metadataAction, false, activeInfo.stream_url); 
+                            
+                            // Check Status from Backend
+                            if (activeInfo.status === 'completed') {
+                                // [NEW] Restore as Completed Success Card
+                                handleAction(metadataAction, false, null, true);
+                            } else {
+                                // Re-attach to the live telemetry stream (Running)
+                                handleAction(metadataAction, false, activeInfo.stream_url); 
+                            }
                         } else {
-                            // If finished, do a normal static restore
+                            // If not in active/recent list, it's an old history item.
+                            // We just show the text message.
                             addMessage(role, msg.content, false);
                         }
                     } else {
@@ -889,12 +898,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 9. ACTION EXECUTION LOGIC ---
-    async function handleAction(action, isRestore = false, reattachStreamUrl = null) {
+    async function handleAction(action, isRestore = false, reattachStreamUrl = null, isCompleted = false) {
         if (!action || !action.tool) return;
 
         const displayTool = action.tool.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-        const statusMsg = isRestore ? `[HISTORY]: ${displayTool} Module was deployed.` : 
-                         (reattachStreamUrl ? `[ACTIVE]: Synchronizing ${displayTool} Telemetry...` : `[ANALYSIS]: Deploying ${displayTool} Module...`);
+        
+        let statusMsg = "";
+        if (isCompleted) {
+             statusMsg = `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.`;
+        } else if (isRestore) {
+             statusMsg = `[HISTORY]: ${displayTool} Module was deployed.`;
+        } else if (reattachStreamUrl) {
+             statusMsg = `[ACTIVE]: Synchronizing ${displayTool} Telemetry...`;
+        } else {
+             statusMsg = `[ANALYSIS]: Deploying ${displayTool} Module...`;
+        }
         
         // Format Parameters nicely
         let paramsHtml = '<div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin-top: 10px;">';
@@ -912,19 +930,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const row = document.createElement('div');
         row.className = 'msg-row system-action';
         row.innerHTML = `
-            <div class="msg-bubble action-bubble ${isRestore ? 'success' : ''}" style="border-color: rgba(59, 130, 246, 0.5) !important;">
+            <div class="msg-bubble action-bubble ${isRestore || isCompleted ? 'success' : ''}" style="border-color: rgba(59, 130, 246, 0.5) !important;">
                 <div class="action-header" style="display: flex; align-items: center; gap: 10px; color: var(--neo-blue); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em;">
-                    <span class="material-symbols-outlined ${isRestore ? '' : 'spin'}" style="font-size: 1.2rem;">${isRestore ? 'check_circle' : 'sync'}</span>
-                    <span class="header-text">${isRestore ? `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.` : statusMsg}</span>
+                    <span class="material-symbols-outlined ${isRestore || isCompleted ? '' : 'spin'}" style="font-size: 1.2rem;">${isRestore || isCompleted ? 'check_circle' : 'sync'}</span>
+                    <span class="header-text">${statusMsg}</span>
                 </div>
                 <div class="action-details">
                     ${paramsHtml}
                     <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;">
                         <button class="action-btn btn-redirect" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px;">VIEW MODULE PAGE</button>
-                        <button class="action-btn btn-download" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; ${isRestore ? 'display: block;' : 'display: none;'}">DOWNLOAD PDF REPORT</button>
+                        <button class="action-btn btn-download" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; ${isRestore || isCompleted ? 'display: block;' : 'display: none;'}">DOWNLOAD PDF REPORT</button>
                     </div>
                 </div>
-                <div class="terminal-container" style="${isRestore ? 'display:none;' : (reattachStreamUrl ? 'display:flex;' : 'display:none;')} margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.05);">
+                <div class="terminal-container" style="${isRestore || isCompleted ? 'display:none;' : (reattachStreamUrl ? 'display:flex;' : 'display:none;')} margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.05);">
                     <div class="terminal-header" style="background: rgba(255,255,255,0.05); height: 36px; display: flex; align-items: center; padding: 0 1rem; gap: 1.5rem;">
                         <div class="terminal-title" style="flex-shrink: 0;">
                             <span class="material-symbols-outlined" style="font-size: 0.9rem;">terminal</span>
@@ -940,10 +958,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="terminal-body"></div>
                 </div>
-                <div class="action-footer" style="${isRestore ? 'display:flex;' : 'display:none;'} margin-top:1rem; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:0.75rem;">
+                <div class="action-footer" style="${isRestore || isCompleted ? 'display:flex;' : 'display:none;'} margin-top:1rem; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:0.75rem;">
                     <span class="status-badge" style="font-size:0.65rem; color:#10b981; font-family:var(--font-code); display: flex; align-items: center; gap: 6px;">
                         <span class="material-symbols-outlined" style="font-size: 1rem;">insights</span>
-                        ${isRestore ? 'DATASET LOADED FROM CACHE.' : 'SYNCHRONIZING ANALYTICS...'}
+                        ${isRestore || isCompleted ? 'DATASET LOADED FROM CACHE.' : 'SYNCHRONIZING ANALYTICS...'}
                     </span>
                 </div>
             </div>
@@ -993,7 +1011,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isRestore) return;
 
-        // If we are re-attaching, we go straight to streaming
+        // [NEW] If completed, we stop here (already rendered success card)
+        if (isCompleted) {
+            // Trigger auto-analysis if it's a fresh load of a completed scan context
+            // But usually restoreSession handles this.
+            return;
+        }
+
+        // If we are re-attaching to a running scan, we go straight to streaming
         if (reattachStreamUrl) {
             setupStreaming(reattachStreamUrl, row, displayTool, action.tool, btnDownload);
             return;
@@ -1068,6 +1093,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            // [NEW] Check for text-based progress bars (e.g. "[===== ] 75%")
+            const cleanedMessage = e.data.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "").trim();
+            const isTextProgressBar = cleanedMessage.startsWith('[') && cleanedMessage.includes('%');
+
+            if (isTextProgressBar) {
+                const lastLine = terminalBody.lastElementChild;
+                if (lastLine && lastLine.getAttribute('data-is-progress') === 'true') {
+                    // Update existing progress line
+                    lastLine.querySelector('.term-time').textContent = new Date().toLocaleTimeString([], { hour12: false });
+                    lastLine.querySelector('.term-text').textContent = cleanedMessage;
+                    return;
+                }
+            }
+
             const line = document.createElement('div');
             line.className = 'terminal-line';
             if (isProgress) {
@@ -1075,7 +1114,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Remove previous progress lines to keep terminal clean
                 terminalBody.querySelectorAll('.progress-line').forEach(el => el.remove());
             }
-            line.className = 'terminal-line';
+            
+            if (isTextProgressBar) {
+                line.setAttribute('data-is-progress', 'true');
+            }
             
             const timeSpan = document.createElement('span');
             timeSpan.className = 'term-time';

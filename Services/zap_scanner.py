@@ -1,18 +1,22 @@
 import os
 import subprocess
+import sys
 import time
 import psutil
 import socket
 import shutil
 import re
+import uuid
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import json
 import pandas as pd
 import joblib
 from pathlib import Path
-import queue  # Queue for real-time streaming
+import queue
 import threading
+from zapv2 import ZAPv2
+from Services import scan_logger
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
@@ -32,10 +36,11 @@ if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR, exist_ok=True)
 
 # --- Global State for Process Management (Isolated by user_id) ---
+# --- Global State for Process Management (Transient - Process Only) ---
 active_scans = {} # { "user_id": {"process": Popen, "target": str, "start_time": float} }
 scan_lock = threading.Lock()
 
-# --- USER ISOLATION: Dictionary to hold a queue for each user_id ---
+# --- USER ISOLATION ---
 user_queues = {}
 
 def get_user_queue(user_id):
@@ -259,99 +264,40 @@ ZAP_TO_CWE_MAP = {
 def get_free_port():
     """Finds an available port on the host machine to avoid conflicts."""
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(('', 0)) # Bind to port 0 lets the OS select a free port
+        s.bind(('', 0)) 
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        port = s.getsockname()[1]
-        return port
+        return s.getsockname()[1]
+
+def wait_for_zap(port, timeout=120):
+    """Waits for ZAP daemon to be ready on the assigned port."""
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        try:
+            with socket.create_connection(('localhost', port), timeout=1):
+                return True
+        except:
+            time.sleep(2)
+    return False
 
 # --- LOGGING FUNCTIONS (USER-AWARE) ---
 
-def log(message, user_id=None, to_console=False):
+def log(message, user_id=None, to_console=False, level='INFO'):
     """
-    Logs messages to:
-    1. System Console (optional)
-    2. User-specific log file (logs/users/{user_id}/zap_agent_log.txt)
-    3. User-specific Memory Queue (for real-time frontend)
+    Logs messages using the centralized scan_logger.
     """
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_message = f"[{timestamp}] {message}"
-    
-    # 1. System Console
     if to_console:
-        print(log_message)
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
     
-    # If a specific user is targeted
     if user_id:
-        user_id = str(user_id)
-        # Organized Path: logs/users/{user_id}/
-        user_dir = os.path.join(LOGS_DIR, "users", user_id)
-        if not os.path.exists(user_dir):
-            os.makedirs(user_dir, exist_ok=True)
-            
-        user_log_file = os.path.join(user_dir, "zap_agent_log.txt")
-        try:
-            with open(user_log_file, 'a', encoding='utf-8') as f:
-                f.write(log_message + "\n")
-        except Exception as e:
-            print(f"FATAL: Failed to write to user log file {user_log_file}: {e}")
-
-        # 3. User-Specific Queue (Streaming)
-        uq = get_user_queue(user_id)
-        uq.put(message)
-        
-    else:
-        # Fallback to general system log
-        system_dir = os.path.join(LOGS_DIR, "system")
-        if not os.path.exists(system_dir):
-            os.makedirs(system_dir, exist_ok=True)
-            
-        try:
-            with open(os.path.join(system_dir, "zap_system_log.txt"), 'a', encoding='utf-8') as f:
-                f.write(log_message + "\n")
-        except:
-            pass
+        scan_logger.write_log(user_id, "zap", message, level=level)
 
 def clear_log_file(user_id):
-    """Clears the log file and queue for a specific user."""
     if not user_id: return
-    user_id = str(user_id)
-    user_log_file = os.path.join(LOGS_DIR, "users", user_id, "zap_agent_log.txt")
-    
+    log_file = scan_logger.get_active_log_file(user_id, "zap")
     try:
-        if os.path.exists(user_log_file):
-            with open(user_log_file, 'w', encoding='utf-8') as f:
-                f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
-        
-        # Clear Queue
-        uq = get_user_queue(user_id)
-        with uq.mutex:
-            uq.queue.clear()
-            
-    except Exception as e:
-        print(f"FATAL: Could not clear log file for user {user_id}: {e}")
-
-def kill_zap_processes(user_id=None):
-    """
-    Terminates ZAP processes. 
-    NOTE: CAUTION. This kills global ZAP processes. 
-    Do NOT use this during simultaneous scanning unless doing a full system reset.
-    """
-    log("Checking for and terminating existing ZAP processes...", user_id)
-    killed_a_process = False
-    current_pid = os.getpid()
-    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-        try:
-            if proc.info['pid'] != current_pid and proc.info['cmdline'] and 'zap.jar' in ' '.join(proc.info['cmdline']).lower():
-                log(f"Found ZAP process {proc.name()} (PID: {proc.info['pid']}). Terminating...", user_id)
-                proc.kill()
-                killed_a_process = True
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
-    if not killed_a_process:
-        log("No running ZAP processes found.", user_id)
-    else:
-        log("Waiting 5 seconds for system resources to be released...", user_id)
-        time.sleep(5)
+        open(log_file, 'w').close()
+    except:
+        pass
 
 # --- ML Prediction ---
 def predict_risk(vulnerability_name: str):
@@ -379,152 +325,194 @@ def predict_risk(vulnerability_name: str):
     return round(float(predicted_score[0]), 2)
 
 # --- Path Helper ---
-def get_output_paths(output_dir=None):
-    if output_dir:
-        base = Path(output_dir)
-    else:
-        base = Path(DEFAULT_RESULTS_DIR)
-    
-    if not base.exists():
-        try:
-            base.mkdir(parents=True, exist_ok=True)
-        except Exception as e:
-            print(f"[!] Error creating directory {base}: {e}")
-
+def get_output_paths(user_output_dir):
+    base = Path(user_output_dir)
     return {
         "xml_report": base / "zap_report.xml",
         "json_report": base / "zap_report.json",
         "pdf_report": base / "zap_report.pdf"
     }
 
-# --- Core Scan Logic (Simultaneous Support) ---
-def run_zap_scan(target_url, report_path, user_id):
+# --- Context and Authentication Helpers ---
+
+def setup_context_and_auth(zap, context_name, target_url, auth_config=None, user_id=None):
     """
-    Launches ZAP and streams output to user specific log.
-    Supports simultaneous execution by assigning unique ports and directories.
+    Sets up a ZAP context, defines the scope, and configures form-based authentication if credentials are provided.
     """
-    
-    # 1. REMOVED kill_zap_processes to prevent stopping other concurrent scans.
-    
+    try:
+        # 1. Create Context
+        context_id = zap.context.new_context(context_name)
+        log(f"[CONTEXT] Created context '{context_name}' (ID: {context_id})", user_id)
+
+        # 2. Define Scope (Include target URL and sub-paths)
+        # We use a regex that matches the target and anything below it
+        target_regex = f"{target_url.rstrip('/')}.*"
+        zap.context.include_in_context(context_name, target_regex)
+        log(f"[CONTEXT] Scope defined: {target_regex}", user_id)
+
+        # 3. Handle Authentication (Form-Based)
+        if auth_config and all(k in auth_config for k in ['login_url', 'username_field', 'password_field', 'username', 'password']):
+            log(f"[AUTH] Configuring Form-Based Auth for {auth_config['login_url']}...", user_id)
+            
+            # Set Authentication Method
+            login_request_data = f"{auth_config['username_field']}={auth_config['username']}&{auth_config['password_field']}={auth_config['password']}"
+            zap.authentication.set_authentication_method(
+                context_id, 'formBasedAuthentication', 
+                f"loginUrl={auth_config['login_url']}&loginRequestData={login_request_data}"
+            )
+
+            # Set Logged In/Out Indicators (Best effort detection)
+            # You can refine these based on common patterns
+            zap.authentication.set_logged_out_indicator(context_id, ".*(login|signin|authenticate).*")
+            
+            # Create a ZAP User
+            user_name = f"user_{user_id}"
+            user_id_zap = zap.users.new_user(context_id, user_name)
+            
+            # Set User Credentials
+            zap.users.set_authentication_credentials(
+                context_id, user_id_zap, 
+                f"username={auth_config['username']}&password={auth_config['password']}"
+            )
+            
+            zap.users.set_user_enabled(context_id, user_id_zap, 'true')
+            zap.forcedUser.set_forced_user(context_id, user_id_zap)
+            zap.forcedUser.set_forced_user_mode_enabled('true')
+            
+            log(f"[AUTH] User '{user_name}' created and Forced User Mode enabled.", user_id)
+            return context_id, user_id_zap
+            
+        return context_id, None
+    except Exception as e:
+        log(f"[!] Error setting up context/auth: {e}", user_id)
+        return None, None
+
+# --- Core Scan Logic (Upgraded with zapv2) ---
+def run_zap_scan(target_url, report_path, user_id, scan_mode="Quick Scan", use_ajax=False, auth_config=None):
+    """
+    Launches ZAP in daemon mode and uses the API for scanning.
+    Supports tiered scanning, AJAX spidering, and Form-Based Authentication.
+    """
     if not os.path.exists(ZAP_EXECUTABLE_PATH):
         log(f"Error: ZAP executable not found at '{ZAP_EXECUTABLE_PATH}'", user_id)
         return False
 
-    # 2. Assign Unique Resources
-    unique_zap_dir = ""
+    assigned_port = get_free_port()
+    unique_zap_dir = os.path.join(TEMP_DIR, f"user_{user_id}_{assigned_port}")
+    os.makedirs(unique_zap_dir, exist_ok=True)
+
+    log(f"\n--- Starting ZAP Engine (Port: {assigned_port}) ---", user_id, to_console=True)
+    log(f"Mode: {scan_mode} | AJAX: {use_ajax} | Target: {target_url}", user_id, to_console=True)
+
+    # Launch ZAP in Daemon Mode
+    command = [
+        ZAP_EXECUTABLE_PATH, '-daemon', '-port', str(assigned_port), 
+        '-dir', unique_zap_dir, '-config', 'api.disablekey=true',
+        '-config', 'api.addrs.addr.name=.*', '-config', 'api.addrs.addr.regex=true'
+    ]
+
+    process = None
+    zap = None
     try:
-        assigned_port = get_free_port()
-        
-        # Create a unique directory for this specific scan instance/user in the central temp folder
-        # This prevents the "HSQLDB Lock" error
-        unique_zap_dir = os.path.join(TEMP_DIR, f"user_{user_id}_{assigned_port}")
-        if not os.path.exists(unique_zap_dir):
-            os.makedirs(unique_zap_dir, exist_ok=True)
-
-        log(f"\n--- Starting ZAP Quick Scan (Isolated Instance) ---", user_id, to_console=True)
-        log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_id, to_console=True)
-        log(f"Target: {target_url}", user_id, to_console=True)
-        log(f"Report will be saved to: {report_path}", user_id, to_console=True)
-
-        report_dir = os.path.dirname(report_path)
-        if not os.path.exists(report_dir):
-            os.makedirs(report_dir)
-
-        # 3. Construct Command with Isolation Flags (-port and -dir)
-        command = [
-            ZAP_EXECUTABLE_PATH, '-cmd',
-            '-port', str(assigned_port),
-            '-dir', unique_zap_dir,
-            '-quickurl', target_url,
-            '-quickout', str(report_path),
-            '-quickprogress'
-        ]
-
-        log(f"Executing command: {' '.join(command)}", user_id, to_console=True)
-        zap_directory = os.path.dirname(ZAP_EXECUTABLE_PATH)
-        
         process = subprocess.Popen(
             command, 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.STDOUT,
-            text=True, 
-            encoding='utf-8', 
-            errors='replace', 
-            cwd=zap_directory,
-            bufsize=1 
+            stdout=subprocess.DEVNULL, 
+            stderr=subprocess.STDOUT, 
+            cwd=os.path.dirname(ZAP_EXECUTABLE_PATH),
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == 'win32' else 0
         )
-        
-        # Track this user's process
+
         with scan_lock:
             active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
 
-        log("--- ZAP Output Stream Started ---", user_id)
+        if not wait_for_zap(assigned_port):
+            log("Error: ZAP daemon failed to start within timeout.", user_id)
+            return False
         
-        # Stream stdout line by line
-        for line in iter(process.stdout.readline, ''):
-            if line:
-                stripped_line = line.strip()
-                # --- NOISE FILTER: Extract ZAP Progress Cleanly ---
-                # Matches: [                    ] 15% /
-                if "%" in stripped_line and "[" in stripped_line and "]" in stripped_line:
-                    match = re.search(r'(\d+%)', stripped_line)
-                    if match:
-                        # Log the original line with [PROGRESS] prefix so UI can parse percent
-                        # but still show the original bracket format in terminal
-                        log(f"[PROGRESS] {stripped_line}", user_id)
-                        continue
+        zap = ZAPv2(proxies={'http': f'http://127.0.0.1:{assigned_port}', 'https': f'http://127.0.0.1:{assigned_port}'})
+        
+        # 1. Setup Context & Authentication
+        context_name = f"Ctx_{user_id}_{assigned_port}"
+        context_id, zap_user_id = setup_context_and_auth(zap, context_name, target_url, auth_config, user_id)
+
+        # 2. Spidering
+        if use_ajax:
+            log("[STAGE] Starting AJAX Spider (Deep Discovery)...", user_id)
+            # AJAX spider uses the context. Forced User mode (set in setup_context_and_auth) 
+            # ensures the spider runs as the authenticated user if configured.
+            zap.ajaxSpider.scan(url=target_url, contextname=context_name)
+            while zap.ajaxSpider.status != 'stopped':
+                log(f"[PROGRESS] AJAX Spider in progress...", user_id)
+                time.sleep(5)
+        else:
+            log("[STAGE] Starting Web Spider...", user_id)
+            # Regular spider with context and user if available
+            zap.spider.scan(url=target_url, contextname=context_name)
+            while int(zap.spider.status()) < 100:
+                status = int(zap.spider.status())
+                filled = status // 5
+                bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"
+                log(f"[PROGRESS] {bracket} {status}%", user_id)
+                time.sleep(2)
+
+        # 3. Passive Scan Wait
+        log("[STAGE] Waiting for Passive Scan to complete...", user_id)
+        while int(zap.pscan.records_to_scan) > 0:
+            log(f"Passive Scan: {zap.pscan.records_to_scan} records remaining", user_id)
+            time.sleep(2)
+
+        # 4. Active Scanning
+        if scan_mode in ["Quick Scan", "Full Scan"]:
+            log("[STAGE] Starting Active Scan (Core Analysis)...", user_id)
+            # Active scan with context and user
+            scan_id = zap.ascan.scan(url=target_url, contextid=context_id)
+            
+            last_progress = -1
+            while True:
+                current_progress = int(zap.ascan.status(scan_id))
+                if current_progress > last_progress:
+                    filled = current_progress // 5
+                    bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"
+                    log(f"[PROGRESS] {bracket} {current_progress}%", user_id)
+                    last_progress = current_progress
                 
-                if not stripped_line:
-                    continue
-
-                # Skip other noisy technical messages but keep important ones
-                if any(x in stripped_line.lower() for x in ["copying default", "creating directory", "plugin"]):
-                    if "main" in stripped_line: continue
-
-                # We log to file/queue but NOT to console to avoid terminal clutter
-                log(stripped_line, user_id, to_console=False)
-
-        process.wait()
+                if current_progress >= 100:
+                    break
+                time.sleep(5)
         
-        # Unregister process
+        log("Generating XML report...", user_id)
+        xml_report = zap.core.xmlreport()
+        with open(report_path, 'w', encoding='utf-8') as f:
+            f.write(xml_report)
+            
+        return True
+    except Exception as e:
+        log(f"ZAP Scan Error: {e}", user_id)
+        return False
+    finally:
         with scan_lock:
+            # We no longer need active_scans dict, DB handles it.
             if user_id in active_scans:
                 del active_scans[user_id]
 
-        log("--- End of ZAP Output ---", user_id)
-
-        success = False
-        if process.returncode == 0 and os.path.exists(report_path):
-            log(f"Scan completed successfully!", user_id, to_console=True)
-            success = True
-        else:
-            log(f"Error: ZAP process failed. Return code: {process.returncode}.", user_id, to_console=True)
-            success = False
-            
-        return success
-
-    except Exception as e:
-        log(f"An unexpected error occurred: {e}", user_id)
-        return False
-        
-    finally:
-        # 4. CLEANUP: Remove the temporary directory to save space
-        if unique_zap_dir and os.path.exists(unique_zap_dir):
-            try:
-                log(f"Cleaning up temporary ZAP directory: {unique_zap_dir}", user_id)
-                shutil.rmtree(unique_zap_dir, ignore_errors=True)
-            except Exception as cleanup_error:
-                log(f"Warning: Failed to clean up temp dir: {cleanup_error}", user_id)
+        if zap: 
+            try: zap.core.shutdown()
+            except: pass
+        if process:
+            process.terminate()
+            try: process.wait(timeout=5)
+            except: process.kill()
+        if os.path.exists(unique_zap_dir):
+            shutil.rmtree(unique_zap_dir, ignore_errors=True)
 
 def parse_zap_xml_report(report_file, user_id=None):
     """Parses ZAP XML and enriches with ML."""
     if not os.path.exists(report_file):
-        log(f"Error: ZAP report file not found for parsing: {report_file}", user_id)
+        log(f"Error: ZAP report file not found: {report_file}", user_id)
         return None
     
     log(f"Parsing ZAP report: {report_file}", user_id)
     
-    # Initialize Summary with "Info" key
     report_data = {
         "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "summary": {"High": 0, "Medium": 0, "Low": 0, "Info": 0, "Total": 0},
@@ -537,11 +525,8 @@ def parse_zap_xml_report(report_file, user_id=None):
         
         for alertitem in root.findall('.//alertitem'):
             riskdesc = alertitem.find('riskdesc').text
-            risk = riskdesc.split(' ')[0] # Extracts "High", "Medium", "Low", "Informational"
-            
-            # Normalize "Informational" to "Info"
-            if risk == "Informational": 
-                risk = "Info"
+            risk = riskdesc.split(' ')[0] 
+            if risk == "Informational": risk = "Info"
 
             finding_name = alertitem.find('alert').text
             predicted_score = predict_risk(finding_name)
@@ -552,9 +537,16 @@ def parse_zap_xml_report(report_file, user_id=None):
                 "predicted_risk_score": predicted_score,
                 "confidence": alertitem.find('confidence').text,
                 "url": alertitem.find('.//uri').text,
+                "method": alertitem.find('.//method').text if alertitem.find('.//method') is not None else "GET",
                 "description": get_inner_html(alertitem.find('desc')),
                 "solution": get_inner_html(alertitem.find('solution')),
-                "reference": get_inner_html(alertitem.find('reference'))
+                "reference": get_inner_html(alertitem.find('reference')),
+                "evidence": {
+                    "request_header": alertitem.find('requestheader').text if alertitem.find('requestheader') is not None else "",
+                    "request_body": alertitem.find('requestbody').text if alertitem.find('requestbody') is not None else "",
+                    "response_header": alertitem.find('responseheader').text if alertitem.find('responseheader') is not None else "",
+                    "response_body": alertitem.find('responsebody').text if alertitem.find('responsebody') is not None else ""
+                }
             }
             
             if risk in report_data["summary"]:
@@ -563,7 +555,6 @@ def parse_zap_xml_report(report_file, user_id=None):
             
             report_data["findings"].append(finding)
             
-        # Sort by predicted score
         report_data["findings"].sort(
             key=lambda x: x['predicted_risk_score'] if isinstance(x['predicted_risk_score'], (int, float)) else -1,
             reverse=True
@@ -581,16 +572,10 @@ def get_inner_html(element):
 
 def save_json_report(data, output_dir, user_id=None):
     try:
-        if output_dir:
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-            json_path = os.path.join(output_dir, "zap_report.json")
-        else:
-            json_path = os.path.join(DEFAULT_RESULTS_DIR, "zap_report.json")
-
+        os.makedirs(output_dir, exist_ok=True)
+        json_path = os.path.join(output_dir, "zap_report.json")
         with open(json_path, 'w') as f:
             json.dump(data, f, indent=2)
-        log(f"JSON report saved to: {json_path}", user_id)
         return json_path
     except Exception as e:
         log(f"Error saving JSON report: {e}", user_id)

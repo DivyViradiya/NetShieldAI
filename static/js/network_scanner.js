@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastScanType = 'tcp'; 
     let isActionInProgress = false;
     let reportDownloadUrl = null;
+    let eventSource = null;
 
     // [NEW] Scan Mode State
     let currentScanMode = 'default';
@@ -104,17 +105,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function appendLog(message) {
         if (!elements.logOutput) return;
 
+        // [CLEANUP] Remove backend timestamps (e.g. [11:07:25]) so we don't duplicate
+        let displayMessage = message.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*/, '').trim();
+
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
         const isLight = document.body.classList.contains("light-mode");
         let contentStyle = isLight ? 'color:#334155' : 'color:#d4d4d8'; 
         
-        if (message.includes('[!]') || message.includes('[x]')) {
+        if (displayMessage.includes('[!]') || displayMessage.includes('[x]')) {
             contentStyle = 'color:#ef4444'; 
-        } else if (message.includes('[✓]') || message.includes('[+]')) {
+        } else if (displayMessage.includes('[✓]') || displayMessage.includes('[+]')) {
             contentStyle = 'color:#10b981'; 
-        } else if (message.includes('[*]')) {
+        } else if (displayMessage.includes('[*]')) {
             contentStyle = 'color:#3b82f6'; 
         }
 
@@ -124,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         line.className = 'log-line';
         line.innerHTML = `
             <div class="log-time" style="color:${timeColor}">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${message}</div>
+            <div class="log-content" style="${contentStyle}">${displayMessage}</div>
         `;
         
         elements.logOutput.appendChild(line);
@@ -158,14 +162,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- API & Data Functions ---
 
     async function apiPost(endpoint, body = {}, button = null) {
-        if (isActionInProgress) return;
-        isActionInProgress = true;
-        if (button) toggleSpinner(button, true);
+        // Allow /scan endpoint to run even if isActionInProgress is true, as it's the initiating action
+        // For other endpoints, block if an action is already in progress.
+        const isScanEndpoint = (endpoint === '/scan' || endpoint === '/start_vuln_scan');
+        if (isActionInProgress && !isScanEndpoint) return null; 
+
+        // For /scan endpoint, isActionInProgress and spinner toggling should be handled by initiateScan()
+        if (!isScanEndpoint) {
+            isActionInProgress = true;
+            if (button) toggleSpinner(button, true);
+        }
 
         if (!csrfToken) {
             appendLog('[x] Error: CSRF Token missing. Refresh page.');
-            isActionInProgress = false;
-            if (button) toggleSpinner(button, false);
+            // Only reset if this wasn't a scan initiation
+            if (!isScanEndpoint) {
+                isActionInProgress = false;
+                if (button) toggleSpinner(button, false);
+            }
             return null;
         }
 
@@ -189,8 +203,11 @@ document.addEventListener('DOMContentLoaded', () => {
             setStatus('Error', 'error');
             return null;
         } finally {
-            if (button) toggleSpinner(button, false);
-            isActionInProgress = false;
+            // Only reset if this wasn't a scan initiation
+            if (!isScanEndpoint) {
+                if (button) toggleSpinner(button, false);
+                isActionInProgress = false;
+            }
         }
     }
     
@@ -304,8 +321,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function checkReportAvailability() {
+        const target = elements.targetIpInput.value.trim();
         try {
-            const response = await fetch(`${API_BASE_URL}/report_files`);
+            const url = target ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report_files`;
+            const response = await fetch(url);
             if (response.ok) {
                 const data = await response.json();
                 if (data.status === 'success' && data.pdf_report) {
@@ -337,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const overlay = elements.aiProcessingOverlay;
         const processingText = elements.aiProcessingText;
         const llmOptions = elements.llmAnalysisOptions;
+        const target = elements.targetIpInput.value.trim();
 
         if (!button || button.disabled) return;
         
@@ -344,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (overlay) overlay.classList.remove('hidden');
         
         if (processingText) {
-            processingText.textContent = llmMode === 'gemini' 
+            processingText.textContent = llmMode.includes('gemini') 
                 ? 'CONTACTING GEMINI...' 
                 : 'LOADING LOCAL MODEL...';
         }
@@ -358,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken 
                 },
-                body: JSON.stringify({ llm_mode: llmMode })
+                body: JSON.stringify({ llm_mode: llmMode, target: target })
             });
             let data = await response.json();
             
@@ -375,6 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ 
                     llm_mode: llmMode, 
                     scanner_type: data.scanner_type,
+                    target: data.target, // Pass sanitized target
                     force_new_session: true // [NEW] Force a fresh chat
                 })
             });
@@ -412,43 +433,112 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // --- Multi-Mode UI Update ---
-        // Note: We don't change button text here anymore as it is selected beforehand,
-        // unless it is a specific separate button (like vuln scan).
-        
-        lastScanType = scanType === 'default' ? protocolType.toLowerCase() : scanType;
+        // Update state
+        lastScanType = scanType;
+
+        // Set action in progress and show spinner immediately
+        isActionInProgress = true;
+        if (button) toggleSpinner(button, true);
+
         setStatus(`Scanning (${scanType})...`, 'busy');
         switchTab('ports'); 
 
         const whitelist = elements.whitelistPortsInput ? elements.whitelistPortsInput.value.split(',').map(s => s.trim()).filter(s => s) : [];
 
-        await apiPost('/scan', {
-            target_ip: targetIp,
-            protocol_type: protocolType,
-            scan_type: scanType,
-            timing: parseInt(timingVal), // Pass timing to backend
-            whitelist: whitelist
-        }, button);
+        try {
+            const data = await apiPost('/scan', { // Note: this apiPost won't toggle spinner itself
+                target_ip: targetIp,
+                protocol_type: protocolType,
+                scan_type: scanType,
+                timing: parseInt(timingVal), // Pass timing to backend
+                whitelist: whitelist
+            });
+
+            if (data && data.queue_id) {
+                initializeLogStream(data.queue_id); // Pass queue_id to log stream
+            } else {
+                throw new Error("Scan initiation failed or no queue_id received.");
+            }
+        } catch (error) {
+            appendLog(`[x] Scan initiation failed: ${error.message}`);
+            setStatus('Error', 'error');
+            isActionInProgress = false; // Reset on failure
+            if (button) toggleSpinner(button, false); // Hide spinner on failure
+        }
     }
     
-    function initializeLogStream() {
-        const eventSource = new EventSource(`${API_BASE_URL}/log_stream`);
-        eventSource.onmessage = (event) => {
-            const message = event.data;
-            if (message.startsWith(':')) return;
-            appendLog(message);
+    function initializeLogStream(queueId) {
+        if (eventSource) {
+            eventSource.close();
+            if (queueId) appendLog('[*] Existing log stream closed.');
+        }
 
-            if (message.toLowerCase().includes("scan complete") || message.toLowerCase().includes("finished")) {
+        // Establish EventSource - queueId is optional for general logs
+        const url = queueId ? `${API_BASE_URL}/log_stream?queue_id=${queueId}` : `${API_BASE_URL}/log_stream`;
+        eventSource = new EventSource(url);
+
+        eventSource.onmessage = (event) => {
+            let rawData = event.data;
+            if (rawData.startsWith(':')) return; // Keep-alive messages
+
+            let displayMessage = rawData;
+            try {
+                const logData = JSON.parse(rawData);
+                
+                // If a specific queueId is being tracked, ignore messages from other queues
+                if (queueId && logData.queue_id && logData.queue_id !== queueId) {
+                    return;
+                }
+                
+                displayMessage = logData.message || rawData;
+            } catch (e) {
+                // Message is not JSON, use as is
+            }
+
+            if (displayMessage.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
+                appendLog('[✓] Network Scan Complete!');
                 setStatus('Scan Complete', 'success');
                 fetchAndDisplayOpenPorts();
                 loadScanResults(lastScanType);
                 checkReportAvailability();
+                
+                isActionInProgress = false;
+                toggleSpinner(elements.scanTcpBtn, false);
+                toggleSpinner(elements.scanVulnBtn, false);
+                eventSource.close();
+            }
+
+            if (displayMessage.includes("[!] Scan failed") || displayMessage.includes("Scan failed to produce")) {
+                setStatus('Scan Failed', 'error');
+                isActionInProgress = false;
+                toggleSpinner(elements.scanTcpBtn, false);
+                toggleSpinner(elements.scanVulnBtn, false);
+                eventSource.close();
+            }
+            
+            // [FIX] Filter out EVENT: messages even if they have timestamps
+            if (displayMessage.includes("EVENT:") || displayMessage.startsWith("EVENT:")) return;
+            appendLog(displayMessage);
+        };
+
+        eventSource.onerror = (error) => {
+            console.error('EventSource failed:', error);
+            // Don't show error log immediately if it's just a closure
+            if (eventSource.readyState !== EventSource.CLOSED) {
+                 // appendLog('[x] Log stream error or disconnected.'); // Silent reconnect better
+            }
+            eventSource.close();
+            
+            // Re-enable buttons only if not manually stopped by complete/failed event
+            if (isActionInProgress) {
+                isActionInProgress = false;
+                toggleSpinner(elements.scanTcpBtn, false);
+                toggleSpinner(elements.scanVulnBtn, false);
+                setStatus('Error', 'error');
             }
         };
-        eventSource.onerror = () => {
-            console.warn('Log stream disconnected.');
-            eventSource.close();
-        };
+        
+        // Removed generic queue ID log as per user request
     }
     
     function switchTab(tabName) {

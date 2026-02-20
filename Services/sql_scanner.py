@@ -43,49 +43,31 @@ def is_scan_running(user_id):
         return user_id in active_scans
 
 # --- LOGGING UTILS ---
-def log(message, user_id=None, to_console=False):
-    """Logs messages to queue for SSE streaming and file."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    full_message = f"data: [{timestamp}] {message}\n\n"
+from Services import scan_logger
+
+# --- LOGGING UTILS ---
+def log(message, user_id=None, to_console=False, level='INFO'):
+    """
+    Logs messages using the centralized scan_logger.
+    """
+    timestamp = datetime.now().strftime("%H:%M:%S")
     
     if to_console:
         print(f"[{timestamp}] {message}")
     
     if user_id:
-        user_id = str(user_id)
-        uq = get_user_queue(user_id)
-        uq.put(message)
-
-    # Determine Log File Path
-    log_dir = BASE_DIR / "logs"
-    if user_id:
-        user_id = str(user_id)
-        target_dir = log_dir / "users" / user_id
-        target_dir.mkdir(parents=True, exist_ok=True)
-        target_log_file = target_dir / "sql_agent_log.txt"
-    else:
-        system_dir = log_dir / "system"
-        system_dir.mkdir(parents=True, exist_ok=True)
-        target_log_file = system_dir / "sql_system_log.txt"
-
-    try:
-        with open(target_log_file, 'a', encoding='utf-8') as f:
-            f.write(f"[{timestamp}] {message}\n")
-    except Exception as e:
-        print(f"ERROR: Failed to write to {target_log_file}: {e}")
+        scan_logger.write_log(user_id, "sql", message, level=level)
 
 def send_sse_event(event_name, data="", user_id=None):
-    """Sends a custom SSE event to the user's log_queue."""
+    """
+    Simulates SSE event by logging a special format line that tail_log_file can pick up.
+    """
     if isinstance(data, (dict, list)):
         data_str = json.dumps(data)
     else:
         data_str = str(data)
-    sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
     
-    if user_id:
-        user_id = str(user_id)
-        uq = get_user_queue(user_id)
-        uq.put(sse_message)
+    log(f"EVENT: {event_name} | PAYLOAD: {data_str}", user_id)
 
 def get_python_executable():
     return sys.executable

@@ -51,51 +51,32 @@ def get_user_queue(user_id):
 
 # --- Logging and SSE Helpers ---
 
-def log(message, user_id=None, to_console=False):
+from Services import scan_logger
+
+# --- Logging and SSE Helpers ---
+
+def log(message, user_id=None, to_console=False, level='INFO'):
     """
-    Logs messages to queue and file.
-    Organized Path: logs/users/{user_id}/packet_sniffer_log.txt
+    Logs messages using the centralized scan_logger.
     """
-    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    full_message = f"data: [{timestamp}] {message}\n\n"
+    timestamp = time.strftime("%H:%M:%S")
     
     if to_console:
         print(f"[{timestamp}] {message}")
     
     if user_id:
-        user_id = str(user_id)
-        uq = get_user_queue(user_id)
-        uq.put(message)
-
-    # Determine Log File Path
-    if user_id:
-        user_id = str(user_id)
-        log_dir = LOG_DIR / "users" / user_id
-        log_dir.mkdir(parents=True, exist_ok=True)
-        target_log_file = log_dir / "packet_sniffer_log.txt"
-    else:
-        system_dir = LOG_DIR / "system"
-        system_dir.mkdir(parents=True, exist_ok=True)
-        target_log_file = system_dir / "packet_sniffer_system_log.txt"
-
-    try:
-        with open(target_log_file, 'a', encoding='utf-8') as f:
-            f.write(f"[{timestamp}] {message}\n")
-    except Exception as e:
-        print(f"ERROR: Failed to write log file: {e}", file=sys.stderr)
+        scan_logger.write_log(user_id, "packet_sniffer", message, level=level)
 
 def send_sse_event(event_name, data="", user_id=None):
-    """Sends a custom SSE event to the user's log_queue."""
+    """
+    Simulates SSE event by logging a special format line that tail_log_file can pick up.
+    """
     if isinstance(data, (dict, list)):
         data_str = json.dumps(data)
     else:
         data_str = str(data)
-    sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
     
-    if user_id:
-        user_id = str(user_id)
-        uq = get_user_queue(user_id)
-        uq.put(sse_message)
+    log(f"EVENT: {event_name} | PAYLOAD: {data_str}", user_id)
 
 def clear_log_file(user_id):
     """Clears the log file and queue for a specific user."""

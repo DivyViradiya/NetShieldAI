@@ -14,7 +14,12 @@ import joblib
 from pathlib import Path
 import queue
 import threading
+import queue
+import threading
 from zapv2 import ZAPv2
+from extensions import db
+from models import ScanLog, User
+from Services import scan_logger
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
@@ -29,6 +34,7 @@ LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
 TEMP_DIR = os.path.join(BASE_DIR, "temp", "api_scanner")
 
 # --- Global State for Process Management (Isolated by user_id) ---
+# --- Global State for Process Management (Transient - Process Only) ---
 active_scans = {} # { "user_id": {"process": Popen, "target": str, "start_time": float} }
 scan_lock = threading.Lock()
 
@@ -45,49 +51,61 @@ def is_scan_running(user_id):
     with scan_lock:
         return user_id in active_scans
 
+def get_scan_status(user_id):
+    """
+    Returns the current status of the scan for a user from the DATABASE.
+    """
+    try:
+        # Query DB for the latest 'Running' scan for this user and tool
+        scan = ScanLog.query.filter_by(
+            user_id=user_id.split('_')[-1], # Extract ID from composite
+            tool_name='API',
+            status='Running'
+        ).order_by(ScanLog.start_time.desc()).first()
+
+        if scan:
+            return {
+                "status": "running",
+                "target": scan.target,
+                "start_time": scan.start_time.timestamp()
+            }
+        
+        # Check for recent completed/failed
+        recent = ScanLog.query.filter_by(
+            user_id=user_id.split('_')[-1],
+            tool_name='API'
+        ).order_by(ScanLog.start_time.desc()).first()
+
+        if recent:
+             return {
+                "status": recent.status.lower(), # completed/failed
+                "target": recent.target,
+                "timestamp": recent.end_time.strftime("%Y-%m-%d %H:%M:%S") if recent.end_time else ""
+            }
+
+    except Exception as e:
+        print(f"Error getting DB scan status: {e}")
+
+    return None
+
 # --- LOGGING FUNCTIONS ---
-def log(message, user_id=None, to_console=False):
+def log(message, user_id=None, to_console=False, level='INFO'):
     """
-    Logs messages to queue and file. Isolated by user_id.
+    Logs messages using the centralized scan_logger.
     """
-    timestamp = datetime.now().strftime("%H:%M:%S")
-    log_message = f"[{timestamp}] {message}"
-    
     if to_console:
-        print(log_message)
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
     
     if user_id:
-        user_id = str(user_id)
-        user_dir = os.path.join(LOGS_DIR, "users", user_id)
-        os.makedirs(user_dir, exist_ok=True)
-            
-        user_log_file = os.path.join(user_dir, "api_agent_log.txt")
-        try:
-            with open(user_log_file, 'a', encoding='utf-8') as f:
-                f.write(log_message + "\n")
-        except: pass
-
-        uq = get_user_queue(user_id)
-        uq.put(message)
-    else:
-        system_dir = os.path.join(LOGS_DIR, "system")
-        os.makedirs(system_dir, exist_ok=True)
-        try:
-            with open(os.path.join(system_dir, "api_system_log.txt"), 'a', encoding='utf-8') as f:
-                f.write(log_message + "\n")
-        except: pass
+        scan_logger.write_log(user_id, "api", message, level=level)
 
 def clear_log_file(user_id):
     if not user_id: return
-    user_id = str(user_id)
-    user_log_file = os.path.join(LOGS_DIR, "users", user_id, "api_agent_log.txt")
+    log_file = scan_logger.get_active_log_file(user_id, "api")
     try:
-        if os.path.exists(user_log_file):
-            with open(user_log_file, 'w', encoding='utf-8') as f:
-                f.write(f"--- Log cleared at {datetime.now()} ---\n")
-        uq = get_user_queue(user_id)
-        with uq.mutex: uq.queue.clear()
-    except: pass
+        open(log_file, 'w').close()
+    except:
+        pass
 
 # --- ML Model Setup ---
 MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
@@ -116,6 +134,36 @@ def get_output_paths(user_output_dir, user_id=None):
         "pdf_report": base / "api_scan_report.pdf"
     }
 
+# --- API Authentication and GraphQL Helpers ---
+
+def setup_api_auth(zap, auth_token=None, user_id=None):
+    """
+    Configures ZAP to inject a Bearer token or API Key into every request.
+    Uses ZAP's 'replacer' rule to add the Authorization header.
+    """
+    if not auth_token:
+        return
+
+    try:
+        log(f"[AUTH] Configuring Token-Based Auth (Bearer/API-Key)...", user_id)
+        # Enable Replacer
+        zap.replacer.set_enabled('true')
+        
+        # Add Header Rule: Replace (or add) 'Authorization' header
+        # Match any 'Authorization' header and replace with new one, or add if missing
+        zap.replacer.add_rule(
+            description='API_Auth_Token',
+            enabled='true',
+            matchtype='REQ_HEADER',
+            matchregex='false',
+            matchstring='Authorization',
+            replacement=f"Bearer {auth_token}" if not auth_token.startswith("Bearer ") else auth_token,
+            initiators=''
+        )
+        log(f"[AUTH] Header injection rule added.", user_id)
+    except Exception as e:
+        log(f"[!] Error setting up API Auth: {e}", user_id)
+
 # --- Core API Scan Logic ---
 
 def wait_for_zap(port, timeout=120):
@@ -126,7 +174,7 @@ def wait_for_zap(port, timeout=120):
         except: time.sleep(2)
     return False
 
-def run_api_scan(target_url, definition_url, report_path, user_id):
+def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=None):
     if not os.path.exists(ZAP_EXECUTABLE_PATH):
         log(f"Error: ZAP executable not found.", user_id)
         return False
@@ -141,6 +189,10 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
     os.makedirs(unique_zap_dir, exist_ok=True)
 
     log(f"--- Initializing API Scanner (Port: {assigned_port}) ---", user_id, to_console=True)
+
+    # [NEW] Log Start Element in DB
+    db_user_id = int(user_id.split('_')[-1])
+    log_id = scan_logger.log_scan_start(db_user_id, "API", target_url, scan_type="Standard")
 
     command = [
         ZAP_EXECUTABLE_PATH, '-daemon', '-port', str(assigned_port), 
@@ -162,18 +214,28 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
         if not wait_for_zap(assigned_port): return False
         
         zap = ZAPv2(proxies={'http': f'http://127.0.0.1:{assigned_port}', 'https': f'http://127.0.0.1:{assigned_port}'})
-        log("[STAGE] Importing OpenAPI Definition...", user_id)
-        zap.openapi.import_url(definition_url)
+        
+        # 1. Setup Authentication Header Injection
+        if auth_token:
+            setup_api_auth(zap, auth_token, user_id)
+
+        # 2. Import Definition (OpenAPI or GraphQL)
+        if "graphql" in definition_url.lower() or "graphql" in target_url.lower():
+            log("[STAGE] Importing GraphQL Schema...", user_id)
+            # ZAP has a graphql add-on that handles both URLs and files
+            zap.graphql.import_url(definition_url)
+        else:
+            log("[STAGE] Importing OpenAPI Definition...", user_id)
+            zap.openapi.import_url(definition_url)
+        
         time.sleep(2)
 
         log(f"[STAGE] Starting Web Spider...", user_id)
         zap.spider.scan(target_url)
         while int(zap.spider.status()) < 100:
             status = int(zap.spider.status())
-            # Manual bracket generation for API scanner
             filled = status // 5
-            empty = 20 - filled
-            bracket = "[" + ("=" * filled) + (" " * empty) + "]"
+            bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"
             log(f"[PROGRESS] {bracket} {status}%", user_id)
             time.sleep(2)
 
@@ -184,10 +246,8 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
         while True:
             current_progress = int(zap.ascan.status(scan_id))
             if current_progress > last_progress:
-                # Manual bracket generation
                 filled = current_progress // 5
-                empty = 20 - filled
-                bracket = "[" + ("=" * filled) + (" " * empty) + "]"
+                bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"
                 log(f"[PROGRESS] {bracket} {current_progress}%", user_id)
                 last_progress = current_progress
             
@@ -200,9 +260,18 @@ def run_api_scan(target_url, definition_url, report_path, user_id):
         with open(report_path, 'w', encoding='utf-8') as f: f.write(xml_report)
         return True
     except Exception as e:
+        return True
+    except Exception as e:
         log(f"Scan Error: {e}", user_id)
+        error_msg = str(e) # Capture for DB
         return False
     finally:
+        # [NEW] Log End Element in DB
+        final_status = "Completed" if zap else "Failed"
+        if 'error_msg' not in locals(): error_msg = None
+        
+        scan_logger.log_scan_end(log_id, status=final_status, error_msg=error_msg)
+
         # Unregister process
         with scan_lock:
             if user_id in active_scans:

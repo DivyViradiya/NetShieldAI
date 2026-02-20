@@ -745,15 +745,7 @@
         color: var(--text-secondary);
     }
     
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--neo-blue);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
     
     .tab-pills {
       display: flex;
@@ -819,8 +811,9 @@
             </div>
 
             <div class="controls-toolbar">
-                <button id="scanQuickBtn" class="btn-dash btn-primary btn-icon-only" title="Quick Detection Scan">
-                    <span class="material-symbols-outlined" style="font-size:1.1rem">bolt</span>
+                <button id="scanQuickBtn" class="btn-dash btn-primary btn-icon-only" title="Start Quick SQL Scan">
+                    <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+                    <span class="spinner hidden"></span>
                 </button>
 
                 <div class="relative">
@@ -847,9 +840,9 @@
         </div>
         
         <div class="control-row-bottom">
-            <button id="scanFullBtn" class="btn-dash btn-danger-outline" title="Full Enumeration (Slow)" style="min-width: 140px;">
-                <span class="material-symbols-outlined" style="font-size:1.1rem">bomb</span>
-                <span>START FULL SCAN</span>
+            <button id="scanFullBtn" class="btn-dash btn-danger-outline" title="Start Full Enumeration Scan" style="min-width: 140px;">
+                <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+                <span class="button-text">START FULL SCAN</span>
                 <span class="spinner hidden"></span>
             </button>
 
@@ -973,9 +966,9 @@
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
                   Local LLM
                 </a>
-                <a href="#" data-llm-mode="gemini" class="dropdown-link">
+                <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">auto_awesome</span>
-                  Gemini AI
+                  Gemini 2.5 Flash
                 </a>
               </div>
             </div>

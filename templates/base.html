@@ -62,6 +62,7 @@
         --neo-text-secondary: var(--text-muted);
         --neo-text-label: #64748b;
         --neo-card-hover: var(--surface-elevated);
+        --accent-vibrant-spinner: #00FFFF; /* Vibrant cyan for spinner */
 
         /* Standardized Heights */
         --navbar-height: 64px;
@@ -74,10 +75,10 @@
       /* LIGHT MODE OVERRIDES (ARCTIC TECHNICAL MINIMALISM) */
       body.light-mode {
         --bg-primary: #f8fafc; /* Soft cool-gray structure */
-        --bg-secondary: #f1f5f9;
+        --bg-secondary: #eef2ff; /* Indigo-50 tinted wash */
         --surface-primary: #ffffff;
         --surface-elevated: #ffffff;
-        --surface-subtle: #f8fafc;
+        --surface-subtle: #f5f7ff; /* Faint indigo tint */
 
         --border-default: #e2e8f0; /* Slate-200 - Structure over shadow */
         --border-subtle: #f1f5f9; /* Slate-100 */
@@ -117,6 +118,7 @@
         --neo-text-secondary: var(--text-secondary);
         --neo-text-label: var(--text-muted);
         --neo-card-hover: var(--bg-secondary);
+        --accent-vibrant-spinner: #00BFFF; /* Vibrant deep sky blue for spinner */
 
         --scrollbar-thumb: rgba(0, 0, 0, 0.1);
         --scrollbar-hover: var(--text-muted);
@@ -137,6 +139,20 @@
 
       body.light-mode {
         color: var(--text-secondary);
+      }
+
+      /* Frosted Arctic — Subtle dot grid background pattern */
+      body.light-mode::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(circle, rgba(99, 102, 241, 0.07) 1px, transparent 1px);
+        background-size: 24px 24px;
+        pointer-events: none;
+        z-index: 0;
       }
 
       /* Global Link Refinement */
@@ -267,11 +283,11 @@
       }
 
       body.light-mode .navbar {
-        background-color: var(--surface-primary);
+        background-color: rgba(255, 255, 255, 0.85);
         border-bottom: 1px solid var(--border-default);
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03); /* Subtle separation */
-        backdrop-filter: none; /* Institutional stability */
-        -webkit-backdrop-filter: none;
+        box-shadow: 0 1px 8px 0 rgba(99, 102, 241, 0.06); /* Frosted indigo shadow */
+        backdrop-filter: blur(16px); /* Frosted glass effect */
+        -webkit-backdrop-filter: blur(16px);
       }
       
       .navbar-container {
@@ -403,9 +419,11 @@
       }
 
       body.light-mode .profile-dropdown-content {
-        background-color: var(--surface-primary);
+        background-color: rgba(255, 255, 255, 0.95);
         border-color: var(--border-default);
-        box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.08);
+        box-shadow: 0px 10px 40px rgba(99, 102, 241, 0.1); /* Frosted indigo */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
       }
       
       /* New: User Header (Name & Email) */
@@ -527,6 +545,22 @@
           transform: translateY(0);
         }
       }
+
+      /* Global Spinner Style - VIBRANT */
+      .spinner {
+        width: 18px; /* Slightly larger for better visibility */
+        height: 18px; /* Slightly larger for better visibility */
+        border: 3px solid rgba(255, 255, 255, 0.2); /* Thicker, subtle base */
+        border-top-color: var(--accent-vibrant-spinner); /* Use the vibrant accent color */
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite; /* Consistent speed */
+        display: inline-block; /* Ensure it respects width/height */
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
       
       /*******************************************/
       /* --- FLASH MESSAGES --- */
@@ -610,10 +644,10 @@
       }
 
       body.light-mode footer {
-        background-color: var(--surface-primary);
+        background-color: rgba(255, 255, 255, 0.85);
         border-top: 1px solid var(--border-default);
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
       }
 
       /* Subtle line on top of footer */
@@ -692,14 +726,14 @@
       }
 
       body.light-mode .section-card {
-        background-color: var(--surface-primary);
+        background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%); /* Ice-blue wash */
         border-color: var(--border-default);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06); /* Soft indigo glow */
       }
 
       body.light-mode .section-card:hover {
-        border-color: var(--text-muted);
-        background-color: var(--surface-subtle);
+        border-color: rgba(99, 102, 241, 0.3); /* Indigo-tinted border */
+        box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1); /* Deeper indigo glow */
       }
       
       .fade-in-element {

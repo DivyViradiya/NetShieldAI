@@ -35,33 +35,28 @@ def is_scan_running(user_id):
         return user_id in active_scans
 
 # --- Logging & Events ---
-def log(message, user_id=None, to_console=False):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    full_message = f"data: [{timestamp}] {message}\n\n"
+from Services import scan_logger
+
+# --- Logging & Events ---
+def log(message, user_id=None, to_console=False, level='INFO'):
+    """
+    Logs messages using the centralized scan_logger.
+    """
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    
     if to_console: print(f"[{timestamp}] {message}")
     
     if user_id:
-        user_id = str(user_id)
-        uq = get_user_queue(user_id)
-        uq.put(message)
-        log_dir = LOG_DIR / "users" / user_id
-        log_dir.mkdir(parents=True, exist_ok=True)
-        log_path = log_dir / "semgrep_agent_log.txt"
-    else:
-        log_path = LOG_DIR / "system" / "semgrep_system_log.txt"
-
-    try:
-        with open(log_path, 'a', encoding='utf-8') as f:
-            f.write(f"[{timestamp}] {message}\n")
-    except: pass
+        scan_logger.write_log(user_id, "semgrep", message, level=level)
 
 def send_sse_event(event_name, data="", user_id=None):
+    """
+    Simulates SSE event by logging a special format line that tail_log_file can pick up.
+    """
     if isinstance(data, (dict, list)): data_str = json.dumps(data)
     else: data_str = str(data)
-    sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
-    if user_id:
-        uq = get_user_queue(user_id)
-        uq.put(sse_message)
+    
+    log(f"EVENT: {event_name} | PAYLOAD: {data_str}", user_id)
 
 def clear_log_file(user_id):
     if not user_id: return

@@ -166,3 +166,115 @@
 [2026-02-16 15:13:35] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_df4b1bfd.txt 10.120.106.1
 [2026-02-16 15:13:48] [!] Nmap scan failed with error: 
 [2026-02-16 15:34:42] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-17 09:36:50] [+] Running VULN scan on 192.168.29.1 with timing -T4...
+[2026-02-17 09:36:50] [*] Executing: nmap -T4 -sC -sV --script vuln -Pn -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_7abd8776.txt 192.168.29.1
+[2026-02-17 09:46:58] [+] VULN scan complete. Results synchronized.
+[2026-02-17 09:46:58] [+] Processing results for PDF report...
+[2026-02-17 09:46:59] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 09:46:59] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-17 09:47:03] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.pdf
+[2026-02-17 15:42:00] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-17 15:42:04] [+] Running TCP (Top 1000) scan on 10.120.96.1 with timing -T4...
+[2026-02-17 15:42:04] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_2a67a411.txt 10.120.96.1
+[2026-02-17 15:42:08] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 15:42:08] [+] Processing results for PDF report...
+[2026-02-17 15:42:08] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 15:42:08] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_10_120_96_1.pdf
+[2026-02-17 15:42:12] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_10_120_96_1.pdf
+[2026-02-17 19:18:46] [*] Starting Master Kill Chain PDF generation: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\killchain\reports\killchain_report_testphp_vulnweb_com.pdf
+[2026-02-17 19:18:50] [+] Master Kill Chain Report successfully generated at: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\killchain\reports\killchain_report_testphp_vulnweb_com.pdf
+[2026-02-17 19:20:09] [*] Starting Master Kill Chain PDF generation: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\killchain\reports\killchain_report_testphp_vulnweb_com.pdf
+[2026-02-17 19:20:11] [+] Master Kill Chain Report successfully generated at: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\killchain\reports\killchain_report_testphp_vulnweb_com.pdf
+[2026-02-17 19:54:25] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-17 19:54:27] [+] Running TCP (Top 1000) scan on 192.168.29.1 with timing -T4...
+[2026-02-17 19:54:27] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_424d84ff.txt 192.168.29.1
+[2026-02-17 19:54:33] [+] Running TCP (Top 1000) scan on 192.168.29.1 with timing -T4...
+[2026-02-17 19:54:33] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_4b8a4d86.txt 192.168.29.1
+[2026-02-17 19:56:34] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 19:56:35] [+] Processing results for PDF report...
+[2026-02-17 19:56:35] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 19:56:41] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 19:56:41] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_1.pdf
+[2026-02-17 19:56:42] [+] Processing results for PDF report...
+[2026-02-17 19:56:42] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 19:56:42] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_1.pdf
+[2026-02-17 19:56:44] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_1.pdf
+[2026-02-17 19:56:44] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_1.pdf
+[2026-02-17 20:06:24] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-17 20:06:58] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-17 20:07:01] [+] Running TCP (Top 1000) scan on 192.168.29.1 with timing -T4...
+[2026-02-17 20:07:02] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_ea466e96.txt 192.168.29.1
+[2026-02-17 20:07:32] [*] Starting Master Kill Chain PDF generation: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\killchain\reports\killchain_report_testphp_vulnweb_com.pdf
+[2026-02-17 20:07:36] [+] Master Kill Chain Report successfully generated at: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\killchain\reports\killchain_report_testphp_vulnweb_com.pdf
+[2026-02-17 20:08:12] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-17 20:08:21] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 20:08:22] [+] Processing results for PDF report...
+[2026-02-17 20:08:23] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 20:08:23] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_1.pdf
+[2026-02-17 20:08:27] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_1.pdf
+[2026-02-17 20:10:45] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[2026-02-17 20:10:45] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_86a4f7ba.txt 192.168.29.48
+[2026-02-17 20:10:53] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 20:10:55] [+] Processing results for PDF report...
+[2026-02-17 20:10:56] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 20:10:56] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 20:10:57] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 20:16:09] [*] Starting Condensed PDF generation for Packet Sniffer...
+[2026-02-17 20:16:13] [+] Condensed Sniffer Report saved: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\packet_sniffer\pcap_analysis_report_192_168_29_48.pdf
+[2026-02-17 20:18:25] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[2026-02-17 20:18:25] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_9b3e8001.txt 192.168.29.48
+[2026-02-17 20:18:33] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 20:18:34] [+] Processing results for PDF report...
+[2026-02-17 20:18:35] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 20:18:35] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 20:18:38] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 21:52:29] [+] Running TCP (Top 1000) scan on 192.168.29.1 with timing -T4...
+[2026-02-17 21:52:29] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_bf4b0d3f.txt 192.168.29.1
+[2026-02-17 21:53:48] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 21:55:02] [+] Processing results for PDF report...
+[2026-02-17 21:55:02] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 21:55:02] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_1.pdf
+[2026-02-17 21:55:04] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_1.pdf
+[2026-02-17 22:13:10] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[2026-02-17 22:13:10] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_3cb8dfb3.txt 192.168.29.48
+[2026-02-17 22:13:22] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 22:13:24] [!] Error extracting TCP open ports: list indices must be integers or slices, not str
+[2026-02-17 22:13:24] [+] Processing results for PDF report...
+[2026-02-17 22:13:25] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 22:13:25] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 22:13:29] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 22:26:17] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-17 22:26:26] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[2026-02-17 22:26:26] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_25770a61.txt 192.168.29.48
+[2026-02-17 22:26:35] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 22:26:36] [!] Error extracting TCP open ports: list indices must be integers or slices, not str
+[2026-02-17 22:26:36] [+] Processing results for PDF report...
+[2026-02-17 22:26:37] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 22:26:37] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 22:26:38] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 22:29:36] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[2026-02-17 22:29:37] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_ad87e27f.txt 192.168.29.48
+[2026-02-17 22:29:44] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-17 22:29:46] [+] Processing results for PDF report...
+[2026-02-17 22:29:47] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-17 22:29:47] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 22:29:48] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-17 22:29:59] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-18 09:56:51] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[2026-02-18 09:56:56] [+] Running TCP (Top 1000) scan on 192.168.0.1 with timing -T4...
+[2026-02-18 09:56:56] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_sys_7728caac.txt 192.168.0.1
+[2026-02-18 09:57:08] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-18 09:57:08] [+] Processing results for PDF report...
+[2026-02-18 09:57:08] [+] JSON Scan report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report.json
+[2026-02-18 09:57:08] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_0_1.pdf
+[2026-02-18 09:57:10] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_0_1.pdf
+[2026-02-18 10:02:15] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_0_1.pdf
+[2026-02-18 10:02:17] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_0_1.pdf
+[2026-02-18 10:06:28] [*] Starting SSL PDF generation for target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\ssl_scanner\ssl_report_example_com.pdf
+[2026-02-18 10:06:30] [+] SSL PDF report saved successfully to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\ssl_scanner\ssl_report_example_com.pdf
+[2026-02-18 10:07:59] [*] Starting SQL Injection PDF generation: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report_testphp_vulnweb_com_artists_php_artist_1.pdf
+[2026-02-18 10:08:26] [+] SQL PDF Report generated successfully: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report_testphp_vulnweb_com_artists_php_artist_1.pdf
+[2026-02-19 20:42:54] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-19 20:42:58] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_29_48.pdf
+[2026-02-19 21:49:23] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_28_48.pdf
+[2026-02-19 21:49:24] [+] Nmap PDF Report generated: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_192_168_28_48.pdf

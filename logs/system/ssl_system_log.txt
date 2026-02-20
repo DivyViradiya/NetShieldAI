@@ -3,3 +3,9 @@
 [2026-02-15 13:32:40] [✓] sslscan.exe found.
 [2026-02-15 13:50:50] [✓] sslscan.exe found.
 [2026-02-15 13:50:50] [✓] sslscan.exe found.
+[2026-02-17 20:15:13] [+] Running local SSL scan on google.com...
+[2026-02-17 20:15:13] [*] Executing command: C:\Program Files\sslscan\sslscan.exe --xml=D:\NetShield\NetShieldAI\Services\temp\sslscan\ssl_temp_sys_56e0e51b.xml --show-client-cas --show-cipher-ids --show-signatures google.com
+[2026-02-17 20:15:13] [!] An unexpected error occurred during SSL scan: name 'time' is not defined
+[2026-02-18 10:02:41] [+] Running local SSL scan on google.com...
+[2026-02-18 10:02:41] [*] Executing command: C:\Program Files\sslscan\sslscan.exe --xml=D:\NetShield\NetShieldAI\Services\temp\sslscan\ssl_temp_sys_1a954288.xml --show-client-cas --show-cipher-ids --show-signatures google.com
+[2026-02-18 10:02:41] [!] An unexpected error occurred during SSL scan: name 'time' is not defined

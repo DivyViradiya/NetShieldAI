@@ -236,7 +236,7 @@
     /* --- LAYOUT GRIDS (BALANCED) --- */
     .scan-overview-grid {
       display: grid; 
-      grid-template-columns: 2fr 3fr; 
+      grid-template-columns: 1fr 1fr; 
       gap: 1.5rem;
       margin-bottom: 0.5rem; width: 100%;
     }
@@ -439,12 +439,7 @@
     }
     .btn-text-glow:hover { color: var(--neo-blue); transform: translateX(-4px); }
     
-    .spinner {
-      width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.1);
-      border-top-color: var(--neo-blue); border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    
 
     @media (max-width: 1200px) {
       .scan-overview-grid, .metrics-grid, .main-grid { grid-template-columns: 1fr; height: auto; }
@@ -483,14 +478,14 @@
                 </div>
                 
                 <div class="search-container">
-                    <span class="material-symbols-outlined search-icon">description</span>
-                    <input type="url" id="definitionUrl" class="dash-input" placeholder="ENTER SWAGGER JSON URL..." />
+                    <span class="material-symbols-outlined search-icon">key</span>
+                    <input type="text" id="authToken" class="dash-input" placeholder="API TOKEN (OPTIONAL BEARER)..." />
                 </div>
             </div>
         </div>
 
         <div class="control-row-bottom">
-            <button id="startScanBtn" class="btn-dash btn-primary" style="min-width: 140px;">
+            <button id="startScanBtn" class="btn-dash btn-primary" title="Start API Scan" style="min-width: 140px;">
                 <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
                 <span class="button-text">START SCAN</span>
                 <span class="spinner hidden"></span>
@@ -596,9 +591,9 @@
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
                   Local LLM
                 </a>
-                <a href="#" data-llm-mode="gemini" class="dropdown-link">
+                <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">auto_awesome</span>
-                  Gemini AI
+                  Gemini 2.5 Flash
                 </a>
               </div>
             </div>

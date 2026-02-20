@@ -1,11 +1,49 @@
 import os
+import sys
 import json
+import logging
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
-from weasyprint import HTML, CSS
+import contextlib
+
+# --- Suppress GLib/GIO Warnings (Windows) during WeasyPrint Import ---
+@contextlib.contextmanager
+def suppress_stderr():
+    """
+    Suppresses stderr at the OS level (file descriptor 2).
+    Need to flush Python's sys.stderr first to avoid mixed output.
+    """
+    try:
+        sys.stderr.flush()
+        with open(os.devnull, "w") as devnull:
+            old_stderr_fd = os.dup(sys.stderr.fileno())
+            os.dup2(devnull.fileno(), sys.stderr.fileno())
+            try:
+                yield
+            finally:
+                os.dup2(old_stderr_fd, sys.stderr.fileno())
+                os.close(old_stderr_fd)
+    except Exception:
+        # Fallback if FD manipulation fails (e.g. some restricted envs)
+        yield
+
+with suppress_stderr():
+    from weasyprint import HTML, CSS
+
 import pathlib
 import re
 from Services.network_scanner import log
+
+# --- Suppress Noisy Logs ---
+logging.getLogger('weasyprint').setLevel(logging.ERROR)
+logging.getLogger('fontTools').setLevel(logging.ERROR)
+logging.getLogger('fontTools.subset').setLevel(logging.ERROR)
+logging.getLogger('fontTools.ttLib').setLevel(logging.ERROR)
+logging.getLogger('fontTools.ttLib.tables').setLevel(logging.ERROR)
+logging.getLogger('fontTools.otlLib').setLevel(logging.ERROR)
+logging.getLogger('fontTools.varLib').setLevel(logging.ERROR)
+logging.getLogger('PIL').setLevel(logging.ERROR)
+logging.getLogger('urllib3').setLevel(logging.ERROR)
 
 # --- Path Configuration ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -109,7 +147,7 @@ def create_nmap_report_pdf(source_data, pdf_path):
         html = HTML(string=rendered_html, base_url=base_url)
         html.write_pdf(pdf_path, stylesheets=[css] if css else [])
         
-        log(f"[+] Nmap PDF Report generated: {pdf_path}", to_console=True)
+        log(f"[+] Nmap PDF Report generated", to_console=True)
         return True
     except Exception as e:
         log(f"[!] WeasyPrint PDF Generation Error: {e}")
@@ -140,6 +178,8 @@ def create_zap_report_pdf(source_data, pdf_path):
         "logo_url": pathlib.Path(logo_path).as_uri(),
         "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         "target_url": zap_data.get("target_url"),
+        "scan_mode": zap_data.get("scan_mode"),
+        "use_ajax": zap_data.get("use_ajax"),
         "scan_date": zap_data.get("scan_date"),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "summary": zap_data.get("summary", {}),
@@ -159,7 +199,7 @@ def create_zap_report_pdf(source_data, pdf_path):
 
     base_url = pathlib.Path(PROJECT_ROOT).as_uri()
     HTML(string=rendered_html, base_url=base_url).write_pdf(pdf_path, stylesheets=[css] if css else [])
-    log(f"[+] ZAP PDF report saved successfully to: {pdf_path}", to_console=True)
+    log(f"[+] ZAP PDF report saved successfully", to_console=True)
     return True
 
 def create_ssl_report_pdf(source_data, pdf_path):
@@ -308,7 +348,7 @@ def create_ssl_report_pdf(source_data, pdf_path):
             log(f"[!] Warning: CSS file not found at {CSS_FILE_PATH}")
             
         html_obj.write_pdf(pdf_path, stylesheets=stylesheets)
-        log(f"[+] SSL PDF report saved successfully to: {pdf_path}", to_console=True)
+        log(f"[+] SSL PDF report saved successfully", to_console=True)
         return True
     except Exception as e:
         log(f"[!] FAILED to generate PDF: {e}")
@@ -429,7 +469,7 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
         stylesheets = [CSS(filename=CSS_FILE_PATH)] if os.path.exists(CSS_FILE_PATH) else []
         
         HTML(string=rendered_html, base_url=base_url).write_pdf(pdf_path, stylesheets=stylesheets)
-        log(f"[+] Condensed Sniffer Report saved: {pdf_path}", to_console=True)
+        log(f"[+] Condensed Sniffer Report saved", to_console=True)
         return True
     except Exception as e:
         log(f"[!] PDF Generation Error: {e}")
@@ -439,6 +479,9 @@ def create_killchain_report_pdf(source_data, pdf_path):
     """
     Renders the Full-Spectrum Kill Chain Report aligned to the NetShieldAI JSON structure.
     """
+    # Import log locally to avoid circular import issues if placed at top
+    from Services.network_scanner import log 
+
     log(f"[*] Starting Master Kill Chain PDF generation: {pdf_path}", to_console=True)
 
     # 1. Data Loading
@@ -452,17 +495,34 @@ def create_killchain_report_pdf(source_data, pdf_path):
     else:
         data = source_data
 
-    # 2. Enhanced Stats Calculation
-    # Uses 'vulns_grouped' from JSON to generate high-level stats for the dashboard
-    grouped = data.get("vulns_grouped", {})
-    severity_order = ["Critical", "High", "Medium", "Low", "Info"]
+    # 2. Enhanced Stats Calculation and Grouping for all_findings
+    all_findings = data.get("all_findings", [])
     
-    # Calculate counts with a default of 0 if the category is missing
-    stats = {sev: len(grouped.get(sev, [])) for sev in severity_order}
+    # Define a consistent severity order and mapping for all tools
+    severity_order_map = {
+        "Critical": 5, "High": 4, "Medium": 3, "Low": 2, "Info": 1, "Informational": 1
+    }
+    
+    # Initialize severity counts and grouped findings
+    severity_counts = {"Critical": 0, "High": 0, "Medium": 0, "Low": 0, "Info": 0}
+    grouped_findings = {"Critical": [], "High": [], "Medium": [], "Low": [], "Info": []}
+
+    for finding in all_findings:
+        # Normalize severity from various tools
+        raw_severity = finding.get("severity", finding.get("risk", "Info"))
+        normalized_severity = "Info" # Default
+        for sev_key in severity_order_map:
+            if sev_key.lower() in raw_severity.lower():
+                normalized_severity = sev_key
+                break
+        
+        severity_counts[normalized_severity] += 1
+        grouped_findings[normalized_severity].append(finding)
+
+    stats = {sev: severity_counts[sev] for sev in ["Critical", "High", "Medium", "Low", "Info"]}
     stats["Total"] = sum(stats.values())
 
-    # 3. Technology Mapping
-    # Updated to capture both 'technologies' (the stack) and 'versions' (specific version numbers)
+    # 3. Technology Mapping (from results["tech"])
     tech_node = data.get("tech", {})
     
     # 4. Comprehensive Template Context
@@ -474,41 +534,59 @@ def create_killchain_report_pdf(source_data, pdf_path):
         "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         # --- Metadata ---
         "target": data.get("target", "Unknown Target"),
-        "profile": data.get("profile", "full_audit").replace("_", " ").title(),
+        "target_ip": data.get("target_ip", "N/A"),
+        "profile": data.get("profile", "Unknown Profile").replace("_", " ").title(),
+        "aggression": data.get("aggression", "Normal").replace("_", " ").title(),
         "scan_date": data.get("scan_date", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "report_id": f"KC-{int(datetime.now().timestamp())}",
         
-        # --- Phase 1: Recon & Discovery ---
-        "recon": data.get("recon", {}),
-        "urls_discovered": len(data.get("urls", [])),
-        "raw_urls": data.get("urls", []), # List of strings from JSON
+        # --- Recon & Discovery (from results["recon"]) ---
+        "recon": {
+            "subdomains": data.get("recon", {}).get("subdomains", []),
+            "resolved_hosts": data.get("recon", {}).get("resolved_hosts", [])
+        },
         
-        # --- Phase 2: Network & Infrastructure ---
-        "network": data.get("network", {}), # Contains status, ports (service/version), and network vulns
-        "traffic": data.get("traffic_analysis", {}), # Stats, anomalies, credentials
+        # --- Network & Infrastructure (from results["network"]) ---
+        "network": {
+            "nmap_scan": data.get("network", {}).get("nmap_scan", {}),
+            "exploiter_findings": data.get("network", {}).get("exploiter_findings", [])
+        },
         
-        # --- Phase 3: Tech Stack & Fingerprinting ---
-        # Passing the full dictionaries so template can iterate over key/values
+        # --- Web Audit (from results["web_audit"]) ---
+        "web_audit": {
+            "waf_detection": data.get("web_audit", {}).get("waf_detection", {}),
+            "crawled_urls": data.get("web_audit", {}).get("crawled_urls", []),
+            "forms_found": data.get("web_audit", {}).get("forms_found", []),
+            "api_endpoints": data.get("web_audit", {}).get("api_endpoints", []),
+            "directory_fuzzing": data.get("web_audit", {}).get("directory_fuzzing", {}),
+            "vuln_scanner_findings": data.get("web_audit", {}).get("vuln_scanner_findings", []),
+            "custom_scanner_findings": data.get("web_audit", {}).get("custom_scanner_findings", []),
+            "logic_scanner_findings": data.get("web_audit", {}).get("logic_scanner_findings", []),
+            "zap_findings": data.get("web_audit", {}).get("zap_findings", {})
+        },
+
+        # --- Traffic Analysis (from results["traffic_analysis"]) ---
+        "traffic_analysis": data.get("traffic_analysis", {}),
+        
+        # --- Tech Stack & Fingerprinting (from results["tech"]) ---
         "tech_stack": {
             "technologies": tech_node.get("technologies", {}),
             "versions": tech_node.get("versions", {}),
             "target_url": tech_node.get("target")
         },
         
-        # --- Phase 4: Vulnerabilities (The "Kill Chain") ---
+        # --- Vulnerability Summary ---
         "stats": stats,
-        "grouped_findings": grouped, # The main categorized dictionary (Critical, High, etc.)
-        "flat_findings": data.get("vulns", []), # The chronological flat list with timestamps
+        "grouped_findings": grouped_findings, # Grouped by severity
+        "all_findings": all_findings, # Flat list of all findings
         
-        # --- Phase 5: Tool Specifics (OWASP ZAP) ---
-        "zap_report": {
-            "meta": data.get("zap_report", {}).get("summary", {}), # High/Medium/Low counts specific to ZAP
-            "info": {
-                "tool": data.get("zap_report", {}).get("tool"),
-                "scan_date": data.get("zap_report", {}).get("scan_date")
-            },
-            "findings": data.get("zap_report", {}).get("findings", []) # Detailed ZAP findings with solution/CWE
+        "severity_map_colors": { # For styling findings
+            "Critical": "#dc3545", # Red
+            "High": "#ffc107",     # Yellow/Orange
+            "Medium": "#fd7e14",   # Orange
+            "Low": "#17a2b8",      # Teal
+            "Info": "#6c757d"      # Gray
         }
     }
 
@@ -516,9 +594,6 @@ def create_killchain_report_pdf(source_data, pdf_path):
     try:
         # Initialize Jinja2 Environment
         env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
-        
-        # Add custom filters if needed (e.g., for date formatting)
-        # env.filters['datetime_format'] = some_filter_function
         
         template = env.get_template(KILLCHAIN_TEMPLATE_FILE)
         
@@ -537,7 +612,7 @@ def create_killchain_report_pdf(source_data, pdf_path):
             stylesheets=stylesheets
         )
         
-        log(f"[+] Master Kill Chain Report successfully generated at: {pdf_path}", to_console=True)
+        log(f"[+] Master Kill Chain Report successfully generated", to_console=True)
         return True
         
     except Exception as e:
@@ -649,7 +724,7 @@ def create_sql_report_pdf(source_data, pdf_path):
             stylesheets=stylesheets
         )
         
-        log(f"[+] SQL PDF Report generated successfully: {pdf_path}", to_console=True)
+        log(f"[+] SQL PDF Report generated successfully", to_console=True)
         return True
     except Exception as e:
         log(f"[!] PDF Generation Failed: {e}")

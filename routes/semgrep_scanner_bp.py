@@ -57,7 +57,7 @@ def scan_code():
     Handles both File Uploads (Zip) and Git URLs.
     Runs the scan in a separate thread.
     """
-    print(f"\033[32m[*] Semgrep SAST Scan requested by {current_user.username}\033[0m")
+    print(f"[*] Semgrep SAST Scan requested by {current_user.username}")
     user_output_dir = get_user_results_dir()
     
     target_input = None
@@ -96,6 +96,17 @@ def scan_code():
     else:
         return jsonify({"status": "error", "message": "Invalid input. Provide a file or git_url."}), 400
 
+    # User Context
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+
+    # [NEW] Prevent Multiple Concurrent Scans for the same user
+    if semgrep_scanner.is_scan_running(current_user_identifier):
+        print(f"[!] Semgrep Scan already in progress for user {current_user_identifier}")
+        return jsonify({
+            "status": "error", 
+            "message": "A code scan is already in progress. Please wait for it to complete."
+        }), 400
+
     # 2. Update Database Stats
     try:
         # Assuming you added 'scan_count_semgrep' to your User model. 
@@ -115,9 +126,25 @@ def scan_code():
     user_id = current_user.id
     app = current_app._get_current_object()
 
+    # [NEW] Reset Log File for this new scan session
+    scan_logger.reset_log_file(current_user_identifier, "semgrep")
+
+    # 3. Define Background Task
     # 3. Define Background Task
     def scan_task():
+        # Use DB Logging
+        with app.app_context():
+            log_id = scan_logger.log_scan_start(
+                user_id=user_id,
+                tool_name="Semgrep SAST",
+                target=target_display,
+                scan_type="Code Audit"
+            )
+
         semgrep_scanner.log(f"[*] Starting Semgrep SAST scan on {target_display} (User: {current_user_identifier})...", user_id=current_user_identifier, to_console=True)
+        
+        sanitized_target = scan_logger.sanitize_filename(target_display)
+        target_pdf_filename = f"semgrep_report_{sanitized_target}.pdf"
         
         start_time = time.time()
         
@@ -142,7 +169,7 @@ def scan_code():
 
         if report_file:
             status = "Completed"
-            semgrep_scanner.log(f"[+] Semgrep scan complete. Generating PDF report...", user_id=current_user_identifier, to_console=True)
+            semgrep_scanner.log(f"[+] Semgrep scan complete. Generating PDF report for {target_display}...", user_id=current_user_identifier, to_console=True)
             
             # Extract finding count from saved JSON
             try:
@@ -158,7 +185,7 @@ def scan_code():
             # Generate PDF Report
             try:
                 # Create a specific PDF name
-                pdf_path = Path(user_output_dir) / "semgrep_report.pdf"
+                pdf_path = Path(user_output_dir) / target_pdf_filename
 
                 # Ensure directory exists
                 pdf_path.parent.mkdir(parents=True, exist_ok=True)
@@ -170,8 +197,8 @@ def scan_code():
                     if pdf_path.exists():
                         # Final synchronization wait
                         time.sleep(1.5)
-                        semgrep_scanner.log(f"[+] PDF report generated: {pdf_path.name}", user_id=current_user_identifier, to_console=True)
-                        semgrep_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", user_id=current_user_identifier, to_console=True)
+                        semgrep_scanner.log(f"[+] PDF report generated", user_id=current_user_identifier, to_console=True)
+                        semgrep_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_display}", user_id=current_user_identifier, to_console=True)
                     else:
                         semgrep_scanner.log("[!] PDF generation ran but file not found.", user_id=current_user_identifier, to_console=True)
                 else:
@@ -184,15 +211,7 @@ def scan_code():
 
         # Log to Database (Inside App Context)
         with app.app_context():
-            scan_logger.create_full_scan_log(
-                user_id=user_id,
-                tool_name="Semgrep SAST",
-                target=target_display,
-                duration=duration,
-                finding_count=finding_count,
-                status=status,
-                scan_type="Code Audit"
-            )
+            scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration)
 
     # 4. Start Thread
     threading.Thread(target=scan_task).start()
@@ -205,9 +224,17 @@ def scan_code():
 @login_required
 def trigger_ai_analysis_route():
     """Checks if PDF exists and tells Chatbot to use 'semgrep' mode."""
+    data = request.get_json() or {}
+    target = data.get('target')
     user_dir = get_user_results_dir()
-    # We construct the path manually to match the scan_task logic
-    pdf_path = Path(user_dir) / "semgrep_report.pdf"
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"semgrep_report_{sanitized}.pdf"
+    else:
+        pdf_filename = "semgrep_report.pdf"
+
+    pdf_path = Path(user_dir) / pdf_filename
 
     if not pdf_path.exists():
         current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
@@ -219,18 +246,26 @@ def trigger_ai_analysis_route():
 
     return jsonify({
         "status": "success",
-        "scanner_type": "semgrep" 
+        "scanner_type": "semgrep",
+        "target": target
     })
 
 @semgrep_bp.route('/report_files', methods=['GET'])
 @login_required
 def get_report_files():
     """Checks availability of reports to enable download buttons."""
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
     paths = semgrep_scanner.get_output_paths(user_dir)
     
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"semgrep_report_{sanitized}.pdf"
+    else:
+        pdf_filename = "semgrep_report.pdf"
+
     json_path = paths["parsed_json"]
-    pdf_path = Path(user_dir) / "semgrep_report.pdf"
+    pdf_path = Path(user_dir) / pdf_filename
 
     json_exists = json_path.exists()
     pdf_exists = pdf_path.exists()
@@ -241,15 +276,23 @@ def get_report_files():
     return jsonify({
         "status": "success",
         "json_report": "/semgrep_scanner/get_json_report" if json_exists else None,
-        "pdf_report": "/semgrep_scanner/download_pdf" if pdf_exists else None
+        "pdf_report": f"/semgrep_scanner/download_pdf?target={target}" if pdf_exists else None
     })
 
 @semgrep_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
     """Serves the PDF report."""
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    pdf_path = Path(user_dir) / "semgrep_report.pdf"
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"semgrep_report_{sanitized}.pdf"
+    else:
+        pdf_filename = "semgrep_report.pdf"
+
+    pdf_path = Path(user_dir) / pdf_filename
 
     if not pdf_path.exists():
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
@@ -324,18 +367,7 @@ def log_stream():
     """Server-Sent Events (SSE) endpoint."""
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     
-    def generate_logs():
-        user_queue = semgrep_scanner.get_user_queue(current_user_identifier)
-        while True:
-            try:
-                message = user_queue.get(timeout=10)
-                if message == ': keep-alive':
-                    yield f"{message}\n\n"
-                else:
-                    yield f"data: {message}\n\n"
-            except Empty:
-                yield ": keep-alive\n\n"
-            except GeneratorExit:
-                break
-
-    return Response(generate_logs(), mimetype='text/event-stream')
+    return Response(
+        scan_logger.tail_log_file(current_user_identifier, "semgrep"),
+        mimetype='text/event-stream'
+    )

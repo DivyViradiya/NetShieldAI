@@ -78,57 +78,30 @@ def get_scan_summary(user_id=None):
         "metadata": user_data["metadata"]
     }
 
-def log(message, user_id=None, to_console=False):
+from Services import scan_logger
+
+def log(message, user_id=None, queue_id=None, to_console=False, level='INFO'):
     """
-    Logs messages to an in-memory queue and to a file.
-    Organized Path: logs/users/{user_id}/network_agent_log.txt
+    Logs messages using the centralized scan_logger.
     """
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    full_message = f"data: [{timestamp}] {message}\n\n" # SSE format
-    
     if to_console:
-        print(f"[{timestamp}] {message}")
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}")
     
-    # Put message into the user-specific queue for Flask to stream
     if user_id:
-        user_id = str(user_id)
-        uq = get_user_queue(user_id)
-        # Send raw message to UI (UI handles its own timestamps)
-        uq.put(message)
+        scan_logger.write_log(user_id, "nmap", message, level=level)
 
-    # Determine Log File Path
-    if user_id:
-        user_id = str(user_id)
-        log_dir = LOG_DIR / "users" / user_id
-        log_dir.mkdir(parents=True, exist_ok=True)
-        target_log_file = log_dir / "network_agent_log.txt"
-    else:
-        system_dir = LOG_DIR / "system"
-        system_dir.mkdir(parents=True, exist_ok=True)
-        target_log_file = system_dir / "network_system_log.txt"
-
-    # Also write to a file for persistent logging
-    try:
-        with open(target_log_file, 'a', encoding='utf-8') as f:
-            f.write(f"[{timestamp}] {message}\n")
-    except Exception as e:
-        # Log to console if file write fails, as this is a critical logging function
-        print(f"ERROR: Failed to write to {target_log_file}: {e}")
-
-def send_sse_event(event_name, data="", user_id=None):
-    """Sends a custom SSE event to the user's log_queue."""
-    # Ensure data is a JSON string if it's an object/list
+def send_sse_event(event_name, data="", user_id=None, queue_id=None):
+    """
+    Simulates SSE event by logging a special format line that tail_log_file can pick up.
+    """
+    # For now, just log it as a structured message
     if isinstance(data, (dict, list)):
+        import json
         data_str = json.dumps(data)
     else:
-        data_str = str(data) # Convert other types to string
-
-    sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
-    
-    if user_id:
-        user_id = str(user_id)
-        uq = get_user_queue(user_id)
-        uq.put(sse_message)
+        data_str = str(data)
+        
+    log(f"EVENT: {event_name} | PAYLOAD: {data_str}", user_id, queue_id)
 
 def is_valid_hostname(hostname):
     """
@@ -163,30 +136,33 @@ def get_output_paths(output_dir=None):
         except Exception as e:
             log(f"[!] Error creating output directory {base}: {e}")
 
-    # Raw results go to TEMP_DIR for processing, only JSON/Whitelist stays in 'base'
+    # If output_dir is provided, all results (including raw) should go there for persistence
+    # Otherwise, raw results go to TEMP_DIR
+    raw_base = base if output_dir else TEMP_DIR
+
     return {
         "whitelist": base / "whitelisted_ports.json",
         "json_report": base / "nmap_report.json",
-        "tcp": TEMP_DIR / "scan_result_tcp.txt",
-        "udp": TEMP_DIR / "scan_result_udp.txt",
-        "os": TEMP_DIR / "scan_result_os.txt",
-        "fragmented": TEMP_DIR / "scan_result_fragmented.txt",
-        "aggressive": TEMP_DIR / "scan_result_aggressive.txt",
-        "tcp_syn": TEMP_DIR / "scan_result_tcp_syn.txt",
-        "vuln": TEMP_DIR / "scan_result_vuln.txt",
+        "tcp": raw_base / "scan_result_tcp.txt",
+        "udp": raw_base / "scan_result_udp.txt",
+        "os": raw_base / "scan_result_os.txt",
+        "fragmented": raw_base / "scan_result_fragmented.txt",
+        "aggressive": raw_base / "scan_result_aggressive.txt",
+        "tcp_syn": raw_base / "scan_result_tcp_syn.txt",
+        "vuln": raw_base / "scan_result_vuln.txt",
         # --- NEW PATHS FOR ADVANCED SCANS ---
-        "connect": TEMP_DIR / "scan_result_connect.txt",
-        "null": TEMP_DIR / "scan_result_null.txt",
-        "fin": TEMP_DIR / "scan_result_fin.txt",
-        "xmas": TEMP_DIR / "scan_result_xmas.txt",
-        "ack": TEMP_DIR / "scan_result_ack.txt",
-        "window": TEMP_DIR / "scan_result_window.txt",
-        "ping": TEMP_DIR / "scan_result_ping.txt",
-        "decoy": TEMP_DIR / "scan_result_decoy.txt"
+        "connect": raw_base / "scan_result_connect.txt",
+        "null": raw_base / "scan_result_null.txt",
+        "fin": raw_base / "scan_result_fin.txt",
+        "xmas": raw_base / "scan_result_xmas.txt",
+        "ack": raw_base / "scan_result_ack.txt",
+        "window": raw_base / "scan_result_window.txt",
+        "ping": raw_base / "scan_result_ping.txt",
+        "decoy": raw_base / "scan_result_decoy.txt"
     }
 
 # --- Whitelist Persistence Functions (Updated for Phase 2) ---
-def load_whitelist(output_dir=None, user_id=None):
+def load_whitelist(output_dir=None, user_id=None, queue_id=None):
     """Loads whitelisted ports from a JSON file."""
     whitelisted_ports = get_user_whitelisted_ports(user_id)
     paths = get_output_paths(output_dir)
@@ -199,24 +175,24 @@ def load_whitelist(output_dir=None, user_id=None):
                 if isinstance(loaded_ports, list):
                     whitelisted_ports.clear()
                     whitelisted_ports.update(loaded_ports)
-                    log(f"[+] Loaded {len(whitelisted_ports)} whitelisted ports from {whitelist_file}.", user_id)
+                    log(f"[+] Loaded {len(whitelisted_ports)} whitelisted ports from {whitelist_file}.", user_id, queue_id)
                 else:
-                    log(f"[!] Whitelist file '{whitelist_file}' contains invalid format. Starting with empty whitelist.", user_id)
+                    log(f"[!] Whitelist file '{whitelist_file}' contains invalid format. Starting with empty whitelist.", user_id, queue_id)
                     whitelisted_ports.clear()
         except json.JSONDecodeError as e:
-            log(f"[!] Error decoding whitelist file '{whitelist_file}': {e}. Starting with empty whitelist.", user_id)
+            log(f"[!] Error decoding whitelist file '{whitelist_file}': {e}. Starting with empty whitelist.", user_id, queue_id)
             whitelisted_ports.clear()
         except Exception as e:
-            log(f"[!] Unexpected error loading whitelist file '{whitelist_file}': {e}. Starting with empty whitelist.", user_id)
+            log(f"[!] Unexpected error loading whitelist file '{whitelist_file}': {e}. Starting with empty whitelist.", user_id, queue_id)
             whitelisted_ports.clear()
     else:
-        log(f"[*] Whitelist file '{whitelist_file}' not found. Starting with empty whitelist.", user_id)
+        log(f"[*] Whitelist file '{whitelist_file}' not found. Starting with empty whitelist.", user_id, queue_id)
     
     # We don't force save here on load to avoid creating files unnecessarily if reading only
     if not output_dir: 
-        save_whitelist(user_id=user_id) # Ensure global file exists on startup if using global
+        save_whitelist(user_id=user_id, queue_id=queue_id) # Ensure global file exists on startup if using global
 
-def save_whitelist(output_dir=None, user_id=None):
+def save_whitelist(output_dir=None, user_id=None, queue_id=None):
     """Saves the current whitelisted ports to a JSON file."""
     whitelisted_ports = get_user_whitelisted_ports(user_id)
     paths = get_output_paths(output_dir)
@@ -224,16 +200,16 @@ def save_whitelist(output_dir=None, user_id=None):
     try:
         with open(whitelist_file, 'w', encoding='utf-8') as f:
             json.dump(list(whitelisted_ports), f, indent=4)
-        log(f"[+] Whitelist saved to {whitelist_file}.", user_id)
+        log(f"[+] Whitelist saved to {whitelist_file}.", user_id, queue_id)
     except Exception as e:
-        log(f"[!] Error saving whitelist to file '{whitelist_file}': {e}", user_id)
+        log(f"[!] Error saving whitelist to file '{whitelist_file}': {e}", user_id, queue_id)
 
-def clear_whitelist(output_dir=None, user_id=None):
+def clear_whitelist(output_dir=None, user_id=None, queue_id=None):
     """Clears the whitelisted ports and saves the empty state."""
     whitelisted_ports = get_user_whitelisted_ports(user_id)
     whitelisted_ports.clear()
-    save_whitelist(output_dir, user_id=user_id)
-    log("[*] Whitelist cleared.", user_id)
+    save_whitelist(output_dir, user_id=user_id, queue_id=queue_id)
+    log("[*] Whitelist cleared.", user_id, queue_id)
 
 # --- OS-Specific Helper Functions ---
 
@@ -327,7 +303,7 @@ def get_local_ip():
                             return ip
         return "127.0.0.1"
     
-def resolve_to_ip(target_input, user_id=None):
+def resolve_to_ip(target_input, user_id=None, queue_id=None):
     """
     Checks if input is an IP/Range or a URL. 
     If it's a URL, it extracts the hostname and resolves it to an IP.
@@ -340,15 +316,15 @@ def resolve_to_ip(target_input, user_id=None):
         # Clean the URL
         clean_host = target_input.replace("https://", "").replace("http://", "").split('/')[0].split(':')[0]
         
-        log(f"[*] Attempting to resolve hostname: {clean_host}", user_id)
+        log(f"[*] Attempting to resolve hostname: {clean_host}", user_id, queue_id)
         resolved_ip = socket.gethostbyname(clean_host)
-        log(f"[+] Resolved {clean_host} to {resolved_ip}", user_id)
+        log(f"[+] Resolved {clean_host} to {resolved_ip}", user_id, queue_id)
         return resolved_ip
     except socket.gaierror:
-        log(f"[!] DNS Resolution failed for: {target_input}", user_id)
+        log(f"[!] DNS Resolution failed for: {target_input}", user_id, queue_id)
         return None
     except Exception as e:
-        log(f"[!] Unexpected error during resolution: {e}", user_id)
+        log(f"[!] Unexpected error during resolution: {e}", user_id, queue_id)
         return None
 
 def is_valid_ip_or_range(target):
@@ -376,7 +352,7 @@ def is_valid_ip_or_range(target):
     
     return False
 
-def is_nmap_installed(user_id=None):
+def is_nmap_installed(user_id=None, queue_id=None):
     """Checks if Nmap is installed and accessible in the system's PATH."""
     try:
         subprocess.run(
@@ -386,16 +362,16 @@ def is_nmap_installed(user_id=None):
         )
         return True
     except FileNotFoundError:
-        log("[!] 'nmap' command not found. Please install Nmap and ensure it's in your system's PATH.", user_id)
+        log("[!] 'nmap' command not found. Please install Nmap and ensure it's in your system's PATH.", user_id, queue_id)
         return False
     except subprocess.CalledProcessError as e:
-        log(f"[!] Nmap is installed but returned an error on version check: {e.stderr.strip()}", user_id)
+        log(f"[!] Nmap is installed but returned an error on version check: {e.stderr.strip()}", user_id, queue_id)
         return False
     except Exception as e:
-        log(f"[!] An unexpected error occurred while checking for Nmap: {e}", user_id)
+        log(f"[!] An unexpected error occurred while checking for Nmap: {e}", user_id, queue_id)
         return False
 
-def get_process_info_for_port(port_num, protocol="TCP", user_id=None):
+def get_process_info_for_port(port_num, protocol="TCP", user_id=None, queue_id=None):
     """
     Attempts to find the process name listening on a specific TCP/UDP port.
     """
@@ -456,20 +432,20 @@ def get_process_info_for_port(port_num, protocol="TCP", user_id=None):
         if "no process found" in e.stderr.lower() or "no such file or directory" in e.stderr.lower():
             process_name = "No process found"
         else:
-            log(f"[!] Error getting process info for {protocol} port {port_num}: {e.stderr.strip()}", user_id)
+            log(f"[!] Error getting process info for {protocol} port {port_num}: {e.stderr.strip()}", user_id, queue_id)
             process_name = "Error (Cmd Failed)"
     except FileNotFoundError:
-        log(f"[!] Command not found for process info ({'netstat/tasklist' if platform.system() == 'Windows' else 'lsof'}). Cannot determine process info.", user_id)
+        log(f"[!] Command not found for process info ({'netstat/tasklist' if platform.system() == 'Windows' else 'lsof'}). Cannot determine process info.", user_id, queue_id)
         process_name = "Error (Cmd Missing)"
     except Exception as e:
-        log(f"[!] Unexpected error getting process info for {protocol} port {port_num}: {e}", user_id)
+        log(f"[!] Unexpected error getting process info for {protocol} port {port_num}: {e}", user_id, queue_id)
         process_name = "Error"
     
     return process_name
 
 # --- NEW: JSON REPORT GENERATION FOR PDF ---
 
-def parse_nmap_grepable_output(file_path, user_id=None):
+def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
     """
     Parses the Nmap -oG (Grepable) text file into a Python Dictionary.
     """
@@ -484,6 +460,7 @@ def parse_nmap_grepable_output(file_path, user_id=None):
     }
 
     if not os.path.exists(file_path):
+        log(f"[!] Nmap grepable output file not found: {file_path}", user_id, queue_id)
         return parsed_data
 
     # Step 1: Pre-process the file to gather port-specific vulnerability notes
@@ -578,20 +555,20 @@ def parse_nmap_grepable_output(file_path, user_id=None):
         parsed_data["raw_output_summary"] = "\n".join(general_notes)
 
     except Exception as e:
-        log(f"[!] Error parsing Nmap output file for JSON report: {e}", user_id)
+        log(f"[!] Error parsing Nmap output file for JSON report: {e}", user_id, queue_id)
     
     return parsed_data
 
-def save_nmap_json(data, output_dir=None, user_id=None):
+def save_nmap_json(data, output_dir=None, user_id=None, queue_id=None):
     """Saves the parsed scan data to the JSON report file for PDF generation."""
     paths = get_output_paths(output_dir)
     json_file = paths["json_report"]
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
-        log(f"[+] JSON Scan report saved to {json_file}", user_id)
+        log(f"[+] JSON Scan report saved", user_id, queue_id)
     except Exception as e:
-        log(f"[!] Failed to save JSON report: {e}", user_id)
+        log(f"[!] Failed to save JSON report: {e}", user_id, queue_id)
 
 # --- Nmap Scanning ---
 # Note: All scan functions implicitly require admin rights because they call run_nmap_scan
@@ -644,7 +621,7 @@ def run_decoy_scan(target_ip, output_dir=None, user_id=None):
     return run_nmap_scan(target_ip, scan_type="decoy", output_dir=output_dir, user_id=user_id)
 
 
-def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_dir=None, user_id=None, timing=4):
+def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_dir=None, user_id=None, timing=4, queue_id=None):
     """
     Runs an Nmap scan with the specified parameters using local Nmap installation.
     Supports extended mechanics (Timing, Evasion, Scan Techniques).
@@ -652,7 +629,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     timing: Integer 0-5 (default 4 - Aggressive).
     """
     if not is_admin():
-        log(f"[!] Nmap scans require administrator privileges.", user_id)
+        log(f"[!] Nmap scans require administrator privileges.", user_id, queue_id)
         return None
 
     # URL RESOLUTION LOGIC
@@ -660,7 +637,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     resolved_ip = resolve_to_ip(target_ip, user_id=user_id)
     
     if not resolved_ip:
-        log(f"[!] Invalid target or resolution failed: {original_input}", user_id)
+        log(f"[!] Invalid target or resolution failed: {original_input}", user_id, queue_id)
         return None
     
     target_ip = resolved_ip
@@ -717,7 +694,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         flags = base_flags + ['-sS', '--top-ports', '1000', '-sV']
 
     scan_type_display = scan_type.upper() if scan_type != "default" else f"{protocol_type} (Top 1000)"
-    log(f"[+] Running {scan_type_display} scan on {target_ip} with timing {timing_flag}...", user_id, to_console=True)
+    log(f"[+] Running {scan_type_display} scan on {target_ip} with timing {timing_flag}...", user_id, queue_id, to_console=True)
 
     if not os.path.exists(os.path.dirname(output_file)):
         os.makedirs(os.path.dirname(output_file))
@@ -739,7 +716,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
             cmd.insert(1, '--exclude-ports')
             cmd.insert(2, '5000')
 
-    log(f"[*] Executing: {' '.join(cmd)}", user_id, to_console=True)
+    log(f"[*] Executing: {' '.join(cmd)}", user_id, queue_id, to_console=True)
     
     try:
         # Use Popen to allow tracking if needed, or stick with run but register
@@ -758,33 +735,55 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
                 del active_scans[user_id]
 
         if result.returncode != 0:
-            log(f"[!] Nmap scan failed with error: {result.stderr.strip()}", user_id, to_console=True)
+            log(f"[!] Nmap scan failed with error: {result.stderr.strip()}", user_id, queue_id, to_console=True)
+            send_sse_event("scan_failed", {"message": f"Nmap exited with code {result.returncode}"}, user_id, queue_id)
             return None
 
         if not output_file.exists() or output_file.stat().st_size == 0:
-            log(f"[!] Nmap scan completed but no results were saved. This may be normal if no ports are open.", user_id, to_console=True)
+            log(f"[!] Nmap scan completed but no results were saved. This may be normal if no ports are open.", user_id, queue_id, to_console=True)
             
-        log(f"[+] {scan_type_display} scan complete. Results synchronized.", user_id, to_console=True)
+        log(f"[+] {scan_type_display} scan complete. Results synchronized.", user_id, queue_id, to_console=True)
         
+        # [NEW] Persist raw results for the 'RAW DATA' tab in UI
+        if output_dir:
+            import shutil
+            # Map scan_type to the key in get_output_paths
+            scan_path_key = scan_type if scan_type in paths else 'tcp'
+            if scan_type == 'default': scan_path_key = 'tcp'
+            if scan_type == 'ping_sweep': scan_path_key = 'ping'
+            if scan_type == 'tcp_connect': scan_path_key = 'connect'
+            
+            final_path = paths.get(scan_path_key, paths['tcp'])
+            try:
+                shutil.copy2(output_file, final_path)
+                log(f"[*] Raw results persisted to: {final_path.name}", user_id, queue_id)
+            except Exception as e:
+                log(f"[!] Error persisting raw results: {e}", user_id, queue_id)
+
         # 1. Update UI (SSE)
         if scan_type != "ping_sweep":
-            open_ports_list = extract_open_ports(output_file, protocol_type="TCP" if protocol_type == "TCP" or scan_type == "vuln" else protocol_type, user_id=user_id)
+            open_ports_list = extract_open_ports(output_file, protocol_type="TCP" if protocol_type == "TCP" or scan_type == "vuln" else protocol_type, user_id=user_id, queue_id=queue_id)
             send_sse_event("scan_complete", {
                 "target": target_ip, "protocol": protocol_type,
                 "scan_type": scan_type, "open_ports": open_ports_list
-            }, user_id=user_id)
+            }, user_id=user_id, queue_id=queue_id)
         else:
-             log(f"[*] Ping sweep complete. Check log or JSON report for host details.", user_id)
+             log(f"[*] Ping sweep complete. Check log or JSON report for host details.", user_id, queue_id)
+             send_sse_event("scan_complete", {
+                "target": target_ip, "protocol": protocol_type,
+                "scan_type": scan_type, "open_ports": [] # Ping sweep doesn't return open ports
+            }, user_id=user_id, queue_id=queue_id)
 
         # 2. Generate JSON Report (PDF)
-        log(f"[+] Processing results for PDF report...", user_id)
-        scan_data = parse_nmap_grepable_output(output_file, user_id=user_id)
-        save_nmap_json(scan_data, output_dir=output_dir, user_id=user_id)
+        log(f"[+] Processing results for PDF report...", user_id, queue_id)
+        scan_data = parse_nmap_grepable_output(output_file, user_id=user_id, queue_id=queue_id)
+        save_nmap_json(scan_data, output_dir=output_dir, user_id=user_id, queue_id=queue_id)
         
         return str(output_file)
 
     except Exception as e:
-        log(f"[!] Error during {scan_type_display} scan: {str(e)}", user_id)
+        log(f"[!] Error during {scan_type_display} scan: {str(e)}", user_id, queue_id)
+        send_sse_event("scan_failed", {"message": str(e)}, user_id, queue_id)
         return None
     finally:
         # CLEANUP: Remove the temporary .txt file
@@ -796,7 +795,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
                 except:
                     time.sleep(1)
 
-def extract_open_ports(filename, protocol_type, user_id=None):
+def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
     """
     Parses Nmap greppable output to extract open ports, process info, and
     associated vulnerability notes for UI update.
@@ -812,6 +811,7 @@ def extract_open_ports(filename, protocol_type, user_id=None):
     port_vuln_notes = {}
     current_port_key = None
     all_ports_list = []
+    total_vuln_count = 0
     
     try:
         with open(filename, 'r', encoding='utf-8') as f:
@@ -865,6 +865,7 @@ def extract_open_ports(filename, protocol_type, user_id=None):
                 note = line.split("Host:")[0].strip()
                 if note and len(port_vuln_notes[current_port_key]) == 0:
                     port_vuln_notes[current_port_key].append(note[:50].replace('\t', ' ') + "...") 
+                    total_vuln_count += 1
             
             if line.startswith("Host:"):
                  current_port_key = None
@@ -877,12 +878,13 @@ def extract_open_ports(filename, protocol_type, user_id=None):
 
                 for p_str in port_entries:
                     p_str = p_str.strip()
-                    if 'open' in p_str.lower():
-                        parts = p_str.split('/')
+                    temp_parts = p_str.split('/')
+                    if len(temp_parts) < 3:
+                        continue
                         
-                        if len(parts) < 3:
-                            continue
-
+                    if 'open' in p_str.lower():
+                        parts = temp_parts
+                        
                         port_num = parts[0]
                         protocol = parts[2].upper() 
                         service = parts[4].strip() if len(parts) > 4 and parts[4].strip() else 'unknown'
@@ -912,17 +914,20 @@ def extract_open_ports(filename, protocol_type, user_id=None):
         else:
             user_data["TCP"] = all_ports_list
         
-        send_sse_event("ports_updated", json.dumps(get_current_open_ports(user_id)), user_id=user_id)
+        send_sse_event("ports_updated", {
+            "ports": get_current_open_ports(user_id),
+            "vulnerabilities_count": total_vuln_count
+        }, user_id=user_id, queue_id=queue_id)
 
     except FileNotFoundError:
-        log(f"[!] Scan result file '{filename}' not found.", user_id)
+        log(f"[!] Scan result file '{filename}' not found.", user_id, queue_id)
     except Exception as e:
-        log(f"[!] Error extracting {target_protocol} open ports: {e}", user_id)
+        log(f"[!] Error extracting {target_protocol} open ports: {e}", user_id, queue_id)
         
     return get_current_open_ports(user_id)
 
 # --- Firewall Management ---
-def block_port_windows(port, protocol="TCP", user_id=None):
+def block_port_windows(port, protocol="TCP", user_id=None, queue_id=None):
     """Blocks a specified port and protocol using Windows Defender Firewall."""
     rule_name = f"Block_NetShieldAI_{protocol}_Port_{port}"
     cmd = [
@@ -931,10 +936,10 @@ def block_port_windows(port, protocol="TCP", user_id=None):
     ]
     try:
         subprocess.run(cmd, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
-        log(f"[+] Firewall rule '{rule_name}' created to block {protocol} port {port}.", user_id)
+        log(f"[+] Firewall rule '{rule_name}' created to block {protocol} port {port}.", user_id, queue_id)
         return True
     except subprocess.CalledProcessError as e:
-        log(f"[!] Failed to block {protocol} port {port}: {e.stderr.strip() if e.stderr else 'No detailed error.'}", user_id)
+        log(f"[!] Failed to block {protocol} port {port}: {e.stderr.strip() if e.stderr else 'No detailed error.'}", user_id, queue_id)
         return False
 
 def is_port_blocked_windows(port, protocol="TCP"):
@@ -947,27 +952,27 @@ def is_port_blocked_windows(port, protocol="TCP"):
     except subprocess.CalledProcessError:
         return False
 
-def block_port_linux(port, protocol="TCP", user_id=None):
+def block_port_linux(port, protocol="TCP", user_id=None, queue_id=None):
     """Blocks a specified port and protocol using UFW (Uncomplicated Firewall) on Linux."""
     try:
         status_result = subprocess.run(['ufw', 'status'], capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
         if "inactive" in status_result.stdout:
-            log("[!] UFW is not active. Please enable UFW first.", user_id)
+            log("[!] UFW is not active. Please enable UFW first.", user_id, queue_id)
             return False
     except FileNotFoundError:
-        log("[!] UFW command not found. Cannot block ports.", user_id)
+        log("[!] UFW command not found. Cannot block ports.", user_id, queue_id)
         return False
     except subprocess.CalledProcessError as e:
-        log(f"[!] Error checking UFW status: {e.stderr.strip()}", user_id)
+        log(f"[!] Error checking UFW status: {e.stderr.strip()}", user_id, queue_id)
         return False
 
     rule_command = ['ufw', 'deny', f"{port}/{protocol.lower()}"]
     try:
         subprocess.run(rule_command, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
-        log(f"[+] UFW rule created to block {protocol} port {port}.", user_id)
+        log(f"[+] UFW rule created to block {protocol} port {port}.", user_id, queue_id)
         return True
     except subprocess.CalledProcessError as e:
-        log(f"[!] Failed to block {protocol} port {port} with UFW: {e.stderr.strip() if e.stderr else 'No detailed error.'}", user_id)
+        log(f"[!] Failed to block {protocol} port {port} with UFW: {e.stderr.strip() if e.stderr else 'No detailed error.'}", user_id, queue_id)
         return False
 
 def is_port_blocked_linux(port, protocol="TCP"):
@@ -983,12 +988,12 @@ def is_port_blocked_linux(port, protocol="TCP"):
     except FileNotFoundError:
         return False
 
-def block_port(port, protocol="TCP", user_id=None):
+def block_port(port, protocol="TCP", user_id=None, queue_id=None):
     """Calls the appropriate OS-specific port blocking function."""
     if platform.system() == "Windows":
-        return block_port_windows(port, protocol, user_id=user_id)
+        return block_port_windows(port, protocol, user_id=user_id, queue_id=queue_id)
     else:
-        return block_port_linux(port, protocol, user_id=user_id)
+        return block_port_linux(port, protocol, user_id=user_id, queue_id=queue_id)
 
 def is_port_blocked(port, protocol="TCP"):
     """Calls the appropriate OS-specific port blocked check function."""
@@ -998,30 +1003,30 @@ def is_port_blocked(port, protocol="TCP"):
         return is_port_blocked_linux(port, protocol)
 
 # --- Other Helper Functions ---
-def verify_ports_closed(target_ip, user_id=None):
+def verify_ports_closed(target_ip, user_id=None, queue_id=None):
     all_ports_to_verify_info = get_current_open_ports(user_id)
     whitelisted_ports = get_user_whitelisted_ports(user_id)
     
     if not all_ports_to_verify_info:
-        log("[*] No ports to verify.", user_id)
+        log("[*] No ports to verify.", user_id, queue_id)
         return
 
     if '-' in target_ip or '/' in target_ip:
-        log("[!] Port verification is most reliable for single IP addresses.", user_id)
+        log("[!] Port verification is most reliable for single IP addresses.", user_id, queue_id)
         try:
             target_ip = target_ip.split('/')[0].split('-')[0]
         except Exception:
             pass
 
     if not is_valid_ip_or_range(target_ip):
-        log(f"[!] Could not determine a single IP for verification.", user_id)
+        log(f"[!] Could not determine a single IP for verification.", user_id, queue_id)
         return
 
-    log(f"[*] Verifying all detected port status on {target_ip}...", user_id)
+    log(f"[*] Verifying all detected port status on {target_ip}...", user_id, queue_id)
     for p_info in all_ports_to_verify_info:
         port, protocol = p_info['port'], p_info['protocol']
         if port in whitelisted_ports:
-            log(f"[~] Skipping verification for whitelisted {protocol} port {port}.", user_id)
+            log(f"[~] Skipping verification for whitelisted {protocol} port {port}.", user_id, queue_id)
             continue
         
         if protocol == "TCP":
@@ -1029,15 +1034,15 @@ def verify_ports_closed(target_ip, user_id=None):
                 s.settimeout(1)
                 try:
                     if s.connect_ex((target_ip, int(port))) == 0:
-                        log(f"[!] TCP Port {port} (Service: {p_info['service']}) is still OPEN.", user_id)
+                        log(f"[!] TCP Port {port} (Service: {p_info['service']}) is still OPEN.", user_id, queue_id)
                     else:
-                        log(f"[OK] TCP Port {port} (Service: {p_info['service']}) is CLOSED.", user_id)
+                        log(f"[OK] TCP Port {port} (Service: {p_info['service']}) is CLOSED.", user_id, queue_id)
                 except Exception as e:
-                    log(f"[!] Error verifying TCP port {port}: {e}", user_id)
+                    log(f"[!] Error verifying TCP port {port}: {e}", user_id, queue_id)
         else:
-            log(f"[~] UDP Port {port} (Service: {p_info['service']}) verification is limited.", user_id)
+            log(f"[~] UDP Port {port} (Service: {p_info['service']}) verification is limited.", user_id, queue_id)
 
-def add_to_whitelist(ports_str, output_dir=None, user_id=None):
+def add_to_whitelist(ports_str, output_dir=None, user_id=None, queue_id=None):
     """
     Updated for Phase 2 to accept output_dir and user_id.
     """
@@ -1045,17 +1050,16 @@ def add_to_whitelist(ports_str, output_dir=None, user_id=None):
     if ports_str:
         ports = [p.strip() for p in ports_str.split(',') if p.strip().isdigit()]
         if ports:
-            whitelisted_ports.update(ports)
-            save_whitelist(output_dir, user_id=user_id)
-            log(f"[~] Whitelisted ports updated: {', '.join(ports)}", user_id)
+            save_whitelist(output_dir, user_id=user_id, queue_id=queue_id)
+            log(f"[~] Whitelisted ports updated: {', '.join(ports)}", user_id, queue_id)
             return True
-    log("[!] No valid port numbers found in whitelist input.", user_id)
+    log("[!] No valid port numbers found in whitelist input.", user_id, queue_id)
     return False
 
 def get_whitelisted_ports(user_id=None):
     return sorted(list(get_user_whitelisted_ports(user_id)))
 
-def clear_log_file(user_id=None):
+def clear_log_file(user_id=None, queue_id=None):
     """Clears the log file for a specific user or the system log."""
     if user_id:
         user_id = str(user_id)
@@ -1067,7 +1071,7 @@ def clear_log_file(user_id=None):
         if target_log_file.exists():
             with open(target_log_file, 'w', encoding='utf-8') as f:
                 f.write("")
-        log("[*] Log file cleared.", user_id)
+        log("[*] Log file cleared.", user_id, queue_id)
     except Exception as e:
         print(f"[!] Error clearing log file: {e}")
 

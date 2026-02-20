@@ -57,9 +57,11 @@ def api_scanner_page():
 def initiate_api_scan():
     data = request.get_json()
     target_url = data.get('target_url')
-    print(f"\033[34m[*] API Scan requested for {target_url} by {current_user.username}\033[0m")
-    # [NEW] API Scans require a definition (Swagger/OpenAPI)
     definition_url = data.get('definition_url') 
+    auth_token = data.get('auth_token')
+
+    token_status = "Token Provided" if auth_token else "Anonymous"
+    print(f"[*] API Scan requested for {target_url} (Auth: {token_status}) by {current_user.username}")
 
     if not target_url:
         return jsonify({"status": "error", "message": "Target API URL is required."}), 400
@@ -78,6 +80,15 @@ def initiate_api_scan():
 
     # User Context
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+
+    # [NEW] Prevent Multiple Concurrent Scans for the same user
+    if api_scanner.is_scan_running(current_user_identifier):
+        print(f"[!] API Scan already in progress for user {current_user_identifier}")
+        return jsonify({
+            "status": "error", 
+            "message": "An API scan is already in progress. Please wait for it to complete."
+        }), 400
+
     user_output_dir = get_user_results_dir()
     user_id_for_log = current_user.id
     app = current_app._get_current_object()
@@ -90,21 +101,35 @@ def initiate_api_scan():
     except Exception as e:
         api_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
+    # [NEW] Reset Log File for this new scan session
+    scan_logger.reset_log_file(current_user_identifier, "api")
+
+    # 5. Log Scan Start (Database)
+    log_id = scan_logger.log_scan_start(
+        user_id=user_id_for_log,
+        tool_name="API",
+        target=target_url,
+        scan_type="OpenAPI"
+    )
+
     def scan_and_process_task():
-        api_scanner.log(f"[*] Starting API Scan for {target_url}...", current_user_identifier, to_console=True)
+        api_scanner.log(f"[*] Starting API Scan for {target_url} (Auth: {token_status})...", current_user_identifier, to_console=True)
         api_scanner.log(f"[*] Using Definition: {definition_url}", current_user_identifier, to_console=True)
+        
+        sanitized_target = scan_logger.sanitize_filename(target_url)
+        target_pdf_filename = f"api_report_{sanitized_target}.pdf"
         
         paths = api_scanner.get_output_paths(user_output_dir)
         xml_path = paths["xml_report"]
-        pdf_path = paths["pdf_report"]
+        pdf_path = os.path.join(user_output_dir, target_pdf_filename)
         
         os.makedirs(os.path.dirname(xml_path), exist_ok=True)
         
         start_time = time.time()
         
         # 1. Run API Scan
-        # Passing definition_url is the key difference here
-        scan_successful = api_scanner.run_api_scan(target_url, definition_url, str(xml_path), current_user_identifier)
+        # Passing definition_url and auth_token
+        scan_successful = api_scanner.run_api_scan(target_url, definition_url, str(xml_path), current_user_identifier, auth_token=auth_token)
 
         duration = time.time() - start_time
         status = "Failed"
@@ -130,15 +155,15 @@ def initiate_api_scan():
                     
                     # 4. Generate PDF
                     try:
-                        api_scanner.log("[*] Generating PDF report...", current_user_identifier, to_console=True)
+                        api_scanner.log(f"[*] Generating PDF report for {target_url}...", current_user_identifier, to_console=True)
                         # Reusing the generator, assuming it handles generic JSON data structure
                         pdf_generator.create_zap_report_pdf(json_report_path, str(pdf_path))
                         
-                        if pdf_path.exists():
+                        if os.path.exists(pdf_path):
                             # Final synchronization wait
                             time.sleep(1.5)
                             api_scanner.log(f"[+] PDF generated successfully.", current_user_identifier, to_console=True)
-                            api_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", current_user_identifier, to_console=True)
+                            api_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_url}", current_user_identifier, to_console=True)
                             api_scanner.log(f"[*] API Scan complete.", current_user_identifier, to_console=True)
                         else:
                              api_scanner.log("[!] PDF generation failed (file missing).", current_user_identifier, to_console=True)
@@ -155,15 +180,9 @@ def initiate_api_scan():
 
         # Log to Database (Inside App Context)
         with app.app_context():
-            scan_logger.create_full_scan_log(
-                user_id=user_id_for_log,
-                tool_name="API Scanner",
-                target=target_url,
-                duration=duration,
-                finding_count=finding_count,
-                status=status,
-                scan_type="OpenAPI"
-            )
+            # [FIXED] Pass error msg on failure
+            error_msg = None if scan_successful else "API scan process failed."
+            scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, error_msg=error_msg)
 
     threading.Thread(target=scan_and_process_task).start()
     
@@ -177,6 +196,17 @@ def initiate_api_scan():
 @login_required
 def get_api_status():
     """Checks if an API scan is currently running for the user."""
+    # 1. CHECK DB (Primary Source of Truth)
+    active_log = scan_logger.get_active_scan_log(current_user.id, "API")
+    
+    if active_log:
+        return jsonify({
+            "status": "success",
+            "is_running": True,
+            "target": active_log.target
+        })
+
+    # 2. Fallback: Check Memory
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     is_running = api_scanner.is_scan_running(current_user_identifier)
     
@@ -188,6 +218,36 @@ def get_api_status():
     return jsonify({
         "status": "success",
         "is_running": is_running,
+        "target": target
+    })
+
+
+@api_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
+@login_required
+def trigger_ai_analysis_route():
+    data = request.get_json() or {}
+    target = data.get('target')
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_dir = get_user_results_dir()
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"api_report_{sanitized}.pdf"
+    else:
+        paths = api_scanner.get_output_paths(user_dir)
+        pdf_filename = os.path.basename(paths["pdf_report"])
+
+    pdf_path = os.path.join(user_dir, pdf_filename)
+
+    if not os.path.exists(pdf_path):
+        return jsonify({
+            "status": "error", 
+            "message": "PDF report not available. Please run a scan first."
+        }), 404
+
+    return jsonify({
+        "status": "success",
+        "scanner_type": "api",
         "target": target
     })
 
@@ -217,11 +277,18 @@ def get_api_scan_results():
 @api_scanner_bp.route('/report_files', methods=['GET'])
 @login_required
 def get_report_files():
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
     paths = api_scanner.get_output_paths(user_dir)
     
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"api_report_{sanitized}.pdf"
+    else:
+        pdf_filename = os.path.basename(paths["pdf_report"])
+
     json_exists = paths["json_report"].exists()
-    pdf_exists = paths["pdf_report"].exists()
+    pdf_exists = os.path.exists(os.path.join(user_dir, pdf_filename))
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
@@ -230,26 +297,33 @@ def get_report_files():
         "status": "success",
         # Note the prefix change to /api_scanner/
         "json_report": "/api_scanner/scan_results" if json_exists else None,
-        "pdf_report": "/api_scanner/download_pdf" if pdf_exists else None
+        "pdf_report": f"/api_scanner/download_pdf?target={target}" if pdf_exists else None
     })
 
 
 @api_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = api_scanner.get_output_paths(user_dir)
-    pdf_path = paths["pdf_report"]
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"api_report_{sanitized}.pdf"
+    else:
+        paths = api_scanner.get_output_paths(user_dir)
+        pdf_filename = os.path.basename(paths["pdf_report"])
 
-    if not pdf_path.exists():
+    pdf_path = os.path.join(user_dir, pdf_filename)
+
+    if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF file not found."}), 404
     
-    try:
-        directory = str(pdf_path.parent)
-        filename = pdf_path.name
-        return send_from_directory(directory=directory, path=filename, as_attachment=True)
-    except Exception as e:
-        return jsonify({"status": "error", "message": "Could not serve PDF file."}), 500
+    return send_from_directory(
+        directory=user_dir,
+        path=pdf_filename,
+        as_attachment=True
+    )
 
 
 # -----------------------------------------------
@@ -267,22 +341,13 @@ def clear_api_log_route():
 @api_scanner_bp.route('/log_stream')
 @login_required 
 def api_log_stream():
+    """
+    Streams logs specifically for the logged-in user from their active log file.
+    """
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     
-    def generate_logs():
-        # Get the specific queue for this user from the API service
-        user_queue = api_scanner.get_user_queue(current_user_identifier)
-        
-        while True:
-            try:
-                message = user_queue.get(timeout=5)
-                if message == ': keep-alive':
-                    yield f"{message}\n\n"
-                else:
-                    yield f"data: {message}\n\n"
-            except queue.Empty:
-                yield ": keep-alive\n\n"
-            except Exception as e:
-                yield f"data: Error in stream: {str(e)}\n\n"
-
-    return Response(generate_logs(), mimetype='text/event-stream')
+    # Use the file tailing generator from scan_logger
+    return Response(
+        scan_logger.tail_log_file(current_user_identifier, "api"), 
+        mimetype='text/event-stream'
+    )

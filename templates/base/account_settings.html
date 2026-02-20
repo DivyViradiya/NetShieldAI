@@ -20,6 +20,7 @@
       --input-placeholder: var(--text-muted);
       --header-text: var(--text-primary);
       --section-header-border: var(--border-subtle);
+      --settings-card-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
     }
     
     body.light-mode {
@@ -35,48 +36,53 @@
       --input-placeholder: var(--text-muted);
       --header-text: var(--text-primary);
       --section-header-border: var(--border-subtle);
+      --settings-card-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
     }
 
-    /* Light Mode Specific Overrides */
-    body.light-mode .header-title {
-      color: #0f172a;
+    /* --- LIGHT MODE FROSTED ARCTIC OVERRIDES --- */
+    body.light-mode .settings-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
     }
-
-    body.light-mode .card-head h2 {
-      color: #0f172a;
+    body.light-mode .settings-card:hover {
+      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
     }
-
-    body.light-mode .form-label {
-      color: #64748b;
+    body.light-mode .identity-banner {
+      background: linear-gradient(135deg, #ffffff 0%, #eef2ff 100%);
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
     }
-
-    body.light-mode .neo-input {
-      background: #ffffff;
-      border-color: #e2e8f0;
-      color: #0f172a;
+    body.light-mode .neo-input-wrap .neo-input {
+      background: var(--surface-primary);
+      border-color: var(--border-default);
+      color: var(--text-primary);
     }
-
-    body.light-mode .neo-input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 15px rgba(37, 99, 235, 0.1);
+    body.light-mode .neo-input-wrap .neo-input:focus {
+      border-color: var(--neo-blue);
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
     }
-
+    body.light-mode .input-icon {
+      color: var(--text-muted);
+    }
+    body.light-mode .neo-input-wrap .neo-input:focus ~ .input-icon {
+      color: var(--neo-blue);
+    }
+    body.light-mode .card-head-line { background: var(--border-subtle); }
+    body.light-mode .avatar-ring { border-color: rgba(99, 102, 241, 0.2); }
+    body.light-mode .id-meta-value { color: var(--text-primary); }
+    body.light-mode .security-card { border-color: rgba(220, 38, 38, 0.15); }
     body.light-mode .btn-submit.security-btn {
-      background: #ffffff;
-      border-color: #e2e8f0;
-      color: #475569;
+      background: var(--surface-primary);
+      border-color: var(--border-default);
+      color: var(--text-secondary);
     }
-
     body.light-mode .btn-submit.security-btn:hover {
       background: #dc2626;
       border-color: #dc2626;
       color: #ffffff;
     }
+    body.light-mode .settings-header { border-bottom-color: var(--border-subtle); }
 
-    body.light-mode .settings-header {
-      border-bottom-color: #f1f5f9;
-    }
-    
+    /* --- MAIN LAYOUT --- */
     .main-content {
       width: 100%;
       padding: 0 4rem;
@@ -89,7 +95,6 @@
       border-bottom: 1px solid var(--neo-border);
       margin-bottom: 3rem;
     }
-
     .header-tagline {
       font-size: 0.8rem;
       letter-spacing: 0.2em;
@@ -101,44 +106,166 @@
       align-items: center;
       gap: 0.5rem;
     }
-
     .header-tagline::before {
       content: '//';
       color: var(--neo-text-primary);
+      font-weight: 800;
       opacity: 0.5;
     }
-
     .header-title {
       font-size: clamp(2rem, 6vw, 3rem);
       line-height: 1;
       font-weight: 800;
       text-transform: uppercase;
       color: var(--header-text);
+      letter-spacing: -0.03em;
     }
-
     .header-title span {
-      color: var(--neo-text-secondary); /* Dimmed "Settings" text */
+      color: var(--neo-text-secondary);
     }
 
-    /* --- LAYOUT GRID --- */
+    /* ============================== */
+    /*    IDENTITY BANNER CARD        */
+    /* ============================== */
+    .identity-banner {
+      background: linear-gradient(180deg, rgba(20,20,23,0.6) 0%, rgba(5,5,5,0) 100%);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--settings-card-shadow);
+    }
+    .identity-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .avatar-ring {
+      width: 90px;
+      height: 90px;
+      min-width: 90px;
+      border-radius: 50%;
+      border: 2px solid rgba(59, 130, 246, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(59, 130, 246, 0.08);
+      position: relative;
+    }
+    .avatar-initials {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--neo-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .avatar-status {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 14px;
+      height: 14px;
+      background: #22c55e;
+      border-radius: 50%;
+      border: 2.5px solid var(--neo-card);
+    }
+
+    .id-info { flex: 1; position: relative; z-index: 1; }
+    .id-name-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+    .id-username {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--header-text);
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+    }
+    .id-role-badge {
+      font-size: 0.6rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      border: 1px solid;
+    }
+    .id-role-badge.admin {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--neo-blue);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+    .id-role-badge.user {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border-color: var(--neo-border);
+    }
+    .id-email {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .id-meta-row {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .id-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .id-meta-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+    .id-meta-value {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* ============================== */
+    /*    SETTINGS GRID               */
+    /* ============================== */
     .settings-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr; /* Profile gets more space */
+      grid-template-columns: 3fr 2fr;
       gap: 2rem;
       padding-bottom: 4rem;
     }
 
-    /* --- FORM CARDS (Adapted from Neo-Cards) --- */
-    .form-card {
-      background-color: var(--neo-card);
+    /* ============================== */
+    /*    SETTINGS CARD (SHARED)      */
+    /* ============================== */
+    .settings-card {
+      background: linear-gradient(180deg, rgba(20,20,23,0.6) 0%, rgba(5,5,5,0) 100%);
       border: 1px solid var(--neo-border);
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 2.5rem;
       position: relative;
+      transition: box-shadow 0.4s ease;
+      box-shadow: var(--settings-card-shadow);
     }
-    
-    body.light-mode .form-card {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    .security-card {
+      border-color: rgba(239, 68, 68, 0.15);
     }
 
     /* Card Header */
@@ -146,124 +273,223 @@
       display: flex;
       align-items: center;
       gap: 1rem;
-      margin-bottom: 2.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--section-header-border);
+      margin-bottom: 2rem;
+      position: relative;
     }
-
-    .card-icon {
+    .card-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--neo-border);
+      background: rgba(255, 255, 255, 0.03);
+      transition: all 0.3s ease;
+    }
+    .card-icon-wrap.blue {
       color: var(--neo-blue);
-      font-size: 1.5rem;
+      background: rgba(59, 130, 246, 0.08);
+      border-color: rgba(59, 130, 246, 0.2);
     }
+    .card-icon-wrap.red {
+      color: var(--neo-red);
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+    .card-icon-wrap span { font-size: 1.3rem; }
 
-    .card-head h2 {
-      font-size: 1.25rem;
+    .card-head-text h2 {
+      font-size: 1.1rem;
       color: var(--header-text);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       margin: 0;
     }
-
-    .card-head p {
-      margin: 0;
-      font-size: 0.8rem;
-      color: var(--neo-text-secondary);
-      display: block;
-      margin-top: 0.25rem;
+    .card-head-text p {
+      margin: 0.15rem 0 0;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .card-head-line {
+      position: absolute;
+      bottom: -1rem;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--neo-border);
     }
 
-    /* --- FORM ELEMENTS --- */
+    /* ============================== */
+    /*    FORM ELEMENTS               */
+    /* ============================== */
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
+      gap: 1.25rem;
+      margin-bottom: 0;
     }
-
     .form-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
-
     .form-label {
       display: block;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--neo-text-tertiary);
-      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
       font-weight: 700;
     }
 
-    .neo-input {
+    /* Icon-Prefixed Input */
+    .neo-input-wrap {
+      position: relative;
+    }
+    .neo-input-wrap .neo-input {
       width: 100%;
-      background: var(--input-bg); /* Slightly lighter than card */
+      background: var(--input-bg);
       border: 1px solid var(--input-border);
       color: var(--input-text);
-      padding: 0.9rem 1rem;
-      border-radius: 6px;
+      padding: 0.8rem 1rem 0.8rem 2.75rem;
+      border-radius: 8px;
       font-family: inherit;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       transition: all 0.3s ease;
     }
-
-    .neo-input:focus {
+    .neo-input-wrap .neo-input:focus {
       outline: none;
       border-color: var(--neo-blue);
       box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
-      background: var(--input-bg);
     }
-
-    body.light-mode .neo-input:focus {
-        border-color: var(--accent-blue);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .neo-input::placeholder {
+    .neo-input-wrap .neo-input::placeholder {
       color: var(--input-placeholder);
+    }
+    .input-icon {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      pointer-events: none;
+      transition: color 0.3s ease;
+      opacity: 0.6;
+    }
+    .neo-input-wrap .neo-input:focus ~ .input-icon {
+      color: var(--neo-blue);
+      opacity: 1;
     }
 
     /* Read Only Styling */
-    .neo-input[readonly] {
+    .neo-input-wrap .neo-input[readonly] {
       opacity: 0.5;
       cursor: not-allowed;
       border-style: dashed;
     }
 
-    /* Security Input Specifics */
-    .security-card .neo-input:focus {
-      border-color: var(--neo-red); /* Red focus for password fields */
+    /* Password Wrap */
+    .pass-wrap { position: relative; }
+    .pass-toggle {
+      position: absolute;
+      right: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0;
+      opacity: 0.5;
+      transition: all 0.3s;
+      display: flex;
+    }
+    .pass-toggle:hover { opacity: 1; color: var(--neo-blue); }
+
+    /* Security Input focus override */
+    .security-card .neo-input-wrap .neo-input:focus {
+      border-color: var(--neo-red);
       box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
     }
+    .security-card .neo-input-wrap .neo-input:focus ~ .input-icon {
+      color: var(--neo-red);
+    }
 
-    /* --- BUTTONS --- */
+    /* ============================== */
+    /*    PASSWORD STRENGTH METER     */
+    /* ============================== */
+    .strength-meter {
+      margin-top: 0.5rem;
+      display: none;
+    }
+    .strength-meter.visible { display: block; }
+    .strength-bar-track {
+      height: 3px;
+      background: var(--neo-border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .strength-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .strength-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      margin-top: 0.3rem;
+      text-align: right;
+    }
+
+    /* ============================== */
+    /*    BUTTONS                     */
+    /* ============================== */
     .btn-submit {
       width: 100%;
       background: var(--neo-blue);
       color: white;
       border: none;
-      padding: 1rem;
+      padding: 0.9rem 1.5rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       cursor: pointer;
       transition: all 0.3s ease;
-      margin-top: 1rem;
-      clip-path: polygon(0 0, 100% 0, 100% 85%, 95% 100%, 0 100%); /* Techy angle */
+      margin-top: 1.5rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
     }
-
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    .btn-submit:hover::before { left: 100%; }
     .btn-submit:hover {
       background: #2563eb;
       box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+      transform: translateY(-1px);
     }
+    .btn-submit:active { transform: translateY(0); }
 
     .btn-submit.security-btn {
       background: var(--input-bg);
       border: 1px solid var(--input-border);
       color: var(--neo-text-primary);
     }
-    
     .btn-submit.security-btn:hover {
       background: var(--neo-red);
       border-color: var(--neo-red);
@@ -271,118 +497,347 @@
       box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
     }
 
-    /* --- RESPONSIVE --- */
-    @media (max-width: 1024px) {
-      .settings-grid {
-        grid-template-columns: 1fr;
-      }
-      .main-content {
-        padding: 0 2rem;
-      }
+    .btn-icon { font-size: 1rem; }
+
+    /* ============================== */
+    /*    FLASH MESSAGES              */
+    /* ============================== */
+    .flash-container {
+      margin-bottom: 1.5rem;
+    }
+    .flash-msg {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid;
+      animation: flashIn 0.4s ease;
+    }
+    .flash-msg.success {
+      background: var(--severity-success-bg);
+      color: var(--severity-success);
+      border-color: var(--severity-success);
+    }
+    .flash-msg.danger {
+      background: var(--severity-critical-bg);
+      color: var(--severity-critical);
+      border-color: var(--severity-critical);
+    }
+    .flash-msg.warning {
+      background: var(--severity-high-bg);
+      color: var(--severity-high);
+      border-color: var(--severity-high);
+    }
+    .flash-msg.info {
+      background: var(--severity-info-bg);
+      color: var(--severity-info);
+      border-color: var(--severity-info);
+    }
+    @keyframes flashIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
+    /* ============================== */
+    /*    RESPONSIVE                  */
+    /* ============================== */
+    @media (max-width: 1024px) {
+      .settings-grid { grid-template-columns: 1fr; }
+      .main-content { padding: 0 2rem; }
+      .identity-banner { flex-direction: column; text-align: center; align-items: center; gap: 1.5rem; }
+      .id-name-row { justify-content: center; }
+      .id-email { text-align: center; }
+      .id-meta-row { justify-content: center; }
+    }
     @media (max-width: 600px) {
-      .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-      .header-title {
-        font-size: 2.5rem;
-      }
+      .form-row { grid-template-columns: 1fr; gap: 0; }
+      .header-title { font-size: 2.5rem; }
+      .id-meta-row { flex-direction: column; align-items: center; gap: 1rem; }
+      .id-meta-item { align-items: center; }
     }
   </style>
 {% endblock %}
 
 {% block content %}
-<div class="main-content fade-in-element">
+<div class="main-content">
   
-  <div class="settings-header">
+  <div class="settings-header fade-in-element">
     <div class="header-tagline">System Configuration</div>
-    <h1 class="header-title">Identity <span>& Access</span></h1>
+    <h1 class="header-title">Identity <span>Command Center</span></h1>
   </div>
 
-  <div class="settings-grid">
-    
-    <div class="form-card">
-      <div class="card-head">
-        <span class="material-symbols-outlined card-icon">badge</span>
-        <div>
-          <h2>Personal Identity</h2>
-          <p>Public profile and organizational details.</p>
+  <!-- FLASH MESSAGES -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container fade-in-element">
+        {% for category, message in messages %}
+          <div class="flash-msg {{ category }}">
+            <span class="material-symbols-outlined" style="font-size: 1rem;">
+              {% if category == 'success' %}check_circle{% elif category == 'danger' %}error{% elif category == 'warning' %}warning{% else %}info{% endif %}
+            </span>
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- IDENTITY BANNER -->
+  <div class="identity-banner fade-in-element">
+    <div class="avatar-ring">
+      <span class="avatar-initials">{{ current_user.username[:2] }}</span>
+      <div class="avatar-status"></div>
+    </div>
+    <div class="id-info">
+      <div class="id-name-row">
+        <span class="id-username">{{ current_user.username }}</span>
+        {% if current_user.is_admin %}
+          <span class="id-role-badge admin">Administrator</span>
+        {% else %}
+          <span class="id-role-badge user">Operator</span>
+        {% endif %}
+      </div>
+      <div class="id-email">{{ current_user.email }}</div>
+      <div class="id-meta-row">
+        {% if current_user.full_name %}
+        <div class="id-meta-item">
+          <span class="id-meta-label">Full Name</span>
+          <span class="id-meta-value">{{ current_user.full_name }}</span>
+        </div>
+        {% endif %}
+        {% if current_user.organization %}
+        <div class="id-meta-item">
+          <span class="id-meta-label">Organization</span>
+          <span class="id-meta-value">{{ current_user.organization }}</span>
+        </div>
+        {% endif %}
+        {% if current_user.job_title %}
+        <div class="id-meta-item">
+          <span class="id-meta-label">Role</span>
+          <span class="id-meta-value">{{ current_user.job_title }}</span>
+        </div>
+        {% endif %}
+        <div class="id-meta-item">
+          <span class="id-meta-label">Member Since</span>
+          <span class="id-meta-value">{{ current_user.created_at.strftime('%b %d, %Y') if current_user.created_at else 'N/A' }}</span>
+        </div>
+        <div class="id-meta-item">
+          <span class="id-meta-label">Last Access</span>
+          <span class="id-meta-value">{{ current_user.last_login.strftime('%b %d, %Y %H:%M') if current_user.last_login else 'N/A' }}</span>
         </div>
       </div>
+    </div>
+  </div>
 
-      <form method="POST" action="">
+  <!-- SETTINGS GRID -->
+  <div class="settings-grid">
+    
+    <!-- PROFILE CARD -->
+    <div class="settings-card fade-in-element">
+      <div class="card-head">
+        <div class="card-icon-wrap blue">
+          <span class="material-symbols-outlined">badge</span>
+        </div>
+        <div class="card-head-text">
+          <h2>Personal Identity</h2>
+          <p>Public profile and organizational details</p>
+        </div>
+        <div class="card-head-line"></div>
+      </div>
+
+      <form method="POST" action="" id="profileForm">
         {{ profile_form.hidden_tag() }}
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ profile_form.username.label }}</label>
-            {{ profile_form.username(class='neo-input', readonly=true) }}
+            <div class="neo-input-wrap">
+              {{ profile_form.username(class='neo-input', readonly=true) }}
+              <span class="material-symbols-outlined input-icon">fingerprint</span>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">{{ profile_form.email.label }}</label>
-            {{ profile_form.email(class='neo-input') }}
+            <div class="neo-input-wrap">
+              {{ profile_form.email(class='neo-input') }}
+              <span class="material-symbols-outlined input-icon">mail</span>
+            </div>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ profile_form.full_name.label }}</label>
-            {{ profile_form.full_name(class='neo-input') }}
+            <div class="neo-input-wrap">
+              {{ profile_form.full_name(class='neo-input') }}
+              <span class="material-symbols-outlined input-icon">person</span>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">{{ profile_form.phone_number.label }}</label>
-            {{ profile_form.phone_number(class='neo-input') }}
+            <div class="neo-input-wrap">
+              {{ profile_form.phone_number(class='neo-input') }}
+              <span class="material-symbols-outlined input-icon">phone</span>
+            </div>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">{{ profile_form.organization.label }}</label>
-            {{ profile_form.organization(class='neo-input') }}
+            <div class="neo-input-wrap">
+              {{ profile_form.organization(class='neo-input') }}
+              <span class="material-symbols-outlined input-icon">corporate_fare</span>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">{{ profile_form.job_title.label }}</label>
-            {{ profile_form.job_title(class='neo-input') }}
+            <div class="neo-input-wrap">
+              {{ profile_form.job_title(class='neo-input') }}
+              <span class="material-symbols-outlined input-icon">work</span>
+            </div>
           </div>
         </div>
 
-        {{ profile_form.submit_profile(class='btn-submit', value="SAVE CONFIGURATION") }}
+        <button type="submit" name="submit_profile" value="true" class="btn-submit" id="profileBtn">
+          <span class="material-symbols-outlined btn-icon">save</span>
+          <span>Save Configuration</span>
+        </button>
       </form>
     </div>
 
-    <div class="form-card security-card">
+    <!-- SECURITY CARD -->
+    <div class="settings-card security-card fade-in-element">
       <div class="card-head">
-        <span class="material-symbols-outlined card-icon" style="color: var(--neo-red);">lock_reset</span>
-        <div>
-          <h2>Security Keys</h2>
-          <p>Encryption and authentication.</p>
+        <div class="card-icon-wrap red">
+          <span class="material-symbols-outlined">shield_lock</span>
         </div>
+        <div class="card-head-text">
+          <h2>Security Keys</h2>
+          <p>Encryption and authentication</p>
+        </div>
+        <div class="card-head-line"></div>
       </div>
 
-      <form method="POST" action="">
+      <form method="POST" action="" id="securityForm">
         {{ security_form.hidden_tag() }}
 
         <div class="form-group">
           <label class="form-label">{{ security_form.current_password.label }}</label>
-          {{ security_form.current_password(class='neo-input', placeholder='••••••••') }}
+          <div class="neo-input-wrap pass-wrap">
+            {{ security_form.current_password(class='neo-input', placeholder='••••••••', type='password') }}
+            <span class="material-symbols-outlined input-icon">key</span>
+            <button type="button" class="pass-toggle" onclick="togglePass(this)" aria-label="Toggle password visibility">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
         </div>
 
-        <div class="form-group" style="margin-top: 2rem;">
+        <div class="form-group" style="margin-top: 1.5rem;">
           <label class="form-label" style="color: var(--neo-blue);">{{ security_form.new_password.label }}</label>
-          {{ security_form.new_password(class='neo-input', placeholder='New Passphrase') }}
+          <div class="neo-input-wrap pass-wrap">
+            {{ security_form.new_password(class='neo-input', placeholder='New Passphrase', type='password', id='newPassField') }}
+            <span class="material-symbols-outlined input-icon">lock</span>
+            <button type="button" class="pass-toggle" onclick="togglePass(this)" aria-label="Toggle password visibility">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
+          <div class="strength-meter" id="strengthMeter">
+            <div class="strength-bar-track">
+              <div class="strength-bar-fill" id="strengthFill"></div>
+            </div>
+            <div class="strength-label" id="strengthLabel"></div>
+          </div>
         </div>
 
         <div class="form-group">
           <label class="form-label">{{ security_form.confirm_password.label }}</label>
-          {{ security_form.confirm_password(class='neo-input', placeholder='Confirm Passphrase') }}
+          <div class="neo-input-wrap pass-wrap">
+            {{ security_form.confirm_password(class='neo-input', placeholder='Confirm Passphrase', type='password') }}
+            <span class="material-symbols-outlined input-icon">lock_reset</span>
+            <button type="button" class="pass-toggle" onclick="togglePass(this)" aria-label="Toggle password visibility">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+          </div>
         </div>
 
-        {{ security_form.submit_security(class='btn-submit security-btn', value="UPDATE CREDENTIALS") }}
+        <button type="submit" name="submit_security" value="true" class="btn-submit security-btn" id="securityBtn">
+          <span class="material-symbols-outlined btn-icon">security</span>
+          <span>Update Credentials</span>
+        </button>
       </form>
     </div>
 
   </div>
 </div>
+
+<script>
+  // Password Visibility Toggle
+  function togglePass(btn) {
+    const input = btn.parentElement.querySelector('.neo-input');
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      icon.textContent = 'visibility';
+    }
+  }
+
+  // Password Strength Meter
+  const newPassField = document.getElementById('newPassField');
+  const strengthMeter = document.getElementById('strengthMeter');
+  const strengthFill = document.getElementById('strengthFill');
+  const strengthLabel = document.getElementById('strengthLabel');
+
+  if (newPassField) {
+    newPassField.addEventListener('input', function() {
+      const val = this.value;
+      if (val.length === 0) {
+        strengthMeter.classList.remove('visible');
+        return;
+      }
+      strengthMeter.classList.add('visible');
+
+      let score = 0;
+      if (val.length >= 6) score++;
+      if (val.length >= 10) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const levels = [
+        { w: '20%', color: '#ef4444', text: 'Very Weak' },
+        { w: '40%', color: '#f97316', text: 'Weak' },
+        { w: '60%', color: '#eab308', text: 'Fair' },
+        { w: '80%', color: '#22c55e', text: 'Strong' },
+        { w: '100%', color: '#06b6d4', text: 'Excellent' },
+      ];
+      const level = levels[Math.min(score, 4)];
+      strengthFill.style.width = level.w;
+      strengthFill.style.background = level.color;
+      strengthLabel.textContent = level.text;
+      strengthLabel.style.color = level.color;
+    });
+  }
+
+  // Submit Button Animation
+  document.querySelectorAll('#profileForm, #securityForm').forEach(form => {
+    form.addEventListener('submit', function() {
+      const btn = this.querySelector('.btn-submit');
+      btn.innerHTML = '<svg class="animate-spin" style="width:16px;height:16px;animation:spin 1s linear infinite" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle style="opacity:0.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path style="opacity:0.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Processing...</span>';
+      btn.style.opacity = '0.75';
+      btn.style.pointerEvents = 'none';
+    });
+  });
+</script>
+
+<style>
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
 {% endblock %}

@@ -13,6 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const targetUrlInput = document.getElementById('targetUrl');
     const startScanBtn = document.getElementById('startScanBtn'); 
     
+    // Scan Options UI
+    const scanOptionsBtn = document.getElementById('scanOptionsBtn');
+    const scanOptionsDropdown = document.getElementById('scanOptionsDropdown');
+    const scanModeSelect = document.getElementById('scanMode');
+    const useAjaxCheckbox = document.getElementById('useAjax');
+    const loginUrlInput = document.getElementById('loginUrl');
+    const userFieldInput = document.getElementById('userField');
+    const passFieldInput = document.getElementById('passField');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
     const scanStatus = document.getElementById('scanStatus');
     const logOutput = document.getElementById('logOutput');
     const clearLogBtn = document.getElementById('clearLogBtn');
@@ -97,28 +108,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
         }
-
-        // 4. Determine Color Style
-        const isLight = document.body.classList.contains("light-mode");
-        let contentStyle = isLight ? 'color:#334155' : 'color:#d4d4d8'; // Slate-700 / Zinc-300
+        let contentStyle = 'color:#d4d4d8';
         
-        const lowerMsg = cleanedMessage.toLowerCase();
-        if (cleanedMessage.includes('[!]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {
-            contentStyle = 'color:#ef4444'; // Red
-        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('[✓]') || lowerMsg.includes('success') || lowerMsg.includes('complete')) {
-            contentStyle = 'color:#10b981'; // Green
-        } else if (cleanedMessage.includes('[*]') || lowerMsg.includes('initiating')) {
-            contentStyle = 'color:#3b82f6'; // Blue
+        if (displayMessage.includes('[!]') || displayMessage.includes('Error')) {
+            contentStyle = 'color:#ef4444';
+        } else if (displayMessage.includes('[+]') || displayMessage.includes('Success')) {
+            contentStyle = 'color:#10b981';
+        } else if (displayMessage.includes('[*]')) {
+            contentStyle = 'color:#3b82f6';
         }
-
-        const timeColor = isLight ? "#64748b" : "#555";
 
         const line = document.createElement('div');
         line.className = 'log-line';
-        // Flex layout: Time on left, Content on right
         line.innerHTML = `
-            <div class="log-time" style="color:${timeColor}">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}" ${isProgressBar ? 'data-is-progress="true"' : ''}>${cleanedMessage}</div>
+            <div class="log-time">${timeStr}</div>
+            <div class="log-content" style="${contentStyle}">${displayMessage}</div>
         `;
         
         logOutput.appendChild(line);
@@ -128,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Report & Button Management ---
 
     async function checkReportStatus() {
+        const target = targetUrlInput.value.trim();
         if (downloadPdfBtn) {
             downloadPdfBtn.disabled = true;
             downloadPdfBtn.style.opacity = '0.5';
@@ -138,14 +143,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch(REPORT_FILES_ENDPOINT);
+            const url = target ? `${REPORT_FILES_ENDPOINT}?target=${encodeURIComponent(target)}` : REPORT_FILES_ENDPOINT;
+            const response = await fetch(url);
             if (!response.ok) return;
             const data = await response.json();
     
             if (data.status === "success" && data.pdf_report) {
                 if (downloadPdfBtn) {
                     downloadPdfBtn.href = data.pdf_report; 
-                    downloadPdfBtn.setAttribute('download', 'zap_report.pdf'); 
+                    downloadPdfBtn.setAttribute('download', `zap_report_${target.replace(/[^a-z0-9]/gi, '_')}.pdf`); 
                     downloadPdfBtn.disabled = false;
                     downloadPdfBtn.style.opacity = '1';
                     
@@ -167,6 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- UPDATED AI ANALYSIS LOGIC (With Overlay) ---
     async function analyzeReport(llmMode) {
         if (analyzeReportDropdown.disabled) return;
+        const target = targetUrlInput.value.trim();
+        
         if (!csrfToken) {
             appendLog('[!] Error: CSRF Token missing. Refresh page.');
             return;
@@ -177,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (aiProcessingOverlay) {
             aiProcessingOverlay.classList.remove('hidden');
             if (aiProcessingText) {
-                aiProcessingText.textContent = llmMode === 'gemini' 
+                aiProcessingText.textContent = llmMode.includes('gemini') 
                     ? 'CONTACTING GEMINI...' 
                     : 'LOADING LOCAL MODEL...';
             }
@@ -196,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken
                 },
-                body: JSON.stringify({ llm_mode: llmMode })
+                body: JSON.stringify({ llm_mode: llmMode, target: target })
             });
             let data = await response.json();
             
@@ -215,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ 
                     llm_mode: llmMode, 
                     scanner_type: data.scanner_type,
+                    target: data.target,
                     force_new_session: true // [NEW] Force a fresh chat
                 })
             });
@@ -316,6 +325,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleScanButtonClick() {
         const targetUrl = targetUrlInput.value.trim();
+        const scanMode = scanModeSelect ? scanModeSelect.value : 'Quick Scan';
+        const useAjax = useAjaxCheckbox ? useAjaxCheckbox.checked : false;
+
+        // Collect Auth Config if provided
+        let authConfig = null;
+        if (loginUrlInput && loginUrlInput.value.trim() && usernameInput.value.trim() && passwordInput.value.trim()) {
+            authConfig = {
+                login_url: loginUrlInput.value.trim(),
+                username_field: userFieldInput.value.trim() || 'username',
+                password_field: passFieldInput.value.trim() || 'password',
+                username: usernameInput.value.trim(),
+                password: passwordInput.value.trim()
+            };
+        }
+
         if (!targetUrl) {
             alert("Please enter a URL");
             return;
@@ -327,10 +351,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         toggleButtonLoading(startScanBtn, true);
-        updateScanStatus(`Scanning...`, 'busy');
+        const authMsg = authConfig ? 'Authenticated' : 'Anonymous';
+        updateScanStatus(`Scanning (${scanMode}, ${authMsg})...`, 'busy');
         // Clear log but maintain cursor/layout
         logOutput.innerHTML = ''; 
-        appendLog(`> Initiating ZAP Scan on ${targetUrl}...`);
+        appendLog(`> Initiating ZAP ${scanMode} on ${targetUrl} (AJAX: ${useAjax}, Auth: ${authMsg})...`);
 
         try {
             const response = await fetch(SCAN_ENDPOINT, {
@@ -339,7 +364,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken
                 },
-                body: JSON.stringify({ target_url: targetUrl })
+                body: JSON.stringify({ 
+                    target_url: targetUrl,
+                    scan_mode: scanMode,
+                    use_ajax: useAjax,
+                    auth_config: authConfig
+                })
             });
             const data = await response.json();
 
@@ -355,18 +385,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- SSE & Event Listeners ---
+    
+    // Toggle Scan Options Dropdown
+    if (scanOptionsBtn && scanOptionsDropdown) {
+        scanOptionsBtn.addEventListener('click', (e) => {
+            scanOptionsDropdown.classList.toggle('hidden');
+            e.stopPropagation();
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!scanOptionsBtn.contains(e.target) && !scanOptionsDropdown.contains(e.target)) {
+                scanOptionsDropdown.classList.add('hidden');
+            }
+        });
+    }
 
     function setupLogStream() {
         const eventSource = new EventSource(LOG_STREAM_ENDPOINT);
         eventSource.onmessage = function(event) {
             if (event.data === ': keep-alive') return;
-            appendLog(event.data);
-            
+
+            // Check for completion signals BEFORE filtering EVENT: lines
             if (event.data.includes("Scan, analysis, and prediction complete")) {
                 updateScanStatus('Complete', 'success');
                 toggleButtonLoading(startScanBtn, false);
                 fetchAndDisplayResults();
             }
+
+            // [NEW] Handle Failures from Stream to reset UI
+            if (event.data.includes("[!] ZAP scan failed") || event.data.includes("ZAP Scan Error:")) {
+                updateScanStatus('Failed', 'error');
+                toggleButtonLoading(startScanBtn, false);
+            }
+
+            if (event.data.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
+                checkReportStatus();
+            }
+
+            if (event.data.includes("EVENT:") || event.data.startsWith("EVENT:")) return;
+            appendLog(event.data);
         };
     }
 

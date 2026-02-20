@@ -10,33 +10,70 @@ from werkzeug.utils import secure_filename
 
 # [NEW] Import db for stats tracking
 from extensions import db
-from Services import network_scanner, zap_scanner, ssl_scanner, sql_scanner, packet_sniffer, api_scanner, killchain_service, semgrep_scanner
+from models import ScanLog
+from Services import network_scanner, zap_scanner, ssl_scanner, sql_scanner, packet_sniffer, api_scanner, killchain_service, semgrep_scanner, scan_logger
 
 # Initialize the Flask Blueprint for chatbot-related routes
 chatbot_bp = Blueprint('chatbot_bp', __name__)
 
 def get_all_active_scans(user_identifier):
-    """Checks status across all scanner modules for a user and returns their stream endpoints."""
+    """Checks status across all scanner modules for a user using the DATABASE."""
     active = {}
+    
     try:
-        if network_scanner.is_scan_running(user_identifier): 
-            active['nmap_scan'] = {'stream_url': '/network_scanner/log_stream'}
-        if zap_scanner.is_scan_running(user_identifier): 
-            active['zap_scan'] = {'stream_url': '/zap_scanner/log_stream'}
-        if ssl_scanner.is_scan_running(user_identifier): 
-            active['ssl_scan'] = {'stream_url': '/ssl_scanner/log_stream'}
-        if sql_scanner.is_scan_running(user_identifier): 
-            active['sql_injection_scan'] = {'stream_url': '/sql_scanner/log_stream'}
-        if packet_sniffer.is_scan_running(user_identifier): 
-            active['packet_sniffer'] = {'stream_url': '/packet_sniffer/log_stream'}
-        if api_scanner.is_scan_running(user_identifier): 
-            active['api_security_scan'] = {'stream_url': '/api_scanner/log_stream'}
-        if killchain_service.is_scan_running(user_identifier): 
-            active['killchain_audit'] = {'stream_url': '/killchain/log_stream'}
-        if semgrep_scanner.is_scan_running(user_identifier): 
-            active['semgrep_sast_scan'] = {'stream_url': '/semgrep_scanner/log_stream'}
+        user_id = int(user_identifier.split('_')[-1])
+        
+        # 1. Query DB for LATEST scan for each DB-supported tool
+        # This ensures that even if a scan is Completed/Failed, the UI knows about it.
+        db_tools = {
+            'ZAP': {'key': 'zap_scan', 'stream': '/zap_scanner/log_stream'},
+            'API': {'key': 'api_security_scan', 'stream': '/api_scanner/log_stream'},
+            'Nmap': {'key': 'nmap_scan', 'stream': '/network_scanner/log_stream'},
+            'SSLScan': {'key': 'ssl_scan', 'stream': '/ssl_scanner/log_stream'},
+            'SQLMap': {'key': 'sql_injection_scan', 'stream': '/sql_scanner/log_stream'},
+            'Sniffer': {'key': 'packet_sniffer', 'stream': '/packet_sniffer/log_stream'},
+            'Semgrep SAST': {'key': 'semgrep_sast_scan', 'stream': '/semgrep_scanner/log_stream'},
+            'Kill Chain': {'key': 'killchain_audit', 'stream': '/killchain/log_stream'}
+        }
+
+        for tool_name, config in db_tools.items():
+            latest = ScanLog.query.filter_by(user_id=user_id, tool_name=tool_name).order_by(ScanLog.start_time.desc()).first()
+            
+            if latest:
+                # Zombie Check (Only if DB says Running)
+                if latest.status == 'Running':
+                    is_actually_running = False
+                    if tool_name == 'ZAP':
+                        is_actually_running = zap_scanner.is_scan_running(user_identifier)
+                    elif tool_name == 'API':
+                        is_actually_running = api_scanner.is_scan_running(user_identifier)
+                    elif tool_name == 'Nmap':
+                        is_actually_running = network_scanner.is_scan_running(user_identifier)
+                    elif tool_name == 'SSLScan':
+                        is_actually_running = ssl_scanner.is_scan_running(user_identifier)
+                    elif tool_name == 'SQLMap':
+                        is_actually_running = sql_scanner.is_scan_running(user_identifier)
+                    elif tool_name == 'Sniffer':
+                        is_actually_running = packet_sniffer.is_scan_running(user_identifier)
+                    elif tool_name == 'Semgrep SAST':
+                        is_actually_running = semgrep_scanner.is_scan_running(user_identifier)
+                    elif tool_name == 'Kill Chain':
+                        is_actually_running = killchain_service.is_user_scanning(user_identifier)
+                    
+                    if not is_actually_running:
+                        latest.status = 'Interrupted'
+                        db.session.commit()
+
+                active[config['key']] = {
+                    'stream_url': config['stream'],
+                    'status': latest.status.lower(), # running, completed, interrupted
+                    'target': latest.target,
+                    'timestamp': latest.start_time.strftime("%Y-%m-%d %H:%M:%S")
+                }
+
     except Exception as e:
         logger.error(f"Error checking active scans: {e}")
+        
     return active
 
 # --- Logging Setup ---
@@ -88,10 +125,19 @@ http_session = requests.Session()
 
 MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024  # 100 MB
 
+def map_llm_mode(mode):
+    """Maps frontend mode aliases to backend supported modes."""
+    mapping = {
+        'gemini': 'gemini-2.5-flash',
+        'local': 'local'
+    }
+    return mapping.get(mode, mode)
+
 # --- Helper to resolve User Paths ---
-def get_user_pdf_path(scanner_type):
+def get_user_pdf_path(scanner_type, target=None):
     """
     Dynamically resolves the path to a specific report PDF for the current user.
+    Supports target-specific filenames if target is provided.
     """
     if not current_user.is_authenticated:
         return None
@@ -102,17 +148,61 @@ def get_user_pdf_path(scanner_type):
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     results_root = os.path.join(base_dir, 'Services', 'results', user_identifier)
     
-    # Map scanner types to their folder and filename conventions
-    path_map = {
-        'nmap': os.path.join(results_root, 'network_scanner', 'nmap_report.pdf'),
-        'zap': os.path.join(results_root, 'zap_scanner', 'zap_report.pdf'),
-        'ssl': os.path.join(results_root, 'ssl_scanner', 'ssl_report.pdf'),
-        'packet_sniffer': os.path.join(results_root, 'packet_sniffer', 'pcap_analysis_report.pdf'),
-        'sql': os.path.join(results_root, 'sql_scanner', 'sql_report.pdf'),
-        'killchain': os.path.join(results_root, 'killchain', 'reports', 'killchain_report.pdf')
-    }
+    # Target-specific naming logic
+    sanitized = scan_logger.sanitize_filename(target) if target else None
+    
+    def get_filename(base_name, target_suffix):
+        if target_suffix:
+            return f"{base_name}_{target_suffix}.pdf"
+        return f"{base_name}.pdf"
 
-    return path_map.get(scanner_type)
+    # 1. Try Specific File First
+    tool_folder_map = {
+        'nmap': ('network_scanner', 'nmap_report'),
+        'zap': ('zap_scanner', 'zap_report'),
+        'ssl': ('ssl_scanner', 'ssl_report'),
+        'packet_sniffer': ('packet_sniffer', 'pcap_analysis_report'),
+        'sql': ('sql_scanner', 'sql_report'),
+        'killchain': ('killchain', 'killchain_report'),
+        'api': ('api_scanner', 'api_security_report')
+    }
+    
+    if scanner_type not in tool_folder_map:
+        return None
+        
+    folder, base_name = tool_folder_map[scanner_type]
+    
+    # Check "Killchain" having a sub-folder 'reports'
+    if scanner_type == 'killchain':
+        scan_dir = os.path.join(results_root, folder, 'reports')
+    else:
+        scan_dir = os.path.join(results_root, folder)
+        
+    if not os.path.exists(scan_dir):
+        return None
+        
+    # Attempt 1: Exact Match
+    if sanitized:
+        specific_path = os.path.join(scan_dir, get_filename(base_name, sanitized))
+        if os.path.exists(specific_path):
+            return specific_path
+            
+    # Attempt 2: Fallback to Generic (Legacy)
+    generic_path = os.path.join(scan_dir, f"{base_name}.pdf")
+    if os.path.exists(generic_path):
+        return generic_path
+        
+    # Attempt 3: Fallback to LATEST PDF in the directory
+    # This is critical if target string mismatch occurs or user just wants "result of last scan"
+    try:
+        files = [os.path.join(scan_dir, f) for f in os.listdir(scan_dir) if f.endswith('.pdf')]
+        if files:
+            latest_file = max(files, key=os.path.getmtime)
+            return latest_file
+    except Exception as e:
+        print(f"Error finding latest PDF: {e}")
+
+    return None
 
 
 @chatbot_bp.route('/')
@@ -172,20 +262,13 @@ def upload_report():
             return jsonify({'error': 'No selected file'}), 400
 
         print(f"\033[35m[*] Manual Report Upload: {file.filename} (User: {current_user.username})\033[0m")
-        llm_mode_param = request.form.get('llm_mode', 'gemini-2.5-flash')
+        llm_mode_param = map_llm_mode(request.form.get('llm_mode', 'gemini-2.5-flash'))
 
         if file and file.filename.endswith('.pdf'):
             if file.content_length > MAX_FILE_SIZE_BYTES:
                 return jsonify({'error': f'File size exceeds the limit of {MAX_FILE_SIZE_BYTES / (1024 * 1024)}MB.'}), 413
 
             try:
-                # [NEW] Increment AI Usage Counter
-                try:
-                    current_user.scan_count_ai += 1
-                    db.session.commit()
-                except Exception as e:
-                    user_logger.error(f"Failed to update AI stats: {e}")
-
                 # Read file into memory to proxy it
                 files_to_send = {'file': (file.filename, file.read(), file.content_type)}
                 
@@ -244,17 +327,9 @@ def chat_with_ai():
         print(f"\033[35m[*] AI Chat Request from {current_user.username}: {user_message[:50]}...\033[0m")
         verbosity = data.get('verbosity', 'standard')
         is_incognito = data.get('is_incognito', False)
-        llm_mode = data.get('llm_mode', 'gemini-2.5-flash')
+        llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-2.5-flash'))
         
         current_session_id = session.get('chatbot_session_id')
-
-        # Increment AI Usage Counter (Only if not incognito)
-        if not is_incognito:
-            try:
-                current_user.scan_count_ai += 1
-                db.session.commit()
-            except Exception as e:
-                user_logger.error(f"Failed to update AI stats: {e}")
 
         payload_to_server = {
             'message': user_message,
@@ -306,17 +381,9 @@ def chat_with_ai_stream():
         user_message = data.get('message')
         verbosity = data.get('verbosity', 'standard')
         is_incognito = data.get('is_incognito', False)
-        llm_mode = data.get('llm_mode', 'gemini-2.5-flash')
+        llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-2.5-flash'))
         
         current_session_id = session.get('chatbot_session_id')
-
-        # [NEW] Increment AI Usage Counter (Only if not incognito)
-        if not is_incognito:
-            try:
-                current_user.scan_count_ai += 1
-                db.session.commit()
-            except Exception as e:
-                user_logger.error(f"Failed to update AI stats: {e}")
 
         payload_to_server = {
             'message': user_message,
@@ -373,15 +440,16 @@ def scanner_analysis_proxy():
     try:
         data = request.get_json()
         scanner_type = data.get('scanner_type')
-        llm_mode = data.get('llm_mode', 'gemini-2.5-flash')
+        target = data.get('target') # [NEW]
+        llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-2.5-flash'))
         # [NEW] Allow caller to decide if a fresh session is needed
         force_new_session = data.get('force_new_session', False)
 
         if not scanner_type:
             return jsonify({'error': 'Missing scanner type'}), 400
 
-        # Dynamically resolve the absolute PDF path
-        pdf_path = get_user_pdf_path(scanner_type)
+        # Dynamically resolve the absolute PDF path (handling target specificity)
+        pdf_path = get_user_pdf_path(scanner_type, target=target)
 
         if not pdf_path:
              return jsonify({'error': 'Invalid scanner type provided.'}), 400
@@ -389,12 +457,6 @@ def scanner_analysis_proxy():
         if not os.path.exists(pdf_path):
             return jsonify({'error': f'PDF report for {scanner_type} not found. Please run a scan first.'}), 404
         
-        try:
-            current_user.scan_count_ai += 1
-            db.session.commit()
-        except Exception as e:
-            user_logger.error(f"Failed to update AI stats: {e}")
-
         # Optimization: We only send the path string, not the file content
         # [FIXED] We only force a new session if force_new_session is True (e.g. from scanner pages)
         current_session_id = None if force_new_session else session.get('chatbot_session_id')
@@ -408,7 +470,7 @@ def scanner_analysis_proxy():
         
         proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"
         
-        user_logger.info(f"Sending {scanner_type} path-based analysis request to backend")
+        user_logger.info(f"Sending {scanner_type} path-based analysis request to backend (Target: {target})")
         
         # Use session and send without multipart files
         response = http_session.post(proxy_upload_url, params=params)
@@ -552,7 +614,10 @@ def execute_action():
                 'url': f"{base_url}/zap_scanner/scan",
                 'stream_url': f"{base_url}/zap_scanner/log_stream",
                 'payload': {
-                    'target_url': params.get('target_url')
+                    'target_url': params.get('target_url'),
+                    'scan_mode': params.get('scan_mode', 'Quick Scan'),
+                    'use_ajax': params.get('use_ajax', False),
+                    'auth_config': params.get('auth_config')
                 }
             },
             'ssl_scan': {
@@ -584,7 +649,8 @@ def execute_action():
                 'stream_url': f"{base_url}/api_scanner/log_stream",
                 'payload': {
                     'target_url': params.get('target_url'),
-                    'definition_url': params.get('definition_url')
+                    'definition_url': params.get('definition_url'),
+                    'auth_token': params.get('auth_token')
                 }
             },
             'killchain_audit': {
@@ -592,8 +658,8 @@ def execute_action():
                 'stream_url': f"{base_url}/killchain/log_stream",
                 'payload': {
                     'target': params.get('target'),
-                    'profile': params.get('profile', 'full_audit'),
-                    'aggression': params.get('aggression', 'normal')
+                    'profile': params.get('profile', 'Full Scan'),
+                    'aggression': params.get('aggression', 'Normal')
                 }
             },
             'semgrep_sast_scan': {

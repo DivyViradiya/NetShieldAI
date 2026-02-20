@@ -859,15 +859,7 @@
         color: var(--text-secondary);
     }
     
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--neo-blue);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
     
     .tab-pills {
       display: flex;
@@ -1117,9 +1109,9 @@
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
                   Local LLM
                 </a>
-                <a href="#" data-llm-mode="gemini" class="dropdown-link">
+                <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">auto_awesome</span>
-                  Gemini AI
+                  Gemini 2.5 Flash
                 </a>
               </div>
             </div>

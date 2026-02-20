@@ -160,8 +160,8 @@
             <span>{{ data.profile }}</span>
         </div>
         <div class="info-box">
-            <strong>Report ID</strong>
-            <span>{{ data.report_id }}</span>
+            <strong>Aggression</strong>
+            <span>{{ data.aggression }}</span>
         </div>
         <div class="info-box">
             <strong>Date</strong>
@@ -195,79 +195,187 @@
         </div>
     </section>
 
-    <section>
+    <section class="new-page">
         <h3>Phase Analysis</h3>
-        <div class="phase-container">
-            <div class="phase-card">
-                <div class="phase-title">Phase 1: Reconnaissance</div>
-                <div style="font-size: 0.75rem; display: flex; flex-direction: column; gap: 4px;">
-                    <div><strong>Target IP:</strong> {{ data.network.target }}</div>
-                    <div><strong>Status:</strong> <span style="color: {{ 'green' if data.network.status == 'up' else 'red' }}">{{ data.network.status | upper }}</span></div>
-                    <div><strong>Subdomains Found:</strong> {{ data.recon.count }}</div>
-                    <div><strong>URLs Discovered:</strong> {{ data.urls_discovered }}</div>
-                    
-                    {% if data.network.ports %}
+        
+        {# Phase 1: Reconnaissance #}
+        {% if data.recon.subdomains or data.recon.resolved_hosts or data.tech_stack.technologies %}
+        <div class="phase-card">
+            <div class="phase-title">Phase 1: Reconnaissance & Fingerprinting</div>
+            <div style="font-size: 0.75rem; display: flex; flex-direction: column; gap: 4px;">
+                <div><strong>Target IP:</strong> {{ data.target_ip | default('N/A') }}</div>
+                {% if data.recon.subdomains %}
+                    <div><strong>Subdomains Found:</strong> {{ data.recon.subdomains | length }}</div>
+                    <div style="margin-top: 5px;">
+                        <strong class="scan-subtitle">Sample Subdomains:</strong>
+                        <div class="code-box" style="margin-top: 2px;">{{ data.recon.subdomains[:5] | join(', ') }}{% if data.recon.subdomains | length > 5 %}...{% endif %}</div>
+                    </div>
+                {% endif %}
+                {% if data.recon.resolved_hosts %}
+                    <div style="margin-top: 5px;">
+                        <strong class="scan-subtitle">Resolved Hosts:</strong>
+                        <div class="code-box" style="margin-top: 2px;">
+                            {% for host in data.recon.resolved_hosts[:5] %}
+                                {{ host.domain }} ({{ host.ip | default('N/A') }}){% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                            {% if data.recon.resolved_hosts | length > 5 %}...{% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if data.tech_stack.technologies %}
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--neo-border);">
+                        <strong class="scan-subtitle" style="display:block; margin-bottom: 4px;">Detected Technologies:</strong>
+                        {% for cat, items in data.tech_stack.technologies.items() %}
+                            <span class="badge badge-info" style="margin-right: 5px;">{{ cat }}: {{ items | join(', ') }}</span>
+                        {% endfor %}
+                        {% if data.tech_stack.versions %}
+                            <strong class="scan-subtitle" style="display:block; margin-top: 8px; margin-bottom: 4px;">Detected Versions:</strong>
+                            {% for soft, ver in data.tech_stack.versions.items() %}
+                                <span class="badge badge-version" style="margin-right: 5px;">{{ soft }} v{{ ver }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# Phase 2: Network Audit #}
+        {% if data.network.nmap_scan or data.network.exploiter_findings %}
+        <div class="phase-card">
+            <div class="phase-title">Phase 2: Network Audit & Exploitation</div>
+            <div style="font-size: 0.75rem; display: flex; flex-direction: column; gap: 4px;">
+                {% if data.network.nmap_scan and data.network.nmap_scan.ports %}
+                    <div><strong>Nmap Scan Status:</strong> <span style="color: {{ 'green' if data.network.nmap_scan.status == 'up' else 'red' }}">{{ data.network.nmap_scan.status | upper }}</span></div>
+                    <div><strong>OS Guess:</strong> {{ data.network.nmap_scan.os | default('N/A') }}</div>
                     <div style="margin-top: 8px;">
-                        <strong class="scan-subtitle">Open Ports:</strong>
+                        <strong class="scan-subtitle">Open Ports ({{ data.network.nmap_scan.ports | length }}):</strong>
                         <div style="margin-top:2px;">
-                            {% for port in data.network.ports %}
-                                <span class="badge badge-info">{{ port.port }}/{{ port.protocol }} ({{ port.service }})</span>
+                            {% for port in data.network.nmap_scan.ports %}
+                                <span class="badge badge-info" style="margin-right: 5px;">{{ port.port }}/{{ port.protocol }} ({{ port.service }})</span>
                             {% endfor %}
                         </div>
                     </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="phase-card">
-                <div class="phase-title">Phase 2: Weaponization (Tech)</div>
-                <div style="font-size: 0.75rem;">
-                    {% if data.tech_stack.technologies %}
-                        {% for cat, items in data.tech_stack.technologies.items() %}
-                            <div style="margin-bottom: 4px;">
-                                <strong>{{ cat }}:</strong> {{ items | join(', ') }}
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        <div>No specific technologies fingerprinted.</div>
-                    {% endif %}
-
-                    {% if data.tech_stack.versions %}
-                        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--neo-border);">
-                            <strong class="scan-subtitle" style="display:block; margin-bottom: 4px;">Detected Versions:</strong>
-                            {% for soft, ver in data.tech_stack.versions.items() %}
-                                <span class="badge badge-version">{{ soft }} v{{ ver }}</span>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
+                {% else %}
+                    <div>No Nmap scan data available for this profile.</div>
+                {% endif %}
+                
+                {% if data.network.exploiter_findings %}
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--neo-border);">
+                        <strong class="scan-subtitle" style="display:block; margin-bottom: 4px;">Exploitation Attempts:</strong>
+                        <span style="color: var(--risk-high);">{{ data.network.exploiter_findings | length }} potential weak credentials/exploits found.</span>
+                    </div>
+                {% endif %}
             </div>
         </div>
+        {% endif %}
+
+        {# Phase 3: Web Audit #}
+        {% if data.web_audit.crawled_urls or data.web_audit.waf_detection or data.web_audit.directory_fuzzing %}
+        <div class="phase-card">
+            <div class="phase-title">Phase 3: Web Application Audit</div>
+            <div style="font-size: 0.75rem; display: flex; flex-direction: column; gap: 4px;">
+                {% if data.web_audit.waf_detection and data.web_audit.waf_detection.has_waf %}
+                    <div><strong>WAF Detected:</strong> <span style="color: var(--risk-high);">{{ data.web_audit.waf_detection.waf_name | default('Generic') }}</span> (Method: {{ data.web_audit.waf_detection.detection_method }})</div>
+                {% else %}
+                    <div><strong>WAF Detected:</strong> No</div>
+                {% endif %}
+                
+                <div><strong>Crawled URLs:</strong> {{ data.web_audit.crawled_urls | length }}</div>
+                <div><strong>Forms Found:</strong> {{ data.web_audit.forms_found | length }}</div>
+                <div><strong>API Endpoints:</strong> {{ data.web_audit.api_endpoints | length }}</div>
+                
+                {% if data.web_audit.directory_fuzzing and data.web_audit.directory_fuzzing.found_count > 0 %}
+                    <div style="margin-top: 5px;">
+                        <strong>Directory Fuzzing:</strong> {{ data.web_audit.directory_fuzzing.found_count }} paths found.
+                        <div class="code-box" style="margin-top: 2px;">
+                            {% for path_info in data.web_audit.directory_fuzzing.findings[:5] %}
+                                {{ path_info.path }} ({{ path_info.status }}){% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                            {% if data.web_audit.directory_fuzzing.findings | length > 5 %}...{% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# Phase 4: Traffic Analysis #}
+        {% if data.traffic_analysis.stats %}
+        <div class="phase-card">
+            <div class="phase-title">Phase 4: Traffic Analysis</div>
+            <div style="font-size: 0.75rem; display: flex; flex-direction: column; gap: 4px;">
+                <div><strong>Total Packets Captured:</strong> {{ data.traffic_analysis.stats.packet_count | default('N/A') }}</div>
+                {% if data.traffic_analysis.anomalies %}
+                    <div style="margin-top: 5px;">
+                        <strong class="scan-subtitle">Anomalies Detected:</strong>
+                        <ul>
+                            {% for anomaly in data.traffic_analysis.anomalies %}
+                                <li style="margin-bottom: 2px;">
+                                    <span class="badge badge-{{ anomaly.severity | lower }}">{{ anomaly.type }}</span>
+                                    <span style="font-size: 0.7rem;"> - {{ anomaly.details | default('No details.') }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <div>No significant traffic anomalies detected.</div>
+                {% endif %}
+                
+                {% if data.traffic_analysis.credentials %}
+                    <div style="margin-top: 5px;">
+                        <strong class="scan-subtitle">Cleartext Credentials:</strong>
+                        <ul>
+                            {% for cred in data.traffic_analysis.credentials %}
+                                <li style="margin-bottom: 2px;">
+                                    <span class="badge badge-critical">{{ cred.type }}</span>
+                                    <span style="font-size: 0.7rem;"> - {{ cred.evidence | default('No evidence.') }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
     </section>
 
-    <section>
+    <section class="new-page">
         <h3>NetShield Aggregated Findings</h3>
-        {% for severity, findings in data.grouped_findings.items() %}
-            {% if findings|length > 0 %}
-                {% for finding in findings %}
+        {% for severity in ['Critical', 'High', 'Medium', 'Low', 'Info'] %}
+            {% if data.grouped_findings[severity] %}
+                <h4>{{ severity }} Findings ({{ data.grouped_findings[severity] | length }})</h4>
+                {% for finding in data.grouped_findings[severity] %}
                     {% set sev_lower = severity | lower %}
                     <div class="finding-card">
-                        <div class="finding-header">
-                            <h4>{{ finding.type }}</h4>
-                            <span class="badge badge-{{ sev_lower }}">{{ severity }}</span>
+                        <div class="finding-header" style="background-color: {{ data.severity_map_colors[severity] }}15;">{# Light background color based on severity #}
+                            <h4 style="color: var(--neo-text-main);">{{ finding.name | default(finding.type) }}</h4>
+                            <div style="display: flex; gap: 5px;">
+                                <span class="badge badge-{{ sev_lower }}" style="background-color: {{ data.severity_map_colors[severity] }}!important; color: white!important;">{{ severity }}</span>
+                                {% if finding.cwe %}
+                                    <span class="badge badge-info">CWE-{{ finding.cwe }}</span>
+                                {% endif %}
+                                {% if finding.ml_risk_score is defined and finding.ml_risk_score != 'N/A (Model missing)' and finding.ml_risk_score != 'Error' and finding.ml_risk_score != 'Unprofiled' %}
+                                    <span class="badge badge-version">ML Score: {{ finding.ml_risk_score }}</span>
+                                {% endif %}
+                            </div>
                         </div>
                         
                         <div class="finding-text-block">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
                                 <div>
-                                    <strong class="scan-subtitle">Parameter:</strong>
-                                    <span style="font-size: 0.75rem;">{{ finding.parameter | default('N/A') }}</span>
+                                    <strong class="scan-subtitle">Source Tool:</strong>
+                                    <span style="font-size: 0.75rem;">{{ finding.tool_name | default('NetShield AI') }}</span>
                                 </div>
                                 <div style="text-align: right;">
                                     <strong class="scan-subtitle">Timestamp:</strong>
                                     <span style="font-size: 0.75rem;">
                                         {% if finding.timestamp and 'T' in finding.timestamp %}
-                                            {{ finding.timestamp.split('T')[1][:8] }}
+                                            {{ finding.timestamp.split('T')[0] }} {{ finding.timestamp.split('T')[1][:8] }}
+                                        {% elif finding.timestamp %}
+                                            {{ finding.timestamp }}
                                         {% else %}
                                             N/A
                                         {% endif %}
@@ -275,13 +383,18 @@
                                 </div>
                             </div>
                             
+                            {% if finding.parameter %}
+                                <strong class="scan-subtitle">Parameter / Location</strong>
+                                <div class="code-box">{{ finding.parameter }}</div>
+                            {% endif %}
+
                             {% if finding.payload %}
                                 <strong class="scan-subtitle">Payload</strong>
                                 <div class="code-box">{{ finding.payload }}</div>
                             {% endif %}
 
-                            {% if finding.evidence and finding.evidence != finding.payload %}
-                                <strong class="scan-subtitle" style="margin-top: 8px; display:block;">Evidence / URL</strong>
+                            {% if finding.evidence %}
+                                <strong class="scan-subtitle" style="margin-top: 8px; display:block;">Evidence / Proof</strong>
                                 <div class="code-box">{{ finding.evidence | safe }}</div>
                             {% endif %}
                             
@@ -293,56 +406,21 @@
                                 </div>
                             </div>
                             {% endif %}
+
+                            {% if finding.solution %}
+                            <div style="margin-top: 10px;">
+                                <strong class="scan-subtitle">Remediation</strong>
+                                <div style="font-size: 0.75rem; color: var(--neo-text-sub);">
+                                    {{ finding.solution | striptags }}
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
             {% endif %}
         {% endfor %}
     </section>
-
-    {% if data.zap_report.findings %}
-    <section>
-        <h3 class="zap-header">OWASP ZAP Detailed Insights</h3>
-        <div style="margin-bottom: 15px; font-size: 0.7rem; color: var(--neo-text-sub);">
-            Source: {{ data.zap_report.info.tool }} | Scanned: {{ data.zap_report.info.scan_date }}
-        </div>
-
-        {% for zap in data.zap_report.findings %}
-            <div class="finding-card">
-                <div class="finding-header">
-                    <h4>{{ zap.name }}</h4>
-                    <div style="display: flex; gap: 5px;">
-                        <span class="badge badge-{{ zap.risk | lower }}">{{ zap.risk }}</span>
-                        {% if zap.cwe %}
-                            <span class="badge badge-info">CWE-{{ zap.cwe }}</span>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="finding-text-block">
-                    <strong class="scan-subtitle">Vulnerable URL</strong>
-                    <div class="code-box" style="background: #fff; border: 1px dashed var(--neo-border);">{{ zap.url }}</div>
-
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 10px;">
-                        <div>
-                            <strong class="scan-subtitle">Description</strong>
-                            <div style="font-size: 0.75rem; margin-top: 2px;">
-                                {{ zap.description | striptags | truncate(400) }}
-                            </div>
-                        </div>
-                        
-                        <div style="background: #f0fdf4; padding: 10px; border-radius: 4px; border: 1px solid #bbf7d0;">
-                            <strong class="scan-subtitle" style="color: #166534;">Suggested Remediation</strong>
-                            <div style="font-size: 0.75rem; color: #14532d; margin-top: 2px;">
-                                {{ zap.solution | striptags }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </section>
-    {% endif %}
 
     <footer>
         <img src="{{ data.logo_url_small }}" alt="NS Logo" class="footer-logo">

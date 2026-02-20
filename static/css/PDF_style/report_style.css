@@ -113,7 +113,6 @@ h3 {
     border: 1px solid var(--neo-border);
     border-radius: var(--radius);
     background: var(--neo-blue-soft); /* Inverted: soft background instead of white */
-    box-shadow: none; /* Removed heavy shadow */
 }
 
 /* --- Service/Finding Cards --- */

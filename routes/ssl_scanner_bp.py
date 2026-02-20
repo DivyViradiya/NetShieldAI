@@ -54,7 +54,7 @@ SERVER_PROXY_URL = "http://localhost:5100"
 @login_required
 def ssl_scanner_page():
     """Renders the SSL scanner page."""
-    logger.info(f"\033[32m[*] Accessing SSL Scanner Page (User: {current_user.username})\033[0m")
+    logger.info(f"[*] Accessing SSL Scanner Page (User: {current_user.username})")
     return render_template('scanners/ssl_scanner.html')
 
 @ssl_scanner_bp.route('/scan', methods=['POST'])
@@ -66,19 +66,8 @@ def scan_ssl():
     """
     data = request.get_json()
     target_host = data.get('target_host')
-    logger.info(f"\033[32m[*] SSL Scan requested for {target_host} by {current_user.username}\033[0m")
+    logger.info(f"[*] SSL Scan requested for {target_host} by {current_user.username}")
 
-    if not target_host:
-        ssl_scanner.log("[!] Target host cannot be empty for SSL scan.", user_identifier)
-        return jsonify({"status": "error", "message": "Target host is required."}), 400
-
-    if not ssl_scanner.is_sslscan_available():
-        ssl_scanner.log("[!] sslscan.exe is not available. Cannot perform scan.", user_identifier)
-        return jsonify({
-            "status": "error",
-            "message": "sslscan.exe not found. Please check server configuration and logs."
-        }), 500
-    
     # Determine User Directory for this scan
     user_output_dir = get_user_results_dir()
 
@@ -87,6 +76,25 @@ def scan_ssl():
     user_id = current_user.id
     app = current_app._get_current_object()
 
+    if not target_host:
+        ssl_scanner.log("[!] Target host cannot be empty for SSL scan.", current_user_identifier)
+        return jsonify({"status": "error", "message": "Target host is required."}), 400
+
+    if not ssl_scanner.is_sslscan_available(user_id=current_user_identifier):
+        ssl_scanner.log("[!] sslscan.exe is not available. Cannot perform scan.", current_user_identifier)
+        return jsonify({
+            "status": "error",
+            "message": "sslscan.exe not found. Please check server configuration and logs."
+        }), 500
+
+    # [NEW] Prevent Multiple Concurrent Scans for the same user
+    if ssl_scanner.is_scan_running(current_user_identifier):
+        logger.warning(f"[!] SSL Scan already in progress for user {current_user_identifier}")
+        return jsonify({
+            "status": "error", 
+            "message": "An SSL scan is already in progress. Please wait for it to complete."
+        }), 400
+
     # [NEW] Increment Database Counter for Stats
     try:
         current_user.scan_count_ssl += 1
@@ -94,15 +102,30 @@ def scan_ssl():
     except Exception as e:
         ssl_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
+    # [NEW] Reset Log File for this new scan session
+    scan_logger.reset_log_file(current_user_identifier, "ssl")
+
     # Function to run in a separate thread
     def scan_task():
+        # Use DB Logging
+        with app.app_context():
+            log_id = scan_logger.log_scan_start(
+                user_id=user_id,
+                tool_name="SSLScan",
+                target=target_host,
+                scan_type="Standard"
+            )
+
         # Use captured identifier
         ssl_scanner.log(f"[*] Starting SSL scan for {target_host} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
+        
+        sanitized_target = scan_logger.sanitize_filename(target_host)
+        target_pdf_filename = f"ssl_report_{sanitized_target}.pdf"
         
         start_time = time.time()
         
         # 1. Run the Scan (Generates XML) - Pass user directory
-        report_file = ssl_scanner.run_ssl_scan(target_host, output_dir=user_output_dir)
+        report_file = ssl_scanner.run_ssl_scan(target_host, output_dir=user_output_dir, user_id=current_user_identifier)
         
         duration = time.time() - start_time
         status = "Failed"
@@ -112,32 +135,32 @@ def scan_ssl():
             status = "Completed"
             # 2. Parse XML and Save JSON
             # Pass user directory so JSON is saved there
-            summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_output_dir)
+            summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_output_dir, user_id=current_user_identifier)
             
             if summary:
                 # Count "findings" as combined weak protocols + vulnerabilities
                 finding_count = len(summary.get('protocols', [])) + len(summary.get('vulnerabilities', []))
                 
-                ssl_scanner.log(f"[+] SSL scan complete. Generating PDF report...", current_user_identifier, to_console=True)
+                ssl_scanner.log(f"[+] SSL scan complete. Generating PDF report for {target_host}...", current_user_identifier, to_console=True)
                 
                 # 3. Generate PDF Report
                 try:
                     # Get user-specific paths
                     user_paths = ssl_scanner.get_output_paths(user_output_dir)
                     json_path = user_paths["json_report"]
-                    pdf_path = user_paths["pdf_report"]
+                    pdf_path = os.path.join(user_output_dir, target_pdf_filename)
 
                     # Create the directory for PDFs if it doesn't exist
-                    os.makedirs(pdf_path.parent, exist_ok=True)
+                    os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
                     
                     # Generate PDF using the JSON file
                     pdf_generator.create_ssl_report_pdf(str(json_path), str(pdf_path))
                     
-                    if pdf_path.exists():
+                    if os.path.exists(pdf_path):
                         # Final synchronization wait
                         time.sleep(1.5)
-                        ssl_scanner.log(f"[+] PDF report generated successfully: {pdf_path}", current_user_identifier, to_console=True)
-                        ssl_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", current_user_identifier, to_console=True)
+                        ssl_scanner.log(f"[+] PDF report generated successfully", current_user_identifier, to_console=True)
+                        ssl_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_host}", current_user_identifier, to_console=True)
                     else:
                         ssl_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier, to_console=True)
                 
@@ -150,18 +173,41 @@ def scan_ssl():
 
         # Log to Database (Inside App Context)
         with app.app_context():
-            scan_logger.create_full_scan_log(
-                user_id=user_id,
-                tool_name="SSLScan",
-                target=target_host,
-                duration=duration,
-                finding_count=finding_count,
-                status=status,
-                scan_type="Standard"
-            )
+            # [FIXED] Pass error msg on failure
+            error_msg = None if status == "Completed" else "SSL scan failed."
+            scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, error_msg=error_msg)
 
     threading.Thread(target=scan_task).start()
     return jsonify({"status": "success", "message": f"SSL scan for {target_host} initiated."})
+
+
+@ssl_scanner_bp.route('/check_active_scan', methods=['GET'])
+@login_required
+def check_active_scan():
+    """
+    Checks if there's an active scan running for the current user's session.
+    Prioritizes DB state (SSOT).
+    """
+    # 1. CHECK DB (Primary Source of Truth)
+    active_log = scan_logger.get_active_scan_log(current_user.id, "SSLScan")
+    
+    if active_log:
+        return jsonify({
+            "status": "active",
+            "message": "Active scan found (DB)",
+            "target": active_log.target,
+            "scan_id": active_log.id
+        }), 200
+
+    # 2. Fallback: Check Memory
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    if ssl_scanner.is_scan_running(current_user_identifier):
+         return jsonify({
+            "status": "active",
+            "message": "Active scan found (Memory)"
+        }), 200
+
+    return jsonify({"status": "inactive", "message": "No active scan found"}), 200
 
 @ssl_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
@@ -169,12 +215,21 @@ def trigger_ai_analysis_route():
     """
     Checks if PDF exists and returns scanner type. 
     """
+    data = request.get_json() or {}
+    target = data.get('target')
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
-    paths = ssl_scanner.get_output_paths(user_dir)
-    pdf_path = paths["pdf_report"]
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"ssl_report_{sanitized}.pdf"
+    else:
+        paths = ssl_scanner.get_output_paths(user_dir)
+        pdf_filename = os.path.basename(paths["pdf_report"])
 
-    if not pdf_path.exists():
+    pdf_path = os.path.join(user_dir, pdf_filename)
+
+    if not os.path.exists(pdf_path):
         ssl_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}", user_identifier)
         return jsonify({
             "status": "error", 
@@ -184,18 +239,26 @@ def trigger_ai_analysis_route():
     # Returns the scanner type so the chatbot blueprint knows which file to read.
     return jsonify({
         "status": "success",
-        "scanner_type": "ssl" 
+        "scanner_type": "ssl",
+        "target": target
     })
 
 @ssl_scanner_bp.route('/report_files', methods=['GET'])
 @login_required
 def get_report_files():
     """Checks availability of reports to enable the download button."""
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
     paths = ssl_scanner.get_output_paths(user_dir)
     
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"ssl_report_{sanitized}.pdf"
+    else:
+        pdf_filename = os.path.basename(paths["pdf_report"])
+
     json_exists = paths["json_report"].exists()
-    pdf_exists = paths["pdf_report"].exists()
+    pdf_exists = os.path.exists(os.path.join(user_dir, pdf_filename))
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
@@ -203,22 +266,30 @@ def get_report_files():
     return jsonify({
         "status": "success",
         "json_report": "/ssl_scanner/get_json_report" if json_exists else None,
-        "pdf_report": "/ssl_scanner/download_pdf" if pdf_exists else None
+        "pdf_report": f"/ssl_scanner/download_pdf?target={target}" if pdf_exists else None
     })
 
 @ssl_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
     """Serves the PDF report dynamically."""
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = ssl_scanner.get_output_paths(user_dir)
-    pdf_path = paths["pdf_report"]
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"ssl_report_{sanitized}.pdf"
+    else:
+        paths = ssl_scanner.get_output_paths(user_dir)
+        pdf_filename = os.path.basename(paths["pdf_report"])
 
-    if not pdf_path.exists():
+    pdf_path = os.path.join(user_dir, pdf_filename)
+
+    if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
     
-    directory = str(pdf_path.parent)
-    filename = pdf_path.name
+    directory = user_dir
+    filename = pdf_filename
 
     return send_from_directory(
         directory=directory,
@@ -292,18 +363,7 @@ def clear_ssl_log_route():
 def ssl_log_stream():
     """Server-Sent Events (SSE) endpoint to stream SSL scanner log messages."""
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    def generate_logs():
-        user_queue = ssl_scanner.get_user_queue(user_identifier)
-        while True:
-            try:
-                message = user_queue.get(timeout=10)
-                if message == ': keep-alive':
-                    yield f"{message}\n\n"
-                else:
-                    yield f"data: {message}\n\n"
-            except Empty:
-                yield ": keep-alive\n\n"
-            except GeneratorExit:
-                break
-
-    return Response(generate_logs(), mimetype='text/event-stream')
+    return Response(
+        scan_logger.tail_log_file(user_identifier, "ssl"),
+        mimetype='text/event-stream'
+    )

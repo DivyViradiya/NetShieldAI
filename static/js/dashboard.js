@@ -453,7 +453,7 @@ document.addEventListener("DOMContentLoaded", function () {
         usageChartInstance = new Chart(ctx, {
           type: "doughnut",
           data: {
-            labels: ["Network", "Web", "SSL", "Sniffer", "Kill Chain", "SQL", "API", "SAST"],
+            labels: ["Network", "Web", "SSL", "Sniffer", "Kill Chain", "SQL", "API", "SAST", "Chat Sessions"],
             datasets: [
               {
                 data: [
@@ -464,7 +464,8 @@ document.addEventListener("DOMContentLoaded", function () {
                   data.scans.killchain,
                   data.scans.sql,
                   data.scans.api,
-                  data.scans.semgrep
+                  data.scans.semgrep,
+                  data.scans.ai_analysis
                 ],
                 backgroundColor: [
                   "#3b82f6", // Blue (Network)
@@ -474,7 +475,8 @@ document.addEventListener("DOMContentLoaded", function () {
                   "#8b5cf6", // Purple (Killchain)
                   "#0ea5e9", // Sky (SQL)
                   "#ec4899", // Pink (API)
-                  "#6366f1"  // Indigo (SAST)
+                  "#6366f1", // Indigo (SAST)
+                  "#a855f7"  // Purple-ish (AI Analyst)
                 ],
                 borderColor: getThemeColor('--neo-bg'), 
                 borderWidth: 2,

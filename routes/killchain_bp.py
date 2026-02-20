@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 from extensions import db
 
 # [SERVICE] Import the Singleton instance and helpers
-from Services.killchain_service import killchain_service, get_scan_queue, cleanup_queue
+from Services.killchain_service import killchain_service, cleanup_queue
 # --- Import Scan Logger ---
 from Services import scan_logger
 
@@ -58,7 +58,7 @@ def get_fixed_scan_dir():
 @killchain_bp.route('/')
 @login_required
 def killchain_page():
-    logger.info(f"\033[35m[*] Accessing Kill Chain Audit Page (User: {current_user.username})\033[0m")
+    logger.info(f"[*] Accessing Kill Chain Audit Page (User: {current_user.username})")
     return render_template('scanners/killchain.html')
 
 
@@ -85,6 +85,16 @@ def dispatch_scan():
     if not re.match(r'^(?:http(s)?://)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\(\)\*\+,;=.]*$', target):
         return jsonify({"status": "error", "message": "Invalid target format. Please provide a valid URL or Domain."}), 400
 
+    # [NEW] Prevent Multiple Concurrent Scans for the same user
+    # We use user_identifier for locking to match queue_id format
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    if killchain_service.is_user_scanning(user_identifier):
+        logger.warning(f"[!] Kill Chain Audit already in progress for user {user_identifier}")
+        return jsonify({
+            "status": "error", 
+            "message": "A Kill Chain audit is already in progress. Please wait for it to complete."
+        }), 400
+
     # 1. Generate Unique Scan ID (UUID)
     # We still need this for the Queue ID and frontend tracking, 
     # even though files are stored in a fixed folder.
@@ -95,8 +105,8 @@ def dispatch_scan():
     os.makedirs(scan_dir, exist_ok=True)
 
     # 3. Create Unique Queue ID
-    # Format: user_id_scan_id
-    queue_id = f"{current_user.id}_{scan_id}"
+    # Format: user_identifier::scan_id
+    queue_id = f"{user_identifier}::{scan_id}"
 
     # 4. Update DB Stats
     try:
@@ -104,6 +114,9 @@ def dispatch_scan():
         db.session.commit()
     except Exception as e:
         print(f"[!] DB Error updating killchain stats: {e}")
+
+    # [NEW] Reset Log File for this new scan session
+    scan_logger.reset_log_file(user_identifier, "killchain")
 
     # 5. Log Scan Start (Database)
     log_id = scan_logger.log_scan_start(
@@ -116,11 +129,14 @@ def dispatch_scan():
     # Capture App Object
     app = current_app._get_current_object()
 
+    # [NEW] Sanitized target for filename
+    sanitized_target = scan_logger.sanitize_filename(target)
+
     # 6. Launch Background Scan
     # We pass the FIXED scan_dir so the service writes to the same folder every time
     thread = threading.Thread(
         target=killchain_service.run_job,
-        args=(target, profile, aggression, queue_id, scan_dir, log_id, app), # Passed log_id and app
+        args=(target, profile, aggression, queue_id, scan_dir, log_id, app, sanitized_target), # Passed sanitized_target
         daemon=True
     )
     thread.start()
@@ -144,36 +160,16 @@ def log_stream():
     if not queue_id:
         return jsonify({"error": "queue_id parameter is required"}), 400
 
-    def generate_logs():
-        q = get_scan_queue(queue_id)
-        
-        # NOTE: We do NOT clean up the queue in a 'finally' block here.
-        # This prevents data loss if the client briefly disconnects/reconnects.
-        # Cleanup is handled in the service layer when the scan actually finishes.
-        
-        try:
-            while True:
-                try:
-                    # Blocking get with timeout
-                    message = q.get(timeout=5)
-                    yield message 
-                    
-                    # Optional: Check for completion signal to gracefully end local stream
-                    if "event: scan_complete" in message:
-                         # Wait a moment for frontend to process, then stop yielding
-                         time.sleep(1)
-                         break
-                         
-                except queue.Empty:
-                    yield ": keep-alive\n\n"
-                except Exception as e:
-                    yield f"data: [System] Stream Error: {str(e)}\n\n"
-                    break
-        except GeneratorExit:
-            # Standard exception when client disconnects
-            pass
+    # Extract user_identifier from queue_id (format: user_identifier::scan_id)
+    try:
+        user_identifier = queue_id.split('::')[0]
+    except:
+        user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
 
-    return Response(generate_logs(), mimetype='text/event-stream')
+    return Response(
+        scan_logger.tail_log_file(user_identifier, "killchain"),
+        mimetype='text/event-stream'
+    )
 
 
 @killchain_bp.route('/report_files', methods=['GET'])
@@ -181,15 +177,24 @@ def log_stream():
 def get_report_files():
     """
     Checks if reports exist in the FIXED directory. 
-    We ignore the scan_id for file lookup since files are overwritten.
     """
+    target = request.args.get('target')
     scan_dir = get_fixed_scan_dir()
     if not scan_dir or not os.path.exists(scan_dir):
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     reports_dir = os.path.join(scan_dir, "reports")
-    json_path = os.path.join(reports_dir, "killchain_report.json")
-    pdf_path = os.path.join(reports_dir, "killchain_report.pdf")
+    
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        json_filename = f"killchain_report_{sanitized}.json"
+        pdf_filename = f"killchain_report_{sanitized}.pdf"
+    else:
+        json_filename = "killchain_report.json"
+        pdf_filename = "killchain_report.pdf"
+
+    json_path = os.path.join(reports_dir, json_filename)
+    pdf_path = os.path.join(reports_dir, pdf_filename)
 
     json_exists = os.path.exists(json_path)
     pdf_exists = os.path.exists(pdf_path)
@@ -197,25 +202,27 @@ def get_report_files():
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
-    # The frontend still expects a scan_id parameter for the download links, 
-    # even if we don't strictly use it for looking up the path server-side anymore.
-    current_scan_id = request.args.get('scan_id', 'latest')
-
     return jsonify({
         "status": "success",
-        "json_report": f"/killchain/get_json_report?scan_id={current_scan_id}",
-        "pdf_report": f"/killchain/download_pdf?scan_id={current_scan_id}"
+        "json_report": f"/killchain/get_json_report?target={target}",
+        "pdf_report": f"/killchain/download_pdf?target={target}"
     })
 
 
 @killchain_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
-    # We use the fixed dir, ignoring the specific scan_id folder logic
+    target = request.args.get('target')
     scan_dir = get_fixed_scan_dir()
     if not scan_dir: return jsonify({"status": "error"}), 404
     
-    pdf_path = os.path.join(scan_dir, "reports", "killchain_report.pdf")
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        pdf_filename = f"killchain_report_{sanitized}.pdf"
+    else:
+        pdf_filename = "killchain_report.pdf"
+
+    pdf_path = os.path.join(scan_dir, "reports", pdf_filename)
 
     if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report not found."}), 404
@@ -230,11 +237,17 @@ def download_pdf_report():
 @killchain_bp.route('/get_json_report', methods=['GET'])
 @login_required
 def get_json_report():
-    # We use the fixed dir, ignoring the specific scan_id folder logic
+    target = request.args.get('target')
     scan_dir = get_fixed_scan_dir()
     if not scan_dir: return jsonify({"status": "error"}), 404
     
-    json_path = os.path.join(scan_dir, "reports", "killchain_report.json")
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        json_filename = f"killchain_report_{sanitized}.json"
+    else:
+        json_filename = "killchain_report.json"
+
+    json_path = os.path.join(scan_dir, "reports", json_filename)
 
     if not os.path.exists(json_path):
         return jsonify({"status": "error", "message": "JSON report not found."}), 404
@@ -253,14 +266,19 @@ def trigger_ai_analysis():
     Checks if the scan report exists and signals the AI Chatbot to analyze it.
     """
     data = request.get_json()
-    scan_id = data.get('scan_id')
+    target = data.get('target')
     
-    # We accept scan_id for validation, but the file is in the fixed location
     scan_dir = get_fixed_scan_dir()
     if not scan_dir:
         return jsonify({"status": "error", "message": "Invalid scan directory."}), 400
 
-    json_report_path = os.path.join(scan_dir, "reports", "killchain_report.json")
+    if target:
+        sanitized = scan_logger.sanitize_filename(target)
+        json_filename = f"killchain_report_{sanitized}.json"
+    else:
+        json_filename = "killchain_report.json"
+
+    json_report_path = os.path.join(scan_dir, "reports", json_filename)
 
     if not os.path.exists(json_report_path):
         return jsonify({
@@ -271,7 +289,7 @@ def trigger_ai_analysis():
     return jsonify({
         "status": "success",
         "scanner_type": "killchain",
-        "scan_id": scan_id 
+        "target": target
     })
     
     
@@ -307,4 +325,61 @@ def get_scan_history():
             print(f"[!] Error reading history: {e}")
 
     return jsonify({"status": "success", "scans": scans})
+
+@killchain_bp.route('/check_active_scan', methods=['GET'])
+@login_required
+def check_active_scan():
+    """
+    Checks if there's an active scan running for the current user's session.
+    Prioritizes DB state (SSOT) over in-memory state.
+    """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    
+    # 1. CHECK DB (Primary Source of Truth)
+    active_log = scan_logger.get_active_scan_log(current_user.id, "Kill Chain")
+    
+    if active_log:
+        return jsonify({
+            "status": "active",
+            "message": "Active scan found (DB)",
+            "queue_id": f"{user_identifier}::latest", # Queue ID might change on refresh, but logging path is stable
+            "scan_id": active_log.id,
+            "target": active_log.target,
+            "profile": active_log.scan_type,
+            "start_time": active_log.start_time.isoformat()
+        }), 200
+    
+    # 2. Fallback: Check Memory (Legacy support or race condition handling)
+    active_scan_info = None
+    from Services.killchain_service import active_scans 
+
+    with threading.Lock(): 
+        for queue_id, scan_info in active_scans.items():
+            if queue_id.startswith(f"{user_identifier}::"):
+                active_scan_info = scan_info
+                # Also extract the scan_id from the queue_id
+                parts = queue_id.split('::')
+                if len(parts) > 1:
+                    active_scan_info['scan_id'] = parts[1]
+                else:
+                    active_scan_info['scan_id'] = queue_id 
+                active_scan_info['queue_id'] = queue_id 
+                break
+
+    if active_scan_info:
+        # If found in memory but NOT in DB, it might be finishing up or DB write failed.
+        # We'll trust memory in this edge case and return it.
+        return jsonify({
+            "status": "active",
+            "message": "Active scan found (Memory)",
+            "queue_id": active_scan_info['queue_id'],
+            "scan_id": active_scan_info.get('scan_id'),
+            "target": active_scan_info.get('target'),
+            "profile": active_scan_info.get('profile'),
+            "aggression": active_scan_info.get('aggression'),
+            "start_time": active_scan_info.get('start_time') 
+        }), 200
+
+    return jsonify({"status": "inactive", "message": "No active scan found"}), 200
+
 

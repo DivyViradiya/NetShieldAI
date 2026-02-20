@@ -111,31 +111,20 @@ document.addEventListener('DOMContentLoaded', () => {
         cleanedMessage = cleanedMessage.trim();
 
         // 3. Determine Color Style
-        const isLight = document.body.classList.contains("light-mode");
-        let contentStyle = isLight ? 'color:#334155' : 'color:#d4d4d8'; 
-        
-        const lowerMsg = cleanedMessage.toLowerCase();
-        if (cleanedMessage.includes('[x]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {
-            contentStyle = 'color:#ef4444'; 
-        } else if (cleanedMessage.includes('[✓]') || lowerMsg.includes('success') || lowerMsg.includes('complete')) {
-            contentStyle = 'color:#10b981'; 
-        } else if (cleanedMessage.includes('[!]') || lowerMsg.includes('warning')) {
-            contentStyle = 'color:#f59e0b'; 
-        } else if (cleanedMessage.includes('[*]')) {
-             contentStyle = 'color:#3b82f6'; 
-        }
-
-        const timeColor = isLight ? "#64748b" : "#555";
+        let contentStyle = 'color:#d4d4d8';
+        if (displayMessage.includes('[!]')) contentStyle = 'color:#ef4444';
+        else if (displayMessage.includes('[+]')) contentStyle = 'color:#10b981';
+        else if (displayMessage.includes('[*]')) contentStyle = 'color:#3b82f6';
 
         const line = document.createElement('div');
         line.className = 'log-line';
         line.innerHTML = `
-            <div class="log-time" style="color:${timeColor}">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+            <div class="log-time">${timeStr}</div>
+            <div class="log-content" style="${contentStyle}">${displayMessage}</div>
         `;
         
-        elements.snifferLogOutput.appendChild(line);
-        elements.snifferLogOutput.scrollTop = elements.snifferLogOutput.scrollHeight;
+        logContainer.appendChild(line);
+        logContainer.scrollTop = logContainer.scrollHeight;
     }
 
     function setStatus(text, type = 'ready') {
@@ -266,17 +255,24 @@ document.addEventListener('DOMContentLoaded', () => {
         eventSource.onmessage = (evt) => {
             const msg = evt.data;
             if (!msg || msg.startsWith(':')) return;
-
-            appendLog(msg);
+            if (msg.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
+                checkReportAvailability();
+            }
 
             const lower = msg.toLowerCase();
             // FIX: Ensure we switch to packets tab when capture is done
             if (lower.includes('capture complete') || lower.includes('analysis complete') || lower.includes('finished')) {
                 setStatus('Capture complete', 'success');
-                loadAndRenderReport();
-                checkReportAvailability();
-                switchTab('packets'); // <--- ADDED: Forces view to Packet List
+                if (elements.analyzeBtn) elements.analyzeBtn.disabled = false;
+                if (elements.stopBtn) {
+                     toggleSpinner(elements.stopBtn, false);
+                     elements.stopBtn.disabled = true;
+                }
+                setTimeout(() => loadPacketData(), 1000); 
             }
+
+            if (msg.includes("EVENT:") || msg.startsWith("EVENT:")) return;
+            appendLog(msg);
         };
 
         eventSource.onerror = () => {
@@ -708,8 +704,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DOWNLOAD & AI LOGIC ---
 
     async function checkReportAvailability() {
+        const target = elements.targetIpInput.value.trim();
         try {
-            const res = await fetch(`${API_BASE_URL}/report_files`);
+            const url = target ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report_files`;
+            const res = await fetch(url);
             if (!res.ok) throw new Error('HTTP error');
             const data = await res.json();
 
@@ -751,6 +749,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const overlay = elements.aiProcessingOverlay;
         const processingText = elements.aiProcessingText;
         const llmOptions = elements.snifferLlmAnalysisOptions;
+        const target = elements.targetIpInput.value.trim();
 
         if (!button || button.disabled) return;
         if (!csrfToken) {
@@ -763,7 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (overlay) overlay.classList.remove('hidden');
         
         if (processingText) {
-            processingText.textContent = llmMode === 'gemini' 
+            processingText.textContent = llmMode.includes('gemini') 
                 ? 'CONTACTING GEMINI...' 
                 : 'LOADING LOCAL MODEL...';
         }
@@ -779,7 +778,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken 
                 },
-                body: JSON.stringify({ llm_mode: llmMode }),
+                body: JSON.stringify({ llm_mode: llmMode, target: target }),
             });
             let data = await res.json();
             
@@ -796,7 +795,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrfToken
                 },
-                body: JSON.stringify({ llm_mode: llmMode, scanner_type: data.scanner_type }),
+                body: JSON.stringify({ 
+                    llm_mode: llmMode, 
+                    scanner_type: data.scanner_type,
+                    target: data.target,
+                    force_new_session: true // [NEW] Force a fresh chat
+                }),
             });
             data = await res.json();
 
@@ -805,7 +809,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 appendLog('[✓] AI analysis initiated. Redirecting...');
                 
                 setTimeout(() => {
-                     window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}`;
+                     window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${encodeURIComponent(data.summary)}&session_id=${data.session_id}`;
                 }, 800);
             } else {
                 throw new Error(data.message || `Analysis failed.`);

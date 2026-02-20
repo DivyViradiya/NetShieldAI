@@ -3,6 +3,7 @@ import os
 import sys
 import ctypes
 import uuid
+import time
 from datetime import datetime
 import platform
 import queue
@@ -42,49 +43,28 @@ def is_scan_running(user_id):
     with scan_lock:
         return user_id in active_scans
 
-def log(message, user_id=None, to_console=False):
-    """Logs messages to an in-memory queue and to a file."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    full_message = f"data: [{timestamp}] {message}\n\n" # SSE format
-    
+from Services import scan_logger
+
+def log(message, user_id=None, to_console=False, level='INFO'):
+    """
+    Logs messages using the centralized scan_logger.
+    """
     if to_console:
-        print(f"[{timestamp}] {message}")
+        print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
     
     if user_id:
-        user_id = str(user_id)
-        uq = get_user_queue(user_id)
-        uq.put(message)
-
-    # Determine Log File Path
-    log_dir = BASE_DIR / "logs"
-    if user_id:
-        user_id = str(user_id)
-        target_dir = log_dir / "users" / user_id
-        target_dir.mkdir(parents=True, exist_ok=True)
-        target_log_file = target_dir / "ssl_agent_log.txt"
-    else:
-        system_dir = log_dir / "system"
-        system_dir.mkdir(parents=True, exist_ok=True)
-        target_log_file = system_dir / "ssl_system_log.txt"
-
-    try:
-        with open(target_log_file, 'a', encoding='utf-8') as f:
-            f.write(f"[{timestamp}] {message}\n")
-    except Exception as e:
-        print(f"ERROR: Failed to write to {target_log_file}: {e}")
+        scan_logger.write_log(user_id, "ssl", message, level=level)
 
 def send_sse_event(event_name, data="", user_id=None):
-    """Sends a custom SSE event to the user's log_queue."""
+    """
+    Simulates SSE event by logging a special format line that tail_log_file can pick up.
+    """
     if isinstance(data, (dict, list)):
         data_str = json.dumps(data)
     else:
         data_str = str(data)
-    sse_message = f"event: {event_name}\ndata: {data_str}\n\n"
-    
-    if user_id:
-        user_id = str(user_id)
-        uq = get_user_queue(user_id)
-        uq.put(sse_message)
+        
+    log(f"EVENT: {event_name} | PAYLOAD: {data_str}", user_id)
 
 def _get_subprocess_creation_flags():
     """Returns appropriate creation flags for subprocess based on OS."""
@@ -177,31 +157,46 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None):
         
         # Track this user's process
         with scan_lock:
-            active_scans[user_id] = {"target": target_host, "start_time": time.time()}
+            process = subprocess.Popen(
+                local_cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                creationflags=_get_subprocess_creation_flags(),
+                cwd=SSLSCAN_EXECUTABLE.parent 
+            )
+            active_scans[user_id] = {"process": process, "target": target_host, "start_time": time.time()}
 
-        process = subprocess.run(
-            local_cmd,
-            capture_output=True,
-            text=True,
-            check=False,
-            creationflags=_get_subprocess_creation_flags(),
-            cwd=SSLSCAN_EXECUTABLE.parent 
-        )
+        # Stream output in real-time
+        def stream_output(pipe, prefix):
+            for line in iter(pipe.readline, ''):
+                if line:
+                    log(f"[{prefix}] {line.strip()}", user_id)
+            pipe.close()
+
+        stdout_thread = threading.Thread(target=stream_output, args=(process.stdout, "SSLScan"))
+        stderr_thread = threading.Thread(target=stream_output, args=(process.stderr, "SSLScan-Err"))
         
+        stdout_thread.start()
+        stderr_thread.start()
+        
+        # Wait for process to complete
+        return_code = process.wait()
+        stdout_thread.join()
+        stderr_thread.join()
+
         # Unregister process
         with scan_lock:
             if user_id in active_scans:
                 del active_scans[user_id]
-        
-        if process.stdout:
-            log(f"[SSLScan STDOUT]\n{process.stdout}", user_id)
-        if process.stderr:
-            log(f"[SSLScan STDERR]\n{process.stderr}", user_id)
 
-        if process.returncode != 0 and not xml_report_path.exists():
-            log(f"[!] SSL scan failed with exit code {process.returncode} and no report was generated.", user_id, to_console=True)
+        if return_code != 0 and not xml_report_path.exists():
+            log(f"[!] SSL scan failed with exit code {return_code} and no report was generated.", user_id, to_console=True)
             return None
         
+        # Give a small buffer for file sync
+        time.sleep(0.5)
+
         if xml_report_path.exists() and xml_report_path.stat().st_size > 0:
             log(f"[+] SSL scan complete. Report synchronized.", user_id, to_console=True)
             send_sse_event("ssl_scan_complete", {"target_host": target_host, "report_file": str(xml_report_path)}, user_id=user_id)
@@ -250,6 +245,7 @@ def parse_ssl_report(report_file, output_dir=None, user_id=None):
         if ssltest_elem is not None:
             scan_summary["target"] = ssltest_elem.get('host', 'N/A')
             scan_summary["port"] = ssltest_elem.get('port', 'N/A')
+            scan_summary["ip"] = ssltest_elem.get('ip', 'N/A') # [FIX] Extract IP address
 
         if (comp := root.find('.//compression')) is not None:
             scan_summary["server_configs"]["tls_compression"] = {

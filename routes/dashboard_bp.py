@@ -1,12 +1,16 @@
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template, jsonify, request, send_from_directory
 from flask_login import login_required, current_user
 import os
 import json
+import requests
 from werkzeug.utils import secure_filename
 import re  
 import logging
 from datetime import datetime
 from Services import compliance_engine
+import glob
+from pathlib import Path
+
 
 # --- Logging Setup ---
 logger = logging.getLogger(__name__)
@@ -39,6 +43,72 @@ def load_json_safe(path):
             return json.load(f)
     except Exception:
         return None
+
+def get_all_reports(user_dir):
+    """
+    Scans the user's result directory for all PDF reports.
+    Returns a list of dicts: { name, type, date, size, download_url }
+    """
+    if not user_dir or not os.path.exists(user_dir):
+        return []
+
+    reports = []
+    
+    # Define mapping from folder name to Scanner Type
+    scanner_map = {
+        "zap_scanner": "Web Vulnerability",
+        "network_scanner": "Network Scan",
+        "ssl_scanner": "SSL/TLS",
+        "packet_sniffer": "Traffic Analysis",
+        "killchain": "Kill Chain Audit",
+        "sql_scanner": "SQL Injection",
+        "api_scanner": "API Security",
+        "semgrep_scanner": "SAST Code Analysis"
+    }
+
+    # Walk through the directory
+    # Structure: Services/results/<user>/<scanner_folder>/.../*.pdf
+    # Killchain has an extra 'reports' subfolder: .../killchain/reports/*.pdf
+    
+    for root, dirs, files in os.walk(user_dir):
+        for file in files:
+            if file.lower().endswith('.pdf'):
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, user_dir)
+                
+                # Determine scanner type from the first folder in relative path
+                parts = Path(rel_path).parts
+                scanner_folder = parts[0] if parts else "Unknown"
+                
+                # Pretty Type Name
+                scan_type = scanner_map.get(scanner_folder, "General Report")
+                
+                # File Stats
+                try:
+                    stats = os.stat(full_path)
+                    mtime = datetime.fromtimestamp(stats.st_mtime)
+                    size_kb = round(stats.st_size / 1024, 1)
+                    
+                    # Generate safe download link
+                    # Passing relative path relative to user_dir so we can serve it genericially
+                    # or mapped to specific routes.
+                    # We'll use a generic download route in dashboard to serve any file from user dir
+                    
+                    reports.append({
+                        "filename": file,
+                        "type": scan_type,
+                        "date": mtime.strftime("%b %d, %Y %I:%M %p"),
+                        "timestamp": stats.st_mtime, # for sorting
+                        "size": f"{size_kb} KB",
+                        "folder": scanner_folder,
+                        "rel_path": rel_path.replace("\\", "/") # Ensure web-safe paths
+                    })
+                except Exception as e:
+                    logger.warning(f"Error processing report {file}: {e}")
+
+    # Sort by newest first
+    reports.sort(key=lambda x: x['timestamp'], reverse=True)
+    return reports
 
 # --- Main Route ---
 
@@ -576,11 +646,38 @@ def get_usage_stats():
     # current_user is a proxy for the User model record defined in models.py
     user = current_user
     
+    # [NEW] Dynamically Fetch AI Session Count from Chatbot Service
+    ai_session_count = 0
+    try:
+        user_identifier = f"{secure_filename(user.username)}_{user.id}"
+        # Port 5000 is where the FastAPI chatbot server is running
+        proxy_url = "http://127.0.0.1:5000/get_user_sessions"
+        resp = requests.get(proxy_url, params={'user_id': user_identifier}, timeout=2)
+        if resp.status_code == 200:
+            ai_data = resp.json()
+            ai_session_count = len(ai_data.get('sessions', []))
+    except Exception as e:
+        logger.warning(f"Could not fetch AI sessions for usage stats: {e}")
+        ai_session_count = user.scan_count_ai # Fallback to legacy counter
+
     # Format the last login date safely
     last_login_str = "Never"
     if user.last_login_at:
         # Format example: "Jan 05, 2026 12:45 PM"
         last_login_str = user.last_login_at.strftime("%b %d, %Y %I:%M %p")
+
+    # Calculate system usage using the fresh session count instead of raw interactions
+    total_usage = (
+        user.scan_count_nmap + 
+        user.scan_count_zap + 
+        user.scan_count_ssl + 
+        user.scan_count_sniffer +
+        user.scan_count_sql +
+        ai_session_count + 
+        user.scan_count_killchain +
+        getattr(user, 'scan_count_api', 0) +
+        getattr(user, 'scan_count_semgrep', 0)
+    )
 
     response = {
         "username": user.username,
@@ -598,7 +695,7 @@ def get_usage_stats():
             "zap": user.scan_count_zap,
             "ssl": user.scan_count_ssl,
             "sniffer": user.scan_count_sniffer,
-            "ai_analysis": user.scan_count_ai,
+            "ai_analysis": ai_session_count, # Reported as sessions
             "killchain": user.scan_count_killchain,
             "api": getattr(user, 'scan_count_api', 0),
             "sql": getattr(user, 'scan_count_sql', 0),
@@ -606,8 +703,7 @@ def get_usage_stats():
         },
         
         # --- Aggregates ---
-        # Using the @property total_scans defined in your models.py
-        "total_system_usage": user.total_scans
+        "total_system_usage": total_usage
     }
 
     return jsonify(response)
@@ -631,3 +727,51 @@ def get_compliance_stats():
     data = compliance_engine.generate_compliance_report(user_dir)
     
     return jsonify(data)
+
+
+@dashboard_bp.route('/api/stats/reports')
+@login_required
+def get_pdf_reports():
+    """Returns a list of all PDF reports for the current user."""
+    logger.info(f"\033[34m[*] Listing PDF Reports for {current_user.username}\033[0m")
+    user_dir = get_user_results_dir()
+    reports = get_all_reports(user_dir)
+    return jsonify({"status": "success", "reports": reports})
+
+
+@dashboard_bp.route('/download/report')
+@login_required
+def download_generic_report():
+    """
+    Generic download handler for any report in the user's directory.
+    Params: path (relative to user's result dir)
+    """
+    rel_path = request.args.get('path')
+    if not rel_path:
+        return jsonify({"status": "error", "message": "Missing path"}), 400
+        
+    user_dir = get_user_results_dir()
+    if not user_dir:
+        return jsonify({"status": "error", "message": "User directory unavailable"}), 404
+        
+    # Security Check: Ensure the resolved path is within user_dir
+    # normalize path separators
+    clean_rel = rel_path.replace("..", "") # Basic traversal prevention
+    
+    file_path = os.path.join(user_dir, clean_rel)
+    
+    # Rigorous check
+    abs_user_dir = os.path.abspath(user_dir)
+    abs_file_path = os.path.abspath(file_path)
+    
+    if not abs_file_path.startswith(abs_user_dir):
+        logger.warning(f"Security Alert: User {current_user.username} attempted path traversal: {rel_path}")
+        return jsonify({"status": "error", "message": "Access denied"}), 403
+        
+    if not os.path.exists(file_path):
+        return jsonify({"status": "error", "message": "File not found"}), 404
+        
+    directory = os.path.dirname(file_path)
+    filename = os.path.basename(file_path)
+    
+    return send_from_directory(directory=directory, path=filename, as_attachment=True)
