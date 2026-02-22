@@ -1,0 +1,28 @@
+[09:44:49] [*] Starting ZAP Quick Scan (AJAX: False, Auth: Anonymous) for http:[FILE_PATH] (User: DivyaViradiya_1)...
+[09:44:49] 
+--- Starting ZAP Engine (Port: 52244) ---
+[09:44:49] Mode: Quick Scan | AJAX: False | Target: http:[FILE_PATH]
+[09:46:11] [CONTEXT] Created context 'Ctx_DivyaViradiya_1_52244' (ID: 1)
+[09:46:11] [CONTEXT] Scope defined: http:[FILE_PATH]*
+[09:46:11] [STAGE] Starting Web Spider...
+[09:46:11] [PROGRESS] [                    ] 0%
+[09:46:13] [STAGE] Waiting for Passive Scan to complete...
+[09:46:13] Passive Scan: 3 records remaining
+[09:46:15] Passive Scan: 3 records remaining
+[09:46:17] Passive Scan: 3 records remaining
+[09:46:19] Passive Scan: 3 records remaining
+[09:46:21] Passive Scan: 3 records remaining
+[09:46:23] [STAGE] Starting Active Scan (Core Analysis)...
+[09:46:23] [PROGRESS] [                    ] 0%
+[09:46:28] [PROGRESS] [=======             ] 35%
+[09:46:54] [PROGRESS] [================    ] 82%
+[09:46:59] [PROGRESS] [====================] 100%
+[09:46:59] Generating XML report...
+[09:47:01] [+] ZAP scan command finished. Parsing...
+[09:47:01] Parsing ZAP report: [FILE_PATH]
+[09:47:01] Report parsed and enriched successfully.
+[09:47:01] [+] JSON report saved.
+[09:47:01] [*] Generating PDF report for http:[FILE_PATH]
+[09:47:18] [+] PDF generated successfully.
+[09:47:18] SYSTEM_EVENT: READY_FOR_ANALYSIS:http:[FILE_PATH]
+[09:47:18] [*] Scan, analysis, and prediction complete.

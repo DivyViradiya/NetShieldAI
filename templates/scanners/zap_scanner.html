@@ -685,8 +685,11 @@
       <div class="control-card">
         <div class="control-row-top">
             <div class="search-container">
+                <!-- Anti-autofill traps to absorb Chrome's password heuristics -->
+                <input type="text" style="position: absolute; opacity: 0; pointer-events: none; z-index: -1;" tabindex="-1" aria-hidden="true" autocomplete="username" />
+                <input type="password" style="position: absolute; opacity: 0; pointer-events: none; z-index: -1;" tabindex="-1" aria-hidden="true" autocomplete="current-password" />
                 <span class="material-symbols-outlined search-icon">link</span>
-                <input type="url" id="targetUrl" class="dash-input" placeholder="ENTER TARGET URL..." />
+                <input type="text" inputmode="url" id="targetUrl" class="dash-input" placeholder="ENTER TARGET URL..." autocomplete="nope" spellcheck="false" data-lpignore="true" data-1p-ignore="true" />
             </div>
         </div>
 
@@ -701,7 +704,7 @@
                 <!-- Scan Options Dropdown -->
                 <div class="relative">
                     <button id="scanOptionsBtn" class="btn-dash btn-secondary" title="Scan Options">
-                        <span class="material-symbols-outlined" style="font-size:1.1rem">settings</span>
+                        OPTIONS
                     </button>
                     
                     <div id="scanOptionsDropdown" class="hidden absolute top-full left-0 mt-2 custom-dropdown" style="min-width: 380px; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
@@ -733,8 +736,8 @@
                                     <input type="text" id="passField" class="dash-input" placeholder="PASS FIELD NAME" style="padding-left: 10px; height: 36px; font-size: 0.7rem; flex: 1;" />
                                 </div>
                                 <div class="flex gap-2">
-                                    <input type="text" id="username" class="dash-input" placeholder="USERNAME" style="padding-left: 10px; height: 36px; font-size: 0.7rem; flex: 1;" />
-                                    <input type="password" id="password" class="dash-input" placeholder="PASSWORD" style="padding-left: 10px; height: 36px; font-size: 0.7rem; flex: 1;" />
+                                    <input type="text" id="username" class="dash-input" placeholder="USERNAME" autocomplete="off" style="padding-left: 10px; height: 36px; font-size: 0.7rem; flex: 1;" />
+                                    <input type="password" id="password" class="dash-input" placeholder="PASSWORD" autocomplete="new-password" style="padding-left: 10px; height: 36px; font-size: 0.7rem; flex: 1;" />
                                 </div>
                             </div>
                         </div>
@@ -742,14 +745,9 @@
                 </div>
             </div>
 
-            <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono); display: flex; align-items: center; gap: 12px;">
-                <div style="display: flex; align-items: center;">
-                    TARGET: <span id="lastScannedUrlDisplay" style="color: var(--neo-text-main); margin-left: 5px;">---</span>
-                </div>
-                <div class="badge-pill">
-                    <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
-                    <span id="scanStatus">READY</span>
-                </div>
+            <div style="display: none;">
+                <span id="lastScannedUrlDisplay"></span>
+                <span id="scanStatus"></span>
             </div>
         </div>
       </div>

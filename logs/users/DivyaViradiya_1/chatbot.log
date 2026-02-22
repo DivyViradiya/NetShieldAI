@@ -750,3 +750,19 @@ requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetErro
 2026-02-20 12:08:19 - INFO - Session switched via URL parameter to: 2e600d2c-cb04-4a4e-a728-303423b062de
 2026-02-20 12:32:30 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
 2026-02-20 12:32:31 - INFO - Session switched via URL parameter to: null
+2026-02-20 12:44:17 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-20 12:44:23 - INFO - Stored session ID from server: 433bcb11-a4a2-48c4-b866-9bf73bca5e13
+2026-02-20 12:44:24 - INFO - Session switched via URL parameter to: 433bcb11-a4a2-48c4-b866-9bf73bca5e13
+2026-02-20 17:50:39 - INFO - New local chat session started: 81a84384-3111-4919-8fe7-a60c6c4fb0c6
+2026-02-20 17:50:54 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 81a84384-3111-4919-8fe7-a60c6c4fb0c6
+2026-02-20 17:50:58 - INFO - Stream updated local session ID to: 6d85eee6-af07-4eba-b6c5-2f3f7166b855
+2026-02-20 17:52:05 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-20 17:52:09 - INFO - Stream updated local session ID to: bcd8dc33-a590-43d2-98d2-7e03952647a0
+2026-02-20 17:53:14 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session bcd8dc33-a590-43d2-98d2-7e03952647a0
+2026-02-20 17:53:19 - INFO - AI Action Execution requested: ssl_scan with params {'target_host': 'testphp.vulnweb.com'}
+2026-02-20 17:53:19 - INFO - Triggering scanner: http://127.0.0.1:5100/ssl_scanner/scan for user DivyaViradiya
+2026-02-20 17:53:47 - INFO - Sending ssl path-based analysis request to backend (Target: None)
+2026-02-20 17:54:51 - INFO - Stored session ID from server: bcd8dc33-a590-43d2-98d2-7e03952647a0
+2026-02-20 17:54:51 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session bcd8dc33-a590-43d2-98d2-7e03952647a0
+2026-02-20 17:55:21 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session bcd8dc33-a590-43d2-98d2-7e03952647a0
+2026-02-20 17:56:02 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session bcd8dc33-a590-43d2-98d2-7e03952647a0

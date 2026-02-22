@@ -12,3 +12,9 @@ jinja2
 scikit-learn
 werkzeug
 scapy
+celery
+redis
+python-owasp-zap-v2.4
+beautifulsoup4
+paramiko
+pysmb

@@ -1,0 +1,16 @@
+[2026-02-20 17:53:19] Log cleared for new ssl scan.
+[17:53:19] [*] Starting SSL scan for testphp.vulnweb.com (User: DivyaViradiya_1)...
+[17:53:19] [+] Running local SSL scan on testphp.vulnweb.com...
+[17:53:19] Running SSL Configuration Scan...
+[17:53:43] [SSLScan-Err] [91mERROR: Could not open a connection to host testphp.vulnweb.com (44.228.249.3) on port 443 (connect: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond. ).[0m
+[17:53:43] [SSLScan] Version: [92m2.2.0 Windows 64-bit (Mingw)[0m
+[17:53:43] [SSLScan] OpenSSL 3.5.0 8 Apr 2025
+[17:53:43] [SSLScan] [0m
+[17:53:43] [+] SSL scan complete. Report synchronized.
+[17:53:43] EVENT: ssl_scan_complete | PAYLOAD: {"target_host": "testphp.vulnweb.com", "report_file": "D:\\NetShield\\NetShieldAI\\Services\\temp\\sslscan\\ssl_temp_DivyaViradiya_1_3edf9b68.xml"}
+[17:53:43] [+] SSLScan report parsed successfully.
+[17:53:43] [+] SSL JSON report saved to [FILE_PATH]
+[17:53:43] EVENT: ssl_report_parsed | PAYLOAD: {"target": "N/A", "ip": "N/A", "port": "N/A", "server_configs": {"tls_compression": {}, "renegotiation": {}, "ocsp_stapling": {}, "fallback_scsv_supported": "N/A"}, "protocols": [], "certificate_chain": [], "ciphers": [], "client_cas": [], "vulnerabilities": []}
+[17:53:43] [+] SSL scan complete. Generating PDF report for testphp.vulnweb.com...
+[17:53:47] [+] PDF report generated successfully
+[17:53:47] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
