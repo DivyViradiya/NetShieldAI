@@ -8,6 +8,7 @@ import queue
 import threading
 import platform
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -34,17 +35,23 @@ def is_scan_running(user_id):
     with scan_lock:
         return user_id in active_scans
 
-# --- Logging & Events ---
 from Services import scan_logger
+from logger_setup import logger
 
 # --- Logging & Events ---
 def log(message, user_id=None, to_console=False, level='INFO'):
     """
     Logs messages using the centralized scan_logger.
     """
-    timestamp = datetime.now().strftime("%H:%M:%S")
-    
-    if to_console: print(f"[{timestamp}] {message}")
+    if to_console:
+        if level == 'INFO':
+            logger.info(message)
+        elif level == 'WARNING':
+            logger.warning(message)
+        elif level == 'ERROR':
+            logger.error(message)
+        else:
+            logger.debug(message)
     
     if user_id:
         scan_logger.write_log(user_id, "semgrep", message, level=level)
@@ -105,14 +112,39 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
     source_dir.mkdir(parents=True, exist_ok=True)
     try:
         if input_type == "zip":
-            with zipfile.ZipFile(target_input, 'r') as z: z.extractall(source_dir)
+            with zipfile.ZipFile(target_input, 'r') as z:
+                file_count = len(z.namelist())
+                log(f"[*] Extracting {file_count} files from zip...", user_id)
+                z.extractall(source_dir)
         elif input_type == "git":
+            log(f"[*] Cloning repository: {target_input}", user_id)
             subprocess.run(["git", "clone", "--depth", "1", target_input, str(source_dir)], check=True, capture_output=True, text=True, encoding='utf-8')
         
-        cmd = [semgrep_cmd, "scan", "--json", "--output", str(raw_report_path), "--config", "p/security-audit", str(source_dir)]
-        subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8')
+        cmd = [semgrep_cmd, "scan", "--json", "--output", str(raw_report_path), 
+               "--config", "p/ci", "--config", "p/security-audit", 
+               "--config", "p/secrets", "--config", "p/python", 
+               "--no-git-ignore", 
+               "."] # Scan extracted source root
+        
+        log(f"[*] Executing Semgrep scan engine...", user_id)
+        # Use cwd to ensure relative paths in output
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', cwd=str(source_dir))
 
-        if not raw_report_path.exists(): return None
+        # Log Semgrep's summary from stderr (contains file count and finding summary)
+        if result.stderr:
+            # Filter out noisy lines, keep the summary
+            summary_lines = [l for l in result.stderr.splitlines() if "Scan info" in l or "Findings" in l or "Scanned" in l]
+            for line in summary_lines:
+                log(f"[Semgrep] {line.strip()}", user_id)
+
+        if result.returncode != 0 and not raw_report_path.exists():
+            log(f"[!] Semgrep engine error (Code {result.returncode}): {result.stderr}", user_id)
+            return None
+
+        if not raw_report_path.exists(): 
+            log(f"[!] Semgrep finished but no results file was generated.", user_id)
+            return None
+            
         return parse_semgrep_results(raw_report_path, output_dir, user_id)
     except Exception as e:
         log(f"Scan Error: {e}", user_id)
@@ -128,12 +160,45 @@ def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None):
     paths = get_output_paths(output_dir, user_id)
     output_file = paths["parsed_json"]
     try:
-        with open(raw_json_path, 'r', encoding='utf-8') as f: data = json.load(f)
-        report = {"scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "findings": []}
+        with open(raw_json_path, 'r', encoding='utf-8') as f: 
+            data = json.load(f)
+        
+        report = {
+            "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "tool": "Semgrep OSS",
+            "total_findings": 0,
+            "severity_counts": {"ERROR": 0, "WARNING": 0, "INFO": 0},
+            "findings": []
+        }
+
         if 'results' in data:
             for r in data['results']:
-                report["findings"].append({"check_id": r.get('check_id'), "path": r.get('path'), "message": r['extra'].get('message')})
+                extra = r.get('extra', {})
+                severity = extra.get('severity', 'INFO').upper()
+                
+                # Update Counts
+                if severity in report["severity_counts"]:
+                    report["severity_counts"][severity] += 1
+                else:
+                    report["severity_counts"]["INFO"] += 1
+
+                finding = {
+                    "check_id": r.get('check_id'),
+                    "path": r.get('path'),
+                    "line": r.get('start', {}).get('line'),
+                    "column": r.get('start', {}).get('col'),
+                    "message": extra.get('message'),
+                    "severity": severity,
+                    "code_snippet": extra.get('lines'),
+                    "fix_suggestion": extra.get('fix')
+                }
+                report["findings"].append(finding)
+        
         report["total_findings"] = len(report["findings"])
-        with open(output_file, 'w', encoding='utf-8') as f: json.dump(report, f, indent=4)
+        
+        with open(output_file, 'w', encoding='utf-8') as f: 
+            json.dump(report, f, indent=4)
         return str(output_file)
-    except: return None
+    except Exception as e:
+        log(f"Error parsing results: {e}", user_id)
+        return None

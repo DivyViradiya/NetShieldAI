@@ -51,7 +51,10 @@ def get_user_queue(user_id):
 
 # --- Logging and SSE Helpers ---
 
+# --- Logging and SSE Helpers ---
+
 from Services import scan_logger
+from logger_setup import logger
 
 # --- Logging and SSE Helpers ---
 
@@ -59,10 +62,13 @@ def log(message, user_id=None, to_console=False, level='INFO'):
     """
     Logs messages using the centralized scan_logger.
     """
-    timestamp = time.strftime("%H:%M:%S")
-    
     if to_console:
-        print(f"[{timestamp}] {message}")
+        if level.upper() == 'ERROR' or level.upper() == 'CRITICAL':
+            logger.error(message)
+        elif level.upper() == 'WARNING':
+            logger.warning(message)
+        else:
+            logger.info(message)
     
     if user_id:
         scan_logger.write_log(user_id, "packet_sniffer", message, level=level)
@@ -95,7 +101,7 @@ def clear_log_file(user_id):
             uq.queue.clear()
             
     except Exception as e:
-        print(f"FATAL: Could not clear log file: {e}")
+        logger.error(f"FATAL: Could not clear log file: {e}")
 
 # --- OS-Specific and Network Helpers ---
 

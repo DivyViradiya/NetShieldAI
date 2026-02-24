@@ -1,20 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- API Endpoints (Pointing to api_scanner_bp) ---
+    // --- API Endpoints ---
     const API_BASE_URL = '/api_scanner';
     const SCAN_ENDPOINT = `${API_BASE_URL}/scan`;
     const RESULTS_ENDPOINT = `${API_BASE_URL}/scan_results`;
     const CLEAR_LOG_ENDPOINT = `${API_BASE_URL}/clear_log`;
     const LOG_STREAM_ENDPOINT = `${API_BASE_URL}/log_stream`;
     const REPORT_FILES_ENDPOINT = `${API_BASE_URL}/report_files`; 
-    // Using existing trigger route, but backend will need to know context or use distinct route if logic differs
-    // We will use the existing route structure defined in blueprint
-    const ANALYZE_ENDPOINT = `${API_BASE_URL}/trigger_ai_analysis`;  // Assume logic added to api_scanner_bp
+    const ANALYZE_ENDPOINT = `${API_BASE_URL}/trigger_ai_analysis`; 
+    const STATUS_ENDPOINT = `${API_BASE_URL}/status`;
     const CHATBOT_REDIRECT_URL = '/chatbot'; 
 
     // --- DOM Elements ---
     const targetUrlInput = document.getElementById('targetUrl');
     const definitionUrlInput = document.getElementById('definitionUrl'); 
-    const authTokenInput = document.getElementById('authToken'); // [NEW]
+    const authTokenInput = document.getElementById('authToken');
     const startScanBtn = document.getElementById('startScanBtn'); 
     
     const scanStatus = document.getElementById('scanStatus');
@@ -28,12 +27,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const mediumAlertsDisplay = document.getElementById('mediumAlertsDisplay');
     const lowAlertsDisplay = document.getElementById('lowAlertsDisplay');
     const infoAlertsDisplay = document.getElementById('infoAlertsDisplay');
-    const apiAlertsTableBody = document.getElementById('apiAlertsTableBody');
+    
+    // New Elements
+    const findingsList = document.getElementById('findingsList');
+    const findingsSearch = document.getElementById('findingsSearch');
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const findingsCountDisplay = document.getElementById('findingsCountDisplay');
+
+    // Insights Panel
+    const avgRiskScore = document.getElementById('avgRiskScore');
+    const topVectorsList = document.getElementById('topVectorsList');
+    const metaTarget = document.getElementById('metaTarget');
+    const metaDuration = document.getElementById('metaDuration');
+
+    let allFindings = [];
+    let currentFilter = 'all';
+    let scanStartTime = null;
 
     // Actions
     const refreshResultsBtn = document.getElementById('refreshResultsBtn');
-    const copyResultsBtn = document.getElementById('copyResultsBtn');
-    const resultsContent = document.getElementById('resultsContent'); 
     const downloadPdfBtn = document.getElementById('downloadReportBtn'); 
     
     // AI Analysis & Overlay Elements
@@ -42,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiProcessingOverlay = document.getElementById('aiProcessingOverlay');
     const aiProcessingText = document.getElementById('aiProcessingText');
 
-    const STATUS_ENDPOINT = `${API_BASE_URL}/status`;
+    let logEventSource = null;
 
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -62,60 +74,67 @@ document.addEventListener('DOMContentLoaded', () => {
             button.style.cursor = 'not-allowed';
             if (spinner) spinner.classList.remove('hidden');
             if (icon && !icon.textContent.includes('expand_more')) icon.style.display = 'none';
+            if (text && button.id === 'startScanBtn') text.textContent = 'SCANNING...';
         } else {
             button.style.opacity = '1';
             button.style.cursor = 'pointer';
             if (spinner) spinner.classList.add('hidden');
             if (icon) icon.style.display = 'inline-block';
+            if (text && button.id === 'startScanBtn') text.textContent = 'START SCAN';
         }
     }
 
     function updateScanStatus(message, type = 'info') {
+        if (!scanStatus) return;
         scanStatus.textContent = message;
-        scanStatus.style.color = '#a1a1aa'; // Default gray
         
-        if (type === 'success') scanStatus.style.color = '#10b981'; // Green
-        else if (type === 'error') scanStatus.style.color = '#ef4444'; // Red
-        else if (type === 'busy') scanStatus.style.color = '#eab308'; // Yellow
+        const isLight = document.body.classList.contains("light-mode");
+        scanStatus.style.color = isLight ? '#64748b' : '#a1a1aa'; 
+        
+        if (type === 'success') scanStatus.style.color = '#10b981'; 
+        else if (type === 'error') scanStatus.style.color = '#ef4444'; 
+        else if (type === 'busy') scanStatus.style.color = '#eab308'; 
     }
 
-    // --- LOGGING ---
     function appendLog(message) {
         if (!logOutput) return;
 
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        // [UPDATED] Robust timestamp cleanup
-        let cleanedMessage = message.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*/, "").replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "").trim();
+        let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
+        cleanedMessage = cleanedMessage.trim();
 
-        // --- In-Place Update Logic for Progress Bars ---
-        const isProgressBar = cleanedMessage.startsWith('[') && cleanedMessage.includes('%');
+        const isProgressBar = cleanedMessage.startsWith('[PROGRESS]') || (cleanedMessage.startsWith('[') && cleanedMessage.includes('%'));
         if (isProgressBar) {
             const lastLine = logOutput.lastElementChild;
-            if (lastLine && lastLine.querySelector('.log-content').getAttribute('data-is-progress') === 'true') {
-                lastLine.querySelector('.log-time').textContent = timeStr;
-                lastLine.querySelector('.log-content').textContent = cleanedMessage;
-                return;
+            if (lastLine) {
+                const logContent = lastLine.querySelector('.log-content');
+                if (logContent && logContent.getAttribute('data-is-progress') === 'true') {
+                    lastLine.querySelector('.log-time').textContent = timeStr;
+                    logContent.textContent = cleanedMessage;
+                    return;
+                }
             }
         }
-
-        let contentStyle = 'color:#d4d4d8';
-        const lowerMsg = cleanedMessage.toLowerCase();
         
-        if (cleanedMessage.includes('[!]') || lowerMsg.includes('error') || lowerMsg.includes('failed')) {
+        let contentStyle = '';
+        if (cleanedMessage.includes('[!]') || cleanedMessage.includes('Error')) {
             contentStyle = 'color:#ef4444';
-        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('[✓]') || lowerMsg.includes('success') || lowerMsg.includes('complete')) {
+        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('Success')) {
             contentStyle = 'color:#10b981';
-        } else if (cleanedMessage.includes('[*]') || lowerMsg.includes('initiating')) {
+        } else if (cleanedMessage.includes('[*]')) {
             contentStyle = 'color:#3b82f6';
         }
 
         const line = document.createElement('div');
         line.className = 'log-line';
+        const dataAttr = isProgressBar ? ' data-is-progress="true"' : '';
+        
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}" ${isProgressBar ? 'data-is-progress="true"' : ''}>${cleanedMessage}</div>
+            <div class="log-prompt">></div>
+            <div class="log-content" style="${contentStyle}"${dataAttr}>${cleanedMessage}</div>
         `;
         
         logOutput.appendChild(line);
@@ -123,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Report & Button Management ---
+
     async function checkReportStatus() {
         const target = targetUrlInput.value.trim();
         if (downloadPdfBtn) {
@@ -162,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // --- AI ANALYSIS ---
     async function analyzeReport(llmMode) {
         if (analyzeReportDropdown.disabled) return;
         const target = targetUrlInput.value.trim();
@@ -186,8 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         analyzeReportDropdown.disabled = true;
 
         try {
-            // 1. Prepare Data
-            let response = await fetch(ANALYZE_ENDPOINT, { // Points to api_scanner_bp
+            let response = await fetch(ANALYZE_ENDPOINT, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -199,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.status !== 'success') throw new Error(data.message || 'Check failed.');
             
-            // 2. Synthesize (Points to Chatbot Proxy)
             if (aiProcessingText) aiProcessingText.textContent = 'ANALYZING ENDPOINTS...';
 
             const CHATBOT_PROXY_URL = `${CHATBOT_REDIRECT_URL}/scanner_analysis`;
@@ -213,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     llm_mode: llmMode, 
                     scanner_type: "api",
                     target: data.target,
-                    force_new_session: true // [NEW] Force a fresh chat
+                    force_new_session: true 
                 })
             });
 
@@ -243,9 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- RESULTS RENDERING ---
+    // --- Main Rendering Logic ---
+
     async function fetchAndDisplayResults() {
-        apiAlertsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: #555;">Loading results...</td></tr>`;
+        if (!findingsList) return;
+        findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #555; font-family: monospace;">LOADING SCAN DATA...</div>`;
 
         try {
             const response = await fetch(RESULTS_ENDPOINT);
@@ -254,14 +273,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.status === 'success' && result.data) {
                 const report = result.data;
                 updateSummaryDisplay(report.summary, report.target_url);
-                populateAlertsTable(report.findings || report.alerts); 
-                resultsContent.textContent = JSON.stringify(report, null, 2);
+                allFindings = report.findings || report.alerts || [];
+                renderFindings();
+                updateInsightsDisplay(report);
             } else {
-                apiAlertsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: #555;">No results available.</td></tr>`;
+                findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #555; font-family: monospace;">NO RESULTS AVAILABLE.</div>`;
             }
         } catch (error) {
             console.error(error);
-            apiAlertsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: #ef4444;">Connection error.</td></tr>`;
+            findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #ef4444; font-family: monospace;">CONNECTION ERROR.</div>`;
         } finally {
             await checkReportStatus();
         }
@@ -269,43 +289,185 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function updateSummaryDisplay(summary, targetUrl) {
         if (!summary) return;
-        lastScannedUrlDisplay.textContent = targetUrl || 'N/A';
-        totalAlertsDisplay.textContent = summary.Total || summary.total || '0';
-        highAlertsDisplay.textContent = summary.High || summary.high || '0';
-        mediumAlertsDisplay.textContent = summary.Medium || summary.medium || '0';
-        lowAlertsDisplay.textContent = summary.Low || summary.low || '0';
-        infoAlertsDisplay.textContent = summary.Info || summary.info || '0';
+        if (lastScannedUrlDisplay) lastScannedUrlDisplay.textContent = targetUrl || '---';
+        if (totalAlertsDisplay) totalAlertsDisplay.textContent = summary.Total || summary.total || '0';
+        if (highAlertsDisplay) highAlertsDisplay.textContent = summary.High || summary.high || '0';
+        if (mediumAlertsDisplay) mediumAlertsDisplay.textContent = summary.Medium || summary.medium || '0';
+        if (lowAlertsDisplay) lowAlertsDisplay.textContent = summary.Low || summary.low || '0';
+        if (infoAlertsDisplay) infoAlertsDisplay.textContent = summary.Info || summary.info || '0';
     }
 
-    function populateAlertsTable(findings) {
-        apiAlertsTableBody.innerHTML = ''; 
-        if (findings && findings.length > 0) {
-            findings.forEach(alert => {
-                const row = document.createElement('tr');
-                
-                const risk = alert.risk || 'Info';
-                let riskColor = '#3b82f6';
-                if (risk === 'High') riskColor = '#ef4444';
-                if (risk === 'Medium') riskColor = '#f97316';
-                if (risk === 'Low') riskColor = '#eab308';
+    function updateInsightsDisplay(report) {
+        if (!report) return;
 
-                const description = (alert.description || '').substring(0, 350) + (alert.description?.length > 350 ? '...' : '');
+        // 1. Target & Metadata
+        if (metaTarget) metaTarget.textContent = report.target_url || '---';
+        if (scanStartTime && metaDuration) {
+            const duration = Math.floor((Date.now() - scanStartTime) / 1000);
+            metaDuration.textContent = `${duration}s`;
+        }
 
-                row.innerHTML = `
-                    <td style="color: ${riskColor}; font-weight: 700;">${risk}</td>
-                    <td style="font-weight: 600;">${alert.predicted_risk_score || 'N/A'}</td>
-                    <td>${alert.name || alert.alert}</td>
-                    <td style="font-family: monospace; font-size: 0.8rem; color: #a1a1aa;">${alert.method || 'GET'} ${alert.path || alert.url}</td>
-                    <td style="font-size: 0.8rem; opacity: 0.8;">${description}</td>
-                `;
-                apiAlertsTableBody.appendChild(row);
-            });
-        } else {
-            apiAlertsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: #555;">No vulnerabilities found.</td></tr>`;
+        // 2. Risk Index (Average of Predicted Scores)
+        const scores = allFindings
+            .map(f => parseFloat(f.predicted_risk_score))
+            .filter(s => !isNaN(s));
+        
+        if (scores.length > 0 && avgRiskScore) {
+            const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+            avgRiskScore.textContent = avg.toFixed(1);
+            
+            if (avg > 15) avgRiskScore.style.color = '#ef4444';
+            else if (avg > 8) avgRiskScore.style.color = '#f97316';
+            else avgRiskScore.style.color = '#3b82f6';
+        }
+
+        // 3. Top Attack Vectors
+        const vectorMap = {};
+        allFindings.forEach(f => {
+            const name = f.name || f.alert;
+            vectorMap[name] = (vectorMap[name] || 0) + 1;
+        });
+
+        const sortedVectors = Object.entries(vectorMap)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3);
+
+        if (topVectorsList) {
+            topVectorsList.innerHTML = '';
+            if (sortedVectors.length > 0) {
+                sortedVectors.forEach(([name, count]) => {
+                    const item = document.createElement('div');
+                    item.className = 'vector-item';
+                    item.innerHTML = `
+                        <span class="vector-name" title="${name}">${name}</span>
+                        <span class="vector-count">${count}x</span>
+                    `;
+                    topVectorsList.appendChild(item);
+                });
+            } else {
+                topVectorsList.innerHTML = `<div style="text-align:center; padding: 1rem; color: #444; font-size: 0.7rem;">NO VECTORS IDENTIFIED</div>`;
+            }
         }
     }
 
-    // --- START SCAN (Updated for Definition URL) ---
+    function getRiskColor(risk) {
+        if (risk === 'High') return '#ef4444';
+        if (risk === 'Medium') return '#f97316';
+        if (risk === 'Low') return '#eab308';
+        return '#3b82f6';
+    }
+
+    function renderFindings() {
+        const searchTerm = findingsSearch.value.toLowerCase();
+        findingsList.innerHTML = '';
+        
+        const filtered = allFindings.filter(f => {
+            const matchesFilter = currentFilter === 'all' || f.risk === currentFilter;
+            const matchesSearch = (f.name || f.alert || '').toLowerCase().includes(searchTerm) || 
+                                  (f.url || '').toLowerCase().includes(searchTerm);
+            return matchesFilter && matchesSearch;
+        });
+
+        if (findingsCountDisplay) findingsCountDisplay.textContent = filtered.length;
+
+        if (filtered.length === 0) {
+            findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #555; font-family: monospace;">NO FINDINGS MATCHING CRITERIA.</div>`;
+            return;
+        }
+
+        filtered.forEach(finding => {
+            const card = createFindingCard(finding);
+            findingsList.appendChild(card);
+        });
+    }
+
+    function createFindingCard(finding) {
+        const risk = finding.risk || 'Info';
+        const confidence = finding.confidence || 'Medium';
+        const color = getRiskColor(risk);
+        const card = document.createElement('div');
+        card.className = 'finding-card';
+        card.style.setProperty('--accent-gradient', color);
+        
+        card.innerHTML = `
+            <div class="finding-header">
+                <div class="risk-indicator" style="color: ${color};">
+                    <div class="risk-dot" style="background: ${color};"></div>
+                    <span>${risk}</span>
+                </div>
+                
+                <div class="finding-title">${finding.name || finding.alert}</div>
+                
+                <div class="score-container">
+                    <span class="score-label">Risk Score</span>
+                    <span class="score-val">${finding.predicted_risk_score || 'N/A'}</span>
+                </div>
+
+                <span class="material-symbols-outlined expand-icon" style="margin-left: 0.5rem; font-size: 1.25rem;">expand_more</span>
+            </div>
+            
+            <div class="finding-details">
+                <div class="details-content">
+                    <div class="detail-section">
+                        <span class="detail-label">Vulnerable Endpoint</span>
+                        <div class="flex items-center gap-3">
+                            <div class="badge-pill" style="background: var(--neo-input); border: 1px solid var(--neo-border); color: var(--neo-text-main); font-family: var(--font-mono); font-size: 0.7rem; padding: 4px 8px;">${finding.method || 'GET'}</div>
+                            <a href="${finding.url || '#'}" target="_blank" class="finding-url-link" style="font-family: var(--font-mono); font-size: 0.8rem;">${finding.url || 'N/A'}</a>
+                        </div>
+                        ${finding.param ? `<div class="detail-text" style="font-size: 0.75rem; margin-top: 4px; color: var(--neo-text-muted);">PARAMETER: <span style="color: var(--neo-text-main);">${finding.param}</span></div>` : ''}
+                    </div>
+
+                    <div class="detail-section">
+                        <span class="detail-label">Vulnerability Analysis</span>
+                        <div class="detail-text">${finding.description || 'Detailed vulnerability analysis is unavailable for this finding.'}</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <span class="detail-label">Remediation & Solution</span>
+                        <div class="detail-text" style="border-left: 3px solid var(--neo-green); padding-left: 1rem; opacity: 1;">${finding.solution || 'Consult industry best practices for specific remediation steps.'}</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="detail-label">Technical Details</span>
+                            <div class="flex gap-4">
+                                <span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 700;">CONFIDENCE: <span style="color: var(--neo-text-main);">${confidence}</span></span>
+                                ${finding.cweid ? `<span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 700;">CWE: <span style="color: var(--neo-blue); cursor: pointer;" onclick="window.open('https://cwe.mitre.org/data/definitions/${finding.cweid}.html', '_blank')">${finding.cweid}</span></span>` : ''}
+                            </div>
+                        </div>
+                        <div class="detail-text detail-text-mono" style="color: #a1a1aa; background: #000; padding: 1rem; border-radius: 6px; border: 1px solid #222; overflow-x: auto; white-space: pre-wrap;">${finding.evidence || 'NO RAW EVIDENCE CAPTURED'}</div>
+                    </div>
+
+                    ${finding.reference ? `
+                    <div class="detail-section" style="border-bottom: none; padding-bottom: 0;">
+                        <span class="detail-label">References</span>
+                        <div class="detail-text" style="font-size: 0.75rem; line-height: 1.6; color: var(--neo-blue); opacity: 0.8;">${finding.reference.split('\n').map(ref => `<a href="${ref.trim()}" target="_blank" style="color: inherit; display: block; margin-bottom: 2px;">${ref.trim()}</a>`).join('')}</div>
+                    </div>` : ''}
+                </div>
+            </div>
+        `;
+
+        card.addEventListener('click', () => {
+            card.classList.toggle('expanded');
+        });
+
+        return card;
+    }
+
+    // --- Filter & Search Listeners ---
+    filterChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            filterChips.forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            currentFilter = chip.dataset.filter;
+            renderFindings();
+        });
+    });
+
+    if (findingsSearch) findingsSearch.addEventListener('input', renderFindings);
+
+    // --- Core Action: Start Scan ---
+
     async function handleScanButtonClick() {
         const targetUrl = targetUrlInput.value.trim();
         const definitionUrl = definitionUrlInput.value.trim();
@@ -325,12 +487,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Start/Restart SSE stream for this new session
+        setupLogStream();
+
         toggleButtonLoading(startScanBtn, true);
         const authMsg = authToken ? 'Authenticated' : 'Anonymous';
         updateScanStatus(`Scanning (${authMsg})...`, 'busy');
         logOutput.innerHTML = ''; 
         appendLog(`> Initiating API Scan on ${targetUrl} (${authMsg})...`);
         appendLog(`> Loading Definition: ${definitionUrl}`);
+        scanStartTime = Date.now();
 
         try {
             const response = await fetch(SCAN_ENDPOINT, {
@@ -358,16 +524,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- EVENT LISTENERS ---
+    // --- SSE & Event Listeners ---
+    
+    // Toggle Scan Options Dropdown
+    const scanOptionsBtn = document.getElementById('scanOptionsBtn');
+    const scanOptionsDropdown = document.getElementById('scanOptionsDropdown');
+
+    if (scanOptionsBtn && scanOptionsDropdown) {
+        scanOptionsBtn.addEventListener('click', (e) => {
+            scanOptionsDropdown.classList.toggle('hidden');
+            e.stopPropagation();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!scanOptionsBtn.contains(e.target) && !scanOptionsDropdown.contains(e.target)) {
+                scanOptionsDropdown.classList.add('hidden');
+            }
+        });
+    }
+
     function setupLogStream() {
-        const eventSource = new EventSource(LOG_STREAM_ENDPOINT);
-        eventSource.onmessage = function(event) {
+        // Close existing stream if active
+        if (logEventSource) {
+            logEventSource.close();
+            logEventSource = null;
+        }
+
+        logEventSource = new EventSource(LOG_STREAM_ENDPOINT);
+        
+        logEventSource.onmessage = function(event) {
             if (event.data === ': keep-alive') return;
 
-            if (event.data.includes("Scan complete")) { // Matches "API Scan complete"
+            const lowerData = event.data.toLowerCase();
+
+            if (lowerData.includes("scan complete") || lowerData.includes("api scan complete")) { 
                 updateScanStatus('Complete', 'success');
                 toggleButtonLoading(startScanBtn, false);
+                scanStartTime = null;
                 fetchAndDisplayResults();
+            }
+
+            if (lowerData.includes("failed") || lowerData.includes("error:")) {
+                updateScanStatus('Failed', 'error');
+                toggleButtonLoading(startScanBtn, false);
+                scanStartTime = null;
             }
             
             if (event.data.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
@@ -376,6 +576,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (event.data.includes("EVENT:") || event.data.startsWith("EVENT:")) return;
             appendLog(event.data);
+        };
+
+        logEventSource.onerror = function(err) {
+            console.error("SSE Stream Error:", err);
+            // Optional: Handle reconnection or state cleanup
         };
     }
 
@@ -391,35 +596,32 @@ document.addEventListener('DOMContentLoaded', () => {
         appendLog("[*] Log cleared.");
     });
 
-    refreshResultsBtn.addEventListener('click', () => {
-        appendLog(`[*] Refreshing results...`);
-        fetchAndDisplayResults();
-    });
-
-    copyResultsBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(resultsContent.textContent);
-        const original = copyResultsBtn.textContent;
-        copyResultsBtn.textContent = 'Copied!';
-        setTimeout(() => copyResultsBtn.textContent = original, 1000);
-    });
+    if (refreshResultsBtn) {
+        refreshResultsBtn.addEventListener('click', () => {
+            fetchAndDisplayResults();
+        });
+    }
     
-    // Dropdowns
-    analyzeReportDropdown.addEventListener('click', (e) => {
-        if (!analyzeReportDropdown.disabled) {
-            llmAnalysisOptions.classList.toggle('hidden');
-            e.stopPropagation(); 
-        }
-    });
+    if (analyzeReportDropdown) {
+        analyzeReportDropdown.addEventListener('click', (e) => {
+            if (!analyzeReportDropdown.disabled) {
+                llmAnalysisOptions.classList.toggle('hidden');
+                e.stopPropagation(); 
+            }
+        });
+    }
     
-    llmAnalysisOptions.addEventListener('click', (e) => {
-        e.preventDefault();
-        const option = e.target.closest('a[data-llm-mode]');
-        if (option) {
-            const llmMode = option.dataset.llmMode;
-            llmAnalysisOptions.classList.add('hidden'); 
-            analyzeReport(llmMode);
-        }
-    });
+    if (llmAnalysisOptions) {
+        llmAnalysisOptions.addEventListener('click', (e) => {
+            e.preventDefault();
+            const option = e.target.closest('a[data-llm-mode]');
+            if (option) {
+                const llmMode = option.dataset.llmMode;
+                llmAnalysisOptions.classList.add('hidden'); 
+                analyzeReport(llmMode);
+            }
+        });
+    }
 
     document.addEventListener('click', (e) => {
         if (llmAnalysisOptions && !analyzeReportDropdown.contains(e.target)) {
@@ -437,15 +639,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateScanStatus(`Scanning: ${data.target}...`, 'busy');
                 if (targetUrlInput) targetUrlInput.value = data.target;
                 appendLog(`[*] Detected active API scan on ${data.target}. Re-attaching...`);
+                return true;
+            } else {
+                // Ensure UI is enabled if no scan is running
+                toggleButtonLoading(startScanBtn, false);
+                updateScanStatus('READY', 'info');
+                return false;
             }
         } catch (error) {
             console.error("Error checking scan status:", error);
+            toggleButtonLoading(startScanBtn, false);
+            return false;
         }
     }
 
-    // Initialize
-    setTimeout(() => appendLog('System Ready. Initializing API Security Scanner...'), 100);
-    checkReportStatus();
-    fetchAndDisplayResults();
-    setupLogStream();
+    // Initialize the page with synchronization
+    async function init() {
+        setTimeout(() => appendLog('System Ready. Initializing API Security Scanner...'), 100);
+        checkReportStatus();
+        fetchAndDisplayResults();
+        
+        // Wait for status check before starting log stream
+        const isRunning = await checkScanStatus();
+        setupLogStream();
+        
+        if (isRunning) {
+            appendLog(`[*] SSE Stream re-attached to active session.`);
+        }
+    }
+
+    init();
 });

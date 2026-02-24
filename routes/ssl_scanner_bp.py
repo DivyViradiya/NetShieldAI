@@ -95,11 +95,17 @@ def scan_ssl():
             "message": "An SSL scan is already in progress. Please wait for it to complete."
         }), 400
 
-    # [NEW] Increment Database Counter for Stats
+    # [RC-8 FIX] Atomic DB counter increment
     try:
-        current_user.scan_count_ssl += 1
+        from sqlalchemy import update as _sa_update
+        from models import User as _User
+        db.session.execute(
+            _sa_update(_User).where(_User.id == current_user.id)
+            .values(scan_count_ssl=_User.scan_count_ssl + 1)
+        )
         db.session.commit()
     except Exception as e:
+        db.session.rollback()  # RC-3 FIX
         ssl_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     # [NEW] Reset Log File for this new scan session
@@ -177,7 +183,7 @@ def scan_ssl():
             error_msg = None if status == "Completed" else "SSL scan failed."
             scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, error_msg=error_msg)
 
-    threading.Thread(target=scan_task).start()
+    threading.Thread(target=scan_task, daemon=True).start()  # RC-5 FIX: daemon=True
     return jsonify({"status": "success", "message": f"SSL scan for {target_host} initiated."})
 
 

@@ -82,11 +82,25 @@ def initiate_zap_scan():
     user_id_for_log = current_user.id
     app = current_app._get_current_object()
 
-    # [NEW] Increment Database Counter for Stats
+    # RC-12 FIX: Prevent duplicate concurrent ZAP scans for the same user (mirrors Nmap guard)
+    if zap_scanner.is_scan_running(current_user_identifier):
+        logger.warning(f"[!] ZAP Scan already in progress for user {current_user_identifier}")
+        return jsonify({
+            "status": "error",
+            "message": "A ZAP scan is already in progress. Please wait for it to complete."
+        }), 400
+
+    # [RC-8 FIX] Atomic DB counter increment — prevents double-count on concurrent tabs
     try:
-        current_user.scan_count_zap += 1
+        from sqlalchemy import update as _sa_update
+        from models import User as _User
+        db.session.execute(
+            _sa_update(_User).where(_User.id == current_user.id)
+            .values(scan_count_zap=_User.scan_count_zap + 1)
+        )
         db.session.commit()
     except Exception as e:
+        db.session.rollback()  # RC-3 FIX: clean session before thread starts
         zap_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     def scan_and_process_task():
@@ -161,7 +175,7 @@ def initiate_zap_scan():
                 scan_type="Quick Scan"
             )
 
-    threading.Thread(target=scan_and_process_task).start()
+    threading.Thread(target=scan_and_process_task, daemon=True).start()  # RC-5 FIX: daemon=True
     
     return jsonify({
         "status": "success",

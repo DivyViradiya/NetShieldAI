@@ -14,12 +14,9 @@ import joblib
 from pathlib import Path
 import queue
 import threading
-import queue
-import threading
 from zapv2 import ZAPv2
-from extensions import db
-from models import ScanLog, User
 from Services import scan_logger
+from logger_setup import logger
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
@@ -33,9 +30,8 @@ DEFAULT_RESULTS_DIR = os.path.join(BASE_DIR, "results", "api_scanner")
 LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
 TEMP_DIR = os.path.join(BASE_DIR, "temp", "api_scanner")
 
-# --- Global State for Process Management (Isolated by user_id) ---
-# --- Global State for Process Management (Transient - Process Only) ---
-active_scans = {} # { "user_id": {"process": Popen, "target": str, "start_time": float} }
+# --- Global State for Process Management ---
+active_scans = {} 
 scan_lock = threading.Lock()
 
 # --- USER ISOLATION ---
@@ -51,50 +47,18 @@ def is_scan_running(user_id):
     with scan_lock:
         return user_id in active_scans
 
-def get_scan_status(user_id):
-    """
-    Returns the current status of the scan for a user from the DATABASE.
-    """
-    try:
-        # Query DB for the latest 'Running' scan for this user and tool
-        scan = ScanLog.query.filter_by(
-            user_id=user_id.split('_')[-1], # Extract ID from composite
-            tool_name='API',
-            status='Running'
-        ).order_by(ScanLog.start_time.desc()).first()
-
-        if scan:
-            return {
-                "status": "running",
-                "target": scan.target,
-                "start_time": scan.start_time.timestamp()
-            }
-        
-        # Check for recent completed/failed
-        recent = ScanLog.query.filter_by(
-            user_id=user_id.split('_')[-1],
-            tool_name='API'
-        ).order_by(ScanLog.start_time.desc()).first()
-
-        if recent:
-             return {
-                "status": recent.status.lower(), # completed/failed
-                "target": recent.target,
-                "timestamp": recent.end_time.strftime("%Y-%m-%d %H:%M:%S") if recent.end_time else ""
-            }
-
-    except Exception as e:
-        print(f"Error getting DB scan status: {e}")
-
-    return None
-
 # --- LOGGING FUNCTIONS ---
 def log(message, user_id=None, to_console=False, level='INFO'):
     """
     Logs messages using the centralized scan_logger.
     """
     if to_console:
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
+        if level.upper() == 'ERROR' or level.upper() == 'CRITICAL':
+            logger.error(message)
+        elif level.upper() == 'WARNING':
+            logger.warning(message)
+        else:
+            logger.info(message)
     
     if user_id:
         scan_logger.write_log(user_id, "api", message, level=level)
@@ -124,7 +88,6 @@ except:
 # --- Path Helper ---
 def get_output_paths(user_output_dir, user_id=None):
     base = Path(user_output_dir)
-    # Unique temp XML for multi-user
     scan_uuid = str(uuid.uuid4())[:8]
     temp_xml = Path(TEMP_DIR) / f"api_temp_{user_id if user_id else 'sys'}_{scan_uuid}.xml"
     
@@ -137,20 +100,12 @@ def get_output_paths(user_output_dir, user_id=None):
 # --- API Authentication and GraphQL Helpers ---
 
 def setup_api_auth(zap, auth_token=None, user_id=None):
-    """
-    Configures ZAP to inject a Bearer token or API Key into every request.
-    Uses ZAP's 'replacer' rule to add the Authorization header.
-    """
     if not auth_token:
         return
 
     try:
         log(f"[AUTH] Configuring Token-Based Auth (Bearer/API-Key)...", user_id)
-        # Enable Replacer
         zap.replacer.set_enabled('true')
-        
-        # Add Header Rule: Replace (or add) 'Authorization' header
-        # Match any 'Authorization' header and replace with new one, or add if missing
         zap.replacer.add_rule(
             description='API_Auth_Token',
             enabled='true',
@@ -166,21 +121,25 @@ def setup_api_auth(zap, auth_token=None, user_id=None):
 
 # --- Core API Scan Logic ---
 
-def wait_for_zap(port, timeout=120):
+def wait_for_zap(port, timeout=120, user_id=None):
     start_time = time.time()
+    log(f"[*] Waiting for ZAP to initialize on port {port}...", user_id)
     while time.time() - start_time < timeout:
         try:
-            with socket.create_connection(('localhost', port), timeout=1): return True
-        except: time.sleep(2)
+            with socket.create_connection(('localhost', port), timeout=1): 
+                log(f"[+] ZAP is active and responding on port {port}.", user_id)
+                return True
+        except: 
+            time.sleep(2)
+    log(f"[!] ZAP failed to respond on port {port} after {timeout} seconds.", user_id)
     return False
 
 def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=None):
     if not os.path.exists(ZAP_EXECUTABLE_PATH):
-        log(f"Error: ZAP executable not found.", user_id)
+        log(f"Error: ZAP executable not found at {ZAP_EXECUTABLE_PATH}", user_id)
         return False
 
     assigned_port = 0
-    # Find free port
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(('', 0))
         assigned_port = s.getsockname()[1]
@@ -189,10 +148,6 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
     os.makedirs(unique_zap_dir, exist_ok=True)
 
     log(f"--- Initializing API Scanner (Port: {assigned_port}) ---", user_id, to_console=True)
-
-    # [NEW] Log Start Element in DB
-    db_user_id = int(user_id.split('_')[-1])
-    log_id = scan_logger.log_scan_start(db_user_id, "API", target_url, scan_type="Standard")
 
     command = [
         ZAP_EXECUTABLE_PATH, '-daemon', '-port', str(assigned_port), 
@@ -203,26 +158,25 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
     process = None
     zap = None
     try:
+        log(f"[*] Launching ZAP process...", user_id)
         process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, 
                                    cwd=os.path.dirname(ZAP_EXECUTABLE_PATH),
                                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == 'win32' else 0)
 
-        # Track this user's process
         with scan_lock:
             active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
 
-        if not wait_for_zap(assigned_port): return False
+        if not wait_for_zap(assigned_port, user_id=user_id): 
+            return False
         
+        log(f"[*] Connecting to ZAP API...", user_id)
         zap = ZAPv2(proxies={'http': f'http://127.0.0.1:{assigned_port}', 'https': f'http://127.0.0.1:{assigned_port}'})
         
-        # 1. Setup Authentication Header Injection
         if auth_token:
             setup_api_auth(zap, auth_token, user_id)
 
-        # 2. Import Definition (OpenAPI or GraphQL)
         if "graphql" in definition_url.lower() or "graphql" in target_url.lower():
             log("[STAGE] Importing GraphQL Schema...", user_id)
-            # ZAP has a graphql add-on that handles both URLs and files
             zap.graphql.import_url(definition_url)
         else:
             log("[STAGE] Importing OpenAPI Definition...", user_id)
@@ -257,22 +211,13 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
         
         log("Generating report...", user_id)
         xml_report = zap.core.xmlreport()
-        with open(report_path, 'w', encoding='utf-8') as f: f.write(xml_report)
+        with open(report_path, 'w', encoding='utf-8') as f: 
+            f.write(xml_report)
         return True
     except Exception as e:
-        return True
-    except Exception as e:
-        log(f"Scan Error: {e}", user_id)
-        error_msg = str(e) # Capture for DB
+        log(f"Scan Error: {e}", user_id, level='ERROR')
         return False
     finally:
-        # [NEW] Log End Element in DB
-        final_status = "Completed" if zap else "Failed"
-        if 'error_msg' not in locals(): error_msg = None
-        
-        scan_logger.log_scan_end(log_id, status=final_status, error_msg=error_msg)
-
-        # Unregister process
         with scan_lock:
             if user_id in active_scans:
                 del active_scans[user_id]
@@ -284,7 +229,8 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
             process.terminate()
             try: process.wait(timeout=5)
             except: process.kill()
-        if os.path.exists(unique_zap_dir): shutil.rmtree(unique_zap_dir, ignore_errors=True)
+        if os.path.exists(unique_zap_dir): 
+            shutil.rmtree(unique_zap_dir, ignore_errors=True)
 
 def parse_xml_report(report_file, user_id=None):
     if not os.path.exists(report_file): return None

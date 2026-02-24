@@ -7,13 +7,14 @@ from sqlalchemy import func
 from models import User, ScanLog # [UPDATED] Import ScanLog
 from extensions import db
 from forms import RegistrationForm, LoginForm, UpdateProfileForm, ChangePasswordForm
+from logger_setup import logger
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        print(f"\033[33m[*] Accessing Login Page\033[0m")
+        logger.info("[*] Accessing Login Page")
     # 1. If user is already logged in, redirect based on their Role
     if current_user.is_authenticated:
         if current_user.is_admin:
@@ -64,7 +65,7 @@ def login():
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
-        print(f"\033[33m[*] Accessing Registration Page\033[0m")
+        logger.info("[*] Accessing Registration Page")
     # Redirect if already logged in
     if current_user.is_authenticated:
         if current_user.is_admin:
@@ -74,7 +75,7 @@ def register():
     form = RegistrationForm()
     
     if form.validate_on_submit():
-        print(f"\033[32m[+] New User Registration Attempt: {form.username.data}\033[0m")
+        logger.info(f"[+] New User Registration Attempt: {form.username.data}")
         if User.query.filter_by(username=form.username.data).first():
             flash('Username already exists. Please choose another.', 'warning')
             return render_template('register.html', form=form)
@@ -100,7 +101,7 @@ def register():
         try:
             db.session.add(new_user)
             db.session.commit()
-            print(f"\033[32m[+] User {form.username.data} registered successfully.\033[0m")
+            logger.info(f"[+] User {form.username.data} registered successfully.")
             
             flash('Account created successfully! Please log in.', 'success')
             return redirect(url_for('auth.login'))
@@ -115,7 +116,7 @@ def register():
 @auth_bp.route('/logout')
 @login_required
 def logout():
-    print(f"\033[31m[*] User Logout: {current_user.username}\033[0m")
+    logger.info(f"[*] User Logout: {current_user.username}")
     logout_user()
     flash('You have been logged out securely.', 'info')
     return redirect(url_for('auth.login'))
@@ -128,7 +129,7 @@ def logout():
 @auth_bp.route('/admin')
 @login_required
 def admin_dashboard():
-    print(f"\033[31m[*] Accessing Admin Control Center (User: {current_user.username})\033[0m")
+    logger.info(f"[*] Accessing Admin Control Center (User: {current_user.username})")
     if not current_user.is_admin:
         flash('Access Denied: Administrator privileges required.', 'danger')
         return redirect(url_for('index'))

@@ -13,13 +13,7 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 # --- Logging Setup ---
-# Professional SaaS-style format: [Time] [Level] [Message]
-logging.basicConfig(
-    level=logging.INFO,
-    format='[%(asctime)s] [%(levelname)-8s] %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
-logger = logging.getLogger('NetShieldAI_Main')
+from logger_setup import logger
 
 from extensions import db, login_manager
 from models import User
@@ -37,9 +31,6 @@ from routes.api_scanner_bp import api_scanner_bp
 from Services.network_scanner import ensure_admin_privileges
 
 
-import logging
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
 
 app = Flask(__name__)
 app.secret_key = 'NetShieldAI' 

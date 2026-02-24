@@ -4,6 +4,7 @@ import os
 import time
 from extensions import db
 from models import ScanLog, User
+from logger_setup import logger
 
 BASE_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
 USERS_LOG_DIR = os.path.join(BASE_LOG_DIR, "users")
@@ -34,6 +35,13 @@ def tail_log_file(user_id, tool_name):
         # Move to end if we only want new? No, we want full history for refresh.
         # So we start from beginning.
         while True:
+            # Check for file truncation (RC-FIX)
+            try:
+                if os.path.exists(log_file) and os.path.getsize(log_file) < f.tell():
+                    f.seek(0)
+            except:
+                pass
+
             line = f.readline()
             if line:
                 yield f"data: {line.strip()}\n\n"
@@ -76,7 +84,7 @@ def log_scan_start(user_id, tool_name, target, scan_type="Standard"):
         db.session.commit()
         return new_log.id
     except Exception as e:
-        print(f"[!] Error logging scan start: {e}")
+        logger.error(f"[!] Error logging scan start: {e}")
         return None
 
 def log_scan_end(log_id, status="Completed", finding_count=0, critical_count=0, error_msg=None, duration=None):
@@ -104,7 +112,7 @@ def log_scan_end(log_id, status="Completed", finding_count=0, critical_count=0, 
             
             db.session.commit()
     except Exception as e:
-        print(f"[!] Error logging scan end: {e}")
+        logger.error(f"[!] Error logging scan end: {e}")
 
 def create_full_scan_log(user_id, tool_name, target, duration, finding_count, status="Completed", scan_type="Standard"):
     """
@@ -131,7 +139,7 @@ def create_full_scan_log(user_id, tool_name, target, duration, finding_count, st
         db.session.add(new_log)
         db.session.commit()
     except Exception as e:
-        print(f"[!] Error logging full scan: {e}")
+        logger.error(f"[!] Error logging full scan: {e}")
 
 def reset_log_file(user_id, tool_name):
     """
@@ -146,7 +154,7 @@ def reset_log_file(user_id, tool_name):
         with open(log_file, 'w', encoding='utf-8') as f:
             f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Log cleared for new {tool_name} scan.\n")
     except Exception as e:
-        print(f"[!] Error resetting log file {log_file}: {e}")
+        logger.error(f"[!] Error resetting log file {log_file}: {e}")
 
 def get_active_scan_log(user_id, tool_name):
     """
@@ -164,7 +172,7 @@ def get_active_scan_log(user_id, tool_name):
         
         return active_scan
     except Exception as e:
-        print(f"[!] Error fetching active scan from DB: {e}")
+        logger.error(f"[!] Error fetching active scan from DB: {e}")
         return None
 
 def mark_scan_failed(log_id, error_message="Scan interrupted or server restarted."):
@@ -181,7 +189,7 @@ def mark_scan_failed(log_id, error_message="Scan interrupted or server restarted
             db.session.commit()
             return True
     except Exception as e:
-        print(f"[!] Error marking scan {log_id} as failed: {e}")
+        logger.error(f"[!] Error marking scan {log_id} as failed: {e}")
     return False
 
 def get_debug_log_file(user_id, tool_name):
@@ -232,7 +240,7 @@ def write_log(user_id, tool_name, message, level='INFO'):
         with open(debug_file, 'a', encoding='utf-8') as f:
             f.write(full_line + "\n")
     except Exception as e:
-        print(f"Error writing to debug log: {e}")
+        logger.error(f"Error writing to debug log: {e}")
 
     # 2. Write to User Log (Active Stream) if level is INFO
     if level == 'INFO':
@@ -245,4 +253,4 @@ def write_log(user_id, tool_name, message, level='INFO'):
                 with open(user_file, 'a', encoding='utf-8') as f:
                     f.write(user_line + "\n")
              except Exception as e:
-                print(f"Error writing to user log: {e}")
+                logger.error(f"Error writing to user log: {e}")

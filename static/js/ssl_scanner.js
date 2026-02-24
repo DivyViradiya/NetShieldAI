@@ -73,19 +73,29 @@ document.addEventListener('DOMContentLoaded', function() {
     function appendLog(message) {
         if (!elements.logOutput) return;
 
-        var now = new Date();
-        var timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        var contentStyle = 'color:#d4d4d8';
-        if (displayMessage.includes('[!]')) contentStyle = 'color:#ef4444';
-        else if (displayMessage.includes('[+]')) contentStyle = 'color:#10b981';
-        else if (displayMessage.includes('[*]')) contentStyle = 'color:#3b82f6';
+        let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
+        cleanedMessage = cleanedMessage.trim();
 
-        var line = document.createElement('div');
+        let contentStyle = '';
+        if (cleanedMessage.includes('[!]') || cleanedMessage.includes('Error')) {
+            contentStyle = 'color:#ef4444';
+        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('Success')) {
+            contentStyle = 'color:#10b981';
+        } else if (cleanedMessage.includes('[*]')) {
+            contentStyle = 'color:#3b82f6';
+        }
+
+        const line = document.createElement('div');
         line.className = 'log-line';
-        line.innerHTML = 
-            '<div class="log-time">' + timeStr + '</div>' +
-            '<div class="log-content" style="' + contentStyle + '">' + displayMessage + '</div>';
+        
+        line.innerHTML = `
+            <div class="log-time">${timeStr}</div>
+            <div class="log-prompt">></div>
+            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+        `;
         
         elements.logOutput.appendChild(line);
         elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
@@ -100,11 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if(elements.summaryRenegotiation) elements.summaryRenegotiation.textContent = '---';
         
         if(elements.serverConfigDetails) elements.serverConfigDetails.innerHTML = 'Waiting for scan...';
-        if(elements.certificateChainContainer) elements.certificateChainContainer.innerHTML = '<div style="text-align:center; color: var(--neo-text-muted); padding: 2rem;">Waiting for scan...</div>';
-        if(elements.protocolsTableBody) elements.protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: var(--neo-text-muted); padding: 2rem;">Waiting for scan...</td></tr>';
-        if(elements.ciphersTableBody) elements.ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: var(--neo-text-muted); padding: 2rem;">Waiting for scan...</td></tr>';
-        if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = '<li style="color: var(--neo-text-muted);">Waiting for scan...</li>';
-        if(elements.resultsContent) elements.resultsContent.textContent = '// Raw JSON report';
+        if(elements.certificateChainContainer) elements.certificateChainContainer.innerHTML = '<div style="text-align:center; color: var(--neo-text-muted); padding: 2rem; font-family: var(--font-mono); font-size: 0.8rem;">NO CERTIFICATE DATA AVAILABLE.</div>';
+        if(elements.protocolsTableBody) elements.protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: #555; padding: 2rem; font-family: var(--font-mono);">---</td></tr>';
+        if(elements.ciphersTableBody) elements.ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #555; padding: 2rem; font-family: var(--font-mono);">---</td></tr>';
+        if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.85rem;">WAITING FOR SCAN RESULTS...</div>';
+        if(elements.resultsContent) elements.resultsContent.textContent = '// JSON OUTPUT';
         
         [elements.downloadReportBtn, elements.analyzeReportDropdown].forEach(function(btn) {
             if (btn) {
@@ -234,30 +244,64 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Rendering Helpers ---
 
+    function getRiskColor(risk) {
+        if (risk === 'Critical' || risk === 'High') return '#ef4444';
+        if (risk === 'Medium') return '#f97316';
+        if (risk === 'Low') return '#eab308';
+        return '#3b82f6';
+    }
+
+    function createFindingCard(finding) {
+        const risk = finding.severity || 'Info';
+        const color = getRiskColor(risk);
+        const card = document.createElement('div');
+        card.className = 'finding-card';
+        
+        card.innerHTML = `
+            <div class="finding-header">
+                <div class="risk-indicator" style="color: ${color};">
+                    <div class="risk-dot" style="background: ${color};"></div>
+                    <span>${risk}</span>
+                </div>
+                
+                <div class="finding-title">${finding.name}</div>
+                
+                <span class="material-symbols-outlined expand-icon" style="margin-left: 0.5rem; font-size: 1.25rem;">expand_more</span>
+            </div>
+            
+            <div class="finding-details">
+                <div class="details-content">
+                    <div class="detail-section">
+                        <span class="detail-label">Vulnerability Analysis</span>
+                        <div class="detail-text">${finding.description || 'Detailed vulnerability analysis is unavailable for this finding.'}</div>
+                    </div>
+
+                    ${finding.remediation ? `
+                    <div class="detail-section">
+                        <span class="detail-label">Remediation & Solution</span>
+                        <div class="detail-text" style="border-left: 3px solid var(--neo-green); padding-left: 1rem; opacity: 1;">${finding.remediation}</div>
+                    </div>` : ''}
+                </div>
+            </div>
+        `;
+
+        card.addEventListener('click', () => {
+            card.classList.toggle('expanded');
+        });
+
+        return card;
+    }
+
     function renderVulnerabilities(vulnerabilities) {
         elements.vulnerabilitiesList.innerHTML = '';
         if (!vulnerabilities || vulnerabilities.length === 0) {
-            elements.vulnerabilitiesList.innerHTML = '<li style="color: var(--neo-green); font-weight: 500;">No vulnerabilities detected.</li>';
+            elements.vulnerabilitiesList.innerHTML = '<div style="text-align:center; padding: 2rem; color: #10b981; font-family: var(--font-mono); font-size: 0.85rem;">NO VULNERABILITIES DETECTED.</div>';
             return;
         }
 
-        var riskColors = {
-            'Critical': 'border-left: 3px solid var(--neo-red); color: var(--neo-red);',
-            'High': 'border-left: 3px solid var(--neo-red); color: var(--neo-red);',
-            'Medium': 'border-left: 3px solid var(--neo-amber); color: var(--neo-amber);',
-            'Low': 'border-left: 3px solid #eab308; color: #eab308;'
-        };
-
         vulnerabilities.forEach(function(vuln) {
-            var li = document.createElement('li');
-            li.className = 'vuln-item';
-            var style = riskColors[vuln.severity] || 'border-left: 3px solid var(--neo-blue); color: var(--neo-blue);';
-            li.style.cssText = style + ' padding: 0.75rem; background: var(--neo-card-hover); margin-bottom: 0.5rem; list-style:none;';
-            
-            li.innerHTML = 
-                '<div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 4px;">' + vuln.name + '</div>' +
-                '<div style="font-size: 0.8rem; opacity: 0.8;">' + vuln.description + '</div>';
-            elements.vulnerabilitiesList.appendChild(li);
+            const card = createFindingCard(vuln);
+            elements.vulnerabilitiesList.appendChild(card);
         });
     }
 

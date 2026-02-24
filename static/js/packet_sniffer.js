@@ -102,74 +102,45 @@ document.addEventListener('DOMContentLoaded', () => {
     function appendLog(message) {
         if (!elements.snifferLogOutput) return;
 
-        // 1. Get Local Timestamp
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        // 2. Clean Message: Remove backend timestamp [YYYY-MM-DD HH:MM:SS]
         let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
         cleanedMessage = cleanedMessage.trim();
 
-        // 3. Determine Color Style
-        let contentStyle = 'color:#d4d4d8';
-        if (displayMessage.includes('[!]')) contentStyle = 'color:#ef4444';
-        else if (displayMessage.includes('[+]')) contentStyle = 'color:#10b981';
-        else if (displayMessage.includes('[*]')) contentStyle = 'color:#3b82f6';
+        let contentStyle = '';
+        if (cleanedMessage.includes('[!]') || cleanedMessage.includes('Error')) {
+            contentStyle = 'color:#ef4444';
+        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('Success')) {
+            contentStyle = 'color:#10b981';
+        } else if (cleanedMessage.includes('[*]')) {
+            contentStyle = 'color:#3b82f6';
+        }
 
         const line = document.createElement('div');
         line.className = 'log-line';
+        
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${displayMessage}</div>
+            <div class="log-prompt">></div>
+            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
         `;
         
-        logContainer.appendChild(line);
-        logContainer.scrollTop = logContainer.scrollHeight;
+        elements.snifferLogOutput.appendChild(line);
+        elements.snifferLogOutput.scrollTop = elements.snifferLogOutput.scrollHeight;
     }
 
     function setStatus(text, type = 'ready') {
         if (!elements.snifferStatus) return;
-
-        elements.snifferStatus.className = 'text-[0.75rem] font-semibold uppercase tracking-wide';
         
-        const oldIcon = elements.snifferStatus.querySelector('i');
-        if (oldIcon) oldIcon.remove();
-
-        const icon = document.createElement('i');
-        let iconClass = '';
-        let textColorClass = '';
+        elements.snifferStatus.textContent = text.toUpperCase();
         
         const isLight = document.body.classList.contains("light-mode");
+        elements.snifferStatus.style.color = isLight ? '#64748b' : '#a1a1aa';
 
-        switch (type) {
-            case 'busy':
-                textColorClass = 'text-yellow-400';
-                iconClass = 'fas fa-cog fa-spin';
-                break;
-            case 'error':
-                textColorClass = 'text-red-400';
-                iconClass = 'fas fa-exclamation-circle';
-                break;
-            case 'success':
-                textColorClass = 'text-green-400';
-                iconClass = 'fas fa-check-circle';
-                break;
-            default: // ready
-                textColorClass = isLight ? 'text-slate-500' : 'text-slate-400';
-                iconClass = ''; 
-                break;
-        }
-
-        if (textColorClass) {
-            elements.snifferStatus.classList.add(textColorClass);
-        }
-
-        elements.snifferStatus.textContent = text;
-
-        if (iconClass) {
-            icon.className = `${iconClass} mr-1`;
-            elements.snifferStatus.prepend(icon);
-        }
+        if (type === 'busy') elements.snifferStatus.style.color = '#eab308';
+        else if (type === 'success') elements.snifferStatus.style.color = '#10b981';
+        else if (type === 'error') elements.snifferStatus.style.color = '#ef4444';
     }
 
     // --- API HANDLER ---

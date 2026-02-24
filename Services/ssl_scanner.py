@@ -44,13 +44,14 @@ def is_scan_running(user_id):
         return user_id in active_scans
 
 from Services import scan_logger
+from logger_setup import logger
 
 def log(message, user_id=None, to_console=False, level='INFO'):
     """
     Logs messages using the centralized scan_logger.
     """
     if to_console:
-        print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
+        logger.info(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
     
     if user_id:
         scan_logger.write_log(user_id, "ssl", message, level=level)
@@ -355,4 +356,4 @@ def clear_log_file(user_id=None):
             
         log("[*] SSL log file cleared.", user_id)
     except Exception as e:
-        print(f"[!] Error clearing SSL log file: {e}")
+        logger.error(f"[!] Error clearing SSL log file: {e}")

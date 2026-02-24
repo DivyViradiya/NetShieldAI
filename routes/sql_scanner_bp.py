@@ -103,13 +103,18 @@ def scan_sql():
     # Determine User Directory for this scan
     user_base_dir = get_user_results_dir()
 
-    # [NEW] Increment Database Counter for Stats
+    # [RC-8 FIX] Atomic DB counter increment
     try:
-        # Assuming you will add 'scan_count_sql' to your User model later
         if hasattr(current_user, 'scan_count_sql'):
-            current_user.scan_count_sql += 1
+            from sqlalchemy import update as _sa_update
+            from models import User as _User
+            db.session.execute(
+                _sa_update(_User).where(_User.id == current_user.id)
+                .values(scan_count_sql=_User.scan_count_sql + 1)
+            )
             db.session.commit()
     except Exception as e:
+        db.session.rollback()  # RC-3 FIX
         sql_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     # [NEW] Reset Log File for this new scan session
@@ -198,7 +203,7 @@ def scan_sql():
                  if current_user_identifier in sql_scanner.active_scans:
                      del sql_scanner.active_scans[current_user_identifier]
 
-    threading.Thread(target=scan_task).start()
+    threading.Thread(target=scan_task, daemon=True).start()  # RC-5 FIX: daemon=True
     return jsonify({"status": "success", "message": f"SQL scan for {target_url} initiated."})
 
 @sql_scanner_bp.route('/check_active_scan', methods=['GET'])

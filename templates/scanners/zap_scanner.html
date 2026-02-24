@@ -274,7 +274,7 @@
     /* --- LAYOUT GRIDS --- */
     .scan-overview-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr; 
+      grid-template-columns: 2fr 3fr; 
       gap: 1.5rem;
       margin-bottom: 0.5rem;
       width: 100%;
@@ -284,7 +284,7 @@
       display: grid;
       grid-template-columns: 1fr 350px; 
       gap: 1.5rem;
-      height: 600px;
+      height: 800px;
       width: 100%;
     }
 
@@ -315,6 +315,22 @@
         margin-top: 1rem;
     }
 
+    .controls-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .status-text-group {
+      font-size: 0.8rem; 
+      color: var(--neo-text-muted); 
+      font-family: var(--font-mono); 
+      display: flex; 
+      align-items: center; 
+      gap: 8px;
+    }
+
     .search-container { position: relative; flex: 1; min-width: 0; }
 
     /* --- METRICS GRID --- */
@@ -329,39 +345,68 @@
     .metric-card {
       display: flex;
       flex-direction: column;
-      align-items: flex-start; 
-      justify-content: center;
+      justify-content: space-between;
       height: 100%;
-      padding: 1.5rem; 
+      padding: 1.25rem; 
       overflow: hidden;
       transition: all 0.3s ease;
     }
 
+    .metric-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .metric-icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    body.light-mode .metric-icon-box {
+      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .metric-icon-box .material-symbols-outlined {
+      font-size: 1.2rem;
+    }
+
     .metric-card:hover {
-      border-color: var(--text-muted);
+      border-color: var(--neo-blue);
       transform: translateY(-2px);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    body.light-mode .metric-card:hover {
       box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
     }
 
     .metric-label {
-      font-size: 0.7rem; 
+      font-size: 0.65rem; 
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--neo-text-muted);
-      margin-bottom: 8px;
       font-weight: 700;
       z-index: 2;
     }
 
     .metric-value {
       font-family: var(--font-mono);
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
       font-weight: 700;
       line-height: 1;
       color: var(--neo-text-main);
       position: relative;
       z-index: 2;
-      margin-bottom: 4px;
+      margin: 0.25rem 0;
     }
 
     /* --- SCANNER TITLE AREA --- */
@@ -448,6 +493,339 @@
     }
     
     .btn-secondary { background: var(--neo-input); }
+
+    /* --- FINDINGS OVERHAUL: CARD SYSTEM --- */
+    .findings-toolbar {
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--neo-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--neo-card);
+      gap: 1rem;
+    }
+
+    .findings-filter-group {
+      display: flex;
+      gap: 6px;
+      background: var(--neo-input);
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .filter-chip {
+      padding: 6px 12px;
+      font-size: 0.7rem;
+      color: var(--neo-text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 700;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid transparent;
+    }
+
+    .filter-chip.active {
+      background: var(--neo-bg);
+      color: var(--neo-text-main);
+      border-color: var(--neo-border);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    body.light-mode .filter-chip.active {
+      background: var(--surface-primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    /* --- FINDINGS OVERHAUL: MINIMALIST DESIGN --- */
+    .findings-list {
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      gap: 1rem;
+    }
+
+    .finding-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+    }
+
+    body.light-mode .finding-card {
+      background: var(--surface-primary);
+      border-color: var(--border-subtle);
+    }
+
+    .finding-card:hover {
+      border-color: var(--neo-blue);
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    body.light-mode .finding-card:hover {
+      background: var(--bg-secondary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .finding-header {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      position: relative;
+    }
+
+    .finding-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--neo-text-main);
+      flex: 1;
+      letter-spacing: -0.01em;
+    }
+
+    .risk-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      min-width: 100px;
+    }
+
+    .risk-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .score-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      min-width: 80px;
+      gap: 2px;
+    }
+
+    .score-label {
+      font-size: 0.6rem;
+      color: var(--neo-text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .score-val {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--neo-text-main);
+    }
+
+    .severity-bar { display: none; } /* Removed as requested */
+    .risk-badge { display: none; } /* Removed as requested */
+    .score-badge { display: none; } /* Removed as requested */
+
+    .finding-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      background: rgba(0,0,0,0.1);
+      border-top: 0 solid var(--neo-border);
+    }
+
+    body.light-mode .finding-details {
+      background: rgba(0,0,0,0.02);
+    }
+
+    .finding-card.expanded .finding-details {
+      max-height: 1000px;
+      border-top-width: 1px;
+    }
+
+    .details-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .detail-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    body.light-mode .detail-section {
+      border-bottom-color: rgba(0,0,0,0.05);
+    }
+
+    .detail-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .detail-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--neo-text-muted);
+      letter-spacing: 0.1em;
+    }
+
+    .detail-text {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--neo-text-main);
+      font-family: var(--font-ui);
+      opacity: 0.9;
+      text-align: justify;
+      hyphens: auto;
+      letter-spacing: 0.01em;
+    }
+
+    .detail-text-mono {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.5;
+      text-align: left;
+    }
+
+    .expand-icon {
+      transition: transform 0.3s ease;
+      color: var(--neo-text-muted);
+    }
+
+    .finding-card.expanded .expand-icon {
+      transform: rotate(180deg);
+    }
+
+    .finding-url-link {
+      color: var(--neo-blue);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .finding-url-link:hover {
+      text-decoration: underline;
+    }
+
+    /* --- RIGHT PANEL: SECURITY INSIGHTS --- */
+    .insights-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 1.25rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .risk-score-gauge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gauge-val {
+      font-family: var(--font-mono);
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--neo-blue);
+      text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .gauge-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--neo-text-muted);
+      letter-spacing: 0.15em;
+      margin-top: 0.5rem;
+    }
+
+    .vector-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .vector-item {
+      padding: 0.75rem 1rem;
+      background: var(--neo-input);
+      border: 1px solid var(--neo-border);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vector-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--neo-text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+
+    .vector-count {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--neo-blue);
+      font-weight: 800;
+      background: rgba(59, 130, 246, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .meta-box {
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.01);
+      border: 1px solid var(--neo-border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meta-label {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: var(--neo-text-muted);
+      text-transform: uppercase;
+    }
+
+    .meta-val {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--neo-text-main);
+      word-break: break-all;
+    }
 
     /* --- PANELS & TABLES --- */
     .dash-panel {
@@ -583,41 +961,104 @@
       to { opacity: 1; text-shadow: 0 0 10px var(--neo-blue); }
     }
 
-    /* --- TERMINAL --- */
+    /* --- TERMINAL REDESIGN: PRO-TECH CONSOLE --- */
     .terminal-footer { 
-      height: 160px; display: flex; flex-direction: column; overflow: hidden;
+      height: 220px; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden;
+      background: #050505 !important;
+      border: 1px solid var(--neo-border);
+      box-shadow: 0 -10px 50px rgba(0,0,0,0.6);
     }
 
     .terminal-header {
-      padding: 0.5rem 1.5rem; border-bottom: 1px solid var(--neo-border);
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--neo-card); flex-shrink: 0; height: 36px;
+      padding: 0 1.5rem; 
+      border-bottom: 1px solid var(--neo-border);
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      background: rgba(255,255,255,0.02); 
+      flex-shrink: 0; 
+      height: 42px;
     }
 
     .term-title {
-      font-family: var(--font-mono); font-size: 0.7rem;
-      text-transform: uppercase; letter-spacing: 0.1em;
-      font-weight: 600; color: var(--neo-text-muted);
-      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); 
+      font-size: 0.7rem;
+      text-transform: uppercase; 
+      letter-spacing: 0.15em;
+      font-weight: 800; 
+      color: var(--neo-text-muted);
+      display: flex; 
+      align-items: center; 
+      gap: 10px;
+    }
+
+    .term-status-dot {
+      width: 6px; height: 6px;
+      background: var(--neo-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--neo-blue);
     }
 
     .term-window { 
-      flex: 1; padding: 0.75rem 1.5rem; background: var(--neo-input); overflow-y: auto; 
+      flex: 1; 
+      padding: 1rem 1.5rem; 
+      background: transparent; 
+      overflow-y: auto; 
+      scrollbar-width: thin;
+      scrollbar-color: #222 transparent;
     }
-    .term-window::-webkit-scrollbar { width: 6px; }
-    .term-window::-webkit-scrollbar-track { background: transparent; }
-    .term-window::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+    .term-window::-webkit-scrollbar { width: 4px; }
+    .term-window::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
     
     .log-line { 
-        display: flex; gap: 1.5rem; font-family: var(--font-mono); 
-        font-size: 0.75rem; line-height: 1.5; padding: 2px 0;
-        border-bottom: 1px solid var(--neo-border);
+        display: grid;
+        grid-template-columns: 85px 20px 1fr;
+        gap: 0.5rem;
+        font-family: var(--font-mono); 
+        font-size: 0.75rem; 
+        line-height: 1.6; 
+        margin-bottom: 4px;
+        align-items: flex-start;
     }
-    .log-time { color: var(--text-muted); font-size: 0.7rem; white-space: nowrap; width: 70px; flex-shrink: 0; }
-    .log-content { color: var(--text-muted); word-break: break-all; white-space: pre; font-family: var(--font-mono); }
 
-    body.light-mode .log-content {
-        color: var(--text-secondary);
+    .log-time { 
+        color: #444; 
+        font-weight: 700;
+        white-space: nowrap; 
+    }
+
+    .log-prompt {
+        color: var(--neo-blue);
+        font-weight: 900;
+        text-align: center;
+        opacity: 0.7;
+    }
+
+    .log-content { 
+        color: #999; 
+        word-break: break-all; 
+        white-space: pre-wrap;
+    }
+
+    #clearLogBtn {
+        background: var(--neo-input) !important;
+        border: 1px solid var(--neo-border) !important;
+        color: var(--neo-text-muted) !important;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.6rem !important;
+        font-weight: 800 !important;
+        transition: all 0.2s ease !important;
+    }
+
+    #clearLogBtn:hover {
+        background: #111 !important;
+        color: var(--neo-text-main) !important;
+        border-color: var(--neo-blue) !important;
     }
 
     /* --- TYPOGRAPHY & TEXT --- */
@@ -691,20 +1132,12 @@
                 <span class="material-symbols-outlined search-icon">link</span>
                 <input type="text" inputmode="url" id="targetUrl" class="dash-input" placeholder="ENTER TARGET URL..." autocomplete="nope" spellcheck="false" data-lpignore="true" data-1p-ignore="true" />
             </div>
-        </div>
 
-        <div class="control-row-bottom">
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <button id="startScanBtn" class="btn-dash btn-primary" title="Start Web App Scan" style="min-width: 140px;">
-                    <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
-                    <span class="button-text">START SCAN</span>
-                    <span class="spinner hidden"></span>
-                </button>
-
-                <!-- Scan Options Dropdown -->
+            <div class="controls-toolbar">
                 <div class="relative">
                     <button id="scanOptionsBtn" class="btn-dash btn-secondary" title="Scan Options">
-                        OPTIONS
+                        <span class="material-symbols-outlined" style="font-size:1.1rem">tune</span>
+                        <span class="button-text">OPTIONS</span>
                     </button>
                     
                     <div id="scanOptionsDropdown" class="hidden absolute top-full left-0 mt-2 custom-dropdown" style="min-width: 380px; padding: 16px; display: flex; flex-direction: column; gap: 16px;">
@@ -744,49 +1177,56 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div style="display: none;">
-                <span id="lastScannedUrlDisplay"></span>
-                <span id="scanStatus"></span>
+        <div class="control-row-bottom">
+            <button id="startScanBtn" class="btn-dash btn-primary" title="Start Web App Scan" style="min-width: 140px;">
+                <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+                <span class="button-text">START SCAN</span>
+                <span class="spinner hidden"></span>
+            </button>
+
+            <div class="status-text-group">
+                TARGET: <span id="lastScannedUrlDisplay" style="color: var(--neo-text-main);">---</span>
+                <div class="badge-pill" style="margin-left: 8px;">
+                    <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
+                    <span id="scanStatus">READY</span>
+                </div>
             </div>
         </div>
       </div>
       
       <div class="metrics-grid">
         <div class="metric-card">
-          <span class="metric-label" style="color: var(--risk-high);">High Risk</span>
+          <div class="metric-top">
+            <span class="metric-label" style="color: var(--risk-high);">High Risk</span>
+          </div>
           <span id="highAlertsDisplay" class="metric-value" style="color: var(--risk-high);">0</span>
-          <span class="metric-info">
-             <span class="material-symbols-outlined" style="font-size:0.9rem;">warning</span>
-             Critical Vulns
-          </span>
+          <span class="metric-info">Critical Findings</span>
         </div>
 
         <div class="metric-card">
-          <span class="metric-label" style="color: var(--risk-med);">Medium Risk</span>
+          <div class="metric-top">
+            <span class="metric-label" style="color: var(--risk-med);">Medium Risk</span>
+          </div>
           <span id="mediumAlertsDisplay" class="metric-value" style="color: var(--risk-med);">0</span>
-          <span class="metric-info">
-             <span class="material-symbols-outlined" style="font-size:0.9rem;">error</span>
-             Action Required
-          </span>
+          <span class="metric-info">Action Required</span>
         </div>
         
         <div class="metric-card">
-          <span class="metric-label" style="color: var(--risk-low);">Low Risk</span>
+          <div class="metric-top">
+            <span class="metric-label" style="color: var(--risk-low);">Low Risk</span>
+          </div>
           <span id="lowAlertsDisplay" class="metric-value" style="color: var(--risk-low);">0</span>
-          <span class="metric-info">
-             <span class="material-symbols-outlined" style="font-size:0.9rem;">shield</span>
-             Minor Issues
-          </span>
+          <span class="metric-info">Minor Issues</span>
         </div>
         
         <div class="metric-card">
-          <span class="metric-label" style="color: var(--risk-info);">Info</span>
+          <div class="metric-top">
+            <span class="metric-label" style="color: var(--risk-info);">Info</span>
+          </div>
           <span id="infoAlertsDisplay" class="metric-value" style="color: var(--risk-info);">0</span>
-          <span class="metric-info">
-             <span class="material-symbols-outlined" style="font-size:0.9rem;">info</span>
-             Observational
-          </span>
+          <span class="metric-info">Observational Data</span>
           <span id="totalAlertsDisplay" class="hidden">0</span>
         </div>
       </div>
@@ -796,34 +1236,41 @@
       <div class="dash-panel">
         <div class="panel-header">
           <span class="panel-title">Vulnerability Findings</span>
+          <div style="font-size: 0.7rem; color: var(--neo-text-muted); font-family: var(--font-mono);">
+            TOTAL: <span id="findingsCountDisplay">0</span>
+          </div>
         </div>
+        
+        <div class="findings-toolbar">
+            <div class="findings-filter-group">
+                <div class="filter-chip active" data-filter="all">All Findings</div>
+                <div class="filter-chip" data-filter="High">High</div>
+                <div class="filter-chip" data-filter="Medium">Medium</div>
+                <div class="filter-chip" data-filter="Low">Low</div>
+                <div class="filter-chip" data-filter="Info">Info</div>
+            </div>
+
+            <div class="search-container" style="max-width: 280px;">
+                <span class="material-symbols-outlined search-icon" style="font-size: 1rem;">search</span>
+                <input type="text" id="findingsSearch" class="dash-input" placeholder="SEARCH ALERTS..." style="height: 36px; padding-left: 36px; font-size: 0.75rem;">
+            </div>
+        </div>
+
         <div class="panel-content">
           <div class="overflow-auto" style="position: absolute; inset: 0;">
-            <table class="dash-table">
-              <thead>
-                <tr>
-                  <th style="width: 10%;">Risk</th>
-                  <th style="width: 8%;">Score</th>
-                  <th style="width: 20%;">Alert Name</th>
-                  <th style="width: 25%;">URL</th>
-                  <th style="width: auto;">Description</th>
-                </tr>
-              </thead>
-              <tbody id="zapAlertsTableBody">
-                <tr>
-                  <td colspan="5" style="text-align:center; padding: 3rem; color: var(--neo-text-muted); font-family: var(--font-mono);">
+            <div id="findingsList" class="findings-list">
+                <div style="text-align:center; padding: 4rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.85rem;">
+                    <span class="material-symbols-outlined" style="font-size: 3rem; opacity: 0.2; margin-bottom: 1rem; display: block;">security</span>
                     INITIATE A SCAN TO VIEW RESULTS...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="flex flex-col gap-6" style="height: 100%; min-height: 0;">
+        <!-- INTELLIGENCE ACTIONS -->
         <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1.5rem; overflow: visible !important;">
-          
           <div id="aiProcessingOverlay" class="processing-overlay hidden" style="overflow: hidden; border-radius: var(--radius-card);">
             <div class="ai-pulse-container">
               <div class="ai-pulse-ring"></div>
@@ -834,7 +1281,7 @@
           
           <div class="flex justify-between items-center mb-4">
             <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence</h5>
-            <button id="refreshResultsBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px; border-radius:6px;" title="Refresh Results">
+            <button id="refreshResultsBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px; border-radius:6px;" title="Refresh Scan Data">
                 <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
             </button>
           </div>
@@ -842,19 +1289,18 @@
           <div class="flex flex-col gap-3">
             <div class="relative w-full">
               <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
-                <span class="button-text">AI Analysis</span>
-                <span class="spinner hidden"></span>
+                <span>AI Analysis</span>
                 <span class="material-symbols-outlined">expand_more</span>
               </button>
 
               <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
                 <a href="#" data-llm-mode="local" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
-                  Local LLM
+                  Local LLM (Private)
                 </a>
                 <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
-                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">auto_awesome</span>
-                  Gemini 2.5 Flash
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
+                  Gemini 2.5 Flash (Cloud)
                 </a>
               </div>
             </div>
@@ -866,13 +1312,47 @@
           </div>
         </div>
 
+        <!-- SECURITY INSIGHTS -->
         <div class="dash-panel" style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
-          <div class="panel-header">
-            <span class="panel-title" style="font-size: 0.85rem;">Raw JSON</span>
-            <button id="copyResultsBtn" class="btn-text-glow" style="font-size: 0.7rem;">COPY</button>
+          <div class="panel-header" style="height: 44px;">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">insights</span>
+                <span class="panel-title" style="font-size: 0.75rem;">Security Insights</span>
+            </div>
           </div>
-          <div class="panel-content" style="background: var(--neo-input);">
-            <div id="resultsContent" style="background: var(--neo-input);">// WAITING FOR SCAN...</div>
+          <div class="panel-content">
+            <div class="insights-container">
+                <!-- Scoreboard -->
+                <div class="risk-score-gauge">
+                    <span id="avgRiskScore" class="gauge-val">0.0</span>
+                    <span class="gauge-label">ML Risk Index</span>
+                </div>
+
+                <!-- Attack Vectors -->
+                <div>
+                    <span class="action-label">Top Attack Vectors</span>
+                    <div id="topVectorsList" class="vector-list">
+                        <div style="text-align:center; padding: 1rem; color: var(--neo-text-muted); font-size: 0.7rem; font-family: var(--font-mono);">
+                            AWAITING ANALYSIS...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scan Metadata -->
+                <div>
+                    <span class="action-label">Scan Context</span>
+                    <div class="meta-grid">
+                        <div class="meta-box">
+                            <span class="meta-label">Target</span>
+                            <span id="metaTarget" class="meta-val">---</span>
+                        </div>
+                        <div class="meta-box">
+                            <span class="meta-label">Duration</span>
+                            <span id="metaDuration" class="meta-val">0s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
           </div>
         </div>
       </div>
@@ -881,10 +1361,10 @@
     <div class="terminal-footer">
       <div class="terminal-header">
         <div class="term-title">
-          <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">terminal</span>
-          Live Activity
+          <div class="term-status-dot"></div>
+          LIVE ACTIVITY STREAM
         </div>
-        <button id="clearLogBtn" style="background: none; border: none; color: #444; font-size: 0.7rem; cursor: pointer; transition: color 0.2s; font-family: var(--font-mono); text-transform: uppercase;">Clear Output</button>
+        <button id="clearLogBtn">CLEAR CONSOLE</button>
       </div>
 
       <div id="logOutput" class="term-window"></div>

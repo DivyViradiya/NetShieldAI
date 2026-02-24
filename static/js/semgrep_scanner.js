@@ -82,22 +82,32 @@ document.addEventListener('DOMContentLoaded', function() {
     function appendLog(message) {
         if (!elements.logOutput) return;
 
-        var now = new Date();
-        var timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        var contentStyle = 'color:#d4d4d8';
-        if (displayMessage.includes('[!]')) contentStyle = 'color:#ef4444';
-        else if (displayMessage.includes('[+]')) contentStyle = 'color:#10b981';
-        else if (displayMessage.includes('[*]')) contentStyle = 'color:#3b82f6';
+        let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
+        cleanedMessage = cleanedMessage.trim();
 
-        var line = document.createElement('div');
+        let contentStyle = '';
+        if (cleanedMessage.includes('[!]') || cleanedMessage.includes('Error')) {
+            contentStyle = 'color:#ef4444';
+        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('Success')) {
+            contentStyle = 'color:#10b981';
+        } else if (cleanedMessage.includes('[*]')) {
+            contentStyle = 'color:#3b82f6';
+        }
+
+        const line = document.createElement('div');
         line.className = 'log-line';
-        line.innerHTML = 
-            '<div class="log-time">' + timeStr + '</div>' +
-            '<div class="log-content" style="' + contentStyle + '">' + displayMessage + '</div>';
         
-        logOutput.appendChild(line);
-        logOutput.scrollTop = logOutput.scrollHeight;
+        line.innerHTML = `
+            <div class="log-time">${timeStr}</div>
+            <div class="log-prompt">></div>
+            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+        `;
+        
+        elements.logOutput.appendChild(line);
+        elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
     }
 
     // --- State Management ---
@@ -108,12 +118,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if(elements.metricHigh) elements.metricHigh.textContent = '0';
         if(elements.metricDuration) elements.metricDuration.textContent = '---';
         
-        if(elements.serverConfigDetails) elements.serverConfigDetails.innerHTML = '<div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><span>Tool</span><span style="color: #fff;">Semgrep OSS</span></div><div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><span>Rulesets</span><span style="color: var(--neo-green);">Security, Secrets, Flask</span></div>';
+        if(elements.serverConfigDetails) elements.serverConfigDetails.innerHTML = 'Waiting for scan...';
         
-        if(elements.findingsTableBody) elements.findingsTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #555; padding: 2rem; font-family: monospace;">---</td></tr>';
+        if(elements.findingsTableBody) elements.findingsTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #555; padding: 2rem; font-family: var(--font-mono);">---</td></tr>';
         
         if(elements.findingsListSide) {
-            elements.findingsListSide.innerHTML = '<div style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono); font-size: 0.8rem;">WAITING FOR CODE SCAN...</div>';
+            elements.findingsListSide.innerHTML = '<div style="text-align:center; padding: 4rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">WAITING FOR CODE SCAN...</div>';
         }
 
         resetDetailView();
@@ -248,49 +258,41 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.findingsListSide.innerHTML = '';
         var filterText = document.getElementById('findingsSearch')?.value.toLowerCase() || '';
         
-        var filteredFindings = findings.filter(function(f) {
-            return f.check_id.toLowerCase().includes(filterText) || 
-                   f.path.toLowerCase().includes(filterText) || 
-                   f.message.toLowerCase().includes(filterText);
+        var filteredFindings = (findings || []).filter(function(f) {
+            return (f.check_id || '').toLowerCase().includes(filterText) || 
+                   (f.path || '').toLowerCase().includes(filterText) || 
+                   (f.message || '').toLowerCase().includes(filterText);
         });
 
         var countBadge = document.getElementById('filteredCountBadge');
         if(countBadge) countBadge.textContent = filteredFindings.length + ' FINDING' + (filteredFindings.length !== 1 ? 'S' : '');
 
-        if (!filteredFindings || filteredFindings.length === 0) {
-            elements.findingsListSide.innerHTML = '<div style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono); font-size: 0.75rem;">' + (filterText ? 'NO MATCHES.' : 'NO VULNERABILITIES.') + '</div>';
+        if (filteredFindings.length === 0) {
+            elements.findingsListSide.innerHTML = '<div style="text-align:center; padding: 3rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.75rem;">' + (filterText ? 'NO MATCHES.' : 'NO VULNERABILITIES.') + '</div>';
             resetDetailView();
             return;
         }
 
-        // Helper for severity styles
-        var getColors = function(sev) {
-            if (sev === 'ERROR') return { dot: '#ef4444', text: '#ef4444' };
-            if (sev === 'WARNING') return { dot: '#f97316', text: '#f97316' };
-            return { dot: '#3b82f6', text: '#3b82f6' };
-        };
-
         filteredFindings.forEach(function(f, index) {
-            var colors = getColors(f.severity);
-            var cleanPath = f.path.includes("source_code_temp") ? f.path.split("source_code_temp")[1].replace(/^[\\/]/, "") : f.path;
+            var severity = f.severity || 'INFO';
+            var color = severity === 'ERROR' ? '#ef4444' : (severity === 'WARNING' ? '#f97316' : '#3b82f6');
+            
+            var path = f.path || 'Unknown Path';
+            var cleanPath = path.includes("source_code_temp") ? path.split("source_code_temp")[1].replace(/^[\\/]/, "") : path;
 
             var item = document.createElement('div');
-            item.className = 'finding-item-compact';
-            if (window.selectedFindingIndex === index) item.classList.add('active');
+            item.style.cssText = 'padding: 1rem; border-bottom: 1px solid var(--neo-border); cursor: pointer; transition: background 0.2s;';
+            if (window.selectedFindingIndex === index) item.style.background = 'rgba(59, 130, 246, 0.1)';
 
             item.innerHTML = `
-                <div class="compact-rule-id">${f.check_id}</div>
-                <div class="compact-file-info" title="${cleanPath}">${cleanPath}</div>
-                <div class="compact-meta">
-                    <span><span class="severity-dot" style="background: ${colors.dot}"></span>${f.severity}</span>
-                    <span>Line ${f.line}</span>
-                </div>
+                <div style="font-size: 0.7rem; color: ${color}; font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">${severity}</div>
+                <div style="font-size: 0.85rem; color: var(--neo-text-main); font-weight: 600; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.check_id || 'Unknown Rule'}</div>
+                <div style="font-size: 0.7rem; color: var(--neo-text-muted); font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${cleanPath}</div>
             `;
 
             item.onclick = function() {
-                // Update active state
-                document.querySelectorAll('.finding-item-compact').forEach(el => el.classList.remove('active'));
-                item.classList.add('active');
+                document.querySelectorAll('#findingsListSide > div').forEach(el => el.style.background = 'transparent');
+                item.style.background = 'rgba(59, 130, 246, 0.1)';
                 window.selectedFindingIndex = index;
                 renderDetailView(f, cleanPath);
             };
@@ -298,7 +300,6 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.findingsListSide.appendChild(item);
         });
 
-        // Automatically select the first finding if none selected
         if (window.selectedFindingIndex === undefined && filteredFindings.length > 0) {
             elements.findingsListSide.firstChild.click();
         }
@@ -307,9 +308,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function resetDetailView() {
         if(!elements.findingsDetailSide) return;
         elements.findingsDetailSide.innerHTML = `
-            <div class="empty-detail-state">
-                <span class="material-symbols-outlined" style="font-size: 4rem; opacity: 0.1;">data_exploration</span>
-                <div style="font-family: var(--font-mono); font-size: 0.8rem; opacity: 0.3; letter-spacing: 0.1em;">SELECT A FINDING TO VIEW ANALYSIS</div>
+            <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.2;">
+                <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem;">data_exploration</span>
+                <div style="font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">Select a finding to view analysis</div>
             </div>
         `;
     }
@@ -317,57 +318,39 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderDetailView(f, cleanPath) {
         if(!elements.findingsDetailSide) return;
 
-        var severityColor = f.severity === 'ERROR' ? '#ef4444' : (f.severity === 'WARNING' ? '#f97316' : '#3b82f6');
+        var severity = f.severity || 'INFO';
+        var severityColor = severity === 'ERROR' ? '#ef4444' : (severity === 'WARNING' ? '#f97316' : '#3b82f6');
 
         elements.findingsDetailSide.innerHTML = `
-            <div class="detail-header">
-                <div class="detail-rule-id">${f.check_id}</div>
-                <div class="detail-title">${cleanPath}</div>
-                <div style="display:flex; gap: 1rem; margin-top: 1rem; align-items:center;">
-                    <span class="badge-pill" style="color: ${severityColor}; border-color: ${severityColor}44; background: ${severityColor}11;">
-                        ${f.severity}
-                    </span>
-                    <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted);">
-                        Line ${f.line}:${f.column}
-                    </span>
+            <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--neo-border); padding-bottom: 1.5rem;">
+                <div style="font-size: 0.7rem; color: ${severityColor}; font-weight: 800; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.1em;">${severity} FINDING</div>
+                <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--neo-text-main); margin-bottom: 0.5rem;">${f.check_id || 'Unknown Rule'}</h2>
+                <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted); word-break: break-all;">${cleanPath || 'Unknown Path'}</div>
+                <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                    <span class="badge-pill" style="color: ${severityColor}; border-color: ${severityColor}44; background: ${severityColor}11;">Line ${f.line || '?'}</span>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-2">
-                <div class="detail-section-label">
-                    <span class="material-symbols-outlined" style="font-size: 1rem;">description</span>
-                    Issue Description
+            <div class="flex flex-col gap-6">
+                <div class="detail-section">
+                    <span class="detail-label">Issue Description</span>
+                    <div class="detail-text">${f.message || 'No description available.'}</div>
                 </div>
-                <div class="detail-box">
-                    <div class="vuln-message">${f.message}</div>
-                </div>
-            </div>
 
-            <div class="flex flex-col gap-2">
-                <div class="detail-section-label">
-                    <span class="material-symbols-outlined" style="font-size: 1rem;">code</span>
-                    Code Evidence
-                </div>
-                <div class="code-view-wrapper">
-                    <div class="code-view-header">
-                        <span>SOURCE CODE</span>
-                        <span>READ-ONLY</span>
+                <div class="detail-section">
+                    <span class="detail-label">Code Evidence</span>
+                    <div style="background: #000; padding: 1rem; border-radius: 8px; border: 1px solid #222; overflow-x: auto; margin-top: 0.5rem;">
+                        <pre style="font-family: var(--font-mono); font-size: 0.75rem; color: #a1a1aa; margin: 0;">${f.code_snippet || 'No code evidence available.'}</pre>
                     </div>
-                    <div class="code-view-content">${f.code_snippet || 'N/A'}</div>
                 </div>
-            </div>
 
-            ${f.fix_suggestion && f.fix_suggestion !== 'N/A' ? `
-                <div class="flex flex-col gap-2">
-                    <div class="detail-section-label">
-                        <span class="material-symbols-outlined" style="font-size: 1rem; color: #10b981;">lightbulb</span>
-                        Remediation Guidance
+                ${f.fix_suggestion && f.fix_suggestion !== 'N/A' ? `
+                    <div class="detail-section" style="border-bottom: none;">
+                        <span class="detail-label" style="color: #10b981;">Remediation Guidance</span>
+                        <div class="detail-text" style="color: #10b981; opacity: 1; border-left: 2px solid #10b981; padding-left: 1rem;">${f.fix_suggestion}</div>
                     </div>
-                    <div class="fix-suggestion-box">
-                        <div style="font-size: 0.85rem; color: #10b981; font-family: var(--font-mono); line-height: 1.6;">${f.fix_suggestion}</div>
-                    </div>
-                </div>
-            ` : ''}
+                ` : ''}
+            </div>
         `;
     }
 
@@ -387,24 +370,24 @@ document.addEventListener('DOMContentLoaded', function() {
             var response = await fetch('/semgrep_scanner/report');
             var data = await response.json();
 
-            if (data.status === 'success') {
+            if (data.status === 'success' && data.content) {
                 var report = data.content;
                 window.currentSemgrepReport = report; // Store globally for filtering
                 
                 // Update Metrics
-                elements.metricTotal.textContent = report.total_findings;
-                elements.metricHigh.textContent = report.severity_counts.ERROR || 0;
+                if (elements.metricTotal) elements.metricTotal.textContent = report.total_findings || 0;
+                if (elements.metricHigh) elements.metricHigh.textContent = (report.severity_counts && report.severity_counts.ERROR) || 0;
                 
                 // Render
                 renderMetadata(report);
                 renderSeverityTable(report.severity_counts);
-                renderFindingsCards(report.findings);
+                renderFindingsCards(report.findings || []);
 
-                elements.resultsContent.textContent = JSON.stringify(report, null, 2);
+                if (elements.resultsContent) elements.resultsContent.textContent = JSON.stringify(report, null, 2);
                 checkReportAvailability();
             } else {
                 // If no report exists, keep "Waiting" state but don't error out
-                elements.resultsContent.textContent = data.message || "// No scan data yet";
+                if (elements.resultsContent) elements.resultsContent.textContent = data.message || "// No scan data yet";
             }
         } catch (error) {
             console.error('Error fetching Semgrep report:', error);
@@ -628,7 +611,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (message.includes("PDF report generated") || message.includes("Semgrep scan complete") || message.includes("Scan complete")) {
                     updateStatus('Complete', 'success');
                     toggleSpinner(elements.initiateScanBtn, false);
-                    fetchAndDisplayResults();
+                    fetchAndDisplayReport();
                 }
 
                 if (message.includes("EVENT:") || message.startsWith("EVENT:")) return;

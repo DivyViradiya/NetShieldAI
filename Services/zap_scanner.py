@@ -13,6 +13,7 @@ import joblib
 from pathlib import Path
 import queue  # Queue for real-time streaming
 import threading
+from logger_setup import logger
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
@@ -37,12 +38,14 @@ scan_lock = threading.Lock()
 
 # --- USER ISOLATION: Dictionary to hold a queue for each user_id ---
 user_queues = {}
+_queue_lock = threading.Lock()  # RC-1 FIX: protect concurrent queue creation
 
 def get_user_queue(user_id):
-    """Ensures a queue exists for the user and returns it."""
-    if user_id not in user_queues:
-        user_queues[user_id] = queue.Queue()
-    return user_queues[user_id]
+    """Ensures a queue exists for the user and returns it. Thread-safe."""
+    with _queue_lock:
+        if user_id not in user_queues:
+            user_queues[user_id] = queue.Queue()
+        return user_queues[user_id]
 
 def is_scan_running(user_id):
     """Checks if a scan is currently active for a specific user."""
@@ -61,7 +64,7 @@ try:
     cwe_profiles = pd.read_csv(PROFILES_PATH, index_col='cwe_id')
     training_columns = joblib.load(TRAINING_COLUMNS_PATH)
 except FileNotFoundError as e:
-    print(f"FATAL: Could not load ML model or data files: {e}")
+    logger.error(f"FATAL: Could not load ML model or data files: {e}")
     model = None
 
 # --- FULL ZAP to CWE Mapping ---
@@ -278,7 +281,7 @@ def log(message, user_id=None, to_console=False):
     
     # 1. System Console
     if to_console:
-        print(log_message)
+        logger.info(message) # use central logger info (colored formatter auto-detects)
     
     # If a specific user is targeted
     if user_id:
@@ -293,7 +296,7 @@ def log(message, user_id=None, to_console=False):
             with open(user_log_file, 'a', encoding='utf-8') as f:
                 f.write(log_message + "\n")
         except Exception as e:
-            print(f"FATAL: Failed to write to user log file {user_log_file}: {e}")
+            logger.error(f"FATAL: Failed to write to user log file {user_log_file}: {e}")
 
         # 3. User-Specific Queue (Streaming)
         uq = get_user_queue(user_id)
@@ -322,19 +325,39 @@ def clear_log_file(user_id):
             with open(user_log_file, 'w', encoding='utf-8') as f:
                 f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
         
-        # Clear Queue
+        # RC-11 FIX: Drain queue using public API instead of internal mutex/queue attributes
         uq = get_user_queue(user_id)
-        with uq.mutex:
-            uq.queue.clear()
+        while not uq.empty():
+            try:
+                uq.get_nowait()
+            except queue.Empty:
+                break
             
     except Exception as e:
-        print(f"FATAL: Could not clear log file for user {user_id}: {e}")
+        logger.error(f"FATAL: Could not clear log file for user {user_id}: {e}")
+
+def stop_user_scan(user_id):
+    """
+    RC-4 FIX: Safely terminates ONLY the ZAP process owned by this specific user.
+    Use this for user-triggered scan cancellation instead of kill_zap_processes().
+    """
+    with scan_lock:
+        entry = active_scans.get(user_id)
+    if entry and entry.get("process"):
+        entry["process"].terminate()
+        log(f"[*] ZAP process for user {user_id} terminated by user request.", user_id)
+        return True
+    return False
 
 def kill_zap_processes(user_id=None):
     """
-    Terminates ZAP processes. 
-    NOTE: CAUTION. This kills global ZAP processes. 
-    Do NOT use this during simultaneous scanning unless doing a full system reset.
+    SYSTEM-LEVEL RESET ONLY — Terminates ALL ZAP processes on the machine.
+
+    RC-4 WARNING: This function is GLOBAL and kills every ZAP instance system-wide,
+    regardless of which user owns it. It MUST NOT be called from any user-triggered
+    code path (e.g. scan start, scan stop, error handlers).
+    Only call this on initial server startup/full system reset.
+    For per-user cancellation, use stop_user_scan(user_id) instead.
     """
     log("Checking for and terminating existing ZAP processes...", user_id)
     killed_a_process = False
@@ -389,7 +412,7 @@ def get_output_paths(output_dir=None):
         try:
             base.mkdir(parents=True, exist_ok=True)
         except Exception as e:
-            print(f"[!] Error creating directory {base}: {e}")
+            logger.error(f"[!] Error creating directory {base}: {e}")
 
     return {
         "xml_report": base / "zap_report.xml",

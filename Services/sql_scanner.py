@@ -42,18 +42,23 @@ def is_scan_running(user_id):
     with scan_lock:
         return user_id in active_scans
 
-# --- LOGGING UTILS ---
 from Services import scan_logger
+from logger_setup import logger
 
 # --- LOGGING UTILS ---
 def log(message, user_id=None, to_console=False, level='INFO'):
     """
     Logs messages using the centralized scan_logger.
     """
-    timestamp = datetime.now().strftime("%H:%M:%S")
-    
     if to_console:
-        print(f"[{timestamp}] {message}")
+        if level == 'INFO':
+            logger.info(message)
+        elif level == 'WARNING':
+            logger.warning(message)
+        elif level == 'ERROR':
+            logger.error(message)
+        else:
+            logger.debug(message)
     
     if user_id:
         scan_logger.write_log(user_id, "sql", message, level=level)

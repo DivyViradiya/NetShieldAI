@@ -200,7 +200,7 @@ def get_user_pdf_path(scanner_type, target=None):
             latest_file = max(files, key=os.path.getmtime)
             return latest_file
     except Exception as e:
-        print(f"Error finding latest PDF: {e}")
+        logger.error(f"Error finding latest PDF: {e}")
 
     return None
 
@@ -209,7 +209,7 @@ def get_user_pdf_path(scanner_type, target=None):
 @login_required
 def chatbot_page():
     """Renders the chatbot UI page with PRE-LOADED session data to prevent UI lag."""
-    print(f"\033[35m[*] Accessing AI Analyst Page (User: {current_user.username})\033[0m")
+    logger.info(f"[*] Accessing AI Analyst Page (User: {current_user.username})")
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     
@@ -261,7 +261,7 @@ def upload_report():
         if file.filename == '':
             return jsonify({'error': 'No selected file'}), 400
 
-        print(f"\033[35m[*] Manual Report Upload: {file.filename} (User: {current_user.username})\033[0m")
+        logger.info(f"[*] Manual Report Upload: {file.filename} (User: {current_user.username})")
         llm_mode_param = map_llm_mode(request.form.get('llm_mode', 'gemini-2.5-flash'))
 
         if file and file.filename.endswith('.pdf'):
@@ -324,7 +324,7 @@ def chat_with_ai():
     try:
         data = request.json
         user_message = data.get('message')
-        print(f"\033[35m[*] AI Chat Request from {current_user.username}: {user_message[:50]}...\033[0m")
+        logger.info(f"[*] AI Chat Request from {current_user.username}: {user_message[:50]}...")
         verbosity = data.get('verbosity', 'standard')
         is_incognito = data.get('is_incognito', False)
         llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-2.5-flash'))

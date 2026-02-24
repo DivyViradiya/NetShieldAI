@@ -153,12 +153,17 @@ def scan_ports():
     app = current_app._get_current_object()
     user_id_for_log = current_user.id
 
-    # [NEW] Increment Database Counter for Stats
+    # [RC-8 FIX] Atomic DB counter increment — prevents double-count on concurrent tabs
     try:
-        current_user.scan_count_nmap += 1
+        from sqlalchemy import update as _sa_update
+        from models import User as _User
+        db.session.execute(
+            _sa_update(_User).where(_User.id == current_user.id)
+            .values(scan_count_nmap=_User.scan_count_nmap + 1)
+        )
         db.session.commit()
     except Exception as e:
-        # Log error but don't stop the scan
+        db.session.rollback()  # RC-3 FIX: clean session before thread starts
         network_scanner.log(f"[!] Failed to update user stats: {e}", user_identifier, queue_id)
     
     # [NEW] Reset Log File for this new scan session
@@ -244,7 +249,7 @@ def scan_ports():
         else:
             network_scanner.log("[!] Scan failed to produce a result file.", user_identifier, queue_id)
 
-    threading.Thread(target=scan_task, args=(queue_id,)).start()
+    threading.Thread(target=scan_task, args=(queue_id,), daemon=True).start()  # RC-5 FIX: daemon=True prevents process hang on shutdown
     return jsonify({"status": "success", "message": f"{scan_type.upper()} scan for {target_ip} initiated.", "queue_id": queue_id})
 
 

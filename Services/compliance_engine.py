@@ -1,6 +1,7 @@
 import os
 import json
 from datetime import datetime
+from logger_setup import logger
 
 # --- CONFIGURATION & MAPPINGS ---
 # This dictionary acts as the "Brain" of the compliance engine.
@@ -297,7 +298,7 @@ class ComplianceEngine:
             with open(output_path, 'w', encoding='utf-8') as f:
                 json.dump(self.report_data, f, indent=4)
         except Exception as e:
-            print(f"Error saving compliance report: {e}")
+            logger.error(f"Error saving compliance report: {e}")
 
 # --- Standalone Execution Helper ---
 def generate_compliance_report(user_dir):

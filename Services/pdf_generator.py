@@ -13,19 +13,28 @@ def suppress_stderr():
     Suppresses stderr at the OS level (file descriptor 2).
     Need to flush Python's sys.stderr first to avoid mixed output.
     """
+    old_stderr_fd = None
+    devnull = None
     try:
         sys.stderr.flush()
-        with open(os.devnull, "w") as devnull:
-            old_stderr_fd = os.dup(sys.stderr.fileno())
-            os.dup2(devnull.fileno(), sys.stderr.fileno())
+        devnull = open(os.devnull, "w")
+        old_stderr_fd = os.dup(sys.stderr.fileno())
+        os.dup2(devnull.fileno(), sys.stderr.fileno())
+    except Exception:
+        # Fallback if FD manipulation fails
+        pass
+
+    try:
+        yield
+    finally:
+        if old_stderr_fd is not None:
             try:
-                yield
-            finally:
                 os.dup2(old_stderr_fd, sys.stderr.fileno())
                 os.close(old_stderr_fd)
-    except Exception:
-        # Fallback if FD manipulation fails (e.g. some restricted envs)
-        yield
+            except:
+                pass
+        if devnull is not None:
+            devnull.close()
 
 with suppress_stderr():
     from weasyprint import HTML, CSS

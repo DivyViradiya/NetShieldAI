@@ -1,37 +1,25 @@
-[2026-02-20 11:12:29] Log cleared for new nmap scan.
-[11:12:29] [*] Preparing DEFAULT scan for target: 192.168.0.1 with T4...
-[11:12:29] [+] Running TCP (Top 1000) scan on 192.168.0.1 with timing -T4...
-[11:12:29] Executing Network Scan...
-[11:12:40] [+] TCP (Top 1000) scan complete. Results synchronized.
-[11:12:40] [*] Raw results persisted to: scan_result_tcp.txt
-[11:12:40] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
-[11:12:40] EVENT: scan_complete | PAYLOAD: {"target": "192.168.0.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "22", "protocol": "TCP", "service": "ssh", "version": "Dropbear sshd 2012.55 (protocol 2.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "53", "protocol": "TCP", "service": "domain", "version": "ISC BIND 9.18.39-0ubuntu0.24.04.2 (Ubuntu Linux)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "80", "protocol": "TCP", "service": "http", "version": "TP-LINK WAP http config", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "Portable SDK for UPnP devices 1.6.19 (Linux 2.6.36; UPnP 1.0)", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
-[11:12:40] [+] Processing results for PDF report...
-[11:12:40] [+] JSON Scan report saved
-[11:12:40] [*] Scan complete. Generating PDF report for 192.168.0.1...
-[11:12:43] [+] PDF report generated successfully
-[11:12:43] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.0.1
-[11:13:32] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:13:32] [*] Local IP requested: 192.168.0.121
-[11:14:08] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:14:08] [*] Local IP requested: 192.168.0.121
-[11:16:17] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:16:17] [*] Local IP requested: 192.168.0.121
-[11:22:04] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:22:04] [*] Local IP requested: 192.168.0.121
-[11:24:11] [*] Local IP requested: 192.168.0.121
-[11:24:11] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:25:27] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:25:27] [*] Local IP requested: 192.168.0.121
-[11:29:20] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:29:20] [*] Local IP requested: 192.168.0.121
-[11:43:18] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:43:19] [*] Local IP requested: 192.168.0.121
-[11:49:29] [*] Local IP requested: 192.168.0.121
-[11:49:29] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[12:08:15] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[12:08:15] [*] Local IP requested: 192.168.0.121
-[12:32:27] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[12:32:28] [*] Local IP requested: 192.168.0.121
-[12:44:15] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[12:44:15] [*] Local IP requested: 192.168.0.121
+[2026-02-23 08:49:18] Log cleared for new nmap scan.
+[08:49:18] [*] Preparing DEFAULT scan for target: 192.168.29.1 with T4...
+[08:49:18] [+] Running TCP (Top 1000) scan on 192.168.29.1 with timing -T4...
+[08:49:18] Executing Network Scan...
+[08:50:43] [+] TCP (Top 1000) scan complete. Results synchronized.
+[08:50:43] [*] Raw results persisted to: scan_result_tcp.txt
+[08:50:44] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "443", "protocol": "TCP", "service": "ssl|http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "7443", "protocol": "TCP", "service": "ssl|oracleas-https?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8080", "protocol": "TCP", "service": "http-proxy", "version": "JCO4032|JUICEJFV-1.3.31", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8443", "protocol": "TCP", "service": "ssl|https-alt?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[08:50:44] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "443", "protocol": "TCP", "service": "ssl|http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "7443", "protocol": "TCP", "service": "ssl|oracleas-https?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8080", "protocol": "TCP", "service": "http-proxy", "version": "JCO4032|JUICEJFV-1.3.31", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8443", "protocol": "TCP", "service": "ssl|https-alt?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[08:50:44] [+] Processing results for PDF report...
+[08:50:44] [+] JSON Scan report saved
+[08:50:44] [*] Scan complete. Generating PDF report for 192.168.29.1...
+[08:50:51] [+] PDF report generated successfully
+[08:50:51] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.1
+[09:17:10] [*] Local IP requested: 192.168.29.48
+[09:17:10] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:36:25] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:36:25] [*] Local IP requested: 192.168.29.48
+[11:42:14] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[11:42:14] [*] Local IP requested: 192.168.29.48
+[12:00:15] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[12:00:15] [*] Local IP requested: 192.168.29.48
+[12:03:18] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[12:03:18] [*] Local IP requested: 192.168.29.48
+[14:15:39] [*] Local IP requested: 10.120.111.41
+[14:15:39] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.

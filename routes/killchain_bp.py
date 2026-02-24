@@ -9,7 +9,7 @@ import logging
 from pathlib import Path
 
 # --- Logging Setup ---
-logger = logging.getLogger(__name__)
+from logger_setup import logger
 
 from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory, current_app
 from flask_login import login_required, current_user
@@ -113,7 +113,7 @@ def dispatch_scan():
         current_user.scan_count_killchain += 1
         db.session.commit()
     except Exception as e:
-        print(f"[!] DB Error updating killchain stats: {e}")
+        logger.error(f"[!] DB Error updating killchain stats: {e}")
 
     # [NEW] Reset Log File for this new scan session
     scan_logger.reset_log_file(user_identifier, "killchain")
@@ -322,7 +322,7 @@ def get_scan_history():
                     "timestamp": os.path.getmtime(report_path)
                 })
         except Exception as e:
-            print(f"[!] Error reading history: {e}")
+            logger.error(f"[!] Error reading history: {e}")
 
     return jsonify({"status": "success", "scans": scans})
 

@@ -27,6 +27,7 @@ from Services.pentest_modules.traffic_analyzer import TrafficAnalyzer
 
 from Services import pdf_generator
 from Services import scan_logger
+from logger_setup import logger
 
 # ==========================================
 # 1. OUTPUT REDIRECTION (Isolated per User)
@@ -89,7 +90,12 @@ def log(queue_id, message, level="INFO", to_console=True):
     formatted_msg = f"[{timestamp}] [{level}] {message}"
     
     if to_console:
-        print(formatted_msg)
+        if level in ["ERROR", "CRITICAL"]:
+            logger.error(f"[{level}] {message}")
+        elif level == "WARNING":
+            logger.warning(f"[{level}] {message}")
+        else:
+            logger.info(f"[{level}] {message}")
         
     if queue_id:
         try:
@@ -99,7 +105,7 @@ def log(queue_id, message, level="INFO", to_console=True):
             with open(log_file, 'a', encoding='utf-8') as f:
                 f.write(f"{formatted_msg}\n")
         except Exception as e:
-            print(f"ERROR: Failed to write to log file: {e}")
+            logger.error(f"ERROR: Failed to write to log file: {e}")
 
 def send_sse_event(queue_id, event_name, data):
     """

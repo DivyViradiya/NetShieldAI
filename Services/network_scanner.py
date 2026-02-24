@@ -34,12 +34,14 @@ scan_lock = threading.Lock()
 
 # --- USER ISOLATION: Dictionary to hold a queue for each user_id ---
 user_queues = {}
+_queue_lock = threading.Lock()  # RC-1 FIX: protect concurrent queue creation
 
 def get_user_queue(user_id):
-    """Ensures a queue exists for the user and returns it."""
-    if user_id not in user_queues:
-        user_queues[user_id] = queue.Queue()
-    return user_queues[user_id]
+    """Ensures a queue exists for the user and returns it. Thread-safe."""
+    with _queue_lock:
+        if user_id not in user_queues:
+            user_queues[user_id] = queue.Queue()
+        return user_queues[user_id]
 
 def is_scan_running(user_id):
     """Checks if a scan is currently active for a specific user."""
@@ -49,26 +51,29 @@ def is_scan_running(user_id):
 # Globals for application state (Isolated by user_id)
 user_open_ports = {} # { "user_id": {"TCP": [], "UDP": [], "metadata": {}} }
 user_whitelisted_ports = {} # { "user_id": set() }
+_ports_lock = threading.Lock()  # RC-2 FIX: protect concurrent port data access
 
 def get_user_open_ports(user_id):
-    """Ensures open_ports structure exists for the user."""
+    """Ensures open_ports structure exists for the user. Thread-safe."""
     user_id = str(user_id) if user_id else "system"
-    if user_id not in user_open_ports:
-        user_open_ports[user_id] = {
-            "TCP": [], 
-            "UDP": [], 
-            "metadata": {"os_guess": "Unknown", "host_status": "Unknown", "latency": "0ms", "insights": "Waiting for scan..."}
-        }
-    elif "metadata" not in user_open_ports[user_id]:
-        user_open_ports[user_id]["metadata"] = {"os_guess": "Unknown", "host_status": "Unknown", "latency": "0ms", "insights": "Waiting for scan..."}
-    return user_open_ports[user_id]
+    with _ports_lock:
+        if user_id not in user_open_ports:
+            user_open_ports[user_id] = {
+                "TCP": [], 
+                "UDP": [], 
+                "metadata": {"os_guess": "Unknown", "host_status": "Unknown", "latency": "0ms", "insights": "Waiting for scan..."}
+            }
+        elif "metadata" not in user_open_ports[user_id]:
+            user_open_ports[user_id]["metadata"] = {"os_guess": "Unknown", "host_status": "Unknown", "latency": "0ms", "insights": "Waiting for scan..."}
+        return user_open_ports[user_id]
 
 def get_user_whitelisted_ports(user_id):
-    """Ensures whitelist set exists for the user."""
+    """Ensures whitelist set exists for the user. Thread-safe."""
     user_id = str(user_id) if user_id else "system"
-    if user_id not in user_whitelisted_ports:
-        user_whitelisted_ports[user_id] = set()
-    return user_whitelisted_ports[user_id]
+    with _ports_lock:
+        if user_id not in user_whitelisted_ports:
+            user_whitelisted_ports[user_id] = set()
+        return user_whitelisted_ports[user_id]
 
 def get_scan_summary(user_id=None):
     """Returns both open ports and scan metadata for the user."""
@@ -79,13 +84,19 @@ def get_scan_summary(user_id=None):
     }
 
 from Services import scan_logger
+from logger_setup import logger
 
 def log(message, user_id=None, queue_id=None, to_console=False, level='INFO'):
     """
     Logs messages using the centralized scan_logger.
     """
     if to_console:
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {message}")
+        if level.upper() == 'ERROR' or level.upper() == 'CRITICAL':
+            logger.error(message)
+        elif level.upper() == 'WARNING':
+            logger.warning(message)
+        else:
+            logger.info(message)
     
     if user_id:
         scan_logger.write_log(user_id, "nmap", message, level=level)
@@ -239,7 +250,7 @@ def ensure_admin_privileges():
         return True # We are already admin, continue execution.
 
     # If not admin, attempt to re-launch with privileges
-    print("[INFO] Administrator privileges not found. Requesting elevation...")
+    logger.info("Administrator privileges not found. Requesting elevation...")
     
     try:
         if platform.system() == "Windows":
@@ -259,7 +270,7 @@ def ensure_admin_privileges():
             subprocess.call(args)
             
         else:
-            print(f"[ERROR] Automatic privilege elevation not supported on this OS: {platform.system()}")
+            logger.error(f"Automatic privilege elevation not supported on this OS: {platform.system()}")
             time.sleep(5)
             return False
 
@@ -267,7 +278,7 @@ def ensure_admin_privileges():
         sys.exit(0)
 
     except Exception as e:
-        print(f"[ERROR] Failed to re-launch with admin rights: {e}")
+        logger.error(f"Failed to re-launch with admin rights: {e}")
         time.sleep(5)
         sys.exit(1)
 
@@ -725,10 +736,17 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
             # but for consistency with others, we'll use a thread-local identifier
             active_scans[user_id] = {"target": target_ip, "start_time": time.time()}
 
-        result = subprocess.run(
-            cmd, capture_output=True, text=True,
-            creationflags=_get_subprocess_creation_flags()
-        )
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True,
+                creationflags=_get_subprocess_creation_flags(),
+                timeout=600  # RC-5 FIX: 10-minute hard cap to prevent zombie threads
+            )
+        except subprocess.TimeoutExpired:
+            log(f"[!] Nmap scan timed out after 600s for {target_ip}. Aborting.", user_id, queue_id, to_console=True)
+            with scan_lock:
+                active_scans.pop(user_id, None)
+            return None
 
         with scan_lock:
             if user_id in active_scans:
@@ -1073,7 +1091,7 @@ def clear_log_file(user_id=None, queue_id=None):
                 f.write("")
         log("[*] Log file cleared.", user_id, queue_id)
     except Exception as e:
-        print(f"[!] Error clearing log file: {e}")
+        logger.error(f"[!] Error clearing log file: {e}")
 
 def get_current_open_ports(user_id=None):
     user_data = get_user_open_ports(user_id)
@@ -1088,44 +1106,44 @@ def main_test():
     This function is intended for development and testing purposes.
     """
     # Use standard print for test runner output to distinguish from log() output
-    print("=============================================")
-    print("=          NETWORK SCANNER TEST             =")
-    print("=============================================")
+    logger.info("=============================================")
+    logger.info("=          NETWORK SCANNER TEST             =")
+    logger.info("=============================================")
     
     # The check for privileges is now handled automatically by ensure_admin_privileges()
-    print("\n[INFO] Running with administrator/root privileges.")
+    logger.info("\n[INFO] Running with administrator/root privileges.")
     
     # Check for Nmap installation
     if not is_nmap_installed():
-        print("[ERROR] Nmap is not installed or not in PATH. Please install it and try again.")
+        logger.info("[ERROR] Nmap is not installed or not in PATH. Please install it and try again.")
         return # Exit the test if nmap is missing
 
     # Define the target for testing
     target_ip = "192.168.29.48"
-    print(f"\n[INFO] This test will perform scans on {target_ip}.")
+    logger.info(f"\n[INFO] This test will perform scans on {target_ip}.")
     
     # --- Test 1: Standard TCP Scan ---
-    print(f"\n--- [TEST 1] Performing Default TCP scan on {target_ip} ---")
+    logger.info(f"\n--- [TEST 1] Performing Default TCP scan on {target_ip} ---")
     run_nmap_scan(target_ip, protocol_type="TCP", timing=4)
     
     # --- Test 2: Stealth FIN Scan (New Feature) ---
-    print(f"\n--- [TEST 2] Performing Stealth FIN scan on {target_ip} ---")
+    logger.info(f"\n--- [TEST 2] Performing Stealth FIN scan on {target_ip} ---")
     run_fin_scan(target_ip)
     
     # --- Test 3: Decoy Scan (New Feature) ---
-    print(f"\n--- [TEST 3] Performing Decoy scan (Evasion) on {target_ip} ---")
+    logger.info(f"\n--- [TEST 3] Performing Decoy scan (Evasion) on {target_ip} ---")
     run_decoy_scan(target_ip)
 
     time.sleep(1)  # Brief pause to allow logs to process
 
     # --- Display Final Results ---
-    print("\n--- [RESULTS] All detected open ports (Accumulated) ---")
+    logger.info("\n--- [RESULTS] All detected open ports (Accumulated) ---")
     all_open = get_current_open_ports()
     if all_open:
-        print(f"Found {len(all_open)} open port(s):")
+        logger.info(f"Found {len(all_open)} open port(s):")
         for port_info in all_open:
             # Displaying the new vulnerability field
-            print(
+            logger.info(
                 f"  - Port: {port_info['port']}/{port_info['protocol']}, "
                 f"Service: {port_info.get('service', 'n/a')}, "
                 f"Version: {port_info.get('version', 'n/a')}, "
@@ -1133,9 +1151,9 @@ def main_test():
                 f"Vulnerability: {port_info.get('vulnerability', 'N/A')}"
             )
     else:
-        print("No open ports were found on the target.")
+        logger.info("No open ports were found on the target.")
         
-    print(f"\n--- Test run finished. Check '{LOG_FILE}' for detailed logs. ---")
+    logger.info(f"\n--- Test run finished. Check '{LOG_FILE}' for detailed logs. ---")
 
 if __name__ == "__main__":
     # This function will exit and re-launch the script as admin if needed.

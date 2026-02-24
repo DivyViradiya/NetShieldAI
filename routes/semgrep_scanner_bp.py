@@ -18,6 +18,7 @@ from Services import semgrep_scanner
 from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
+from logger_setup import logger
 
 semgrep_bp = Blueprint('semgrep_bp', __name__)
 
@@ -46,7 +47,7 @@ def get_user_results_dir():
 @login_required
 def semgrep_scanner_page():
     """Renders the Semgrep scanner page."""
-    print(f"\033[32m[*] Accessing Source Code Scanner Page (User: {current_user.username})\033[0m")
+    logger.info(f"[*] Accessing Source Code Scanner Page (User: {current_user.username})")
     return render_template('scanners/semgrep_scanner.html')
 
 @semgrep_bp.route('/scan', methods=['POST'])
@@ -57,7 +58,7 @@ def scan_code():
     Handles both File Uploads (Zip) and Git URLs.
     Runs the scan in a separate thread.
     """
-    print(f"[*] Semgrep SAST Scan requested by {current_user.username}")
+    logger.info(f"[*] Semgrep SAST Scan requested by {current_user.username}")
     user_output_dir = get_user_results_dir()
     
     target_input = None
@@ -101,24 +102,26 @@ def scan_code():
 
     # [NEW] Prevent Multiple Concurrent Scans for the same user
     if semgrep_scanner.is_scan_running(current_user_identifier):
-        print(f"[!] Semgrep Scan already in progress for user {current_user_identifier}")
+        logger.warning(f"[!] Semgrep Scan already in progress for user {current_user_identifier}")
         return jsonify({
             "status": "error", 
             "message": "A code scan is already in progress. Please wait for it to complete."
         }), 400
 
-    # 2. Update Database Stats
+    # [RC-8 FIX] Atomic DB counter increment
     try:
-        # Assuming you added 'scan_count_semgrep' to your User model. 
-        # If not, add it or use a generic field.
         if hasattr(current_user, 'scan_count_semgrep'):
-            current_user.scan_count_semgrep += 1
+            from sqlalchemy import update as _sa_update
+            from models import User as _User
+            db.session.execute(
+                _sa_update(_User).where(_User.id == current_user.id)
+                .values(scan_count_semgrep=_User.scan_count_semgrep + 1)
+            )
         else:
-            # Fallback if specific field doesn't exist yet
-            current_user.scan_count += 1 
+            pass  # Gracefully skip if column not present yet
         db.session.commit()
     except Exception as e:
-        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+        db.session.rollback()  # RC-3 FIX
         semgrep_scanner.log(f"[!] Failed to update user stats: {e}", user_id=current_user_identifier)
 
     # Capture User ID for thread safety
@@ -214,7 +217,7 @@ def scan_code():
             scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration)
 
     # 4. Start Thread
-    threading.Thread(target=scan_task).start()
+    threading.Thread(target=scan_task, daemon=True).start()  # RC-5 FIX: daemon=True
     
     return jsonify({"status": "success", "message": f"Code scan started for {target_display}."})
 

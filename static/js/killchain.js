@@ -50,16 +50,65 @@ document.addEventListener("DOMContentLoaded", () => {
     customAggressionSelectTrigger: document.querySelector('#customAggressionSelect .custom-select-trigger .selected-text'),
   };
 
-  // --- UI HELPERS ---
+  // --- LOGGING LOGIC ---
+  function appendLog(msg) {
+    if (!msg) return;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', {
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+
+    let cleanedMessage = msg.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '').trim();
+    cleanedMessage = cleanedMessage.replace(/\[ZAP-CLI\]\s*/g, '').replace(/\[ZAP\]\s*/g, '').trim();
+
+    if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
+
+    const isProgress = cleanedMessage.startsWith('[') && (cleanedMessage.includes('%') || cleanedMessage.includes('==='));
+    if (isProgress) {
+        const lastLine = els.logOutput.lastElementChild;
+        if (lastLine && lastLine.querySelector('.log-content').getAttribute('data-is-progress') === 'true') {
+            lastLine.querySelector('.log-content').textContent = cleanedMessage;
+            return;
+        }
+    }
+
+    let contentStyle = '';
+    if (cleanedMessage.includes('[x]') || cleanedMessage.includes('CRITICAL') || cleanedMessage.includes('ERROR')) {
+        contentStyle = 'color:#ef4444';
+    } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('SUCCESS') || cleanedMessage.includes('Complete')) {
+        contentStyle = 'color:#10b981';
+    } else if (cleanedMessage.includes('[*]') || cleanedMessage.includes('PHASE')) {
+        contentStyle = 'color:#3b82f6';
+    }
+
+    const line = document.createElement("div");
+    line.className = "log-line";
+    
+    line.innerHTML = `
+        <div class="log-time">${timeStr}</div>
+        <div class="log-prompt">></div>
+        <div class="log-content" style="${contentStyle}" ${isProgress ? 'data-is-progress="true"' : ''}>${cleanedMessage}</div>
+    `;
+    
+    els.logOutput.appendChild(line);
+    els.logOutput.scrollTop = els.logOutput.scrollHeight;
+  }
 
   function updateStatus(text, type = "idle") {
-    let color = document.body.classList.contains("light-mode") ? "#64748b" : "#52525b"; // Default Slate/Gray
-    if (type === "busy") color = "#eab308";
-    if (type === "success") color = "#10b981";
-    if (type === "error") color = "#ef4444";
+    if (!els.statusText) return;
+    
+    els.statusText.textContent = text.toUpperCase();
+    
+    const isLight = document.body.classList.contains("light-mode");
+    els.statusText.style.color = isLight ? '#64748b' : '#a1a1aa';
 
-    if (els.statusText)
-      els.statusText.innerHTML = `<span style="color: ${color}; font-weight: bold;">${text.toUpperCase()}</span>`;
+    if (type === "busy") els.statusText.style.color = '#eab308';
+    else if (type === "success") els.statusText.style.color = '#10b981';
+    else if (type === "error") els.statusText.style.color = '#ef4444';
   }
 
   function updateProgress(percent, phase) {
@@ -79,7 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
       els.startBtn.querySelector(".spinner").classList.add("hidden");
     }
 
-    // Report/AI/Download buttons are enabled if scan is NOT active AND a report (currentScanId) exists
     const reportButtonsEnabled = !scanActive && currentScanId !== null;
     const opacity = reportButtonsEnabled ? "1" : "0.7";
     const cursor = reportButtonsEnabled ? "pointer" : "not-allowed";
@@ -95,7 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // Helper to select option in custom dropdown
   function setSelectedOption(wrapperId, hiddenSelectId, valueToSelect) {
     const wrapper = document.getElementById(wrapperId);
     const hiddenSelect = document.getElementById(hiddenSelectId);
@@ -109,84 +156,18 @@ document.addEventListener("DOMContentLoaded", () => {
       if (option.getAttribute('data-value') === valueToSelect) {
         option.classList.add('selected');
         selectedTextSpan.textContent = option.textContent;
-        hiddenSelect.value = valueToSelect; // Update hidden select
+        hiddenSelect.value = valueToSelect;
         found = true;
       } else {
         option.classList.remove('selected');
       }
     });
 
-    if (!found) { // If valueToSelect isn't found in options, fallback to first option
-      if (options.length > 0) {
-        options[0].classList.add('selected');
-        selectedTextSpan.textContent = options[0].textContent;
-        hiddenSelect.value = options[0].getAttribute('data-value');
-      }
+    if (!found && options.length > 0) {
+      options[0].classList.add('selected');
+      selectedTextSpan.textContent = options[0].textContent;
+      hiddenSelect.value = options[0].getAttribute('data-value');
     }
-  }
-
-  // --- LOGGING LOGIC ---
-  function appendLog(msg) {
-    if (!msg) return;
-
-    // [FIX] Strip timestamps from the incoming message
-    msg = msg.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '').trim();
-
-    // [FIX] CLEANUP ZAP LOGS
-    // 1. Remove [ZAP-CLI] and [ZAP] prefixes
-    msg = msg.replace(/\[ZAP-CLI\]\s*/g, '').replace(/\[ZAP\]\s*/g, '').trim();
-
-    // [FIX] If the line was *only* a timestamp or filtered out, it's now empty
-    if (!msg) return;
-
-    // 2. Filter out internal Java warnings (Keep these silent)
-    if (msg.includes('deprecated method') || msg.includes('Unsafe::objectFieldOffset')) return;
-    if (msg === '' || msg === '|') return;
-
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('en-US', {
-      hour12: false,
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-
-    // --- IN-PLACE UPDATE FOR PROGRESS BARS ---
-    // Detects lines like "[=====     ] 25% |"
-    const isProgress = msg.startsWith('[') && (msg.includes('%') || msg.includes('==='));
-    if (isProgress) {
-        const lastLine = els.logOutput.lastElementChild;
-        if (lastLine && lastLine.querySelector('.log-content').getAttribute('data-is-progress') === 'true') {
-            lastLine.querySelector('.log-content').textContent = msg;
-            return;
-        }
-    }
-
-    const isLight = document.body.classList.contains("light-mode");
-    let style = isLight ? "color: #334155;" : "color: #d4d4d8;"; // Slate-700 / Zinc-300
-    
-    if (msg.includes("[x]") || msg.includes("CRITICAL") || msg.includes("ERROR") || msg.includes("Failed")) {
-      style = "color: #ef4444;";
-    } else if (msg.includes("[+]") || msg.includes("SUCCESS") || msg.includes("Complete")) {
-      style = "color: #10b981;";
-    } else if (msg.includes("[!]") || msg.includes("WARNING") || msg.includes("[WARN]")) {
-      style = "color: #f97316;";
-    } else if (msg.includes("[*]") || msg.includes("PHASE")) {
-      style = "color: #3b82f6;";
-    } else if (msg.includes("[>]")) {
-      style = isLight ? "color: #64748b;" : "color: #a1a1aa;";
-    }
-
-    const timeColor = isLight ? "#64748b" : "#555";
-
-    const line = document.createElement("div");
-    line.className = "log-line";
-    line.innerHTML = `
-        <div style="color: ${timeColor}; width: 70px; flex-shrink: 0;">${timeStr}</div>
-        <div class="log-content" style="${style} flex: 1; white-space: pre-wrap;" ${isProgress ? 'data-is-progress="true"' : ''}>${msg}</div>
-    `;
-    els.logOutput.appendChild(line);
-    els.logOutput.scrollTop = els.logOutput.scrollHeight;
   }
 
   // --- MAIN SCANNING LOGIC ---

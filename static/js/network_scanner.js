@@ -105,30 +105,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function appendLog(message) {
         if (!elements.logOutput) return;
 
-        // [CLEANUP] Remove backend timestamps (e.g. [11:07:25]) so we don't duplicate
-        let displayMessage = message.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*/, '').trim();
-
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        const isLight = document.body.classList.contains("light-mode");
-        let contentStyle = isLight ? 'color:#334155' : 'color:#d4d4d8'; 
-        
-        if (displayMessage.includes('[!]') || displayMessage.includes('[x]')) {
-            contentStyle = 'color:#ef4444'; 
-        } else if (displayMessage.includes('[✓]') || displayMessage.includes('[+]')) {
-            contentStyle = 'color:#10b981'; 
-        } else if (displayMessage.includes('[*]')) {
-            contentStyle = 'color:#3b82f6'; 
-        }
+        let cleanedMessage = message.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*/, '').trim();
 
-        const timeColor = isLight ? "#64748b" : "#555";
+        let contentStyle = '';
+        if (cleanedMessage.includes('[!]') || cleanedMessage.includes('[x]')) {
+            contentStyle = 'color:#ef4444';
+        } else if (cleanedMessage.includes('[✓]') || cleanedMessage.includes('[+]')) {
+            contentStyle = 'color:#10b981';
+        } else if (cleanedMessage.includes('[*]')) {
+            contentStyle = 'color:#3b82f6';
+        }
 
         const line = document.createElement('div');
         line.className = 'log-line';
+        
         line.innerHTML = `
-            <div class="log-time" style="color:${timeColor}">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${displayMessage}</div>
+            <div class="log-time">${timeStr}</div>
+            <div class="log-prompt">></div>
+            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
         `;
         
         elements.logOutput.appendChild(line);
@@ -138,25 +135,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function setStatus(text, type = 'ready') {
         if (!elements.scanStatus) return;
         
-        elements.scanStatus.className = 'status-val font-mono ml-2';
+        elements.scanStatus.textContent = text.toUpperCase();
         
-        switch (type) {
-            case 'busy':
-                elements.scanStatus.style.color = '#eab308'; 
-                elements.scanStatus.innerHTML = `BUSY...`;
-                break;
-            case 'error':
-                elements.scanStatus.style.color = '#ef4444'; 
-                elements.scanStatus.textContent = text;
-                break;
-            case 'success':
-                elements.scanStatus.style.color = '#10b981'; 
-                elements.scanStatus.textContent = text;
-                break;
-            default: 
-                elements.scanStatus.style.color = '#10b981';
-                elements.scanStatus.textContent = 'READY';
-        }
+        const isLight = document.body.classList.contains("light-mode");
+        elements.scanStatus.style.color = isLight ? '#64748b' : '#a1a1aa';
+
+        if (type === 'busy') elements.scanStatus.style.color = '#eab308';
+        else if (type === 'success') elements.scanStatus.style.color = '#10b981';
+        else if (type === 'error') elements.scanStatus.style.color = '#ef4444';
     }
 
     // --- API & Data Functions ---
