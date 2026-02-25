@@ -20,3 +20,123 @@
 [2026-02-23 16:01:33] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
 [2026-02-23 16:03:23] [INFO    ] [run] [*] Registering Core Modules...
 [2026-02-23 16:03:23] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:12:37] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:12:37] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:12:37] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-25 09:12:42] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:12:42] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:12:42] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-02-25 09:12:42] [INFO    ] [run] [+] Database schema verified.
+[2026-02-25 09:12:42] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-02-25 09:12:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:12:50] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:14:14] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-25 09:14:14] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-25 09:14:17] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-02-25 09:14:17] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-02-25 09:14:23] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-02-25 09:14:24] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-02-25 09:14:24] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-02-25 09:14:32] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-25 09:14:32] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-25 09:14:32] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-25 09:14:32] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-25 09:14:32] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-25 09:14:33] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-25 09:14:34] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-25 09:14:34] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-25 09:14:36] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-02-25 09:14:37] [INFO    ] [run] [>] GET /network_scanner/local_ip from 127.0.0.1
+[2026-02-25 09:14:37] [INFO    ] [run] [>] GET /network_scanner/whitelisted_ports from 127.0.0.1
+[2026-02-25 09:14:37] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-25 09:14:37] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-25 09:14:37] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-02-25 09:14:37] [INFO    ] [network_scanner] [*] Local IP requested: 192.168.29.48
+[2026-02-25 09:14:37] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-25 09:14:37] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-02-25 09:14:37] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-25 09:14:38] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-25 09:14:38] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-25 09:14:40] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-02-25 09:14:40] [INFO    ] [run] [>] GET /network_scanner/local_ip from 127.0.0.1
+[2026-02-25 09:14:40] [INFO    ] [run] [>] GET /network_scanner/whitelisted_ports from 127.0.0.1
+[2026-02-25 09:14:40] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-25 09:14:40] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-25 09:14:40] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-02-25 09:14:40] [INFO    ] [network_scanner] [*] Local IP requested: 192.168.29.48
+[2026-02-25 09:14:40] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-25 09:14:40] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-02-25 09:14:40] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-25 09:14:42] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-25 09:14:42] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-25 09:14:44] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-25 09:14:44] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-25 09:14:44] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-25 09:14:45] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-25 09:14:45] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-25 09:14:45] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-25 09:15:05] [INFO    ] [run] [>] POST /zap_scanner/scan from 127.0.0.1
+[2026-02-25 09:21:06] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:21:06] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:21:06] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-25 09:23:47] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:23:47] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:23:47] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-25 09:23:52] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:23:52] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:23:52] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-02-25 09:23:52] [INFO    ] [run] [+] Database schema verified.
+[2026-02-25 09:23:52] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-02-25 09:23:57] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:23:57] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:23:57] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-25 09:27:12] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-25 09:27:13] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-25 09:27:13] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-25 09:27:13] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-25 09:27:13] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-25 09:27:13] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-25 09:28:05] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:28:05] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:28:05] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-25 09:28:30] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:28:30] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:28:30] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-02-25 09:28:30] [INFO    ] [run] [+] Database schema verified.
+[2026-02-25 09:28:30] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-02-25 09:28:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-25 09:28:34] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-25 09:29:11] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-25 09:29:12] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-25 09:29:12] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-25 09:29:12] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-25 09:29:12] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-25 09:29:12] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-25 09:29:25] [INFO    ] [run] [>] POST /zap_scanner/scan from 127.0.0.1
+[2026-02-25 09:29:25] [INFO    ] [zap_scanner] [*] Starting ZAP Quick Scan for http://testphp.vulnweb.com (User: DivyaViradiya_1)...
+[2026-02-25 09:29:25] [INFO    ] [zap_scanner] 
+--- Starting ZAP Quick Scan (Isolated Instance) ---
+[2026-02-25 09:29:25] [INFO    ] [zap_scanner] Instance Config -> Port: 5533 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_5533
+[2026-02-25 09:29:25] [INFO    ] [zap_scanner] Target: http://testphp.vulnweb.com
+[2026-02-25 09:29:25] [INFO    ] [zap_scanner] Report will be saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml
+[2026-02-25 09:29:25] [INFO    ] [zap_scanner] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 5533 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_5533 -quickurl http://testphp.vulnweb.com -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.xml -quickprogress
+[2026-02-25 09:46:55] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-25 09:46:56] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-25 09:46:56] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-25 09:46:56] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-25 09:46:56] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-25 09:46:56] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-25 09:52:45] [INFO    ] [zap_scanner] Scan completed successfully!
+[2026-02-25 09:53:20] [INFO    ] [zap_scanner] [+] JSON report saved.
+[2026-02-25 09:53:20] [INFO    ] [zap_scanner] [*] Generating PDF report...
+[2026-02-25 09:53:20] [INFO    ] [network_scanner] [*] Starting WeasyPrint PDF generation for ZAP: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_report.pdf
+[2026-02-25 09:53:26] [INFO    ] [network_scanner] [+] ZAP PDF report saved successfully
+[2026-02-25 09:53:27] [INFO    ] [zap_scanner] [+] PDF generated successfully.
+[2026-02-25 09:53:27] [INFO    ] [zap_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-02-25 09:53:27] [INFO    ] [zap_scanner] [*] Scan, analysis, and prediction complete.
+[2026-02-25 09:53:27] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-25 09:53:27] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-25 09:53:27] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1

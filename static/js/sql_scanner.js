@@ -112,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         line.className = 'log-line';
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-prompt">></div>
             <div class="log-content" style="${contentStyle}">${message}</div>
         `;
         
@@ -175,7 +174,10 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.findingsList.innerHTML = filtered.map((f, index) => {
             const riskLabel = getRiskLabel(f.type);
             const riskColor = getRiskColor(f.type);
-            const score = riskLabel === 'High' ? '8.5' : (riskLabel === 'Medium' ? '6.0' : '3.5');
+            
+            // [NEW] Risk Score Rendering
+            const rawScore = f.predicted_risk_score !== undefined ? f.predicted_risk_score : 0;
+            const score = (rawScore * 10).toFixed(1);
 
             return `
                 <div class="finding-card" data-index="${index}">
@@ -261,11 +263,10 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.hostStatusDisplay.style.color = 'var(--neo-green)';
         }
 
-        // Calculate avg risk score
-        const highCount = currentFindings.filter(f => getRiskLabel(f.type) === 'High').length;
-        const medCount = currentFindings.filter(f => getRiskLabel(f.type) === 'Medium').length;
+        // Calculate avg risk score from re-ranked findings
+        const totalScore = currentFindings.reduce((acc, f) => acc + (f.predicted_risk_score || 0), 0);
         const avgScore = currentFindings.length > 0 
-            ? ((highCount * 8.5 + medCount * 6.0 + (currentFindings.length - highCount - medCount) * 3.5) / currentFindings.length).toFixed(1)
+            ? (totalScore / currentFindings.length * 10).toFixed(1)
             : "0.0";
         
         if (elements.strengthDisplay) elements.strengthDisplay.textContent = avgScore;

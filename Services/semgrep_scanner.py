@@ -196,6 +196,13 @@ def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None):
         
         report["total_findings"] = len(report["findings"])
         
+        # Apply ML Threat Re-ranking
+        try:
+            import Services.threat_reranker as threat_reranker
+            report["findings"] = threat_reranker.rerank_findings(report["findings"])
+        except Exception as e:
+            log(f"ML Re-ranking failed for Semgrep: {e}", user_id)
+        
         with open(output_file, 'w', encoding='utf-8') as f: 
             json.dump(report, f, indent=4)
         return str(output_file)

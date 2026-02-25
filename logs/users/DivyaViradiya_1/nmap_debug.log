@@ -134,3 +134,7 @@ eldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' n
 [12:03:18] [INFO] [*] Local IP requested: 192.168.29.48
 [14:15:39] [INFO] [*] Local IP requested: 10.120.111.41
 [14:15:39] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[09:14:37] [INFO] [*] Local IP requested: 192.168.29.48
+[09:14:37] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[09:14:40] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[09:14:40] [INFO] [*] Local IP requested: 192.168.29.48

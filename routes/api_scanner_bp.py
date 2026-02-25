@@ -72,7 +72,8 @@ def initiate_api_scan():
     
     # Check if ML model is loaded (if you are using AI for API too)
     if api_scanner.model is None:
-        return jsonify({"status": "error", "message": "ML model is not loaded."}), 500
+        logger.error(f"[!] ML Threat Reranker not available for API Scanner.")
+        return jsonify({"status": "error", "message": "ML Threat Re-ranking service is currently unavailable. Please verify 'Services/threat_reranker.py' and model files."}), 500
 
     # User Context
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"

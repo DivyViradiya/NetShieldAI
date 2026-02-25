@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-prompt">></div>
             <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
         `;
         
@@ -254,19 +253,29 @@ document.addEventListener('DOMContentLoaded', function() {
     function createFindingCard(finding) {
         const risk = finding.severity || 'Info';
         const color = getRiskColor(risk);
+        
+        // [NEW] Risk Score Rendering
+        const rawScore = finding.predicted_risk_score !== undefined ? finding.predicted_risk_score : 0;
+        const displayScore = (rawScore * 10).toFixed(1);
+
         const card = document.createElement('div');
         card.className = 'finding-card';
         
         card.innerHTML = `
-            <div class="finding-header">
-                <div class="risk-indicator" style="color: ${color};">
+            <div class="finding-header" style="flex-wrap: wrap; gap: 1rem;">
+                <div class="risk-indicator" style="color: ${color}; min-width: 80px;">
                     <div class="risk-dot" style="background: ${color};"></div>
                     <span>${risk}</span>
                 </div>
+
+                <div class="risk-indicator" style="color: var(--neo-text-muted); min-width: 100px;">
+                    <span style="font-size: 0.6rem; opacity: 0.6; margin-right: 4px;">ML RISK:</span>
+                    <span style="color: ${rawScore > 0.5 ? 'var(--neo-red)' : 'var(--neo-text-main)'}">${displayScore}</span>
+                </div>
                 
-                <div class="finding-title">${finding.name}</div>
+                <div class="finding-title" style="flex: 1; min-width: 200px;">${finding.name}</div>
                 
-                <span class="material-symbols-outlined expand-icon" style="margin-left: 0.5rem; font-size: 1.25rem;">expand_more</span>
+                <span class="material-symbols-outlined expand-icon" style="font-size: 1.25rem;">expand_more</span>
             </div>
             
             <div class="finding-details">

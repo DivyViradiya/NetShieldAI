@@ -568,6 +568,13 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
     except Exception as e:
         log(f"[!] Error parsing Nmap output file for JSON report: {e}", user_id, queue_id)
     
+    # Apply ML Threat Re-ranking
+    try:
+        import Services.threat_reranker as threat_reranker
+        parsed_data["ports"] = threat_reranker.rerank_findings(parsed_data["ports"])
+    except Exception as e:
+        log(f"[!] ML Re-ranking skipped or failed: {e}", user_id, queue_id)
+
     return parsed_data
 
 def save_nmap_json(data, output_dir=None, user_id=None, queue_id=None):

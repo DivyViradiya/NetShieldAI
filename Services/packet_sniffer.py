@@ -417,6 +417,25 @@ def detect_anomalies(analysis_report_data, target_ip, user_id=None):
         if len(ports) >= 5:
             anomalies['port_scans'].append({"type": "Port Scan", "source_ip": src_ip, "details": f"Scanned {len(ports)} ports."})
 
+    # Apply ML Threat Re-ranking to anomalies
+    try:
+        import Services.threat_reranker as threat_reranker
+        for category in ['port_scans', 'fragmentation_alerts', 'web_attacks']:
+            if anomalies[category]:
+                # threat_reranker.rerank_findings handles 'type' and 'details' via its normalization logic
+                normalized_findings = []
+                for item in anomalies[category]:
+                    # Map to reranker expected keys
+                    normalized_findings.append({
+                        "title": item.get("type", "Anomaly"),
+                        "description": item.get("details", ""),
+                        "severity": "High" if category == "web_attacks" else "Medium",
+                        **item # Keep original fields
+                    })
+                anomalies[category] = threat_reranker.rerank_findings(normalized_findings)
+    except Exception as e:
+        log(f"[!] ML Re-ranking failed for Anomaly Report: {e}", user_id)
+
     total = sum(len(v) for k, v in anomalies.items() if isinstance(v, list))
     if total > 0: anomalies['summary'] = f"Detected {total} anomalies."
     return anomalies
@@ -431,6 +450,28 @@ def analyze_pcap_to_json(pcap_path, target_ip, max_packets=50, user_id=None):
         result = subprocess.run(cmd, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags(), encoding='utf-8')
         packet_data = json.loads(result.stdout)
     except: pass
+
+    # Apply ML Reranking to dissected packets
+    if packet_data:
+        try:
+            import Services.threat_reranker as threat_reranker
+            for p in packet_data:
+                layers = p.get('_source', {}).get('layers', {})
+                proto_full = layers.get('frame', {}).get('frame.protocols', "")
+                proto = proto_full.split(':')[-1].upper() if proto_full else "DATA"
+                length = layers.get('frame', {}).get('frame.len', "0")
+                
+                # Heuristic for packet risk
+                suspicious_protos = ['SMB', 'DCERPC', 'MODBUS', 'ENIP', 'S7COMM', 'BACNET']
+                sev = "Medium" if any(sp in proto for sp in suspicious_protos) else "Info"
+                
+                p['predicted_risk_score'] = threat_reranker.predict_threat_risk(
+                    f"Packet {proto}", 
+                    f"Flow analysis packet. Len: {length}", 
+                    severity=sev
+                )
+        except Exception as e:
+            log(f"[!] Packet reranking failed: {e}", user_id)
 
     stats = get_traffic_statistics(pcap_path, user_id=user_id)
     flows = extract_application_flows(pcap_path, user_id=user_id)

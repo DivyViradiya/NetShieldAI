@@ -711,7 +711,7 @@
       
       .log-line { 
           display: grid;
-          grid-template-columns: 85px 20px 1fr;
+          grid-template-columns: 85px 1fr;
           gap: 0.5rem;
           font-family: var(--font-mono); 
           font-size: 0.75rem; 
@@ -979,17 +979,18 @@
             <table class="dash-table">
               <thead>
                 <tr>
-                  <th>No.</th>
-                  <th>Time</th>
+                  <th style="width: 60px;">No.</th>
+                  <th style="width: 100px;">Time</th>
                   <th>Source</th>
                   <th>Dest</th>
                   <th>Proto</th>
-                  <th>Len</th>
+                  <th style="width: 80px;">Risk</th>
+                  <th style="width: 80px;">Len</th>
                 </tr>
               </thead>
               <tbody id="packetsTableBody">
                 <tr>
-                  <td colspan="6" style="text-align:center; padding: 4rem; color: var(--neo-text-muted); font-family: var(--font-mono);">WAITING FOR DATA STREAM...</td>
+                  <td colspan="7" style="text-align:center; padding: 4rem; color: var(--neo-text-muted); font-family: var(--font-mono);">WAITING FOR DATA STREAM...</td>
                 </tr>
               </tbody>
             </table>

@@ -124,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-prompt">></div>
             <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
         `;
         
@@ -244,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         ports.forEach(p => {
             let vulnStyle = 'color: #a1a1aa;';
-            let vulnText = p.vulnerability || 'N/A';
+            let vulnText = p.vulnerability || (p.vulnerability_notes ? 'Notes Available' : 'N/A');
             
             if (vulnText.toLowerCase().includes('exploit') || vulnText.toLowerCase().includes('cve')) {
                 vulnStyle = 'color: #ef4444; font-weight: bold;';
@@ -252,11 +251,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 vulnStyle = 'color: #3b82f6; font-style: italic;';
             }
 
+            // [NEW] Risk Score Rendering
+            const rawScore = p.predicted_risk_score !== undefined ? p.predicted_risk_score : 0;
+            const displayScore = (rawScore * 10).toFixed(1);
+            let riskColor = '#71717a';
+            if (rawScore >= 0.8) riskColor = 'var(--risk-high)';
+            else if (rawScore >= 0.5) riskColor = 'var(--risk-med)';
+            else if (rawScore >= 0.2) riskColor = 'var(--risk-low)';
+
             const row = `
                 <tr>
                     <td style="font-family: monospace; color: white;">${p.port}</td>
                     <td style="color: #d4d4d8;">${p.protocol}</td>
                     <td style="color: #d4d4d8;">${p.service} <span style="font-size: 0.75em; color: #71717a;">(${p.version || ''})</span></td>
+                    <td style="color: ${riskColor}; font-family: monospace; font-weight: 800;">${displayScore}</td>
                     <td style="${vulnStyle} font-family: monospace; font-size: 0.8em;">${vulnText}</td>
                 </tr>`;
             elements.openPortsTableBody.insertAdjacentHTML('beforeend', row);

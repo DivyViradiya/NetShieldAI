@@ -122,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-prompt">></div>
             <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
         `;
         
@@ -495,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!packets.length) {
             elements.packetsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="p-12 text-center">
+                    <td colspan="7" class="p-12 text-center">
                         <div class="text-slate-600 mb-2"><i class="fas fa-network-wired text-4xl opacity-20"></i></div>
                         <p class="${textSecondary}">Start a capture to view dissected packets.</p>
                     </td>
@@ -524,6 +523,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 proto = (parts[parts.length - 1] || 'DATA').toUpperCase();
             }
 
+            // [NEW] Risk Score Rendering
+            const rawScore = pkt.predicted_risk_score !== undefined ? pkt.predicted_risk_score : 0;
+            const scoreLabel = (rawScore * 10).toFixed(1);
+            const scoreColor = rawScore > 0.7 ? '#ef4444' : (rawScore > 0.4 ? '#f97316' : '#3b82f6');
+
             elements.packetsTableBody.insertAdjacentHTML('beforeend',
                 `<tr class="${hoverBg} transition-colors">
                     <td class="px-6 py-2 text-xs font-mono ${textSecondary}">${frameNum}</td>
@@ -531,6 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td class="px-6 py-2 text-xs font-mono text-blue-400">${src}</td>
                     <td class="px-6 py-2 text-xs font-mono text-emerald-400">${dst}</td>
                     <td class="px-6 py-2 text-xs font-bold ${textPrimary}">${proto}</td>
+                    <td class="px-6 py-2 text-xs font-mono" style="color: ${scoreColor}; font-weight: 800;">${scoreLabel}</td>
                     <td class="px-6 py-2 text-xs font-mono ${textMuted}">${len}</td>
                 </tr>`
             );
@@ -538,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (packets.length > 500) {
             elements.packetsTableBody.insertAdjacentHTML('beforeend', 
-                `<tr><td colspan="6" class="p-2 text-center text-xs ${textSecondary} italic">... ${packets.length - 500} more packets not shown ...</td></tr>`
+                `<tr><td colspan="7" class="p-2 text-center text-xs ${textSecondary} italic">... ${packets.length - 500} more packets not shown ...</td></tr>`
             );
         }
     }

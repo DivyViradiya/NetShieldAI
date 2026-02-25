@@ -153,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-prompt">></div>
             <div class="log-content" style="${contentStyle}"${dataAttr}>${cleanedMessage}</div>
         `;
         
@@ -428,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 <div class="score-container">
                     <span class="score-label">Risk Score</span>
-                    <span class="score-val">${finding.predicted_risk_score || 'N/A'}</span>
+                    <span class="score-val">${(parseFloat(finding.predicted_risk_score || 0) * 10).toFixed(1)}</span>
                 </div>
 
                 <span class="material-symbols-outlined expand-icon" style="margin-left: 0.5rem; font-size: 1.25rem;">expand_more</span>

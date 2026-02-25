@@ -320,6 +320,13 @@ def parse_ssl_report(report_file, output_dir=None, user_id=None):
                 vulnerabilities.append({"name": "RC4 Cipher Suite", "severity": "Medium", "description": f"Cipher {c['name']} is supported."})
         
         scan_summary["vulnerabilities"] = vulnerabilities
+        
+        # Apply ML Threat Re-ranking
+        try:
+            import Services.threat_reranker as threat_reranker
+            scan_summary["vulnerabilities"] = threat_reranker.rerank_findings(vulnerabilities)
+        except Exception as e:
+            log(f"[!] ML Re-ranking failed for SSL: {e}", user_id)
 
         log(f"[+] SSLScan report parsed successfully.", user_id, to_console=True)
         save_ssl_json(scan_summary, output_dir=output_dir, user_id=user_id)

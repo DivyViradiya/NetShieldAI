@@ -133,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-prompt">></div>
             <div class="log-content" style="${contentStyle}"${dataAttr}>${cleanedMessage}</div>
         `;
         
@@ -314,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (scores.length > 0 && avgRiskScore) {
             const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-            avgRiskScore.textContent = avg.toFixed(1);
+            avgRiskScore.textContent = (avg * 10).toFixed(1);
             
             if (avg > 15) avgRiskScore.style.color = '#ef4444';
             else if (avg > 8) avgRiskScore.style.color = '#f97316';
@@ -400,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 <div class="score-container">
                     <span class="score-label">Risk Score</span>
-                    <span class="score-val">${finding.predicted_risk_score || 'N/A'}</span>
+                    <span class="score-val">${(parseFloat(finding.predicted_risk_score || 0) * 10).toFixed(1)}</span>
                 </div>
 
                 <span class="material-symbols-outlined expand-icon" style="margin-left: 0.5rem; font-size: 1.25rem;">expand_more</span>
@@ -494,8 +493,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const authMsg = authToken ? 'Authenticated' : 'Anonymous';
         updateScanStatus(`Scanning (${authMsg})...`, 'busy');
         logOutput.innerHTML = ''; 
-        appendLog(`> Initiating API Scan on ${targetUrl} (${authMsg})...`);
-        appendLog(`> Loading Definition: ${definitionUrl}`);
+        appendLog(`Initiating API Scan on ${targetUrl} (${authMsg})...`);
+        appendLog(`Loading Definition: ${definitionUrl}`);
         scanStartTime = Date.now();
 
         try {

@@ -74,7 +74,8 @@ def initiate_zap_scan():
         target_url = 'http://' + target_url
     
     if zap_scanner.model is None:
-        return jsonify({"status": "error", "message": "ML model is not loaded. Check server logs."}), 500
+        logger.error(f"[!] ML Threat Reranker not available for ZAP Scanner.")
+        return jsonify({"status": "error", "message": "ML Threat Re-ranking service is currently unavailable. Please verify 'Services/threat_reranker.py' and model files."}), 500
 
     # Capture User Context for Thread using Composite ID
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"

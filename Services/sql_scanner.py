@@ -250,6 +250,13 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
     except Exception as e:
         log(f"[!] Error reading/parsing SQLMap log file: {e}", user_id)
 
+    # Apply ML Threat Re-ranking
+    try:
+        import Services.threat_reranker as threat_reranker
+        report_data["vulnerabilities"] = threat_reranker.rerank_findings(report_data.get("vulnerabilities", []))
+    except Exception as e:
+        log(f"[!] ML Re-ranking failed for SQL: {e}", user_id)
+
     return report_data
 
 # --- MAIN SCAN FUNCTION ---

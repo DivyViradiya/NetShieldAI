@@ -90,7 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     line.innerHTML = `
         <div class="log-time">${timeStr}</div>
-        <div class="log-prompt">></div>
         <div class="log-content" style="${contentStyle}" ${isProgress ? 'data-is-progress="true"' : ''}>${cleanedMessage}</div>
     `;
     

@@ -18,3 +18,15 @@ python-owasp-zap-v2.4
 beautifulsoup4
 paramiko
 pysmb
+pyarrow
+fastparquet
+matplotlib
+seaborn
+xgboost
+lightgbm
+sentence-transformers
+torch
+torch-geometric
+networkx
+scipy
+shap

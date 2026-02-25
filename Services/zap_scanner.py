@@ -53,19 +53,15 @@ def is_scan_running(user_id):
         return user_id in active_scans
 
 # --- ML Model Setup ---
-MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
-DATA_DIR = os.path.join(PROJECT_ROOT, "Data")
-MODEL_PATH = Path(MODELS_DIR) / 'vulnerability_ranker.joblib'
-PROFILES_PATH = Path(DATA_DIR) / 'cwe_profiles.csv'
-TRAINING_COLUMNS_PATH = Path(MODELS_DIR) / 'training_columns.joblib'
-
 try:
-    model = joblib.load(MODEL_PATH)
-    cwe_profiles = pd.read_csv(PROFILES_PATH, index_col='cwe_id')
-    training_columns = joblib.load(TRAINING_COLUMNS_PATH)
-except FileNotFoundError as e:
-    logger.error(f"FATAL: Could not load ML model or data files: {e}")
-    model = None
+    from .threat_reranker import predict_threat_risk
+except ImportError:
+    try:
+        from threat_reranker import predict_threat_risk
+    except ImportError:
+        predict_threat_risk = None
+
+model = predict_threat_risk
 
 # --- FULL ZAP to CWE Mapping ---
 ZAP_TO_CWE_MAP = {
@@ -377,29 +373,13 @@ def kill_zap_processes(user_id=None):
         time.sleep(5)
 
 # --- ML Prediction ---
-def predict_risk(vulnerability_name: str):
-    if model is None:
-        return "N/A (Model not loaded)"
-
-    cwe_id = ZAP_TO_CWE_MAP.get(vulnerability_name)
-    if not cwe_id:
-        return "N/A"
-
+def predict_risk(vulnerability_name: str, description: str = "", severity: str = "Medium"):
     try:
-        profile = cwe_profiles.loc[[cwe_id]]
-    except KeyError:
-        return f"Unprofiled"
-
-    features_to_drop = [
-        'actual_risk_score', 'av_weight', 'pr_weight', 'attack_vector_<lambda>',
-        'privileges_required_<lambda>', 'user_interaction_<lambda>'
-    ]
-    profile_features = profile.drop(columns=features_to_drop, errors='ignore')
-    profile_encoded = pd.get_dummies(profile_features)
-    profile_final = profile_encoded.reindex(columns=training_columns, fill_value=0)
-
-    predicted_score = model.predict(profile_final)
-    return round(float(predicted_score[0]), 2)
+        from Services.threat_reranker import predict_threat_risk
+        return predict_threat_risk(vulnerability_name, description, severity=severity)
+    except Exception as e:
+        logger.error(f"Error predicting risk with Threat Reranker: {e}")
+        return 0.5
 
 # --- Path Helper ---
 def get_output_paths(output_dir=None):
@@ -567,7 +547,8 @@ def parse_zap_xml_report(report_file, user_id=None):
                 risk = "Info"
 
             finding_name = alertitem.find('alert').text
-            predicted_score = predict_risk(finding_name)
+            description = get_inner_html(alertitem.find('desc'))
+            predicted_score = predict_risk(finding_name, description, severity=risk)
 
             finding = {
                 "name": finding_name,
@@ -575,7 +556,7 @@ def parse_zap_xml_report(report_file, user_id=None):
                 "predicted_risk_score": predicted_score,
                 "confidence": alertitem.find('confidence').text,
                 "url": alertitem.find('.//uri').text,
-                "description": get_inner_html(alertitem.find('desc')),
+                "description": description,
                 "solution": get_inner_html(alertitem.find('solution')),
                 "reference": get_inner_html(alertitem.find('reference'))
             }

@@ -72,18 +72,24 @@ def clear_log_file(user_id):
         pass
 
 # --- ML Model Setup ---
-MODELS_DIR = os.path.join(PROJECT_ROOT, "models")
-DATA_DIR = os.path.join(PROJECT_ROOT, "Data")
-MODEL_PATH = Path(MODELS_DIR) / 'vulnerability_ranker.joblib'
-PROFILES_PATH = Path(DATA_DIR) / 'cwe_profiles.csv'
-TRAINING_COLUMNS_PATH = Path(MODELS_DIR) / 'training_columns.joblib'
-
 try:
-    model = joblib.load(MODEL_PATH)
-    cwe_profiles = pd.read_csv(PROFILES_PATH, index_col='cwe_id')
-    training_columns = joblib.load(TRAINING_COLUMNS_PATH)
-except:
-    model = None
+    from .threat_reranker import predict_threat_risk
+except ImportError:
+    try:
+        from threat_reranker import predict_threat_risk
+    except ImportError:
+        predict_threat_risk = None
+
+model = predict_threat_risk
+
+# --- ML Prediction ---
+def predict_risk(vulnerability_name: str, description: str = "", severity: str = "Medium"):
+    try:
+        from Services.threat_reranker import predict_threat_risk
+        return predict_threat_risk(vulnerability_name, description, severity=severity)
+    except Exception as e:
+        logger.error(f"Error predicting risk with Threat Reranker: {e}")
+        return 0.5
 
 # --- Path Helper ---
 def get_output_paths(user_output_dir, user_id=None):
@@ -245,17 +251,32 @@ def parse_xml_report(report_file, user_id=None):
         for alert in root.findall('.//alertitem'):
             risk = alert.find('riskdesc').text.split(' ')[0]
             if risk == "Informational": risk = "Info"
+            
+            finding_name = alert.find('alert').text
+            desc_text = alert.find('desc').text if alert.find('desc') is not None else ""
+            predicted_score = predict_risk(finding_name, desc_text, severity=risk)
+            
             finding = {
-                "name": alert.find('alert').text, "risk": risk,
-                "url": alert.find('.//uri').text, "method": alert.find('.//method').text or "GET",
-                "description": alert.find('desc').text if alert.find('desc') is not None else ""
+                "name": finding_name, 
+                "risk": risk,
+                "predicted_risk_score": predicted_score,
+                "url": alert.find('.//uri').text, 
+                "method": alert.find('.//method').text or "GET",
+                "description": desc_text
             }
             if risk in report_data["summary"]:
                 report_data["summary"][risk] += 1
                 report_data["summary"]["Total"] += 1
             report_data["findings"].append(finding)
+            
+        report_data["findings"].sort(
+            key=lambda x: x['predicted_risk_score'] if isinstance(x['predicted_risk_score'], (int, float)) else -1,
+            reverse=True
+        )
         return report_data
-    except: return None
+    except Exception as e:
+        logger.error(f"Error parse_xml_report: {e}")
+        return None
     finally:
         if os.path.exists(report_file): os.remove(report_file)
 
