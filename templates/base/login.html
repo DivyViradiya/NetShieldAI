@@ -18,6 +18,40 @@
     background-image: none !important;
     background-color: var(--bg-secondary) !important;
   }
+
+  /* ── Mobile-only fixes ── */
+  @media (max-width: 768px) {
+    /* Outer wrapper: less padding & no forced full viewport height */
+    .min-h-\[85vh\] {
+      min-height: unset !important;
+      padding: 1.25rem 1rem !important;
+      align-items: flex-start !important;
+    }
+    /* Card: no forced min-height */
+    .max-w-\[1000px\] {
+      min-height: unset !important;
+      border-radius: 14px !important;
+    }
+    /* Form pane: compact padding */
+    .w-full.md\:w-1\/2.p-8 {
+      padding: 1.5rem 1.25rem !important;
+    }
+    /* Title spacing */
+    #loginForm ~ p { margin-top: 1rem !important; }
+    /* Remember / Forgot row — stack on very small screens */
+    @media (max-width: 400px) {
+      .flex.items-center.justify-between.text-xs {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.5rem !important;
+      }
+    }
+    /* OAuth grid: single column */
+    .grid.grid-cols-2.gap-4 {
+      grid-template-columns: 1fr !important;
+      gap: 0.5rem !important;
+    }
+  }
 </style>
 {% endblock %}
 

@@ -869,3 +869,159 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5
 2026-02-23 15:32:52 - INFO - Sending zap path-based analysis request to backend (Target: None)
 2026-02-23 15:33:17 - INFO - Stored session ID from server: 4d575d7a-09d3-4933-b9c3-d7f00c2e64be
 2026-02-23 15:33:17 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d575d7a-09d3-4933-b9c3-d7f00c2e64be
+2026-02-27 13:18:45 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-27 13:19:02 - INFO - Stored session ID from server: 1cbfce0d-7a69-4e2a-837b-3b35b89ada72
+2026-02-27 13:19:03 - INFO - Session switched via URL parameter to: 1cbfce0d-7a69-4e2a-837b-3b35b89ada72
+2026-02-27 13:21:05 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 1cbfce0d-7a69-4e2a-837b-3b35b89ada72
+2026-02-27 13:44:26 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d575d7a-09d3-4933-b9c3-d7f00c2e64be
+2026-02-27 13:52:13 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d575d7a-09d3-4933-b9c3-d7f00c2e64be
+2026-02-27 14:35:37 - INFO - Sending zap path-based analysis request to backend (Target: None)
+2026-02-27 14:36:49 - INFO - Stored session ID from server: 5e0af240-37e8-4254-8d1a-03f3704c730d
+2026-02-27 14:36:50 - INFO - Session switched via URL parameter to: 5e0af240-37e8-4254-8d1a-03f3704c730d
+2026-02-27 15:13:32 - INFO - Sending zap path-based analysis request to backend (Target: None)
+2026-02-27 15:13:36 - INFO - Session switched via URL parameter to: null
+2026-02-27 15:14:58 - INFO - Sending zap path-based analysis request to backend (Target: None)
+2026-02-27 15:23:28 - INFO - Sending zap path-based analysis request to backend (Target: None)
+2026-02-27 15:24:16 - INFO - Stored session ID from server: 619a9dd3-7c4a-4b5e-b42c-a1405c831ff5
+2026-02-27 15:24:17 - INFO - Session switched via URL parameter to: 619a9dd3-7c4a-4b5e-b42c-a1405c831ff5
+2026-02-27 15:25:02 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 619a9dd3-7c4a-4b5e-b42c-a1405c831ff5
+2026-02-27 15:34:38 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 619a9dd3-7c4a-4b5e-b42c-a1405c831ff5
+2026-02-27 15:35:21 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 619a9dd3-7c4a-4b5e-b42c-a1405c831ff5
+2026-02-27 15:50:36 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 619a9dd3-7c4a-4b5e-b42c-a1405c831ff5
+2026-02-27 15:50:58 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 619a9dd3-7c4a-4b5e-b42c-a1405c831ff5
+2026-02-27 15:51:01 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com'}
+2026-02-27 15:51:01 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-27 15:51:51 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-02-27 15:51:59 - INFO - Stored session ID from server: 619a9dd3-7c4a-4b5e-b42c-a1405c831ff5
+2026-02-27 15:51:59 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 619a9dd3-7c4a-4b5e-b42c-a1405c831ff5
+2026-02-27 16:55:26 - INFO - New local chat session started: 4be4bbb3-4f52-4820-ac81-5749d00effc6
+2026-02-27 17:05:40 - INFO - New local chat session started: 2a68e4da-2e89-47d3-b85c-6240537c9846
+2026-02-27 17:20:09 - ERROR - Unexpected error in stream proxy: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\routes\chatbot_bp.py", line 413, in chat_with_ai_stream
+    data = request.json
+           ^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\werkzeug\wrappers\request.py", line 560, in json
+    return self.get_json()
+           ~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\werkzeug\wrappers\request.py", line 604, in get_json
+    return self.on_json_loading_failed(None)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\flask\wrappers.py", line 214, in on_json_loading_failed
+    return super().on_json_loading_failed(e)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "D:\chatbot-env\Lib\site-packages\werkzeug\wrappers\request.py", line 647, in on_json_loading_failed
+    raise UnsupportedMediaType(
+    ...<2 lines>...
+    )
+werkzeug.exceptions.UnsupportedMediaType: 415 Unsupported Media Type: Did not attempt to load JSON data because the request Content-Type was not 'application/json'.
+2026-02-27 17:26:30 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 2a68e4da-2e89-47d3-b85c-6240537c9846
+2026-02-27 17:26:33 - INFO - Stream updated local session ID to: 4d8fa7e2-67ae-4e6f-ba15-d57ddc68abd2
+2026-02-27 17:31:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d8fa7e2-67ae-4e6f-ba15-d57ddc68abd2
+2026-02-27 17:38:39 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-27 17:38:46 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-27 17:38:59 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-27 17:39:04 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-27 17:39:18 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-27 17:39:24 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-27 17:41:39 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-27 17:41:45 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-27 17:41:53 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-27 17:41:58 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-27 17:42:00 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d8fa7e2-67ae-4e6f-ba15-d57ddc68abd2
+2026-02-27 17:43:23 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-02-27 17:43:28 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-02-27 17:43:37 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.0.1)
+2026-02-27 17:44:08 - INFO - Stored session ID from server: 011e7dc2-6cec-45a1-ad0f-975c2bb797eb
+2026-02-27 17:44:09 - INFO - Session switched via URL parameter to: 011e7dc2-6cec-45a1-ad0f-975c2bb797eb
+2026-02-27 17:44:29 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 011e7dc2-6cec-45a1-ad0f-975c2bb797eb
+2026-02-27 17:44:32 - INFO - AI Action Execution requested: scanner_analysis with params {'target': '192.168.0.1', 'scanner_type': 'nmap'}
+2026-02-27 17:44:55 - INFO - Session switched via URL parameter to: 011e7dc2-6cec-45a1-ad0f-975c2bb797eb
+2026-02-27 17:47:01 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 011e7dc2-6cec-45a1-ad0f-975c2bb797eb
+2026-02-27 17:47:05 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com'}
+2026-02-27 17:47:05 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-27 17:47:53 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-02-27 17:48:40 - ERROR - Error communicating with server proxy during scanner analysis: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 490, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\util.py", line 38, in reraise
+    raise value.with_traceback(tb)
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1430, in getresponse
+    response.begin()
+    ~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 331, in begin
+    version, status, reason = self._read_status()
+                              ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 292, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\socket.py", line 719, in readinto
+    return self._sock.recv_into(b)
+           ~~~~~~~~~~~~~~~~~~~~^^^
+urllib3.exceptions.ProtocolError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\routes\chatbot_bp.py", line 535, in scanner_analysis_proxy
+    response = http_session.post(proxy_upload_url, params=params)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 682, in send
+    raise ConnectionError(err, request=request)
+requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-02-27 17:53:05 - INFO - New local chat session started: 04f923f4-b341-4e4f-bda2-40e17eb5a005

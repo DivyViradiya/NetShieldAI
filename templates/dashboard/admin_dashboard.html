@@ -184,23 +184,25 @@
     }
 
     /* ============================================ */
-    /*  SPLIT GRID LAYOUT                           */
+    /*  TIERED ZONE LAYOUT                           */
     /* ============================================ */
+    .zone-cockpit { width: 100%; margin-bottom: 1.5rem; }
+    
+    .zone-telemetry {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .zone-personnel { width: 100%; }
+
+    /* For backwards compat or specific 75/25 needs */
     .main-split-grid {
       display: grid;
       grid-template-columns: 3fr 1fr;
       gap: 1.5rem;
       align-items: start;
-    }
-    .left-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    .right-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
     }
 
     /* ============================================ */
@@ -664,19 +666,66 @@
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
     /* ============================================ */
-    /*  RESPONSIVE                                  */
+    /*  MOBILE TABS                                 */
+    /* ============================================ */
+    .admin-mobile-tabs {
+      display: none;
+      background: var(--neo-card);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 1.5rem;
+      position: sticky;
+      top: 1rem;
+      z-index: 100;
+      backdrop-filter: var(--glass-blur);
+    }
+    .admin-tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--neo-text-dim);
+      padding: 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+    .admin-tab-btn.active {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--neo-blue);
+    }
+
+    /* ============================================ */
+    /*  RESPONSIVE (Rearranged)                     */
     /* ============================================ */
     @media (max-width: 1200px) {
-      .main-split-grid { grid-template-columns: 1fr; }
+      .zone-telemetry { grid-template-columns: 1fr; }
       .metrics-row { grid-template-columns: repeat(2, 1fr); }
-      .dual-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
+      .admin-mobile-tabs { display: flex; }
+      
       .dashboard-container { padding: 1rem; }
       .hud-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+      
       .metrics-row { grid-template-columns: 1fr; }
       .admin-hero { flex-direction: column; gap: 1rem; }
-      .hero-stats { border: none; padding: 0; }
+      .hero-stats { border: none; padding: 0.5rem 0; width: 100%; border-top: 1px solid var(--neo-border); border-bottom: 1px solid var(--neo-border); }
+      
+      .zone-cockpit, .zone-telemetry, .zone-personnel { display: none; }
+      .zone-active { display: block !important; }
+      
+      .dual-grid { grid-template-columns: 1fr; }
+      .ow-table th:nth-child(4), .ow-table td:nth-child(4),
+      .ow-table th:nth-child(5), .ow-table td:nth-child(5) { display: none; } /* Hide lower priority columns on mobile table */
     }
 
   </style>
@@ -703,14 +752,113 @@
     </div>
   </div>
 
-  <!-- ======== MAIN SPLIT GRID ======== -->
-  <div class="main-split-grid">
 
-    <!-- ======== LEFT COLUMN ======== -->
-    <div class="left-column">
+  <!-- ======== MOBILE NAVIGATION TABS ======== -->
+  <div class="admin-mobile-tabs">
+    <button class="admin-tab-btn active" onclick="switchZone('personnel')">
+      <span class="material-symbols-outlined" style="font-size:1.1rem;">group</span> Operators
+    </button>
+    <button class="admin-tab-btn" onclick="switchZone('cockpit')">
+      <span class="material-symbols-outlined" style="font-size:1.1rem;">dashboard</span> Status
+    </button>
+    <button class="admin-tab-btn" onclick="switchZone('telemetry')">
+      <span class="material-symbols-outlined" style="font-size:1.1rem;">monitoring</span> Feed
+    </button>
+  </div>
 
+  <!-- ======== ZONE 0: PERSONNEL COMMAND (Now at Top) ======== -->
+  <div id="zone-personnel" class="zone-personnel zone-active">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="material-symbols-outlined">dns</span>
+            Operator Database Management
+          </div>
+          <span class="panel-badge" style="background: rgba(99,102,241,0.1); color: var(--neo-purple); border: 1px solid rgba(99,102,241,0.2);">{{ users|length }} Enrolled</span>
+        </div>
+        <div class="feed-scroll" style="max-height: 500px;">
+          <table class="ow-table">
+            <thead>
+              <tr>
+                <th style="width:40px;">ID</th>
+                <th>Identity</th>
+                <th>Role</th>
+                <th>Context</th>
+                <th>Scans</th>
+                <th>Status</th>
+                <th style="text-align:right;">Access Controls</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+              <tr>
+                <td style="color:var(--neo-text-dim);">#{{ user.id }}</td>
+                <td>
+                  <div class="user-identity">
+                    <div class="user-avatar">{{ user.username[:2] }}</div>
+                    <div class="user-identity-text">
+                      <div class="user-name">{{ user.username }}</div>
+                      <div class="user-email">{{ user.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  {% if user.is_admin %}
+                    <span class="role-chip role-admin">ADMIN</span>
+                  {% else %}
+                    <span class="role-chip role-user">OPERATOR</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if user.organization %}
+                    <div style="font-size:0.75rem;">{{ user.organization }}</div>
+                    <div style="font-size:0.6rem; color:var(--neo-text-dim);">{{ user.job_title }}</div>
+                  {% else %}
+                    <span style="color:var(--neo-text-dim);">—</span>
+                  {% endif %}
+                </td>
+                <td style="font-weight:700;">{{ user.total_scans }}</td>
+                <td>
+                  {% if user.is_active_account %}
+                    <span class="status-badge st-active">ACTIVE</span>
+                  {% else %}
+                    <span class="status-badge st-suspended">SUSPENDED</span>
+                  {% endif %}
+                </td>
+                <td style="text-align:right;">
+                  <div class="action-group" style="justify-content:flex-end;">
+                    <form action="{{ url_for('auth.toggle_user_status', user_id=user.id) }}" method="POST">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="action-btn btn-suspend" title="{% if user.is_active_account %}Suspend{% else %}Activate{% endif %}">
+                        <span class="material-symbols-outlined">{% if user.is_active_account %}block{% else %}check_circle_outline{% endif %}</span>
+                      </button>
+                    </form>
+                    <form action="{{ url_for('auth.toggle_user_role', user_id=user.id) }}" method="POST">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="action-btn btn-promote" title="Authority Toggle">
+                        <span class="material-symbols-outlined">shield_person</span>
+                      </button>
+                    </form>
+                    <form action="{{ url_for('auth.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('DANGER: This will permanently wipe operator {{ user.username }}. Proceed?');">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="action-btn btn-delete" title="Purge Record">
+                        <span class="material-symbols-outlined">delete_forever</span>
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+  </div>
+
+  <!-- ======== ZONE 1: COCKPIT (Status Overview) ======== -->
+  <div id="zone-cockpit" class="zone-cockpit">
       <!-- ADMIN SUMMARY HERO -->
-      <div class="admin-hero">
+      <div class="admin-hero" style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
         <div class="hero-scope">
           <div class="hero-label">
             <span class="material-symbols-outlined" style="font-size:0.8rem; vertical-align: middle;">admin_panel_settings</span>
@@ -779,259 +927,154 @@
           <div class="metric-sub">{{ total_critical }} Critical</div>
         </div>
       </div>
-
-      <!-- DUAL GRID: SCAN FEED + TELEMETRY -->
-      <div class="dual-grid">
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span class="material-symbols-outlined" style="color:var(--neo-blue);">history</span>
-              Recent Scan Feed
-            </div>
-            <span class="panel-badge" style="background: rgba(59,130,246,0.1); color: var(--neo-blue); border: 1px solid rgba(59,130,246,0.2);">Live</span>
-          </div>
-          <div class="feed-scroll">
-            <table class="ow-table">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Operator</th>
-                  <th>Tool</th>
-                  <th>Target</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for log in recent_scans %}
-                <tr>
-                  <td style="font-size:0.65rem; color:var(--neo-text-dim);">{{ log.start_time.strftime('%H:%M:%S') }}</td>
-                  <td style="color:var(--neo-blue); font-weight:600;">{{ log.user.username }}</td>
-                  <td>{{ log.tool_name }}</td>
-                  <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ log.target }}</td>
-                  <td>
-                    {% if log.status == 'Completed' %}
-                      <span class="status-badge st-ok">OK</span>
-                    {% else %}
-                      <span class="status-badge st-fail">FAIL</span>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% endfor %}
-                {% if recent_scans|length == 0 %}
-                <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--neo-text-dim);">No scan activity recorded yet.</td></tr>
-                {% endif %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-header">
-            <div class="panel-title">
-              <span class="material-symbols-outlined" style="color:var(--neo-purple);">pie_chart</span>
-              Telemetry
-            </div>
-          </div>
-          <div class="chart-wrapper">
-            <canvas id="toolUsageChart"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- OPERATOR DATABASE -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="material-symbols-outlined">dns</span>
-            Operator Database
-          </div>
-          <span class="panel-badge" style="background: rgba(99,102,241,0.1); color: var(--neo-purple); border: 1px solid rgba(99,102,241,0.2);">{{ users|length }} Records</span>
-        </div>
-        <div class="feed-scroll" style="max-height: 400px;">
-          <table class="ow-table">
-            <thead>
-              <tr>
-                <th style="width:40px;">ID</th>
-                <th>Identity</th>
-                <th>Role</th>
-                <th>Context</th>
-                <th>Scans</th>
-                <th>Status</th>
-                <th style="text-align:right;">Controls</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for user in users %}
-              <tr>
-                <td style="color:var(--neo-text-dim);">#{{ user.id }}</td>
-                <td>
-                  <div class="user-identity">
-                    <div class="user-avatar">{{ user.username[:2] }}</div>
-                    <div class="user-identity-text">
-                      <div class="user-name">{{ user.username }}</div>
-                      <div class="user-email">{{ user.email }}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  {% if user.is_admin %}
-                    <span class="role-chip role-admin">ADMIN</span>
-                  {% else %}
-                    <span class="role-chip role-user">USER</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if user.organization %}
-                    <div style="font-size:0.7rem;">{{ user.organization }}</div>
-                    <div style="font-size:0.6rem; color:var(--neo-text-dim);">{{ user.job_title }}</div>
-                  {% else %}
-                    <span style="color:var(--neo-text-dim);">—</span>
-                  {% endif %}
-                </td>
-                <td style="font-weight:700;">{{ user.total_scans }}</td>
-                <td>
-                  {% if user.is_active_account %}
-                    <span class="status-badge st-active">ACTIVE</span>
-                  {% else %}
-                    <span class="status-badge st-suspended">SUSPENDED</span>
-                  {% endif %}
-                </td>
-                <td style="text-align:right;">
-                  <div class="action-group" style="justify-content:flex-end;">
-                    <form action="{{ url_for('auth.toggle_user_status', user_id=user.id) }}" method="POST">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                      <button type="submit" class="action-btn btn-suspend" title="{% if user.is_active_account %}Suspend{% else %}Activate{% endif %}">
-                        <span class="material-symbols-outlined">{% if user.is_active_account %}block{% else %}check_circle{% endif %}</span>
-                      </button>
-                    </form>
-                    <form action="{{ url_for('auth.toggle_user_role', user_id=user.id) }}" method="POST">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                      <button type="submit" class="action-btn btn-promote" title="Toggle Admin Role">
-                        <span class="material-symbols-outlined">shield_person</span>
-                      </button>
-                    </form>
-                    <form action="{{ url_for('auth.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete {{ user.username }}? This cannot be undone.');">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                      <button type="submit" class="action-btn btn-delete" title="Delete Account">
-                        <span class="material-symbols-outlined">delete</span>
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ======== RIGHT COLUMN ======== -->
-    <div class="right-column">
-
-      <!-- SYSTEM HEALTH -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="material-symbols-outlined" style="color:var(--neo-green);">monitor_heart</span>
-            System Health
-          </div>
-        </div>
-        <div>
-          <div class="health-stat">
-            <span class="health-stat-label">Disk Storage</span>
-            <span class="health-stat-value">{{ storage_info.percent }}%</span>
-          </div>
-          <div class="health-bar-track">
-            <div class="health-bar-fill" style="width:{{ storage_info.percent }}%; background: {% if storage_info.percent > 85 %}var(--neo-red){% elif storage_info.percent > 60 %}var(--neo-amber){% else %}var(--neo-blue){% endif %};"></div>
-          </div>
-          <div class="health-detail">Using {{ storage_info.used_gb }}GB of {{ storage_info.total_gb }}GB</div>
-        </div>
-
-        <hr class="health-divider">
-
-        <div class="alert-row">
-          <div>
-            <div class="health-stat-label">Failed Logins</div>
-            <div class="alert-count" style="color: {{ 'var(--neo-red)' if total_failed_logins > 0 else 'var(--neo-text-main)' }};">
-              {{ total_failed_logins }}
-            </div>
-          </div>
-          <span class="material-symbols-outlined" style="color:var(--neo-red); opacity:0.4; font-size:1.5rem;">gpp_maybe</span>
-        </div>
-
-        <hr class="health-divider">
-
-        <div class="alert-row">
-          <div>
-            <div class="health-stat-label">Failed Scans</div>
-            <div class="alert-count" style="color: {{ 'var(--neo-amber)' if failed_scans > 0 else 'var(--neo-text-main)' }};">
-              {{ failed_scans }}
-            </div>
-          </div>
-          <span class="material-symbols-outlined" style="color:var(--neo-amber); opacity:0.4; font-size:1.5rem;">warning</span>
-        </div>
-      </div>
-
-      <!-- LEADERBOARD -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="material-symbols-outlined" style="color:var(--neo-amber);">leaderboard</span>
-            Top Operators
-          </div>
-        </div>
-        <ul class="leaderboard-list">
-          {% for label in top_users_labels %}
-          <li class="leaderboard-item">
-            <span class="lb-rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">{{ loop.index }}</span>
-            <span class="lb-name">{{ label }}</span>
-            <span class="lb-score">{{ top_users_data[loop.index0] }} scans</span>
-          </li>
-          {% endfor %}
-          {% if top_users_labels|length == 0 %}
-            <li style="text-align:center; padding:1.5rem; color:var(--neo-text-dim); font-size:0.8rem;">No data available.</li>
-          {% endif %}
-        </ul>
-      </div>
-
-      <!-- QUICK ALERTS -->
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="material-symbols-outlined" style="color:var(--neo-red);">notifications_active</span>
-            Quick Alerts
-          </div>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-          <div style="display: flex; gap: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px dashed var(--neo-border);">
-            <span class="material-symbols-outlined" style="font-size: 0.9rem; color: var(--neo-green);">check_circle</span>
-            <div>
-              <div style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono);">{{ active_users }} Active / {{ total_users }} Total</div>
-              <div style="font-size: 0.65rem; color: var(--neo-text-label);">Account Status</div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px dashed var(--neo-border);">
-            <span class="material-symbols-outlined" style="font-size: 0.9rem; color: var(--neo-amber);">speed</span>
-            <div>
-              <div style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono);">{{ success_rate }}% Success Rate</div>
-              <div style="font-size: 0.65rem; color: var(--neo-text-label);">Scan Performance</div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 0.75rem;">
-            <span class="material-symbols-outlined" style="font-size: 0.9rem; color: var(--neo-red);">bug_report</span>
-            <div>
-              <div style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono);">{{ total_critical }} Critical Findings</div>
-              <div style="font-size: 0.65rem; color: var(--neo-text-label);">Requires Attention</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
   </div>
+
+  <!-- ======== ZONE 2: TELEMETRY MATRIX ======== -->
+  <div id="zone-telemetry" class="zone-telemetry">
+    
+    <!-- Left Column: Health & Alerts -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- SYSTEM HEALTH -->
+        <div class="panel">
+            <div class="panel-header">
+            <div class="panel-title">
+                <span class="material-symbols-outlined" style="color:var(--neo-green);">monitor_heart</span>
+                System Health
+            </div>
+            </div>
+            <div>
+                <div class="health-stat">
+                    <span class="health-stat-label">Disk Storage</span>
+                    <span class="health-stat-value">{{ storage_info.percent }}%</span>
+                </div>
+                <div class="health-bar-track">
+                    <div class="health-bar-fill" style="width:{{ storage_info.percent }}%; background: {% if storage_info.percent > 85 %}var(--neo-red){% elif storage_info.percent > 60 %}var(--neo-amber){% else %}var(--neo-blue){% endif %};"></div>
+                </div>
+                <div class="health-detail">Used {{ storage_info.used_gb }}GB / {{ storage_info.total_gb }}GB</div>
+            </div>
+
+            <hr class="health-divider">
+
+            <div class="alert-row">
+            <div>
+                <div class="health-stat-label">Failed Logins</div>
+                <div class="alert-count" style="color: {{ 'var(--neo-red)' if total_failed_logins > 0 else 'var(--neo-text-main)' }};">
+                {{ total_failed_logins }}
+                </div>
+            </div>
+            <span class="material-symbols-outlined" style="color:var(--neo-red); opacity:0.4; font-size:1.5rem;">gpp_maybe</span>
+            </div>
+        </div>
+
+        <!-- QUICK ALERTS -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="material-symbols-outlined" style="color:var(--neo-red);">notifications_active</span>
+                    Critical Alerts
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; gap: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px dashed var(--neo-border);">
+                    <span class="material-symbols-outlined" style="font-size: 0.9rem; color: var(--neo-amber);">speed</span>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono);">{{ success_rate }}% Success</div>
+                        <div style="font-size: 0.65rem; color: var(--neo-text-label);">System Productivity</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <span class="material-symbols-outlined" style="font-size: 0.9rem; color: var(--neo-red);">bug_report</span>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono);">{{ total_critical }} Critical Findings</div>
+                        <div style="font-size: 0.65rem; color: var(--neo-text-label);">Action Required</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Live Feed & Chart -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="dual-grid">
+            <!-- SCAN FEED -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="material-symbols-outlined" style="color:var(--neo-blue);">history</span>
+                        Live Scan Feed
+                    </div>
+                    <span class="panel-badge" style="background: rgba(59,130,246,0.1); color: var(--neo-blue); border: 1px solid rgba(59,130,246,0.2);">Real-time</span>
+                </div>
+                <div class="feed-scroll">
+                    <table class="ow-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Operator</th>
+                                <th>Tool</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in recent_scans %}
+                            <tr>
+                                <td style="font-size:0.65rem; color:var(--neo-text-dim);">{{ log.start_time.strftime('%H:%M:%S') }}</td>
+                                <td style="color:var(--neo-blue); font-weight:600;">{{ log.user.username }}</td>
+                                <td>{{ log.tool_name }}</td>
+                                <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ log.target }}</td>
+                                <td>
+                                    {% if log.status == 'Completed' %}
+                                    <span class="status-badge st-ok">OK</span>
+                                    {% else %}
+                                    <span class="status-badge st-fail">FAIL</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if recent_scans|length == 0 %}
+                            <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--neo-text-dim);">No scan activity.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TELEMETRY CHART -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span class="material-symbols-outlined" style="color:var(--neo-purple);">pie_chart</span>
+                        Tool Distribution
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="toolUsageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOP OPERATORS (Integrated into matrix) -->
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="material-symbols-outlined" style="color:var(--neo-amber);">leaderboard</span>
+                    Top System Operators
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                {% for label in top_users_labels %}
+                <div class="leaderboard-item" style="border: 1px solid var(--neo-border); border-radius: 8px; padding: 0.75rem;">
+                    <span class="lb-rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">{{ loop.index }}</span>
+                    <span class="lb-name" style="margin-right: auto;">{{ label }}</span>
+                    <span class="lb-score">{{ top_users_data[loop.index0] }} ops</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+  </div>
+
 
 </div>
 
@@ -1123,8 +1166,40 @@
             });
         }
 
+
         createChart();
         window.addEventListener('themeChanged', () => createChart());
     });
+
+    /**
+     * Mobile Zone Switching
+     */
+    function switchZone(zoneId) {
+        // Toggle Active Buttons
+        const buttons = document.querySelectorAll('.admin-tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        
+        const clickedBtn = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(zoneId));
+        if (clickedBtn) clickedBtn.classList.add('active');
+
+        // Toggle Visibility
+        const zones = ['cockpit', 'telemetry', 'personnel'];
+        zones.forEach(id => {
+            const el = document.getElementById('zone-' + id);
+            if (id === zoneId) {
+                el.classList.add('zone-active');
+            } else {
+                el.classList.remove('zone-active');
+            }
+        });
+
+        // Trigger chart resize if invisible when switching to telemetry
+        if(zoneId === 'telemetry') {
+            window.dispatchEvent(new Event('resize'));
+        }
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 </script>
 {% endblock %}

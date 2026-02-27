@@ -1034,7 +1034,7 @@
       font-weight: 800;
       color: white;
       text-transform: uppercase;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.5rem;
     }
     
     body.light-mode .chat-hero h1 { color: #0f172a; }
@@ -1044,9 +1044,11 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
-      margin: 3rem auto 0 auto; /* Added auto margins for horizontal centering */
+      margin: 2rem auto 0 auto;
       width: 100%;
       max-width: 800px;
+      padding: 0 1rem;
+      box-sizing: border-box;
     }
     .suggestion-card {
       background: rgba(255, 255, 255, 0.02);
@@ -1082,18 +1084,21 @@
     /* Bubble Styles */
     .msg-row { display: flex; width: 100%; margin-bottom: 2rem; opacity: 0; transform: translateY(10px); animation: msg-appear 0.4s forwards; }
     @keyframes msg-appear { to { opacity: 1; transform: translateY(0); } }
-    .msg-row.user { justify-content: flex-end; }
+    .msg-row.user { justify-content: flex-end; flex-direction: column; align-items: flex-end; }
     
     .msg-bubble {
       font-family: var(--font-primary);
       font-size: 1rem;      
       font-weight: 400;        
-      letter-spacing: 0.015em; 
-      line-height: 1.65;
+      letter-spacing: 0.01em; 
+      line-height: 1.7;
       padding: 1.25rem 1.75rem;
       position: relative;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
       transition: max-width 0.4s ease;
+      text-align: justify;
+      word-break: break-word; /* Prevents overflow with justified text */
+      hyphens: auto; /* Uses hyphens to naturally balance justified lines */
     }
 
     /* Subtle Labels */
@@ -1108,6 +1113,11 @@
       color: #52525b;
     }
     .msg-row.user .msg-bubble::before { right: 0.5rem; }
+
+    /* Fix potential overlap with attachments */
+    .msg-attachments + .msg-bubble {
+      margin-top: 1.5rem; /* Space for the label to breathe below attachments */
+    }
     .msg-row.ai .msg-bubble::before { left: 0.5rem; }
 
     /* Dynamic Widths based on Sidebar State */
@@ -1438,6 +1448,225 @@
 
     .modal-input:focus { border-color: var(--neo-blue); outline: none; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+
+    /* --- NEW MULTIMODAL UI STYLES --- */
+    .attachment-plus-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--neo-border);
+      color: #71717a;
+      width: 48px; /* Matched to 48px */
+      height: 48px; /* Matched to 48px */
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-right: 8px;
+    }
+    .attachment-plus-btn:hover, .attachment-plus-btn.active {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      border-color: #52525b;
+      transform: scale(1.05);
+    }
+
+    .attachment-menu {
+      position: absolute;
+      bottom: calc(100% + 12px);
+      left: 0;
+      background: #0f0f11;
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      width: 220px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      z-index: 1000;
+      animation: menuPopUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .attachment-menu.show { display: flex; }
+
+    /* Triangle Pointer Removed */
+
+
+    .attachment-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      color: #999;
+      cursor: pointer;
+      font-size: 0.75rem;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      transition: all 0.2s;
+    }
+    .attachment-option:last-child { border-bottom: none; }
+    .attachment-option:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: white;
+    }
+    .attachment-option span.material-symbols-outlined {
+      font-size: 1.25rem;
+    }
+    .opt-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      flex: 1;
+    }
+    .opt-shortcut {
+      font-size: 0.65rem;
+      color: #52525b;
+      font-family: var(--font-code);
+    }
+
+    .attachment-preview-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--neo-border);
+      background: rgba(255, 255, 255, 0.01);
+      min-height: 0;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .attachment-preview-area:empty { display: none; }
+
+    .attachment-item {
+      position: relative;
+      width: 64px; /* Slightly smaller for better flow */
+      height: 64px;
+      border-radius: 10px; /* Rounded square */
+      border: 1px solid var(--neo-border);
+      overflow: visible; /* To allow cross to peek out if needed */
+      background: #09090b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .attachment-item .remove-btn {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 20px;
+      height: 20px;
+      background: #18181b;
+      border: 1px solid var(--neo-border);
+      border-radius: 50%;
+      color: #71717a;
+      display: flex;
+      align-items: center;
+    }
+     /* Message Attachments (Outside Bubbles - Stacked Above) */
+    .msg-attachments {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px; /* Gap between image and bubble */
+      justify-content: flex-end; /* Align with user bubble */
+      width: fit-content;
+      max-width: 80%;
+    }
+    .msg-attachment-card {
+      width: 80px; /* Smaller as requested */
+      height: 80px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .msg-attachment-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .msg-attachment-card.doc-type {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+    }
+    .msg-attachment-card.doc-type .file-name {
+      font-size: 0.6rem;
+      color: #71717a;
+      text-align: center;
+      margin-top: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+      justify-content: center;
+      cursor: pointer; /* Pointer, not text */
+      font-size: 14px;
+      z-index: 10;
+      transition: all 0.2s;
+    }
+    .attachment-item .remove-btn:hover {
+      background: #27272a;
+      color: white;
+      border-color: #52525b;
+    }
+
+    .attachment-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .attachment-item .file-icon {
+      font-size: 2rem;
+      color: var(--neo-blue);
+    }
+    .attachment-item .attachment-label {
+      font-size: 0.6rem;
+      color: #94a3b8;
+      width: 100%;
+      text-align: center;
+      padding: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      position: absolute;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+    }
+
+    .btn-remove-attach {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s;
+    }
+    .btn-remove-attach:hover {
+      background: #ef4444;
+      border-color: #ef4444;
+    }
+
+    body.light-mode .attachment-plus-btn { background: #f1f5f9; color: #64748b; }
+    body.light-mode .attachment-menu { background: rgba(255, 255, 255, 0.95); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1); backdrop-filter: blur(12px); }
+    body.light-mode .attachment-option { color: #64748b; border-bottom-color: rgba(99, 102, 241, 0.05); }
+    body.light-mode .attachment-option:hover { background: var(--bg-secondary); color: var(--neo-blue); }
+    body.light-mode .attachment-item { background: #f8fafc; border-color: #e2e8f0; }
+    body.light-mode .attachment-item .attachment-label { background: rgba(255,255,255,0.8); color: #0f172a; }
     .btn-modal {
       padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.75rem;
       cursor: pointer; border: none; font-weight: 600;
@@ -1455,6 +1684,13 @@
     /* Ensure these styles apply inside the AI/User bubbles regardless of nested classes */
     .markdown-content, .msg-bubble {
         color: #d4d4d8;
+    }
+    
+    .markdown-content p, .msg-bubble p {
+        margin-bottom: 1.25rem;
+    }
+    .markdown-content p:last-child, .msg-bubble p:last-child {
+        margin-bottom: 0;
     }
     
     body.light-mode .markdown-content, 
@@ -1977,6 +2213,7 @@
   {# PRE-FETCHED DATA INJECTION #}
   <script>
     window.PRELOADED_SESSIONS = {{ initial_sessions | tojson | safe }};
+    window.ACTIVE_SESSION_ID = "{{ active_session_id }}";
   </script>
 
   <div class="app-layout">
@@ -2186,7 +2423,6 @@
       <div class="messages-area" id="messages-container">
         <div id="welcome-state" class="chat-hero">
           <h1 style="line-height: 1;">
-            <span style="font-size: 0.9rem; letter-spacing: 0.3em; color: var(--neo-blue); display: block; margin-bottom: 1.5rem;">// SECURE CHANNEL</span>
             NetShield<br />
             <span style="color: #333;">Analyst</span>
           </h1>
@@ -2211,7 +2447,36 @@
 
       <div class="input-zone">
         <div class="input-container-inner">
+          <div class="attachment-preview-area" id="attachment-preview-area"></div>
+          
           <div class="input-wrapper">
+            <!-- Hidden Multimodal Input -->
+            <input type="file" id="multimodal-file-input" style="display: none;" multiple />
+            
+            <div style="position: relative;">
+               <button class="attachment-plus-btn" id="attachment-plus-btn" title="Add attachment">
+                 <span class="material-symbols-outlined">add</span>
+               </button>
+               
+               <div class="attachment-menu" id="attachment-menu">
+                  <div class="attachment-option" id="attach-image">
+                    <span class="material-symbols-outlined">image</span>
+                    <span class="opt-label">Images & Diagrams</span>
+                    <span class="opt-shortcut">IMG</span>
+                  </div>
+                  <div class="attachment-option" id="attach-doc">
+                    <span class="material-symbols-outlined">description</span>
+                    <span class="opt-label">Logs, JSON, Configs</span>
+                    <span class="opt-shortcut">TXT</span>
+                  </div>
+                  <div class="attachment-option" id="attach-pcap">
+                    <span class="material-symbols-outlined">settings_input_component</span>
+                    <span class="opt-label">Network Captures</span>
+                    <span class="opt-shortcut">PCAP</span>
+                  </div>
+               </div>
+            </div>
+
             <input type="text" id="user-input" class="chat-input" placeholder="Describe threat or query database..." autocomplete="off" />
             <div class="model-select-compact">
               <button class="model-trigger-compact" id="model-trigger-compact">

@@ -138,3 +138,37 @@ eldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' n
 [09:14:37] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
 [09:14:40] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
 [09:14:40] [INFO] [*] Local IP requested: 192.168.29.48
+[13:18:43] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[13:18:43] [INFO] [*] Local IP requested: 192.168.0.121
+[15:51:01] [INFO] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T4...
+[15:51:01] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[15:51:01] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[15:51:01] [INFO] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T4...
+[15:51:02] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_3142b7b4.txt 44.228.249.3
+[15:51:47] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[15:51:47] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[15:51:47] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[15:51:47] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "44.228.249.3", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[15:51:47] [INFO] [+] Processing results for PDF report...
+[15:51:47] [INFO] [+] JSON Scan report saved
+[15:51:47] [INFO] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[15:51:51] [INFO] [+] PDF report generated successfully
+[15:51:51] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[17:10:14] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[17:10:14] [INFO] [*] Local IP requested: 192.168.0.121
+[17:43:34] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[17:43:34] [INFO] [*] Local IP requested: 192.168.0.121
+[17:47:05] [INFO] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T4...
+[17:47:05] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[17:47:05] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[17:47:05] [INFO] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T4...
+[17:47:05] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_66fd06b2.txt 44.228.249.3
+[17:47:46] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[17:47:46] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[17:47:46] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[17:47:46] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "44.228.249.3", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[17:47:46] [INFO] [+] Processing results for PDF report...
+[17:47:46] [INFO] [+] JSON Scan report saved
+[17:47:46] [INFO] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[17:47:53] [INFO] [+] PDF report generated successfully
+[17:47:53] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com

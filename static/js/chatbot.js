@@ -6,11 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper to send authorized requests
     async function fetchWithAuth(url, options = {}) {
         const headers = {
-            'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken,
             'X-Session-ID': currentSessionId, // Send session ID if available
             ...options.headers
         };
+        
+        // If body is NOT FormData, default to JSON
+        if (options.body && !(options.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
+        
         return fetch(url, { ...options, headers });
     }
 
@@ -85,13 +90,29 @@ document.addEventListener('DOMContentLoaded', () => {
         renameModal: document.getElementById('rename-modal'),
         renameInput: document.getElementById('rename-input'),
         cancelRenameBtn: document.getElementById('cancel-rename'),
-        confirmRenameBtn: document.getElementById('confirm-rename')
+        confirmRenameBtn: document.getElementById('confirm-rename'),
+
+        // Topology Graph Elements
+        btnViewTopology: document.getElementById('cc-view-topology'),
+        topologyModal: document.getElementById('topology-modal'),
+        btnCloseTopology: document.getElementById('close-topology-btn'),
+        topologyContainer: document.getElementById('vis-network-container'),
+
+        // Multimodal Elements
+        attachmentPlusBtn: document.getElementById('attachment-plus-btn'),
+        attachmentMenu: document.getElementById('attachment-menu'),
+        attachmentPreview: document.getElementById('attachment-preview-area'),
+        multimodalInput: document.getElementById('multimodal-file-input'),
+        attachImage: document.getElementById('attach-image'),
+        attachDoc: document.getElementById('attach-doc'),
+        attachPcap: document.getElementById('attach-pcap')
     };
 
     // --- 3. State Variables ---
     let selectedFile = null;
     let isProcessing = false;
     let currentSessionId = null; 
+    let attachedFiles = []; // Array of {file: File, id: string, type: 'image'|'doc'|'pcap', previewUrl: string}
     let sessionToRename = null;
     let isPinning = false;
     let allSessions = []; 
@@ -141,9 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         rows.forEach(row => {
             const role = row.classList.contains('user') ? 'HUMAN' : 'AI';
+            if (row.classList.contains('system')) role = 'SYSTEM';
+            if (row.classList.contains('system-action')) role = 'ACTION';
+            
+            const actionText = row.querySelector('.action-header')?.innerText || '';
             const bubble = row.querySelector('.msg-bubble');
-            const text = bubble.innerText.replace(/content_copyrefreshthumb_upthumb_down/g, ''); // Clean actions
-            transcript += `[${role}]: ${text}\n\n`;
+            let text = bubble ? bubble.innerText.replace(/content_copyrefreshthumb_upthumb_down/g, '') : ''; 
+            
+            if (role === 'ACTION') text = `[Automated Task Triggered] ${actionText}`;
+            if (text) transcript += `[${role}]: ${text}\n\n`;
         });
 
         const blob = new Blob([transcript], { type: 'text/plain' });
@@ -154,6 +181,135 @@ document.addEventListener('DOMContentLoaded', () => {
         a.click();
         URL.revokeObjectURL(url);
     };
+
+    // --- Topology Graph Logic ---
+    let networkInstance = null;
+
+    if (ui.btnViewTopology) {
+        ui.btnViewTopology.onclick = async () => {
+            if (!currentSessionId) {
+                alert("Please start an analysis session first.");
+                return;
+            }
+
+            ui.commandCenter.classList.remove('open');
+            ui.topologyModal.classList.add('show');
+            
+            ui.topologyContainer.innerHTML = '<div style="color: white; padding: 20px; text-align: center;">Fetching topology data...</div>';
+
+            try {
+                const response = await fetchWithAuth(`/chatbot/session/${currentSessionId}/graph`);
+                const data = await response.json();
+
+                if (data.success && data.graph_data && data.graph_data.nodes && data.graph_data.nodes.length > 0) {
+                    renderTopology(data.graph_data);
+                } else {
+                    ui.topologyContainer.innerHTML = '<div style="color: #ef4444; padding: 20px; text-align: center;">No physical or logical topology data available for this session yet.</div>';
+                }
+            } catch (error) {
+                console.error("Graph Fetch Error:", error);
+                ui.topologyContainer.innerHTML = '<div style="color: #ef4444; padding: 20px; text-align: center;">Failed to retrieve topology data.</div>';
+            }
+        };
+    }
+
+    if (ui.btnCloseTopology) {
+        ui.btnCloseTopology.onclick = () => {
+            ui.topologyModal.classList.remove('show');
+            // Clean up old instance to prevent memory leaks
+            if (networkInstance) {
+                networkInstance.destroy();
+                networkInstance = null;
+            }
+        };
+    }
+
+    function renderTopology(graphData) {
+        // Map NetworkX data to Vis.js format
+        const visNodes = new vis.DataSet(graphData.nodes.map(node => {
+            // Determine styling based on node type
+            let color = '#3b82f6'; // Default blue
+            let shape = 'dot';
+            let icon = '';
+
+            let displayLabel = node.id.split(':').pop();
+
+            switch(node.type) {
+                case 'Host': color = '#10b981'; shape = 'hexagon'; break;
+                case 'Port': color = '#f59e0b'; shape = 'diamond'; break;
+                case 'VulnerabilityType': color = '#ef4444'; shape = 'triangleDown'; displayLabel = node.name || node.title || displayLabel; break;
+                case 'CodeFile': color = '#6366f1'; shape = 'box'; break;
+                case 'ScanEvent': color = '#64748b'; shape = 'database'; break;
+                case 'WebApplication': color = '#8b5cf6'; shape = 'box'; break;
+                case 'Endpoint': color = '#0ea5e9'; break;
+            }
+
+            // Truncate long labels
+            if (displayLabel.length > 25) displayLabel = displayLabel.substring(0, 22) + "...";
+
+            // Build tooltip text (title) from arbitrary properties
+            let propsHtml = '';
+            for (const [key, value] of Object.entries(node)) {
+                if (key !== 'id' && key !== 'type' && value) {
+                   propsHtml += `<b>${key}:</b> ${value}<br>`;
+                }
+            }
+
+            return {
+                id: node.id,
+                label: `[${node.type}]\n${displayLabel}`,
+                title: `<div style="padding:5px; font-size:12px;"><b>ID:</b> ${node.id}<br>${propsHtml}</div>`,
+                color: { background: color, border: '#1e1e24' },
+                shape: shape,
+                font: { color: '#f8fafc', face: 'monospace', size: 12 },
+                borderWidth: 2,
+                shadow: true
+            };
+        }));
+
+        const visEdges = new vis.DataSet(graphData.links.map(link => {
+            return {
+                from: link.source,
+                to: link.target,
+                label: link.label || '',
+                font: { color: '#94a3b8', size: 10, align: 'horizontal' },
+                color: { color: '#475569', opacity: 0.8 },
+                arrows: 'to',
+                smooth: { type: 'continuous' }
+            };
+        }));
+
+        const container = ui.topologyContainer;
+        const data = { nodes: visNodes, edges: visEdges };
+        
+        const options = {
+            nodes: {
+                scaling: { min: 10, max: 30 }
+            },
+            interaction: {
+                hover: true,
+                tooltipDelay: 200,
+                navigationButtons: true,
+                keyboard: true
+            },
+            physics: {
+                forceAtlas2Based: {
+                    gravitationalConstant: -50,
+                    centralGravity: 0.01,
+                    springLength: 100,
+                    springConstant: 0.08
+                },
+                maxVelocity: 50,
+                solver: 'forceAtlas2Based',
+                timestep: 0.35,
+                stabilization: { iterations: 150 }
+            }
+        };
+
+        // Initialize Network
+        ui.topologyContainer.innerHTML = ''; // clear loading text
+        networkInstance = new vis.Network(container, data, options);
+    }
 
     // Helper Functions ... (keep existing)
 
@@ -333,14 +489,54 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!text) return "";
         try {
             let html = marked.parse(text);
-            return highlightThreats(html);
+            
+            // Wrap pre blocks in a container with a copy button
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const preBlocks = tempDiv.querySelectorAll('pre');
+            
+            preBlocks.forEach(pre => {
+                const container = document.createElement('div');
+                container.className = 'code-container';
+                
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-code-btn';
+                copyBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">content_copy</span> Copy';
+                
+                // Wrap pre in container and add button
+                pre.parentNode.insertBefore(container, pre);
+                container.appendChild(pre);
+                container.appendChild(copyBtn);
+            });
+            
+            return highlightThreats(tempDiv.innerHTML);
         } catch (e) {
             console.error("Markdown parsing error:", e);
             return text; // Fallback to raw text
         }
     }
 
-    function addMessage(role, text, animate = true) {
+    // [NEW] Global listener for copy code buttons
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.copy-code-btn');
+        if (btn) {
+            const pre = btn.parentElement.querySelector('pre');
+            if (pre) {
+                const code = pre.innerText;
+                navigator.clipboard.writeText(code).then(() => {
+                    const originalHTML = btn.innerHTML;
+                    btn.classList.add('copied');
+                    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">check</span> Copied!';
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.innerHTML = originalHTML;
+                    }, 2000);
+                });
+            }
+        }
+    });
+
+    function addMessage(role, text, animate = true, attachments = []) {
         ui.welcomeState.style.display = 'none';
 
         // Suppress the raw [ANALYSIS_TRIGGER] from being RENDERED
@@ -396,6 +592,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         contentDiv.innerHTML = parseContent(displayContext);
+        
+        // --- Render Attachments if present ---
+        if (attachments && attachments.length > 0) {
+            const attachContainer = document.createElement('div');
+            attachContainer.className = 'msg-attachments';
+            
+            attachments.forEach(a => {
+                const card = document.createElement('div');
+                card.className = 'msg-attachment-card';
+                
+                const url = a.url || a.previewUrl; // Handle both history and live
+                
+                if (a.type === 'image') {
+                    card.innerHTML = `<img src="${url}" alt="Attachment" />`;
+                } else {
+                    card.classList.add('doc-type');
+                    const icon = a.type === 'pcap' ? 'settings_input_component' : 'description';
+                    card.innerHTML = `
+                        <span class="material-symbols-outlined" style="font-size: 1.5rem;">${icon}</span>
+                        <div class="file-name">${a.name}</div>
+                    `;
+                }
+                attachContainer.appendChild(card);
+            });
+            row.appendChild(attachContainer); // Append to ROW (above bubble)
+        }
+
         bubble.appendChild(contentDiv);
 
         if (role === 'ai' || role === 'assistant' || role === 'system') {
@@ -435,11 +658,12 @@ document.addEventListener('DOMContentLoaded', () => {
             lastUserMessage = cleanText;
         }
         
-        row.appendChild(bubble);
+        row.appendChild(bubble); // Still append bubble to row
         ui.chatHistory.appendChild(row);
         
         // If it's a restore (not animated) and has metadata, trigger the action card
-        if (metadataAction && !animate) {
+        // But ONLY if cleanText is NOT empty (if it's empty, line 566 handled it)
+        if (metadataAction && !animate && cleanText !== "") {
             handleAction(metadataAction, true);
         }
 
@@ -745,40 +969,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 const activeScans = data.active_scans || {};
 
                 data.chat_history.forEach(msg => {
-                    const role = msg.role === 'assistant' ? 'ai' : msg.role;
-                    
-                    let cleanText = msg.content;
-                    let metadataAction = null;
-                    if (msg.content.includes("__METADATA_ACTION__:")) {
-                        const parts = msg.content.split("__METADATA_ACTION__:");
-                        cleanText = parts[0].trim();
-                        try {
-                            metadataAction = JSON.parse(parts[1]);
-                        } catch(e) {}
-                    }
-
-                    if (metadataAction) {
-                        // Check if this specific tool is currently active for this user
-                        const activeInfo = activeScans[metadataAction.tool];
+                    try {
+                        const role = msg.role === 'assistant' ? 'ai' : msg.role;
                         
-                        if (activeInfo) {
-                            if (cleanText) addMessage(role, cleanText, false);
-                            
-                            // Check Status from Backend
-                            if (activeInfo.status === 'completed') {
-                                // [NEW] Restore as Completed Success Card
-                                handleAction(metadataAction, false, null, true);
-                            } else {
-                                // Re-attach to the live telemetry stream (Running)
-                                handleAction(metadataAction, false, activeInfo.stream_url); 
-                            }
-                        } else {
-                            // If not in active/recent list, it's an old history item.
-                            // We just show the text message.
-                            addMessage(role, msg.content, false);
+                        let attachments = [];
+                        if (msg.attachments && typeof msg.attachments === 'string' && msg.attachments.trim() !== "" && msg.attachments !== "null") {
+                            try {
+                                attachments = JSON.parse(msg.attachments);
+                            } catch(e) { console.error("History attachment parse error:", e, msg.attachments); }
                         }
-                    } else {
-                        addMessage(role, msg.content, false); 
+
+                        let cleanText = msg.content;
+                        let metadataAction = null;
+                        if (msg.content && msg.content.includes("__METADATA_ACTION__:")) {
+                            const parts = msg.content.split("__METADATA_ACTION__:");
+                            cleanText = parts[0].trim();
+                            try {
+                                metadataAction = JSON.parse(parts[1]);
+                            } catch(e) {}
+                        }
+
+                        // Use addMessage for everything. addMessage will handle:
+                        // 1. Text rendering
+                        // 2. Image/Attachment rendering
+                        // 3. Metadata card triggering (via the !animate flag)
+                        addMessage(role, msg.content, false, attachments);
+
+                        // Specialized Handling for ACTIVE scans (reattach stream)
+                        if (metadataAction && metadataAction.tool && activeScans[metadataAction.tool]) {
+                            const activeInfo = activeScans[metadataAction.tool];
+                            if (activeInfo.status !== 'completed' && activeInfo.stream_url) {
+                                // Re-attach stream for currently running modules
+                                handleAction(metadataAction, false, activeInfo.stream_url);
+                            }
+                        }
+                    } catch (loopErr) {
+                        console.error("Error restoring history item:", loopErr, msg);
                     }
                 });
                 scrollToBottom();
@@ -1158,6 +1384,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function triggerAutoAnalysis(tool) {
+        // Show typing indicator immediately to signal AI reasoning is starting
+        ui.typingIndicator.style.display = 'block';
+        scrollToBottom();
+
         // Map AI tool names to scanner types for the analysis proxy
         const toolToScannerMap = {
             'nmap_scan': 'nmap',
@@ -1195,6 +1425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (e) {
             console.error("Auto-analysis failed:", e);
+            ui.typingIndicator.style.display = 'none';
         }
     }
 
@@ -1210,7 +1441,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ui.userInput.value = '';
 
-        addMessage('user', text); 
+        // Capture a snapshot of current attachments before clearing
+        const messageAttachments = [...attachedFiles];
+
+        addMessage('user', text, true, messageAttachments); 
+        clearAttachments(); // Instant clear as requested
 
         isProcessing = true;
         
@@ -1225,15 +1460,36 @@ document.addEventListener('DOMContentLoaded', () => {
         let metadataAction = null;
 
         try {
-            const response = await fetchWithAuth('/chatbot/chat_stream', {
-                method: 'POST',
-                body: JSON.stringify({ 
-                    message: text,
-                    verbosity: verbosity,
-                    is_incognito: isIncognito,
-                    llm_mode: llmMode
-                })
-            });
+            let response;
+            if (attachedFiles.length > 0) {
+                const formData = new FormData();
+                formData.append('message', text);
+                formData.append('verbosity', verbosity);
+                formData.append('is_incognito', isIncognito);
+                formData.append('llm_mode', llmMode);
+                
+                attachedFiles.forEach(a => {
+                    formData.append('files', a.file);
+                });
+
+                response = await fetchWithAuth('/chatbot/chat_stream', {
+                    method: 'POST',
+                    body: formData
+                });
+            } else {
+                response = await fetchWithAuth('/chatbot/chat_stream', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        message: text,
+                        verbosity: verbosity,
+                        is_incognito: isIncognito,
+                        llm_mode: llmMode
+                    })
+                });
+            }
+
+            // Clear attachments after sending
+            clearAttachments();
 
             if (!response.body) throw new Error('ReadableStream not supported.');
 
@@ -1371,55 +1627,190 @@ document.addEventListener('DOMContentLoaded', () => {
         clearView();
         currentSessionId = null;
         loadSessionList();
+        renderSuggestions();
     });
 
     ui.sendBtn.addEventListener('click', sendMessage);
     ui.userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
     
-    const suggestions = [
-        { title: "Vulnerability Analysis", desc: "Analyze the severity of SQL Injection." },
-        { title: "Remediation", desc: "How do I fix XSS vulnerabilities?" },
-        { title: "Network Audit", desc: "Risks of open Port 23 (Telnet)." },
-        { title: "Compliance", desc: "Check password policy against NIST." }
+    const suggestionPool = [
+        { title: "Vulnerability Analysis", desc: "Analyze the severity and impact of a Time-Based Blind SQL Injection." },
+        { title: "Remediation", desc: "Provide a secure coding strategy to patch DOM-based XSS vulnerabilities." },
+        { title: "Network Audit", desc: "What are the security implications of exposing RDP (Port 3389) to the public internet?" },
+        { title: "Compliance", desc: "Map our current password hashing strategy (bcrypt) against NIST 800-63B guidelines." },
+        { title: "Incident Response", desc: "Draft an initial response playbook for a suspected ransomware outbreak." },
+        { title: "Architecture Review", desc: "Evaluate the security trade-offs between JWT and stateful session cookies." },
+        { title: "Threat Hunting", desc: "Write a Splunk query to detect lateral movement using Pass-the-Hash." },
+        { title: "Cloud Security", desc: "Identify common misconfigurations in AWS S3 bucket policies." },
+        { title: "Malware Analysis", desc: "Explain the purpose of process hollowing in evasive malware." },
+        { title: "Cryptography", desc: "Why is AES-GCM preferred over AES-CBC for securing web traffic?" },
+        { title: "Web Application", desc: "Explain how Server-Side Request Forgery (SSRF) can be used to pivot into an internal network." },
+        { title: "API Security", desc: "How do I implement rate limiting and thwart BOLA (Broken Object Level Authorization) attacks?" },
+        { title: "Zero Trust", desc: "What are the core principles of a Zero Trust Architecture?" },
+        { title: "DevSecOps", desc: "How can I integrate Semgrep smoothly into a GitHub Actions CI/CD pipeline?" },
+        { title: "Active Directory", desc: "Describe the mechanics of a Kerberoasting attack and how to mitigate it." }
     ];
-    ui.suggestionGrid.innerHTML = '';
-    suggestions.forEach(s => {
-        const card = document.createElement('div');
-        card.className = 'suggestion-card';
-        card.innerHTML = `<h5>${s.title}</h5><p>${s.desc}</p>`;
-        card.onclick = () => { ui.userInput.value = s.desc; ui.userInput.focus(); };
-        ui.suggestionGrid.appendChild(card);
+
+    function renderSuggestions() {
+        if (!ui.suggestionGrid) return;
+        ui.suggestionGrid.innerHTML = '';
+        
+        // Shuffle the pool and pick the first 4
+        const shuffled = [...suggestionPool].sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 4);
+        
+        selected.forEach(s => {
+            const card = document.createElement('div');
+            card.className = 'suggestion-card';
+            card.innerHTML = `<h5>${s.title}</h5><p>${s.desc}</p>`;
+            card.onclick = () => { ui.userInput.value = s.desc; ui.userInput.focus(); };
+            ui.suggestionGrid.appendChild(card);
+        });
+    }
+
+    renderSuggestions();
+
+    // --- [MULTIMODAL] ATTACHMENT HANDLERS ---
+    
+    // Toggle Attachment Menu
+    if (ui.attachmentPlusBtn) {
+        ui.attachmentPlusBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            ui.attachmentMenu.classList.toggle('show');
+            ui.attachmentPlusBtn.classList.toggle('active');
+        });
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (ui.attachmentMenu && !ui.attachmentMenu.contains(e.target) && e.target !== ui.attachmentPlusBtn) {
+            ui.attachmentMenu.classList.remove('show');
+            ui.attachmentPlusBtn.classList.remove('active');
+        }
     });
 
-    // --- 11. INITIALIZATION LOGIC ---
+    // Handle Attachment Menu Clicks
+    if (ui.attachImage) ui.attachImage.onclick = () => { ui.multimodalInput.accept = "image/*"; ui.multimodalInput.click(); };
+    if (ui.attachDoc) ui.attachDoc.onclick = () => { ui.multimodalInput.accept = ".log,.txt,.yaml,.json"; ui.multimodalInput.click(); };
+    if (ui.attachPcap) ui.attachPcap.onclick = () => { ui.multimodalInput.accept = ".pcap,.pcapng"; ui.multimodalInput.click(); };
+
+    if (ui.multimodalInput) {
+        ui.multimodalInput.addEventListener('change', (e) => {
+            handleAttachments(e.target.files);
+            ui.attachmentMenu.classList.remove('show');
+            ui.attachmentPlusBtn.classList.remove('active');
+            ui.multimodalInput.value = ''; // Reset for same file re-upload
+        });
+    }
+
+    // Paste Support
+    ui.userInput.addEventListener('paste', (e) => {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let item of items) {
+            if (item.type.indexOf('image') !== -1) {
+                const blob = item.getAsFile();
+                handleAttachments([blob]);
+            }
+        }
+    });
+
+    function handleAttachments(files) {
+        if (attachedFiles.length + files.length > 10) {
+            alert("Maximum 10 attachments allowed");
+            return;
+        }
+
+        Array.from(files).forEach(file => {
+            const id = Math.random().toString(36).substr(2, 9);
+            const type = file.type.startsWith('image/') ? 'image' : 
+                         (file.name.endsWith('.pcap') || file.name.endsWith('.pcapng') ? 'pcap' : 'doc');
+            
+            const attachment = {
+                file: file,
+                id: id,
+                type: type,
+                name: file.name || `Pasted Image ${attachedFiles.length + 1}`,
+                previewUrl: type === 'image' ? URL.createObjectURL(file) : null
+            };
+
+            attachedFiles.push(attachment);
+            renderAttachmentPreview(attachment);
+        });
+    }
+
+    function renderAttachmentPreview(attachment) {
+        if (!ui.attachmentPreview) return;
+        const item = document.createElement('div');
+        item.className = 'attachment-item';
+        item.setAttribute('data-id', attachment.id);
+        
+        let content = '';
+        if (attachment.type === 'image') {
+            content = `<img src="${attachment.previewUrl}" alt="Preview" />`;
+        } else {
+            const icon = attachment.type === 'pcap' ? 'settings_input_component' : 'description';
+            content = `
+                <span class="material-symbols-outlined" style="font-size: 1.5rem;">${icon}</span>
+                <span style="font-size: 0.6rem; margin-top: 4px; color: #71717a; text-align: center; width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    ${attachment.file.name}
+                </span>
+            `;
+        }
+        
+        item.innerHTML = `
+            ${content}
+            <div class="remove-btn" title="Remove attachment">&times;</div>
+        `;
+        
+        item.querySelector('.remove-btn').onclick = (e) => {
+            e.stopPropagation();
+            removeAttachment(attachment.id);
+        };
+        
+        ui.attachmentPreview.appendChild(item);
+    }
+
+    function removeAttachment(id) {
+        const index = attachedFiles.findIndex(a => a.id === id);
+        if (index !== -1) {
+            if (attachedFiles[index].previewUrl) {
+                URL.revokeObjectURL(attachedFiles[index].previewUrl);
+            }
+            attachedFiles.splice(index, 1);
+            const el = document.getElementById(`attach-${id}`);
+            if (el) el.remove();
+        }
+    }
+
+    function clearAttachments() {
+        if (!ui.attachmentPreview) return;
+        attachedFiles.forEach(a => {
+            if (a.previewUrl) URL.revokeObjectURL(a.previewUrl);
+        });
+        attachedFiles = [];
+        ui.attachmentPreview.innerHTML = '';
+    }
+
     async function init() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const urlSessionId = urlParams.get('session_id');
+        console.log("[*] Initializing Chatbot interface...");
         
-        if (urlSessionId) {
-            console.log(`[*] Initializing with URL Session ID: ${urlSessionId}`);
-            try {
-                // Inform backend to switch to this session
-                await fetchWithAuth('/chatbot/switch_session', {
-                    method: 'POST',
-                    body: JSON.stringify({ session_id: urlSessionId })
-                });
-                currentSessionId = urlSessionId;
-            } catch (e) { console.error("Failed to switch session on init:", e); }
-        }
-
+        // 1. Load the sidebar session list
         await loadSessionList();
-        await restoreSession();
         
-        // [NEW] If redirected with a summary but history is empty, show the summary
-        const urlSummary = urlParams.get('summary');
-        if (urlSummary && ui.chatHistory.children.length === 0) {
-            addMessage('ai', urlSummary, true);
+        // 2. Restore history if an active session exists
+        if (window.ACTIVE_SESSION_ID && window.ACTIVE_SESSION_ID !== "None" && window.ACTIVE_SESSION_ID !== "") {
+            console.log(`[*] Active session detected: ${window.ACTIVE_SESSION_ID}. Restoring...`);
+            currentSessionId = window.ACTIVE_SESSION_ID;
+            await restoreSession();
+        } else {
+            console.log("[*] No active session. Waiting for user input.");
+            ui.welcomeState.style.display = 'block';
+            switchView('upload');
         }
-
-        // Clean up URL after successful load
-        if (urlSessionId) {
-            window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // 3. Set a default model if not set
+        if (!ui.hiddenModelInput.value) {
+            ui.hiddenModelInput.value = 'gemini-2.5-flash';
         }
     }
 

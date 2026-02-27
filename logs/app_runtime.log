@@ -140,3 +140,1372 @@
 [2026-02-25 09:53:27] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
 [2026-02-25 09:53:27] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
 [2026-02-25 09:53:27] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 13:12:02] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 13:12:02] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 13:12:02] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-27 13:12:14] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 13:12:14] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 13:12:14] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-02-27 13:12:14] [INFO    ] [run] [+] Database schema verified.
+[2026-02-27 13:12:14] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-02-27 13:12:31] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 13:12:32] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 13:18:18] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 13:18:18] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 13:18:31] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-02-27 13:18:31] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-02-27 13:18:38] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-02-27 13:18:38] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-02-27 13:18:38] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-02-27 13:18:41] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 13:18:41] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 13:18:42] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-02-27 13:18:43] [INFO    ] [run] [>] GET /network_scanner/whitelisted_ports from 127.0.0.1
+[2026-02-27 13:18:43] [INFO    ] [run] [>] GET /network_scanner/local_ip from 127.0.0.1
+[2026-02-27 13:18:43] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-27 13:18:43] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-27 13:18:43] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-02-27 13:18:43] [INFO    ] [network_scanner] [*] Local IP requested: 192.168.0.121
+[2026-02-27 13:18:43] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-27 13:18:43] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-02-27 13:18:43] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-27 13:18:45] [INFO    ] [run] [>] POST /network_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-02-27 13:18:45] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-02-27 13:19:03] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-02-27 13:19:03] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 13:19:04] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 13:19:04] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 13:21:05] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 13:21:12] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 13:42:28] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 13:42:28] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 13:42:28] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-27 13:42:37] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 13:42:37] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 13:42:37] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-02-27 13:42:37] [INFO    ] [run] [+] Database schema verified.
+[2026-02-27 13:42:37] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-02-27 13:42:44] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 13:42:44] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 13:44:14] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 13:44:15] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 13:44:15] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 13:44:26] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 13:44:47] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 13:52:13] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 13:53:06] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 14:33:39] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 14:33:39] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 14:33:39] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-27 14:33:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 14:33:50] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 14:33:50] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-02-27 14:33:50] [INFO    ] [run] [+] Database schema verified.
+[2026-02-27 14:33:50] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-02-27 14:34:00] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 14:34:00] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 14:34:19] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 14:34:22] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 14:34:50] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 14:34:50] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 14:34:50] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 14:34:52] [INFO    ] [run] [>] GET /chatbot/session/4d575d7a-09d3-4933-b9c3-d7f00c2e64be/graph from 127.0.0.1
+[2026-02-27 14:35:16] [INFO    ] [run] [>] POST /chatbot/delete_all_sessions from 127.0.0.1
+[2026-02-27 14:35:24] [INFO    ] [run] [>] POST /chatbot/delete_all_sessions from 127.0.0.1
+[2026-02-27 14:35:28] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 14:35:28] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 14:35:31] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 14:35:31] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 14:35:34] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-27 14:35:34] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 14:35:34] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-27 14:35:34] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-27 14:35:34] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-27 14:35:34] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 14:35:37] [INFO    ] [run] [>] POST /zap_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-02-27 14:35:37] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-02-27 14:36:49] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 14:36:50] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-02-27 14:36:50] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 14:36:51] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 14:36:51] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 14:36:56] [INFO    ] [run] [>] GET /chatbot/session/5e0af240-37e8-4254-8d1a-03f3704c730d/graph from 127.0.0.1
+[2026-02-27 14:40:32] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 14:40:32] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 14:41:01] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 14:41:03] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 14:41:11] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 14:41:11] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 14:41:11] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 14:41:12] [INFO    ] [run] [>] GET /chatbot/session/5e0af240-37e8-4254-8d1a-03f3704c730d/graph from 127.0.0.1
+[2026-02-27 15:13:20] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-02-27 15:13:22] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 15:13:23] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 15:13:24] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 15:13:26] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 15:13:26] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 15:13:29] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-27 15:13:29] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 15:13:29] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-27 15:13:29] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-27 15:13:29] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-27 15:13:29] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 15:13:32] [INFO    ] [run] [>] POST /zap_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-02-27 15:13:32] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-02-27 15:13:35] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 15:13:36] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-02-27 15:13:36] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 15:13:37] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 15:13:37] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 15:14:52] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 15:14:52] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 15:14:55] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-27 15:14:55] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-27 15:14:55] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 15:14:55] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-27 15:14:55] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-27 15:14:55] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 15:14:58] [INFO    ] [run] [>] POST /zap_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-02-27 15:14:58] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-02-27 15:22:28] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 15:22:28] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 15:22:28] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-27 15:22:39] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 15:22:39] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 15:22:39] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-02-27 15:22:39] [INFO    ] [run] [+] Database schema verified.
+[2026-02-27 15:22:39] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-02-27 15:22:47] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 15:22:48] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 15:22:48] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-27 15:23:23] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-27 15:23:25] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-27 15:23:25] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 15:23:25] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-27 15:23:25] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-27 15:23:26] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 15:23:28] [INFO    ] [run] [>] POST /zap_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-02-27 15:23:28] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-02-27 15:24:16] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 15:24:16] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-02-27 15:24:17] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 15:24:17] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 15:24:18] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 15:25:02] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 15:28:43] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 15:34:38] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 15:34:55] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 15:35:21] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 15:35:34] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 15:42:38] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 15:42:39] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 15:45:22] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 15:45:22] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 15:50:36] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 15:50:42] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 15:50:58] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 15:51:01] [INFO    ] [run] [>] POST /chatbot/execute_action from 127.0.0.1
+[2026-02-27 15:51:01] [INFO    ] [run] [>] POST /network_scanner/scan from 127.0.0.1
+[2026-02-27 15:51:01] [INFO    ] [network_scanner] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T4...
+[2026-02-27 15:51:01] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-02-27 15:51:01] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T4...
+[2026-02-27 15:51:02] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_3142b7b4.txt 44.228.249.3
+[2026-02-27 15:51:47] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-27 15:51:47] [INFO    ] [network_scanner] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[2026-02-27 15:51:47] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_testphp_vulnweb_com.pdf
+[2026-02-27 15:51:49] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-02-27 15:51:51] [INFO    ] [network_scanner] [+] PDF report generated successfully
+[2026-02-27 15:51:51] [INFO    ] [network_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[2026-02-27 15:51:51] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-02-27 15:51:59] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 15:53:28] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 16:07:35] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 16:07:35] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 16:11:59] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 16:11:59] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 16:11:59] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-27 16:12:09] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 16:12:09] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 16:12:09] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-02-27 16:12:09] [INFO    ] [run] [+] Database schema verified.
+[2026-02-27 16:12:09] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-02-27 16:12:17] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 16:12:17] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 16:13:42] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 16:22:22] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 16:22:45] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 16:35:52] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 16:37:32] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 16:37:54] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 16:47:44] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 16:47:44] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 16:47:44] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-02-27 16:47:56] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 16:47:56] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 16:47:56] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-02-27 16:47:56] [INFO    ] [run] [+] Database schema verified.
+[2026-02-27 16:47:56] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-02-27 16:48:15] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 16:48:15] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 16:48:53] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 16:55:13] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 16:55:26] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 16:57:36] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 16:57:41] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 16:57:41] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 16:57:41] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 16:57:51] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 16:57:51] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 17:05:07] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 17:05:07] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 17:05:39] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:05:41] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:10:10] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 17:10:10] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 17:10:13] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-02-27 17:10:14] [INFO    ] [run] [>] GET /network_scanner/local_ip from 127.0.0.1
+[2026-02-27 17:10:14] [INFO    ] [run] [>] GET /network_scanner/whitelisted_ports from 127.0.0.1
+[2026-02-27 17:10:14] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-27 17:10:14] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-27 17:10:14] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-02-27 17:10:14] [INFO    ] [network_scanner] [*] Local IP requested: 192.168.0.121
+[2026-02-27 17:10:14] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-27 17:10:14] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-27 17:10:14] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-02-27 17:10:16] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 17:10:16] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 17:10:19] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-27 17:10:19] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-27 17:10:19] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 17:10:19] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-27 17:10:19] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-27 17:10:19] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 17:10:47] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:10:49] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:19:51] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:19:52] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:20:09] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 17:20:10] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 17:21:47] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 17:21:47] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 17:23:35] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:23:36] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:23:43] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 17:23:43] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 17:25:44] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 17:25:44] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 17:25:48] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-02-27 17:25:48] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 17:25:48] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-02-27 17:25:48] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-02-27 17:25:48] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-02-27 17:25:48] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-02-27 17:26:07] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:26:07] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:26:30] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 17:26:43] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 17:31:04] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:31:04] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:31:21] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 17:31:21] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 17:31:24] [INFO    ] [run] [>] GET /ssl_scanner/ from 127.0.0.1
+[2026-02-27 17:31:24] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-02-27 17:31:24] [INFO    ] [run] [>] GET /ssl_scanner/log_stream from 127.0.0.1
+[2026-02-27 17:31:24] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-02-27 17:31:24] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-02-27 17:31:24] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-02-27 17:31:24] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-02-27 17:31:24] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-02-27 17:31:25] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-02-27 17:31:25] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-02-27 17:31:25] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-02-27 17:31:37] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 17:31:53] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 17:34:47] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:34:48] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:37:20] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 17:37:20] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 17:37:21] [INFO    ] [run] [>] GET /ssl_scanner/log_stream from 127.0.0.1
+[2026-02-27 17:37:22] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-02-27 17:37:22] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-02-27 17:37:22] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-02-27 17:37:22] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-02-27 17:37:22] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-02-27 17:37:22] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-02-27 17:38:37] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:38:41] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:38:57] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:38:59] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:39:16] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:39:19] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:41:37] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:41:40] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:41:44] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 17:41:44] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 17:41:51] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:41:53] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:42:00] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 17:43:21] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:43:23] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:43:28] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 17:43:28] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 17:43:29] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 17:43:29] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 17:43:31] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 17:43:31] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 17:43:34] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-02-27 17:43:34] [INFO    ] [run] [>] GET /network_scanner/local_ip from 127.0.0.1
+[2026-02-27 17:43:34] [INFO    ] [run] [>] GET /network_scanner/whitelisted_ports from 127.0.0.1
+[2026-02-27 17:43:34] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-27 17:43:34] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-27 17:43:34] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-02-27 17:43:34] [INFO    ] [network_scanner] [*] Local IP requested: 192.168.0.121
+[2026-02-27 17:43:34] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-02-27 17:43:34] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-02-27 17:43:34] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-02-27 17:43:37] [INFO    ] [run] [>] POST /network_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-02-27 17:43:37] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-02-27 17:44:09] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-02-27 17:44:09] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:44:09] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:44:29] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 17:44:32] [INFO    ] [run] [>] POST /chatbot/execute_action from 127.0.0.1
+[2026-02-27 17:44:55] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:44:56] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:45:26] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 17:45:26] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:45:26] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 17:45:28] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 17:45:28] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:45:29] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 17:47:01] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-02-27 17:47:05] [INFO    ] [run] [>] POST /chatbot/execute_action from 127.0.0.1
+[2026-02-27 17:47:05] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 17:47:05] [INFO    ] [run] [>] POST /network_scanner/scan from 127.0.0.1
+[2026-02-27 17:47:05] [INFO    ] [network_scanner] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T4...
+[2026-02-27 17:47:05] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-02-27 17:47:05] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T4...
+[2026-02-27 17:47:05] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_66fd06b2.txt 44.228.249.3
+[2026-02-27 17:47:46] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-02-27 17:47:46] [INFO    ] [network_scanner] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[2026-02-27 17:47:46] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\nmap_report_testphp_vulnweb_com.pdf
+[2026-02-27 17:47:51] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-02-27 17:47:53] [INFO    ] [network_scanner] [+] PDF report generated successfully
+[2026-02-27 17:47:53] [INFO    ] [network_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[2026-02-27 17:47:53] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-02-27 17:50:08] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 17:50:08] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 17:50:09] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 17:50:09] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 17:50:09] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 17:50:09] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 17:50:10] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:50:11] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:50:52] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:50:53] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:50:56] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 17:50:56] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 17:53:05] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:53:06] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:54:21] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 17:54:21] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 17:54:22] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-02-27 17:54:22] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-02-27 17:54:23] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-02-27 17:54:23] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-02-27 17:54:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:54:23] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-02-27 17:54:31] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:54:40] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:54:40] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:54:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:54:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:54:58] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:54:58] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:05] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:55:06] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:55:07] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:07] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:16] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:16] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:25] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:25] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:34] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:34] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:43] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:43] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:52] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:55:52] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:56:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:56:24] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:56:24] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:56:33] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:56:33] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 17:56:33] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:56:34] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 17:56:42] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:56:42] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:56:51] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:56:51] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:00] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:00] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:09] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:09] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:18] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:18] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:27] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:27] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:36] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:36] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:45] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:45] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:54] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:57:54] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:03] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:03] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:12] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:12] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:21] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:21] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:30] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:30] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:40] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:58] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:58:58] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:07] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 17:59:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:33] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:33] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:42] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:42] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:51] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:00:51] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:00] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:00] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:09] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:09] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:18] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:18] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:27] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:27] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:36] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:36] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:45] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:45] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:54] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:01:54] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:03] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:03] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:12] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:12] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:21] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:21] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:28] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 18:02:29] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 18:02:30] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:30] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:39] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:39] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:40] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 18:02:40] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 18:02:48] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:48] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:57] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:02:57] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:06] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:06] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:15] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:15] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:24] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:24] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:33] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:33] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:42] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:42] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:51] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:03:51] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:00] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:00] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:09] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:09] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:18] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:18] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:27] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:27] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:36] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:36] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:45] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:45] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:54] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:04:54] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:03] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:03] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:12] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:12] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:21] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:22] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:31] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:31] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:40] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:40] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:58] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:05:58] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:07] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:07] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:16] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:16] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:25] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:25] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:27] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 18:06:27] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 18:06:34] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:34] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:43] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:43] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:52] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:06:52] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:01] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:01] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:10] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:47] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:47] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:56] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:07:56] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:01] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 18:08:02] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 18:08:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:15] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:24] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:24] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:33] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:34] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:43] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:43] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:52] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:08:52] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:01] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:01] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:10] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:10] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:19] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:19] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:28] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:28] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:37] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:37] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:46] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:46] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:55] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:09:55] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:04] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:04] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:13] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:13] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:22] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:22] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:31] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:31] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:40] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:40] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:58] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:10:58] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:07] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:07] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:16] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:16] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:25] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:25] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:34] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:34] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:43] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:43] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:51] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 18:11:51] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 18:11:51] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 18:11:52] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:11:52] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:01] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:01] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 18:12:01] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 18:12:01] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 18:12:01] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:07] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-02-27 18:12:07] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 18:12:07] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 18:12:10] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:10] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-02-27 18:12:10] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:13] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 18:12:19] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:19] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:28] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:28] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:37] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:37] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:46] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:46] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:55] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:12:55] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:04] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:04] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:13] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:13] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:22] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:31] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:13:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:27] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 18:14:27] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 18:14:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:14:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:47] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:55] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:15:56] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:16:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:17:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:21] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 18:18:21] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 18:18:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:47] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:47] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:56] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:18:56] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:19:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:20:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:47] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:47] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:56] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:21:56] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:22:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:23:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:38] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:47] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:47] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:56] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:24:56] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:40] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 18:25:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-02-27 19:38:33] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 19:38:33] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 19:38:34] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 19:38:34] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 19:38:34] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 19:38:34] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 19:39:06] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 19:39:06] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 19:39:07] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 19:39:07] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 19:39:07] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 19:39:07] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 19:48:29] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 19:48:29] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 19:48:29] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 19:48:32] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 19:48:32] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 19:48:32] [INFO    ] [run] [>] GET /favicon.ico from 127.0.0.1
+[2026-02-27 19:48:35] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 19:48:35] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 19:48:35] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 19:48:35] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 19:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 19:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 19:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 19:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 19:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 19:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 19:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 19:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 19:52:18] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 19:52:18] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 19:52:18] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 19:52:18] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 19:52:18] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 19:52:18] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 19:53:57] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 19:53:57] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 19:53:57] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 19:53:58] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 19:53:58] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 19:53:58] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 19:54:13] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 19:54:13] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 19:54:14] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 19:54:14] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 19:54:14] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 19:54:14] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 19:59:42] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 19:59:42] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 19:59:44] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 19:59:44] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 19:59:44] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 19:59:45] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:00:15] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:00:15] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:00:15] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:00:15] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:00:15] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:00:15] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:00:26] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:00:26] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:00:26] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:00:26] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:00:26] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:00:26] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:00:34] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:00:34] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:00:34] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:00:34] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:00:35] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:00:35] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:00:41] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:00:41] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:00:41] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:00:41] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:00:41] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:00:41] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:00:45] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:00:45] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:00:46] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:00:46] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:00:46] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:00:46] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:00:48] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:00:48] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:00:48] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:00:48] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:00:48] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:00:48] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:00:49] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:00:49] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:00:50] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:00:50] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:00:50] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:00:50] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:03:39] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:03:39] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:03:40] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:03:40] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:03:42] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:03:42] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:03:45] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:03:45] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:03:46] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:03:46] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:03:46] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:03:46] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:03:52] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:03:52] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:03:52] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:03:52] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:03:52] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:03:52] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:04:00] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:04:00] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:04:00] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:04:00] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:04:00] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:04:00] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:04:05] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:04:05] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:04:05] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:04:05] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:04:06] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:04:06] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:04:08] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:04:08] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:04:08] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:04:08] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:04:08] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:04:08] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:04:10] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:04:10] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:04:10] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:04:10] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:04:10] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:04:10] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:04:18] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:04:18] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:04:18] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:04:18] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:04:18] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:04:18] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:12:53] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:12:53] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:12:53] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:12:53] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:12:53] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:12:55] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:12:55] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:12:55] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:12:55] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:12:55] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:12:55] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:12:55] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:13:30] [INFO    ] [run] [>] GET /logout from 127.0.0.1
+[2026-02-27 20:13:30] [INFO    ] [auth_bp] [*] User Logout: DivyaViradiya
+[2026-02-27 20:13:30] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-02-27 20:13:30] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-02-27 20:14:08] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-02-27 20:14:09] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-02-27 20:14:09] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-02-27 20:14:18] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:14:18] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:14:18] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:14:18] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:14:18] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:14:18] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:14:30] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:14:30] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:14:30] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:14:30] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:14:30] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:14:31] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:14:31] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:14:31] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:14:32] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:14:32] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:14:32] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:14:32] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:14:35] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:14:35] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:14:36] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:14:36] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:14:36] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:14:36] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:14:54] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:14:54] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:14:54] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:14:54] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:14:54] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:14:54] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:14:58] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:14:58] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:14:58] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:14:58] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:14:58] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:14:58] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:15:20] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:15:20] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:15:21] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:15:21] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:15:21] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:15:22] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:15:22] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:15:22] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:15:22] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:15:23] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:15:23] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:15:23] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:17:00] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:17:00] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:17:01] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:17:01] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:17:01] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:17:02] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:19:13] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:19:13] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:19:13] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:19:13] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:19:13] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:19:13] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:19:15] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:19:15] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:19:16] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:19:16] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:19:16] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:19:16] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:20:06] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-02-27 20:20:06] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-02-27 20:20:10] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:20:10] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:20:10] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:20:10] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:20:10] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:20:11] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:21:32] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:21:32] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:21:33] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:21:33] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:21:33] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:21:33] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:21:34] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:21:34] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:21:34] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:21:34] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:21:35] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:21:35] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:22:31] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:22:31] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:22:31] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:22:31] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:22:31] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:22:32] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:23:01] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:23:01] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:23:01] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:23:01] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:23:01] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:23:02] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:23:02] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:23:02] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:23:02] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:23:02] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:23:02] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:23:03] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:24:47] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:24:47] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:24:47] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:24:48] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:24:48] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:24:48] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:24:50] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:24:50] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:24:50] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:24:50] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:24:50] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:24:51] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:25:05] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:25:05] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:25:06] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:25:06] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:25:06] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:25:06] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:25:07] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:25:07] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:25:07] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:25:07] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:25:07] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:25:07] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:27:33] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:27:33] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:27:34] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:27:34] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:27:34] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:27:35] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:27:35] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:27:35] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:27:35] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:27:35] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:27:35] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:27:35] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:28:02] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:28:02] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:28:03] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:28:03] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:28:03] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:28:04] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:28:04] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:28:04] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:28:04] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:28:04] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:28:05] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:28:05] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:28:25] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-02-27 20:28:26] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-02-27 20:28:29] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:28:29] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:28:29] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:28:29] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:28:29] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:28:29] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:28:54] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:28:54] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:28:54] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:28:54] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:28:54] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:28:54] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:30:27] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:30:27] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:30:29] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:30:29] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:30:29] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:30:29] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:30:29] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:30:29] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:30:29] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:30:29] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:30:29] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:30:30] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:32:43] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:32:43] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:32:43] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:32:43] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:32:43] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:32:43] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:32:44] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:32:44] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:32:45] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:32:45] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:32:45] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:32:45] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:33:29] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:33:29] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:33:30] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:33:30] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:33:30] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:33:30] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:35:22] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:35:22] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:35:22] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:35:22] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:35:23] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:35:23] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:35:24] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:35:24] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:35:24] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:35:24] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:35:24] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:35:24] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:36:04] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:36:04] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:36:04] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:36:04] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:36:04] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:36:05] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:37:25] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:37:25] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:37:25] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:37:25] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:37:25] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:37:25] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:37:32] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:37:32] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:37:32] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:37:32] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:37:33] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:37:33] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:37:37] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:37:37] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:37:37] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:37:37] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:37:37] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:37:37] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:37:44] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:37:44] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:37:44] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:37:44] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:37:44] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:37:44] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:37:57] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:37:57] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:37:58] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:37:58] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:37:58] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:37:58] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:38:04] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:38:04] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:38:05] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:38:05] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:38:05] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:38:05] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:38:07] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:38:07] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:38:07] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:38:07] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:38:07] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:38:07] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:38:17] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:38:17] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:38:17] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:38:17] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:38:17] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:38:19] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:38:19] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:38:19] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:38:19] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:38:19] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:38:19] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:38:19] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:38:49] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:38:49] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:38:50] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:38:50] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:38:50] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:38:50] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:43:18] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:43:18] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:43:18] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:43:18] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:43:18] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:43:19] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:43:19] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:43:19] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:43:19] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:43:19] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:43:19] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:43:19] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:45:56] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:45:56] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:45:56] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:45:56] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:45:56] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:45:56] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:45:57] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:45:57] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:45:57] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:45:58] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:45:58] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:45:58] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:47:56] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:47:56] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:47:57] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:47:57] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:47:57] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:47:58] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:47:58] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:47:58] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:47:58] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:47:58] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:47:58] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:47:58] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:48:05] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:48:05] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:48:05] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:48:05] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:48:05] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:48:05] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:48:32] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:48:32] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:48:32] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:48:32] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:48:32] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:48:32] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:48:34] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:48:34] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:48:34] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:48:34] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:48:34] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:48:34] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:48:35] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:48:35] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:48:36] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:49:00] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:49:00] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:49:01] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:49:01] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:49:01] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:49:01] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:49:02] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:49:02] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:49:02] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:49:02] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:49:02] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:49:02] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:49:13] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:49:13] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:49:14] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:49:14] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:49:14] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:49:14] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:50:01] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:50:01] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:50:02] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:50:02] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:50:02] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:50:02] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:50:03] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:50:03] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:50:03] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:50:03] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:50:03] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:50:03] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:50:57] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:50:57] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:50:58] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:50:58] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:50:58] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:50:58] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:51:07] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-02-27 20:51:08] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-02-27 20:51:14] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-02-27 20:51:14] [INFO    ] [run] [*] Accessing Home Page
+[2026-02-27 20:51:14] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-02-27 20:51:14] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-02-27 20:51:14] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-02-27 20:51:14] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-02-27 20:55:33] [INFO    ] [run] [*] Registering Core Modules...
+[2026-02-27 20:55:33] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-02-27 20:55:33] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...

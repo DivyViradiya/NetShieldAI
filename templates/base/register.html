@@ -18,6 +18,34 @@
     background-image: none !important;
     background-color: var(--bg-secondary) !important;
   }
+
+  /* ── Mobile-only fixes ── */
+  @media (max-width: 768px) {
+    /* Outer wrapper */
+    .min-h-\[85vh\] {
+      min-height: unset !important;
+      padding: 1.25rem 1rem !important;
+      align-items: flex-start !important;
+    }
+    /* Card */
+    .max-w-\[1000px\] {
+      min-height: unset !important;
+      border-radius: 14px !important;
+    }
+    /* Form pane */
+    .w-full.md\:w-1\/2.p-8 {
+      padding: 1.5rem 1.25rem !important;
+    }
+    /* Step header: reduce bottom margin */
+    .mb-8 { margin-bottom: 1rem !important; }
+    /* Button row: ensure Back button doesn't collapse */
+    .flex.gap-3.mt-8 {
+      margin-top: 1.25rem !important;
+      gap: 0.5rem !important;
+    }
+    /* "Already have an account" link closer */
+    .mt-6 { margin-top: 1rem !important; }
+  }
 </style>
 {% endblock %}
 

@@ -125,6 +125,18 @@ http_session = requests.Session()
 
 MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024  # 100 MB
 
+@chatbot_bp.route('/chatbot_uploads/<path:filename>')
+@login_required
+def proxy_uploads(filename):
+    """Proxies static file requests to the FastAPI backend."""
+    target_url = f"{SERVER_PROXY_URL}/chatbot_uploads/{filename}"
+    try:
+        resp = requests.get(target_url, stream=True)
+        resp.raise_for_status()
+        return Response(resp.content, content_type=resp.headers.get('content-type'))
+    except Exception as e:
+        return f"File not found: {e}", 404
+
 def map_llm_mode(mode):
     """Maps frontend mode aliases to backend supported modes."""
     mapping = {
@@ -157,6 +169,7 @@ def get_user_pdf_path(scanner_type, target=None):
         return f"{base_name}.pdf"
 
     # 1. Try Specific File First
+    # 1. Configuration Map
     tool_folder_map = {
         'nmap': ('network_scanner', 'nmap_report'),
         'zap': ('zap_scanner', 'zap_report'),
@@ -164,7 +177,14 @@ def get_user_pdf_path(scanner_type, target=None):
         'packet_sniffer': ('packet_sniffer', 'pcap_analysis_report'),
         'sql': ('sql_scanner', 'sql_report'),
         'killchain': ('killchain', 'killchain_report'),
-        'api': ('api_scanner', 'api_security_report')
+        'api': ('api_scanner', 'api_report'),
+        'semgrep': ('semgrep_scanner', 'semgrep_report')
+    }
+    
+    # 2. Alternative Fallbacks for non-standardized legacy reports
+    alternative_bases = {
+        'api': ['api_scan_report', 'api_security_report'],
+        'packet_sniffer': ['pcap_analysis_report']
     }
     
     if scanner_type not in tool_folder_map:
@@ -181,18 +201,25 @@ def get_user_pdf_path(scanner_type, target=None):
     if not os.path.exists(scan_dir):
         return None
         
-    # Attempt 1: Exact Match
+    # Attempt 1: Exact Match with Target (High Priority)
     if sanitized:
         specific_path = os.path.join(scan_dir, get_filename(base_name, sanitized))
         if os.path.exists(specific_path):
             return specific_path
             
-    # Attempt 2: Fallback to Generic (Legacy)
+    # Attempt 2: Generic Fallback (Legacy or non-targeted)
     generic_path = os.path.join(scan_dir, f"{base_name}.pdf")
     if os.path.exists(generic_path):
         return generic_path
         
-    # Attempt 3: Fallback to LATEST PDF in the directory
+    # Attempt 3: Alternative Generic Bases
+    if scanner_type in alternative_bases:
+        for alt in alternative_bases[scanner_type]:
+            alt_path = os.path.join(scan_dir, f"{alt}.pdf")
+            if os.path.exists(alt_path):
+                return alt_path
+
+    # Attempt 4: Fallback to LATEST PDF in the directory
     # This is critical if target string mismatch occurs or user just wants "result of last scan"
     try:
         files = [os.path.join(scan_dir, f) for f in os.listdir(scan_dir) if f.endswith('.pdf')]
@@ -200,7 +227,7 @@ def get_user_pdf_path(scanner_type, target=None):
             latest_file = max(files, key=os.path.getmtime)
             return latest_file
     except Exception as e:
-        logger.error(f"Error finding latest PDF: {e}")
+        logger.error(f"Error finding latest PDF in {scan_dir}: {e}")
 
     return None
 
@@ -240,8 +267,13 @@ def chatbot_page():
         except Exception as e:
             user_logger.warning(f"Server-side session pre-fetch failed: {e}")
 
+        # [NEW] Active Session Identifier for Frontend
+        active_session_id = session.get('chatbot_session_id')
+
         # Pass the pre-fetched data directly to the template
-        return render_template('chatbot.html', initial_sessions=initial_sessions)
+        return render_template('chatbot.html', 
+                               initial_sessions=initial_sessions, 
+                               active_session_id=active_session_id)
         
     except Exception as e:
         logger.error(f"Error in chatbot_page for user {user_identifier}: {str(e)}", exc_info=True)
@@ -264,7 +296,10 @@ def upload_report():
         logger.info(f"[*] Manual Report Upload: {file.filename} (User: {current_user.username})")
         llm_mode_param = map_llm_mode(request.form.get('llm_mode', 'gemini-2.5-flash'))
 
-        if file and file.filename.endswith('.pdf'):
+        ALLOWED_EXTENSIONS = {'.pdf', '.png', '.jpg', '.jpeg', '.log', '.txt', '.pcap', '.pcapng', '.yaml', '.json'}
+        ext = os.path.splitext(file.filename)[1].lower()
+        
+        if file and ext in ALLOWED_EXTENSIONS:
             if file.content_length > MAX_FILE_SIZE_BYTES:
                 return jsonify({'error': f'File size exceeds the limit of {MAX_FILE_SIZE_BYTES / (1024 * 1024)}MB.'}), 413
 
@@ -306,7 +341,7 @@ def upload_report():
                 user_logger.error(f"An unexpected error occurred during upload: {e}", exc_info=True)
                 return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
-        return jsonify({'error': 'Invalid file format. Only PDF files are allowed.'}), 400
+        return jsonify({'error': f'Invalid file format. Allowed: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
     except Exception as e:
         user_logger.error(f"Error in upload_report: {str(e)}", exc_info=True)
         return jsonify({"error": "An error occurred while uploading the report"}), 500
@@ -342,8 +377,18 @@ def chat_with_ai():
 
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat"
         
-        # Make the request using persistent session
-        response = http_session.post(proxy_chat_url, json=payload_to_server)
+        # Handle attachments if present
+        if request.files:
+            files_to_send = []
+            for f in request.files.getlist('files'):
+                files_to_send.append(('files', (f.filename, f.read(), f.content_type)))
+            
+            # For multi-part, we send the fields as 'data'
+            response = http_session.post(proxy_chat_url, data=payload_to_server, files=files_to_send)
+        else:
+            # Standard JSON request
+            response = http_session.post(proxy_chat_url, json=payload_to_server)
+            
         response.raise_for_status()
 
         result_from_server = response.json()
@@ -377,7 +422,12 @@ def chat_with_ai_stream():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
-        data = request.json
+        # Handle both JSON and Multipart/Form-Data
+        if request.is_json:
+            data = request.json
+        else:
+            data = request.form
+
         user_message = data.get('message')
         verbosity = data.get('verbosity', 'standard')
         is_incognito = data.get('is_incognito', False)
@@ -399,8 +449,17 @@ def chat_with_ai_stream():
         
         user_logger.info(f"Initiating stream to {proxy_chat_url} for session {current_session_id}")
         
-        # Use persistent session for streaming too
-        req = http_session.post(proxy_chat_url, json=payload_to_server, stream=True)
+        # Handle attachments if present
+        if 'files' in request.files:
+            files_to_send = []
+            for f in request.files.getlist('files'):
+                files_to_send.append(('files', (f.filename, f.read(), f.content_type)))
+            
+            # Send as multipart/form-data
+            req = http_session.post(proxy_chat_url, data=payload_to_server, files=files_to_send, stream=True)
+        else:
+            # Send as application/json
+            req = http_session.post(proxy_chat_url, json=payload_to_server, stream=True)
         
         new_sess_id = req.headers.get("X-Session-ID")
         if new_sess_id and new_sess_id != current_session_id:
@@ -793,6 +852,29 @@ def switch_session():
         return jsonify({'success': False, 'message': 'No session_id provided'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@chatbot_bp.route('/session/<session_id>/graph', methods=['GET'])
+@login_required
+def get_session_graph_proxy(session_id):
+    """Proxies the request to fetch the interactive topology graph."""
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
+    try:
+        proxy_url = f"{SERVER_PROXY_URL}/chatbot/session/{session_id}/graph"
+        response = http_session.get(proxy_url, timeout=5)
+        
+        # It's important to return exactly what the backend returned, including status code
+        try:
+            return jsonify(response.json()), response.status_code
+        except Exception:
+            return jsonify({'success': False, 'message': 'Invalid response from backend'}), 500
+            
+    except requests.exceptions.RequestException as e:
+        user_logger.error(f"Error fetching graph proxy: {e}")
+        return jsonify({'success': False, 'message': 'Failed to connect to backend service.'}), 500
+    except Exception as e:
+        user_logger.error(f"Unexpected error in graph proxy: {e}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 # =======================================================================
 # NEW ROUTES FOR PIN, RENAME, DELETE

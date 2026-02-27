@@ -126,8 +126,8 @@ def dashboard():
 @login_required
 def get_killchain_stats():
     """
-    Parses the massive killchain_report.json to provide a high-level 
-    security posture overview for the Dashboard.
+    Parses the killchain_report JSON to provide a high-level 
+    security posture overview for the Home page and Dashboard.
     """
     logger.info(f"\033[34m[*] Fetching Kill Chain Stats for {current_user.username}\033[0m")
     user_dir = get_user_results_dir()
@@ -144,9 +144,19 @@ def get_killchain_stats():
 
     if not user_dir: return jsonify(response)
 
-    # Path to the killchain specific report
-    # Path: Services/results/{User_ID}/killchain/reports/killchain_report.json
-    kc_path = os.path.join(user_dir, 'killchain', 'reports', 'killchain_report.json')
+    # --- FIX 1: Service saves killchain_report_<target>.json (not a fixed name) ---
+    # Use glob to find the most recently modified JSON in the reports folder.
+    kc_reports_dir = os.path.join(user_dir, 'killchain', 'reports')
+    kc_path = None
+    if os.path.isdir(kc_reports_dir):
+        candidates = glob.glob(os.path.join(kc_reports_dir, 'killchain_report*.json'))
+        if candidates:
+            # Pick the most recently modified file
+            kc_path = max(candidates, key=os.path.getmtime)
+
+    if not kc_path:
+        return jsonify(response)
+
     data = load_json_safe(kc_path)
 
     if data:
@@ -155,56 +165,54 @@ def get_killchain_stats():
         response['target'] = data.get('target', 'Unknown')
         response['scan_date'] = data.get('scan_date', 'N/A')
 
-        # 2. Vulnerability Summary (Counts from vulns_grouped)
-        # Structure: "vulns_grouped": { "Critical": [...], "High": [...] }
-        vuln_groups = data.get('vulns_grouped', {})
-        total_vulns = 0
-        
-        for severity in ['Critical', 'High', 'Medium', 'Low', 'Info']:
-            count = len(vuln_groups.get(severity, []))
-            response['vuln_summary'][severity] = count
-            total_vulns += count
+        # --- FIX 2: JSON uses 'all_findings' (flat list with 'severity' field),
+        #            NOT 'vulns_grouped'. Build severity groups from the flat list. ---
+        all_findings = data.get('all_findings', [])
 
-        # 3. Extract Top Risks (Critical & High)
-        # We take up to 5 items, prioritizing Critical then High
-        top_risks = []
-        
-        # Helper to format risk for UI
+        # Group by severity
+        vuln_groups = {"Critical": [], "High": [], "Medium": [], "Low": [], "Info": []}
+        for item in all_findings:
+            sev = item.get('severity', 'Info')
+            # Normalise casing (e.g. 'low' -> 'Low')
+            sev_key = sev.capitalize() if sev.capitalize() in vuln_groups else 'Info'
+            vuln_groups[sev_key].append(item)
+
+        # 2. Vulnerability Summary counts
+        for severity in ['Critical', 'High', 'Medium', 'Low', 'Info']:
+            response['vuln_summary'][severity] = len(vuln_groups[severity])
+
+        # 3. Extract Top Risks (Critical → High → Medium, up to 5)
         def format_risk(vuln_item, sev_label):
             return {
                 "type": vuln_item.get('type', 'Unknown Vulnerability'),
                 "severity": sev_label,
-                "evidence": vuln_item.get('evidence', '')[:100], # Truncate evidence
+                "evidence": vuln_item.get('evidence', '')[:100],
                 "param": vuln_item.get('parameter', 'N/A')
             }
 
-        for v in vuln_groups.get('Critical', []):
-            top_risks.append(format_risk(v, 'Critical'))
-        
-        # If we have space left, add Highs
-        if len(top_risks) < 5:
-            for v in vuln_groups.get('High', []):
+        top_risks = []
+        for sev in ['Critical', 'High', 'Medium']:
+            for v in vuln_groups[sev]:
                 if len(top_risks) >= 5: break
-                top_risks.append(format_risk(v, 'High'))
-        
+                top_risks.append(format_risk(v, sev))
+            if len(top_risks) >= 5: break
+
         response['top_risks'] = top_risks
 
-        # 4. Tech Stack Extraction
-        # Structure: "tech": { "technologies": { "Server": ["nginx"], "Language": ["PHP"] } }
+        # 4. Tech Stack
         tech_data = data.get('tech', {}).get('technologies', {})
         response['tech_stack'] = tech_data
 
-        # 5. Network/Recon Summary
-        # Structure: "network": { "ports": [...] }, "recon": { "subdomains": [...] }
-        ports = data.get('network', {}).get('ports', [])
+        # --- FIX 3: Ports are under network.nmap_scan.ports, not network.ports ---
+        ports = data.get('network', {}).get('nmap_scan', {}).get('ports', [])
         subdomains = data.get('recon', {}).get('subdomains', [])
-        
-        # [UPDATED] Added urls_crawled count here
+        crawled_urls = data.get('web_audit', {}).get('crawled_urls', data.get('urls', []))
+
         response['network_summary'] = {
             "open_ports": len(ports),
             "subdomains": len(subdomains),
-            "urls_crawled": len(data.get('urls', [])), 
-            "ports_list": [f"{p.get('port')}/{p.get('service')}" for p in ports[:5]] # Quick preview
+            "urls_crawled": len(crawled_urls),
+            "ports_list": [f"{p.get('port')}/{p.get('service')}" for p in ports[:5]]
         }
 
     return jsonify(response)

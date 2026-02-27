@@ -586,7 +586,112 @@
         transition: width 1s ease;
     }
 
+
+    /* ==========================================
+       MOBILE RESPONSIVENESS (max-width: 768px)
+       ========================================== */
+    @media (max-width: 768px) {
+      .dashboard-container {
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .hud-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding-bottom: 1.25rem;
+      }
+
+      .hud-title h1 {
+        font-size: 1.75rem !important;
+      }
+
+      .user-profile-badge {
+        width: 100%;
+        justify-content: flex-start !important;
+        box-sizing: border-box;
+      }
+
+      .main-split-grid {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .left-column, .right-column {
+        width: 100%;
+        gap: 1rem;
+      }
+
+      .killchain-hero {
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+
+      .kc-scope-section, .kc-stats-section, .kc-action-section {
+        width: 100%;
+        flex: none;
+      }
+
+      .kc-stats-section {
+        border-left: none;
+        border-right: none;
+        border-top: 1px solid var(--neo-border);
+        border-bottom: 1px solid var(--neo-border);
+        padding: 1.25rem 0;
+        justify-content: space-around;
+        height: auto;
+      }
+
+      .kc-action-section {
+        justify-content: center;
+      }
+
+      .standard-btn {
+        width: 100%;
+      }
+
+      .metrics-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .dual-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .download-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .radar-console {
+        height: 250px;
+      }
+
+      /* Horizontal scrolling for interactive bars */
+      #compliance-tabs-container, 
+      #reports-tabs-container {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .comp-tab-btn {
+        flex-shrink: 0;
+      }
+      
+      /* Scale mono tables for mobile */
+      .mono-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
   </style>
+
 {% endblock %}
 
 {% block content %}

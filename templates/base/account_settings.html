@@ -543,21 +543,110 @@
     }
 
     /* ============================== */
-    /*    RESPONSIVE                  */
+    /*    MOBILE REDESIGN (≤768px)    */
     /* ============================== */
-    @media (max-width: 1024px) {
-      .settings-grid { grid-template-columns: 1fr; }
-      .main-content { padding: 0 2rem; }
-      .identity-banner { flex-direction: column; text-align: center; align-items: center; gap: 1.5rem; }
-      .id-name-row { justify-content: center; }
-      .id-email { text-align: center; }
-      .id-meta-row { justify-content: center; }
+    @media (max-width: 768px) {
+
+      /* --- Page shell --- */
+      .main-content {
+        padding: 0 1rem;
+        min-height: unset;
+        overflow-x: hidden;
+      }
+
+      /* --- Page header: strip to minimal --- */
+      .settings-header {
+        padding: 1.25rem 0 1rem;
+        margin-bottom: 1.25rem;
+      }
+      .header-tagline { display: none; }
+      .header-title {
+        font-size: clamp(1.4rem, 6vw, 2rem);
+        letter-spacing: -0.02em;
+      }
+
+      /* --- Identity banner: compact horizontal card --- */
+      .identity-banner {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+        border-radius: 14px;
+      }
+      .avatar-ring {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        flex-shrink: 0;
+      }
+      .avatar-initials { font-size: 1.2rem; }
+      .avatar-status { width: 10px; height: 10px; }
+      .id-info { text-align: left; }
+      .id-name-row {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 0.1rem;
+        justify-content: flex-start;
+        align-items: baseline;
+      }
+      .id-username { font-size: 1rem; }
+      .id-role-badge { font-size: 0.55rem; }
+      .id-email { font-size: 0.75rem; margin-bottom: 0; }
+      /* Hide the meta grid (org, join date etc) — too much info on mobile */
+      .id-meta-row { display: none; }
+
+      /* --- Settings grid: single column --- */
+      .settings-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding-bottom: 2rem;
+      }
+
+      /* --- Settings cards --- */
+      .settings-card {
+        padding: 1.25rem;
+        border-radius: 14px;
+      }
+
+      /* --- Card head --- */
+      .card-head {
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .card-icon-wrap { width: 38px; height: 38px; }
+      .card-icon-wrap span { font-size: 1.1rem; }
+      .card-head-text h2 { font-size: 0.95rem; }
+      .card-head-text p { font-size: 0.7rem; }
+
+      /* --- Form rows: always single column --- */
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      .form-group { margin-bottom: 1rem; }
+      .form-label { font-size: 0.6rem; }
+
+      /* --- Inputs: proper touch target --- */
+      .neo-input-wrap .neo-input {
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        font-size: 0.88rem;
+      }
+
+      /* --- Submit buttons --- */
+      .btn-submit {
+        padding: 0.85rem 1rem;
+        margin-top: 0.75rem;
+        font-size: 0.72rem;
+      }
     }
-    @media (max-width: 600px) {
-      .form-row { grid-template-columns: 1fr; gap: 0; }
-      .header-title { font-size: 2.5rem; }
-      .id-meta-row { flex-direction: column; align-items: center; gap: 1rem; }
-      .id-meta-item { align-items: center; }
+
+    /* Micro-adjust for very small phones */
+    @media (max-width: 400px) {
+      .main-content { padding: 0 0.75rem; }
+      .identity-banner { padding: 0.875rem 1rem; }
+      .settings-card { padding: 1rem; }
     }
   </style>
 {% endblock %}

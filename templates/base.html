@@ -12,6 +12,7 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/NS_Logo.png') }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
@@ -259,9 +260,13 @@
       /*******************************************/
       /* --- NAVBAR STYLES --- */
       /*******************************************/
+      .navbar-brand {
+        flex-shrink: 0;
+      }
       .navbar-logo-img {
         width: auto;
         height: 28px; 
+        object-fit: contain;
       }
       
       .navbar {
@@ -297,6 +302,20 @@
         margin-left: auto;
       }
       
+      .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text-light);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      body.light-mode .mobile-menu-btn {
+        color: var(--text-primary);
+      }
+      
       .navbar-links {
         list-style: none;
         display: flex;
@@ -318,17 +337,15 @@
         white-space: nowrap;
       }
       
-      .navbar-links li a:hover,
-      .navbar-links li a.active {
+      .navbar-links li a:hover {
         color: var(--text-light);
       }
 
-      body.light-mode .navbar-links li a:hover,
-      body.light-mode .navbar-links li a.active {
+      body.light-mode .navbar-links li a:hover {
         color: var(--accent-primary);
       }
       
-      .navbar-links li a::after {
+      .navbar-links li a:not(.highlight-link)::after {
         content: '';
         position: absolute;
         width: 0;
@@ -339,8 +356,7 @@
         transition: width 0.3s ease-out;
       }
       
-      .navbar-links li a:hover::after,
-      .navbar-links li a.active::after {
+      .navbar-links li a:not(.highlight-link):hover::after {
         width: 100%;
       }
       
@@ -746,13 +762,334 @@
         transform: translateY(0);
       }
       
+      /* ==========================================
+         MOBILE NAV DRAWER — Full Redesign
+         ========================================== */
       @media (max-width: 768px) {
-        .navbar-links {
+
+        /* --- Navbar shell --- */
+        .navbar { padding: 0 1.25rem; }
+
+        /* --- Hamburger button: visible on mobile --- */
+        .mobile-menu-btn {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          width: 40px;
+          height: 40px;
+          gap: 0;
+          background: transparent;
+          border: 1px solid var(--border-default);
+          border-radius: 8px;
+          cursor: pointer;
+          padding: 0;
+          margin-left: 0.75rem;
+          transition: border-color 0.2s;
+          position: relative;
+          flex-shrink: 0;
+        }
+        .mobile-menu-btn:hover { border-color: var(--accent-primary); }
+
+        /* Animated 3-bar → X via CSS spans */
+        .mobile-menu-btn .hb-bar {
+          display: block;
+          width: 18px;
+          height: 2px;
+          background: var(--text-muted);
+          border-radius: 2px;
+          transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease;
+          position: absolute;
+        }
+        .mobile-menu-btn .hb-bar:nth-child(1) { transform: translateY(-5px); }
+        .mobile-menu-btn .hb-bar:nth-child(2) { transform: translateY(0); }
+        .mobile-menu-btn .hb-bar:nth-child(3) { transform: translateY(5px); }
+
+        /* Open state → X */
+        .mobile-menu-btn.is-open .hb-bar:nth-child(1) { transform: translateY(0) rotate(45deg); }
+        .mobile-menu-btn.is-open .hb-bar:nth-child(2) { opacity: 0; width: 0; }
+        .mobile-menu-btn.is-open .hb-bar:nth-child(3) { transform: translateY(0) rotate(-45deg); }
+        .mobile-menu-btn.is-open { border-color: var(--accent-primary); }
+
+        body.light-mode .mobile-menu-btn .hb-bar { background: var(--text-primary); }
+
+        /* --- Backdrop overlay --- */
+        .nav-backdrop {
           display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.6);
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+          z-index: 998;
+          animation: backdropIn 0.25s ease;
         }
-        .navbar {
-          padding: 0.8rem 1.5rem;
+        .nav-backdrop.visible { display: block; }
+        @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Hide original desktop links on mobile */
+        .navbar-links { display: none !important; }
+        .profile-dropdown { display: none !important; }
+
+        /* --- Slide-in Drawer (Glassmorphism Floating Card) --- */
+        .mobile-drawer-links {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          position: fixed;
+          top: 10px;
+          right: 10px;
+          width: min(85vw, 330px);
+          height: auto;
+          max-height: calc(100dvh - 20px);
+          border-radius: 20px;
+          background: rgba(8, 8, 14, 0.72);
+          backdrop-filter: blur(28px) saturate(1.4);
+          -webkit-backdrop-filter: blur(28px) saturate(1.4);
+          border: 1px solid rgba(255, 255, 255, 0.07);
+          box-shadow:
+            0 0 0 1px rgba(255,255,255,0.04) inset,
+            0 24px 60px rgba(0, 0, 0, 0.7),
+            0 8px 24px rgba(0, 0, 0, 0.5);
+          z-index: 999;
+          display: flex !important;
+          flex-direction: column;
+          overflow-y: auto;
+          overscroll-behavior: contain;
+          gap: 0;
+          transform: translateX(calc(100% + 20px));
+          transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          padding-top: 2.8rem; /* space for floating close button */
+          padding-bottom: 1rem;
         }
+        body.light-mode .mobile-drawer-links {
+          background: rgba(248, 250, 252, 0.80);
+          border: 1px solid rgba(99, 102, 241, 0.12);
+          box-shadow:
+            0 0 0 1px rgba(255,255,255,0.7) inset,
+            0 24px 60px rgba(99, 102, 241, 0.15),
+            0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+        .mobile-drawer-links.show-mobile { transform: translateX(0); }
+
+        /* --- Close button: floats top-right of drawer --- */
+        .nav-drawer-close {
+          position: absolute;
+          top: 0.7rem;
+          right: 0.7rem;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 8px;
+          color: var(--text-muted);
+          cursor: pointer;
+          transition: all 0.2s;
+          z-index: 2;
+          flex-shrink: 0;
+        }
+        body.light-mode .nav-drawer-close {
+          background: rgba(0,0,0,0.04);
+          border-color: var(--border-default);
+        }
+        .nav-drawer-close:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+
+        /* --- Inline Profile Card (top of drawer) --- */
+        .nav-profile-card {
+          display: flex;
+          align-items: center;
+          gap: 0.7rem;
+          padding: 0.6rem 1rem;
+          background: rgba(255,255,255,0.02);
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+          flex-shrink: 0;
+        }
+        body.light-mode .nav-profile-card { background: var(--bg-secondary); border-bottom-color: var(--border-default); }
+        .nav-profile-avatar {
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 800;
+          font-size: 1rem;
+          color: white;
+          flex-shrink: 0;
+          text-transform: uppercase;
+        }
+        .nav-profile-info { display: flex; flex-direction: column; min-width: 0; }
+        .nav-profile-name {
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .nav-profile-email {
+          font-size: 0.68rem;
+          color: var(--text-muted);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* --- Nav section label --- */
+        .nav-section-label {
+          font-size: 0.58rem;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: var(--text-muted);
+          font-weight: 700;
+          padding: 0.45rem 1rem 0.2rem;
+          opacity: 0.45;
+        }
+
+        /* --- Nav link items --- */
+        .mobile-drawer-links li {
+          width: 100%;
+          padding: 0 0.5rem;
+          margin: 0;
+          line-height: 1;
+        }
+        /* Kill browser default list spacing for special li wrappers */
+        .mobile-drawer-links li[style*="padding:0"],
+        .mobile-drawer-links li[style*="list-style:none"] { padding: 0 !important; margin: 0 !important; }
+        .mobile-drawer-links li a:not(.highlight-link) {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: var(--text-muted);
+          text-decoration: none;
+          padding: 0.55rem 0.65rem;
+          border-radius: 7px;
+          transition: all 0.18s;
+          letter-spacing: 0.01em;
+          width: 100%;
+        }
+        .mobile-drawer-links li a:not(.highlight-link)::after { display: none; } /* remove underline */
+        .mobile-drawer-links li a:not(.highlight-link):hover {
+          background: rgba(255,255,255,0.04);
+          color: var(--text-primary);
+        }
+        body.light-mode .mobile-drawer-links li a:not(.highlight-link):hover {
+          background: var(--bg-secondary);
+          color: var(--accent-primary);
+        }
+        .mobile-drawer-links li a:not(.highlight-link).active {
+          background: rgba(59,130,246,0.1);
+          color: var(--accent-primary);
+        }
+        body.light-mode .mobile-drawer-links li a:not(.highlight-link).active {
+          background: rgba(99,102,241,0.09);
+          color: var(--accent-primary);
+        }
+
+        /* Register highlight link in drawer */
+        .mobile-drawer-links li a.highlight-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          margin: 0;
+          padding: 0.7rem;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.07em;
+        }
+
+        /* --- Drawer divider --- */
+        .nav-drawer-divider {
+          height: 1px;
+          background: var(--border-default);
+          margin: 0.5rem 1.25rem;
+          flex-shrink: 0;
+        }
+
+        /* --- Profile action links inside drawer --- */
+        .nav-profile-actions {
+          display: flex;
+          flex-direction: column;
+          padding: 0 0.75rem;
+          gap: 0;
+        }
+        .nav-profile-actions a {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: var(--text-muted);
+          text-decoration: none;
+          padding: 0.55rem 0.65rem;
+          border-radius: 7px;
+          transition: all 0.18s;
+          cursor: pointer;
+        }
+        .nav-profile-actions a .material-symbols-outlined { font-size: 1.1rem; }
+        .nav-profile-actions a:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+        body.light-mode .nav-profile-actions a:hover { background: var(--bg-secondary); color: var(--accent-primary); }
+        .nav-profile-actions a.logout { color: #ef4444; }
+        .nav-profile-actions a.logout:hover { background: rgba(239,68,68,0.08); color: #ef4444; }
+        body.light-mode .nav-profile-actions a.logout { color: #dc2626; }
+
+        /* Hide the old desktop dropdown trigger entirely on mobile */
+        .profile-dropdown { display: none !important; }
+
+        /* Prevent body scroll when drawer open */
+        body.nav-open { overflow: hidden; }
+
+      }
+
+      /* --- Footer mobile --- */
+      @media (max-width: 640px) {
+        .footer-content {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 0.5rem;
+          padding: 0 1.25rem;
+        }
+        .footer-left { justify-content: center; }
+        .footer-brand {
+          font-size: 0.7rem;
+          opacity: 0.5;
+          padding-top: 0.35rem;
+          border-top: 1px solid var(--border-default);
+          width: 100%;
+          text-align: center;
+        }
+      }
+      /* --- Desktop nav: always visible above 768px --- */
+      .navbar-links-desktop { display: flex; }
+      /* Hide desktop nav on mobile (handled by mobile_menu_btn) */
+      @media (max-width: 768px) {
+        .navbar-links-desktop { display: none !important; }
+        /* Drawer nav links list is always in DOM — shown via transform */
+        .nav-drawer-header,
+        .nav-profile-card,
+        .nav-section-label,
+        .nav-drawer-divider,
+        .nav-profile-actions { display: flex; } /* visible inside drawer */
+      }
+      /* Hide drawer-only elements on desktop */
+      @media (min-width: 769px) {
+        .mobile-drawer-links { display: none !important; }
+        .nav-backdrop { display: none !important; }
+        .nav-drawer-header,
+        .nav-profile-card,
+        .nav-section-label,
+        .nav-drawer-divider,
+        .nav-profile-actions { display: none; }
       }
     </style>
     {% block extra_css %}
@@ -777,6 +1114,7 @@
       </div>
 
       <div class="navbar-container">
+        <!-- Original Desktop Links -->
         <ul class="navbar-links">
           <li>
             <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
@@ -877,8 +1215,114 @@
             </li>
           </ul>
         {% endif %}
+
+        <!-- Mobile Drawer Menu Toggle -->
+        <button id="mobile-menu-toggle" class="mobile-menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+          <span class="hb-bar"></span>
+          <span class="hb-bar"></span>
+          <span class="hb-bar"></span>
+        </button>
+
+        <!-- Mobile sliding drawer menu -->
+        <ul class="mobile-drawer-links" id="mobile-nav-drawer">
+
+          <!-- Floating close button (absolute on drawer card) -->
+          <li style="list-style:none; padding:0; margin:0; height:0; overflow:visible; position:static;">
+            <button class="nav-drawer-close" id="nav-drawer-close" aria-label="Close menu">
+              <span class="material-symbols-outlined" style="font-size:1rem;">close</span>
+            </button>
+          </li>
+
+          {% if current_user.is_authenticated %}
+          <!-- Inline profile card (mobile only) -->
+          <li style="list-style:none; padding:0;">
+            <div class="nav-profile-card">
+              <div class="nav-profile-avatar">
+                {{ (current_user.full_name.split(' ')[0] if current_user.full_name else current_user.username)[0] }}
+              </div>
+              <div class="nav-profile-info">
+                <span class="nav-profile-name">{{ current_user.full_name if current_user.full_name else current_user.username }}</span>
+                <span class="nav-profile-email">{{ current_user.email }}</span>
+              </div>
+            </div>
+          </li>
+          {% endif %}
+
+          <!-- Navigation label -->
+          <li style="list-style:none; padding:0;"><div class="nav-section-label">Navigation</div></li>
+
+          <li>
+            <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
+              Home
+            </a>
+          </li>
+          <li>
+            {% set hub_blueprints = ['network_scanner_bp', 'zap_scanner_bp', 'ssl_scanner_bp', 'packet_sniffer_bp', 'sql_scanner_bp', 'semgrep_bp', 'api_scanner_bp', 'killchain_bp'] %}
+            <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">
+              Security Hub
+            </a>
+          </li>
+
+          {% if current_user.is_authenticated %}
+            <li>
+              <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">
+                Security Posture
+              </a>
+            </li>
+          {% endif %}
+
+          <li>
+            <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="{% if request.blueprint == 'chatbot_bp' %}active{% endif %}">
+              AI Analyzer
+            </a>
+          </li>
+
+          {% if not current_user.is_authenticated %}
+            <li>
+              <a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active{% endif %}">
+                <span class="material-symbols-outlined" style="font-size:1.1rem;">login</span>Login
+              </a>
+            </li>
+            <li style="padding: 0 0.75rem; margin-top: 0.5rem;">
+              <a href="{{ url_for('auth.register') }}" class="highlight-link {% if request.endpoint == 'auth.register' %}active{% endif %}">
+                Register
+              </a>
+            </li>
+          {% endif %}
+
+          {% if current_user.is_authenticated %}
+          <!-- Divider -->
+          <li style="list-style:none; padding:0;"><div class="nav-drawer-divider"></div></li>
+          <li style="list-style:none; padding:0;"><div class="nav-section-label">Account</div></li>
+
+          <!-- Profile actions -->
+          <li style="list-style:none; padding:0;">
+            <div class="nav-profile-actions">
+              {% if current_user.is_admin %}
+              <a href="{{ url_for('auth.admin_dashboard') }}">
+                <span class="material-symbols-outlined">admin_panel_settings</span>Admin Panel
+              </a>
+              {% endif %}
+              <a href="javascript:void(0)" onclick="toggleTheme()">
+                <span class="material-symbols-outlined" id="mob-theme-icon">light_mode</span>
+                <span id="mob-theme-text">Light Mode</span>
+              </a>
+              <a href="{{ url_for('auth.account_settings') }}">
+                <span class="material-symbols-outlined">manage_accounts</span>Account Settings
+              </a>
+              <a href="{{ url_for('auth.logout') }}" class="logout">
+                <span class="material-symbols-outlined">logout</span>Logout
+              </a>
+            </div>
+          </li>
+          {% endif %}
+
+        </ul>
       </div>
     </nav>
+
+    <!-- Backdrop overlay for mobile drawer -->
+    <div class="nav-backdrop" id="nav-backdrop"></div>
 
     <div class="flash-container">
       {% with messages=get_flashed_messages(with_categories=true) %}
@@ -915,12 +1359,19 @@
     <script>
       function updateThemeUI() {
         const isLight = document.body.classList.contains('light-mode');
+        // Desktop dropdown icons
         const themeIcon = document.getElementById('theme-icon');
         const themeText = document.getElementById('theme-text');
-        
         if (themeIcon && themeText) {
           themeIcon.textContent = isLight ? 'dark_mode' : 'light_mode';
           themeText.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+        }
+        // Mobile drawer icons
+        const mobIcon = document.getElementById('mob-theme-icon');
+        const mobText = document.getElementById('mob-theme-text');
+        if (mobIcon && mobText) {
+          mobIcon.textContent = isLight ? 'dark_mode' : 'light_mode';
+          mobText.textContent = isLight ? 'Dark Mode' : 'Light Mode';
         }
       }
 
@@ -933,45 +1384,85 @@
 
       document.addEventListener('DOMContentLoaded', function () {
         updateThemeUI();
-        // Dropdown Logic
-        const profileButton = document.getElementById('profile-button')
-        const dropdownContent = document.getElementById('profile-dropdown-content')
-      
-        if (profileButton) {
-          profileButton.addEventListener('click', function (event) {
-            event.stopPropagation()
-            const isVisible = dropdownContent.style.display === 'block'
-            dropdownContent.style.display = isVisible ? 'none' : 'block'
-            profileButton.classList.toggle('open', !isVisible)
-          })
+
+        // --- Mobile Drawer Logic ---
+        const toggle    = document.getElementById('mobile-menu-toggle');
+        const drawer    = document.getElementById('mobile-nav-drawer');
+        const backdrop  = document.getElementById('nav-backdrop');
+        const closeBtn  = document.getElementById('nav-drawer-close');
+
+        function openDrawer() {
+          if (!drawer) return;
+          drawer.classList.add('show-mobile');
+          backdrop && backdrop.classList.add('visible');
+          toggle && toggle.classList.add('is-open');
+          toggle && toggle.setAttribute('aria-expanded', 'true');
+          document.body.classList.add('nav-open');
         }
-      
-        window.addEventListener('click', function (event) {
-          if (dropdownContent && !dropdownContent.contains(event.target) && (!profileButton || !profileButton.contains(event.target))) {
-            dropdownContent.style.display = 'none'
-            if (profileButton) {
-              profileButton.classList.remove('open')
+
+        function closeDrawer() {
+          if (!drawer) return;
+          drawer.classList.remove('show-mobile');
+          backdrop && backdrop.classList.remove('visible');
+          toggle && toggle.classList.remove('is-open');
+          toggle && toggle.setAttribute('aria-expanded', 'false');
+          document.body.classList.remove('nav-open');
+        }
+
+        if (toggle) toggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          drawer && drawer.classList.contains('show-mobile') ? closeDrawer() : openDrawer();
+        });
+
+        if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+        if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+        // Close drawer on ESC
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') closeDrawer();
+        });
+
+        // Close drawer when a nav link is clicked (for same-page navigation)
+        if (drawer) {
+          drawer.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+              // Only close if it's a real navigation link (not JS void)
+              if (!link.href.includes('javascript:void')) closeDrawer();
+            });
+          });
+        }
+
+        // --- Desktop Profile Dropdown Logic ---
+        const profileButton  = document.getElementById('profile-button');
+        const dropdownContent = document.getElementById('profile-dropdown-content');
+
+        if (profileButton && dropdownContent) {
+          profileButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            const isVisible = dropdownContent.style.display === 'block';
+            dropdownContent.style.display = isVisible ? 'none' : 'block';
+            profileButton.classList.toggle('open', !isVisible);
+          });
+
+          window.addEventListener('click', function(event) {
+            if (!dropdownContent.contains(event.target) && !profileButton.contains(event.target)) {
+              dropdownContent.style.display = 'none';
+              profileButton.classList.remove('open');
             }
-          }
-        })
-      
-        // Scroll Animation Logic
+          });
+        }
+
+        // --- Scroll Animation Logic ---
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible')
-              }
-            })
+              if (entry.isIntersecting) entry.target.classList.add('is-visible');
+            });
           },
           { threshold: 0.1 }
-        )
-      
-        const elementsToAnimate = document.querySelectorAll('.fade-in-element')
-        elementsToAnimate.forEach((el) => {
-          observer.observe(el)
-        })
-      })
+        );
+        document.querySelectorAll('.fade-in-element').forEach((el) => observer.observe(el));
+      });
     </script>
     {% block extra_scripts %}
 

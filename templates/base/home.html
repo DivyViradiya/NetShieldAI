@@ -459,7 +459,30 @@
 
     
 
-        @media (max-width: 1024px) {
+        /* Desktop equal-height panels — stretch both columns to same height */
+    .overwatch-main-grid {
+      align-items: stretch;
+    }
+    .mob-tab-panel {
+      display: flex;
+      flex-direction: column;
+    }
+    .mob-tab-panel .over-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    /* usage stats should grow to fill panel */
+    #home-usage-stats {
+      flex: 1;
+    }
+    /* reports grid should fill panel too */
+    #home-reports-grid {
+      flex: 1;
+      align-content: start;
+    }
+
+    @media (max-width: 1024px) {
 
           .analyst-minimal-section { grid-template-columns: 1fr; padding: 2rem; }
 
@@ -483,13 +506,326 @@
       .mock-sidebar { display: none; }
       .mock-messages { padding: 2rem 5%; }
       .mock-input-zone { padding: 0 1rem 2rem 1rem; }
-      .reporting-section { grid-template-columns: 1fr; }
+      .reporting-grid { grid-template-columns: 1fr; }
       .lifecycle-grid { grid-template-columns: 1fr; }
       .status-container { grid-template-columns: 1fr 1fr; }
+      .overwatch-metrics { grid-template-columns: repeat(2, 1fr); }
+      .overwatch-main-grid { grid-template-columns: 1fr !important; }
+    }
+
+    @media (max-width: 768px) {
+      /* --- Container & Hero --- */
+      .page-container { padding: 0 1.25rem; padding-bottom: 3rem; } /* #14 bottom padding */
+      .hero-wrapper {
+        min-height: auto;
+        padding-top: 2rem;
+        padding-bottom: 2.5rem;
+        border-bottom: none;
+        align-items: flex-start;
+      }
+      .hero-content { max-width: 100%; }
+      .hero-tagline { font-size: 0.7rem; margin-bottom: 0.75rem; }
+      .hero-title { font-size: clamp(2.2rem, 9vw, 3.2rem); margin-bottom: 1rem; }
+      .hero-title br { display: none; } /* #2 remove extra gap from hardcoded br */
+      .hero-sub {
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+        padding-left: 1rem;
+        border-left-width: 2px;
+      }
+      .hero-actions { flex-direction: column; width: 100%; gap: 0.75rem; }
+      /* #3 touch target height + full-width */
+      .btn-neo-primary { justify-content: center; text-align: center; width: 100%; box-sizing: border-box; padding-top: 0.9rem; padding-bottom: 0.9rem; }
+
+      /* --- Status Bar --- */
+      .status-bar { display: none; }
+
+      /* --- Section Headers --- */
+      .section-header { margin-bottom: 1.25rem; } /* #13 tighter spacing */
+      .section-header .section-label { display: none; }
+      .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        line-height: 1;
+        font-weight: 300;
+        color: var(--neo-text-secondary);
+      }
+      .section-title b { font-size: 2rem; font-weight: 800; color: var(--neo-text-primary); }
+
+      /* --- Module Cards (neo-grid) --- */
+      /* #5 — 2-column at 768px, drops to 1-col at 480px below */
+      .neo-grid { grid-template-columns: repeat(2, 1fr); gap: 0.9rem; margin-bottom: 3rem; }
+      .neo-card {
+        padding: 1.1rem;
+        min-height: 180px; /* #4 consistent card height */
+        aspect-ratio: auto;
+        display: flex;
+        flex-direction: column;
+      }
+      .card-content { flex-grow: 1; } /* #4 push action to bottom */
+      .neo-card h3 {
+        font-size: 1rem !important;
+        font-weight: 700 !important;
+        margin-top: 0.6rem !important;
+        margin-bottom: 0.35rem !important;
+      }
+      .neo-card p {
+        font-size: 0.8rem !important;
+        line-height: 1.45 !important;
+        color: var(--neo-text-secondary) !important;
+      }
+      .neo-card .card-action {
+        color: var(--neo-blue) !important;
+        font-size: 0.68rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.08em !important;
+        margin-top: 0.75rem;
+      }
+      .neo-card .card-action span.material-symbols-outlined { font-size: 1rem !important; }
+
+      /* --- Lifecycle Grid --- */
+      .lifecycle-grid { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 3rem; }
+      .lifecycle-step { padding: 1.25rem 1.25rem 1.5rem; overflow: hidden; } /* #6 ensure overflow hidden */
+      .lifecycle-step h3 { font-size: 1.05rem; }
+      .lifecycle-step p { font-size: 0.88rem; }
+      /* #6 — reduce size + anchor to bottom-right so it doesn't fight icon */
+      .step-number {
+        font-size: 4.5rem;
+        top: auto;
+        bottom: -0.75rem;
+        right: 0.5rem;
+      }
+
+      /* --- Reporting Grid --- */
+      .reporting-grid { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 3rem; }
+      .reporting-card { padding: 1.25rem 1.5rem; }
+      .reporting-card h3 { font-size: 1.05rem; }
+      .reporting-card p { font-size: 0.88rem; }
+
+      /* --- Analyst Section --- */
+      .analyst-minimal-section {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+        border-radius: 14px;
+      }
+      .minimal-ai-content h3 { font-size: 1.2rem !important; }
+      .minimal-desc { font-size: 0.9rem; margin-bottom: 1.25rem; }
+
+      /* #8 — reliable class-based 1-col for feature grid */
+      .mob-1col { grid-template-columns: 1fr !important; gap: 0.75rem !important; margin-bottom: 1.25rem !important; }
+      /* fallback: attribute selector for backwards compat */
+      .analyst-minimal-section [style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+        margin-bottom: 1.25rem !important;
+      }
+      .mini-feature { font-size: 0.82rem; }
+
+      /* Terminal mock */
+      .minimal-ai-visual { order: -1; }
+      .mini-term-body { padding: 1rem !important; gap: 0.9rem !important; }
+      /* #9 — prevent log lines from overflowing */
+      .mini-term-body > div { overflow-x: hidden; word-break: break-word; }
+      .mini-msg { font-size: 0.78rem !important; }
+
+      /* #10 — analyst CTA button full-width */
+      .analyst-minimal-section .btn-neo-primary { width: 100%; box-sizing: border-box; justify-content: center; }
+
+      /* --- Overwatch Mockup — Mobile Redesign --- */
+      .overwatch-mockup { margin-bottom: 3rem; }
+
+      /* 2×2 compact metric grid */
+      .overwatch-metrics {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.6rem !important;
+        margin-bottom: 0.75rem !important;
+      }
+      .over-card {
+        padding: 0.9rem 0.85rem 0.85rem !important;
+        border-radius: 10px !important;
+        overflow: hidden; /* #12 contain long content */
+      }
+      .over-card::before { height: 2px !important; }
+      .over-label {
+        font-size: 0.6rem !important;
+        letter-spacing: 0.06em !important;
+        margin-bottom: 0.35rem !important;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+      }
+      .over-label .material-symbols-outlined { font-size: 0.85rem !important; }
+      .over-value {
+        font-size: 1.3rem !important;
+        line-height: 1.1 !important;
+        margin-bottom: 0.2rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      /* #11 — truncate long sub-text (e.g. scan dates) */
+      .over-sub {
+        font-size: 0.62rem !important;
+        line-height: 1.3 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* Tab bar replaces the side-by-side panel grid */
+      .overwatch-main-grid { display: block !important; }
+
+      /* Mobile tab bar */
+      .mob-tab-bar {
+        display: flex;
+        gap: 0;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--neo-border);
+        border-radius: 10px;
+        padding: 4px;
+        margin-bottom: 0.75rem;
+      }
+      body.light-mode .mob-tab-bar {
+        background: var(--bg-secondary);
+        border-color: var(--border-default);
+      }
+      .mob-tab-btn {
+        flex: 1;
+        padding: 0.5rem 0;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        border: none;
+        background: transparent;
+        color: var(--neo-text-tertiary);
+        border-radius: 7px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+      }
+      .mob-tab-btn.active {
+        background: var(--neo-blue);
+        color: #fff;
+        box-shadow: 0 2px 10px rgba(59,130,246,0.35);
+      }
+      body.light-mode .mob-tab-btn.active { background: #2563eb; }
+      .mob-tab-btn .material-symbols-outlined { font-size: 0.9rem !important; }
+
+      /* Tab panels — flex so over-panel can fill full height */
+      .mob-tab-panel { display: none; }
+      .mob-tab-panel.active {
+        display: flex;
+        flex-direction: column;
+        min-height: 280px;
+      }
+      .mob-tab-panel .over-panel {
+        flex: 1;
+        border-radius: 10px;
+        padding: 1rem;
+        min-height: 280px;
+      }
+      .mob-tab-panel .over-panel-header {
+        margin-bottom: 0.9rem !important;
+      }
+      .over-vuln-item {
+        padding: 0.6rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        border-radius: 7px !important;
+        gap: 0.6rem !important;
+      }
     }
 
     @media (max-width: 640px) {
       .neo-grid { grid-template-columns: 1fr; }
+      .status-container { grid-template-columns: 1fr; }
+      .overwatch-metrics { grid-template-columns: 1fr 1fr !important; }
+    }
+
+    @media (max-width: 480px) {
+      /* Extra-small phones */
+      .page-container { padding: 0 1rem; padding-bottom: 2.5rem; }
+      .hero-title { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+      /* #1 — remove left border on hero-sub at tiny widths */
+      .hero-sub { font-size: 0.85rem; border-left: none; padding-left: 0; }
+      .section-title b { font-size: 1.75rem; }
+      .over-card { padding: 0.75rem 0.7rem !important; }
+      .over-value { font-size: 1.1rem !important; }
+      .mini-msg { max-width: 95% !important; }
+      .analyst-minimal-section { padding: 1.25rem; }
+      /* #5 — 1-column cards on tiny phones */
+      .neo-grid { grid-template-columns: 1fr; gap: 0.85rem; }
+      .neo-card { min-height: 150px; }
+      .neo-card, .lifecycle-step, .reporting-card { padding: 1rem; }
+    }
+
+    /* --- HOME REPORT CARDS --- */
+    .home-report-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem 0.75rem 0.85rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--neo-border);
+      border-radius: 10px;
+      text-decoration: none;
+      gap: 0.25rem;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .home-report-card:hover {
+      border-color: var(--neo-blue);
+      background: rgba(59, 130, 246, 0.05);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15);
+    }
+    .home-report-type {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--neo-text-tertiary);
+      font-weight: 700;
+    }
+    .home-report-label {
+      font-size: 0.7rem;
+      color: var(--neo-text-primary);
+      font-weight: 600;
+      font-family: var(--font-mono);
+      word-break: break-all;
+      line-height: 1.2;
+    }
+    .home-report-date {
+      font-size: 0.58rem;
+      color: var(--neo-text-tertiary);
+      margin-top: 0.1rem;
+    }
+    .home-report-dl-icon {
+      font-size: 0.85rem !important;
+      color: var(--neo-text-tertiary);
+      opacity: 0;
+      margin-top: 0.25rem;
+      transition: opacity 0.2s;
+    }
+    .home-report-card:hover .home-report-dl-icon { opacity: 1; color: var(--neo-blue); }
+
+    body.light-mode .home-report-card {
+      background: linear-gradient(135deg, #ffffff 0%, #f4f7ff 100%);
+      border-color: var(--border-default);
+    }
+    body.light-mode .home-report-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      background: linear-gradient(135deg, #ffffff 0%, #eaefff 100%);
     }
   </style>
 {% endblock %}
@@ -631,7 +967,7 @@
         NetShield's AI Analyst functions as a sophisticated <b>security orchestrator</b>. It interprets complex directives, manages multi-tool execution sequences, and applies real-time security logic to mitigate risks.
       </p>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2.5rem;">
+      <div class="mob-1col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2.5rem;">
         <div class="mini-feature"><span class="material-symbols-outlined">smart_toy</span> Policy Orchestration</div>
         <div class="mini-feature"><span class="material-symbols-outlined">bolt</span> Automated Execution</div>
         <div class="mini-feature"><span class="material-symbols-outlined">fact_check</span> Requirement Mapping</div>
@@ -678,7 +1014,7 @@
 
   <div class="overwatch-mockup fade-in-element">
     {% if current_user.is_authenticated %}
-      <div class="overwatch-metrics" style="grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+      <div class="overwatch-metrics" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
         <div class="over-card blue">
           <div class="over-label">Scan Target <span class="material-symbols-outlined">hub</span></div>
           <div class="over-value" id="home-target" style="font-size: 1.2rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">N/A</div>
@@ -702,23 +1038,44 @@
       </div>
 
       <div class="overwatch-main-grid" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem;">
-        <div class="over-panel">
-          <div class="over-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.75rem; font-weight: 800; color: var(--neo-text-tertiary); letter-spacing: 0.1em;">
-            <span>THREAT RADAR</span>
-            <span class="live-tag" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; animation: pulse 2s infinite;">LIVE FEED</span>
-          </div>
-          <div class="over-vuln-list" id="home-vuln-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <div style="text-align: center; color: var(--neo-text-tertiary); padding: 2rem;">Loading telemetry...</div>
+
+        <!-- Mobile-only tab bar -->
+        <div class="mob-tab-bar" id="overwatch-tab-bar" style="display:none;">
+          <button class="mob-tab-btn active" data-tab="reports" onclick="switchOverwatchTab('reports')">
+            <span class="material-symbols-outlined">folder_shared</span> Reports
+          </button>
+          <button class="mob-tab-btn" data-tab="usage" onclick="switchOverwatchTab('usage')">
+            <span class="material-symbols-outlined">bar_chart</span> System Usage
+          </button>
+        </div>
+
+        <div class="mob-tab-panel active" id="overwatch-panel-reports">
+          <div class="over-panel">
+            <div class="over-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.75rem; font-weight: 800; color: var(--neo-text-tertiary); letter-spacing: 0.1em;">
+              <span style="display:flex; align-items:center; gap:0.5rem;"><span class="material-symbols-outlined" style="font-size:1rem; color:var(--neo-blue);">folder_shared</span>SCAN REPORTS</span>
+              <a href="{{ url_for('dashboard_bp.dashboard') }}" style="font-size:0.6rem; color:var(--neo-blue); text-decoration:none; display:flex; align-items:center; gap:0.25rem; opacity:0.8;">
+                Full Dashboard <span class="material-symbols-outlined" style="font-size:0.8rem;">open_in_new</span>
+              </a>
+            </div>
+            <!-- Reports grid, populated by JS -->
+            <div id="home-reports-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; min-height: 120px;">
+              <div style="grid-column: 1/-1; text-align:center; color:var(--neo-text-tertiary); padding:2rem; font-size:0.8rem; font-family:var(--font-mono);">
+                <span class="material-symbols-outlined" style="font-size:1.5rem; display:block; margin-bottom:0.5rem; opacity:0.4;">sync</span>
+                Loading reports...
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="over-panel">
-          <div class="over-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.75rem; font-weight: 800; color: var(--neo-text-tertiary); letter-spacing: 0.1em;">
-            <span>SYSTEM USAGE</span>
-            <span class="standard-tag" style="background: rgba(59, 130, 246, 0.1); color: var(--neo-blue); padding: 2px 8px; border-radius: 4px; font-size: 0.6rem;">TELEMETRY</span>
-          </div>
-          <div id="home-usage-stats" style="display: flex; flex-direction: column; gap: 1rem;">
-             <!-- Stats populated by JS -->
+        <div class="mob-tab-panel active" id="overwatch-panel-usage">
+          <div class="over-panel">
+            <div class="over-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.75rem; font-weight: 800; color: var(--neo-text-tertiary); letter-spacing: 0.1em;">
+              <span>SYSTEM USAGE</span>
+              <span class="standard-tag" style="background: rgba(59, 130, 246, 0.1); color: var(--neo-blue); padding: 2px 8px; border-radius: 4px; font-size: 0.6rem;">TELEMETRY</span>
+            </div>
+            <div id="home-usage-stats" style="display: flex; flex-direction: column; gap: 1rem;">
+               <!-- Stats populated by JS -->
+            </div>
           </div>
         </div>
       </div>
@@ -790,9 +1147,10 @@
         const compResponse = await fetch('/dashboard/api/stats/compliance');
         const compData = await compResponse.json();
         if (compData.compliance_summary) {
-          const passCount = compData.compliance_summary.passed;
-          const totalCount = compData.compliance_summary.total;
-          document.getElementById('home-compliance').textContent = Math.round((passCount/totalCount)*100) + '%';
+          const passCount  = compData.compliance_summary.passed || 0;
+          const totalCount = compData.compliance_summary.total  || 0;
+          document.getElementById('home-compliance').textContent =
+            totalCount > 0 ? Math.round((passCount / totalCount) * 100) + '%' : 'Unknown';
         }
       } catch (e) { console.error('Error fetching Compliance stats:', e); }
 
@@ -832,5 +1190,102 @@
       } catch (e) { console.error('Error fetching Usage stats:', e); }
     });
     {% endif %}
+
+    // --- Mobile Overwatch Tab Switcher ---
+    function switchOverwatchTab(tab) {
+      const panels = document.querySelectorAll('.mob-tab-panel');
+      const btns   = document.querySelectorAll('.mob-tab-btn');
+      panels.forEach(p => p.classList.remove('active'));
+      btns.forEach(b => b.classList.remove('active'));
+      const panel = document.getElementById('overwatch-panel-' + tab);
+      if (panel) panel.classList.add('active');
+      const btn = document.querySelector('.mob-tab-btn[data-tab="' + tab + '"]');
+      if (btn) btn.classList.add('active');
+    }
+
+    function initOverwatchLayout() {
+      const isMobile = window.innerWidth <= 768;
+      const tabBar   = document.getElementById('overwatch-tab-bar');
+      const panels   = document.querySelectorAll('.mob-tab-panel');
+      if (!tabBar) return;
+
+      if (isMobile) {
+        tabBar.style.display = 'flex';
+        // Enter tab mode — show only reports panel by default
+        panels.forEach(p => p.classList.remove('active'));
+        const reportsPanel = document.getElementById('overwatch-panel-reports');
+        if (reportsPanel) reportsPanel.classList.add('active');
+        document.querySelectorAll('.mob-tab-btn').forEach(b => b.classList.remove('active'));
+        const reportsBtn = document.querySelector('.mob-tab-btn[data-tab="reports"]');
+        if (reportsBtn) reportsBtn.classList.add('active');
+      } else {
+        tabBar.style.display = 'none';
+        // Desktop: show all panels (grid handles layout)
+        panels.forEach(p => p.classList.add('active'));
+      }
+    }
+
+    // --- Home PDF Reports Panel ---
+    function getReportIcon(filename, folder) {
+      const name = (filename + folder).toLowerCase();
+      if (name.includes('killchain'))  return { icon: 'security',      color: '#a855f7' };
+      if (name.includes('network') || name.includes('nmap')) return { icon: 'hub', color: 'var(--neo-blue)' };
+      if (name.includes('zap') || name.includes('web'))      return { icon: 'language',    color: '#ef4444'   };
+      if (name.includes('ssl'))        return { icon: 'verified_user', color: '#10b981'   };
+      if (name.includes('sniffer') || name.includes('pcap')) return { icon: 'query_stats', color: '#f59e0b'   };
+      if (name.includes('sql'))        return { icon: 'storage',       color: 'var(--neo-blue)' };
+      if (name.includes('api'))        return { icon: 'api',           color: '#a855f7'   };
+      if (name.includes('semgrep') || name.includes('sast')) return { icon: 'code',   color: '#ec4899'   };
+      return { icon: 'description', color: 'var(--neo-text-tertiary)' };
+    }
+
+    async function fetchHomeReports() {
+      const grid = document.getElementById('home-reports-grid');
+      if (!grid) return;
+      try {
+        const resp = await fetch('/dashboard/api/stats/reports');
+        const data = await resp.json();
+        const reports = data.reports || [];
+
+        if (reports.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--neo-text-tertiary); font-size:0.8rem; font-family:var(--font-mono);">
+              <span class="material-symbols-outlined" style="font-size:1.8rem; display:block; margin-bottom:0.5rem; opacity:0.3;">folder_open</span>
+              No reports yet. Run a scan to generate one.
+            </div>`;
+          return;
+        }
+
+        // Show up to 8 most recent reports
+        grid.innerHTML = reports.slice(0, 8).map(r => {
+          const { icon, color } = getReportIcon(r.filename, r.folder || '');
+          const dlUrl = '/dashboard/download/report?path=' + encodeURIComponent(r.rel_path);
+          // Truncate label: remove _report_ prefix & .pdf suffix
+          const label = r.filename
+            .replace(/^.*?_report_/i, '')
+            .replace(/\.pdf$/i, '')
+            .replace(/_/g, ' ')
+            .slice(0, 20);
+          return `
+            <a href="${dlUrl}" download class="home-report-card" title="${r.filename}">
+              <span class="material-symbols-outlined" style="font-size:1.6rem; color:${color}; margin-bottom:0.4rem;">${icon}</span>
+              <span class="home-report-type">${r.type}</span>
+              <span class="home-report-label">${label}</span>
+              <span class="home-report-date">${r.date}</span>
+              <span class="material-symbols-outlined home-report-dl-icon">download</span>
+            </a>`;
+        }).join('');
+
+      } catch (e) {
+        console.error('Error fetching reports:', e);
+        if (grid) grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:1.5rem; color:var(--neo-text-tertiary); font-size:0.8rem;">Failed to load reports.</div>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      initOverwatchLayout();
+      fetchHomeReports();
+    });
+    window.addEventListener('resize', initOverwatchLayout);
   </script>
 {% endblock %}
