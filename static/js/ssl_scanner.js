@@ -17,11 +17,18 @@ document.addEventListener('DOMContentLoaded', function() {
         aiProcessingOverlay: document.getElementById('aiProcessingOverlay'),
         aiProcessingText: document.getElementById('aiProcessingText'),
 
+        // History
+        sslHistoryBtn: document.getElementById('sslHistoryBtn'),
+        historyModal: document.getElementById('historyModal'),
+        closeHistoryModal: document.getElementById('closeHistoryModal'),
+        historyTableBody: document.getElementById('historyTableBody'),
+
         // Report Data
         summaryTarget: document.getElementById('summaryTarget'),
         summaryIp: document.getElementById('summaryIp'),
         summaryPort: document.getElementById('summaryPort'),
         summaryRenegotiation: document.getElementById('summaryRenegotiation'),
+        vulnCountDisplay: document.getElementById('vulnCountDisplay'),
         serverConfigDetails: document.getElementById('serverConfigDetails'),
         certificateChainContainer: document.getElementById('certificateChainContainer'),
         protocolsTableBody: document.getElementById('protocolsTableBody'),
@@ -32,6 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var CHATBOT_REDIRECT_URL = '/chatbot'; 
     var ANALYZE_ENDPOINT = '/ssl_scanner/trigger_ai_analysis';
     var REPORT_FILES_ENDPOINT = '/ssl_scanner/report_files';
+    var API_BASE_URL = '/ssl_scanner';
 
     var eventSource = null;
     var reportDownloadUrl = null;
@@ -107,12 +115,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if(elements.summaryIp) elements.summaryIp.textContent = '---';
         if(elements.summaryPort) elements.summaryPort.textContent = '---';
         if(elements.summaryRenegotiation) elements.summaryRenegotiation.textContent = '---';
+        if(elements.vulnCountDisplay) elements.vulnCountDisplay.textContent = '0';
         
-        if(elements.serverConfigDetails) elements.serverConfigDetails.innerHTML = 'Waiting for scan...';
-        if(elements.certificateChainContainer) elements.certificateChainContainer.innerHTML = '<div style="text-align:center; color: var(--neo-text-muted); padding: 2rem; font-family: var(--font-mono); font-size: 0.8rem;">NO CERTIFICATE DATA AVAILABLE.</div>';
-        if(elements.protocolsTableBody) elements.protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: #555; padding: 2rem; font-family: var(--font-mono);">---</td></tr>';
-        if(elements.ciphersTableBody) elements.ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #555; padding: 2rem; font-family: var(--font-mono);">---</td></tr>';
-        if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.85rem;">WAITING FOR SCAN RESULTS...</div>';
+        if(elements.serverConfigDetails) elements.serverConfigDetails.innerHTML = '<div class="flex items-center gap-2"><span class="spinner-sm"></span><span>Waiting for scan...</span></div>';
+        if(elements.certificateChainContainer) elements.certificateChainContainer.innerHTML = '<div style="text-align:center; color: var(--neo-text-muted); padding: 2rem; font-family: var(--font-mono); font-size: 0.8rem;">NO DATA.</div>';
+        if(elements.protocolsTableBody) elements.protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: var(--neo-text-muted); padding: 2rem; font-family: var(--font-mono);">---</td></tr>';
+        if(elements.ciphersTableBody) elements.ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: var(--neo-text-muted); padding: 2rem; font-family: var(--font-mono);">---</td></tr>';
+        if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.85rem;">WAITING...</div>';
         if(elements.resultsContent) elements.resultsContent.textContent = '// JSON OUTPUT';
         
         [elements.downloadReportBtn, elements.analyzeReportDropdown].forEach(function(btn) {
@@ -132,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok) {
                 var data = await response.json();
                 if (data.status === 'success' && data.pdf_report) {
+                    // Use the URL provided by the backend to ensure compatibility with timestamped filenames
                     reportDownloadUrl = data.pdf_report;
                     
                     if (elements.downloadReportBtn) {
@@ -140,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         elements.downloadReportBtn.classList.remove('opacity-70', 'cursor-not-allowed');
                     }
                     
+                    // Keep AI dropdown interactive even if report not verified yet
                     if (elements.analyzeReportDropdown) {
                         elements.analyzeReportDropdown.disabled = false;
                         elements.analyzeReportDropdown.style.opacity = '1';
@@ -152,21 +163,89 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error checking report availability:', error);
         }
         
-        // If fail, disable buttons
-        [elements.downloadReportBtn, elements.analyzeReportDropdown].forEach(function(btn) {
-            if (btn) {
-                btn.disabled = true;
-                btn.style.opacity = '0.7';
+        if (elements.downloadReportBtn) {
+            elements.downloadReportBtn.disabled = true;
+            elements.downloadReportBtn.style.opacity = '0.5';
+        }
+        // AI Analysis button remains enabled so user can see options/trigger logic
+        if (elements.analyzeReportDropdown) {
+            elements.analyzeReportDropdown.disabled = false;
+            elements.analyzeReportDropdown.style.opacity = '1';
+        }
+        reportDownloadUrl = null;
+    }
+    // --- HISTORY LOGIC ---
+
+    async function fetchHistory() {
+        if (!elements.historyTableBody) return;
+        elements.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">LOADING HISTORY...</td></tr>';
+        
+        try {
+            const res = await fetch(`${API_BASE_URL}/report_history`);
+            const data = await res.json();
+            
+            if (data.status === 'success' && data.history) {
+                if (data.history.length === 0) {
+                    elements.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">NO PRIOR SCANS FOUND</td></tr>';
+                    return;
+                }
+                
+                elements.historyTableBody.innerHTML = '';
+                data.history.forEach(item => {
+                    const row = document.createElement('tr');
+                    // Extract target from filename (ssl_report_target.pdf)
+                    let target = item.filename.split('_').slice(2).join('_').replace('.pdf', '');
+                    if (!target) target = 'Previous Scan';
+                    
+                    row.innerHTML = `
+                        <td>${item.created_at}</td>
+                        <td class="font-mono text-blue-400">${target}</td>
+                        <td style="text-align: right;">
+                            <a href="${API_BASE_URL}/download_pdf?filename=${item.filename}" class="btn-dash btn-secondary" style="display: inline-flex; height: 32px; padding: 0 10px;">
+                                <span class="material-symbols-outlined" style="font-size: 1.1rem;">download</span>
+                            </a>
+                        </td>
+                    `;
+                    elements.historyTableBody.appendChild(row);
+                });
+            } else {
+                elements.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-red);">FAILED TO LOAD HISTORY</td></tr>';
+            }
+        } catch (e) {
+            console.error('History fetch failed:', e);
+            elements.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-red);">ERROR LOADING HISTORY</td></tr>';
+        }
+    }
+
+    if (elements.sslHistoryBtn) {
+        elements.sslHistoryBtn.addEventListener('click', () => {
+            elements.historyModal.classList.remove('hidden');
+            fetchHistory();
+        });
+    }
+
+    if (elements.closeHistoryModal) {
+        elements.closeHistoryModal.addEventListener('click', () => {
+            elements.historyModal.classList.add('hidden');
+        });
+    }
+
+    if (elements.historyModal) {
+        elements.historyModal.addEventListener('click', (e) => {
+            if (e.target === elements.historyModal) {
+                elements.historyModal.classList.add('hidden');
             }
         });
-        reportDownloadUrl = null;
     }
 
     // --- AI ANALYSIS LOGIC ---
 
     async function analyzeReport(llmMode) {
-        if (elements.analyzeReportDropdown.disabled) return;
         var target = elements.targetHostInput.value.trim();
+        if (!target) {
+            alert("Please perform a scan or enter a target host first.");
+            return;
+        }
 
         if (!csrfToken) {
             appendLog('[!] Error: CSRF Token missing. Refresh page.');
@@ -175,6 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // UI LOCKDOWN
         elements.llmAnalysisOptions.classList.add('hidden');
+        elements.llmAnalysisOptions.classList.remove('show');
         elements.aiProcessingOverlay.classList.remove('hidden');
         elements.aiProcessingText.textContent = llmMode.includes('gemini') 
             ? 'CONTACTING GEMINI...' 
@@ -251,46 +331,36 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function createFindingCard(finding) {
-        const risk = finding.severity || 'Info';
-        const color = getRiskColor(risk);
+        const risk = (finding.severity || 'Info').toLowerCase();
+        const score = finding.predicted_risk_score !== undefined ? finding.predicted_risk_score : 0;
+        const displayScore = (score * 10).toFixed(1);
         
-        // [NEW] Risk Score Rendering
-        const rawScore = finding.predicted_risk_score !== undefined ? finding.predicted_risk_score : 0;
-        const displayScore = (rawScore * 10).toFixed(1);
-
         const card = document.createElement('div');
-        card.className = 'finding-card';
+        card.className = `discovery-card risk-${risk}`;
         
         card.innerHTML = `
-            <div class="finding-header" style="flex-wrap: wrap; gap: 1rem;">
-                <div class="risk-indicator" style="color: ${color}; min-width: 80px;">
-                    <div class="risk-dot" style="background: ${color};"></div>
-                    <span>${risk}</span>
+            <div class="card-header">
+                <div class="finding-main">
+                    <span class="finding-severity">${risk}</span>
+                    <h4 class="finding-title">${finding.name}</h4>
                 </div>
-
-                <div class="risk-indicator" style="color: var(--neo-text-muted); min-width: 100px;">
-                    <span style="font-size: 0.6rem; opacity: 0.6; margin-right: 4px;">ML RISK:</span>
-                    <span style="color: ${rawScore > 0.5 ? 'var(--neo-red)' : 'var(--neo-text-main)'}">${displayScore}</span>
+                <div class="risk-badge">
+                    <span class="risk-val">${displayScore}</span>
+                    <span class="risk-label">ML RISK</span>
                 </div>
-                
-                <div class="finding-title" style="flex: 1; min-width: 200px;">${finding.name}</div>
-                
-                <span class="material-symbols-outlined expand-icon" style="font-size: 1.25rem;">expand_more</span>
             </div>
             
-            <div class="finding-details">
-                <div class="details-content">
-                    <div class="detail-section">
-                        <span class="detail-label">Vulnerability Analysis</span>
-                        <div class="detail-text">${finding.description || 'Detailed vulnerability analysis is unavailable for this finding.'}</div>
-                    </div>
+            <div class="analysis-footer">
+                ${finding.description || 'No detailed analysis available.'}
+            </div>
 
-                    ${finding.remediation ? `
-                    <div class="detail-section">
-                        <span class="detail-label">Remediation & Solution</span>
-                        <div class="detail-text" style="border-left: 3px solid var(--neo-green); padding-left: 1rem; opacity: 1;">${finding.remediation}</div>
-                    </div>` : ''}
+            <div class="finding-details">
+                ${finding.remediation ? `
+                <div style="margin-top: 0.5rem;">
+                    <span style="font-size: 0.6rem; font-weight: 800; color: var(--neo-text-muted); text-transform: uppercase; display: block; margin-bottom: 4px;">REMEDIATION</span>
+                    <p style="margin: 0; line-height: 1.4; color: var(--neo-text-main);">${finding.remediation}</p>
                 </div>
+                ` : ''}
             </div>
         `;
 
@@ -302,13 +372,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderVulnerabilities(vulnerabilities) {
+        if (!elements.vulnerabilitiesList) return;
         elements.vulnerabilitiesList.innerHTML = '';
+        
+        if (elements.vulnCountDisplay) {
+            elements.vulnCountDisplay.textContent = vulnerabilities ? vulnerabilities.length : 0;
+        }
+
         if (!vulnerabilities || vulnerabilities.length === 0) {
-            elements.vulnerabilitiesList.innerHTML = '<div style="text-align:center; padding: 2rem; color: #10b981; font-family: var(--font-mono); font-size: 0.85rem;">NO VULNERABILITIES DETECTED.</div>';
+            elements.vulnerabilitiesList.innerHTML = `
+                <div class="w-full flex flex-col items-center justify-center" style="grid-column: 1 / -1; padding: 6rem 2rem;">
+                    <div class="ai-pulse-container" style="opacity: 0.3;">
+                      <div class="ai-pulse-ring"></div>
+                      <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-text-muted);">verified_user</span>
+                    </div>
+                    <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.2em; text-align: center;">
+                      NO VULNERABILITIES DETECTED
+                    </div>
+                </div>
+            `;
             return;
         }
 
-        vulnerabilities.forEach(function(vuln) {
+        vulnerabilities.forEach(vuln => {
             const card = createFindingCard(vuln);
             elements.vulnerabilitiesList.appendChild(card);
         });
@@ -359,15 +445,19 @@ document.addEventListener('DOMContentLoaded', function() {
             var titleColor = isLeaf ? 'var(--neo-green)' : 'var(--neo-text-muted)';
             var titleText = isLeaf ? 'Leaf Certificate' : 'Intermediate #' + index;
 
+            // Handle potential string vs object data
+            const subject = typeof cert.common_name === 'object' ? JSON.stringify(cert.common_name) : cert.common_name;
+            const issuer = typeof cert.issuer === 'object' ? JSON.stringify(cert.issuer) : cert.issuer;
+
             card.innerHTML = 
                 '<div style="color: ' + titleColor + '; font-weight: 700; margin-bottom: 8px; font-size: 0.85rem; text-transform:uppercase;">' +
                     titleText +
                 '</div>' +
                 '<div style="display: grid; gap: 4px;">' +
-                    '<div><span class="cert-label">Subject:</span><span class="cert-val">' + cert.common_name + '</span></div>' +
-                    '<div><span class="cert-label">Issuer:</span><span class="cert-val">' + cert.issuer + '</span></div>' +
+                    '<div><span class="cert-label">Subject:</span><span class="cert-val">' + (subject || 'N/A') + '</span></div>' +
+                    '<div><span class="cert-label">Issuer:</span><span class="cert-val">' + (issuer || 'N/A') + '</span></div>' +
                     '<div><span class="cert-label">Validity:</span><span class="cert-val" style="font-size:0.75rem;">' + cert.not_before + ' - ' + cert.not_after + '</span></div>' +
-                    '<div><span class="cert-label">Sig:</span><span class="cert-val" style="font-size:0.75rem;">' + cert.signature_algorithm + ' (' + cert.key_size + '-bit)</span></div>' +
+                    '<div><span class="cert-label">Sig:</span><span class="cert-val" style="font-size:0.75rem;">' + (cert.signature_algorithm || 'N/A') + ' (' + (cert.key_size || '0') + '-bit)</span></div>' +
                 '</div>';
             elements.certificateChainContainer.appendChild(card);
         });
@@ -415,13 +505,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function fetchAndDisplayReport() {
         try {
-            var response = await fetch('/ssl_scanner/report');
+            var targetHost = elements.targetHostInput ? elements.targetHostInput.value.trim() : '';
+            var url = targetHost ? '/ssl_scanner/report?target=' + encodeURIComponent(targetHost) : '/ssl_scanner/report';
+            var response = await fetch(url);
             var data = await response.json();
 
             if (data.status === 'success') {
                 var report = data.content;
                 
                 if(elements.summaryTarget) elements.summaryTarget.textContent = report.target || 'N/A';
+                if(elements.targetHostInput && !elements.targetHostInput.value) {
+                    elements.targetHostInput.value = report.target || '';
+                }
                 if(elements.summaryIp) elements.summaryIp.textContent = report.ip || 'N/A';
                 if(elements.summaryPort) elements.summaryPort.textContent = report.port || 'N/A';
 
@@ -457,12 +552,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            clearScanResults();
-            elements.logOutput.innerHTML = '';
-            toggleSpinner(elements.initiateScanBtn, true);
-            updateStatus('Scanning...', 'busy');
-            
             appendLog('> Initiating SSL scan for ' + targetHost + '...');
+            
+            if(elements.serverConfigDetails) elements.serverConfigDetails.innerHTML = '<div class="flex items-center gap-2" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);"><div class="spinner-sm"></div><span>SCANNING TARGET...</span></div>';
+            if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center" style="grid-column: 1 / -1; padding: 6rem 2rem;"><div class="ai-pulse-container" style="opacity: 0.3;"><div class="ai-pulse-ring"></div><span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-text-muted);">radar</span></div><div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.2em; text-align: center; margin-top: 1rem;">INITIATE A SCAN TO VIEW RESULTS...</div></div>';
 
             try {
                 var response = await fetch('/ssl_scanner/scan', {
@@ -509,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if(elements.refreshReportBtn) {
+    if (elements.refreshReportBtn) {
         elements.refreshReportBtn.addEventListener('click', function() {
             fetchAndDisplayReport();
         });
@@ -520,32 +613,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (reportDownloadUrl) window.location.href = reportDownloadUrl;
         });
     }
-    
-    // Dropdown Handling
-    if (elements.analyzeReportDropdown) {
-        elements.analyzeReportDropdown.addEventListener('click', function(e) {
-            if (!elements.analyzeReportDropdown.disabled) {
-                elements.llmAnalysisOptions.classList.toggle('hidden');
-                e.stopPropagation(); 
-                
-                var closeAiMenu = function(docEvent) {
-                    if (!elements.llmAnalysisOptions.contains(docEvent.target) && docEvent.target !== elements.analyzeReportDropdown) {
-                        elements.llmAnalysisOptions.classList.add('hidden');
-                        document.removeEventListener('click', closeAiMenu);
-                    }
-                };
-                document.addEventListener('click', closeAiMenu);
-            }
-        });
-    }
-    
+
+    // Dropdown Selection Handling (delegated to items)
     if (elements.llmAnalysisOptions) {
         elements.llmAnalysisOptions.addEventListener('click', function(e) {
             e.preventDefault();
-            var option = e.target.closest('a[data-llm-mode]');
+            var option = e.target.closest('[data-llm-mode]');
             if (option) {
                 var llmMode = option.dataset.llmMode;
                 elements.llmAnalysisOptions.classList.add('hidden'); 
+                elements.llmAnalysisOptions.classList.remove('show');
                 analyzeReport(llmMode); 
             }
         });
@@ -560,9 +637,10 @@ document.addEventListener('DOMContentLoaded', function() {
             var message = event.data;
             if (message && message !== ': keep-alive\n\n') {
                 
-                if (message.includes("PDF report generated") || message.includes("SSL scan complete")) {
+                if (message.includes("SSLScan report parsed successfully") || message.includes("SSL_SCAN_FINALIZED_SUCCESSFULLY")) {
                     updateStatus('Complete', 'success');
                     toggleSpinner(elements.initiateScanBtn, false);
+                    appendLog('[✓] Scan complete. Finalizing results...');
                     fetchAndDisplayReport(); 
                 }
 
@@ -576,5 +654,59 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() { appendLog('System Ready. Initializing SSL Scanner...'); }, 100);
     setupLogStream();
     fetchAndDisplayReport(); 
-    checkReportAvailability(); 
 });
+
+// --- Mobile Helper Functions (Global for compatibility) ---
+window.toggleMobileDropdown = function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var menu = el.querySelector('.dropdown-menu');
+    if (!menu) return;
+    
+    var isShow = menu.classList.contains('show');
+    
+    // Close others
+    document.querySelectorAll('.dropdown-menu').forEach(function(m) {
+        m.classList.remove('show');
+        m.classList.add('hidden');
+    });
+
+    if (!isShow) {
+        menu.classList.add('show');
+        menu.classList.remove('hidden');
+    } else {
+        menu.classList.remove('show');
+        menu.classList.add('hidden');
+    }
+
+    var closeDropdown = function(e) {
+        if (!el.contains(e.target)) {
+            menu.classList.remove('show');
+            menu.classList.add('hidden');
+            document.removeEventListener('click', closeDropdown);
+        }
+    };
+    setTimeout(function() { document.addEventListener('click', closeDropdown); }, 10);
+}
+
+window.toggleDashPanel = function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.toggle('open');
+}
+
+window.toggleTerminal = function() {
+    const sheet = document.getElementById('terminalSheet');
+    if (sheet) sheet.classList.toggle('open');
+}
+
+window.copyRawLogs = function() {
+    const content = document.getElementById('resultsContent');
+    if (content) {
+        navigator.clipboard.writeText(content.innerText).then(() => {
+            const btn = event.currentTarget;
+            const originalIcon = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.1rem;">check</span>';
+            setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
+        });
+    }
+}

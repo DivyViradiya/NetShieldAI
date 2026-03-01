@@ -11,6 +11,7 @@ import threading
 import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from Services import report_manager
 
 # MODIFIED: Define path to the local sslscan.exe
 BASE_DIR = Path(__file__).parent.parent
@@ -54,7 +55,7 @@ def log(message, user_id=None, to_console=False, level='INFO'):
         logger.info(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
     
     if user_id:
-        scan_logger.write_log(user_id, "ssl", message, level=level)
+        scan_logger.write_log(user_id, "ssl_scanner", message, level=level)
 
 def send_sse_event(event_name, data="", user_id=None):
     """
@@ -82,10 +83,10 @@ def is_sslscan_available(user_id=None):
 
 # --- PHASE 2: Dynamic Path Helper ---
 
-def get_output_paths(output_dir=None, user_id=None):
+def get_output_paths(output_dir=None, user_id=None, target=None):
     """
     Returns a dictionary of file paths based on the output directory.
-    Now supports user-specific unique temp files.
+    Now supports user-specific unique temp files and timestamped reports.
     """
     if output_dir:
         base = Path(output_dir)
@@ -102,18 +103,25 @@ def get_output_paths(output_dir=None, user_id=None):
     scan_uuid = str(uuid.uuid4())[:8]
     temp_xml = TEMP_DIR / f"ssl_temp_{user_id if user_id else 'sys'}_{scan_uuid}.xml"
 
+    if target:
+        json_filename = report_manager.generate_report_filename("ssl_report", target, "json")
+        pdf_filename = report_manager.generate_report_filename("ssl_report", target, "pdf")
+    else:
+        json_filename = "ssl_report.json"
+        pdf_filename = "ssl_report.pdf"
+
     return {
         "xml_report": temp_xml,
-        "json_report": base / "ssl_report.json",
-        "pdf_report": base / "ssl_report.pdf"
+        "json_report": base / json_filename,
+        "pdf_report": base / pdf_filename
     }
 
-def save_ssl_json(data, output_dir=None, user_id=None):
+def save_ssl_json(data, output_dir=None, user_id=None, target=None):
     """Saves the parsed SSL scan data to a JSON file."""
     if output_dir and isinstance(output_dir, str):
         output_dir = Path(output_dir)
         
-    paths = get_output_paths(output_dir, user_id=user_id)
+    paths = get_output_paths(output_dir, user_id=user_id, target=target)
     json_file = paths["json_report"]
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
@@ -137,7 +145,7 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None):
     if not is_sslscan_available(user_id=user_id):
         return None
     
-    paths = get_output_paths(output_dir, user_id=user_id)
+    paths = get_output_paths(output_dir, user_id=user_id, target=target_host)
     xml_report_path = paths["xml_report"]
     
     # Ensure directory exists
@@ -199,7 +207,7 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None):
         time.sleep(0.5)
 
         if xml_report_path.exists() and xml_report_path.stat().st_size > 0:
-            log(f"[+] SSL scan complete. Report synchronized.", user_id, to_console=True)
+            log(f"[+] SSL raw scan results synchronized.", user_id, to_console=True)
             send_sse_event("ssl_scan_complete", {"target_host": target_host, "report_file": str(xml_report_path)}, user_id=user_id)
             return str(xml_report_path)
         else:
@@ -210,7 +218,7 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None):
         log(f"[!] An unexpected error occurred during SSL scan: {e}", user_id)
         return None
 
-def parse_ssl_report(report_file, output_dir=None, user_id=None):
+def parse_ssl_report(report_file, output_dir=None, user_id=None, target=None):
     """
     Parses an SSLScan XML report file to extract maximum details.
     """
@@ -246,7 +254,7 @@ def parse_ssl_report(report_file, output_dir=None, user_id=None):
         if ssltest_elem is not None:
             scan_summary["target"] = ssltest_elem.get('host', 'N/A')
             scan_summary["port"] = ssltest_elem.get('port', 'N/A')
-            scan_summary["ip"] = ssltest_elem.get('ip', 'N/A') # [FIX] Extract IP address
+            scan_summary["ip"] = ssltest_elem.get('ip', 'N/A')
 
         if (comp := root.find('.//compression')) is not None:
             scan_summary["server_configs"]["tls_compression"] = {
@@ -329,7 +337,7 @@ def parse_ssl_report(report_file, output_dir=None, user_id=None):
             log(f"[!] ML Re-ranking failed for SSL: {e}", user_id)
 
         log(f"[+] SSLScan report parsed successfully.", user_id, to_console=True)
-        save_ssl_json(scan_summary, output_dir=output_dir, user_id=user_id)
+        save_ssl_json(scan_summary, output_dir=output_dir, user_id=user_id, target=target)
         send_sse_event("ssl_report_parsed", scan_summary, user_id=user_id)
         return scan_summary
 

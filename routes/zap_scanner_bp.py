@@ -18,8 +18,9 @@ from extensions import db
 
 # Import the new zap_scanner module
 from Services import zap_scanner
-# --- NEW: Import the PDF generator ---
+# --- NEW: Import the PDF generator and Report Manager ---
 from Services import pdf_generator
+from Services import report_manager
 # --- Import Scan Logger ---
 from Services import scan_logger
 
@@ -108,7 +109,7 @@ def initiate_zap_scan():
         # Pass composite ID to log function
         zap_scanner.log(f"[*] Starting ZAP Quick Scan for {target_url} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
         
-        paths = zap_scanner.get_output_paths(user_output_dir)
+        paths = zap_scanner.get_output_paths(user_output_dir, target=target_url)
         xml_path = paths["xml_report"]
         pdf_path = paths["pdf_report"]
         
@@ -135,7 +136,7 @@ def initiate_zap_scan():
                 finding_count = len(scan_results.get("findings", []))
                 
                 # 3. Save JSON (Pass composite ID to logging inside save function if needed, usually directory is enough)
-                json_report_path = zap_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier)
+                json_report_path = zap_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier, target=target_url)
                 
                 if json_report_path:
                     zap_scanner.log(f"[+] JSON report saved.", current_user_identifier, to_console=True)
@@ -207,8 +208,10 @@ def get_zap_status():
 @zap_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
+    data = request.get_json() or {}
+    target = data.get('target')
     user_dir = get_user_results_dir()
-    paths = zap_scanner.get_output_paths(user_dir)
+    paths = zap_scanner.get_output_paths(user_dir, target=target)
     pdf_path = paths["pdf_report"]
 
     if not pdf_path.exists():
@@ -219,7 +222,8 @@ def trigger_ai_analysis_route():
 
     return jsonify({
         "status": "success",
-        "scanner_type": "zap" 
+        "scanner_type": "zap_scanner",
+        "target": target
     })
 
 
@@ -231,7 +235,8 @@ def trigger_ai_analysis_route():
 @login_required 
 def get_zap_scan_results():
     user_dir = get_user_results_dir()
-    paths = zap_scanner.get_output_paths(user_dir)
+    target = request.args.get('target')
+    paths = zap_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["json_report"]
 
     if not json_path.exists():
@@ -248,11 +253,20 @@ def get_zap_scan_results():
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
+@zap_scanner_bp.route('/report_history', methods=['GET'])
+@login_required
+def get_zap_report_history():
+    user_dir = get_user_results_dir()
+    history = report_manager.get_report_history(user_dir, scanner_name="zap_scanner")
+    return jsonify({"status": "success", "history": history})
+
+
 @zap_scanner_bp.route('/report_files', methods=['GET'])
 @login_required
 def get_report_files():
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = zap_scanner.get_output_paths(user_dir)
+    paths = zap_scanner.get_output_paths(user_dir, target=target)
     
     json_exists = paths["json_report"].exists()
     pdf_exists = paths["pdf_report"].exists()
@@ -262,8 +276,8 @@ def get_report_files():
 
     return jsonify({
         "status": "success",
-        "json_report": "/zap_scanner/scan_results" if json_exists else None,
-        "pdf_report": "/zap_scanner/download_pdf" if pdf_exists else None
+        "json_report": f"/zap_scanner/scan_results?target={target}" if json_exists else None,
+        "pdf_report": f"/zap_scanner/download_pdf?target={target}" if pdf_exists else None
     })
 
 
@@ -271,18 +285,30 @@ def get_report_files():
 @login_required
 def download_pdf_report():
     user_dir = get_user_results_dir()
-    paths = zap_scanner.get_output_paths(user_dir)
-    pdf_path = paths["pdf_report"]
-
-    if not pdf_path.exists():
-        return jsonify({"status": "error", "message": "PDF file not found."}), 404
+    requested_filename = request.args.get('filename')
+    target = request.args.get('target')
     
-    try:
-        directory = str(pdf_path.parent)
-        filename = pdf_path.name
-        return send_from_directory(directory=directory, path=filename, as_attachment=True)
-    except Exception as e:
-        return jsonify({"status": "error", "message": "Could not serve PDF file."}), 500
+    if requested_filename:
+        filename = secure_filename(requested_filename)
+        pdf_path = os.path.join(user_dir, filename)
+    elif target:
+        filename = report_manager.generate_report_filename("zap_scanner", target, "pdf")
+        pdf_path = os.path.join(user_dir, filename)
+    else:
+        history = report_manager.get_report_history(user_dir, scanner_name="zap_scanner")
+        if not history:
+            return jsonify({"status": "error", "message": "No reports found."}), 404
+        pdf_path = history[0]['path']
+        filename = os.path.basename(pdf_path)
+
+    if not os.path.exists(pdf_path):
+        return jsonify({"status": "error", "message": "PDF report file not found."}), 404
+    
+    return send_from_directory(
+        directory=os.path.dirname(pdf_path),
+        path=filename,
+        as_attachment=True
+    )
 
 
 # -----------------------------------------------

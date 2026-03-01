@@ -11,6 +11,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from Services import report_manager
 
 # --- Configuration ---
 BASE_DIR = Path(__file__).parent.parent
@@ -54,7 +55,7 @@ def log(message, user_id=None, to_console=False, level='INFO'):
             logger.debug(message)
     
     if user_id:
-        scan_logger.write_log(user_id, "semgrep", message, level=level)
+        scan_logger.write_log(user_id, "semgrep_scanner", message, level=level)
 
 def send_sse_event(event_name, data="", user_id=None):
     """
@@ -83,7 +84,7 @@ def get_semgrep_path():
         if os.path.exists(p): return p
     return None
 
-def get_output_paths(output_dir=None, user_id=None):
+def get_output_paths(output_dir=None, user_id=None, target=None):
     base = Path(output_dir) if output_dir else DEFAULT_RESULTS_DIR
     user_temp = TEMP_DIR / (user_id if user_id else "default")
     user_temp.mkdir(parents=True, exist_ok=True)
@@ -91,9 +92,14 @@ def get_output_paths(output_dir=None, user_id=None):
     # Multi-user unique raw report
     scan_uuid = str(uuid.uuid4())[:8]
     
+    if target:
+        json_filename = report_manager.generate_report_filename("semgrep_scanner", target, "json")
+    else:
+        json_filename = "semgrep_report.json"
+
     return {
         "raw_json": user_temp / f"semgrep_raw_{scan_uuid}.json",
-        "parsed_json": base / "semgrep_report.json",
+        "parsed_json": base / json_filename,
         "source_code": user_temp / f"source_{scan_uuid}"
     }
 
@@ -145,7 +151,7 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
             log(f"[!] Semgrep finished but no results file was generated.", user_id)
             return None
             
-        return parse_semgrep_results(raw_report_path, output_dir, user_id)
+        return parse_semgrep_results(raw_report_path, output_dir, user_id, target=target_input)
     except Exception as e:
         log(f"Scan Error: {e}", user_id)
         return None
@@ -156,8 +162,8 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
         if source_dir.exists(): shutil.rmtree(source_dir, ignore_errors=True)
         if raw_report_path.exists(): raw_report_path.unlink()
 
-def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None):
-    paths = get_output_paths(output_dir, user_id)
+def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None, target=None):
+    paths = get_output_paths(output_dir, user_id, target=target)
     output_file = paths["parsed_json"]
     try:
         with open(raw_json_path, 'r', encoding='utf-8') as f: 

@@ -13,6 +13,7 @@ import time
 import json
 import uuid
 from pathlib import Path
+from Services import report_manager
 
 # --- PHASE 2: Dynamic Path Setup ---
 # BASE_DIR should be at the root of the project (one level up from Services/network_scanner.py)
@@ -75,11 +76,70 @@ def get_user_whitelisted_ports(user_id):
             user_whitelisted_ports[user_id] = set()
         return user_whitelisted_ports[user_id]
 
-def get_scan_summary(user_id=None):
+def load_results_from_json(output_dir, user_id):
+    """Loads scan results from the persisted JSON report into memory."""
+    paths = get_output_paths(output_dir)
+    json_file = paths["json_report"]
+    user_data = get_user_open_ports(user_id)
+    
+    if json_file.exists():
+        try:
+            with open(json_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                
+                with _ports_lock:
+                    # Update Ports
+                    user_data["TCP"].clear()
+                    user_data["UDP"].clear()
+                    for p in data.get("ports", []):
+                        if p.get("protocol") == "UDP":
+                            user_data["UDP"].append(p)
+                        else:
+                            user_data["TCP"].append(p)
+                    
+                    user_data["metadata"]["os_guess"] = data.get("os_guess", "Unknown")
+                    user_data["metadata"]["host_status"] = data.get("host_status", "Unknown")
+                    
+                    # Insights usually from raw processing, but we can synthesize if missing
+                    current_insights = user_data["metadata"].get("insights", "")
+                    if "waiting" in current_insights.lower() or "scanning" in current_insights.lower() or "detected" in current_insights.lower():
+                        total_found = len(data.get("ports", []))
+                        if total_found > 0:
+                            user_data["metadata"]["insights"] = f"Detected {total_found} active services from persisted report."
+                        else:
+                            user_data["metadata"]["insights"] = "No open services detected in last scan."
+                    
+                return True
+        except Exception as e:
+            log(f"[!] Error loading persisted JSON report: {e}", user_id)
+    return False
+
+def get_scan_summary(user_id=None, output_dir=None):
     """Returns both open ports and scan metadata for the user."""
     user_data = get_user_open_ports(user_id)
+    
+    with _ports_lock:
+        # If memory is empty but we have an output_dir, try loading from disk
+        if not user_data["TCP"] and not user_data["UDP"] and output_dir:
+            # Drop lock to call loader (it has its own lock)
+            pass
+        else:
+            return {
+                "open_ports": sorted(user_data["TCP"] + user_data["UDP"], key=lambda x: int(x['port']) if str(x['port']).isdigit() else 0),
+                "metadata": user_data["metadata"]
+            }
+            
+    # Load from disk if memory was empty
+    if output_dir:
+        load_results_from_json(output_dir, user_id)
+        with _ports_lock:
+            return {
+                "open_ports": sorted(user_data["TCP"] + user_data["UDP"], key=lambda x: int(x['port']) if str(x['port']).isdigit() else 0),
+                "metadata": user_data["metadata"]
+            }
+            
     return {
-        "open_ports": sorted(user_data["TCP"] + user_data["UDP"], key=lambda x: int(x['port'])),
+        "open_ports": [],
         "metadata": user_data["metadata"]
     }
 
@@ -99,7 +159,7 @@ def log(message, user_id=None, queue_id=None, to_console=False, level='INFO'):
             logger.info(message)
     
     if user_id:
-        scan_logger.write_log(user_id, "nmap", message, level=level)
+        scan_logger.write_log(user_id, "network_scanner", message, level=level)
 
 def send_sse_event(event_name, data="", user_id=None, queue_id=None):
     """
@@ -130,7 +190,7 @@ def is_valid_hostname(hostname):
     return re.match(hostname_regex, clean_host) is not None
 
 # --- PHASE 2: Dynamic Path Helper ---
-def get_output_paths(output_dir=None):
+def get_output_paths(output_dir=None, target=None):
     """
     Returns a dictionary of file paths.
     If output_dir is provided (User ID folder), it returns paths in that folder.
@@ -151,9 +211,17 @@ def get_output_paths(output_dir=None):
     # Otherwise, raw results go to TEMP_DIR
     raw_base = base if output_dir else TEMP_DIR
 
+    if target:
+        json_filename = report_manager.generate_report_filename("network_scanner", target, "json")
+        pdf_filename = report_manager.generate_report_filename("network_scanner", target, "pdf")
+    else:
+        json_filename = "nmap_report.json"
+        pdf_filename = "nmap_report.pdf"
+
     return {
         "whitelist": base / "whitelisted_ports.json",
-        "json_report": base / "nmap_report.json",
+        "json_report": base / json_filename,
+        "pdf_report": base / pdf_filename,
         "tcp": raw_base / "scan_result_tcp.txt",
         "udp": raw_base / "scan_result_udp.txt",
         "os": raw_base / "scan_result_os.txt",
@@ -577,9 +645,9 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
 
     return parsed_data
 
-def save_nmap_json(data, output_dir=None, user_id=None, queue_id=None):
+def save_nmap_json(data, output_dir=None, user_id=None, queue_id=None, target=None):
     """Saves the parsed scan data to the JSON report file for PDF generation."""
-    paths = get_output_paths(output_dir)
+    paths = get_output_paths(output_dir, target=target)
     json_file = paths["json_report"]
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
@@ -714,6 +782,17 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     scan_type_display = scan_type.upper() if scan_type != "default" else f"{protocol_type} (Top 1000)"
     log(f"[+] Running {scan_type_display} scan on {target_ip} with timing {timing_flag}...", user_id, queue_id, to_console=True)
 
+    # [NEW] Clear current in-memory results when a new scan starts
+    user_data = get_user_open_ports(user_id)
+    with _ports_lock:
+        user_data["TCP"].clear()
+        user_data["UDP"].clear()
+        user_data["metadata"]["insights"] = f"Actively running {scan_type_display} scan..."
+        user_data["metadata"]["host_status"] = "Scanning"
+    
+    # Notify UI that ports were cleared
+    send_sse_event("ports_updated", {"ports": [], "vulnerabilities_count": 0}, user_id=user_id, queue_id=queue_id)
+
     if not os.path.exists(os.path.dirname(output_file)):
         os.makedirs(os.path.dirname(output_file))
     
@@ -802,7 +881,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         # 2. Generate JSON Report (PDF)
         log(f"[+] Processing results for PDF report...", user_id, queue_id)
         scan_data = parse_nmap_grepable_output(output_file, user_id=user_id, queue_id=queue_id)
-        save_nmap_json(scan_data, output_dir=output_dir, user_id=user_id, queue_id=queue_id)
+        save_nmap_json(scan_data, output_dir=output_dir, user_id=user_id, queue_id=queue_id, target=target_ip)
         
         return str(output_file)
 
@@ -828,10 +907,12 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
     target_protocol = "TCP" if "vuln" in str(filename).lower() or protocol_type == "TCP" else "UDP"
     user_data = get_user_open_ports(user_id)
 
-    if target_protocol == "UDP":
-        user_data["UDP"].clear()
-    else:
-        user_data["TCP"].clear()
+    # Wrap modifications in lock to prevent race conditions with concurrent /open_ports reads
+    with _ports_lock:
+        if target_protocol == "UDP":
+            user_data["UDP"].clear()
+        else:
+            user_data["TCP"].clear()
 
     port_vuln_notes = {}
     current_port_key = None
@@ -839,6 +920,10 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
     total_vuln_count = 0
     
     try:
+        if not os.path.exists(filename):
+            log(f"[!] Scan result file '{filename}' not found.", user_id, queue_id)
+            return []
+
         with open(filename, 'r', encoding='utf-8') as f:
             lines = f.readlines()
             
@@ -847,31 +932,35 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
         # Step 0: Extract Metadata (Host Status, OS, Latency)
         for line in lines:
             if line.startswith("Host:"):
-                if "Status: Up" in line: user_data["metadata"]["host_status"] = "Online"
-                
-                # Extract Latency
-                latency_match = re.search(r"Status: Up\s+\(([\d\.]+s)\s+latency\)", line)
-                if latency_match: user_data["metadata"]["latency"] = latency_match.group(1)
-                
-                # Extract OS Guess
-                os_match = re.search(r"OS: ([^;]+)", line)
-                if os_match: 
-                    user_data["metadata"]["os_guess"] = os_match.group(1).strip()
+                with _ports_lock:
+                    if "Status: Up" in line: user_data["metadata"]["host_status"] = "Online"
                     
-                    # Discovery Insights based on OS/Service
-                    os_str = os_match.group(1).lower()
-                    if "vmware" in os_str or "virtualbox" in os_str or "qemu" in os_str:
-                        user_data["metadata"]["insights"] = "Virtual Machine detected"
-                    elif "aws" in os_str or "azure" in os_str or "google" in os_str:
-                        user_data["metadata"]["insights"] = "Cloud Instance detected"
-                    else:
-                        user_data["metadata"]["insights"] = "Hardware/Physical Host"
-
+                    # Extract Latency
+                    latency_match = re.search(r"Status: Up\s+\(([\d\.]+s)\s+latency\)", line)
+                    if latency_match: user_data["metadata"]["latency"] = latency_match.group(1)
+                    
+                    # Extract OS Guess
+                    os_match = re.search(r"OS: ([^;]+)", line)
+                    if os_match: 
+                        user_data["metadata"]["os_guess"] = os_match.group(1).strip()
+                        
+                        # Discovery Insights based on OS/Service
+                        os_str = os_match.group(1).lower()
+                        if "vmware" in os_str or "virtualbox" in os_str or "qemu" in os_str:
+                            user_data["metadata"]["insights"] = "Virtual Machine environment detected. High probability of containerized or sandboxed infrastructure."
+                        elif "aws" in os_str or "azure" in os_str or "google" in os_str:
+                            user_data["metadata"]["insights"] = "Cloud Infrastructure detected. Review security groups and cloud-specific exposure."
+                        elif "linux" in os_str:
+                            user_data["metadata"]["insights"] = "Linux-based host identified. Check for SSH hardening and outdated kernel vulnerabilities."
+                        elif "windows" in os_str:
+                            user_data["metadata"]["insights"] = "Windows-based host identified. Evaluate SMB, RDP, and WinRM exposure."
+                        else:
+                            user_data["metadata"]["insights"] = "Physical or specialized hardware host identified. Review hardware-specific entry points."
+        
         # Step 1: Pre-parse for vulnerability notes
         for line in lines:
             line = line.strip()
-            
-            if "Ports:" in line and "open" in line:
+            if "Ports:" in line:
                 current_port_key = None
                 ports_section = line.split("Ports:")[1].strip()
                 port_entries = ports_section.split(',')
@@ -880,7 +969,7 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
                     if 'open' in p_str.lower():
                         parts = p_str.split('/')
                         if len(parts) >= 3:
-                            current_port_key = f"{parts[0]}/{parts[2].upper()}"
+                            current_port_key = f"{parts[0].strip()}/{parts[2].strip().upper()}"
                             if current_port_key not in port_vuln_notes:
                                 port_vuln_notes[current_port_key] = []
                             
@@ -891,63 +980,81 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
                 if note and len(port_vuln_notes[current_port_key]) == 0:
                     port_vuln_notes[current_port_key].append(note[:50].replace('\t', ' ') + "...") 
                     total_vuln_count += 1
-            
-            if line.startswith("Host:"):
-                 current_port_key = None
-
+        
         # Step 2: Extract final port list
         for line in lines:
-            if 'Ports:' in line and 'open' in line:
+            if 'Ports:' in line:
                 port_details_str = line.split('Ports:')[1].strip()
                 port_entries = port_details_str.split(',')
 
                 for p_str in port_entries:
                     p_str = p_str.strip()
+                    if not p_str or "Ignored State" in p_str: continue
+
                     temp_parts = p_str.split('/')
-                    if len(temp_parts) < 3:
-                        continue
+                    if len(temp_parts) >= 3:
+                        port_num = temp_parts[0].strip()
+                        state = temp_parts[1].strip().lower()
+                        protocol = temp_parts[2].strip().upper()
                         
-                    if 'open' in p_str.lower():
-                        parts = temp_parts
-                        
-                        port_num = parts[0]
-                        protocol = parts[2].upper() 
-                        service = parts[4].strip() if len(parts) > 4 and parts[4].strip() else 'unknown'
-                        version = parts[6].strip() if len(parts) > 6 and parts[6].strip() else ''
-                        
-                        process_name = get_process_info_for_port(port_num, protocol=protocol, user_id=user_id)
-                        
-                        vuln_key = f"{port_num}/{protocol}"
-                        vulnerability_summary = " | ".join(port_vuln_notes.get(vuln_key, []))
-                        if not vulnerability_summary and is_vuln_scan:
-                            vulnerability_summary = "No immediate CVE/Risk found."
-                        elif not is_vuln_scan:
-                            vulnerability_summary = "Run VULN Scan for details."
+                        if 'open' in state:
+                            service = temp_parts[4].strip() if len(temp_parts) > 4 and temp_parts[4].strip() else 'unknown'
+                            version_raw = temp_parts[6].strip() if len(temp_parts) > 6 else ''
+                            version = version_raw.split('\t')[0].strip()
+                            
+                            process_name = get_process_info_for_port(port_num, protocol=protocol, user_id=user_id)
+                            
+                            vuln_key = f"{port_num}/{protocol}"
+                            vulnerability_summary = " | ".join(port_vuln_notes.get(vuln_key, []))
+                            if not vulnerability_summary and is_vuln_scan:
+                                vulnerability_summary = "No immediate CVE/Risk found."
+                            elif not is_vuln_scan:
+                                vulnerability_summary = "Run VULN Scan for details."
 
-                        port_obj = {
-                            'port': port_num, 'protocol': protocol,
-                            'service': service, 'version': version,
-                            'process_name': process_name,
-                            'vulnerability': vulnerability_summary
-                        }
-                        
-                        if protocol == target_protocol:
+                            port_obj = {
+                                'port': port_num, 'protocol': protocol,
+                                'service': service, 'version': version,
+                                'process_name': process_name,
+                                'vulnerability': vulnerability_summary
+                            }
+                            
                             all_ports_list.append(port_obj)
+                            
+                            # Add to user data structure with Lock
+                            with _ports_lock:
+                                if protocol == "UDP":
+                                    if port_obj not in user_data["UDP"]: user_data["UDP"].append(port_obj)
+                                else:
+                                    if port_obj not in user_data["TCP"]: user_data["TCP"].append(port_obj)
 
-        if target_protocol == "UDP":
-            user_data["UDP"] = all_ports_list
-        else:
-            user_data["TCP"] = all_ports_list
-        
+        # Apply ML Threat Re-ranking for live data
+        try:
+            import Services.threat_reranker as threat_reranker
+            all_ports_list = threat_reranker.rerank_findings(all_ports_list)
+        except Exception as e:
+            log(f"[!] ML Re-ranking skipped or failed for live extraction: {e}", user_id, queue_id)
+
+        with _ports_lock:
+            # [NEW] Default Insights if OS detection was skipped or failed
+            # Always update if we have data, unless it already contains high-quality OS info
+            current_insights = user_data["metadata"].get("insights", "").lower()
+            if "detected" in current_insights or "scanning" in current_insights or "waiting" in current_insights or "no open" in current_insights:
+                total_ports = len(all_ports_list)
+                if total_ports > 0:
+                    user_data["metadata"]["insights"] = f"Detected {total_ports} active services. Host is responding to probes."
+                else:
+                    user_data["metadata"]["insights"] = "No open services detected. Host may be behind a firewall or using port knocking."
+
+        # Send UI Updates
         send_sse_event("ports_updated", {
             "ports": get_current_open_ports(user_id),
             "vulnerabilities_count": total_vuln_count
         }, user_id=user_id, queue_id=queue_id)
 
-    except FileNotFoundError:
-        log(f"[!] Scan result file '{filename}' not found.", user_id, queue_id)
+        send_sse_event("metadata_updated", user_data["metadata"], user_id=user_id, queue_id=queue_id)
+
     except Exception as e:
-        log(f"[!] Error extracting {target_protocol} open ports: {e}", user_id, queue_id)
+        log(f"[!] Error extracting open ports: {e}", user_id, queue_id)
         
     return get_current_open_ports(user_id)
 

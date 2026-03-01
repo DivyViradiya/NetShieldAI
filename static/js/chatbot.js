@@ -408,10 +408,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sync session ID if returned
                 if (result.session_id) currentSessionId = result.session_id;
 
-                ui.uploadStatus.textContent = "Success. Analysis incoming.";
+                ui.uploadStatus.textContent = "Success. Analysis loaded.";
                 
-                // Add AI summary message
-                addMessage('ai', result.summary || result.message);
+                // Add AI summary message as a System component
+                const summaryContent = result.summary || result.message;
+                addMessage('system', `SYSTEM_NOTIFICATION: Upload Complete. Report successfully synchronized. Summary: ${summaryContent}`, false);
                 
                 // Reset view
                 selectedFile = null;
@@ -1418,10 +1419,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sync session ID if returned
                 if (result.session_id) currentSessionId = result.session_id;
 
-                // Backend has injected the summary as a SYSTEM_NOTIFICATION in history.
-                // We send a matching trigger to get the AI to analyze it.
-                ui.userInput.value = `[ANALYSIS_TRIGGER]`;
-                sendMessage();
+                ui.typingIndicator.style.display = 'none';
+                
+                // Directly render the System Core's generated summary
+                addMessage('system', "SYSTEM_NOTIFICATION: Scan Complete. Report successfully synchronized. Summary: " + result.summary, false);
             }
         } catch (e) {
             console.error("Auto-analysis failed:", e);

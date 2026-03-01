@@ -27,6 +27,7 @@ from Services.pentest_modules.traffic_analyzer import TrafficAnalyzer
 
 from Services import pdf_generator
 from Services import scan_logger
+from Services import report_manager
 from logger_setup import logger
 
 # ==========================================
@@ -403,7 +404,7 @@ class KillChainService:
         pass
 
 
-    def _get_paths(self, user_output_dir, queue_id, target_suffix=None):
+    def _get_paths(self, user_output_dir, queue_id, target=None):
         base = Path(user_output_dir)
         reports_dir = base / "reports"
         reports_dir.mkdir(parents=True, exist_ok=True)
@@ -415,8 +416,8 @@ class KillChainService:
         # Multi-user unique pcap
         scan_uuid = str(uuid.uuid4())[:8]
 
-        json_name = f"killchain_report_{target_suffix}.json" if target_suffix else "killchain_report.json"
-        pdf_name = f"killchain_report_{target_suffix}.pdf" if target_suffix else "killchain_report.pdf"
+        json_name = report_manager.generate_report_filename("killchain", target, "json") if target else "killchain_report.json"
+        pdf_name = report_manager.generate_report_filename("killchain", target, "pdf") if target else "killchain_report.pdf"
 
         return {
             "root": base,
@@ -426,7 +427,7 @@ class KillChainService:
             "pcap_file": temp_dir / f"capture_{queue_id}_{scan_uuid}.pcap" 
         }
 
-    def run_job(self, target, profile_name, aggression_level, queue_id, user_output_dir, log_id=None, app=None, target_suffix=None):
+    def run_job(self, target, profile_name, aggression_level, queue_id, user_output_dir, log_id=None, app=None):
         scan_context.queue_id = queue_id
         
         # Track active audit
@@ -458,7 +459,7 @@ class KillChainService:
                 "zap": ZAPScanner(), "exploiter": NetworkExploiter(), "traffic": TrafficAnalyzer()
             }
 
-            paths = self._get_paths(user_output_dir, queue_id, target_suffix=target_suffix)
+            paths = self._get_paths(user_output_dir, queue_id, target=target)
             results = {
                 "target": target, "profile": profile_name, "aggression": aggression_level,
                 "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -572,8 +573,8 @@ class KillChainService:
             if paths["pdf_report"].exists():
                 time.sleep(1.5) # Give file system a moment
                 send_sse_event(queue_id, "report_ready", {
-                    "pdf_url": f"/killchain/download_pdf?target={target_suffix}", # Use target_suffix for URL if available, else target
-                    "json_url": f"/killchain/download_json?target={target_suffix}",
+                    "pdf_url": f"/killchain/download_pdf?target={target}",
+                    "json_url": f"/killchain/download_json?target={target}",
                     "target": target
                 })
             else:

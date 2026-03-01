@@ -8,6 +8,7 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
+from Services import report_manager
 
 # --- CONFIGURATION ---
 # BASE_DIR should be at the root of the project (one level up from Services folder)
@@ -61,7 +62,7 @@ def log(message, user_id=None, to_console=False, level='INFO'):
             logger.debug(message)
     
     if user_id:
-        scan_logger.write_log(user_id, "sql", message, level=level)
+        scan_logger.write_log(user_id, "sql_scanner", message, level=level)
 
 def send_sse_event(event_name, data="", user_id=None):
     """
@@ -95,7 +96,7 @@ def clear_log_file(user_id=None):
         log(f"[!] Error clearing SQL log file: {e}", user_id)
 
 # --- PATH HELPERS ---
-def get_output_paths(output_dir=None):
+def get_output_paths(output_dir=None, target=None):
     if output_dir:
         base = Path(output_dir)
     else:
@@ -108,8 +109,6 @@ def get_output_paths(output_dir=None):
             log(f"[!] Error creating directory {base}: {e}")
 
     # Use the central TEMP_DIR but create a user-specific subfolder to avoid collisions
-    # We derive the user identifier from the output_dir path if possible
-    # Example: Services/results/DivyaViradiya_1/sql_scanner -> DivyaViradiya_1
     try:
         user_id = base.parent.name if base.parent.name != "results" else "default"
     except Exception:
@@ -118,14 +117,21 @@ def get_output_paths(output_dir=None):
     sqlmap_temp = TEMP_DIR / user_id
     sqlmap_temp.mkdir(parents=True, exist_ok=True)
 
+    if target:
+        json_filename = report_manager.generate_report_filename("sql_scanner", target, "json")
+        pdf_filename = report_manager.generate_report_filename("sql_scanner", target, "pdf")
+    else:
+        json_filename = "sql_report.json"
+        pdf_filename = "sql_report.pdf"
+
     return {
-        "json_report": base / "sql_report.json",
-        "pdf_report": base / "sql_report.pdf",
+        "json_report": base / json_filename,
+        "pdf_report": base / pdf_filename,
         "sqlmap_base": sqlmap_temp 
     }
 
-def save_sql_json(data, output_dir=None, user_id=None):
-    paths = get_output_paths(output_dir)
+def save_sql_json(data, output_dir=None, user_id=None, target=None):
+    paths = get_output_paths(output_dir, target=target)
     json_file = paths["json_report"]
     try:
         with open(json_file, 'w', encoding='utf-8') as f:

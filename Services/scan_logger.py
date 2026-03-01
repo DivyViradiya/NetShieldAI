@@ -207,8 +207,8 @@ def clean_log_message(message):
     """
     if not message: return ""
     
-    # Preserve SSE Events
-    if message.startswith("EVENT:"):
+    # Preserve SSE Events (SYSTEM_EVENT or EVENT)
+    if "SYSTEM_EVENT:" in message or "EVENT:" in message:
         return message
     
     # 1. Hide Absolute Paths (Windows/Linux)

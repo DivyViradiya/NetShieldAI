@@ -46,7 +46,7 @@ def _load_models():
 
 def extract_features(name: str, description: str, severity_score: float = 5.0) -> np.ndarray:
     """
-    Extracts the 9 features expected by the TCTR LightGBM model.
+    Extracts the 10 features expected by the TCTR LightGBM model.
     1. desc_length
     2. num_keywords
     3. num_platforms
@@ -56,6 +56,7 @@ def extract_features(name: str, description: str, severity_score: float = 5.0) -
     7. mock_threat_velocity
     8. mock_threat_acceleration
     9. semantic_centrality
+    10. base_severity_score
     """
     desc = description if description else ""
     
@@ -76,21 +77,28 @@ def extract_features(name: str, description: str, severity_score: float = 5.0) -
     velocity = severity_score / days_since_pub
     acceleration = velocity / days_since_pub
     
-    semantic_centrality = 0.5 # Neutral baseline
-    
-    features = [
-        desc_length,
-        num_keywords,
-        num_platforms,
-        num_affected_products,
-        days_since_pub,
-        days_to_modify,
-        velocity,
-        acceleration,
-        semantic_centrality
+    # Create feature names to match training
+    feature_names = [
+        "desc_length", "num_keywords", "num_platforms", "num_affected_products",
+        "days_since_pub_at_horizon", "days_to_last_modify", "mock_threat_velocity",
+        "mock_threat_acceleration", "semantic_centrality", "base_severity_score"
     ]
     
-    return np.array([features])
+    # Static fallback for missing features in real-time scoring
+    days_to_last_modify = days_to_modify # Use the alias defined above
+    semantic_centrality = 0.0
+    
+    features_raw = [
+        float(desc_length), float(num_keywords), float(num_platforms), float(num_affected_products),
+        float(days_since_pub), float(days_to_modify), float(velocity),
+        float(acceleration), float(semantic_centrality), float(severity_score)
+    ]
+    
+    try:
+        import pandas as pd
+        return pd.DataFrame([features_raw], columns=feature_names)
+    except ImportError:
+        return np.array([features_raw])
 
 def predict_threat_risk(finding_name: str, description: str = "", severity: str = "Medium") -> float:
     """
@@ -118,15 +126,17 @@ def predict_threat_risk(finding_name: str, description: str = "", severity: str 
     try:
         if _ranker:
             # Predict raw rank score from LambdaMART
+            # If features is a DataFrame, LightGBM will use feature names
             raw_score = _ranker.predict(features)[0]
             
             # Normalize to [0, 1]. In training, relevance was [0, 4].
-            # Ranker scores can be higher or lower depending on features.
-            # We'll use a sigmoid-like or simple linear mapping for the UI.
             final_score = np.clip(raw_score / 4.0, 0.05, 0.99)
             return round(float(final_score), 4)
     except Exception as e:
-        logger.error(f"Ranking inference failed: {e}")
+        logger.error(f"Ranking inference failed for {finding_name}: {e}")
+        # Log the shape for debugging
+        if hasattr(features, 'shape'):
+            logger.error(f"Feature shape: {features.shape}")
     
     # Fallback to normalized baseline score
     return round(base_score / 10.0, 4)

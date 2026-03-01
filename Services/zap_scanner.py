@@ -14,6 +14,7 @@ from pathlib import Path
 import queue  # Queue for real-time streaming
 import threading
 from logger_setup import logger
+from Services import report_manager
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
@@ -382,7 +383,7 @@ def predict_risk(vulnerability_name: str, description: str = "", severity: str =
         return 0.5
 
 # --- Path Helper ---
-def get_output_paths(output_dir=None):
+def get_output_paths(output_dir=None, target=None):
     if output_dir:
         base = Path(output_dir)
     else:
@@ -394,10 +395,19 @@ def get_output_paths(output_dir=None):
         except Exception as e:
             logger.error(f"[!] Error creating directory {base}: {e}")
 
+    if target:
+        json_filename = report_manager.generate_report_filename("zap_scanner", target, "json")
+        pdf_filename = report_manager.generate_report_filename("zap_scanner", target, "pdf")
+        xml_filename = report_manager.generate_report_filename("zap_scanner", target, "xml")
+    else:
+        json_filename = "zap_report.json"
+        pdf_filename = "zap_report.pdf"
+        xml_filename = "zap_report.xml"
+
     return {
-        "xml_report": base / "zap_report.xml",
-        "json_report": base / "zap_report.json",
-        "pdf_report": base / "zap_report.pdf"
+        "xml_report": base / xml_filename,
+        "json_report": base / json_filename,
+        "pdf_report": base / pdf_filename
     }
 
 # --- Core Scan Logic (Simultaneous Support) ---
@@ -583,12 +593,17 @@ def get_inner_html(element):
     if element is None: return ""
     return (element.text or '') + ''.join(ET.tostring(e, encoding='unicode') for e in element)
 
-def save_json_report(data, output_dir, user_id=None):
+def save_json_report(data, output_dir, user_id=None, target=None):
     try:
         if output_dir:
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
-            json_path = os.path.join(output_dir, "zap_report.json")
+            
+            if target:
+                filename = report_manager.generate_report_filename("zap_scanner", target, "json")
+                json_path = os.path.join(output_dir, filename)
+            else:
+                json_path = os.path.join(output_dir, "zap_report.json")
         else:
             json_path = os.path.join(DEFAULT_RESULTS_DIR, "zap_report.json")
 

@@ -172,3 +172,133 @@ eldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' n
 [17:47:46] [INFO] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
 [17:47:53] [INFO] [+] PDF report generated successfully
 [17:47:53] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[23:50:32] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:50:32] [INFO] [*] Local IP requested: 192.168.29.48
+[17:32:46] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[17:32:46] [INFO] [*] Local IP requested: 192.168.29.48
+[17:55:42] [INFO] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T3...
+[17:55:42] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[17:55:42] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[17:55:42] [INFO] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T3...
+[17:55:43] [INFO] [*] Executing: nmap -T3 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_705b9ca0.txt 44.228.249.3
+[17:56:26] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[17:56:26] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[17:56:26] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[17:56:26] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "44.228.249.3", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[17:56:26] [INFO] [+] Processing results for PDF report...
+[17:56:26] [INFO] [+] JSON Scan report saved
+[17:56:26] [INFO] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[17:56:28] [INFO] [+] PDF report generated successfully
+[17:56:28] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[17:58:03] [INFO] [*] Preparing DEFAULT scan for target: example.com with T3...
+[17:58:03] [INFO] [*] Attempting to resolve hostname: example.com
+[17:58:03] [INFO] [+] Resolved example.com to 104.18.27.120
+[17:58:03] [INFO] [+] Running TCP (Top 1000) scan on 104.18.27.120 with timing -T3...
+[17:58:03] [INFO] [*] Executing: nmap -T3 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_611cf19f.txt 104.18.27.120
+[17:58:21] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[17:58:21] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[17:58:21] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "Cloudflare http proxy", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "443", "protocol": "TCP", "service": "ssl|https", "version": "cloudflare", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8080", "protocol": "TCP", "service": "http", "version": "Cloudflare http proxy", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8443", "protocol": "TCP", "service": "ssl|https-alt", "version": "cloudflare", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[17:58:21] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "104.18.27.120", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "Cloudflare http proxy", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "443", "protocol": "TCP", "service": "ssl|https", "version": "cloudflare", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8080", "protocol": "TCP", "service": "http", "version": "Cloudflare http proxy", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8443", "protocol": "TCP", "service": "ssl|https-alt", "version": "cloudflare", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[17:58:21] [INFO] [+] Processing results for PDF report...
+[17:58:42] [INFO] [+] JSON Scan report saved
+[17:58:42] [INFO] [*] Scan complete. Generating PDF report for example.com...
+[17:58:45] [INFO] [+] PDF report generated successfully
+[17:58:45] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:example.com
+[18:07:13] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:07:13] [INFO] [*] Local IP requested: 192.168.29.48
+[18:39:31] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:39:31] [INFO] [*] Local IP requested: 192.168.29.48
+[18:43:41] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:43:41] [INFO] [*] Local IP requested: 192.168.29.48
+[18:52:12] [INFO] [*] Local IP requested: 192.168.29.48
+[18:52:12] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:57:47] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:57:47] [INFO] [*] Local IP requested: 192.168.29.48
+[18:57:52] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:57:52] [INFO] [*] Local IP requested: 192.168.29.48
+[19:05:59] [INFO] [*] Local IP requested: 192.168.29.48
+[19:05:59] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:07:32] [INFO] [*] Local IP requested: 192.168.29.48
+[19:07:32] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:52:22] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:52:22] [INFO] [*] Local IP requested: 192.168.29.48
+[19:57:40] [INFO] [*] Preparing DEFAULT scan for target: 192.168.29.1 with T4...
+[19:57:40] [INFO] [+] Running TCP (Top 1000) scan on 192.168.29.1 with timing -T4...
+[19:57:40] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_fa13de40.txt 192.168.29.1
+[19:58:55] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[19:58:55] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[19:58:56] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "443", "protocol": "TCP", "service": "ssl|http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "7443", "protocol": "TCP", "service": "ssl|oracleas-https?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8080", "protocol": "TCP", "service": "http-proxy", "version": "JCO4032|JUICEJFV-1.3.31", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8443", "protocol": "TCP", "service": "ssl|https-alt?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[19:58:56] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "443", "protocol": "TCP", "service": "ssl|http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "7443", "protocol": "TCP", "service": "ssl|oracleas-https?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8080", "protocol": "TCP", "service": "http-proxy", "version": "JCO4032|JUICEJFV-1.3.31", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8443", "protocol": "TCP", "service": "ssl|https-alt?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[19:58:56] [INFO] [+] Processing results for PDF report...
+[19:58:57] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:58:57] [INFO] [*] Local IP requested: 192.168.29.48
+[19:59:22] [INFO] [+] JSON Scan report saved
+[19:59:22] [INFO] [*] Scan complete. Generating PDF report for 192.168.29.1...
+[19:59:25] [INFO] [+] PDF report generated successfully
+[19:59:25] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.1
+[19:59:29] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:59:29] [INFO] [*] Local IP requested: 192.168.29.48
+[20:00:10] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:00:10] [INFO] [*] Local IP requested: 192.168.29.48
+[20:03:22] [INFO] [*] Local IP requested: 192.168.29.48
+[20:03:22] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:11:09] [INFO] [*] Local IP requested: 192.168.29.48
+[20:11:09] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:36:53] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:36:53] [INFO] [*] Local IP requested: 192.168.29.48
+[22:22:13] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[22:22:13] [INFO] [*] Local IP requested: 192.168.29.48
+[22:29:37] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[22:29:37] [INFO] [*] Local IP requested: 192.168.29.48
+[22:30:18] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[22:30:18] [INFO] [*] Local IP requested: 192.168.29.48
+[22:32:05] [INFO] [*] Local IP requested: 192.168.29.48
+[22:32:05] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[22:34:44] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[22:34:44] [INFO] [*] Local IP requested: 192.168.29.48
+[22:43:21] [INFO] [*] Local IP requested: 192.168.29.48
+[22:43:21] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[22:43:25] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[22:43:25] [INFO] [*] Local IP requested: 192.168.29.48
+[22:52:51] [INFO] [*] Local IP requested: 192.168.29.48
+[22:52:54] [INFO] [*] Local IP requested: 192.168.29.48
+[22:54:13] [INFO] [*] Local IP requested: 192.168.29.48
+[23:06:39] [INFO] [*] Local IP requested: 192.168.29.48
+[23:06:42] [INFO] [*] Local IP requested: 192.168.29.48
+[23:15:54] [INFO] [*] Local IP requested: 192.168.29.48
+[23:17:51] [INFO] [*] Local IP requested: 192.168.29.48
+[23:17:55] [INFO] [*] Local IP requested: 192.168.29.48
+[23:18:07] [INFO] [*] Local IP requested: 192.168.29.48
+[23:18:40] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:18:40] [INFO] [*] Local IP requested: 192.168.29.48
+[23:19:00] [INFO] [*] Local IP requested: 192.168.29.48
+[23:19:06] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:19:06] [INFO] [*] Local IP requested: 192.168.29.48
+[23:19:15] [INFO] [*] Local IP requested: 192.168.29.48
+[23:19:37] [INFO] [*] Preparing DEFAULT scan for target: 192.168.29.1 with T4...
+[23:19:37] [INFO] [+] Running TCP (Top 1000) scan on 192.168.29.1 with timing -T4...
+[23:19:37] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_4224aec6.txt 192.168.29.1
+[23:20:50] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[23:20:50] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[23:20:50] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "443", "protocol": "TCP", "service": "ssl|http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "7443", "protocol": "TCP", "service": "ssl|oracleas-https?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8080", "protocol": "TCP", "service": "http-proxy", "version": "JCO4032|JUICEJFV-1.3.31", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8443", "protocol": "TCP", "service": "ssl|https-alt?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}], "vulnerabilities_count": 0}
+[23:20:50] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "No open services detected. Host may be behind a firewall or using port knocking."}
+[23:20:50] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.1", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "443", "protocol": "TCP", "service": "ssl|http", "version": "lighttpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "1900", "protocol": "TCP", "service": "upnp", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "7443", "protocol": "TCP", "service": "ssl|oracleas-https?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8080", "protocol": "TCP", "service": "http-proxy", "version": "JCO4032|JUICEJFV-1.3.31", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}, {"port": "8443", "protocol": "TCP", "service": "ssl|https-alt?", "version": "", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details."}]}
+[23:20:50] [INFO] [+] Processing results for PDF report...
+[23:20:50] [INFO] [+] JSON Scan report saved
+[23:20:50] [INFO] [*] Scan complete. Generating PDF report for 192.168.29.1...
+[23:20:53] [INFO] [+] PDF report generated successfully
+[23:20:53] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.1
+[23:21:37] [INFO] [*] Local IP requested: 192.168.29.48
+[23:22:18] [INFO] [*] Local IP requested: 192.168.29.48
+[23:22:18] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:23:39] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:23:39] [INFO] [*] Local IP requested: 192.168.29.48
+[23:24:52] [INFO] [*] Local IP requested: 192.168.29.48
+[23:26:01] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:29:11] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:30:10] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:30:48] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:32:38] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:32:49] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:33:09] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:38:43] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.

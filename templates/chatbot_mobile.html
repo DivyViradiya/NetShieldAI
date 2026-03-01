@@ -1,0 +1,1013 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  NetShield Analyst | Mobile
+{% endblock %}
+
+{% block extra_css %}
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --neo-bg: var(--bg-primary, #0f0f11);
+      --neo-sidebar: var(--bg-secondary, #1a1a1e);
+      --neo-card: var(--surface-primary, #1f1f23);
+      --neo-border: var(--border-default, rgba(255, 255, 255, 0.1));
+      --neo-blue: var(--accent-primary, #3b82f6);
+      --neo-blue-glow: rgba(59, 130, 246, 0.5);
+      --neo-cyan: #00f7ff;
+      --font-primary: 'IBM Plex Sans', sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+      
+      /* Mobile safe area for input bar */
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    body.light-mode {
+      --neo-bg: #f8fafc;
+      --neo-sidebar: #ffffff;
+      --neo-card: #ffffff;
+      --neo-border: rgba(0, 0, 0, 0.1);
+      --neo-blue: #2563eb;
+      --neo-cyan: #0891b2;
+    }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: var(--font-primary);
+      background-color: var(--neo-bg);
+      color: #e5e5e5;
+      overscroll-behavior: none;
+      -webkit-tap-highlight-color: transparent;
+      position: fixed;
+      width: 100%;
+    }
+
+    body.light-mode {
+      color: #0f172a;
+    }
+
+    /* Hide standard desktop elements */
+    footer, .flash-container {
+      display: none !important;
+    }
+    /* We must preserve .navbar to show the mobile drawer, but make it invisible */
+    .navbar {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+      height: 0 !important;
+      pointer-events: none;
+    }
+    .navbar-brand, .navbar-links, .profile-dropdown, #mobile-menu-toggle, .navbar-container {
+      display: none !important;
+    }
+    
+    /* Ensure right drawer links from base.html show properly over chatbot */
+    @media (max-width: 768px) {
+        .navbar-container {
+            display: block !important; /* Must be unhidden for drawer */
+            height: 0; padding: 0; margin: 0;
+        }
+        .mobile-drawer-links,
+        .nav-drawer-header,
+        .nav-profile-card,
+        .nav-section-label,
+        .nav-drawer-divider,
+        .nav-profile-actions { display: flex !important; }
+    }
+
+    .mobile-layout {
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* Floating Header Items */
+    .mobile-header {
+      flex-shrink: 0;
+      height: calc(64px + env(safe-area-inset-top, 0px));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: env(safe-area-inset-top, 0px) 15px 0 15px;
+      box-sizing: border-box;
+      z-index: 100;
+      background: var(--neo-bg);
+      border-bottom: 1px solid var(--neo-border);
+    }
+
+    .float-btn {
+      pointer-events: auto;
+      background: rgba(15, 15, 17, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--neo-border);
+      color: #fafafa;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+    body.light-mode .float-btn {
+      background: rgba(255, 255, 255, 0.85);
+      color: #0f172a;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .brand-title {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #fff, #a1a1aa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    body.light-mode .brand-title {
+      background: linear-gradient(90deg, #0f172a, #64748b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+    }
+
+    /* Panels */
+    .mobile-panel {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      width: 80%;
+      max-width: 320px;
+      background: rgba(15, 15, 18, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+      border-right: 1px solid var(--neo-border);
+    }
+    body.light-mode .mobile-panel {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .panel-left {
+      left: 0;
+      transform: translateX(-105%);
+    }
+    .panel-left.open { transform: translateX(0); }
+
+    .panel-right {
+      right: 0;
+      border-right: none;
+      border-left: 1px solid var(--neo-border);
+      transform: translateX(105%);
+    }
+    .panel-right.open { transform: translateX(0); }
+
+    .panel-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .panel-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Panel Content */
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--neo-border);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.8rem;
+    }
+    .panel-header button.panel-close {
+        order: -1;
+    }
+    .panel-close {
+      background: none; border: none; color: #a1a1aa; cursor: pointer; padding: 5px;
+    }
+    .panel-close:hover { color: white; }
+    body.light-mode .panel-close:hover { color: black; }
+
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .btn-neo-action {
+      background: linear-gradient(135deg, var(--neo-blue) 0%, #2563eb 100%);
+      color: white;
+      width: 100%;
+      padding: 0.8rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* Neutral shadow */
+      cursor: pointer;
+    }
+
+    /* Session List */
+    .session-list { display: flex; flex-direction: column; gap: 4px; padding-bottom: 80px; }
+    .session-group { margin-top: 1rem; }
+    .group-label { font-size: 0.65rem; font-weight: 800; color: #71717a; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .session-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px;
+      font-size: 0.85rem; color: #d4d4d8; background: rgba(255,255,255,0.03);
+      position: relative;
+    }
+    .session-item.active { background: rgba(59, 130, 246, 0.15); color: white; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .session-item.pinned { border-left: 2px solid var(--neo-cyan); }
+    body.light-mode .session-item { color: #334155; background: #f1f5f9; }
+    body.light-mode .session-item.active { background: #e0e7ff; color: #0f172a; }
+    .session-info { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: flex; flex-direction: column; }
+    .session-title { font-weight: 500; }
+    .session-date { font-size: 0.6rem; color: #71717a; display: block; }
+    .session-menu-btn { background: none; border: none; color: #a1a1aa; padding: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 2; }
+    
+    /* Context Menu */
+    .context-menu {
+      position: absolute; right: 0.5rem; top: 100%; margin-top: 0.2rem;
+      background: #0f0f11; border: 1px solid var(--neo-border); border-radius: 8px;
+      z-index: 9999; display: none; flex-direction: column; width: 140px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); overflow: hidden;
+    }
+    body.light-mode .context-menu { background: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .context-menu.show { display: flex; }
+    .menu-item {
+      padding: 10px 12px; font-size: 0.8rem; color: #bbb; cursor: pointer;
+      display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    body.light-mode .menu-item { color: #64748b; border-bottom-color: #f1f5f9; }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+    body.light-mode .menu-item:hover { background: var(--bg-secondary); color: var(--neo-blue); }
+    .menu-item.delete { color: #ef4444; }
+
+    /* Main Chat Area */
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      touch-action: pan-y;
+      overscroll-behavior: contain;
+      z-index: 10;
+      width: 100%;
+    }
+
+    .messages-container {
+      padding: 1.5rem 1rem 3rem 1rem;
+      flex: 1;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .welcome-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start !important;
+      justify-content: center;
+      min-height: 50vh;
+      text-align: left !important;
+      padding: 0 1.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .welcome-screen h1, .welcome-screen p {
+      width: auto;
+      text-align: left !important;
+      margin-left: 0;
+      margin-right: auto;
+    }
+    .welcome-screen h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin: 0;
+      color: white;
+      text-transform: uppercase;
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+    .welcome-screen h1 .analyst-text {
+      color: #3f3f46;
+      display: block;
+    }
+    body.light-mode .welcome-screen h1 { color: #0f172a; }
+    body.light-mode .welcome-screen h1 .analyst-text { color: #94a3b8; }
+
+    .welcome-screen p { 
+       color: #71717a; 
+       margin-top: 1rem; 
+       font-size: 0.95rem; 
+       line-height: 1.5;
+       max-width: 280px;
+    }
+    
+    .suggestions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      margin-top: 2.5rem;
+    }
+    .suggestion-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--neo-border);
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      min-height: 100px;
+    }
+    .suggestion-card:active {
+      transform: scale(0.96);
+      border-color: var(--neo-blue);
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    body.light-mode .suggestion-card { background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    .suggestion-card h5 { margin: 0 0 4px 0; color: #fff; font-size: 0.85rem; font-weight: 700; transition: color 0.3s; line-height: 1.2; }
+    body.light-mode .suggestion-card h5 { color: #0f172a; }
+    .suggestion-card:active h5 { color: var(--neo-blue); }
+    .suggestion-card p { margin: 0; color: #71717a; font-size: 0.7rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* Chat Bubbles */
+    .msg-row { display: flex; width: 100%; margin-bottom: 1.5rem; flex-direction: column; }
+    .msg-row.user { align-items: flex-end; }
+    .msg-row.ai { align-items: flex-start; }
+    
+    .msg-bubble {
+      max-width: 85%;
+      padding: 1rem 1.25rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      font-family: var(--font-primary);
+      position: relative;
+      word-break: break-word;
+      text-align: justify;
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+    .msg-bubble::before {
+      content: attr(data-label);
+      position: absolute;
+      top: -1.2rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #71717a;
+    }
+    .msg-row.user .msg-bubble::before { right: 0.2rem; }
+    .msg-row.ai .msg-bubble::before { left: 0.2rem; }
+
+    .msg-row.user .msg-bubble {
+      background: linear-gradient(135deg, #0a0f1d 0%, #020617 100%);
+      color: #f8fafc;
+      border: 1px solid rgba(29, 78, 216, 0.2);
+      border-radius: 20px 20px 4px 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    body.light-mode .msg-row.user .msg-bubble {
+      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
+      color: #0f172a;
+      border-color: rgba(59, 130, 246, 0.2);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .msg-row.ai .msg-bubble {
+      background: linear-gradient(165deg, #050505 0%, #000000 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(29, 78, 216, 0.15);
+      color: #f1f5f9;
+      border-radius: 4px 20px 20px 20px;
+      box-shadow: 0 10px 50px rgba(0, 0, 0, 0.8);
+      max-width: 90%;
+    }
+    body.light-mode .msg-row.ai .msg-bubble {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(59, 130, 246, 0.2);
+      color: #1e293b;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .msg-row.system { align-items: flex-start; width: 100%; margin: 1.5rem 0; }
+    .msg-row.system .msg-bubble {
+      max-width: 95%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      text-align: justify;
+      padding: 1rem 1.25rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    body.light-mode .msg-row.system .msg-bubble { 
+      background: #f1f5f9; 
+      border-color: #e2e8f0; 
+      color: #64748b; 
+    }
+    .msg-row.system .msg-bubble::before { left: 0.2rem; transform: none; }
+
+    /* Fixed Input Bar */
+    .mobile-input-bar {
+      flex-shrink: 0;
+      background: rgba(15, 15, 18, 0.85);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-top: 1px solid var(--neo-border);
+      padding: 10px 15px calc(15px + var(--safe-bottom)) 15px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 80;
+    }
+    body.light-mode .mobile-input-bar {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .input-top-level {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--neo-border);
+      border-radius: 18px;
+      padding: 6px;
+    }
+    body.light-mode .input-top-level { background: #f8fafc; }
+
+    .input-top-level textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: white;
+      font-family: var(--font-primary);
+      font-size: 1rem;
+      padding: 8px 12px;
+      resize: none;
+      max-height: 120px;
+      outline: none;
+    }
+    body.light-mode .input-top-level textarea { color: #0f172a; }
+
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      background: var(--neo-blue);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-bottom-level {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--neo-border);
+      color: #a1a1aa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    body.light-mode .icon-btn { background: #f1f5f9; color: #475569; }
+
+    .model-selector-container { position: relative; }
+    .model-trigger {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--neo-border);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #d4d4d8;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    body.light-mode .model-trigger { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+
+    /* Bottom Sheet Modals */
+    .bottom-sheet {
+      position: fixed;
+      bottom: -100%;
+      left: 0;
+      width: 100%;
+      background: var(--neo-card);
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      padding: 20px;
+      padding-bottom: calc(20px + var(--safe-bottom));
+      box-sizing: border-box;
+      z-index: 1000;
+      transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+    }
+    .bottom-sheet.open { bottom: 0; }
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: #52525b;
+      border-radius: 2px;
+      margin: 0 auto 15px auto;
+    }
+    
+    .attachment-preview-area {
+      display: flex; flex-wrap: wrap; gap: 8px; padding: 5px 0; max-height: 80px; overflow-y: auto;
+    }
+    .attachment-item {
+      width: 50px; height: 50px; border-radius: 8px; background: #27272a; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .attachment-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .attachment-item .remove-btn { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 4px; width: 18px; height: 18px; border:none; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+
+    /* Fix for tables on mobile */
+    .markdown-content table {
+        width: 100%;
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+        border: 1px solid var(--neo-border);
+        margin: 1rem 0;
+    }
+
+    /* Markdown Formatting inside Bubbles */
+    .markdown-content p { margin-bottom: 0.75rem; }
+    .markdown-content p:last-child { margin-bottom: 0; }
+    .markdown-content h1, .markdown-content h2, .markdown-content h3 { color: white; margin-top: 1.25rem; margin-bottom: 0.75rem; }
+    body.light-mode .markdown-content h1, body.light-mode .markdown-content h2, body.light-mode .markdown-content h3 { color: #0f172a; }
+    .markdown-content pre { background: #000; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; margin: 12px 0; border: 1px solid #27272a; }
+    body.light-mode .markdown-content pre { background: #f8fafc; border-color: #e2e8f0; }
+    .markdown-content code { font-family: var(--font-code); color: var(--neo-cyan); }
+    body.light-mode .markdown-content code { color: var(--neo-blue); }
+    .markdown-content ul { margin: 0.75rem 0; padding-left: 1.25rem; list-style-type: disc; }
+    .markdown-content ol { margin: 0.75rem 0; padding-left: 1.25rem; list-style-type: decimal; }
+    .markdown-content li { margin-bottom: 0.4rem; }
+    
+    .markdown-content ul ul, .markdown-content ol ul { list-style-type: circle; margin-bottom: 0.2rem; color: #cbd5e1; }
+    body.light-mode .markdown-content ul ul, body.light-mode .markdown-content ol ul { color: #475569; }
+    .markdown-content ul ul ul, .markdown-content ol ul ul { list-style-type: square; }
+    
+    .markdown-content strong, .markdown-content b { color: white; font-weight: 800; }
+    body.light-mode .markdown-content strong, body.light-mode .markdown-content b { color: #0f172a; }
+    
+    .markdown-content em, .markdown-content i { font-style: italic; color: #e2e8f0; }
+    body.light-mode .markdown-content em, body.light-mode .markdown-content i { color: #334155; }
+    
+    .markdown-content blockquote {
+        border-left: 4px solid var(--neo-blue);
+        background: rgba(59, 130, 246, 0.05);
+        padding: 0.5rem 1rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+    }
+    body.light-mode .markdown-content blockquote { background: rgba(59, 130, 246, 0.1); }
+    .markdown-content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.8rem; display: block; overflow-x: auto; white-space: nowrap; }
+    .markdown-content th, .markdown-content td { padding: 8px; border: 1px solid var(--neo-border); }
+    .markdown-content th { background: rgba(255,255,255,0.05); color: var(--neo-cyan); }
+    body.light-mode .markdown-content th { background: #f1f5f9; color: var(--neo-blue); }
+
+    /* Action & System Bubbles */
+    .msg-row.system-action .msg-bubble { 
+      background: linear-gradient(165deg, rgba(8,8,10,0.95), rgba(0,0,0,0.98)); 
+      border: 1px solid var(--neo-blue); 
+      max-width: 95%;
+    }
+    .action-bubble { width: 100%; }
+    .action-header { margin-bottom: 12px; }
+    .action-details { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 12px; }
+    
+    /* Remove AI bubble glow */
+    /* .msg-row.ai .msg-bubble::after { display: none; } */
+
+    /* Message Actions */
+    .msg-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      justify-content: flex-end;
+    }
+    body.light-mode .msg-actions { border-top-color: rgba(0,0,0,0.05); }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .action-btn:active { transform: scale(0.9); background: rgba(255, 255, 255, 0.1); color: white; }
+    body.light-mode .action-btn { background: #f8fafc; border-color: #e2e8f0; color: #64748b; }
+
+    /* Terminal Styles */
+    .terminal-container {
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 15px;
+      font-family: var(--font-code);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .terminal-header {
+      background: #1a1a1e;
+      padding: 8px 12px;
+      font-size: 0.65rem;
+      color: #71717a;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .terminal-body {
+      padding: 10px;
+      height: 150px;
+      overflow-y: auto;
+      font-size: 0.7rem;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .terminal-line { display: flex; gap: 8px; }
+    .term-time { color: #52525b; min-width: 50px; }
+    .term-text { color: #d4d4d8; white-space: pre-wrap; word-break: break-all; }
+    .term-text.success { color: #10b981; }
+    .term-text.error { color: #ef4444; }
+    .term-text.info { color: var(--neo-blue); }
+
+    .progress-fill { transition: width 0.4s ease; }
+    .progress-line { border-left: 2px solid var(--neo-blue); background: rgba(59,130,246,0.05); }
+
+    /* Message Actions (Copy/Regen/Feedback) */
+    .msg-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      opacity: 0.4;
+      transition: opacity 0.2s;
+    }
+    .msg-bubble:hover .msg-actions { opacity: 1; }
+    .msg-actions .action-btn {
+      background: none;
+      border: none;
+      color: #71717a;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+    .msg-actions .action-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+
+    /* Threat Highlighting */
+    .threat-critical { color: #ef4444; font-weight: 700; text-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+    .threat-high { color: #f97316; font-weight: 700; }
+    .threat-medium { color: #eab308; font-weight: 700; }
+    .threat-low { color: #22c55e; font-weight: 700; }
+    .threat-info { color: #3b82f6; font-weight: 700; }
+
+    /* Code Block Copy Button */
+    .code-wrapper { position: relative; margin: 10px 0; }
+    .code-copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #a1a1aa;
+      padding: 4px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      z-index: 10;
+    }
+    .code-copy-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+    /* Search Input */
+    .search-container {
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--neo-border);
+      border-radius: 10px;
+      padding: 10px 10px 10px 35px;
+      color: white;
+      font-size: 0.8rem;
+      outline: none;
+    }
+    .search-container .material-symbols-outlined {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      color: #71717a;
+    }
+
+    /* Animation */
+    .spin { animation: spin 2s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .typing-text::after {
+      content: '|';
+      animation: blink 0.7s infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* Typing Dots */
+    .typing-dots { display: inline-flex; gap: 4px; padding: 0.5rem 0; }
+    .typing-dots span {
+      width: 6px; height: 6px; background-color: var(--neo-blue);
+      border-radius: 50%; animation: typingBounce 1.4s infinite ease-in-out both;
+    }
+    .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes typingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+  </style>
+{% endblock %}
+
+{% block content %}
+<script>
+    window.PRELOADED_SESSIONS = {{ initial_sessions | tojson | safe }};
+    window.ACTIVE_SESSION_ID = "{{ active_session_id }}";
+</script>
+
+<div class="mobile-layout">
+    <!-- Header -->
+    <header class="mobile-header">
+       <button id="mobile-menu-btn" class="float-btn" aria-label="Open History"><span class="material-symbols-outlined">history</span></button>
+       <div class="brand-title">
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" class="dark-logo" style="height: 18px; width: auto; object-fit: contain;" alt="NetShieldAI" />
+          <img src="{{ url_for('static', filename='images/NetShieldAI_logo_PDF.png') }}" class="light-logo" style="height: 18px; width: auto; object-fit: contain; display: none;" alt="NetShieldAI" />
+       </div>
+       <button id="mobile-menu-toggle-chatbot" class="mobile-menu-btn float-btn" aria-label="Toggle navigation" aria-expanded="false">
+          <span class="hb-bar"></span>
+          <span class="hb-bar"></span>
+          <span class="hb-bar"></span>
+       </button>
+    </header>
+
+    <!-- Panels -->
+    <div class="panel-overlay" id="panel-overlay"></div>
+    
+    <!-- Left Panel (Menu) -->
+    <div class="mobile-panel panel-left" id="panel-left">
+        <div class="panel-header">
+            <span>History</span>
+            <button class="panel-close" id="close-left"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        <div class="panel-body">
+            <div class="search-container">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="session-search" class="search-input" placeholder="Search history..." />
+            </div>
+            <button id="new-chat-btn" class="btn-neo-action" style="margin-bottom: 1rem;">
+                <span class="material-symbols-outlined">add</span> New Chat
+            </button>
+            <div class="session-list-container">
+                <div class="group-label">Analysis History</div>
+                <div id="session-list" class="session-list"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- No secondary panels; all migrated to bottom sheets -->
+
+    <!-- Main Chat Area -->
+    <main class="chat-area" id="chat-area">
+         <div class="messages-container" id="messages-container">
+              <div class="welcome-screen" id="welcome-state">
+                  <h1>NetShield<br><span class="analyst-text">Analyst</span></h1>
+                  <p>Autonomous security consultant ready.<br>Use the settings panel to configure your session or start charting.</p>
+                  <div class="suggestions" id="suggestion-grid">
+                       <!-- Dynamically populated by JS to match desktop pool -->
+                  </div>
+              </div>
+              <div class="chat-history" id="chat-history"></div>
+              <div class="typing-indicator" id="typing-indicator" style="display:none; padding: 10px;">
+                   <div class="msg-row ai">
+                     <div class="msg-bubble" style="padding: 1rem 1.5rem; display: inline-flex; align-items: center;">
+                       <div class="typing-dots">
+                         <span></span><span></span><span></span>
+                       </div>
+                     </div>
+                   </div>
+              </div>
+         </div>
+    </main>
+
+    <!-- Fixed Input Area -->
+    <div class="mobile-input-bar">
+         <div class="attachment-preview-area" id="attachment-preview-area"></div>
+         <div class="input-top-level">
+              <textarea id="user-input" rows="1" placeholder="Issue command..."></textarea>
+              <button id="send-btn" class="send-btn"><span class="material-symbols-outlined">arrow_upward</span></button>
+         </div>
+         <div class="input-bottom-level">
+              <div style="display: flex; gap: 8px;">
+                  <button id="attachment-plus-btn" class="icon-btn"><span class="material-symbols-outlined">add</span></button>
+                  <button id="mobile-settings-btn" class="icon-btn" style="pointer-events: auto;"><span class="material-symbols-outlined">settings_suggest</span></button>
+              </div>
+              
+              <input type="hidden" id="selected-model-value" value="gemini-2.5-flash" />
+              <div class="model-selector-container">
+                   <div id="model-trigger-compact" class="model-trigger">
+                       <span class="current-model-text" id="current-model-display">Gemini 2.5 Flash</span>
+                       <span class="material-symbols-outlined" style="font-size: 14px;">expand_more</span>
+                   </div>
+              </div>
+         </div>
+    </div>
+
+    <!-- Modals as Bottom Sheets -->
+
+    <!-- Model Selector Bottom Sheet -->
+    <div class="bottom-sheet" id="model-sheet">
+         <div class="sheet-handle"></div>
+         <div style="font-weight: 700; margin-bottom: 15px;">Select AI Model</div>
+         <div class="model-opt" data-value="gemini-2.5-flash" style="padding: 12px 0; border-bottom: 1px solid var(--neo-border); cursor: pointer;">Gemini 2.5 Flash</div>
+         <div class="model-opt" data-value="gemini-2.5-flash-lite" style="padding: 12px 0; border-bottom: 1px solid var(--neo-border); cursor: pointer;">Gemini 2.5 Flash Lite</div>
+         <div class="model-opt" data-value="gemini-2.5-pro" style="padding: 12px 0; border-bottom: 1px solid var(--neo-border); cursor: pointer;">Gemini 2.5 Pro</div>
+         <div class="model-opt" data-value="gemini-3-flash-preview" style="padding: 12px 0; border-bottom: 1px solid var(--neo-border); cursor: pointer;">Gemini 3 Flash</div>
+         <div class="model-opt" data-value="gemini-3-pro-preview" style="padding: 12px 0; border-bottom: 1px solid var(--neo-border); cursor: pointer;">Gemini 3 Pro</div>
+         <div class="model-opt" data-value="local" style="padding: 12px 0; cursor: pointer;">NetShield Local (Qwen)</div>
+    </div>
+
+    <!-- Attachment Select Bottom Sheet -->
+    <div class="bottom-sheet" id="attachment-sheet">
+         <div class="sheet-handle"></div>
+         <div style="font-weight: 700; margin-bottom: 15px;">Attach Data</div>
+         <div id="attach-image" style="display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--neo-border); cursor: pointer;">
+             <span class="material-symbols-outlined">image</span> Upload Image
+         </div>
+         <div id="attach-doc" style="display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--neo-border); cursor: pointer;">
+             <span class="material-symbols-outlined">description</span> Upload Document
+         </div>
+         <input type="file" id="multimodal-file-input" style="display: none;" multiple accept="image/*,.pdf,.txt,.log,.pcap" />
+    </div>
+
+    <!-- Rename/Delete Bottom Sheet (Context Menu) -->
+    <div class="bottom-sheet" id="context-sheet">
+         <div class="sheet-handle"></div>
+         <div id="context-session-title" style="font-weight: 700; color: var(--neo-blue); margin-bottom: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+         <div id="sheet-action-pin" style="padding: 12px 0; border-bottom: 1px solid var(--neo-border); cursor: pointer;"><span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">push_pin</span> Pin Session</div>
+         <div id="sheet-action-rename" style="padding: 12px 0; border-bottom: 1px solid var(--neo-border); cursor: pointer;"><span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">edit</span> Rename</div>
+         <div id="sheet-action-delete" style="padding: 12px 0; color: #ef4444; cursor: pointer;"><span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">delete</span> Delete</div>
+    </div>
+    
+    <!-- Topology Sheet or basic modal -->
+    <div class="bottom-sheet" id="topology-sheet" style="height: 80vh;">
+         <div class="sheet-handle"></div>
+         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+             <div style="font-weight: 700;">Infrastructure Topology</div>
+             <button id="close-topology-btn" style="background: none; border: none; color: white;"><span class="material-symbols-outlined">close</span></button>
+         </div>
+         <div id="vis-network-container" style="width: 100%; height: calc(100% - 40px); background: #000; border-radius: 12px; border: 1px solid var(--neo-border);"></div>
+    </div>
+
+    <!-- Workflow & Settings Bottom Sheet -->
+    <div class="bottom-sheet" id="settings-sheet">
+         <div class="sheet-handle"></div>
+         <div style="font-weight: 700; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.9rem; color: var(--neo-blue);">Command Center</div>
+         
+         <div style="display: flex; flex-direction: column; gap: 24px;">
+              <!-- AI Settings -->
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                       <div>
+                           <div style="font-size: 0.85rem; font-weight: 600;">Incognito mode</div>
+                           <div style="font-size: 0.7rem; color: #71717a;">Don't save analysis history</div>
+                       </div>
+                       <input type="checkbox" id="setting-incognito" style="width: 20px; height: 20px; accent-color: var(--neo-blue);" />
+                  </div>
+                  
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                       <div style="font-size: 0.85rem; font-weight: 600;">Response depth</div>
+                       <select id="setting-verbosity" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--neo-border); padding: 8px 12px; border-radius: 8px; outline: none; font-size: 0.8rem;">
+                           <option value="concise">Executive</option>
+                           <option value="standard" selected>Standard</option>
+                           <option value="detailed">Deep Dive</option>
+                       </select>
+                  </div>
+                  
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                       <div style="font-size: 0.85rem; font-weight: 600;">Response speed</div>
+                       <select id="setting-speed" style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--neo-border); padding: 8px 12px; border-radius: 8px; outline: none; font-size: 0.8rem;">
+                           <option value="0">Instant</option>
+                           <option value="10" selected>Fast</option>
+                           <option value="30">Natural</option>
+                       </select>
+                  </div>
+
+              </div>
+
+              <!-- Terminal Controls -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                   <button id="cc-view-topology" class="btn-neo-action" style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); color: var(--neo-blue);">
+                       <span class="material-symbols-outlined" style="font-size: 1.1rem;">hub</span> Topology
+                   </button>
+                   <button id="btn-download-transcript" class="btn-neo-action" style="background: transparent; border: 1px solid var(--neo-border); color: #d4d4d8;">
+                       <span class="material-symbols-outlined" style="font-size: 1.1rem;">download</span> Export
+                   </button>
+                   <button id="cc-clear-context" class="btn-neo-action" style="background: transparent; border: 1px solid var(--neo-border); color: #d4d4d8;">
+                       <span class="material-symbols-outlined" style="font-size: 1.1rem;">layers_clear</span> Reset
+                   </button>
+                   <button id="cc-delete-session" class="btn-neo-action" style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444;">
+                       <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete</span> Delete
+                   </button>
+              </div>
+
+              <button id="btn-wipe-all" class="btn-neo-action" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444;">
+                  <span class="material-symbols-outlined" style="font-size: 1.1rem;">delete_forever</span> Wipe global history
+              </button>
+         </div>
+    </div>
+
+</div>
+
+<!-- VIS.JS For Topology -->
+<script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/chatbot_mobile.js') }}"></script>
+{% endblock %}

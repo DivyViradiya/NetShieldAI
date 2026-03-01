@@ -1840,23 +1840,81 @@
     }
 
     /* Lists - Fix Indentation in Bubbles */
-    .markdown-content ul, .msg-bubble ul,
+    .markdown-content ul, .msg-bubble ul {
+        margin: 1rem 0;
+        padding-left: 1.5rem;
+        list-style-type: disc;
+    }
     .markdown-content ol, .msg-bubble ol {
         margin: 1rem 0;
         padding-left: 1.5rem;
+        list-style-type: decimal;
     }
     .markdown-content li, .msg-bubble li {
         margin-bottom: 0.5rem;
     }
 
-    /* Bold/Strong Text Enhancement */
-    .markdown-content strong, .msg-bubble strong {
+    /* Nested Lists (Sub-bullets) */
+    .markdown-content ul ul, .msg-bubble ul ul,
+    .markdown-content ol ul, .msg-bubble ol ul {
+        list-style-type: circle;
+        margin-bottom: 0.25rem;
+        color: #cbd5e1;
+    }
+    
+    body.light-mode .markdown-content ul ul, 
+    body.light-mode .msg-bubble ul ul,
+    body.light-mode .markdown-content ol ul, 
+    body.light-mode .msg-bubble ol ul {
+        color: var(--text-secondary);
+    }
+    
+    .markdown-content ul ul ul, .msg-bubble ul ul ul,
+    .markdown-content ol ul ul, .msg-bubble ol ul ul {
+        list-style-type: square;
+    }
+
+    /* Bold/Strong/Italic Text Enhancement */
+    .markdown-content strong, .msg-bubble strong,
+    .markdown-content b, .msg-bubble b {
         color: white;
-        font-weight: 700;
+        font-weight: 800;
     }
     
     body.light-mode .markdown-content strong, 
-    body.light-mode .msg-bubble strong { color: var(--text-primary); }
+    body.light-mode .msg-bubble strong,
+    body.light-mode .markdown-content b,
+    body.light-mode .msg-bubble b { 
+        color: #0f172a; 
+    }
+
+    .markdown-content em, .msg-bubble em,
+    .markdown-content i, .msg-bubble i {
+        font-style: italic;
+        color: #e2e8f0;
+    }
+
+    body.light-mode .markdown-content em, 
+    body.light-mode .msg-bubble em,
+    body.light-mode .markdown-content i,
+    body.light-mode .msg-bubble i { 
+        color: #334155; 
+    }
+
+    /* Blockquotes */
+    .markdown-content blockquote, .msg-bubble blockquote {
+        border-left: 4px solid var(--neo-blue);
+        background: rgba(59, 130, 246, 0.05);
+        padding: 0.5rem 1rem;
+        margin: 1rem 0;
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+    }
+
+    body.light-mode .markdown-content blockquote, 
+    body.light-mode .msg-bubble blockquote {
+        background: rgba(59, 130, 246, 0.1);
+    }
 
     /* Responsive Table Wrapper (if needed) */
     .table-responsive {

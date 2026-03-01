@@ -23,6 +23,7 @@ from Services import network_scanner
 from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
+from Services import report_manager
 
 network_scanner_bp = Blueprint('network_scanner_bp', __name__)
 
@@ -52,7 +53,7 @@ def get_user_results_dir():
 # ==========================================
 # 1. To change the FOLDER, edit 'RESULTS_DIR' in 'Services/network_scanner.py'
 # 2. To change the FILENAME, edit the variable below:
-PDF_FILENAME = "nmap_report.pdf" 
+PDF_FILENAME = "network_scanner_report.pdf" 
 PDF_REPORT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'PDFs') 
 
 # 🚨 NEW: Central server proxy URL (Must match the one in chatbot_bp.py)
@@ -73,7 +74,65 @@ def is_valid_hostname(hostname):
 def network_scanner_page():
     """Renders the network scanner page."""
     logger.info(f"[*] Accessing Network Scanner Page (User: {current_user.username})")
+    
+    user_agent = request.headers.get('User-Agent')
+    if user_agent and any(word in user_agent for word in ['Mobile', 'Android', 'iPhone', 'iPad']):
+        return render_template('mobile_scanners/network_scanner.html')
+        
     return render_template('scanners/network_scanner.html')
+
+@network_scanner_bp.route('/init_data', methods=['GET'])
+@login_required
+def init_data():
+    """Consolidated endpoint for initial page load data."""
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_dir = get_user_results_dir()
+
+    # 1. Local IP
+    local_ip = network_scanner.get_local_ip()
+
+    # 2. Whitelisted Ports
+    network_scanner.load_whitelist(output_dir=user_dir, user_id=user_identifier)
+    whitelisted_ports = network_scanner.get_whitelisted_ports(user_id=user_identifier)
+
+    # 3. Open Ports & Summary
+    summary = network_scanner.get_scan_summary(user_identifier, output_dir=user_dir)
+    # ... rest of function ...
+
+    # 4. Report Files
+    # Get user-specific paths using report_manager
+    user_json_path = os.path.join(user_dir, report_manager.generate_report_filename("nmap_report", None, "json"))
+    
+    target = request.args.get('target')
+    if target:
+        filename = report_manager.generate_report_filename("network_scanner", target, "pdf")
+        user_pdf_path = os.path.join(user_dir, filename)
+    else:
+        # Fallback to latest (Prefix-agnostic)
+        history = report_manager.get_report_history(user_dir, scanner_name=None)
+        if history:
+            user_pdf_path = history[0]['path']
+            filename = os.path.basename(user_pdf_path)
+            target = history[0].get('target', target)
+        else:
+            user_pdf_path = os.path.join(user_dir, PDF_FILENAME)
+            filename = PDF_FILENAME
+
+    json_exists = os.path.exists(user_json_path)
+    pdf_exists = os.path.exists(user_pdf_path)
+    
+    report_files = {
+        "status": "success" if (json_exists or pdf_exists) else "pending",
+        "json_report": "/network_scanner/get_json_report" if json_exists else None,
+        "pdf_report": f"/network_scanner/download_pdf?filename={filename}" if pdf_exists else None
+    }
+
+    return jsonify({
+        "local_ip": local_ip,
+        "whitelisted_ports": whitelisted_ports,
+        "summary": summary,
+        "report_files": report_files
+    })
 
 @network_scanner_bp.route('/local_ip', methods=['GET'])
 @login_required
@@ -167,7 +226,7 @@ def scan_ports():
         network_scanner.log(f"[!] Failed to update user stats: {e}", user_identifier, queue_id)
     
     # [NEW] Reset Log File for this new scan session
-    scan_logger.reset_log_file(user_identifier, "nmap")
+    scan_logger.reset_log_file(user_identifier, "network_scanner")
 
     # --- Threaded Scan Task ---
     def scan_task(queue_id): # queue_id is now a parameter
@@ -214,11 +273,9 @@ def scan_ports():
         
         if result_file:
             # Define specific paths for this user's PDF generation
-            sanitized_target = scan_logger.sanitize_filename(target_ip)
-            target_pdf_filename = f"nmap_report_{sanitized_target}.pdf"
-            
-            user_json_path = os.path.join(user_output_dir, "nmap_report.json")
-            user_pdf_path = os.path.join(user_output_dir, target_pdf_filename)
+            user_paths = network_scanner.get_output_paths(user_output_dir, target=target_ip)
+            user_json_path = user_paths["json_report"]
+            user_pdf_path = user_paths["pdf_report"]
 
             # 2. Generate PDF Report
             try:
@@ -286,6 +343,15 @@ def check_active_scan():
         
     return jsonify({"status": "inactive", "message": "No active scan found"}), 200
 
+
+@network_scanner_bp.route('/report_history', methods=['GET'])
+@login_required
+def get_report_history():
+    """Returns the history of network scan reports (Prefix-agnostic)."""
+    user_dir = get_user_results_dir()
+    history = report_manager.get_report_history(user_dir, scanner_name=None)
+    return jsonify({"status": "success", "history": history})
+
 @network_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
@@ -300,17 +366,16 @@ def trigger_ai_analysis_route():
     user_dir = get_user_results_dir()
     
     if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"nmap_report_{sanitized}.pdf"
+        pdf_filename = report_manager.generate_report_filename("network_scanner", target, "pdf")
     else:
-        pdf_filename = PDF_FILENAME # Fallback
+        pdf_filename = report_manager.generate_report_filename("network_scanner", None, "pdf") # Fallback
 
     user_pdf_path = os.path.join(user_dir, pdf_filename)
 
     if not os.path.exists(user_pdf_path):
         # Try fallback to generic if specific not found
         if target:
-             user_pdf_path = os.path.join(user_dir, PDF_FILENAME)
+             user_pdf_path = os.path.join(user_dir, report_manager.generate_report_filename("network_scanner", None, "pdf"))
         
         if not os.path.exists(user_pdf_path):
             network_scanner.log(f"[!] Analysis failed: PDF report not found at {user_pdf_path}", user_identifier, queue_id=None)
@@ -332,13 +397,12 @@ def get_report_files():
     """Checks availability of reports."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    user_json_path = os.path.join(user_dir, "nmap_report.json")
+    user_json_path = os.path.join(user_dir, report_manager.generate_report_filename("network_scanner", target, "json"))
     
     if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"nmap_report_{sanitized}.pdf"
+        pdf_filename = report_manager.generate_report_filename("network_scanner", target, "pdf")
     else:
-        pdf_filename = PDF_FILENAME
+        pdf_filename = report_manager.generate_report_filename("network_scanner", None, "pdf")
 
     user_pdf_path = os.path.join(user_dir, pdf_filename)
 
@@ -350,47 +414,46 @@ def get_report_files():
 
     return jsonify({
         "status": "success",
-        "json_report": "/network_scanner/get_json_report" if json_exists else None,
-        "pdf_report": f"/network_scanner/download_pdf?target={target}" if pdf_exists else None
+        "json_report": "/network_scanner/get_json_report" + (f"?target={target}" if target else ""),
+        "pdf_report": f"/network_scanner/download_pdf?target={target}" if target else "/network_scanner/download_pdf"
     })
 
 @network_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
     """Serves the PDF report dynamically based on the configured path."""
-    target = request.args.get('target')
     user_dir = get_user_results_dir()
+    requested_filename = request.args.get('filename')
+    target = request.args.get('target')
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"nmap_report_{sanitized}.pdf"
+    if requested_filename:
+        filename = secure_filename(requested_filename)
+        pdf_path = os.path.join(user_dir, filename)
+    elif target:
+        filename = report_manager.generate_report_filename("network_scanner", target, "pdf")
+        pdf_path = os.path.join(user_dir, filename)
     else:
-        pdf_filename = PDF_FILENAME
+        history = report_manager.get_report_history(user_dir, scanner_name=None)
+        if not history:
+             return jsonify({"status": "error", "message": "No reports found."}), 404
+        pdf_path = history[0]['path']
+        filename = os.path.basename(pdf_path)
 
-    user_pdf_path = os.path.join(user_dir, pdf_filename)
-
-    if not os.path.exists(user_pdf_path):
+    if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
     
-    try:
-        # Dynamically determine directory and filename from the global path
-        directory = os.path.dirname(user_pdf_path)
-        filename = os.path.basename(user_pdf_path)
-
-        return send_from_directory(
-            directory=directory,
-            path=filename,
-            as_attachment=True
-        )
-    except Exception as e:
-        network_scanner.log(f"[!] Error serving PDF file: {e}", user_id=current_user.id, queue_id=None)
-        return jsonify({"status": "error", "message": "Could not serve PDF file."}), 500
+    return send_from_directory(
+        directory=os.path.dirname(pdf_path),
+        path=filename,
+        as_attachment=True
+    )
 
 @network_scanner_bp.route('/get_json_report', methods=['GET'])
 @login_required
 def get_json_report_file():
     user_dir = get_user_results_dir()
-    user_json_path = os.path.join(user_dir, "nmap_report.json")
+    target = request.args.get('target')
+    user_json_path = os.path.join(user_dir, report_manager.generate_report_filename("network_scanner", target, "json"))
 
     if not os.path.exists(user_json_path):
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
@@ -410,7 +473,8 @@ def get_json_report_file():
 @login_required
 def get_open_ports_route():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    summary = network_scanner.get_scan_summary(user_identifier)
+    user_dir = get_user_results_dir()
+    summary = network_scanner.get_scan_summary(user_identifier, output_dir=user_dir)
     return jsonify(summary)
 
 @network_scanner_bp.route('/block_ports', methods=['POST'])
@@ -542,6 +606,6 @@ def clear_log_route():
 def log_stream():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     return Response(
-        scan_logger.tail_log_file(user_identifier, "nmap"),
+        scan_logger.tail_log_file(user_identifier, "network_scanner"),
         mimetype='text/event-stream'
     )

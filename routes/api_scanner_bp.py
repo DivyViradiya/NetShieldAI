@@ -12,6 +12,7 @@ from Services import api_scanner
 from Services import pdf_generator 
 # --- Import Scan Logger ---
 from Services import scan_logger
+from Services import report_manager
 from logger_setup import logger
 
 api_scanner_bp = Blueprint('api_scanner_bp', __name__)
@@ -104,7 +105,7 @@ def initiate_api_scan():
         api_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     # [NEW] Reset Log File for this new scan session
-    scan_logger.reset_log_file(current_user_identifier, "api")
+    scan_logger.reset_log_file(current_user_identifier, "api_scanner")
 
     # 5. Log Scan Start (Database)
     log_id = scan_logger.log_scan_start(
@@ -125,12 +126,9 @@ def initiate_api_scan():
             api_scanner.log(f"[*] Starting API Scan for {target_url} (Auth: {token_status})...", current_user_identifier, to_console=True)
             api_scanner.log(f"[*] Using Definition: {definition_url}", current_user_identifier, to_console=True)
             
-            sanitized_target = scan_logger.sanitize_filename(target_url)
-            target_pdf_filename = f"api_report_{sanitized_target}.pdf"
-            
-            paths = api_scanner.get_output_paths(user_output_dir)
+            paths = api_scanner.get_output_paths(user_output_dir, target=target_url)
             xml_path = paths["xml_report"]
-            pdf_path = os.path.join(user_output_dir, target_pdf_filename)
+            pdf_path = paths["pdf_report"]
             
             os.makedirs(os.path.dirname(xml_path), exist_ok=True)
             
@@ -154,7 +152,7 @@ def initiate_api_scan():
                     finding_count = len(scan_results.get("findings", []))
                     
                     # 3. Save JSON
-                    json_report_path = api_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier)
+                    json_report_path = api_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier, target=target_url)
                     
                     if json_report_path:
                         api_scanner.log(f"[+] JSON report saved.", current_user_identifier, to_console=True)
@@ -247,24 +245,25 @@ def get_api_status():
     })
 
 
+@api_scanner_bp.route('/report_history', methods=['GET'])
+@login_required
+def get_api_report_history():
+    user_dir = get_user_results_dir()
+    history = report_manager.get_report_history(user_dir, scanner_name="api_scanner")
+    return jsonify({"status": "success", "history": history})
+
+
 @api_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
     data = request.get_json() or {}
     target = data.get('target')
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"api_report_{sanitized}.pdf"
-    else:
-        paths = api_scanner.get_output_paths(user_dir)
-        pdf_filename = os.path.basename(paths["pdf_report"])
+    paths = api_scanner.get_output_paths(user_dir, target=target)
+    pdf_path = paths["pdf_report"]
 
-    pdf_path = os.path.join(user_dir, pdf_filename)
-
-    if not os.path.exists(pdf_path):
+    if not pdf_path.exists():
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
@@ -272,7 +271,7 @@ def trigger_ai_analysis_route():
 
     return jsonify({
         "status": "success",
-        "scanner_type": "api",
+        "scanner_type": "api_scanner",
         "target": target
     })
 
@@ -284,8 +283,9 @@ def trigger_ai_analysis_route():
 @api_scanner_bp.route('/scan_results', methods=['GET'])
 @login_required 
 def get_api_scan_results():
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = api_scanner.get_output_paths(user_dir)
+    paths = api_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["json_report"]
 
     if not json_path.exists():
@@ -304,16 +304,10 @@ def get_api_scan_results():
 def get_report_files():
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = api_scanner.get_output_paths(user_dir)
+    paths = api_scanner.get_output_paths(user_dir, target=target)
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"api_report_{sanitized}.pdf"
-    else:
-        pdf_filename = os.path.basename(paths["pdf_report"])
-
     json_exists = paths["json_report"].exists()
-    pdf_exists = os.path.exists(os.path.join(user_dir, pdf_filename))
+    pdf_exists = paths["pdf_report"].exists()
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
@@ -321,7 +315,7 @@ def get_report_files():
     return jsonify({
         "status": "success",
         # Note the prefix change to /api_scanner/
-        "json_report": "/api_scanner/scan_results" if json_exists else None,
+        "json_report": f"/api_scanner/scan_results?target={target}" if json_exists else None,
         "pdf_report": f"/api_scanner/download_pdf?target={target}" if pdf_exists else None
     })
 
@@ -329,24 +323,29 @@ def get_report_files():
 @api_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
-    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"api_report_{sanitized}.pdf"
-    else:
-        paths = api_scanner.get_output_paths(user_dir)
-        pdf_filename = os.path.basename(paths["pdf_report"])
+    requested_filename = request.args.get('filename')
+    target = request.args.get('target')
 
-    pdf_path = os.path.join(user_dir, pdf_filename)
+    if requested_filename:
+        filename = secure_filename(requested_filename)
+        pdf_path = os.path.join(user_dir, filename)
+    elif target:
+        filename = report_manager.generate_report_filename("api_scanner", target, "pdf")
+        pdf_path = os.path.join(user_dir, filename)
+    else:
+        history = report_manager.get_report_history(user_dir, scanner_name="api_scanner")
+        if not history:
+            return jsonify({"status": "error", "message": "No reports found."}), 404
+        pdf_path = history[0]['path']
+        filename = os.path.basename(pdf_path)
 
     if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF file not found."}), 404
     
     return send_from_directory(
-        directory=user_dir,
-        path=pdf_filename,
+        directory=os.path.dirname(pdf_path),
+        path=filename,
         as_attachment=True
     )
 
@@ -359,7 +358,7 @@ def download_pdf_report():
 @login_required 
 def clear_api_log_route():
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    api_scanner.clear_log_file(current_user_identifier)
+    scan_logger.reset_log_file(current_user_identifier, "api_scanner")
     return jsonify({"status": "success", "message": "Log cleared."})
 
 
@@ -373,6 +372,6 @@ def api_log_stream():
     
     # Use the file tailing generator from scan_logger
     return Response(
-        scan_logger.tail_log_file(current_user_identifier, "api"), 
+        scan_logger.tail_log_file(current_user_identifier, "api_scanner"), 
         mimetype='text/event-stream'
     )

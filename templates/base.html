@@ -843,15 +843,15 @@
           height: auto;
           max-height: calc(100dvh - 20px);
           border-radius: 20px;
-          background: rgba(8, 8, 14, 0.72);
-          backdrop-filter: blur(28px) saturate(1.4);
-          -webkit-backdrop-filter: blur(28px) saturate(1.4);
-          border: 1px solid rgba(255, 255, 255, 0.07);
+          background: rgba(8, 8, 14, 0.88);
+          backdrop-filter: blur(45px) saturate(1.6);
+          -webkit-backdrop-filter: blur(45px) saturate(1.6);
+          border: 1px solid rgba(255, 255, 255, 0.12);
           box-shadow:
-            0 0 0 1px rgba(255,255,255,0.04) inset,
-            0 24px 60px rgba(0, 0, 0, 0.7),
-            0 8px 24px rgba(0, 0, 0, 0.5);
-          z-index: 999;
+            0 0 0 1px rgba(255,255,255,0.06) inset,
+            0 24px 60px rgba(0, 0, 0, 0.8),
+            0 8px 24px rgba(0, 0, 0, 0.6);
+          z-index: 1100;
           display: flex !important;
           flex-direction: column;
           overflow-y: auto;
@@ -863,12 +863,14 @@
           padding-bottom: 1rem;
         }
         body.light-mode .mobile-drawer-links {
-          background: rgba(248, 250, 252, 0.80);
-          border: 1px solid rgba(99, 102, 241, 0.12);
+          background: rgba(248, 250, 252, 0.92);
+          backdrop-filter: blur(45px) saturate(1.6);
+          -webkit-backdrop-filter: blur(45px) saturate(1.6);
+          border: 1px solid rgba(99, 102, 241, 0.18);
           box-shadow:
-            0 0 0 1px rgba(255,255,255,0.7) inset,
-            0 24px 60px rgba(99, 102, 241, 0.15),
-            0 8px 24px rgba(0, 0, 0, 0.08);
+            0 0 0 1px rgba(255,255,255,0.85) inset,
+            0 24px 60px rgba(99, 102, 241, 0.18),
+            0 8px 24px rgba(0, 0, 0, 0.12);
         }
         .mobile-drawer-links.show-mobile { transform: translateX(0); }
 
@@ -1222,102 +1224,104 @@
           <span class="hb-bar"></span>
           <span class="hb-bar"></span>
         </button>
+      </div>
+    </nav>
 
-        <!-- Mobile sliding drawer menu -->
-        <ul class="mobile-drawer-links" id="mobile-nav-drawer">
+    <!-- Mobile sliding drawer menu moved outside navbar container for reliability -->
+    <ul class="mobile-drawer-links" id="mobile-nav-drawer">
 
-          <!-- Floating close button (absolute on drawer card) -->
-          <li style="list-style:none; padding:0; margin:0; height:0; overflow:visible; position:static;">
-            <button class="nav-drawer-close" id="nav-drawer-close" aria-label="Close menu">
-              <span class="material-symbols-outlined" style="font-size:1rem;">close</span>
-            </button>
-          </li>
+      <!-- Floating close button (absolute on drawer card) -->
+      <li style="list-style:none; padding:0; margin:0; height:0; overflow:visible; position:static;">
+        <button class="nav-drawer-close" id="nav-drawer-close" aria-label="Close menu">
+          <span class="material-symbols-outlined" style="font-size:1rem;">close</span>
+        </button>
+      </li>
 
-          {% if current_user.is_authenticated %}
-          <!-- Inline profile card (mobile only) -->
-          <li style="list-style:none; padding:0;">
-            <div class="nav-profile-card">
-              <div class="nav-profile-avatar">
-                {{ (current_user.full_name.split(' ')[0] if current_user.full_name else current_user.username)[0] }}
-              </div>
-              <div class="nav-profile-info">
-                <span class="nav-profile-name">{{ current_user.full_name if current_user.full_name else current_user.username }}</span>
-                <span class="nav-profile-email">{{ current_user.email }}</span>
-              </div>
-            </div>
-          </li>
+      {% if current_user.is_authenticated %}
+      <!-- Inline profile card (mobile only) -->
+      <li style="list-style:none; padding:0;">
+        <div class="nav-profile-card">
+          <div class="nav-profile-avatar">
+            {{ (current_user.full_name.split(' ')[0] if current_user.full_name else current_user.username)[0] }}
+          </div>
+          <div class="nav-profile-info">
+            <span class="nav-profile-name">{{ current_user.full_name if current_user.full_name else current_user.username }}</span>
+            <span class="nav-profile-email">{{ current_user.email }}</span>
+          </div>
+        </div>
+      </li>
+      {% endif %}
+
+      <!-- Navigation label -->
+      <li style="list-style:none; padding:0;"><div class="nav-section-label">Navigation</div></li>
+
+      <li>
+        <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
+          Home
+        </a>
+      </li>
+      <li>
+        {% set hub_blueprints = ['network_scanner_bp', 'zap_scanner_bp', 'ssl_scanner_bp', 'packet_sniffer_bp', 'sql_scanner_bp', 'semgrep_bp', 'api_scanner_bp', 'killchain_bp'] %}
+        <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">
+          Security Hub
+        </a>
+      </li>
+
+      {% if current_user.is_authenticated %}
+        <li>
+          <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">
+            Security Posture
+          </a>
+        </li>
+      {% endif %}
+
+      <li>
+        <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="{% if request.blueprint == 'chatbot_bp' %}active{% endif %}">
+          AI Analyzer
+        </a>
+      </li>
+
+      {% if not current_user.is_authenticated %}
+        <li>
+          <a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active{% endif %}">
+            <span class="material-symbols-outlined" style="font-size:1.1rem;">login</span>Login
+          </a>
+        </li>
+        <li style="padding: 0 0.75rem; margin-top: 0.5rem;">
+          <a href="{{ url_for('auth.register') }}" class="highlight-link {% if request.endpoint == 'auth.register' %}active{% endif %}">
+            Register
+          </a>
+        </li>
+      {% endif %}
+
+      {% if current_user.is_authenticated %}
+      <!-- Divider -->
+      <li style="list-style:none; padding:0;"><div class="nav-drawer-divider"></div></li>
+      <li style="list-style:none; padding:0;"><div class="nav-section-label">Account</div></li>
+
+      <!-- Profile actions -->
+      <li style="list-style:none; padding:0;">
+        <div class="nav-profile-actions">
+          {% if current_user.is_admin %}
+          <a href="{{ url_for('auth.admin_dashboard') }}">
+            <span class="material-symbols-outlined">admin_panel_settings</span>Admin Panel
+          </a>
           {% endif %}
+          <a href="javascript:void(0)" onclick="toggleTheme()">
+            <span class="material-symbols-outlined" id="mob-theme-icon">light_mode</span>
+            <span id="mob-theme-text">Light Mode</span>
+          </a>
+          <a href="{{ url_for('auth.account_settings') }}">
+            <span class="material-symbols-outlined">manage_accounts</span>Account Settings
+          </a>
+          <a href="{{ url_for('auth.logout') }}" class="logout">
+            <span class="material-symbols-outlined">logout</span>Logout
+          </a>
+        </div>
+      </li>
+      {% endif %}
 
-          <!-- Navigation label -->
-          <li style="list-style:none; padding:0;"><div class="nav-section-label">Navigation</div></li>
-
-          <li>
-            <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
-              Home
-            </a>
-          </li>
-          <li>
-            {% set hub_blueprints = ['network_scanner_bp', 'zap_scanner_bp', 'ssl_scanner_bp', 'packet_sniffer_bp', 'sql_scanner_bp', 'semgrep_bp', 'api_scanner_bp', 'killchain_bp'] %}
-            <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">
-              Security Hub
-            </a>
-          </li>
-
-          {% if current_user.is_authenticated %}
-            <li>
-              <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">
-                Security Posture
-              </a>
-            </li>
-          {% endif %}
-
-          <li>
-            <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="{% if request.blueprint == 'chatbot_bp' %}active{% endif %}">
-              AI Analyzer
-            </a>
-          </li>
-
-          {% if not current_user.is_authenticated %}
-            <li>
-              <a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active{% endif %}">
-                <span class="material-symbols-outlined" style="font-size:1.1rem;">login</span>Login
-              </a>
-            </li>
-            <li style="padding: 0 0.75rem; margin-top: 0.5rem;">
-              <a href="{{ url_for('auth.register') }}" class="highlight-link {% if request.endpoint == 'auth.register' %}active{% endif %}">
-                Register
-              </a>
-            </li>
-          {% endif %}
-
-          {% if current_user.is_authenticated %}
-          <!-- Divider -->
-          <li style="list-style:none; padding:0;"><div class="nav-drawer-divider"></div></li>
-          <li style="list-style:none; padding:0;"><div class="nav-section-label">Account</div></li>
-
-          <!-- Profile actions -->
-          <li style="list-style:none; padding:0;">
-            <div class="nav-profile-actions">
-              {% if current_user.is_admin %}
-              <a href="{{ url_for('auth.admin_dashboard') }}">
-                <span class="material-symbols-outlined">admin_panel_settings</span>Admin Panel
-              </a>
-              {% endif %}
-              <a href="javascript:void(0)" onclick="toggleTheme()">
-                <span class="material-symbols-outlined" id="mob-theme-icon">light_mode</span>
-                <span id="mob-theme-text">Light Mode</span>
-              </a>
-              <a href="{{ url_for('auth.account_settings') }}">
-                <span class="material-symbols-outlined">manage_accounts</span>Account Settings
-              </a>
-              <a href="{{ url_for('auth.logout') }}" class="logout">
-                <span class="material-symbols-outlined">logout</span>Logout
-              </a>
-            </div>
-          </li>
-          {% endif %}
-
-        </ul>
+    </ul>
       </div>
     </nav>
 

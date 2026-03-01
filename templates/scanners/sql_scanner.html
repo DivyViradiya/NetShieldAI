@@ -1266,6 +1266,11 @@
               <span>Export PDF</span>
               <span class="material-symbols-outlined">picture_as_pdf</span>
             </button>
+
+            <button id="sqlHistoryBtn" class="btn-dash btn-secondary w-full justify-between">
+              <span>Prior Scans</span>
+              <span class="material-symbols-outlined">history</span>
+            </button>
           </div>
         </div>
 
@@ -1326,6 +1331,32 @@
 
       <div id="logOutput" class="term-window"></div>
     </div>
+  </div>
+
+  <!-- --- REPORT HISTORY MODAL --- -->
+  <div id="historyModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div class="dash-panel w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
+          <div class="panel-header">
+              <span class="panel-title">Scan History</span>
+              <button id="closeHistoryModal" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px;">
+                  <span class="material-symbols-outlined">close</span>
+              </button>
+          </div>
+          <div class="panel-content overflow-auto p-0">
+              <table class="dash-table">
+                  <thead>
+                      <tr>
+                          <th>Date</th>
+                          <th>Target</th>
+                          <th style="text-align: right;">Action</th>
+                      </tr>
+                  </thead>
+                  <tbody id="historyTableBody">
+                      <tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">LOADING HISTORY...</td></tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
   </div>
 {% endblock %}
 

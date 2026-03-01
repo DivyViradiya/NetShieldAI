@@ -14,6 +14,7 @@ import uuid
 import psutil
 from datetime import datetime, timezone
 from pathlib import Path
+from Services import report_manager
 
 # --- Configuration Paths ---
 BASE_DIR = Path(__file__).parent.parent
@@ -207,7 +208,7 @@ def get_selected_interface(interface_id=None, user_id=None):
 
 # --- PHASE 2: Dynamic Path Helper ---
 
-def get_output_paths(output_dir=None, user_id=None):
+def get_output_paths(output_dir=None, user_id=None, target=None):
     if output_dir:
         base = Path(output_dir)
     else:
@@ -223,10 +224,17 @@ def get_output_paths(output_dir=None, user_id=None):
     scan_uuid = str(uuid.uuid4())[:8]
     pcap_filename = f"capture_{user_id if user_id else 'sys'}_{scan_uuid}.pcap"
 
+    if target:
+        json_filename = report_manager.generate_report_filename("packet_sniffer", target, "json")
+        pdf_filename = report_manager.generate_report_filename("packet_sniffer", target, "pdf")
+    else:
+        json_filename = "pcap_analysis_report.json"
+        pdf_filename = "pcap_analysis_report.pdf"
+
     return {
         "pcap": TEMP_DIR / pcap_filename,
-        "json_report": base / "pcap_analysis_report.json",
-        "pdf_report": base / "pcap_analysis_report.pdf" 
+        "json_report": base / json_filename,
+        "pdf_report": base / pdf_filename 
     }
 
 # --- Core Capture Logic ---
@@ -489,8 +497,8 @@ def build_pdf_report_context(analysis_data):
     # (Existing context logic remains compatible)
     return {"metadata": analysis_data.get('traffic_summary', {}), "anomalies": analysis_data.get('security_anomaly_report', {}), "raw": analysis_data}
 
-def save_json_report(analysis_data, output_dir=None, user_id=None):
-    paths = get_output_paths(output_dir, user_id=user_id)
+def save_json_report(analysis_data, output_dir=None, user_id=None, target=None):
+    paths = get_output_paths(output_dir, user_id=user_id, target=target)
     json_path = paths["json_report"]
     try:
         with open(json_path, 'w', encoding='utf-8') as f:

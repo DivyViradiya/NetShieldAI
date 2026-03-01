@@ -22,6 +22,7 @@ from Services import ssl_scanner
 from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
+from Services import report_manager
 
 ssl_scanner_bp = Blueprint('ssl_scanner_bp', __name__)
 
@@ -55,6 +56,11 @@ SERVER_PROXY_URL = "http://localhost:5100"
 def ssl_scanner_page():
     """Renders the SSL scanner page."""
     logger.info(f"[*] Accessing SSL Scanner Page (User: {current_user.username})")
+    
+    user_agent = request.headers.get('User-Agent')
+    if user_agent and any(word in user_agent for word in ['Mobile', 'Android', 'iPhone', 'iPad']):
+        return render_template('mobile_scanners/ssl_scanner.html')
+        
     return render_template('scanners/ssl_scanner.html')
 
 @ssl_scanner_bp.route('/scan', methods=['POST'])
@@ -109,7 +115,7 @@ def scan_ssl():
         ssl_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     # [NEW] Reset Log File for this new scan session
-    scan_logger.reset_log_file(current_user_identifier, "ssl")
+    scan_logger.reset_log_file(current_user_identifier, "ssl_scanner")
 
     # Function to run in a separate thread
     def scan_task():
@@ -122,12 +128,6 @@ def scan_ssl():
                 scan_type="Standard"
             )
 
-        # Use captured identifier
-        ssl_scanner.log(f"[*] Starting SSL scan for {target_host} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
-        
-        sanitized_target = scan_logger.sanitize_filename(target_host)
-        target_pdf_filename = f"ssl_report_{sanitized_target}.pdf"
-        
         start_time = time.time()
         
         # 1. Run the Scan (Generates XML) - Pass user directory
@@ -141,20 +141,19 @@ def scan_ssl():
             status = "Completed"
             # 2. Parse XML and Save JSON
             # Pass user directory so JSON is saved there
-            summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_output_dir, user_id=current_user_identifier)
-            
+            summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_output_dir, user_id=current_user_identifier, target=target_host)
             if summary:
                 # Count "findings" as combined weak protocols + vulnerabilities
                 finding_count = len(summary.get('protocols', [])) + len(summary.get('vulnerabilities', []))
                 
-                ssl_scanner.log(f"[+] SSL scan complete. Generating PDF report for {target_host}...", current_user_identifier, to_console=True)
+                ssl_scanner.log(f"[+] SSL scan data processed. Generating PDF report for {target_host}...", current_user_identifier, to_console=True)
                 
                 # 3. Generate PDF Report
                 try:
                     # Get user-specific paths
-                    user_paths = ssl_scanner.get_output_paths(user_output_dir)
+                    user_paths = ssl_scanner.get_output_paths(user_output_dir, target=target_host)
                     json_path = user_paths["json_report"]
-                    pdf_path = os.path.join(user_output_dir, target_pdf_filename)
+                    pdf_path = user_paths["pdf_report"]
 
                     # Create the directory for PDFs if it doesn't exist
                     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
@@ -165,7 +164,7 @@ def scan_ssl():
                     if os.path.exists(pdf_path):
                         # Final synchronization wait
                         time.sleep(1.5)
-                        ssl_scanner.log(f"[+] PDF report generated successfully", current_user_identifier, to_console=True)
+                        ssl_scanner.log(f"[+] SSL_SCAN_FINALIZED_SUCCESSFULLY", current_user_identifier, to_console=True)
                         ssl_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_host}", current_user_identifier, to_console=True)
                     else:
                         ssl_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier, to_console=True)
@@ -215,27 +214,26 @@ def check_active_scan():
 
     return jsonify({"status": "inactive", "message": "No active scan found"}), 200
 
+
+@ssl_scanner_bp.route('/report_history', methods=['GET'])
+@login_required
+def get_ssl_report_history():
+    user_dir = get_user_results_dir()
+    history = report_manager.get_report_history(user_dir, scanner_name="ssl_report")
+    return jsonify({"status": "success", "history": history})
+
 @ssl_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
-    """
-    Checks if PDF exists and returns scanner type. 
-    """
     data = request.get_json() or {}
     target = data.get('target')
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"ssl_report_{sanitized}.pdf"
-    else:
-        paths = ssl_scanner.get_output_paths(user_dir)
-        pdf_filename = os.path.basename(paths["pdf_report"])
+    paths = ssl_scanner.get_output_paths(user_dir, target=target)
+    pdf_path = paths["pdf_report"]
 
-    pdf_path = os.path.join(user_dir, pdf_filename)
-
-    if not os.path.exists(pdf_path):
+    if not pdf_path.exists():
         ssl_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}", user_identifier)
         return jsonify({
             "status": "error", 
@@ -255,23 +253,17 @@ def get_report_files():
     """Checks availability of reports to enable the download button."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = ssl_scanner.get_output_paths(user_dir)
+    paths = ssl_scanner.get_output_paths(user_dir, target=target)
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"ssl_report_{sanitized}.pdf"
-    else:
-        pdf_filename = os.path.basename(paths["pdf_report"])
-
     json_exists = paths["json_report"].exists()
-    pdf_exists = os.path.exists(os.path.join(user_dir, pdf_filename))
+    pdf_exists = paths["pdf_report"].exists()
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     return jsonify({
         "status": "success",
-        "json_report": "/ssl_scanner/get_json_report" if json_exists else None,
+        "json_report": f"/ssl_scanner/get_json_report?target={target}" if json_exists else None,
         "pdf_report": f"/ssl_scanner/download_pdf?target={target}" if pdf_exists else None
     })
 
@@ -279,23 +271,32 @@ def get_report_files():
 @login_required
 def download_pdf_report():
     """Serves the PDF report dynamically."""
-    target = request.args.get('target')
     user_dir = get_user_results_dir()
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"ssl_report_{sanitized}.pdf"
-    else:
-        paths = ssl_scanner.get_output_paths(user_dir)
-        pdf_filename = os.path.basename(paths["pdf_report"])
+    # Check if a specific filename is requested
+    requested_filename = request.args.get('filename')
+    target = request.args.get('target') # For backward compatibility
 
-    pdf_path = os.path.join(user_dir, pdf_filename)
+    if requested_filename:
+        filename = secure_filename(requested_filename)
+        pdf_path = os.path.join(user_dir, filename)
+        if not os.path.exists(pdf_path):
+             return jsonify({"status": "error", "message": f"Report {filename} not found."}), 404
+    elif target:
+        filename = report_manager.generate_report_filename("ssl_report", target, "pdf")
+        pdf_path = os.path.join(user_dir, filename)
+    else:
+        # Fallback to latest
+        history = report_manager.get_report_history(user_dir, scanner_name="ssl_report")
+        if not history:
+             return jsonify({"status": "error", "message": "No reports found."}), 404
+        pdf_path = history[0]['path']
+        filename = os.path.basename(pdf_path)
 
     if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
     
-    directory = user_dir
-    filename = pdf_filename
+    directory = os.path.dirname(pdf_path)
 
     return send_from_directory(
         directory=directory,
@@ -307,19 +308,17 @@ def download_pdf_report():
 @login_required
 def get_json_report_file():
     """Serves the JSON report file."""
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = ssl_scanner.get_output_paths(user_dir)
+    paths = ssl_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["json_report"]
 
     if not json_path.exists():
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
     
-    directory = str(json_path.parent)
-    filename = json_path.name
-
     return send_from_directory(
-        directory=directory,
-        path=filename,
+        directory=str(json_path.parent),
+        path=json_path.name,
         as_attachment=True
     )
 
@@ -331,8 +330,15 @@ def get_ssl_report():
     This is used by the frontend to render the immediate results view.
     """
     user_dir = get_user_results_dir()
-    paths = ssl_scanner.get_output_paths(user_dir)
+    target = request.args.get('target')
+    paths = ssl_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["json_report"]
+
+    if not json_path.exists() and not target:
+        # Fallback to latest JSON
+        history = report_manager.get_report_history(user_dir, scanner_name="ssl_report", extension="json")
+        if history:
+            json_path = Path(history[0]['path'])
 
     if not json_path.exists():
         return jsonify({
@@ -361,7 +367,7 @@ def get_ssl_report():
 def clear_ssl_log_route():
     """API endpoint to clear the SSL scanner log file."""
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    ssl_scanner.clear_log_file(user_identifier)
+    scan_logger.reset_log_file(user_identifier, "ssl_scanner")
     return jsonify({"status": "success", "message": "SSL log cleared."})
 
 @ssl_scanner_bp.route('/log_stream')
@@ -370,6 +376,6 @@ def ssl_log_stream():
     """Server-Sent Events (SSE) endpoint to stream SSL scanner log messages."""
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     return Response(
-        scan_logger.tail_log_file(user_identifier, "ssl"),
+        scan_logger.tail_log_file(user_identifier, "ssl_scanner"),
         mimetype='text/event-stream'
     )

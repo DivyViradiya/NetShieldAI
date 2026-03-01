@@ -1,0 +1,16 @@
+[2026-03-01 09:59:52] Log cleared for new packet_sniffer scan.
+[09:59:52] [*] Starting capture for 192.168.29.1 (30s) User: DivyaViradiya_1...
+[09:59:54] [*] Auto-detected interface: Wi-Fi
+[09:59:54] [+] Starting capture for host 192.168.29.1 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[10:00:24] [~] Capture time limit reached.
+[10:00:24] [+] Capture finished.
+[10:00:24] EVENT: capture_complete | PAYLOAD: D:\NetShield\NetShieldAI\Services\temp\sniffer\capture_DivyaViradiya_1_8fb34e7d.pcap
+[10:00:24] [*] Capture complete. Starting JSON analysis...
+[10:01:18] [!] Packet reranking failed: name 'semantic_centrality' is not defined
+[10:01:20] [+] Statistics extracted. Packets: 2, Duration: 20.07s
+[10:01:21] [*] Running Security Anomaly Detection...
+[10:01:21] [+] JSON report saved: [FILE_PATH]
+[10:01:21] [*] Analysis complete. Generating PDF report for 192.168.29.1...
+[10:01:23] [+] PDF report generated successfully
+[10:01:23] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.1
+[10:01:23] EVENT: analysis_complete | PAYLOAD: {"target_ip": "192.168.29.1", "status": "success"}

@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
         stopCaptureBtn: document.getElementById('stopCaptureBtn'),
         refreshSnifferResultsBtn: document.getElementById('refreshSnifferResultsBtn'),
         snifferDownloadReportBtn: document.getElementById('snifferDownloadReportBtn'),
+        snifferHistoryBtn: document.getElementById('snifferHistoryBtn'),
+        historyModal: document.getElementById('historyModal'),
+        closeHistoryModal: document.getElementById('closeHistoryModal'),
+        historyTableBody: document.getElementById('historyTableBody'),
         
         // Dropdowns & Analysis
         snifferAnalyzeReportDropdown: document.getElementById('snifferAnalyzeReportDropdown'),
@@ -83,15 +87,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function toggleSpinner(button, isLoading) {
         if (!button) return;
-        const textSpan = button.querySelector('.button-text');
+        const textSpan = button.querySelector('.button-text') || button.querySelector('.trigger-text');
         const spinnerSpan = button.querySelector('.spinner');
-        const caretIcon = button.querySelector('.fa-caret-down');
+        const caretIcon = button.querySelector('.fa-caret-down') || button.querySelector('.material-symbols-outlined:last-child');
 
-        button.disabled = isLoading;
+        if (button.id !== 'snifferAnalyzeReportDropdown') {
+            button.disabled = isLoading;
+        }
         if (isLoading) {
             button.classList.add('cursor-not-allowed', 'opacity-70');
         } else {
-            button.classList.remove('cursor-not-allowed', 'opacity-70');
+            button.classList.remove('opacity-70', 'cursor-not-allowed');
         }
         if (textSpan) textSpan.classList.toggle('hidden', isLoading); 
         if (spinnerSpan) spinnerSpan.classList.toggle('hidden', !isLoading);
@@ -203,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         Object.entries(map).forEach(([key, el]) => {
             if (!el) return;
-            el.classList.toggle('hidden', key !== name);
+            el.classList.toggle('active', key === name);
         });
 
         Object.entries(btnMap).forEach(([key, btn]) => {
@@ -212,7 +218,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         if (name === 'graph' && networkInstance) {
-             networkInstance.fit();
+             setTimeout(() => {
+                 networkInstance.fit();
+             }, 100);
         }
     }
 
@@ -232,13 +240,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const lower = msg.toLowerCase();
             // FIX: Ensure we switch to packets tab when capture is done
             if (lower.includes('capture complete') || lower.includes('analysis complete') || lower.includes('finished')) {
-                setStatus('Capture complete', 'success');
-                if (elements.analyzeBtn) elements.analyzeBtn.disabled = false;
-                if (elements.stopBtn) {
-                     toggleSpinner(elements.stopBtn, false);
-                     elements.stopBtn.disabled = true;
+                setStatus('Processing report...', 'busy');
+                if (elements.stopCaptureBtn) {
+                     toggleSpinner(elements.stopCaptureBtn, false);
+                     elements.stopCaptureBtn.disabled = true;
                 }
-                setTimeout(() => loadPacketData(), 1000); 
+                setTimeout(() => loadAndRenderReport(), 1000); 
             }
 
             if (msg.includes("EVENT:") || msg.startsWith("EVENT:")) return;
@@ -281,8 +288,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const protoStats = ts.protocol_hierarchy_stats || ts.protocol_distribution || [];
         const tcpStats = ts.tcp_conversation_stats || ts.tcp_conversations || [];
 
-        const totalPackets = ts.total_packets ?? (Array.isArray(report.dissected_packets) ? report.dissected_packets.length : 0);
-        const totalBytes = ts.total_bytes ?? 0;
+        const totalPackets = ts.summary_io?.total_packets ?? ts.total_packets ?? (Array.isArray(report.dissected_packets) ? report.dissected_packets.length : 0);
+        const totalBytes = ts.summary_io?.total_bytes ?? ts.total_bytes ?? 0;
         const dur = ts.effective_capture_duration_seconds ?? report.analysis_time_seconds ?? 0;
         const avgRate = ts.average_rate_bps ?? 0;
 
@@ -299,7 +306,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let primaryProto = 'N/A';
         if (Array.isArray(protoStats) && protoStats.length > 0) {
-            const line = protoStats.find((l) => l.toLowerCase().includes('http') || l.toLowerCase().includes('tcp')) || protoStats[protoStats.length - 1];
+            // Filter out decorative separator lines (starts with =) and header lines
+            const realProtoLines = protoStats.filter(l => l.trim() && !l.trim().startsWith('=') && !l.includes('Protocol Hierarchy'));
+            
+            const line = realProtoLines.find((l) => l.toLowerCase().includes('http') || l.toLowerCase().includes('tcp')) || realProtoLines[realProtoLines.length - 1];
+            
             if (line) {
                 const parts = line.trim().split(/\s+/);
                 primaryProto = parts[0] || 'N/A';
@@ -680,44 +691,124 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DOWNLOAD & AI LOGIC ---
 
     async function checkReportAvailability() {
-        const target = elements.targetIpInput.value.trim();
+        const target = elements.targetIpInput ? elements.targetIpInput.value.trim() : "";
+        console.log('Checking report availability for:', target || 'generic');
+        
         try {
             const url = target ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report_files`;
             const res = await fetch(url);
-            if (!res.ok) throw new Error('HTTP error');
             const data = await res.json();
 
-            if (data.status === 'success' && data.pdf_report) {
+            if (res.ok && data.status === 'success' && data.pdf_report) {
+                console.log('Report found:', data.pdf_report);
                 reportDownloadUrl = data.pdf_report;
                 
                 if (elements.snifferDownloadReportBtn) {
                     elements.snifferDownloadReportBtn.disabled = false;
                     elements.snifferDownloadReportBtn.classList.remove('opacity-70', 'cursor-not-allowed');
-                    elements.snifferDownloadReportBtn.style.opacity = '1';
                 }
-
                 if (elements.snifferAnalyzeReportDropdown) {
                     elements.snifferAnalyzeReportDropdown.disabled = false;
                     elements.snifferAnalyzeReportDropdown.classList.remove('opacity-70', 'cursor-not-allowed');
-                    elements.snifferAnalyzeReportDropdown.style.opacity = '1';
                 }
                 return;
+            } else if (target) {
+                console.log('Specific report not found, checking generic fallback...');
+                const fallbackRes = await fetch(`${API_BASE_URL}/report_files`);
+                const fallbackData = await fallbackRes.json();
+                if (fallbackRes.ok && fallbackData.status === 'success' && fallbackData.pdf_report) {
+                    console.log('Fallback report found:', fallbackData.pdf_report);
+                    reportDownloadUrl = fallbackData.pdf_report;
+                    if (elements.snifferDownloadReportBtn) {
+                        elements.snifferDownloadReportBtn.disabled = false;
+                        elements.snifferDownloadReportBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                    }
+                    if (elements.snifferAnalyzeReportDropdown) {
+                        elements.snifferAnalyzeReportDropdown.disabled = false;
+                        elements.snifferAnalyzeReportDropdown.classList.remove('opacity-70', 'cursor-not-allowed');
+                    }
+                    return;
+                }
             }
         } catch (e) {
-            // silent fail
+            console.error('Report availability check failed:', e);
         }
 
+        console.log('No report found, updating button states.');
         reportDownloadUrl = null;
         if (elements.snifferDownloadReportBtn) {
             elements.snifferDownloadReportBtn.disabled = true;
             elements.snifferDownloadReportBtn.classList.add('opacity-70', 'cursor-not-allowed');
-            elements.snifferDownloadReportBtn.style.opacity = '0.7';
         }
+        // AI Analysis button remains enabled so user can see options, matching network_scanner.js
         if (elements.snifferAnalyzeReportDropdown) {
-            elements.snifferAnalyzeReportDropdown.disabled = true;
-            elements.snifferAnalyzeReportDropdown.classList.add('opacity-70', 'cursor-not-allowed');
-            elements.snifferAnalyzeReportDropdown.style.opacity = '0.7';
+            elements.snifferAnalyzeReportDropdown.disabled = false;
+            elements.snifferAnalyzeReportDropdown.classList.remove('opacity-70', 'cursor-not-allowed');
         }
+    }
+
+    // --- HISTORY LOGIC ---
+
+    async function fetchHistory() {
+        if (!elements.historyTableBody) return;
+        elements.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">LOADING HISTORY...</td></tr>';
+        
+        try {
+            const res = await fetch(`${API_BASE_URL}/report_history`);
+            const data = await res.json();
+            
+            if (data.status === 'success' && data.history) {
+                if (data.history.length === 0) {
+                    elements.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">NO PRIOR SCANS FOUND</td></tr>';
+                    return;
+                }
+                
+                elements.historyTableBody.innerHTML = '';
+                data.history.forEach(item => {
+                    const row = document.createElement('tr');
+                    // Extract target from filename (scanner_target.pdf)
+                    let target = item.filename.split('_').slice(1).join('_').replace('.pdf', '');
+                    if (!target) target = 'Previous Scan';
+                    
+                    row.innerHTML = `
+                        <td>${item.created_at}</td>
+                        <td class="font-mono text-blue-400">${target}</td>
+                        <td style="text-align: right;">
+                            <a href="${API_BASE_URL}/download_pdf?filename=${item.filename}" class="btn-dash btn-secondary" style="display: inline-flex; height: 32px; padding: 0 10px;">
+                                <span class="material-symbols-outlined" style="font-size: 1.1rem;">download</span>
+                            </a>
+                        </td>
+                    `;
+                    elements.historyTableBody.appendChild(row);
+                });
+            } else {
+                elements.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-red);">FAILED TO LOAD HISTORY</td></tr>';
+            }
+        } catch (e) {
+            console.error('History fetch failed:', e);
+            elements.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-red);">ERROR LOADING HISTORY</td></tr>';
+        }
+    }
+
+    if (elements.snifferHistoryBtn) {
+        elements.snifferHistoryBtn.addEventListener('click', () => {
+            elements.historyModal.classList.remove('hidden');
+            fetchHistory();
+        });
+    }
+
+    if (elements.closeHistoryModal) {
+        elements.closeHistoryModal.addEventListener('click', () => {
+            elements.historyModal.classList.add('hidden');
+        });
+    }
+
+    if (elements.historyModal) {
+        elements.historyModal.addEventListener('click', (e) => {
+            if (e.target === elements.historyModal) {
+                elements.historyModal.classList.add('hidden');
+            }
+        });
     }
 
     async function analyzeReport(llmMode) {
@@ -734,7 +825,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 1. UI Setup
-        if (llmOptions) llmOptions.classList.add('hidden');
+        if (llmOptions) llmOptions.classList.remove('show');
         if (overlay) overlay.classList.remove('hidden');
         
         if (processingText) {
@@ -876,6 +967,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        if(elements.snifferAnalyzeReportDropdown) {
+            elements.snifferAnalyzeReportDropdown.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (elements.snifferLlmAnalysisOptions) {
+                    elements.snifferLlmAnalysisOptions.classList.toggle('hidden');
+                    elements.snifferLlmAnalysisOptions.classList.toggle('show');
+                }
+            });
+        }
+
         if(elements.clearSnifferLogBtn) {
             elements.clearSnifferLogBtn.addEventListener('click', async () => {
                 if(elements.snifferLogOutput) elements.snifferLogOutput.textContent = '';
@@ -894,23 +995,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        if(elements.snifferAnalyzeReportDropdown) {
-            elements.snifferAnalyzeReportDropdown.addEventListener('click', (e) => {
-                if (!elements.snifferAnalyzeReportDropdown.disabled) {
-                    e.stopPropagation();
-                    elements.snifferLlmAnalysisOptions.classList.toggle('hidden');
-                    
-                    const closeAiMenu = (docEvent) => {
-                        if (!elements.snifferLlmAnalysisOptions.contains(docEvent.target) && docEvent.target !== elements.snifferAnalyzeReportDropdown) {
-                            elements.snifferLlmAnalysisOptions.classList.add('hidden');
-                            document.removeEventListener('click', closeAiMenu);
-                        }
-                    };
-                    document.addEventListener('click', closeAiMenu);
-                }
-            });
-        }
-
         if(elements.snifferLlmAnalysisOptions) {
             elements.snifferLlmAnalysisOptions.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -918,7 +1002,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!link) return;
                 
                 const mode = link.dataset.llmMode;
-                elements.snifferLlmAnalysisOptions.classList.add('hidden'); 
+                elements.snifferLlmAnalysisOptions.classList.remove('show'); 
+                elements.snifferLlmAnalysisOptions.classList.add('hidden');
                 analyzeReport(mode);
             });
         }
@@ -930,7 +1015,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         setupEventListeners();
         initializeLogStream();
-        switchTab('packets'); // Default tab
+        switchTab('summary'); // Default tab
 
         loadAndRenderReport();
         checkReportAvailability();

@@ -34,7 +34,11 @@ from Services.network_scanner import ensure_admin_privileges
 
 app = Flask(__name__)
 app.secret_key = 'NetShieldAI' 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users_db.sqlite3'
+
+# --- [FIX] Use Absolute Path for Database ---
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_path = os.path.join(basedir, 'instance', 'users_db.sqlite3')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  # 1GB limit for uploads
 

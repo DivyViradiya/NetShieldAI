@@ -1025,3 +1025,538 @@ Traceback (most recent call last):
     raise ConnectionError(err, request=request)
 requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
 2026-02-27 17:53:05 - INFO - New local chat session started: 04f923f4-b341-4e4f-bda2-40e17eb5a005
+2026-02-27 22:14:09 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1ebd64229c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 22:14:12 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=011e7dc2-6cec-45a1-ad0f-975c2bb797eb (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 22:20:27 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1ebd64229c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 22:20:29 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=011e7dc2-6cec-45a1-ad0f-975c2bb797eb (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 22:20:43 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1ebd64209e0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 22:20:45 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=011e7dc2-6cec-45a1-ad0f-975c2bb797eb (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 22:20:46 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1ebd62a2250>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 22:20:48 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=011e7dc2-6cec-45a1-ad0f-975c2bb797eb (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 22:21:36 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1ebd64229c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 22:21:38 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=011e7dc2-6cec-45a1-ad0f-975c2bb797eb (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 22:21:39 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1ebd6421d00>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 22:21:42 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=011e7dc2-6cec-45a1-ad0f-975c2bb797eb (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 22:23:42 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1ebd64228b0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 22:23:45 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=011e7dc2-6cec-45a1-ad0f-975c2bb797eb (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 22:25:51 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1ebd6423790>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 22:25:53 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=011e7dc2-6cec-45a1-ad0f-975c2bb797eb (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:40:55 - INFO - New local chat session started: 18e0beef-014b-4ae2-92fa-261896b7c40d
+2026-02-27 23:40:57 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bd89be0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:41:01 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:41:15 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bef1090>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:41:17 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:41:24 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bea7950>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:41:27 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:41:48 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebe580>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:41:51 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:41:57 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebff00>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:41:59 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:46:34 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebdbf0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:46:37 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:47:47 - INFO - New local chat session started: 7b521a4c-bc47-4497-822a-8ce8816abf6d
+2026-02-27 23:47:49 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bcd58c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:47:51 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=7b521a4c-bc47-4497-822a-8ce8816abf6d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:48:07 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebebe0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:48:09 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:48:16 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bcd58c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:48:19 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:50:14 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebdf20>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:50:16 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:50:50 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebf130>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:50:53 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:51:33 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebf130>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:51:36 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:52:57 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebe690>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:53:00 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:54:01 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebd8c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:54:04 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=18e0beef-014b-4ae2-92fa-261896b7c40d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:56:39 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebe030>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:56:41 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=7b521a4c-bc47-4497-822a-8ce8816abf6d (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:57:17 - INFO - New local chat session started: 8d8982a9-17b5-4d08-a163-d2c5a83c7600
+2026-02-27 23:57:19 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebd260>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:57:21 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=8d8982a9-17b5-4d08-a163-d2c5a83c7600 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:57:30 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebe9c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:57:32 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=8d8982a9-17b5-4d08-a163-d2c5a83c7600 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:58:09 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebe9c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:58:11 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=8d8982a9-17b5-4d08-a163-d2c5a83c7600 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:58:28 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebead0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:58:30 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=8d8982a9-17b5-4d08-a163-d2c5a83c7600 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-27 23:58:41 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebe140>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-27 23:58:43 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=8d8982a9-17b5-4d08-a163-d2c5a83c7600 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:08:04 - INFO - New local chat session started: 1ee80716-7b43-460a-abaf-ca8229d63896
+2026-02-28 00:08:06 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebdd00>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:08:08 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=1ee80716-7b43-460a-abaf-ca8229d63896 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:08:40 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebf570>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:08:59 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebe030>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:09:01 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=1ee80716-7b43-460a-abaf-ca8229d63896 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:17:05 - INFO - New local chat session started: 0d0b45ce-e62a-4029-9566-b6b90054d8e2
+2026-02-28 00:17:07 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebcaf0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:17:09 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=0d0b45ce-e62a-4029-9566-b6b90054d8e2 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:17:47 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebf8a0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:17:50 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=0d0b45ce-e62a-4029-9566-b6b90054d8e2 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:18:00 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebf9b0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:18:02 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=0d0b45ce-e62a-4029-9566-b6b90054d8e2 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:18:19 - INFO - New local chat session started: 6ce4eb62-1267-4452-a393-d9e8efa0ae1f
+2026-02-28 00:18:21 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebd480>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:18:23 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=6ce4eb62-1267-4452-a393-d9e8efa0ae1f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:20:43 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebebe0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:20:45 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=6ce4eb62-1267-4452-a393-d9e8efa0ae1f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:23:50 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebf460>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:23:52 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=6ce4eb62-1267-4452-a393-d9e8efa0ae1f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:24:21 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebf680>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:24:23 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=6ce4eb62-1267-4452-a393-d9e8efa0ae1f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:24:29 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebf350>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:24:32 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=6ce4eb62-1267-4452-a393-d9e8efa0ae1f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:29:02 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebe140>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:29:04 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=6ce4eb62-1267-4452-a393-d9e8efa0ae1f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:29:22 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebdd00>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:29:24 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=6ce4eb62-1267-4452-a393-d9e8efa0ae1f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:30:03 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bebd9d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:30:05 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=6ce4eb62-1267-4452-a393-d9e8efa0ae1f (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 00:31:29 - INFO - New local chat session started: 1c4ba57a-7c77-40ee-a388-f8a98856b682
+2026-02-28 00:31:31 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1425bcd57b0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 00:31:33 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=1c4ba57a-7c77-40ee-a388-f8a98856b682 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 09:45:43 - INFO - New local chat session started: e8e074d3-afb9-4bfc-bf19-b6a1a3077e16
+2026-02-28 09:45:45 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee1e97f0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 09:45:55 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee22fd90>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 09:50:08 - INFO - New local chat session started: 0e8700e0-1e21-4981-b0f4-5e71b53ea30a
+2026-02-28 09:50:10 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee28fbb0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 09:50:16 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee343bf0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 09:50:18 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=0e8700e0-1e21-4981-b0f4-5e71b53ea30a (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 09:50:29 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee34c490>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 09:53:13 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee34c7c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 10:38:12 - INFO - New local chat session started: 41849f54-d632-4f7e-8e14-bbe1a0ea93d5
+2026-02-28 10:38:14 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee1d1bf0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 10:38:18 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=41849f54-d632-4f7e-8e14-bbe1a0ea93d5 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 10:40:00 - INFO - New local chat session started: 84f35d92-b4ba-4e01-8745-cbd39bb21cdf
+2026-02-28 10:40:02 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee34c050>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 10:47:46 - INFO - New local chat session started: c0d4968f-d1bc-4ef7-97ad-ec684d84b134
+2026-02-28 10:47:48 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee1d3790>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 10:48:29 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee1d07c0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 10:48:32 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=41849f54-d632-4f7e-8e14-bbe1a0ea93d5 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 10:48:54 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1caee0b57b0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 10:48:57 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=41849f54-d632-4f7e-8e14-bbe1a0ea93d5 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 11:52:20 - INFO - New local chat session started: 4e75d486-f000-40c8-bdf0-981701486f4b
+2026-02-28 12:50:39 - INFO - New local chat session started: 8b030012-58b5-4fa1-9cb0-8106988c13f1
+2026-02-28 13:40:40 - INFO - New local chat session started: 2a8b7588-9357-41ca-ad84-29e7643c279b
+2026-02-28 13:41:52 - INFO - New local chat session started: 8d954208-c99d-439a-ad98-65bbee802fdc
+2026-02-28 13:48:58 - INFO - New local chat session started: b610aaaa-6bb3-4e6d-bc9a-cfa88af15208
+2026-02-28 14:27:45 - INFO - New local chat session started: ccdd4644-de5d-409d-ad1b-063116bae8e0
+2026-02-28 14:27:47 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1bb0d7c17f0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 14:38:31 - INFO - New local chat session started: 8b434b3b-ceed-439b-bfab-88db258cc30a
+2026-02-28 15:14:02 - INFO - New local chat session started: 97b6b97e-752a-4c7d-a80e-ca896fda73c7
+2026-02-28 15:50:43 - INFO - New local chat session started: a6a1df0f-d4f8-48ed-8f0c-d1471c0ea582
+2026-02-28 15:51:27 - INFO - New local chat session started: b33ce398-c87c-4025-bf6d-10348578c304
+2026-02-28 16:20:53 - INFO - New local chat session started: cdeed052-9836-4ee7-ad6a-e3cd6e48becb
+2026-02-28 17:17:11 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d8fa7e2-67ae-4e6f-ba15-d57ddc68abd2
+2026-02-28 17:19:17 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d8fa7e2-67ae-4e6f-ba15-d57ddc68abd2
+2026-02-28 17:23:46 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d8fa7e2-67ae-4e6f-ba15-d57ddc68abd2
+2026-02-28 17:25:17 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d8fa7e2-67ae-4e6f-ba15-d57ddc68abd2
+2026-02-28 17:25:49 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4d8fa7e2-67ae-4e6f-ba15-d57ddc68abd2
+2026-02-28 17:25:54 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com', 'scan_type': 'aggressive'}
+2026-02-28 17:25:54 - INFO - Triggering scanner: https://majestically-acetimetric-burma.ngrok-free.dev/network_scanner/scan for user DivyaViradiya
+2026-02-28 17:31:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 41849f54-d632-4f7e-8e14-bbe1a0ea93d5
+2026-02-28 17:31:40 - INFO - Stream updated local session ID to: 23768ef3-f7b5-433e-ba32-551135863971
+2026-02-28 17:31:58 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 23768ef3-f7b5-433e-ba32-551135863971
+2026-02-28 17:32:03 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com'}
+2026-02-28 17:32:03 - INFO - Triggering scanner: https://majestically-acetimetric-burma.ngrok-free.dev/network_scanner/scan for user DivyaViradiya
+2026-02-28 17:47:54 - INFO - New local chat session started: fb793820-7463-40e8-85fb-2288223bdf8f
+2026-02-28 17:48:27 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session fb793820-7463-40e8-85fb-2288223bdf8f
+2026-02-28 17:48:30 - INFO - Stream updated local session ID to: 4786fdf5-d461-4855-824d-8a52906267a5
+2026-02-28 17:48:45 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4786fdf5-d461-4855-824d-8a52906267a5
+2026-02-28 17:49:00 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4786fdf5-d461-4855-824d-8a52906267a5
+2026-02-28 17:49:02 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com'}
+2026-02-28 17:49:02 - INFO - Triggering scanner: http://127.0.0.1:5000/network_scanner/scan for user DivyaViradiya
+2026-02-28 17:55:00 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-02-28 17:55:03 - INFO - Stream updated local session ID to: a6003a6d-9771-475e-8efa-11c8b83480dc
+2026-02-28 17:55:21 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a6003a6d-9771-475e-8efa-11c8b83480dc
+2026-02-28 17:55:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a6003a6d-9771-475e-8efa-11c8b83480dc
+2026-02-28 17:55:42 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com', 'timing': 3, 'scan_type': 'default'}
+2026-02-28 17:55:42 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-28 17:56:02 - INFO - New local chat session started: c6732073-e86c-44b1-9f04-0eee553fc12e
+2026-02-28 17:56:29 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-02-28 17:56:35 - INFO - Stored session ID from server: a6003a6d-9771-475e-8efa-11c8b83480dc
+2026-02-28 17:56:35 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a6003a6d-9771-475e-8efa-11c8b83480dc
+2026-02-28 17:57:15 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session c6732073-e86c-44b1-9f04-0eee553fc12e
+2026-02-28 17:57:15 - INFO - Stream updated local session ID to: b7f8fa02-1692-489f-9077-b9033374b331
+2026-02-28 17:57:45 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session b7f8fa02-1692-489f-9077-b9033374b331
+2026-02-28 17:58:03 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'example.com', 'timing': 3, 'scan_type': 'default'}
+2026-02-28 17:58:03 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-02-28 17:58:46 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-02-28 17:58:55 - INFO - Stored session ID from server: b7f8fa02-1692-489f-9077-b9033374b331
+2026-02-28 17:59:03 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session b7f8fa02-1692-489f-9077-b9033374b331
+2026-02-28 18:08:02 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session b7f8fa02-1692-489f-9077-b9033374b331
+2026-02-28 18:38:27 - INFO - New local chat session started: 18026c78-52c4-40c2-b8bb-5cb63ce97529
+2026-02-28 20:05:15 - INFO - New local chat session started: 2a33ede3-6748-48d4-a987-ed3f562979f1
+2026-02-28 20:35:43 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.29.1)
+2026-02-28 20:35:57 - INFO - Stored session ID from server: 2ec386b0-059b-48a5-8462-f8fc7d4200ab
+2026-02-28 20:35:58 - INFO - Session switched via URL parameter to: 2ec386b0-059b-48a5-8462-f8fc7d4200ab
+2026-02-28 20:37:01 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.29.1)
+2026-02-28 20:37:05 - INFO - Stored session ID from server: 147f97f7-c90b-4b1b-b020-f489884c1c6c
+2026-02-28 20:37:06 - INFO - Session switched via URL parameter to: 147f97f7-c90b-4b1b-b020-f489884c1c6c
+2026-02-28 20:37:30 - INFO - Session switched via URL parameter to: 2ec386b0-059b-48a5-8462-f8fc7d4200ab
+2026-02-28 22:31:45 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.29.1)
+2026-02-28 22:31:48 - ERROR - Error communicating with server proxy during scanner analysis: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cnetwork_scanner%5Cnmap_report_192_168_29_1.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1037, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cnetwork_scanner%5Cnmap_report_192_168_29_1.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\routes\chatbot_bp.py", line 540, in scanner_analysis_proxy
+    response = http_session.post(proxy_upload_url, params=params)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cnetwork_scanner%5Cnmap_report_192_168_29_1.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 22:40:20 - INFO - Sending ssl path-based analysis request to backend (Target: Google.com)
+2026-02-28 22:40:22 - ERROR - Error communicating with server proxy during scanner analysis: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cssl_scanner%5Cssl_report_Google_com.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1037, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cssl_scanner%5Cssl_report_Google_com.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\routes\chatbot_bp.py", line 540, in scanner_analysis_proxy
+    response = http_session.post(proxy_upload_url, params=params)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cssl_scanner%5Cssl_report_Google_com.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 23:06:27 - INFO - New local chat session started: 6313635c-b75b-402e-9db3-a6891cc2a2fa
+2026-02-28 23:06:29 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x25a68c1d6e0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-02-28 23:51:55 - INFO - Sending packet_sniffer path-based analysis request to backend (Target: 192.168.29.1)
+2026-02-28 23:51:57 - ERROR - Error communicating with server proxy during scanner analysis: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cpacket_sniffer%5Cpcap_analysis_report_192_168_29_1.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1037, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cpacket_sniffer%5Cpcap_analysis_report_192_168_29_1.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\routes\chatbot_bp.py", line 540, in scanner_analysis_proxy
+    response = http_session.post(proxy_upload_url, params=params)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cpacket_sniffer%5Cpcap_analysis_report_192_168_29_1.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-02-28 23:51:59 - INFO - Sending packet_sniffer path-based analysis request to backend (Target: 192.168.29.1)
+2026-02-28 23:52:01 - ERROR - Error communicating with server proxy during scanner analysis: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cpacket_sniffer%5Cpcap_analysis_report_192_168_29_1.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 204, in _new_conn
+    sock = connection.create_connection(
+        (self._dns_host, self.port),
+    ...<2 lines>...
+        socket_options=self.socket_options,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+    ~~~~~~~~~~~~^^^^
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+        conn,
+    ...<10 lines>...
+        **response_kw,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+    ~~~~~~~~~~~~^
+        method,
+        ^^^^^^^
+    ...<6 lines>...
+        enforce_content_length=enforce_content_length,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 500, in request
+    self.endheaders()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1333, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1093, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "C:\Users\Divy\AppData\Local\Programs\Python\Python313\Lib\http\client.py", line 1037, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 331, in connect
+    self.sock = self._new_conn()
+                ~~~~~~~~~~~~~~^^
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connection.py", line 219, in _new_conn
+    raise NewConnectionError(
+        self, f"Failed to establish a new connection: {e}"
+    ) from e
+urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+        method=request.method,
+    ...<9 lines>...
+        chunked=chunked,
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]
+    )
+  File "D:\chatbot-env\Lib\site-packages\urllib3\util\retry.py", line 535, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cpacket_sniffer%5Cpcap_analysis_report_192_168_29_1.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\routes\chatbot_bp.py", line 540, in scanner_analysis_proxy
+    response = http_session.post(proxy_upload_url, params=params)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=DivyaViradiya_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5CServices%5Cresults%5CDivyaViradiya_1%5Cpacket_sniffer%5Cpcap_analysis_report_192_168_29_1.pdf (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-03-01 12:50:15 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.29.48)
+2026-03-01 12:50:32 - INFO - Stored session ID from server: a0eb6e04-7b81-4cdd-90fb-d0e0c7f90db2
+2026-03-01 12:50:33 - INFO - Session switched via URL parameter to: a0eb6e04-7b81-4cdd-90fb-d0e0c7f90db2
+2026-03-01 14:00:23 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.29.48)
+2026-03-01 14:01:30 - INFO - Stored session ID from server: 925ed378-b516-4db9-927f-83d94d42a681
+2026-03-01 14:01:31 - INFO - Session switched via URL parameter to: 925ed378-b516-4db9-927f-83d94d42a681

@@ -15,6 +15,7 @@ from pathlib import Path
 import queue
 import threading
 from zapv2 import ZAPv2
+from Services import report_manager
 from Services import scan_logger
 from logger_setup import logger
 
@@ -61,7 +62,7 @@ def log(message, user_id=None, to_console=False, level='INFO'):
             logger.info(message)
     
     if user_id:
-        scan_logger.write_log(user_id, "api", message, level=level)
+        scan_logger.write_log(user_id, "api_scanner", message, level=level)
 
 def clear_log_file(user_id):
     if not user_id: return
@@ -92,15 +93,22 @@ def predict_risk(vulnerability_name: str, description: str = "", severity: str =
         return 0.5
 
 # --- Path Helper ---
-def get_output_paths(user_output_dir, user_id=None):
+def get_output_paths(user_output_dir, user_id=None, target=None):
     base = Path(user_output_dir)
     scan_uuid = str(uuid.uuid4())[:8]
     temp_xml = Path(TEMP_DIR) / f"api_temp_{user_id if user_id else 'sys'}_{scan_uuid}.xml"
     
+    if target:
+        json_filename = report_manager.generate_report_filename("api_scanner", target, "json")
+        pdf_filename = report_manager.generate_report_filename("api_scanner", target, "pdf")
+    else:
+        json_filename = "api_scan_report.json"
+        pdf_filename = "api_scan_report.pdf"
+
     return {
         "xml_report": temp_xml,
-        "json_report": base / "api_scan_report.json",
-        "pdf_report": base / "api_scan_report.pdf"
+        "json_report": base / json_filename,
+        "pdf_report": base / pdf_filename
     }
 
 # --- API Authentication and GraphQL Helpers ---
@@ -280,10 +288,14 @@ def parse_xml_report(report_file, user_id=None):
     finally:
         if os.path.exists(report_file): os.remove(report_file)
 
-def save_json_report(data, output_dir, user_id=None):
+def save_json_report(data, output_dir, user_id=None, target=None):
     try:
         os.makedirs(output_dir, exist_ok=True)
-        json_path = os.path.join(output_dir, "api_scan_report.json")
+        if target:
+            filename = report_manager.generate_report_filename("api_scanner", target, "json")
+            json_path = os.path.join(output_dir, filename)
+        else:
+            json_path = os.path.join(output_dir, "api_scan_report.json")
         with open(json_path, 'w') as f: json.dump(data, f, indent=2)
         return json_path
     except: return None

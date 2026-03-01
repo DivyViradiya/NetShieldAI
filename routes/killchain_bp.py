@@ -21,6 +21,7 @@ from extensions import db
 from Services.killchain_service import killchain_service, cleanup_queue
 # --- Import Scan Logger ---
 from Services import scan_logger
+from Services import report_manager
 
 killchain_bp = Blueprint('killchain_bp', __name__)
 
@@ -136,7 +137,7 @@ def dispatch_scan():
     # We pass the FIXED scan_dir so the service writes to the same folder every time
     thread = threading.Thread(
         target=killchain_service.run_job,
-        args=(target, profile, aggression, queue_id, scan_dir, log_id, app, sanitized_target), # Passed sanitized_target
+        args=(target, profile, aggression, queue_id, scan_dir, log_id, app), 
         daemon=True
     )
     thread.start()
@@ -185,13 +186,8 @@ def get_report_files():
 
     reports_dir = os.path.join(scan_dir, "reports")
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        json_filename = f"killchain_report_{sanitized}.json"
-        pdf_filename = f"killchain_report_{sanitized}.pdf"
-    else:
-        json_filename = "killchain_report.json"
-        pdf_filename = "killchain_report.pdf"
+    json_filename = report_manager.generate_report_filename("killchain", target, "json")
+    pdf_filename = report_manager.generate_report_filename("killchain", target, "pdf")
 
     json_path = os.path.join(reports_dir, json_filename)
     pdf_path = os.path.join(reports_dir, pdf_filename)
@@ -204,8 +200,8 @@ def get_report_files():
 
     return jsonify({
         "status": "success",
-        "json_report": f"/killchain/get_json_report?target={target}",
-        "pdf_report": f"/killchain/download_pdf?target={target}"
+        "json_report": f"/killchain/get_json_report?target={target}" if json_exists else None,
+        "pdf_report": f"/killchain/download_pdf?target={target}" if pdf_exists else None
     })
 
 
@@ -213,23 +209,32 @@ def get_report_files():
 @login_required
 def download_pdf_report():
     target = request.args.get('target')
+    requested_filename = request.args.get('filename')
     scan_dir = get_fixed_scan_dir()
     if not scan_dir: return jsonify({"status": "error"}), 404
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"killchain_report_{sanitized}.pdf"
-    else:
-        pdf_filename = "killchain_report.pdf"
+    reports_dir = os.path.join(scan_dir, "reports")
 
-    pdf_path = os.path.join(scan_dir, "reports", pdf_filename)
+    if requested_filename:
+        filename = secure_filename(requested_filename)
+        pdf_path = os.path.join(reports_dir, filename)
+    elif target:
+        filename = report_manager.generate_report_filename("killchain", target, "pdf")
+        pdf_path = os.path.join(reports_dir, filename)
+    else:
+        # Fallback to latest
+        history = report_manager.get_report_history(reports_dir, scanner_name="killchain")
+        if not history:
+             return jsonify({"status": "error", "message": "No reports found."}), 404
+        pdf_path = history[0]['path']
+        filename = os.path.basename(pdf_path)
 
     if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report not found."}), 404
 
     return send_from_directory(
         directory=os.path.dirname(pdf_path),
-        path=os.path.basename(pdf_path),
+        path=filename,
         as_attachment=True
     )
 
@@ -238,23 +243,32 @@ def download_pdf_report():
 @login_required
 def get_json_report():
     target = request.args.get('target')
+    requested_filename = request.args.get('filename')
     scan_dir = get_fixed_scan_dir()
     if not scan_dir: return jsonify({"status": "error"}), 404
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        json_filename = f"killchain_report_{sanitized}.json"
-    else:
-        json_filename = "killchain_report.json"
+    reports_dir = os.path.join(scan_dir, "reports")
 
-    json_path = os.path.join(scan_dir, "reports", json_filename)
+    if requested_filename:
+        filename = secure_filename(requested_filename)
+        json_path = os.path.join(reports_dir, filename)
+    elif target:
+        filename = report_manager.generate_report_filename("killchain", target, "json")
+        json_path = os.path.join(reports_dir, filename)
+    else:
+        # Fallback to latest
+        history = report_manager.get_report_history(reports_dir, scanner_name="killchain", extension="json")
+        if not history:
+             return jsonify({"status": "error", "message": "No reports found."}), 404
+        json_path = history[0]['path']
+        filename = os.path.basename(json_path)
 
     if not os.path.exists(json_path):
         return jsonify({"status": "error", "message": "JSON report not found."}), 404
 
     return send_from_directory(
         directory=os.path.dirname(json_path),
-        path=os.path.basename(json_path),
+        path=filename,
         as_attachment=True,
         mimetype='application/json'
     )
@@ -272,12 +286,7 @@ def trigger_ai_analysis():
     if not scan_dir:
         return jsonify({"status": "error", "message": "Invalid scan directory."}), 400
 
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        json_filename = f"killchain_report_{sanitized}.json"
-    else:
-        json_filename = "killchain_report.json"
-
+    json_filename = report_manager.generate_report_filename("killchain", target, "json")
     json_report_path = os.path.join(scan_dir, "reports", json_filename)
 
     if not os.path.exists(json_report_path):
@@ -325,6 +334,16 @@ def get_scan_history():
             logger.error(f"[!] Error reading history: {e}")
 
     return jsonify({"status": "success", "scans": scans})
+
+
+@killchain_bp.route('/report_history', methods=['GET'])
+@login_required
+def get_killchain_report_history():
+    scan_dir = get_fixed_scan_dir()
+    if not scan_dir: return jsonify({"status": "success", "history": []})
+    reports_dir = os.path.join(scan_dir, "reports")
+    history = report_manager.get_report_history(reports_dir, scanner_name="killchain")
+    return jsonify({"status": "success", "history": history})
 
 @killchain_bp.route('/check_active_scan', methods=['GET'])
 @login_required

@@ -24,6 +24,7 @@ from Services import sql_scanner
 from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
+from Services import report_manager
 
 sql_scanner_bp = Blueprint('sql_scanner_bp', __name__)
 
@@ -118,7 +119,7 @@ def scan_sql():
         sql_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
 
     # [NEW] Reset Log File for this new scan session
-    scan_logger.reset_log_file(current_user_identifier, "sql")
+    scan_logger.reset_log_file(current_user_identifier, "sql_scanner")
 
     # Function to run in a separate thread
     def scan_task():
@@ -133,9 +134,6 @@ def scan_sql():
                 )
 
             sql_scanner.log(f"[*] Starting {scan_mode.upper()} SQL scan for {target_url} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
-            
-            sanitized_target = scan_logger.sanitize_filename(target_url)
-            target_pdf_filename = f"sql_report_{sanitized_target}.pdf"
             
             start_time = time.time()
             
@@ -166,8 +164,9 @@ def scan_sql():
                 
                 # 2. Generate PDF Report
                 try:
-                    # PDF path is now directly in user_base_dir
-                    pdf_path = os.path.join(user_base_dir, target_pdf_filename)
+                    # Get user-specific paths
+                    user_paths = sql_scanner.get_output_paths(user_base_dir, target=target_url)
+                    pdf_path = user_paths["pdf_report"]
                     
                     # Check if the PDF generator has the SQL function implemented
                     if hasattr(pdf_generator, 'create_sql_report_pdf'):
@@ -234,6 +233,14 @@ def check_active_scan():
 
     return jsonify({"status": "inactive", "message": "No active scan found"}), 200
 
+
+@sql_scanner_bp.route('/report_history', methods=['GET'])
+@login_required
+def get_sql_report_history():
+    user_dir = get_user_results_dir()
+    history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner")
+    return jsonify({"status": "success", "history": history})
+
 @sql_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
@@ -245,15 +252,10 @@ def trigger_ai_analysis_route():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"sql_report_{sanitized}.pdf"
-    else:
-        pdf_filename = PDF_FILENAME
+    paths = sql_scanner.get_output_paths(user_dir, target=target)
+    pdf_path = paths["pdf_report"]
 
-    pdf_path = os.path.join(user_dir, pdf_filename)
-
-    if not os.path.exists(pdf_path):
+    if not pdf_path.exists():
         sql_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}", user_identifier)
         return jsonify({
             "status": "error", 
@@ -262,7 +264,7 @@ def trigger_ai_analysis_route():
 
     return jsonify({
         "status": "success",
-        "scanner_type": "sql",
+        "scanner_type": "sql_scanner",
         "target": target
     })
 
@@ -274,24 +276,19 @@ def get_report_files():
     user_dir = get_user_results_dir()
     
     # We use the helper from the service to get standard paths
-    paths = sql_scanner.get_output_paths(user_dir)
+    paths = sql_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["json_report"]
-    
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"sql_report_{sanitized}.pdf"
-    else:
-        pdf_filename = PDF_FILENAME
+    pdf_path = paths["pdf_report"]
 
     json_exists = json_path.exists()
-    pdf_exists = os.path.exists(os.path.join(user_dir, pdf_filename))
+    pdf_exists = pdf_path.exists()
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     return jsonify({
         "status": "success",
-        "json_report": "/sql_scanner/get_json_report" if json_exists else None,
+        "json_report": f"/sql_scanner/get_json_report?target={target}" if json_exists else None,
         "pdf_report": f"/sql_scanner/download_pdf?target={target}" if pdf_exists else None
     })
 
@@ -299,23 +296,29 @@ def get_report_files():
 @login_required
 def download_pdf_report():
     """Serves the PDF report dynamically."""
-    target = request.args.get('target')
     user_dir = get_user_results_dir()
+    requested_filename = request.args.get('filename')
+    target = request.args.get('target')
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"sql_report_{sanitized}.pdf"
+    if requested_filename:
+        filename = secure_filename(requested_filename)
+        pdf_path = os.path.join(user_dir, filename)
+    elif target:
+        filename = report_manager.generate_report_filename("sql_scanner", target, "pdf")
+        pdf_path = os.path.join(user_dir, filename)
     else:
-        pdf_filename = PDF_FILENAME
-
-    pdf_path = os.path.join(user_dir, pdf_filename)
+        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner")
+        if not history:
+            return jsonify({"status": "error", "message": "No reports found."}), 404
+        pdf_path = history[0]['path']
+        filename = os.path.basename(pdf_path)
 
     if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
     
     return send_from_directory(
-        directory=user_dir,
-        path=pdf_filename,
+        directory=os.path.dirname(pdf_path),
+        path=filename,
         as_attachment=True
     )
 
@@ -323,8 +326,9 @@ def download_pdf_report():
 @login_required
 def get_json_report_file():
     """Serves the JSON report file."""
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = sql_scanner.get_output_paths(user_dir)
+    paths = sql_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["json_report"]
 
     if not json_path.exists():
@@ -343,8 +347,9 @@ def get_sql_report_content():
     API endpoint to get the content of the parsed SQL scan report (JSON content).
     Used by frontend to render immediate results.
     """
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = sql_scanner.get_output_paths(user_dir)
+    paths = sql_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["json_report"]
 
     if not json_path.exists():
@@ -374,7 +379,7 @@ def get_sql_report_content():
 def clear_sql_log_route():
     """API endpoint to clear the SQL scanner log file."""
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    sql_scanner.clear_log_file(user_identifier)
+    scan_logger.reset_log_file(user_identifier, "sql_scanner")
     return jsonify({"status": "success", "message": "SQL log cleared."})
 
 @sql_scanner_bp.route('/log_stream')
@@ -383,6 +388,6 @@ def sql_log_stream():
     """Server-Sent Events (SSE) endpoint to stream SQL scanner log messages."""
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     return Response(
-        scan_logger.tail_log_file(user_identifier, "sql"),
+        scan_logger.tail_log_file(user_identifier, "sql_scanner"),
         mimetype='text/event-stream'
     )

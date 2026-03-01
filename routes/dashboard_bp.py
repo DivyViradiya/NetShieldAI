@@ -8,6 +8,7 @@ import re
 import logging
 from datetime import datetime
 from Services import compliance_engine
+from Services import report_manager
 import glob
 from pathlib import Path
 
@@ -239,7 +240,7 @@ def get_network_stats():
 
     if not user_dir: return jsonify(response)
 
-    nmap_path = os.path.join(user_dir, 'network_scanner', 'nmap_report.json')
+    nmap_path = os.path.join(user_dir, 'network_scanner', report_manager.generate_report_filename("nmap_report", None, "json"))
     nmap_data = load_json_safe(nmap_path)
 
     if nmap_data:

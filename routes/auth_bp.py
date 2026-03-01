@@ -25,39 +25,52 @@ def login():
     
     # 2. Validate Form
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        raw_username = form.username.data.strip()
+        logger.info(f"[*] Login attempt for: {raw_username}")
+        
+        # In SQLite, LIKE is case-insensitive by default for ASCII
+        user = User.query.filter(User.username.like(raw_username)).first()
 
         # 3. Check credentials
-        if user and user.check_password(form.password.data):
-            # Check if account is suspended
-            if not user.is_active_account:
-                flash('Your account has been suspended. Please contact the administrator.', 'danger')
-                return render_template('base/login.html', form=form)
+        if user:
+            logger.debug(f"[+] User '{user.username}' found in database.")
+            is_valid_pw = user.check_password(form.password.data)
+            logger.debug(f"[?] Password match for '{user.username}': {is_valid_pw}")
+            
+            if is_valid_pw:
+                # Check if account is suspended
+                if not user.is_active_account:
+                    flash('Your account has been suspended. Please contact the administrator.', 'danger')
+                    return render_template('base/login.html', form=form)
 
-            login_user(user)
-            
-            # 4. Update Stats
-            try:
-                user.update_login_stats(request.remote_addr)
-            except Exception:
-                pass 
-            
-            # 5. Role-Based Redirect Logic
-            next_page = request.args.get('next')
-            
-            if not next_page or urlparse(next_page).netloc != '':
-                if user.is_admin:
-                    next_page = url_for('auth.admin_dashboard')
-                else:
-                    next_page = url_for('index')
-            
-            return redirect(next_page)
+                login_user(user)
+                
+                # 4. Update Stats
+                try:
+                    user.update_login_stats(request.remote_addr)
+                except Exception:
+                    pass 
+                
+                # 5. Role-Based Redirect Logic
+                next_page = request.args.get('next')
+                
+                if not next_page or urlparse(next_page).netloc != '':
+                    if user.is_admin:
+                        next_page = url_for('auth.admin_dashboard')
+                    else:
+                        next_page = url_for('index')
+                
+                return redirect(next_page)
+            else:
+                # [NEW] Track failed login attempt
+                if user:
+                    user.failed_login_attempts += 1
+                    db.session.commit()
+                flash('Invalid username or password.', 'danger')
+                logger.warning(f"[!] Login failed (Incorrect Password) for username: {form.username.data}")
         else:
-            # [NEW] Track failed login attempt
-            if user:
-                user.failed_login_attempts += 1
-                db.session.commit()
             flash('Invalid username or password.', 'danger')
+            logger.warning(f"[!] Login failed (User Not Found) for username: {form.username.data}")
             
     return render_template('base/login.html', form=form)
 
@@ -75,10 +88,13 @@ def register():
     form = RegistrationForm()
     
     if form.validate_on_submit():
+        username_lower = form.username.data.lower()
         logger.info(f"[+] New User Registration Attempt: {form.username.data}")
-        if User.query.filter_by(username=form.username.data).first():
+        
+        if User.query.filter(func.lower(User.username) == username_lower).first():
             flash('Username already exists. Please choose another.', 'warning')
-            return render_template('register.html', form=form)
+            logger.warning(f"[!] Registration failed: Username '{form.username.data}' already exists.")
+            return render_template('base/register.html', form=form)
             
         if User.query.filter_by(email=form.email.data).first():
             flash('Email address is already registered.', 'warning')

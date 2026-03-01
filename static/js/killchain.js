@@ -48,6 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Custom dropdowns for Profiles
     customProfileSelectTrigger: document.querySelector('#customProfileSelect .custom-select-trigger .selected-text'),
     customAggressionSelectTrigger: document.querySelector('#customAggressionSelect .custom-select-trigger .selected-text'),
+
+    // History
+    killchainHistoryBtn: document.getElementById('killchainHistoryBtn'),
+    historyModal: document.getElementById('historyModal'),
+    closeHistoryModal: document.getElementById('closeHistoryModal'),
+    historyTableBody: document.getElementById('historyTableBody'),
   };
 
   // --- LOGGING LOGIC ---
@@ -647,6 +653,70 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Analysis failed: " + e.message);
       els.aiOverlay.classList.add("hidden");
     }
+  }
+
+  // --- HISTORY LOGIC ---
+
+  async function fetchHistory() {
+    if (!els.historyTableBody) return;
+    els.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">LOADING HISTORY...</td></tr>';
+    
+    try {
+      const res = await fetch(`${API_BASE}/report_history`);
+      const data = await res.json();
+      
+      if (data.status === 'success' && data.history) {
+        if (data.history.length === 0) {
+          els.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">NO PRIOR SCANS FOUND</td></tr>';
+          return;
+        }
+        
+        els.historyTableBody.innerHTML = '';
+        data.history.forEach(item => {
+          const row = document.createElement('tr');
+          // Extract target from filename (scanner_target.pdf)
+          let target = item.filename.split('_').slice(1).join('_').replace('.pdf', '');
+          if (!target) target = 'Previous Scan';
+          
+          row.innerHTML = `
+            <td>${item.created_at}</td>
+            <td class="font-mono text-blue-400">${target}</td>
+            <td style="text-align: right;">
+              <a href="${API_BASE}/download_pdf?filename=${item.filename}" class="btn-dash btn-secondary" style="display: inline-flex; height: 32px; padding: 0 10px;">
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">download</span>
+              </a>
+            </td>
+          `;
+          els.historyTableBody.appendChild(row);
+        });
+      } else {
+        els.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-red);">FAILED TO LOAD HISTORY</td></tr>';
+      }
+    } catch (e) {
+      console.error('History fetch failed:', e);
+      els.historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-red);">ERROR LOADING HISTORY</td></tr>';
+    }
+  }
+
+  if (els.killchainHistoryBtn) {
+    els.killchainHistoryBtn.addEventListener('click', () => {
+      els.historyModal.classList.remove('hidden');
+      fetchHistory();
+    });
+  }
+
+  if (els.closeHistoryModal) {
+    els.closeHistoryModal.addEventListener('click', () => {
+      els.historyModal.classList.add('hidden');
+    });
+  }
+
+  if (els.historyModal) {
+    els.historyModal.addEventListener('click', (e) => {
+      if (e.target === els.historyModal) {
+        els.historyModal.classList.add('hidden');
+      }
+    });
   }
 
   // --- INIT ---

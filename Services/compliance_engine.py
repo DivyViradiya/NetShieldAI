@@ -2,6 +2,7 @@ import os
 import json
 from datetime import datetime
 from logger_setup import logger
+from Services import report_manager
 
 # --- CONFIGURATION & MAPPINGS ---
 # This dictionary acts as the "Brain" of the compliance engine.
@@ -67,7 +68,7 @@ class ComplianceEngine:
         self.zap = self._load_json("zap_scanner/zap_report.json")
         self.ssl = self._load_json("ssl_scanner/ssl_report.json")
         self.sql = self._load_json("sql_scanner/sql_report.json")
-        self.nmap = self._load_json("network_scanner/nmap_report.json")
+        self.nmap = self._load_json(f"network_scanner/{report_manager.generate_report_filename('nmap_report', None, 'json')}")
         self.api = self._load_json("api_scanner/api_scan_report.json")
         self.semgrep = self._load_json("semgrep_scanner/semgrep_report.json")
 

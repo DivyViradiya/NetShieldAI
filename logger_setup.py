@@ -40,6 +40,7 @@ def setup_logger():
     # Only configure if no handlers are present to avoid duplicate logs
     if not logger.handlers:
         logger.setLevel(logging.DEBUG)
+        logger.propagate = False  # Prevent propagation to root logger to avoid duplicate logs
         
         # Console Handler
         ch = logging.StreamHandler()
@@ -63,6 +64,7 @@ def setup_logger():
 
         # Suppress overly verbose libraries
         logging.getLogger('werkzeug').setLevel(logging.ERROR)
+        logging.getLogger('pyngrok').setLevel(logging.WARNING)
         
     return logger
 

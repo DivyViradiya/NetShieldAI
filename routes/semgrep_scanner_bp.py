@@ -18,6 +18,7 @@ from Services import semgrep_scanner
 from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
+from Services import report_manager
 from logger_setup import logger
 
 semgrep_bp = Blueprint('semgrep_bp', __name__)
@@ -130,7 +131,7 @@ def scan_code():
     app = current_app._get_current_object()
 
     # [NEW] Reset Log File for this new scan session
-    scan_logger.reset_log_file(current_user_identifier, "semgrep")
+    scan_logger.reset_log_file(current_user_identifier, "semgrep_scanner")
 
     # 3. Define Background Task
     # 3. Define Background Task
@@ -146,9 +147,6 @@ def scan_code():
 
         semgrep_scanner.log(f"[*] Starting Semgrep SAST scan on {target_display} (User: {current_user_identifier})...", user_id=current_user_identifier, to_console=True)
         
-        sanitized_target = scan_logger.sanitize_filename(target_display)
-        target_pdf_filename = f"semgrep_report_{sanitized_target}.pdf"
-        
         start_time = time.time()
         
         # Run Scan
@@ -156,7 +154,8 @@ def scan_code():
             target_input=target_input, 
             input_type=input_type, 
             output_dir=user_output_dir,
-            user_id=current_user_identifier
+            user_id=current_user_identifier,
+            target=target_display
         )
 
         duration = time.time() - start_time
@@ -176,8 +175,9 @@ def scan_code():
             
             # Extract finding count from saved JSON
             try:
-                user_paths = semgrep_scanner.get_output_paths(user_output_dir)
+                user_paths = semgrep_scanner.get_output_paths(user_output_dir, target=target_display)
                 json_path = user_paths["parsed_json"]
+                pdf_path = user_paths["pdf_report"]
                 
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
@@ -187,11 +187,8 @@ def scan_code():
 
             # Generate PDF Report
             try:
-                # Create a specific PDF name
-                pdf_path = Path(user_output_dir) / target_pdf_filename
-
                 # Ensure directory exists
-                pdf_path.parent.mkdir(parents=True, exist_ok=True)
+                os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
                 
                 # Call PDF Generator (Note: You need to add this function to Services/pdf_generator.py)
                 if hasattr(pdf_generator, 'create_semgrep_report_pdf'):
@@ -221,6 +218,14 @@ def scan_code():
     
     return jsonify({"status": "success", "message": f"Code scan started for {target_display}."})
 
+
+@semgrep_bp.route('/report_history', methods=['GET'])
+@login_required
+def get_semgrep_report_history():
+    user_dir = get_user_results_dir()
+    history = report_manager.get_report_history(user_dir, scanner_name="semgrep_scanner")
+    return jsonify({"status": "success", "history": history})
+
 # --- Standard Routes (Replicating SSL Scanner Pattern) ---
 
 @semgrep_bp.route('/trigger_ai_analysis', methods=['POST'])
@@ -231,13 +236,8 @@ def trigger_ai_analysis_route():
     target = data.get('target')
     user_dir = get_user_results_dir()
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"semgrep_report_{sanitized}.pdf"
-    else:
-        pdf_filename = "semgrep_report.pdf"
-
-    pdf_path = Path(user_dir) / pdf_filename
+    paths = semgrep_scanner.get_output_paths(user_dir, target=target)
+    pdf_path = paths["pdf_report"]
 
     if not pdf_path.exists():
         current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
@@ -249,7 +249,7 @@ def trigger_ai_analysis_route():
 
     return jsonify({
         "status": "success",
-        "scanner_type": "semgrep",
+        "scanner_type": "semgrep_scanner",
         "target": target
     })
 
@@ -259,26 +259,17 @@ def get_report_files():
     """Checks availability of reports to enable download buttons."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = semgrep_scanner.get_output_paths(user_dir)
+    paths = semgrep_scanner.get_output_paths(user_dir, target=target)
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"semgrep_report_{sanitized}.pdf"
-    else:
-        pdf_filename = "semgrep_report.pdf"
-
-    json_path = paths["parsed_json"]
-    pdf_path = Path(user_dir) / pdf_filename
-
-    json_exists = json_path.exists()
-    pdf_exists = pdf_path.exists()
+    json_exists = paths["parsed_json"].exists()
+    pdf_exists = paths["pdf_report"].exists()
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     return jsonify({
         "status": "success",
-        "json_report": "/semgrep_scanner/get_json_report" if json_exists else None,
+        "json_report": f"/semgrep_scanner/get_json_report?target={target}" if json_exists else None,
         "pdf_report": f"/semgrep_scanner/download_pdf?target={target}" if pdf_exists else None
     })
 
@@ -286,23 +277,29 @@ def get_report_files():
 @login_required
 def download_pdf_report():
     """Serves the PDF report."""
-    target = request.args.get('target')
     user_dir = get_user_results_dir()
+    requested_filename = request.args.get('filename')
+    target = request.args.get('target')
     
-    if target:
-        sanitized = scan_logger.sanitize_filename(target)
-        pdf_filename = f"semgrep_report_{sanitized}.pdf"
+    if requested_filename:
+        filename = secure_filename(requested_filename)
+        pdf_path = os.path.join(user_dir, filename)
+    elif target:
+        filename = report_manager.generate_report_filename("semgrep_scanner", target, "pdf")
+        pdf_path = os.path.join(user_dir, filename)
     else:
-        pdf_filename = "semgrep_report.pdf"
+        history = report_manager.get_report_history(user_dir, scanner_name="semgrep_scanner")
+        if not history:
+            return jsonify({"status": "error", "message": "No reports found."}), 404
+        pdf_path = history[0]['path']
+        filename = os.path.basename(pdf_path)
 
-    pdf_path = Path(user_dir) / pdf_filename
-
-    if not pdf_path.exists():
+    if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
     
     return send_from_directory(
-        directory=str(pdf_path.parent),
-        path=pdf_path.name,
+        directory=os.path.dirname(pdf_path),
+        path=filename,
         as_attachment=True
     )
 
@@ -310,8 +307,9 @@ def download_pdf_report():
 @login_required
 def get_json_report_file():
     """Serves the JSON report."""
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = semgrep_scanner.get_output_paths(user_dir)
+    paths = semgrep_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["parsed_json"]
 
     if not json_path.exists():
@@ -330,8 +328,9 @@ def get_semgrep_report():
     API endpoint to get the content of the parsed scan report (JSON content).
     Used by the frontend to render the results table immediately.
     """
+    target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = semgrep_scanner.get_output_paths(user_dir)
+    paths = semgrep_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["parsed_json"]
 
     if not json_path.exists():
@@ -371,6 +370,6 @@ def log_stream():
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     
     return Response(
-        scan_logger.tail_log_file(current_user_identifier, "semgrep"),
+        scan_logger.tail_log_file(current_user_identifier, "semgrep_scanner"),
         mimetype='text/event-stream'
     )

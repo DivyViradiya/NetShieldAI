@@ -54,6 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiProcessingOverlay = document.getElementById('aiProcessingOverlay');
     const aiProcessingText = document.getElementById('aiProcessingText');
 
+    // History
+    const apiHistoryBtn = document.getElementById('apiHistoryBtn');
+    const historyModal = document.getElementById('historyModal');
+    const closeHistoryModal = document.getElementById('closeHistoryModal');
+    const historyTableBody = document.getElementById('historyTableBody');
+
     let logEventSource = null;
 
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
@@ -179,6 +185,70 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Error checking report status:", error);
         }
+    }
+
+    // --- HISTORY LOGIC ---
+
+    async function fetchHistory() {
+        if (!historyTableBody) return;
+        historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">LOADING HISTORY...</td></tr>';
+        
+        try {
+            const res = await fetch(`${API_BASE_URL}/report_history`);
+            const data = await res.json();
+            
+            if (data.status === 'success' && data.history) {
+                if (data.history.length === 0) {
+                    historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">NO PRIOR SCANS FOUND</td></tr>';
+                    return;
+                }
+                
+                historyTableBody.innerHTML = '';
+                data.history.forEach(item => {
+                    const row = document.createElement('tr');
+                    // Extract target from filename (scanner_target.pdf)
+                    let target = item.filename.split('_').slice(1).join('_').replace('.pdf', '');
+                    if (!target) target = 'Previous Scan';
+                    
+                    row.innerHTML = `
+                        <td>${item.created_at}</td>
+                        <td class="font-mono text-blue-400">${target}</td>
+                        <td style="text-align: right;">
+                            <a href="${API_BASE_URL}/download_pdf?filename=${item.filename}" class="btn-dash btn-secondary" style="display: inline-flex; height: 32px; padding: 0 10px;">
+                                <span class="material-symbols-outlined" style="font-size: 1.1rem;">download</span>
+                            </a>
+                        </td>
+                    `;
+                    historyTableBody.appendChild(row);
+                });
+            } else {
+                historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-red);">FAILED TO LOAD HISTORY</td></tr>';
+            }
+        } catch (e) {
+            console.error('History fetch failed:', e);
+            historyTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-red);">ERROR LOADING HISTORY</td></tr>';
+        }
+    }
+
+    if (apiHistoryBtn) {
+        apiHistoryBtn.addEventListener('click', () => {
+            historyModal.classList.remove('hidden');
+            fetchHistory();
+        });
+    }
+
+    if (closeHistoryModal) {
+        closeHistoryModal.addEventListener('click', () => {
+            historyModal.classList.add('hidden');
+        });
+    }
+
+    if (historyModal) {
+        historyModal.addEventListener('click', (e) => {
+            if (e.target === historyModal) {
+                historyModal.classList.add('hidden');
+            }
+        });
     }
     
     async function analyzeReport(llmMode) {

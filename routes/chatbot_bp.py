@@ -270,8 +270,13 @@ def chatbot_page():
         # [NEW] Active Session Identifier for Frontend
         active_session_id = session.get('chatbot_session_id')
 
+        # [NEW] Device Detection for Separate Frontend
+        ua = request.headers.get('User-Agent', '').lower()
+        is_mobile = any(keyword in ua for keyword in ['mobile', 'android', 'iphone', 'ipad', 'ipod'])
+        template_name = 'chatbot_mobile.html' if is_mobile else 'chatbot.html'
+
         # Pass the pre-fetched data directly to the template
-        return render_template('chatbot.html', 
+        return render_template(template_name, 
                                initial_sessions=initial_sessions, 
                                active_session_id=active_session_id)
         
@@ -738,14 +743,19 @@ def execute_action():
         # Security: Forward the session cookie so the sub-request is authenticated as the same user
         cookies = request.cookies
         
-        user_logger.info(f"Triggering scanner: {config['url']} for user {current_user.username}")
+        # Avoid routing via external ngrok URLs for server-to-server call.
+        # Ensure it hits the Flask app on port 5100.
+        flask_local_base = "http://127.0.0.1:5100"
+        internal_url = config['url'].replace(base_url, flask_local_base)
+        
+        user_logger.info(f"Triggering scanner: {internal_url} for user {current_user.username}")
         
         # Trigger the scan as a separate POST request
         # We don't wait for the scan to finish (they are already threaded in their bps)
         try:
             # Note: We use verify=False if using self-signed certs in dev, but usually not needed for localhost
             resp = requests.post(
-                config['url'], 
+                internal_url, 
                 json=config['payload'], 
                 cookies=cookies,
                 headers={'X-CSRFToken': request.headers.get('X-CSRFToken')}, # Pass CSRF if needed
@@ -785,7 +795,7 @@ def get_chat_history_proxy():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
-        session_id = session.get('chatbot_session_id')
+        session_id = request.args.get('session_id') or session.get('chatbot_session_id')
         
         if not session_id:
             return jsonify({'chat_history': [], 'session_metadata': None})
