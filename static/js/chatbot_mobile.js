@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentSessionId = (window.ACTIVE_SESSION_ID && window.ACTIVE_SESSION_ID !== "None" && window.ACTIVE_SESSION_ID !== "") ? window.ACTIVE_SESSION_ID : null;
     let allSessions = window.PRELOADED_SESSIONS || [];
+    let isSwitching = false;
 
     // Helper to send authorized requests
     async function fetchWithAuth(url, options = {}) {
@@ -600,6 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const row = document.createElement('div');
         row.className = 'msg-row system-action';
+        row.setAttribute('data-tool', action.tool); // Track the tool for async updates
         row.innerHTML = `
             <div class="msg-bubble action-bubble ${isRestore || isCompleted ? 'success' : ''}" style="border-radius: 12px; border-color: rgba(59, 130, 246, 0.5) !important;">
                 <div class="action-header" style="display: flex; align-items: center; gap: 10px; color: var(--neo-blue); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em;">
@@ -696,7 +698,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon.textContent = 'error';
                 icon.classList.remove('spin');
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { 
+            console.error("Action execution failed:", e);
+            row.querySelector('.header-text').textContent = `[FAILED]: ${displayTool} Connection Error`;
+            const icon = row.querySelector('.action-header .material-symbols-outlined');
+            if (icon) {
+                icon.textContent = 'error';
+                icon.classList.remove('spin');
+            }
+        }
     }
 
     function setupStreaming(streamUrl, row, displayTool, toolName) {
@@ -892,7 +902,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Session History API ---
     async function loadSessionList() {
         try {
-            const resp = await fetchWithAuth('/chatbot/get_user_sessions');
+            // [PERF] Use server-injected sessions if available (same fast-path as desktop)
+            if (window.PRELOADED_SESSIONS) {
+                allSessions = window.PRELOADED_SESSIONS;
+                renderSessionList(allSessions);
+                window.PRELOADED_SESSIONS = null;
+                return;
+            }
+            const resp = await fetchWithAuth('/chatbot/get_sessions');
             const data = await resp.json();
             allSessions = data.sessions || [];
             renderSessionList(allSessions);
@@ -902,48 +919,84 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function switchSession(sid, force = false) {
+        if (sid === currentSessionId || isSwitching) return;
+        isSwitching = true;
+        
         // Prepare UI
         ui.chatHistory.innerHTML = '';
         ui.welcomeState.style.display = 'none';
+        ui.typingIndicator.style.display = 'block';
         closePanels();
         
-        currentSessionId = sid;
-
         try {
-            // 1. Switch session on backend
-            await fetchWithAuth('/chatbot/switch_session', {
-                method: 'POST',
-                body: JSON.stringify({ session_id: sid })
-            });
+            currentSessionId = sid;
 
-            // 2. Fetch history
-            const resp = await fetchWithAuth(`/chatbot/get_history?session_id=${sid}`);
-            const data = await resp.json();
+            // [PERF] Fire cookie update + history fetch simultaneously.
+            // get_history accepts ?session_id= directly so it doesn't need the cookie first.
+            const [, histResp] = await Promise.all([
+                fetchWithAuth('/chatbot/switch_session', {
+                    method: 'POST',
+                    body: JSON.stringify({ session_id: sid })
+                }),
+                fetchWithAuth(`/chatbot/get_history?session_id=${sid}`)
+            ]);
+
+            const data = await histResp.json();
             
             if (data.chat_history) {
-                // Update cache
-                historyCache[sid] = {
-                    history: data.chat_history,
-                    activeScans: data.active_scans || {}
-                };
-
                 if (data.chat_history.length > 0) {
-                    renderHistory(data.chat_history, data.active_scans || {});
+                    renderHistory(data.chat_history);
+                    fetchActiveScans();
                 } else {
                     ui.welcomeState.style.display = 'block';
                 }
             } else {
                 ui.welcomeState.style.display = 'block';
             }
-            renderSessionList(allSessions); // Updates active class
+            // [PERF] Update active class locally — no extra network call
+            document.querySelectorAll('.session-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.id === sid);
+            });
         } catch(e) { 
             console.error("Failed to switch session:", e);
             addMessage('ai', 'Error switching simulation context.');
+        } finally {
+            ui.typingIndicator.style.display = 'none';
+            isSwitching = false;
         }
     }
 
+    async function fetchActiveScans() {
+        try {
+            const resp = await fetchWithAuth('/chatbot/get_active_scans');
+            const data = await resp.json();
+            const activeScans = data.active_scans || {};
+            
+            Object.keys(activeScans).forEach(toolKey => {
+                const info = activeScans[toolKey];
+                if (info.status === 'running' && info.stream_url) {
+                    // Find THE LATEST action bubble for this tool and re-attach
+                    const cards = document.querySelectorAll(`.msg-row.system-action[data-tool="${toolKey}"]`);
+                    if (cards.length > 0) {
+                        const lastCard = cards[cards.length - 1];
+                        // If it's not already in sync/running state (not spinning)
+                        const icon = lastCard.querySelector('.action-header .material-symbols-outlined');
+                        if (icon && !icon.classList.contains('spin')) {
+                            const headerText = lastCard.querySelector('.header-text');
+                            const displayTool = toolKey.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                            headerText.textContent = `[ACTIVE]: Synchronizing ${displayTool} Telemetry...`;
+                            icon.textContent = 'sync';
+                            icon.classList.add('spin');
+                            setupStreaming(info.stream_url, lastCard, displayTool, toolKey);
+                        }
+                    }
+                }
+            });
+        } catch(e) { console.error("Async scan check failed:", e); }
+    }
 
-    function renderHistory(history, activeScans = {}) {
+
+    function renderHistory(history) {
         ui.chatHistory.innerHTML = '';
         history.forEach(msg => {
             const role = msg.role === 'assistant' ? 'ai' : msg.role;
@@ -956,24 +1009,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 attachments = msg.attachments;
             }
 
-            // We pass the RAW msg.content to addMessage.
-            // addMessage handles splitting cleanText from __METADATA_ACTION__.
             addMessage(role, msg.content || "", false, attachments);
-
-            // Re-attach stream for active scans
-            let metadataAction = null;
-            if (msg.content && msg.content.includes("__METADATA_ACTION__:")) {
-                try {
-                    metadataAction = JSON.parse(msg.content.split("__METADATA_ACTION__:")[1]);
-                } catch(e) {}
-            }
-
-            if (metadataAction && metadataAction.tool && activeScans[metadataAction.tool]) {
-                const activeInfo = activeScans[metadataAction.tool];
-                if (activeInfo.status !== 'completed' && activeInfo.stream_url) {
-                    handleAction(metadataAction, false, activeInfo.stream_url);
-                }
-            }
         });
         scrollToBottom();
     }
@@ -1124,17 +1160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('show'));
     });
 
-    async function loadSessionList() {
-        try {
-            const response = await fetchWithAuth('/chatbot/get_sessions');
-            const data = await response.json();
-            allSessions = data.sessions || [];
-            renderSessionList(allSessions);
-            preloadAllHistories(); // Start preloading after list is ready
-        } catch (e) {
-            console.error("Error loading sessions:", e);
-        }
-    }
+    // (loadSessionList defined above with PRELOADED_SESSIONS fast-path)
 
     ui.newChatBtn.onclick = () => {
         currentSessionId = null;

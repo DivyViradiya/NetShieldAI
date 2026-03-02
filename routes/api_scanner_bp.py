@@ -71,10 +71,7 @@ def initiate_api_scan():
     if not target_url.startswith(('http://', 'https://')):
         target_url = 'http://' + target_url
     
-    # Check if ML model is loaded (if you are using AI for API too)
-    if api_scanner.model is None:
-        logger.error(f"[!] ML Threat Reranker not available for API Scanner.")
-        return jsonify({"status": "error", "message": "ML Threat Re-ranking service is currently unavailable. Please verify 'Services/threat_reranker.py' and model files."}), 500
+    # [REMOVED] Legacy model check. TCTREngine handles model availability internally.
 
     # User Context
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
@@ -256,14 +253,34 @@ def get_api_report_history():
 @api_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
+    """Robustly triggers AI analysis by finding the correct PDF report."""
     data = request.get_json() or {}
     target = data.get('target')
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    paths = api_scanner.get_output_paths(user_dir, target=target)
-    pdf_path = paths["pdf_report"]
+    # 1. Resolve PDF Path with Fallbacks
+    from pathlib import Path
+    pdf_path = None
+    
+    if target:
+        paths = api_scanner.get_output_paths(user_dir, target=target)
+        pdf_path = Path(paths["pdf_report"])
+    
+    # Fallback 1: History search (Recent for this scanner)
+    if not pdf_path or not pdf_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name="api_scanner", extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
+    
+    # Fallback 2: Any PDF in the results directory
+    if not pdf_path or not pdf_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
 
-    if not pdf_path.exists():
+    if not pdf_path or not pdf_path.exists():
+        api_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
@@ -271,7 +288,7 @@ def trigger_ai_analysis_route():
 
     return jsonify({
         "status": "success",
-        "scanner_type": "api_scanner",
+        "scanner_type": "api",
         "target": target
     })
 

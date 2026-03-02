@@ -1,21 +1,15 @@
-[2026-03-01 13:40:57] Log cleared for new network_scanner scan.
-[13:40:57] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
-[13:40:57] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
-[13:40:57] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
-[13:40:57] Executing Network Scan...
-[13:41:05] [+] TCP (Top 1000) scan complete. Results synchronized.
-[13:41:05] [*] Raw results persisted to: scan_result_tcp.txt
-[13:41:09] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.05}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.05}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.05}, {"port": "1095", "protocol": "TCP", "service": "tcpwrapped", "version": "", "process_name": "nearby_share.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.05}], "vulnerabilities_count": 0}
-[13:41:09] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown / Not Detected", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
-[13:41:09] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.48", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.05}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.05}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.05}, {"port": "1095", "protocol": "TCP", "service": "tcpwrapped", "version": "", "process_name": "nearby_share.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.05}]}
-[13:41:09] [+] Processing results for PDF report...
-[13:41:10] [+] JSON Scan report saved
-[13:41:10] [*] Scan complete. Generating PDF report for 192.168.29.48...
-[13:41:14] [+] PDF report generated successfully
-[13:41:14] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
-[13:41:25] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[13:57:55] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[14:00:03] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[14:00:22] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[14:01:44] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[14:03:29] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[2026-03-02 23:02:17] Log cleared for new network_scanner scan.
+[23:02:17] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T4...
+[23:02:17] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[23:02:17] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[23:02:17] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T4...
+[23:02:17] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[23:02:17] Executing Network Scan...
+[23:03:03] [+] TCP (Top 1000) scan complete. Results synchronized.
+[23:03:03] [*] Raw results persisted to: scan_result_tcp.txt
+[23:03:03] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[23:03:03] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[23:03:03] EVENT: scan_complete | PAYLOAD: {"target": "44.228.249.3", "protocol": "TCP", "scan_type": "default", "open_ports": []}
+[23:03:03] [+] Processing results for PDF report...
+[23:03:03] [+] JSON Scan report saved
+[23:03:03] [!] JSON report not found. Cannot generate PDF.

@@ -11,9 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Metrics / Status
         scanStatus: document.getElementById('scanStatus'),
+        lastScannedUrlDisplay: document.getElementById('lastScannedUrlDisplay'),
         targetDisplay: document.getElementById('targetDisplay'),
         hostStatusDisplay: document.getElementById('hostStatusDisplay'),
-        vulnCountDisplay: document.getElementById('vulnCountDisplay'),
+        findingsCountDisplay: document.getElementById('findingsCountDisplay'),
+        threatLevelDisplay: document.getElementById('threatLevelDisplay'),
         dbmsDisplay: document.getElementById('dbmsDisplay'),
         strengthDisplay: document.getElementById('strengthDisplay'), // Used as Risk Score display
         
@@ -40,6 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Live Terminal
         clearLogBtn: document.getElementById('clearLogBtn'),
         logOutput: document.getElementById('logOutput'),
+        resultsContent: document.getElementById('resultsContent'),
+        rawContent: document.getElementById('rawContent'),
+        copyJsonBtn: document.getElementById('copyJsonBtn'),
 
         // History
         sqlHistoryBtn: document.getElementById('sqlHistoryBtn'),
@@ -58,6 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    // Tab Switching
+    const findingsTabBtn = document.getElementById('findingsTabBtn');
+    const rawTabBtn = document.getElementById('rawTabBtn');
+    const findingsContent = document.getElementById('findingsContent');
+    const rawContent = document.getElementById('rawContent');
 
     // --- Helper Functions ---
     
@@ -121,8 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="log-content" style="${contentStyle}">${message}</div>
         `;
         
-        elements.logOutput.appendChild(line);
-        elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
+        if (elements.logOutput) {
+            elements.logOutput.appendChild(line);
+            elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
+        }
     }
 
     function setStatus(text, type = 'ready') {
@@ -236,22 +249,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- API & Data Functions ---
 
-    async function fetchReportData() {
+    async function fetchReportData(specificTarget = null) {
+        const target = specificTarget || elements.targetUrlInput?.value.trim();
         try {
-            const response = await fetch(`${API_BASE_URL}/report`);
+            const url = target ? `${API_BASE_URL}/report?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report`;
+            const response = await fetch(url);
             if (response.ok) {
                 const data = await response.json();
                 if(data.status === 'success') {
                     updateDashboard(data.content);
                 }
+            } else {
+                const errorData = await response.json();
+                appendLog(`[!] Failed to load findings: ${errorData.message || 'Unknown error'}`);
             }
             await checkReportAvailability();
         } catch (error) {
             console.error('Error fetching report:', error);
+            appendLog(`[!] Connection error while fetching results.`);
         }
     }
 
     function updateDashboard(data) {
+        if (!data) return;
         currentFindings = data.vulnerabilities || [];
         
         // Update Metrics
@@ -259,17 +279,36 @@ document.addEventListener('DOMContentLoaded', () => {
         if(elements.metaTarget) elements.metaTarget.textContent = (data.target || '---').split('?')[0];
         
         const dbms = data.database_info?.dbms || '---';
-        elements.dbmsDisplay.textContent = dbms;
-        elements.dbmsDisplay.title = dbms;
+        if (elements.dbmsDisplay) {
+            elements.dbmsDisplay.textContent = dbms;
+            elements.dbmsDisplay.title = dbms;
+        }
         
-        elements.vulnCountDisplay.textContent = currentFindings.length;
+        if (elements.findingsCountDisplay) elements.findingsCountDisplay.textContent = currentFindings.length;
+        if (elements.dbCountDisplay) elements.dbCountDisplay.textContent = data.database_info?.db_count || '0';
         
-        if(data.scan_time) {
+        if (elements.lastScannedUrlDisplay) elements.lastScannedUrlDisplay.textContent = data.target || '---';
+
+        if (elements.threatLevelDisplay) {
+            const count = currentFindings.length;
+            if (count > 5) {
+                elements.threatLevelDisplay.textContent = 'CRITICAL';
+                elements.threatLevelDisplay.style.color = 'var(--neo-red)';
+            } else if (count > 0) {
+                elements.threatLevelDisplay.textContent = 'HIGH';
+                elements.threatLevelDisplay.style.color = 'var(--neo-amber)';
+            } else {
+                elements.threatLevelDisplay.textContent = 'LOW';
+                elements.threatLevelDisplay.style.color = 'var(--neo-green)';
+            }
+        }
+        
+        if(data.scan_time && elements.hostStatusDisplay) {
             elements.hostStatusDisplay.textContent = "SCANNED";
             elements.hostStatusDisplay.style.color = 'var(--neo-green)';
         }
 
-        // Calculate avg risk score from re-ranked findings
+        // Calculate avg risk score
         const totalScore = currentFindings.reduce((acc, f) => acc + (f.predicted_risk_score || 0), 0);
         const avgScore = currentFindings.length > 0 
             ? (totalScore / currentFindings.length * 10).toFixed(1)
@@ -299,11 +338,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         renderFindings(currentFindings);
+
+        // Update JSON View
+        if (elements.resultsContent) {
+            elements.resultsContent.textContent = JSON.stringify(data, null, 4);
+        }
     }
 
     async function checkReportAvailability() {
-        const target = elements.targetUrlInput.value.trim();
+        const target = elements.targetUrlInput?.value.trim();
         try {
+            // If target is empty, we still want to check for the MOST RECENT report to enable buttons
             const url = target ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report_files`;
             const response = await fetch(url);
             if (response.ok) {
@@ -433,27 +478,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function analyzeReport(llmMode) {
-        const overlay = elements.aiProcessingOverlay;
-        const processingText = elements.aiProcessingText;
-        const target = elements.targetUrlInput.value.trim();
+        if (!elements.analyzeReportDropdown || elements.analyzeReportDropdown.disabled) return;
+        const target = elements.targetUrlInput?.value.trim() || elements.targetDisplay?.textContent.trim();
 
-        if (overlay) overlay.classList.remove('hidden');
-        if (processingText) processingText.textContent = 'PREPARING ANALYSIS...';
+        if (!csrfToken) {
+            appendLog('[!] Error: CSRF Token missing. Refresh page.');
+            return;
+        }
+
+        // 1. LOCK UI & SHOW OVERLAY
+        if (elements.llmAnalysisOptions) elements.llmAnalysisOptions.classList.add('hidden');
+        if (elements.aiProcessingOverlay) {
+            elements.aiProcessingOverlay.classList.remove('hidden');
+            if (elements.aiProcessingText) {
+                elements.aiProcessingText.textContent = llmMode.includes('gemini') 
+                    ? 'CONTACTING GEMINI...' 
+                    : 'LOADING LOCAL MODEL...';
+            }
+        }
+
+        setStatus(`AI Analysis (${llmMode})...`, 'busy');
+        
+        // Disable dropdown interactions
+        elements.analyzeReportDropdown.disabled = true;
 
         try {
+            // 2. Trigger Context Preparation (Backend loads Scan Data)
             let response = await fetch(`${API_BASE_URL}/trigger_ai_analysis`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-                body: JSON.stringify({ target: target })
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ llm_mode: llmMode, target: target })
             });
             let data = await response.json();
-            if (data.status !== 'success') throw new Error(data.message);
             
-            if (processingText) processingText.textContent = 'RUNNING AI ENGINE...';
+            if (data.status !== 'success') throw new Error(data.message || 'Check failed.');
+            
+            // 3. Synthesize Report (Backend calls LLM)
+            if (elements.aiProcessingText) elements.aiProcessingText.textContent = 'SYNTHESIZING REPORT...';
 
             response = await fetch(`${CHATBOT_REDIRECT_URL}/scanner_analysis`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
                 body: JSON.stringify({ 
                     llm_mode: llmMode, 
                     scanner_type: 'sql',
@@ -463,15 +534,33 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             data = await response.json();
+
             if (response.ok && data.status === 'success') {
-                window.location.href = `${CHATBOT_REDIRECT_URL}?mode=${data.llm_mode}&summary=${data.summary}&session_id=${data.session_id}`;
+                if (elements.aiProcessingText) elements.aiProcessingText.textContent = 'REDIRECTING...';
+                setStatus('Redirecting...', 'success');
+                
+                // Brief delay to let the user see the "Redirecting" state
+                setTimeout(() => {
+                    const params = new URLSearchParams({
+                        mode: data.llm_mode,
+                        summary: data.summary,
+                        session_id: data.session_id
+                    });
+                    window.location.href = `${CHATBOT_REDIRECT_URL}?${params.toString()}`;
+                }, 800);
             } else {
-                throw new Error(data.message);
+                throw new Error(data.message || `Analysis failed`);
             }
         } catch (error) {
             appendLog(`[!] AI Analysis Error: ${error.message}`);
-            if (overlay) overlay.classList.add('hidden');
-        } 
+            setStatus('Analysis failed', 'error');
+            
+            // Hide overlay to allow retry
+            if (elements.aiProcessingOverlay) elements.aiProcessingOverlay.classList.add('hidden');
+            elements.analyzeReportDropdown.disabled = false;
+        } finally {
+            checkReportAvailability(); 
+        }
     }
 
     // --- SSE Log Stream ---
@@ -481,6 +570,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const message = event.data;
             if (message.startsWith(':')) return;
             
+            // Handle Structured Events
+            if (message.includes("EVENT: scan_complete")) {
+                try {
+                    const payloadStr = message.split('| PAYLOAD: ')[1];
+                    const payload = JSON.parse(payloadStr);
+                    setStatus('Ready', 'success');
+                    fetchReportData(payload.target).then(() => {
+                        setButtonsDisabled(false);
+                        toggleSpinner(elements.startScanBtn, false);
+                    });
+                } catch (e) { console.error("Error parsing scan_complete event:", e); }
+                return;
+            }
+
             if (message.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
                 checkReportAvailability();
             }
@@ -516,12 +619,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         elements.refreshResultsBtn?.addEventListener('click', () => {
-            toggleSpinner(elements.refreshResultsBtn, true);
-            fetchReportData().then(() => setTimeout(() => toggleSpinner(elements.refreshResultsBtn, false), 500));
+            const icon = elements.refreshResultsBtn.querySelector('.material-symbols-outlined');
+            if (icon) icon.classList.add('animate-spin');
+            
+            Promise.all([
+                fetchReportData(),
+                checkReportAvailability()
+            ]).then(() => {
+                setTimeout(() => {
+                    if (icon) icon.classList.remove('animate-spin');
+                }, 800);
+            });
         });
 
         elements.clearLogBtn?.addEventListener('click', () => {
-            elements.logOutput.innerHTML = '';
+            if (elements.logOutput) elements.logOutput.innerHTML = '';
+            if (elements.resultsContent) elements.resultsContent.textContent = '// Buffer Empty';
             fetch(`${API_BASE_URL}/clear_log`, { method: 'POST', headers: { 'X-CSRFToken': csrfToken } });
         });
 
@@ -547,6 +660,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 chip.classList.add('active');
                 activeFilter = chip.dataset.filter;
                 renderFindings(currentFindings);
+            });
+        });
+
+        // --- Tab Switching Logic ---
+        if (findingsTabBtn && rawTabBtn && findingsContent && rawContent) {
+            findingsTabBtn.addEventListener('click', () => {
+                findingsTabBtn.classList.add('active');
+                rawTabBtn.classList.remove('active');
+                findingsContent.classList.remove('hidden');
+                rawContent.classList.add('hidden');
+            });
+
+            rawTabBtn.addEventListener('click', () => {
+                rawTabBtn.classList.add('active');
+                findingsTabBtn.classList.remove('active');
+                rawContent.classList.remove('hidden');
+                findingsContent.classList.add('hidden');
+            });
+        }
+
+        elements.copyJsonBtn?.addEventListener('click', () => {
+            const content = elements.resultsContent?.textContent;
+            if (!content || content.includes('// Buffer Empty')) return;
+
+            navigator.clipboard.writeText(content).then(() => {
+                const icon = elements.copyJsonBtn.querySelector('.material-symbols-outlined');
+                const text = elements.copyJsonBtn.querySelector('span:not(.material-symbols-outlined)');
+                
+                const originalIcon = icon.textContent;
+                const originalText = text.textContent;
+
+                icon.textContent = 'check';
+                text.textContent = 'COPIED';
+                elements.copyJsonBtn.style.color = 'var(--neo-green)';
+
+                setTimeout(() => {
+                    if (icon) icon.textContent = originalIcon;
+                    if (text) text.textContent = originalText;
+                    if (elements.copyJsonBtn) elements.copyJsonBtn.style.color = '';
+                }, 2000);
             });
         });
     }

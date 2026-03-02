@@ -1560,3 +1560,49 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5
 2026-03-01 14:00:23 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.29.48)
 2026-03-01 14:01:30 - INFO - Stored session ID from server: 925ed378-b516-4db9-927f-83d94d42a681
 2026-03-01 14:01:31 - INFO - Session switched via URL parameter to: 925ed378-b516-4db9-927f-83d94d42a681
+2026-03-01 14:03:55 - INFO - Sending ssl path-based analysis request to backend (Target: Google.com)
+2026-03-01 14:06:06 - INFO - Stored session ID from server: dfc9a29a-764d-4236-ad11-c81ceebdbc35
+2026-03-01 14:07:19 - INFO - Sending ssl path-based analysis request to backend (Target: Google.com)
+2026-03-01 14:07:42 - INFO - Stored session ID from server: 8c479969-a609-4e48-ab46-e1bb75358d96
+2026-03-01 14:07:43 - INFO - Session switched via URL parameter to: 8c479969-a609-4e48-ab46-e1bb75358d96
+2026-03-01 23:43:49 - INFO - Sending packet_sniffer path-based analysis request to backend (Target: None)
+2026-03-01 23:45:20 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.29.48)
+2026-03-01 23:45:32 - INFO - Stored session ID from server: d7a09652-46d3-43f1-9b0b-7d5e19619cb6
+2026-03-01 23:45:33 - INFO - Session switched via URL parameter to: d7a09652-46d3-43f1-9b0b-7d5e19619cb6
+2026-03-01 23:45:52 - INFO - Sending packet_sniffer path-based analysis request to backend (Target: None)
+2026-03-01 23:46:19 - INFO - Stored session ID from server: fb7bf18d-ad11-467c-8b4a-58c24df2e197
+2026-03-01 23:46:20 - INFO - Session switched via URL parameter to: fb7bf18d-ad11-467c-8b4a-58c24df2e197
+2026-03-02 11:56:36 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.29.48)
+2026-03-02 11:56:42 - INFO - Stored session ID from server: 7ce690c8-b2d8-4dba-b673-853159e7876d
+2026-03-02 11:56:43 - INFO - Session switched via URL parameter to: 7ce690c8-b2d8-4dba-b673-853159e7876d
+2026-03-02 11:57:23 - INFO - Sending zap path-based analysis request to backend (Target: )
+2026-03-02 11:58:00 - INFO - Stored session ID from server: 5bf64641-c6a2-4eeb-9b53-e612943b9fca
+2026-03-02 11:58:01 - INFO - Session switched via URL parameter to: 5bf64641-c6a2-4eeb-9b53-e612943b9fca
+2026-03-02 11:59:38 - INFO - Sending nmap path-based analysis request to backend (Target: 192.168.29.48)
+2026-03-02 11:59:50 - INFO - Stored session ID from server: 09aac0a5-f3b0-4906-8f18-6170707f3b2e
+2026-03-02 11:59:51 - INFO - Session switched via URL parameter to: 09aac0a5-f3b0-4906-8f18-6170707f3b2e
+2026-03-02 13:15:22 - INFO - Sending sql path-based analysis request to backend (Target: )
+2026-03-02 13:15:39 - INFO - Stored session ID from server: fafb1592-0e1b-47d8-b2d0-dea76c949b4f
+2026-03-02 13:15:40 - INFO - Session switched via URL parameter to: fafb1592-0e1b-47d8-b2d0-dea76c949b4f
+2026-03-02 13:39:19 - INFO - Sending sql path-based analysis request to backend (Target: )
+2026-03-02 13:39:41 - INFO - Stored session ID from server: f44b5015-def9-4c66-aaea-eba1af94cb60
+2026-03-02 13:51:30 - INFO - Sending sql path-based analysis request to backend (Target: )
+2026-03-02 13:51:47 - INFO - Stored session ID from server: 53d2360b-5419-4b2d-8b89-6365d60dd707
+2026-03-02 14:02:49 - INFO - Sending sql path-based analysis request to backend (Target: )
+2026-03-02 14:03:52 - INFO - Stored session ID from server: 0a753708-60a8-4774-8c5e-a9ac64db4180
+2026-03-02 14:42:26 - INFO - New local chat session started: e7d23a48-f2f5-4e77-a7e6-db04e71917b2
+2026-03-02 21:25:14 - INFO - New local chat session started: 7185fdaf-6a01-43e5-8936-e95404f0171c
+2026-03-02 21:43:12 - INFO - New local chat session started: 98bf5812-0185-4a2c-8d74-95486099a63d
+2026-03-02 21:46:25 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-03-02 21:46:30 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=5)
+2026-03-02 21:46:39 - INFO - Sending sql path-based analysis request to backend (Target: )
+2026-03-02 21:47:11 - INFO - Stored session ID from server: 4cccf5e8-beee-461f-a80b-616acd42cf12
+2026-03-02 21:55:08 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-03-02 21:55:12 - INFO - Stream updated local session ID to: 5180c44b-8c8c-440a-856d-8ce69b16181e
+2026-03-02 22:31:18 - INFO - New local chat session started: ed620254-0f10-45ad-8662-d70c9e81335f
+2026-03-02 22:34:13 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x21a646da7b0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-03-02 22:34:17 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=4cccf5e8-beee-461f-a80b-616acd42cf12 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-03-02 22:48:54 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-03-02 22:48:57 - INFO - Stream updated local session ID to: 62886be1-1f3e-48c1-9230-e6b1ac2cce84
+2026-03-02 22:53:43 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-03-02 22:53:45 - INFO - Stream updated local session ID to: f6addcf5-d2e2-4d0f-a875-4b9ff1c49ff3

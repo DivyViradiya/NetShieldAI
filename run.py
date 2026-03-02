@@ -3,6 +3,17 @@ import os
 import time
 from pathlib import Path
 
+# ===========================================================================
+# CRITICAL: Check admin privileges FIRST — before importing any heavy modules.
+# If not admin, this forks a new elevated process and exits immediately.
+# This prevents the ML models from being loaded in the non-admin process.
+# ===========================================================================
+if __name__ == '__main__':
+    # We need a minimal import just to call ensure_admin_privileges()
+    # network_scanner itself is lightweight at this stage (no ML models yet)
+    from Services.network_scanner import ensure_admin_privileges
+    ensure_admin_privileges()
+    # If we reach here, we ARE admin (either already were, or just re-elevated).
 
 from flask import Flask, render_template, jsonify, request
 from flask_login import current_user
@@ -28,7 +39,6 @@ from routes.killchain_bp import killchain_bp
 from routes.sql_scanner_bp import sql_scanner_bp
 from routes.semgrep_scanner_bp import semgrep_bp
 from routes.api_scanner_bp import api_scanner_bp
-from Services.network_scanner import ensure_admin_privileges
 
 
 
@@ -100,11 +110,8 @@ def tools_hub():
 # --- REVISED MAIN BLOCK ---
 if __name__ == '__main__':
     try:
-        # 1. ALWAYS check privileges first. 
-        # Note: If this re-executes the script as admin, the current non-admin process will exit here.
-        ensure_admin_privileges()
-
-        # 2. Only perform setup logic in the MAIN process (not the reloader)
+        # Admin check already happened at the top of this file (before imports).
+        # Only perform setup logic in the MAIN process (not the reloader child).
         if not os.environ.get("WERKZEUG_RUN_MAIN"):
             os.system('cls' if os.name == 'nt' else 'clear')
             print_banner()
@@ -116,8 +123,7 @@ if __name__ == '__main__':
             
             logger.info("[+] System checks complete. Launching interface...\n")
 
-        # 3. Run Flask. 
-        # Tip: If it still closes, try setting use_reloader=False inside app.run
+        # Run Flask.
         app.run(host='0.0.0.0', port=5100, debug=True, use_reloader=True, threaded=True)
 
     except Exception as e:

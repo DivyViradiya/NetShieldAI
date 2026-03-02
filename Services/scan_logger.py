@@ -44,7 +44,10 @@ def tail_log_file(user_id, tool_name):
 
             line = f.readline()
             if line:
-                yield f"data: {line.strip()}\n\n"
+                try:
+                    yield f"data: {line.strip()}\n\n"
+                except (OSError, GeneratorExit):
+                    return # Client disconnected
             else:
                 time.sleep(0.5) # Wait for new content
 

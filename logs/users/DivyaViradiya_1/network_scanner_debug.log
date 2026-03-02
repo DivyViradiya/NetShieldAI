@@ -118,3 +118,26 @@
 [14:00:22] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
 [14:01:44] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
 [14:03:29] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:45:18] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:49:22] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:49:24] [INFO] [*] Log file cleared.
+[08:47:49] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:09:48] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:12:07] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:56:24] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[11:59:36] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[12:00:15] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[23:02:17] [INFO] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T4...
+[23:02:17] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[23:02:17] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[23:02:17] [INFO] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T4...
+[23:02:17] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[23:02:17] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_7ddd9eda.txt 44.228.249.3
+[23:03:03] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[23:03:03] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[23:03:03] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[23:03:03] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[23:03:03] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "44.228.249.3", "protocol": "TCP", "scan_type": "default", "open_ports": []}
+[23:03:03] [INFO] [+] Processing results for PDF report...
+[23:03:03] [INFO] [+] JSON Scan report saved
+[23:03:03] [INFO] [!] JSON report not found. Cannot generate PDF.

@@ -12,12 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- DOM Elements ---
     const targetUrlInput = document.getElementById('targetUrl');
-    const startScanBtn = document.getElementById('startScanBtn'); 
+    const startScanBtn = document.getElementById('scanBtn');
     
     // Scan Options UI
-    const scanOptionsBtn = document.getElementById('scanOptionsBtn');
+    const scanOptionsBtn = document.getElementById('scanOptionsBtn') || document.getElementById('analyzeReportDropdown');
     const scanOptionsDropdown = document.getElementById('scanOptionsDropdown');
-    const scanModeSelect = document.getElementById('scanMode');
+    const scanModeSelect = document.getElementById('scanCategory');
     const useAjaxCheckbox = document.getElementById('useAjax');
     const loginUrlInput = document.getElementById('loginUrl');
     const userFieldInput = document.getElementById('userField');
@@ -25,22 +25,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
 
+    const findingsSearch = document.getElementById('findingsSearch');
+    const filterChips = document.querySelectorAll('.filter-chip');
+
     const scanStatus = document.getElementById('scanStatus');
     const hostStatusDisplay = document.getElementById('hostStatusDisplay');
-    const logOutput = document.getElementById('logOutput');
+    const logOutput = document.getElementById('logOutput') || document.getElementById('resultsContent');
     const clearLogBtn = document.getElementById('clearLogBtn');
 
     // Metrics
-    const lastScannedUrlDisplay = document.getElementById('lastScannedUrlDisplay');
+    const lastScannedUrlDisplay = document.getElementById('localIpDisplay');
     const totalAlertsDisplay = document.getElementById('totalAlertsDisplay');
     const highAlertsDisplay = document.getElementById('highAlertsDisplay');
     const mediumAlertsDisplay = document.getElementById('mediumAlertsDisplay');
     const lowAlertsDisplay = document.getElementById('lowAlertsDisplay');
     const infoAlertsDisplay = document.getElementById('infoAlertsDisplay');
-    const findingsList = document.getElementById('findingsList');
-    const findingsSearch = document.getElementById('findingsSearch');
-    const filterChips = document.querySelectorAll('.filter-chip');
     const findingsCountDisplay = document.getElementById('findingsCountDisplay');
+    const threatLevelDisplay = document.getElementById('threatLevelDisplay');
+    const findingsList = document.getElementById('findingsList') || document.getElementById('openPortsTableBody');
+    const copyResultsBtn = document.getElementById('copyResultsBtn');
 
     // Insights Panel
     const avgRiskScore = document.getElementById('avgRiskScore');
@@ -63,11 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiProcessingText = document.getElementById('aiProcessingText');
 
     // History
-    const zapHistoryBtn = document.getElementById('zapHistoryBtn');
+    const zapHistoryBtn = document.getElementById('nmapHistoryBtn'); // ID exists in HTML
     const historyModal = document.getElementById('historyModal');
     const closeHistoryModal = document.getElementById('closeHistoryModal');
     const historyTableBody = document.getElementById('historyTableBody');
-
+    
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
@@ -95,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateScanStatus(message, type = 'info') {
+        if (!scanStatus) return;
         scanStatus.textContent = message;
         
         if (hostStatusDisplay) {
@@ -365,6 +369,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const response = await fetch(RESULTS_ENDPOINT);
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #64748b; font-family: var(--font-mono); letter-spacing: 0.1em;">NO SCAN DATA FOUND. START A NEW SCAN.</div>`;
+                    return;
+                }
+                if (response.status === 401 || response.status === 403) {
+                    findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #f97316; font-family: monospace;">SESSION EXPIRED. PLEASE <a href="/login" style="color: var(--neo-blue); text-decoration: underline;">RE-LOGIN</a>.</div>`;
+                    return;
+                }
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #f97316; font-family: monospace;">UNEXPECTED RESPONSE FROM SERVER.</div>`;
+                return;
+            }
+
             const result = await response.json();
 
             if (result.status === 'success' && result.data) {
@@ -386,12 +409,24 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function updateSummaryDisplay(summary, targetUrl) {
         if (!summary) return;
-        lastScannedUrlDisplay.textContent = targetUrl || '---';
-        totalAlertsDisplay.textContent = summary.Total || summary.total || '0';
-        highAlertsDisplay.textContent = summary.High || summary.high || '0';
-        mediumAlertsDisplay.textContent = summary.Medium || summary.medium || '0';
-        lowAlertsDisplay.textContent = summary.Low || summary.low || '0';
-        infoAlertsDisplay.textContent = summary.Info || summary.info || '0';
+        if (lastScannedUrlDisplay) lastScannedUrlDisplay.textContent = targetUrl || '---';
+        if (totalAlertsDisplay) totalAlertsDisplay.textContent = summary.Total || summary.total || '0';
+        if (highAlertsDisplay) highAlertsDisplay.textContent = summary.High || summary.high || '0';
+        if (mediumAlertsDisplay) mediumAlertsDisplay.textContent = summary.Medium || summary.medium || '0';
+        if (lowAlertsDisplay) lowAlertsDisplay.textContent = summary.Low || summary.low || '0';
+        if (infoAlertsDisplay) infoAlertsDisplay.textContent = summary.Info || summary.info || '0';
+        
+        const threatLevelDisplay = document.getElementById('threatLevelDisplay');
+        if (threatLevelDisplay) {
+            let topRisk = (summary.High || summary.high) > 0 ? 'High' : ((summary.Medium || summary.medium) > 0 ? 'Medium' : ((summary.Low || summary.low) > 0 ? 'Low' : 'Info'));
+            threatLevelDisplay.textContent = topRisk.toUpperCase();
+            threatLevelDisplay.style.color = getRiskColor(topRisk);
+        }
+        
+        const genericCountDisplays = document.querySelectorAll('#spiderCountDisplay');
+        if (genericCountDisplays) {
+            genericCountDisplays.forEach(el => el.textContent = summary.Total || summary.total || '0');
+        }
     }
 
     function updateInsightsDisplay(report) {
@@ -455,7 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderFindings() {
-        const searchTerm = findingsSearch.value.toLowerCase();
+        const searchTerm = findingsSearch ? findingsSearch.value.toLowerCase() : '';
         findingsList.innerHTML = '';
         
         const filtered = allFindings.filter(f => {
@@ -480,8 +515,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createFindingCard(finding) {
         const risk = finding.risk || 'Info';
-        const confidence = finding.confidence || 'Medium';
+        const rawScore = parseFloat(finding.predicted_risk_score || 0);
+        const scoreVal = (rawScore * 10).toFixed(1);
         const color = getRiskColor(risk);
+        
+        // Gauge logic
+        const radius = 20;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (rawScore * circumference);
+        
+        let gaugeClass = 'gauge-low';
+        if (rawScore > 0.7) gaugeClass = 'gauge-critical';
+        else if (rawScore > 0.5) gaugeClass = 'gauge-high';
+        else if (rawScore > 0.3) gaugeClass = 'gauge-medium';
+
+        const priorityLevel = finding.priority_level || 'P3';
+        const priorityColor = priorityLevel === 'P0' ? '#ef4444' : (priorityLevel === 'P1' ? '#f59e0b' : (priorityLevel === 'P2' ? '#3b82f6' : '#10b981'));
+
         const card = document.createElement('div');
         card.className = 'finding-card';
         card.style.setProperty('--accent-gradient', color);
@@ -493,11 +543,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span>${risk}</span>
                 </div>
                 
-                <div class="finding-title">${finding.name || finding.alert}</div>
+                <div class="finding-title" title="${finding.name || finding.alert}">${finding.name || finding.alert}</div>
                 
                 <div class="score-container">
-                    <span class="score-label">Risk Score</span>
-                    <span class="score-val">${(parseFloat(finding.predicted_risk_score || 0) * 10).toFixed(1)}</span>
+                    <div class="risk-score-gauge">
+                        <svg class="gauge-svg" viewBox="0 0 48 48">
+                            <circle class="gauge-bg" cx="24" cy="24" r="${radius}"></circle>
+                            <circle class="gauge-fill ${gaugeClass}" cx="24" cy="24" r="${radius}" 
+                                style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset};"></circle>
+                        </svg>
+                        <span class="gauge-val">${scoreVal}</span>
+                    </div>
                 </div>
 
                 <span class="material-symbols-outlined expand-icon" style="margin-left: 0.5rem; font-size: 1.25rem;">expand_more</span>
@@ -528,10 +584,31 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="flex justify-between items-center mb-1">
                             <span class="detail-label">Technical Details</span>
                             <div class="flex gap-4">
-                                <span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 700;">CONFIDENCE: <span style="color: var(--neo-text-main);">${confidence}</span></span>
+                                <span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 700;">CONFIDENCE: <span style="color: var(--neo-text-main);">${finding.confidence || 'N/A'}</span></span>
                                 ${finding.cweid ? `<span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 700;">CWE: <span style="color: var(--neo-blue); cursor: pointer;" onclick="window.open('https://cwe.mitre.org/data/definitions/${finding.cweid}.html', '_blank')">${finding.cweid}</span></span>` : ''}
                             </div>
                         </div>
+                        
+                        <!-- SOC Analyst Metrics -->
+                        <div class="flex flex-col gap-2 mt-2 mb-3" style="background: rgba(0,0,0,0.2); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--neo-border);">
+                            <div class="flex justify-between items-center">
+                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">ANALYST PRIORITY</span>
+                                <span class="badge-pill" style="background: ${priorityColor}22; border-color: ${priorityColor}44; color: ${priorityColor}; font-size: 0.7rem; font-weight: 800;">${priorityLevel}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">TCTR SCORE</span>
+                                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main); font-weight: 600;">${finding.tctr_priority || '0.00'}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">BASE RISK</span>
+                                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main); font-weight: 600;">${finding.base_score || '0.0'}</span>
+                            </div>
+                            <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 0.05em;">RISK JUSTIFICATION</span>
+                                <p style="font-size: 0.8rem; color: var(--neo-text-main); line-height: 1.5; opacity: 0.85;">${finding.risk_justification || 'Automated risk assessment performed by TCTR Engine.'}</p>
+                            </div>
+                        </div>
+
                         <div class="detail-text detail-text-mono" style="color: #a1a1aa; background: #000; padding: 1rem; border-radius: 6px; border: 1px solid #222; overflow-x: auto; white-space: pre-wrap;">${finding.evidence || 'NO RAW EVIDENCE CAPTURED'}</div>
                     </div>
 
@@ -551,17 +628,63 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     }
 
-    // --- Filter & Search Listeners ---
-    filterChips.forEach(chip => {
-        chip.addEventListener('click', () => {
-            filterChips.forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            currentFilter = chip.dataset.filter;
-            renderFindings();
-        });
-    });
+    async function loadRawScanResults() {
+        if (!logOutput) return;
+        const resultsContent = document.getElementById('resultsContent');
+        if (!resultsContent) return;
 
-    findingsSearch.addEventListener('input', renderFindings);
+        resultsContent.textContent = '// LOADING RAW DATA...';
+        
+        try {
+            const response = await fetch(RESULTS_ENDPOINT);
+            if (!response.ok) {
+                resultsContent.textContent = '// NO RAW DATA AVAILABLE.';
+                return;
+            }
+            const result = await response.json();
+            if (result.status === 'success' && result.data) {
+                resultsContent.textContent = JSON.stringify(result.data, null, 4);
+            } else {
+                resultsContent.textContent = '// NO RAW DATA AVAILABLE.';
+            }
+        } catch (error) {
+            console.error(error);
+            resultsContent.textContent = '// FAILED TO LOAD RESULTS.';
+        }
+    }
+
+    if (copyResultsBtn) {
+        copyResultsBtn.addEventListener('click', () => {
+            const resultsContent = document.getElementById('resultsContent');
+            if (resultsContent && resultsContent.textContent !== '// Buffer Empty') {
+                navigator.clipboard.writeText(resultsContent.textContent)
+                    .then(() => {
+                        const originalText = copyResultsBtn.querySelector('span:last-child').textContent;
+                        copyResultsBtn.querySelector('span:last-child').textContent = 'COPIED!';
+                        setTimeout(() => {
+                            copyResultsBtn.querySelector('span:last-child').textContent = originalText;
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+            }
+        });
+    }
+
+    findingsSearch && findingsSearch.addEventListener('input', renderFindings);
+    
+    // Add guards for filter chips
+    if (filterChips && filterChips.length > 0) {
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                filterChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentFilter = chip.dataset.filter;
+                renderFindings();
+            });
+        });
+    }
 
     // --- Core Action: Start Scan ---
 
@@ -670,49 +793,82 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    startScanBtn.addEventListener('click', handleScanButtonClick);
+    if (startScanBtn) {
+        startScanBtn.addEventListener('click', handleScanButtonClick);
+    }
 
-    clearLogBtn.addEventListener('click', async () => {
-        if (!csrfToken) {
-            appendLog('[!] Error: CSRF Token missing. Refresh page.');
-            return;
-        }
-        
-        logOutput.innerHTML = '';
-        await fetch(CLEAR_LOG_ENDPOINT, { 
-            method: 'POST',
-            headers: { 'X-CSRFToken': csrfToken }
+    if (clearLogBtn) {
+        clearLogBtn.addEventListener('click', async () => {
+            if (!csrfToken) {
+                appendLog('[!] Error: CSRF Token missing. Refresh page.');
+                return;
+            }
+            
+            logOutput.innerHTML = '';
+            await fetch(CLEAR_LOG_ENDPOINT, { 
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken }
+            });
+            appendLog("[*] Log cleared.");
         });
-        appendLog("[*] Log cleared.");
-    });
+    }
 
-    refreshResultsBtn.addEventListener('click', () => {
-        fetchAndDisplayResults();
-    });
+    if (refreshResultsBtn) {
+        refreshResultsBtn.addEventListener('click', () => {
+            fetchAndDisplayResults();
+        });
+    }
     
     // Dropdown Handling
-    analyzeReportDropdown.addEventListener('click', (e) => {
-        if (!analyzeReportDropdown.disabled) {
-            llmAnalysisOptions.classList.toggle('hidden');
-            e.stopPropagation(); 
-        }
-    });
+    if (analyzeReportDropdown) {
+        analyzeReportDropdown.addEventListener('click', (e) => {
+            if (!analyzeReportDropdown.disabled) {
+                if (llmAnalysisOptions) llmAnalysisOptions.classList.toggle('hidden');
+                e.stopPropagation(); 
+            }
+        });
+    }
     
-    llmAnalysisOptions.addEventListener('click', (e) => {
-        e.preventDefault();
-        const option = e.target.closest('a[data-llm-mode]');
-        if (option) {
-            const llmMode = option.dataset.llmMode;
-            llmAnalysisOptions.classList.add('hidden'); 
-            analyzeReport(llmMode);
-        }
-    });
+    if (llmAnalysisOptions) {
+        llmAnalysisOptions.addEventListener('click', (e) => {
+            e.preventDefault();
+            const option = e.target.closest('a[data-llm-mode]');
+            if (option) {
+                const llmMode = option.dataset.llmMode;
+                llmAnalysisOptions.classList.add('hidden'); 
+                analyzeReport(llmMode);
+            }
+        });
+    }
 
     document.addEventListener('click', (e) => {
         if (llmAnalysisOptions && !analyzeReportDropdown.contains(e.target)) {
             llmAnalysisOptions.classList.add('hidden');
         }
     });
+
+    // --- Tab Switching Logic ---
+    const findingsTabBtn = document.getElementById('findingsTabBtn');
+    const rawTabBtn = document.getElementById('rawTabBtn');
+    const findingsContent = document.getElementById('findingsContent');
+    const rawContent = document.getElementById('rawContent');
+
+    if (findingsTabBtn && rawTabBtn && findingsContent && rawContent) {
+        findingsTabBtn.addEventListener('click', () => {
+            findingsTabBtn.classList.add('active');
+            rawTabBtn.classList.remove('active');
+            findingsContent.classList.remove('hidden');
+            rawContent.classList.add('hidden');
+        });
+
+        rawTabBtn.addEventListener('click', () => {
+            rawTabBtn.classList.add('active');
+            findingsTabBtn.classList.remove('active');
+            rawContent.classList.remove('hidden');
+            findingsContent.classList.add('hidden');
+            loadRawScanResults();
+        });
+    }
 
     async function checkScanStatus() {
         try {
@@ -724,6 +880,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateScanStatus(`Scanning: ${data.target}...`, 'busy');
                 if (targetUrlInput) targetUrlInput.value = data.target;
                 appendLog(`[*] Detected active scan on ${data.target}. Re-attaching to stream...`);
+                
+                // Fetch the logs emitted so far in the running scan
+                try {
+                    const logRes = await fetch(`${API_BASE_URL}/log_history`);
+                    const logData = await logRes.json();
+                    if (logData.status === 'success' && logData.logs) {
+                        logOutput.innerHTML = '';
+                        logData.logs.forEach(line => appendLog(line));
+                    }
+                } catch(e) { console.error("Could not fetch log history:", e); }
             }
         } catch (error) {
             console.error("Error checking scan status:", error);

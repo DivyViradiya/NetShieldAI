@@ -225,8 +225,8 @@ def get_output_paths(output_dir=None, user_id=None, target=None):
     pcap_filename = f"capture_{user_id if user_id else 'sys'}_{scan_uuid}.pcap"
 
     if target:
-        json_filename = report_manager.generate_report_filename("packet_sniffer", target, "json")
-        pdf_filename = report_manager.generate_report_filename("packet_sniffer", target, "pdf")
+        json_filename = report_manager.generate_report_filename("pcap_analysis_report", target, "json")
+        pdf_filename = report_manager.generate_report_filename("pcap_analysis_report", target, "pdf")
     else:
         json_filename = "pcap_analysis_report.json"
         pdf_filename = "pcap_analysis_report.pdf"
@@ -427,20 +427,28 @@ def detect_anomalies(analysis_report_data, target_ip, user_id=None):
 
     # Apply ML Threat Re-ranking to anomalies
     try:
-        import Services.threat_reranker as threat_reranker
+        from .tctr_engine import tctr_engine
         for category in ['port_scans', 'fragmentation_alerts', 'web_attacks']:
             if anomalies[category]:
-                # threat_reranker.rerank_findings handles 'type' and 'details' via its normalization logic
-                normalized_findings = []
                 for item in anomalies[category]:
-                    # Map to reranker expected keys
-                    normalized_findings.append({
-                        "title": item.get("type", "Anomaly"),
-                        "description": item.get("details", ""),
-                        "severity": "High" if category == "web_attacks" else "Medium",
-                        **item # Keep original fields
-                    })
-                anomalies[category] = threat_reranker.rerank_findings(normalized_findings)
+                    # Map to CWE-319 (Cleartext Transmission) or generic anomaly CWE
+                    cwe_id = "319" if category == "web_attacks" else "200"
+                    prediction_obj = tctr_engine.predict_risk(
+                        item.get("type", "Anomaly"), 
+                        item.get("details", ""), 
+                        cwe_id=cwe_id
+                    )
+                    item["predicted_risk_score"] = prediction_obj["score"]
+                    item["tctr_priority"] = prediction_obj["tctr_priority"]
+                    item["base_score"] = prediction_obj["base_score"]
+                    item["priority_level"] = prediction_obj["priority_level"]
+                    item["risk_justification"] = prediction_obj["risk_justification"]
+                
+                # Sort category by score
+                anomalies[category].sort(
+                    key=lambda x: x.get('predicted_risk_score', 0),
+                    reverse=True
+                )
     except Exception as e:
         log(f"[!] ML Re-ranking failed for Anomaly Report: {e}", user_id)
 
@@ -462,22 +470,23 @@ def analyze_pcap_to_json(pcap_path, target_ip, max_packets=50, user_id=None):
     # Apply ML Reranking to dissected packets
     if packet_data:
         try:
-            import Services.threat_reranker as threat_reranker
+            from .tctr_engine import tctr_engine
             for p in packet_data:
                 layers = p.get('_source', {}).get('layers', {})
                 proto_full = layers.get('frame', {}).get('frame.protocols', "")
                 proto = proto_full.split(':')[-1].upper() if proto_full else "DATA"
                 length = layers.get('frame', {}).get('frame.len', "0")
                 
-                # Heuristic for packet risk
-                suspicious_protos = ['SMB', 'DCERPC', 'MODBUS', 'ENIP', 'S7COMM', 'BACNET']
-                sev = "Medium" if any(sp in proto for sp in suspicious_protos) else "Info"
-                
-                p['predicted_risk_score'] = threat_reranker.predict_threat_risk(
+                prediction_obj = tctr_engine.predict_risk(
                     f"Packet {proto}", 
                     f"Flow analysis packet. Len: {length}", 
-                    severity=sev
+                    cwe_id="200"
                 )
+                p['predicted_risk_score'] = prediction_obj["score"]
+                p['tctr_priority'] = prediction_obj["tctr_priority"]
+                p['base_score'] = prediction_obj["base_score"]
+                p['priority_level'] = prediction_obj["priority_level"]
+                p['risk_justification'] = prediction_obj["risk_justification"]
         except Exception as e:
             log(f"[!] Packet reranking failed: {e}", user_id)
 

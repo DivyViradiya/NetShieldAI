@@ -2,8 +2,11 @@ from flask import Blueprint, render_template, request, jsonify, session, Respons
 from flask_login import login_required, current_user
 import requests
 import os
+import sys
 import uuid
 import logging
+import time
+import threading
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -16,8 +19,23 @@ from Services import network_scanner, zap_scanner, ssl_scanner, sql_scanner, pac
 # Initialize the Flask Blueprint for chatbot-related routes
 chatbot_bp = Blueprint('chatbot_bp', __name__)
 
+# --- TTL Cache for get_all_active_scans ---
+# Without this, every get_history call runs 8 sequential DB queries + zombie checks.
+# Cache prevents redundant checks within a 10-second window per user.
+_active_scans_cache = {}   # { user_identifier: (timestamp, result) }
+_active_scans_lock = threading.Lock()
+_ACTIVE_SCANS_TTL = 10  # seconds
+
 def get_all_active_scans(user_identifier):
-    """Checks status across all scanner modules for a user using the DATABASE."""
+    """Checks status across all scanner modules for a user using the DATABASE.
+    Results are TTL-cached per user to avoid 8x DB queries + zombie checks on every get_history call.
+    """
+    # [PERF] Return cached result if still fresh (avoids expensive repeated checks within 10s)
+    with _active_scans_lock:
+        cached = _active_scans_cache.get(user_identifier)
+        if cached and (time.time() - cached[0]) < _ACTIVE_SCANS_TTL:
+            return cached[1]
+
     active = {}
     
     try:
@@ -73,7 +91,11 @@ def get_all_active_scans(user_identifier):
 
     except Exception as e:
         logger.error(f"Error checking active scans: {e}")
-        
+
+    # [PERF] Store result in TTL cache (avoids repeated expensive checks)
+    with _active_scans_lock:
+        _active_scans_cache[user_identifier] = (time.time(), active)
+
     return active
 
 # --- Logging Setup ---

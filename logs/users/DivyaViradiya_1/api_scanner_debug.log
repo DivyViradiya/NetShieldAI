@@ -1,0 +1,81 @@
+[11:35:30] [INFO] [*] Starting API Scan for http://testphp.vulnweb.com/artists.php?artist=1 (Auth: Anonymous)...
+[11:35:30] [INFO] [*] Using Definition: http://testphp.vulnweb.com/artists.php?artist=1.json
+[11:35:30] [INFO] --- Initializing API Scanner (Port: 17787) ---
+[11:35:30] [INFO] [*] Launching ZAP process...
+[11:35:30] [INFO] [*] Waiting for ZAP to initialize on port 17787...
+[11:37:30] [INFO] [!] ZAP failed to respond on port 17787 after 120 seconds.
+[11:37:31] [INFO] [!] API scan failed for target: http://testphp.vulnweb.com/artists.php?artist=1.
+[11:43:44] [INFO] [*] Starting API Scan for http://demo.testfire.net/bank/login.aspx (Auth: Anonymous)...
+[11:43:44] [INFO] [*] Using Definition: http://demo.testfire.net/bank/login.aspx.json
+[11:43:44] [INFO] --- Initializing API Scanner (Port: 1700) ---
+[11:43:44] [INFO] [*] Launching ZAP process...
+[11:43:45] [INFO] [*] Waiting for ZAP to initialize on port 1700...
+[12:03:16] [INFO] [*] Starting API Scan for https://petstore.swagger.io/v2 (Auth: Anonymous)...
+[12:03:16] [INFO] [*] Using Definition: https://petstore.swagger.io/v2/swagger.json
+[12:03:16] [INFO] --- Initializing API Scanner (Port: 5951) ---
+[12:03:16] [INFO] [*] Launching ZAP process...
+[12:03:16] [INFO] [*] Waiting for ZAP to initialize on port 5951...
+[12:05:17] [INFO] [!] ZAP failed to respond on port 5951 after 120 seconds.
+[12:05:18] [INFO] [!] API scan failed for target: https://petstore.swagger.io/v2.
+[12:10:34] [INFO] [*] Starting API Scan for https://petstore.swagger.io/v2 (Auth: Anonymous)...
+[12:10:34] [INFO] [*] Using Definition: https://petstore.swagger.io/v2/swagger.json
+[12:10:34] [INFO] --- Initializing API Scanner (Port: 38941) ---
+[12:10:34] [INFO] [*] Launching ZAP process...
+[12:10:34] [INFO] [*] Waiting for ZAP to initialize on port 38941...
+[12:15:19] [INFO] [*] Starting API Scan for https://petstore.swagger.io/v2 (Auth: Anonymous)...
+[12:15:19] [INFO] [*] Using Definition: https://petstore.swagger.io/v2/swagger.json
+[12:15:19] [INFO] --- Initializing API Scanner (Port: 50506) ---
+[12:15:19] [INFO] [*] Launching ZAP process...
+[12:15:19] [INFO] [*] Waiting for ZAP to initialize on port 50506...
+[12:17:04] [INFO] [+] ZAP is active and responding on port 50506.
+[12:17:04] [INFO] [*] Connecting to ZAP API...
+[12:17:04] [INFO] [STAGE] Importing OpenAPI Definition...
+[12:17:38] [INFO] [STAGE] Starting Web Spider...
+[12:17:38] [INFO] [PROGRESS] [                    ] 0%
+[12:17:40] [INFO] [STAGE] Starting Active Scan (Core Analysis)...
+[12:17:40] [INFO] [PROGRESS] [                    ] 0%
+[12:17:46] [INFO] [PROGRESS] [                    ] 1%
+[12:20:46] [INFO] [PROGRESS] [                    ] 3%
+[12:22:31] [INFO] [PROGRESS] [                    ] 4%
+[12:22:36] [INFO] [PROGRESS] [=                   ] 7%
+[12:22:56] [INFO] [PROGRESS] [=                   ] 8%
+[12:23:06] [INFO] [PROGRESS] [==                  ] 12%
+[12:23:11] [INFO] [PROGRESS] [===                 ] 15%
+[12:24:51] [INFO] [PROGRESS] [===                 ] 16%
+[12:25:36] [INFO] [PROGRESS] [===                 ] 17%
+[12:25:41] [INFO] [PROGRESS] [===                 ] 18%
+[12:26:36] [INFO] [PROGRESS] [====                ] 20%
+[12:26:46] [INFO] [PROGRESS] [====                ] 22%
+[12:26:51] [INFO] [PROGRESS] [=====               ] 25%
+[12:26:56] [INFO] [PROGRESS] [=====               ] 26%
+
+
+
+
+[12:31:27] [INFO] [PROGRESS] [=====               ] 28%
+[12:33:17] [INFO] [PROGRESS] [=====               ] 29%
+[12:33:22] [INFO] [PROGRESS] [======              ] 30%
+[12:35:12] [INFO] [PROGRESS] [======              ] 31%
+[12:35:17] [INFO] [PROGRESS] [======              ] 32%
+[12:41:43] [INFO] [*] Starting API Scan for https://petstore.swagger.io/v2 (Auth: Anonymous)...
+[12:41:43] [INFO] [*] Using Definition: https://petstore.swagger.io/v2/swagger.json
+[12:41:43] [INFO] --- Initializing API Scanner (Port: 37766) ---
+[12:41:43] [INFO] [*] Launching ZAP process...
+[12:41:43] [INFO] [*] Waiting for ZAP to initialize on port 37766...
+[12:43:43] [INFO] [!] ZAP failed to respond on port 37766 after 120 seconds.
+[12:43:43] [ERROR] [!] ZAP STARTUP ERROR LOG:
+addon webdriverwindows v185.0.0
+112446 [ZAP-DownloadInstaller] INFO  org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate - Installing new addon spider v0.19.0
+112616 [ZAP-DownloadInstaller] INFO  org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate - Finished installing new addon spider v0.19.0
+112681 [ZAP-DownloadInstaller] INFO  org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate - Installing new addon ascanrules v79.0.0
+113096 [ZAP-DownloadInstaller] INFO  org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate - Finished installing new addon ascanrules v79.0.0
+114689 [ZAP-DownloadInstaller] INFO  org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate - Installing new addon graaljs v0.13.0
+118774 [ZAP-DownloadInstaller] INFO  org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate - Finished installing new addon graaljs v0.13.0
+118804 [ZAP-DownloadInstaller] INFO  org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate - Installing new addon openapi v52.0.0
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.oracle.truffle.polyglot.JDKSupport in an unnamed module (file:/D:/NetShield/NetShieldAI/Services/temp/api_scanner/user_DivyaViradiya_1_37766/addOnData/graaljs/0.13.0/libs/truffle-api-25.0.2.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+
+[12:43:44] [INFO] [!] API scan failed for target: https://petstore.swagger.io/v2.

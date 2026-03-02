@@ -22,8 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 1. Initialize Markdown ---
     marked.setOptions({
         highlight: function(code, lang) {
-            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-            return hljs.highlight(code, { language }).value;
+            // [PERF] Skip syntax highlighting for large code blocks to prevent main-thread freeze
+            if (code.length > 5000) return code;
+            try {
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
+            } catch (err) {
+                return code;
+            }
         },
         langPrefix: 'hljs language-',
         breaks: true,

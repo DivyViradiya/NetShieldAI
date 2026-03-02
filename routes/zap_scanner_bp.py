@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import threading
 import json
 import time
@@ -64,7 +65,8 @@ def zap_scanner_page():
 def initiate_zap_scan():
     data = request.get_json()
     target_url = data.get('target_url')
-    logger.info(f"\033[34m[*] ZAP Scan requested for {target_url} by {current_user.username}\033[0m")
+    scan_mode = data.get('scan_mode', 'default')
+    logger.info(f"\033[34m[*] ZAP Scan requested for {target_url} (Mode: {scan_mode}) by {current_user.username}\033[0m")
 
     if not target_url:
         return jsonify({"status": "error", "message": "Target URL is required."}), 400
@@ -74,9 +76,7 @@ def initiate_zap_scan():
     if not target_url.startswith(('http://', 'https://')):
         target_url = 'http://' + target_url
     
-    if zap_scanner.model is None:
-        logger.error(f"[!] ML Threat Reranker not available for ZAP Scanner.")
-        return jsonify({"status": "error", "message": "ML Threat Re-ranking service is currently unavailable. Please verify 'Services/threat_reranker.py' and model files."}), 500
+    # [REMOVED] Legacy model check. TCTREngine handles model availability internally.
 
     # Capture User Context for Thread using Composite ID
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
@@ -117,8 +117,8 @@ def initiate_zap_scan():
         
         start_time = time.time()
         
-        # 1. Run Scan (Pass composite ID)
-        scan_successful = zap_scanner.run_zap_scan(target_url, str(xml_path), current_user_identifier)
+        # 1. Run Scan (Pass composite ID and scan_mode)
+        scan_successful = zap_scanner.run_zap_scan(target_url, str(xml_path), current_user_identifier, scan_mode=scan_mode)
 
         duration = time.time() - start_time
         finding_count = 0
@@ -208,13 +208,34 @@ def get_zap_status():
 @zap_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
+    """Robustly triggers AI analysis by finding the correct PDF report."""
     data = request.get_json() or {}
     target = data.get('target')
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
-    paths = zap_scanner.get_output_paths(user_dir, target=target)
-    pdf_path = paths["pdf_report"]
+    
+    # 1. Resolve PDF Path with Fallbacks
+    from pathlib import Path
+    pdf_path = None
+    
+    if target:
+        paths = zap_scanner.get_output_paths(user_dir, target=target)
+        pdf_path = Path(paths["pdf_report"])
+    
+    # Fallback 1: History search (Recent for this scanner)
+    if not pdf_path or not pdf_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name="zap_scanner", extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
+    
+    # Fallback 2: Any PDF in the results directory
+    if not pdf_path or not pdf_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
 
-    if not pdf_path.exists():
+    if not pdf_path or not pdf_path.exists():
+        zap_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
@@ -222,7 +243,7 @@ def trigger_ai_analysis_route():
 
     return jsonify({
         "status": "success",
-        "scanner_type": "zap_scanner",
+        "scanner_type": "zap",
         "target": target
     })
 
@@ -236,8 +257,18 @@ def trigger_ai_analysis_route():
 def get_zap_scan_results():
     user_dir = get_user_results_dir()
     target = request.args.get('target')
-    paths = zap_scanner.get_output_paths(user_dir, target=target)
-    json_path = paths["json_report"]
+
+    if not target:
+        history = report_manager.get_report_history(user_dir, scanner_name="zap_scanner", extension="json")
+        if history:
+            json_path = Path(history[0]['path'])
+        else:
+            json_path = zap_scanner.get_output_paths(user_dir, target=target)["json_report"]
+    else:
+        paths = zap_scanner.get_output_paths(user_dir, target=target)
+        json_path = paths["json_report"]
+    
+    print(f"[DEBUG] Accessing ZAP results at: {json_path} (exists: {json_path.exists()})")
 
     if not json_path.exists():
         return jsonify({
@@ -266,6 +297,12 @@ def get_zap_report_history():
 def get_report_files():
     target = request.args.get('target')
     user_dir = get_user_results_dir()
+    
+    if not target:
+        history = report_manager.get_report_history(user_dir, scanner_name="zap_scanner")
+        if history:
+            target = history[0]['filename'].replace('zap_scanner_', '').replace('.pdf', '')
+            
     paths = zap_scanner.get_output_paths(user_dir, target=target)
     
     json_exists = paths["json_report"].exists()
@@ -323,6 +360,18 @@ def clear_zap_log_route():
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     zap_scanner.clear_log_file(current_user_identifier)
     return jsonify({"status": "success", "message": "Log cleared."})
+
+@zap_scanner_bp.route('/log_history', methods=['GET'])
+@login_required
+def get_zap_log_history():
+    """Retrieves the previously written logs for resilient frontend loading."""
+    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    log_file = os.path.join(zap_scanner.LOGS_DIR, "users", current_user_identifier, "zap_agent_log.txt")
+    logs = []
+    if os.path.exists(log_file):
+        with open(log_file, 'r', encoding='utf-8') as f:
+            logs = f.read().splitlines()
+    return jsonify({"status": "success", "logs": logs})
 
 
 @zap_scanner_bp.route('/log_stream')

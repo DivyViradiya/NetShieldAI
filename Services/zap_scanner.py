@@ -64,197 +64,6 @@ except ImportError:
 
 model = predict_threat_risk
 
-# --- FULL ZAP to CWE Mapping ---
-ZAP_TO_CWE_MAP = {
-    'Directory Browsing': 'CWE-548',
-    'Private IP Disclosure': 'CWE-497',
-    'Session ID in URL Rewrite': 'CWE-598',
-    'Referer Exposes Session ID': 'CWE-598',
-    'Path Traversal': 'CWE-22',
-    'Remote File Inclusion': 'CWE-98',
-    'Source Code Disclosure - Git': 'CWE-541',
-    'Source Code Disclosure - SVN': 'CWE-541',
-    'Source Code Disclosure - File Inclusion': 'CWE-541',
-    'Vulnerable JS Library': 'CWE-1395',
-    'In Page Banner Information Leak': 'CWE-497',
-    'Cookie No HttpOnly Flag': 'CWE-1004',
-    'Cookie Without Secure Flag': 'CWE-614',
-    'Cross-Domain JavaScript Source File Inclusion': 'CWE-829',
-    'Content-Type Header Missing': 'CWE-345',
-    'Content-Type Header Empty': 'CWE-345',
-    'Missing Anti-clickjacking Header': 'CWE-1021',
-    'Multiple X-Frame-Options Header Entries': 'CWE-1021',
-    'X-Frame-Options Defined via META (Non-compliant with Spec)': 'CWE-1021',
-    'X-Frame-Options Setting Malformed': 'CWE-1021',
-    'X-Content-Type-Options Header Missing': 'CWE-693',
-    'Information Disclosure - Debug Error Messages': 'CWE-1295',
-    'Information Disclosure - Sensitive Information in URL': 'CWE-598',
-    'Information Disclosure - Sensitive Information in HTTP Referrer Header': 'CWE-598',
-    'HTTP Parameter Override': 'CWE-20',
-    'Information Disclosure - Suspicious Comments': 'CWE-615',
-    'Off-site Redirect': 'CWE-601',
-    'Cookie Poisoning': 'CWE-565',
-    'User Controllable Charset': 'CWE-20',
-    'User Controllable HTML Element Attribute (Potential XSS)': 'CWE-20',
-    'Potential IP Addresses Found in the Viewstate': 'CWE-642',
-    'Emails Found in the Viewstaterelease': 'CWE-642',
-    'Old Asp.Net Version in Userelease': 'CWE-642',
-    'Viewstate without MAC Signature (Unsure)': 'CWE-642',
-    'Viewstate without MAC Signature (Sure)': 'CWE-642',
-    'Split Viewstate in Userelease': 'CWE-642',
-    'Heartbleed OpenSSL Vulnerability (Indicative)': 'CWE-119',
-    'Strict-Transport-Security Header Not Set': 'CWE-319',
-    'Strict-Transport-Security Disabled': 'CWE-319',
-    'Strict-Transport-Security Multiple Header Entries (Non-compliant with Spec)': 'CWE-319',
-    'Strict-Transport-Security Header on Plain HTTP Responserelease': 'CWE-319',
-    'Strict-Transport-Security Missing Max-Age (Non-compliant with Spec)': 'CWE-319',
-    'Strict-Transport-Security Defined via META (Non-compliant with Spec)': 'CWE-319',
-    'Strict-Transport-Security Max-Age Malformed (Non-compliant with Spec)': 'CWE-319',
-    'Strict-Transport-Security Malformed Content (Non-compliant with Spec)': 'CWE-319',
-    'Server Leaks its Webserver Application via "Server" HTTP Response Header Field': 'CWE-497',
-    'Server Leaks Version Information via "Server" HTTP Response Header Field': 'CWE-497',
-    'Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s)': 'CWE-497',
-    'Content Security Policy (CSP) Header Not Set': 'CWE-693',
-    'Obsolete Content Security Policy (CSP) Header Found': 'CWE-693',
-    'Content Security Policy (CSP) Report-Only Header Found': 'CWE-693',
-    'X-Backend-Server Header Information Leak': 'CWE-497',
-    'Secure Pages Include Mixed Content': 'CWE-311',
-    'HTTP to HTTPS Insecure Transition in Form Post': 'CWE-319',
-    'HTTPS to HTTP Insecure Transition in Form Post': 'CWE-319',
-    'User Controllable JavaScript Event (XSS)': 'CWE-20',
-    'Big Redirect Detected (Potential Sensitive Information Leak)': 'CWE-201',
-    'Multiple HREFs Redirect Detected (Potential Sensitive Information Leak)': 'CWE-201',
-    'Source Code Disclosure - /WEB-INF Folder': 'CWE-541',
-    'Properties File Disclosure - /WEB-INF folder': 'CWE-541',
-    'HTTPS Content Available via HTTP': 'CWE-311',
-    'Remote Code Execution - Shell Shock': 'CWE-78',
-    'Non-Storable Content': 'CWE-524',
-    'Storable but Non-Cacheable Content': 'CWE-524',
-    'Storable and Cacheable Content': 'CWE-524',
-    'Relative Path Confusion': 'CWE-20',
-    'X-ChromeLogger-Data (XCOLD) Header Information Leak': 'CWE-532',
-    'Cookie without SameSite Attribute': 'CWE-1275',
-    'Cookie with SameSite Attribute None': 'CWE-1275',
-    'Cookie with Invalid SameSite Attribute': 'CWE-1275',
-    'CSP: X-Content-Security-Policy': 'CWE-693',
-    'CSP: X-WebKit-CSP': 'CWE-693',
-    'CSP: Notices': 'CWE-693',
-    'CSP: Wildcard Directive': 'CWE-693',
-    'CSP: script-src unsafe-inline': 'CWE-693',
-    'CSP: style-src unsafe-inline': 'CWE-693',
-    'CSP: script-src unsafe-hashes': 'CWE-693',
-    'CSP: style-src unsafe-hashes': 'CWE-693',
-    'CSP: Malformed Policy (Non-ASCII)': 'CWE-693',
-    'CSP: script-src unsafe-eval': 'CWE-693',
-    'CSP: Meta Policy Invalid Directive': 'CWE-693',
-    'CSP: Header & Meta': 'CWE-693',
-    'CSP: Failure to Define Directive with No Fallback': 'CWE-693',
-    'X-Debug-Token Information Leak': 'CWE-489',
-    'Username Hash Found': 'CWE-284',
-    'GET for POST': 'CWE-16',
-    'X-AspNet-Version Response Header': 'CWE-933',
-    'PII Disclosure': 'CWE-359',
-    'Permissions Policy Header Not Set': 'CWE-693',
-    'Deprecated Feature Policy Header Set': 'CWE-16',
-    'ASP.NET ViewState Disclosure': 'CWE-319',
-    'ASP.NET ViewState Integrity': 'CWE-642',
-    'Base64 Disclosure': 'CWE-319',
-    'Backup File Disclosure': 'CWE-530',
-    'Timestamp Disclosure - Unix': 'CWE-497',
-    'Hash Disclosure - MD4 / MD5': 'CWE-497',
-    'Cross-Domain Misconfiguration': 'CWE-264',
-    'Source Code Disclosure - PHP': 'CWE-540',
-    'Access Control Issue - Improper Authentication': 'CWE-287',
-    'Access Control Issue - Improper Authorization': 'CWE-205',
-    'Image Exposes Location or Privacy Data': 'CWE-200',
-    'Authentication Credentials Captured': 'CWE-287',
-    'Weak Authentication Method': 'CWE-326',
-    'HTTP Only Site': 'CWE-311',
-    'Httpoxy - Proxy Header Misuse': 'CWE-20',
-    'Reverse Tabnabbing': 'CWE-1022',
-    'Dangerous JS Functions': 'CWE-749',
-    'Script Served From Malicious Domain (polyfill)': 'CWE-829',
-    'Absence of Anti-CSRF Tokens': 'CWE-352',
-    'Anti-CSRF Tokens Check': 'CWE-352',
-    'HTTP Parameter Pollution': 'CWE-20',
-    'Heartbleed OpenSSL Vulnerability': 'CWE-119',
-    'Source Code Disclosure - CVE-2012-1823': 'CWE-20',
-    'Remote Code Execution - CVE-2012-1823': 'CWE-20',
-    'External Redirect': 'CWE-601',
-    'Buffer Overflow': 'CWE-120',
-    'Format String Error': 'CWE-134',
-    'Integer Overflow Error': 'CWE-190',
-    'CRLF Injection': 'CWE-113',
-    'Parameter Tampering': 'CWE-472',
-    'Server Side Include': 'CWE-97',
-    'Cross Site Scripting (Reflected)': 'CWE-79',
-    'Session Fixation': 'CWE-384',
-    'Cross Site Scripting (Persistent)': 'CWE-79',
-    'LDAP Injection': 'CWE-90',
-    'SQL Injection': 'CWE-89',
-    'SQL Injection - MySQL (Time Based)': 'CWE-89',
-    'SQL Injection - Hypersonic SQL (Time Based)': 'CWE-89',
-    'SQL Injection - Oracle (Time Based)': 'CWE-89',
-    'SQL Injection - PostgreSQL (Time Based)': 'CWE-89',
-    'Possible Username Enumeration': 'CWE-204',
-    'SQL Injection - SQLite (Time Based)': 'CWE-89',
-    'Proxy Disclosure': 'CWE-204',
-    'Cross Site Scripting (DOM Based)': 'CWE-79',
-    'SQL Injection - MsSQL (Time Based)': 'CWE-89',
-    'ELMAH Information Leak': 'CWE-941',
-    'Trace.axd Information Leak': 'CWE-215',
-    'Out of Band XSS': 'CWE-79',
-    '.htaccess Information Leak': 'CWE-941',
-    'NoSQL Injection - MongoDB': 'CWE-943',
-    '.env Information Leak': 'CWE-215',
-    'Hidden File Found': 'CWE-538',
-    'JWT Scan Rule': 'CWE-348',
-    'Web Cache Deception': 'CWE-451',
-    'CORS Misconfiguration': 'CWE-942',
-    'File Upload': 'CWE-434',
-    'Spring Actuator Information Leak': 'CWE-215',
-    'Log4Shell (CVE-2021-44228)': 'CWE-117',
-    'Log4Shell (CVE-2021-45046)': 'CWE-117',
-    'Exponential Entity Expansion (Billion Laughs Attack)': 'CWE-776',
-    'Spring4Shell': 'CWE-78',
-    'Server Side Request Forgery': 'CWE-918',
-    'Text4shell (CVE-2022-42889)': 'CWE-117',
-    'GraphQL Endpoint Supports Introspection': 'CWE-16',
-    'GraphQL Server Implementation Identified': 'CWE-205',
-    'Insecure JSF ViewState': 'CWE-642',
-    'Java Serialization Object': 'CWE-502',
-    'Sub Resource Integrity Attribute Missing': 'CWE-345',
-    'Insufficient Site Isolation Against Spectre Vulnerability': 'CWE-693',
-    'Sec-Fetch-Site Header is Missing': 'CWE-352',
-    'Sec-Fetch-Mode Header is Missing': 'CWE-352',
-    'Sec-Fetch-Dest Header is Missing': 'CWE-352',
-    'Sec-Fetch-User Header is Missing': 'CWE-352',
-    'Sec-Fetch-Site Header Has an Invalid Value': 'CWE-352',
-    'Sec-Fetch-Mode Header Has an Invalid Value': 'CWE-352',
-    'Sec-Fetch-Dest Header Has an Invalid Value': 'CWE-352',
-    'Sec-Fetch-User Header Has an Invalid Value': 'CWE-352',
-    'Charset Mismatch': 'CWE-436',
-    'XSLT Injection': 'CWE-91',
-    'Advanced SQL Injection': 'CWE-89',
-    'Server Side Code Injection - PHP Code Injection': 'CWE-94',
-    'Server Side Code Injection - ASP Code Injection': 'CWE-94',
-    'Remote OS Command Injection': 'CWE-78',
-    'XPath Injection': 'CWE-643',
-    'XML External Entity Attack': 'CWE-611',
-    'Generic Padding Oracle': 'CWE-209',
-    'Expression Language Injection': 'CWE-917',
-    'SOAP Action Spoofing': 'CWE-451',
-    'Cookie Slack Detector': 'CWE-205',
-    'Insecure HTTP Method': 'CWE-749',
-    'SOAP XML Injection': 'CWE-91',
-    'Loosely Scoped Cookie': 'CWE-565',
-    'Cloud Metadata Potentially Exposed': 'CWE-1230',
-    'Server Side Template Injection': 'CWE-1336',
-    'Server Side Template Injection (Blind)': 'CWE-1336',
-    'Remote OS Command Injection (Time Based)': 'CWE-78',
-    'NoSQL Injection - MongoDB (Time Based)': 'CWE-943',
-}
-
 # --- HELPER: Find a Free Port ---
 def get_free_port():
     """Finds an available port on the host machine to avoid conflicts."""
@@ -374,12 +183,13 @@ def kill_zap_processes(user_id=None):
         time.sleep(5)
 
 # --- ML Prediction ---
-def predict_risk(vulnerability_name: str, description: str = "", severity: str = "Medium"):
+from .tctr_engine import tctr_engine
+
+def predict_risk(vulnerability_name: str, description: str = "", cwe_id: str = None):
     try:
-        from Services.threat_reranker import predict_threat_risk
-        return predict_threat_risk(vulnerability_name, description, severity=severity)
+        return tctr_engine.predict_risk(vulnerability_name, description, cwe_id=cwe_id)
     except Exception as e:
-        logger.error(f"Error predicting risk with Threat Reranker: {e}")
+        logger.error(f"Error predicting risk with TCTR Engine: {e}")
         return 0.5
 
 # --- Path Helper ---
@@ -411,7 +221,7 @@ def get_output_paths(output_dir=None, target=None):
     }
 
 # --- Core Scan Logic (Simultaneous Support) ---
-def run_zap_scan(target_url, report_path, user_id):
+def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
     """
     Launches ZAP and streams output to user specific log.
     Supports simultaneous execution by assigning unique ports and directories.
@@ -434,7 +244,7 @@ def run_zap_scan(target_url, report_path, user_id):
         if not os.path.exists(unique_zap_dir):
             os.makedirs(unique_zap_dir, exist_ok=True)
 
-        log(f"\n--- Starting ZAP Quick Scan (Isolated Instance) ---", user_id, to_console=True)
+        log(f"\n--- Starting ZAP Scan ({scan_mode.upper()}) (Isolated Instance) ---", user_id, to_console=True)
         log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_id, to_console=True)
         log(f"Target: {target_url}", user_id, to_console=True)
         log(f"Report will be saved to: {report_path}", user_id, to_console=True)
@@ -444,14 +254,24 @@ def run_zap_scan(target_url, report_path, user_id):
             os.makedirs(report_dir)
 
         # 3. Construct Command with Isolation Flags (-port and -dir)
-        command = [
-            ZAP_EXECUTABLE_PATH, '-cmd',
-            '-port', str(assigned_port),
-            '-dir', unique_zap_dir,
-            '-quickurl', target_url,
-            '-quickout', str(report_path),
-            '-quickprogress'
-        ]
+        if scan_mode == 'spider':
+            command = [
+                ZAP_EXECUTABLE_PATH, '-cmd',
+                '-port', str(assigned_port),
+                '-dir', unique_zap_dir,
+                '-spider', target_url,
+                '-quickout', str(report_path),
+                '-quickprogress'
+            ]
+        else:
+            command = [
+                ZAP_EXECUTABLE_PATH, '-cmd',
+                '-port', str(assigned_port),
+                '-dir', unique_zap_dir,
+                '-quickurl', target_url,
+                '-quickout', str(report_path),
+                '-quickprogress'
+            ]
 
         log(f"Executing command: {' '.join(command)}", user_id, to_console=True)
         zap_directory = os.path.dirname(ZAP_EXECUTABLE_PATH)
@@ -549,21 +369,23 @@ def parse_zap_xml_report(report_file, user_id=None):
         root = tree.getroot()
         
         for alertitem in root.findall('.//alertitem'):
-            riskdesc = alertitem.find('riskdesc').text
-            risk = riskdesc.split(' ')[0] # Extracts "High", "Medium", "Low", "Informational"
-            
-            # Normalize "Informational" to "Info"
-            if risk == "Informational": 
-                risk = "Info"
-
+            risk = alertitem.find('riskdesc').text.split(' ')[0] if alertitem.find('riskdesc') is not None else "Info"
             finding_name = alertitem.find('alert').text
             description = get_inner_html(alertitem.find('desc'))
-            predicted_score = predict_risk(finding_name, description, severity=risk)
+            cwe_id = alertitem.find('cweid').text if alertitem.find('cweid') is not None else None
+            
+            # TCTREngine handles fallback to name-based CWE mapping if cwe_id is missing or -1
+            prediction_obj = predict_risk(finding_name, description, cwe_id=cwe_id)
+            predicted_score = prediction_obj["score"]
 
             finding = {
                 "name": finding_name,
                 "risk": risk,
                 "predicted_risk_score": predicted_score,
+                "tctr_priority": prediction_obj["tctr_priority"],
+                "base_score": prediction_obj["base_score"],
+                "priority_level": prediction_obj["priority_level"],
+                "risk_justification": prediction_obj["risk_justification"],
                 "confidence": alertitem.find('confidence').text,
                 "url": alertitem.find('.//uri').text,
                 "description": description,

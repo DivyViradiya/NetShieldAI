@@ -11,6 +11,7 @@ import requests
 import uuid
 import logging
 from werkzeug.utils import secure_filename 
+from pathlib import Path
 
 # --- Logging Setup ---
 logger = logging.getLogger(__name__)
@@ -244,19 +245,34 @@ def get_sql_report_history():
 @sql_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
-    """
-    Checks if PDF exists and returns scanner type for the AI Chatbot.
-    """
+    """Robustly triggers AI analysis by finding the correct PDF report."""
     data = request.get_json() or {}
     target = data.get('target')
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    paths = sql_scanner.get_output_paths(user_dir, target=target)
-    pdf_path = paths["pdf_report"]
+    # 1. Resolve PDF Path with Fallbacks
+    pdf_path = None
+    
+    if target:
+        paths = sql_scanner.get_output_paths(user_dir, target=target)
+        pdf_path = Path(paths["pdf_report"])
+    
+    # Fallback 1: History search (Recent for this scanner)
+    if not pdf_path or not pdf_path.exists():
+        # Correct scanner name for SQL is 'sql_scanner'
+        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
+    
+    # Fallback 2: Any PDF in the results directory
+    if not pdf_path or not pdf_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
 
-    if not pdf_path.exists():
-        sql_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}", user_identifier)
+    if not pdf_path or not pdf_path.exists():
+        sql_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
@@ -264,7 +280,7 @@ def trigger_ai_analysis_route():
 
     return jsonify({
         "status": "success",
-        "scanner_type": "sql_scanner",
+        "scanner_type": "sql",
         "target": target
     })
 
@@ -283,13 +299,26 @@ def get_report_files():
     json_exists = json_path.exists()
     pdf_exists = pdf_path.exists()
 
+    # Fallback: Find the most recent reports if the specific ones don't exist
+    if not json_exists:
+        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="json")
+        if history:
+            json_path = Path(history[0]['path'])
+            json_exists = True
+    
+    if not pdf_exists:
+        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
+            pdf_exists = True
+
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     return jsonify({
         "status": "success",
-        "json_report": f"/sql_scanner/get_json_report?target={target}" if json_exists else None,
-        "pdf_report": f"/sql_scanner/download_pdf?target={target}" if pdf_exists else None
+        "json_report": f"/sql_scanner/get_json_report?target={target}" if target and json_path.exists() else f"/sql_scanner/get_json_report?filename={json_path.name}",
+        "pdf_report": f"/sql_scanner/download_pdf?target={target}" if target and pdf_path.exists() else f"/sql_scanner/download_pdf?filename={pdf_path.name}"
     })
 
 @sql_scanner_bp.route('/download_pdf', methods=['GET'])
@@ -325,18 +354,30 @@ def download_pdf_report():
 @sql_scanner_bp.route('/get_json_report', methods=['GET'])
 @login_required
 def get_json_report_file():
-    """Serves the JSON report file."""
+    filename = request.args.get('filename')
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = sql_scanner.get_output_paths(user_dir, target=target)
-    json_path = paths["json_report"]
+    
+    if filename:
+        filename = secure_filename(filename)
+        json_path = Path(user_dir) / filename
+    elif target:
+        paths = sql_scanner.get_output_paths(user_dir, target=target)
+        json_path = paths["json_report"]
+        filename = json_path.name
+    else:
+        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="json")
+        if not history:
+            return jsonify({"status": "error", "message": "No JSON reports found."}), 404
+        json_path = Path(history[0]['path'])
+        filename = json_path.name
 
     if not json_path.exists():
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
     
     return send_from_directory(
         directory=str(json_path.parent),
-        path=json_path.name,
+        path=filename,
         as_attachment=True
     )
 
@@ -352,6 +393,12 @@ def get_sql_report_content():
     paths = sql_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["json_report"]
 
+    if not json_path.exists():
+        # Fallback: Find the most recent JSON report for this scanner
+        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="json")
+        if history:
+            json_path = Path(history[0]['path'])
+        
     if not json_path.exists():
         return jsonify({
             "status": "error",

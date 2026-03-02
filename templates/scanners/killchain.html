@@ -930,7 +930,7 @@
   </div>
 
   <div class="main-grid">
-    <div class="dash-panel">
+    <div class="dash-panel" style="display: flex; flex-direction: column; height: 100%;">
       <div class="panel-header">
         <span class="panel-title">Audit Results</span>
         <div class="tab-pills">
@@ -941,7 +941,7 @@
         </div>
       </div>
       
-      <div class="panel-content">
+      <div class="panel-content" style="flex: 1; min-height: 0; width: 100%; overflow: hidden;">
         <div id="contentVulns" class="absolute inset-0 overflow-auto">
           <table class="dash-table">
             <thead>

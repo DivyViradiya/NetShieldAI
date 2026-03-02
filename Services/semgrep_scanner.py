@@ -94,12 +94,15 @@ def get_output_paths(output_dir=None, user_id=None, target=None):
     
     if target:
         json_filename = report_manager.generate_report_filename("semgrep_scanner", target, "json")
+        pdf_filename = report_manager.generate_report_filename("semgrep_scanner", target, "pdf")
     else:
         json_filename = "semgrep_report.json"
+        pdf_filename = "semgrep_report.pdf"
 
     return {
         "raw_json": user_temp / f"semgrep_raw_{scan_uuid}.json",
         "parsed_json": base / json_filename,
+        "pdf_report": base / pdf_filename,
         "source_code": user_temp / f"source_{scan_uuid}"
     }
 
@@ -204,8 +207,31 @@ def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None, target=N
         
         # Apply ML Threat Re-ranking
         try:
-            import Services.threat_reranker as threat_reranker
-            report["findings"] = threat_reranker.rerank_findings(report["findings"])
+            from .tctr_engine import tctr_engine
+            for finding in report["findings"]:
+                # Try to extract CWE from message or check_id
+                cwe_id = None
+                if finding.get("check_id"):
+                    cwe_match = re.search(r'cwe-(\d+)', finding["check_id"].lower())
+                    if cwe_match:
+                        cwe_id = cwe_match.group(1)
+                
+                prediction_obj = tctr_engine.predict_risk(
+                    finding["check_id"], 
+                    finding["message"], 
+                    cwe_id=cwe_id
+                )
+                finding["predicted_risk_score"] = prediction_obj["score"]
+                finding["tctr_priority"] = prediction_obj["tctr_priority"]
+                finding["base_score"] = prediction_obj["base_score"]
+                finding["priority_level"] = prediction_obj["priority_level"]
+                finding["risk_justification"] = prediction_obj["risk_justification"]
+            
+            # Sort by predicted score
+            report["findings"].sort(
+                key=lambda x: x.get('predicted_risk_score', 0),
+                reverse=True
+            )
         except Exception as e:
             log(f"ML Re-ranking failed for Semgrep: {e}", user_id)
         

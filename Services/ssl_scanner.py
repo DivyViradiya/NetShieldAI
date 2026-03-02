@@ -331,8 +331,25 @@ def parse_ssl_report(report_file, output_dir=None, user_id=None, target=None):
         
         # Apply ML Threat Re-ranking
         try:
-            import Services.threat_reranker as threat_reranker
-            scan_summary["vulnerabilities"] = threat_reranker.rerank_findings(vulnerabilities)
+            from .tctr_engine import tctr_engine
+            for vuln in vulnerabilities:
+                # Map to CWE-310 (Cryptographic Issues) by default for SSL
+                prediction_obj = tctr_engine.predict_risk(
+                    vuln["name"], 
+                    vuln["description"], 
+                    cwe_id="310"
+                )
+                vuln["predicted_risk_score"] = prediction_obj["score"]
+                vuln["tctr_priority"] = prediction_obj["tctr_priority"]
+                vuln["base_score"] = prediction_obj["base_score"]
+                vuln["priority_level"] = prediction_obj["priority_level"]
+                vuln["risk_justification"] = prediction_obj["risk_justification"]
+            
+            # Sort by predicted score
+            vulnerabilities.sort(
+                key=lambda x: x.get('predicted_risk_score', 0),
+                reverse=True
+            )
         except Exception as e:
             log(f"[!] ML Re-ranking failed for SSL: {e}", user_id)
 

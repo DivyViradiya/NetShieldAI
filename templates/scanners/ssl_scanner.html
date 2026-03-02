@@ -44,8 +44,12 @@
         --status-online: var(--neo-green);
   
         /* Radii - Sharp / Brutalist */
-        --radius-card: 0px;
-        --radius-sm: 0px;
+        --radius-card: 12px;
+        --radius-sm: 8px;
+
+        /* Shadows & Glows */
+        --shadow-blue: 0 0 15px rgba(59, 130, 246, 0.2);
+        --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
       }
   
       body.light-mode {
@@ -197,14 +201,14 @@
       
       /* --- COMPONENT: HUD CARDS (Shared Style) --- */
       .control-card, .metric-card, .dash-panel, .terminal-footer {
-        background: linear-gradient(165deg, #050505 0%, #000000 100%);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--neo-border);
+        background: rgba(10, 10, 12, 0.45);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: var(--radius-card);
         position: relative;
-        box-shadow: none;
-        transition: background 0.3s ease;
+        box-shadow: var(--shadow-glass);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
   
       body.light-mode .control-card, 
@@ -218,12 +222,11 @@
         -webkit-backdrop-filter: blur(16px);
       }
   
-      /* Override hover effects to be subtle with no jumping */
+      /* Override hover effects */
       .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover {
-        background: linear-gradient(165deg, #050505 0%, #000000 100%);
-        border-color: var(--neo-border) !important;
-        box-shadow: none !important;
-        transform: none !important;
+        background: rgba(15, 15, 18, 0.55);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
       }
   
       body.light-mode .control-card:hover, 
@@ -248,8 +251,7 @@
         display: grid;
         grid-template-columns: minmax(0, 1fr) 340px; 
         gap: 0.5rem;
-        min-height: 600px;
-        flex: 1;
+        height: clamp(600px, calc(100vh - 250px), 1200px);
         width: 100%;
       }
   
@@ -914,7 +916,7 @@
     </div>
 
     <div class="main-grid">
-      <div class="dash-panel" style="height: 650px;">
+      <div class="dash-panel" style="display: flex; flex-direction: column; height: 100%;">
         <div class="panel-header">
           <span class="panel-title">Scan Results</span>
           <div class="tab-pills">
@@ -925,7 +927,7 @@
           </div>
         </div>
 
-        <div class="panel-content overflow-auto" style="height: 100%; width: 100%;">
+        <div class="panel-content" style="flex: 1; min-height: 0; width: 100%; overflow: hidden;">
           <!-- Findings Tab -->
           <div id="findingsContent" class="h-full">
             <div id="vulnerabilitiesList" class="discovery-grid">

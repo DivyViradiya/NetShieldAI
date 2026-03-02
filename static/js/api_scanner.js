@@ -55,10 +55,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiProcessingText = document.getElementById('aiProcessingText');
 
     // History
-    const apiHistoryBtn = document.getElementById('apiHistoryBtn');
+    const apiHistoryBtn = document.getElementById('apiHistoryBtn') || document.getElementById('nmapHistoryBtn');
     const historyModal = document.getElementById('historyModal');
     const closeHistoryModal = document.getElementById('closeHistoryModal');
     const historyTableBody = document.getElementById('historyTableBody');
+
+    // Tab Switching
+    const findingsTabBtn = document.getElementById('findingsTabBtn');
+    const rawTabBtn = document.getElementById('rawTabBtn');
+    const findingsContent = document.getElementById('findingsContent');
+    const rawContent = document.getElementById('rawContent');
 
     let logEventSource = null;
 
@@ -697,6 +703,23 @@ document.addEventListener('DOMContentLoaded', () => {
             llmAnalysisOptions.classList.add('hidden');
         }
     });
+
+    // --- Tab Switching Logic ---
+    if (findingsTabBtn && rawTabBtn && findingsContent && rawContent) {
+        findingsTabBtn.addEventListener('click', () => {
+            findingsTabBtn.classList.add('active');
+            rawTabBtn.classList.remove('active');
+            findingsContent.classList.remove('hidden');
+            rawContent.classList.add('hidden');
+        });
+
+        rawTabBtn.addEventListener('click', () => {
+            rawTabBtn.classList.add('active');
+            findingsTabBtn.classList.remove('active');
+            rawContent.classList.remove('hidden');
+            findingsContent.classList.add('hidden');
+        });
+    }
 
     async function checkScanStatus() {
         try {

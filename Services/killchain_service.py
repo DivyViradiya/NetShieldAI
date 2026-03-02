@@ -29,6 +29,7 @@ from Services import pdf_generator
 from Services import scan_logger
 from Services import report_manager
 from logger_setup import logger
+from Services.tctr_engine import tctr_engine
 
 # ==========================================
 # 1. OUTPUT REDIRECTION (Isolated per User)
@@ -559,6 +560,22 @@ class KillChainService:
                 if "zap_findings" in results["web_audit"] and "findings" in results["web_audit"]["zap_findings"]:
                     all_findings.extend(results["web_audit"]["zap_findings"]["findings"])
             # Add other findings here as new phases are implemented
+
+            # --- Apply ML Threat Re-ranking (TCTR) ---
+            log(queue_id, "[STAGE] Applying ML Threat Re-ranking (TCTR)...", "STAGE")
+            for f in all_findings:
+                name = f.get("name") or f.get("type") or f.get("alert") or "Unknown Finding"
+                desc = f.get("description") or f.get("evidence") or f.get("solution") or ""
+                original_risk = f.get("risk") or f.get("severity") or "Info"
+                
+                prediction = tctr_engine.predict_risk(name, desc, original_risk)
+                
+                # Enrich finding with SOC Dashboard Metrics
+                f["predicted_risk_score"] = prediction["score"]
+                f["tctr_priority"] = prediction["tctr_priority"]
+                f["base_score"] = prediction["base_score"]
+                f["priority_level"] = prediction["priority_level"]
+                f["risk_justification"] = prediction["risk_justification"]
 
             results["all_findings"] = all_findings
 

@@ -258,8 +258,24 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
 
     # Apply ML Threat Re-ranking
     try:
-        import Services.threat_reranker as threat_reranker
-        report_data["vulnerabilities"] = threat_reranker.rerank_findings(report_data.get("vulnerabilities", []))
+        from .tctr_engine import tctr_engine
+        for vuln in report_data.get("vulnerabilities", []):
+            prediction_obj = tctr_engine.predict_risk(
+                vuln["title"], 
+                f"Parameter: {vuln['parameter']}\nPayload: {vuln['payload']}", 
+                cwe_id="89"
+            )
+            vuln["predicted_risk_score"] = prediction_obj["score"]
+            vuln["tctr_priority"] = prediction_obj["tctr_priority"]
+            vuln["base_score"] = prediction_obj["base_score"]
+            vuln["priority_level"] = prediction_obj["priority_level"]
+            vuln["risk_justification"] = prediction_obj["risk_justification"]
+        
+        # Sort by predicted score
+        report_data["vulnerabilities"].sort(
+            key=lambda x: x.get('predicted_risk_score', 0),
+            reverse=True
+        )
     except Exception as e:
         log(f"[!] ML Re-ranking failed for SQL: {e}", user_id)
 
@@ -358,7 +374,7 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None):
         log("[+] Scan finished. Processing results...", user_id, to_console=True)
         scan_data = parse_sqlmap_output(sqlmap_output_dir, target_url_hint=target_url, captured_metadata=live_metadata, user_id=user_id)
         
-        json_path = save_sql_json(scan_data, output_dir, user_id=user_id)
+        json_path = save_sql_json(scan_data, output_dir, user_id=user_id, target=target_url)
         
         send_sse_event("scan_complete", {
             "status": "success",

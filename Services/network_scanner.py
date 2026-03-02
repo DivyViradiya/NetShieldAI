@@ -638,8 +638,24 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
     
     # Apply ML Threat Re-ranking
     try:
-        import Services.threat_reranker as threat_reranker
-        parsed_data["ports"] = threat_reranker.rerank_findings(parsed_data["ports"])
+        from .tctr_engine import tctr_engine
+        for port in parsed_data["ports"]:
+            prediction_obj = tctr_engine.predict_risk(
+                f"Service: {port['service']} ({port['port']}/{port['protocol']})", 
+                f"Version: {port['version']}\nVulnerability: {port['vulnerability_notes']}",
+                cwe_id=None # Engine will fallback to 5.0 unless we add a service-to-CWE map
+            )
+            port["predicted_risk_score"] = prediction_obj["score"]
+            port["tctr_priority"] = prediction_obj["tctr_priority"]
+            port["base_score"] = prediction_obj["base_score"]
+            port["priority_level"] = prediction_obj["priority_level"]
+            port["risk_justification"] = prediction_obj["risk_justification"]
+        
+        # Sort by predicted score
+        parsed_data["ports"].sort(
+            key=lambda x: x.get('predicted_risk_score', 0),
+            reverse=True
+        )
     except Exception as e:
         log(f"[!] ML Re-ranking skipped or failed: {e}", user_id, queue_id)
 
@@ -1029,8 +1045,19 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
 
         # Apply ML Threat Re-ranking for live data
         try:
-            import Services.threat_reranker as threat_reranker
-            all_ports_list = threat_reranker.rerank_findings(all_ports_list)
+            from .tctr_engine import tctr_engine
+            for p_obj in all_ports_list:
+                 p_obj["predicted_risk_score"] = tctr_engine.predict_risk(
+                    f"Service: {p_obj['service']} ({p_obj['port']}/{p_obj['protocol']})", 
+                    f"Version: {p_obj['version']}\nVulnerability: {p_obj['vulnerability']}",
+                    cwe_id=None
+                )
+            
+            # Sort by predicted score
+            all_ports_list.sort(
+                key=lambda x: x.get('predicted_risk_score', 0),
+                reverse=True
+            )
         except Exception as e:
             log(f"[!] ML Re-ranking skipped or failed for live extraction: {e}", user_id, queue_id)
 

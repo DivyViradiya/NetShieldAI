@@ -72,25 +72,21 @@ def clear_log_file(user_id):
     except:
         pass
 
-# --- ML Model Setup ---
-try:
-    from .threat_reranker import predict_threat_risk
-except ImportError:
-    try:
-        from threat_reranker import predict_threat_risk
-    except ImportError:
-        predict_threat_risk = None
-
-model = predict_threat_risk
-
 # --- ML Prediction ---
-def predict_risk(vulnerability_name: str, description: str = "", severity: str = "Medium"):
+from .tctr_engine import tctr_engine
+
+def predict_risk(vulnerability_name: str, description: str = "", cwe_id: str = None):
     try:
-        from Services.threat_reranker import predict_threat_risk
-        return predict_threat_risk(vulnerability_name, description, severity=severity)
+        return tctr_engine.predict_risk(vulnerability_name, description, cwe_id=cwe_id)
     except Exception as e:
-        logger.error(f"Error predicting risk with Threat Reranker: {e}")
-        return 0.5
+        logger.error(f"Error predicting risk with TCTR Engine: {e}")
+        return {
+            "score": 0.5,
+            "tctr_priority": 0.0,
+            "base_score": 5.0,
+            "priority_level": "P2 (Medium)",
+            "risk_justification": "Fallback due to prediction error"
+        }
 
 # --- Path Helper ---
 def get_output_paths(user_output_dir, user_id=None, target=None):
@@ -140,7 +136,8 @@ def wait_for_zap(port, timeout=120, user_id=None):
     log(f"[*] Waiting for ZAP to initialize on port {port}...", user_id)
     while time.time() - start_time < timeout:
         try:
-            with socket.create_connection(('localhost', port), timeout=1): 
+            # [Win-FIX] Use 127.0.0.1 explicitly to avoid IPv6 resolution delays/failures
+            with socket.create_connection(('127.0.0.1', port), timeout=1): 
                 log(f"[+] ZAP is active and responding on port {port}.", user_id)
                 return True
         except: 
@@ -173,17 +170,37 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
     zap = None
     try:
         log(f"[*] Launching ZAP process...", user_id)
-        process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT, 
+        
+        # [DEBUG] Capture ZAP raw output to identify boot issues
+        zap_log_file = os.path.join(TEMP_DIR, f"zap_raw_{user_id}_{assigned_port}.log")
+        os.makedirs(TEMP_DIR, exist_ok=True)
+        
+        # Use a context manager to open the file for the subprocess
+        f_log = open(zap_log_file, "w")
+        process = subprocess.Popen(command, stdout=f_log, stderr=subprocess.STDOUT, 
                                    cwd=os.path.dirname(ZAP_EXECUTABLE_PATH),
                                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == 'win32' else 0)
 
         with scan_lock:
-            active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
+            active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time(), "log_file": zap_log_file}
 
-        if not wait_for_zap(assigned_port, user_id=user_id): 
+        if not wait_for_zap(assigned_port, timeout=120, user_id=user_id): 
+            # If ZAP failed to start, grab the last part of its log
+            f_log.flush()
+            f_log.close()
+            try:
+                with open(zap_log_file, "r") as f_read:
+                    err_tail = f_read.read()[-1500:] 
+                    log(f"[!] ZAP STARTUP ERROR LOG:\n{err_tail}", user_id, level='ERROR')
+            except: pass
             return False
         
+        f_log.close() # Close it if it actually started (or we just let ZAP keep the handle? 
+                      # Windows might locking issues if we try to close before ZAP finishes.)
+                      # Actually, subprocess.Popen increments the ref count on the file object.
+        
         log(f"[*] Connecting to ZAP API...", user_id)
+        # [Win-FIX] Connect to 127.0.0.1 
         zap = ZAPv2(proxies={'http': f'http://127.0.0.1:{assigned_port}', 'https': f'http://127.0.0.1:{assigned_port}'})
         
         if auth_token:
@@ -257,17 +274,23 @@ def parse_xml_report(report_file, user_id=None):
         tree = ET.parse(report_file)
         root = tree.getroot()
         for alert in root.findall('.//alertitem'):
-            risk = alert.find('riskdesc').text.split(' ')[0]
-            if risk == "Informational": risk = "Info"
-            
+            risk = alert.find('riskdesc').text.split(' ')[0] if alert.find('riskdesc') is not None else "Info"
             finding_name = alert.find('alert').text
             desc_text = alert.find('desc').text if alert.find('desc') is not None else ""
-            predicted_score = predict_risk(finding_name, desc_text, severity=risk)
+            cwe_id = alert.find('cweid').text if alert.find('cweid') is not None else None
+            
+            # predicted_score = predict_risk(finding_name, desc_text, cwe_id=cwe_id)
+            prediction_obj = predict_risk(finding_name, desc_text, cwe_id=cwe_id)
+            predicted_score = prediction_obj["score"]
             
             finding = {
                 "name": finding_name, 
                 "risk": risk,
                 "predicted_risk_score": predicted_score,
+                "tctr_priority": prediction_obj["tctr_priority"],
+                "base_score": prediction_obj["base_score"],
+                "priority_level": prediction_obj["priority_level"],
+                "risk_justification": prediction_obj["risk_justification"],
                 "url": alert.find('.//uri').text, 
                 "method": alert.find('.//method').text or "GET",
                 "description": desc_text

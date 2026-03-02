@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
         durationInput: document.getElementById('captureDuration'),
         maxPacketsInput: document.getElementById('maxPackets'),
         bpfFilterInput: document.getElementById('bpfFilter'),
+        interfaceSelect: document.getElementById('interfaceSelect'),
+        advancedScanToggle: document.getElementById('advancedScanToggle'),
+        advancedScanOptions: document.getElementById('advancedScanOptions'),
 
         // Buttons
         startCaptureBtn: document.getElementById('startCaptureBtn'),
@@ -116,19 +119,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let contentStyle = '';
         if (cleanedMessage.includes('[!]') || cleanedMessage.includes('Error')) {
-            contentStyle = 'color:#ef4444';
+            contentStyle = 'color: var(--neo-red);';
         } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('Success')) {
-            contentStyle = 'color:#10b981';
+            contentStyle = 'color: var(--neo-green);';
         } else if (cleanedMessage.includes('[*]')) {
-            contentStyle = 'color:#3b82f6';
+            contentStyle = 'color: var(--neo-blue);';
         }
-
+    
         const line = document.createElement('div');
         line.className = 'log-line';
         
         line.innerHTML = `
-            <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+            <div class="log-time" style="color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.75rem;">${timeStr}</div>
+            <div class="log-content" style="${contentStyle} font-family: var(--font-mono); font-size: 0.8rem;">${cleanedMessage}</div>
         `;
         
         elements.snifferLogOutput.appendChild(line);
@@ -140,12 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         elements.snifferStatus.textContent = text.toUpperCase();
         
-        const isLight = document.body.classList.contains("light-mode");
-        elements.snifferStatus.style.color = isLight ? '#64748b' : '#a1a1aa';
-
-        if (type === 'busy') elements.snifferStatus.style.color = '#eab308';
-        else if (type === 'success') elements.snifferStatus.style.color = '#10b981';
-        else if (type === 'error') elements.snifferStatus.style.color = '#ef4444';
+        elements.snifferStatus.style.color = 'var(--neo-text-muted)';
+        
+        if (type === 'busy') elements.snifferStatus.style.color = 'var(--neo-amber)';
+        else if (type === 'success') elements.snifferStatus.style.color = 'var(--neo-green)';
+        else if (type === 'error') elements.snifferStatus.style.color = 'var(--neo-red)';
     }
 
     // --- API HANDLER ---
@@ -209,7 +211,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         Object.entries(map).forEach(([key, el]) => {
             if (!el) return;
-            el.classList.toggle('active', key === name);
+            if (key === name) {
+                el.classList.remove('hidden');
+                el.classList.add('active');
+            } else {
+                el.classList.add('hidden');
+                el.classList.remove('active');
+            }
         });
 
         Object.entries(btnMap).forEach(([key, btn]) => {
@@ -234,6 +242,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const msg = evt.data;
             if (!msg || msg.startsWith(':')) return;
             if (msg.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
+                isActionInProgress = false;
+                if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, false);
+                setStatus('System Ready', 'success');
                 checkReportAvailability();
             }
 
@@ -246,6 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
                      elements.stopCaptureBtn.disabled = true;
                 }
                 setTimeout(() => loadAndRenderReport(), 1000); 
+            }
+
+            if (msg.includes("[!] Scan failed") || msg.includes("Scan failed to produce") || msg.includes("Failed")) {
+                setStatus('Scan Failed', 'error');
+                isActionInProgress = false;
+                if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, false);
             }
 
             if (msg.includes("EVENT:") || msg.startsWith("EVENT:")) return;
@@ -264,7 +281,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadAndRenderReport() {
         try {
-            const res = await fetch(`${API_BASE_URL}/get_json_report`);
+            const target = elements.targetIpInput ? elements.targetIpInput.value.trim() : "";
+            const url = target 
+                ? `${API_BASE_URL}/get_json_report?target=${encodeURIComponent(target)}`
+                : `${API_BASE_URL}/get_json_report`;
+
+            const res = await fetch(url);
             const data = await res.json();
             
             if (!res.ok || data.status === 'error') {
@@ -285,13 +307,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderSummary(report) {
         const ts = report.traffic_summary || {};
-        const protoStats = ts.protocol_hierarchy_stats || ts.protocol_distribution || [];
-        const tcpStats = ts.tcp_conversation_stats || ts.tcp_conversations || [];
+        const protoStats = ts.protocol_distribution || ts.protocol_hierarchy_stats || [];
+        const tcpStats = ts.tcp_conversations || ts.tcp_conversation_stats || [];
+        
+        let extractedPackets = 0;
+        let extractedBytes = 0;
+        
+        // Scan protocol stats for total packets/bytes at the 'frame' level
+        for (const line of protoStats) {
+            if (line.includes('frame') && line.includes('frames:')) {
+                const parts = line.split('frames:');
+                if (parts.length > 1) {
+                    extractedPackets = parseInt(parts[1].split(' ')[0], 10) || 0;
+                }
+                const bytesParts = line.split('bytes:');
+                if (bytesParts.length > 1) {
+                    extractedBytes = parseInt(bytesParts[1], 10) || 0;
+                }
+                break;
+            }
+        }
 
-        const totalPackets = ts.summary_io?.total_packets ?? ts.total_packets ?? (Array.isArray(report.dissected_packets) ? report.dissected_packets.length : 0);
-        const totalBytes = ts.summary_io?.total_bytes ?? ts.total_bytes ?? 0;
-        const dur = ts.effective_capture_duration_seconds ?? report.analysis_time_seconds ?? 0;
-        const avgRate = ts.average_rate_bps ?? 0;
+        const totalPackets = ts.summary_io?.total_packets ?? ts.total_packets ?? extractedPackets ?? (Array.isArray(report.dissected_packets) ? report.dissected_packets.length : 0);
+        const totalBytes = ts.summary_io?.total_bytes ?? ts.total_bytes ?? extractedBytes ?? 0;
+        const dur = ts.effective_capture_duration_seconds ?? report.analysis_time_seconds ?? report.capture_duration ?? 0;
+        const avgRate = dur > 0 ? (totalBytes * 8) / dur : 0;
 
         if(elements.packetCountDisplay) elements.packetCountDisplay.textContent = totalPackets;
         if(elements.durationDisplay) elements.durationDisplay.textContent = `${dur.toFixed(1)}s`;
@@ -306,23 +346,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let primaryProto = 'N/A';
         if (Array.isArray(protoStats) && protoStats.length > 0) {
-            // Filter out decorative separator lines (starts with =) and header lines
-            const realProtoLines = protoStats.filter(l => l.trim() && !l.trim().startsWith('=') && !l.includes('Protocol Hierarchy'));
+            const realProtoLines = protoStats.filter(l => l.trim() && !l.trim().startsWith('=') && !l.includes('Protocol Hierarchy') && !l.includes('frame') && !l.includes('eth') && !l.includes('ip') && !l.includes('tcp') && !l.includes('udp'));
             
-            const line = realProtoLines.find((l) => l.toLowerCase().includes('http') || l.toLowerCase().includes('tcp')) || realProtoLines[realProtoLines.length - 1];
-            
-            if (line) {
-                const parts = line.trim().split(/\s+/);
-                primaryProto = parts[0] || 'N/A';
+            if (realProtoLines.length > 0) {
+                const line = realProtoLines.find((l) => l.toLowerCase().includes('http') || l.toLowerCase().includes('tls') || l.toLowerCase().includes('quic')) || realProtoLines[realProtoLines.length - 1];
+                if (line) {
+                    primaryProto = line.trim().split(/\s+/)[0] || 'N/A';
+                }
             }
         }
         if(elements.summaryPrimaryProto) elements.summaryPrimaryProto.textContent = primaryProto.toUpperCase();
 
+        const tsDate = new Date(report.timestamp || Date.now());
+        const timeStr = tsDate.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+
         const metaRows = [
-            ['Timestamp', report.timestamp || 'N/A'],
+            ['Time', timeStr],
             ['Target', targetDisplay],
             ['File', report.pcap_file ? report.pcap_file.split(/[\\/]/).pop() : 'N/A'], 
-            ['Duration', `${(report.analysis_time_seconds || 0).toFixed(2)}s`],
+            ['Packets Analysed', totalPackets],
         ];
         
         if (elements.captureMetaBody) {
@@ -330,8 +372,8 @@ document.addEventListener('DOMContentLoaded', () => {
             metaRows.forEach(([k, v]) => {
                 elements.captureMetaBody.insertAdjacentHTML('beforeend',
                     `<tr>
-                        <td class="px-4 py-2 text-xs text-slate-400 font-medium">${k}</td>
-                        <td class="px-4 py-2 text-xs font-mono text-slate-200 text-right">${v}</td>
+                        <td class="px-4 py-2 text-xs font-medium" style="color: var(--neo-text-muted);">${k}</td>
+                        <td class="px-4 py-2 text-xs font-mono text-right" style="color: var(--neo-text-main);">${v}</td>
                     </tr>`
                 );
             });
@@ -344,19 +386,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderProtocolTable(lines) {
         if (!elements.protocolStatsBody) return;
         elements.protocolStatsBody.innerHTML = '';
-        const isLight = document.body.classList.contains("light-mode");
-        const textPrimary = isLight ? 'text-slate-700' : 'text-slate-300';
-        const textSecondary = isLight ? 'text-slate-500' : 'text-slate-400';
-        const hoverBg = isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/50';
-
+    
         if (!Array.isArray(lines) || lines.length === 0) {
-            elements.protocolStatsBody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center ${textSecondary}">No data available.</td></tr>`;
+            elements.protocolStatsBody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center" style="color: var(--neo-text-muted);">No data available.</td></tr>`;
             return;
         }
-
+    
         const regex = /([a-zA-Z0-9\-\._]+)\s+frames:(\d+)\s+bytes:(\d+)/;
-
-        lines.forEach(line => {
+        
+        // Ensure we filter out decorative elements
+        const validLines = lines.filter(l => l.includes('frames:') && l.includes('bytes:'));
+        
+        if (validLines.length === 0) {
+            elements.protocolStatsBody.innerHTML = `<tr><td colspan="3" class="px-4 py-4 text-center" style="color: var(--neo-text-muted);">No protocol hierarchy mapped.</td></tr>`;
+            return;
+        }
+    
+        validLines.forEach(line => {
             const match = line.match(regex);
             if (match) {
                 const name = match[1];
@@ -365,12 +411,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const leadingSpaces = line.search(/\S|$/);
                 const indent = Math.max(0, (leadingSpaces / 2) * 10); 
-
+    
                 elements.protocolStatsBody.insertAdjacentHTML('beforeend', 
-                    `<tr class="${hoverBg} transition-colors">
-                        <td class="px-4 py-2 text-xs font-mono text-blue-400" style="padding-left: ${indent + 16}px">${name}</td>
-                        <td class="px-4 py-2 text-xs font-mono ${textPrimary} text-right">${frames}</td>
-                        <td class="px-4 py-2 text-xs font-mono ${textSecondary} text-right">${(bytes/1024).toFixed(1)} KB</td>
+                    `<tr style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='var(--neo-card-hover)'" onmouseout="this.style.backgroundColor='transparent'">
+                        <td class="px-4 py-2 text-xs font-mono" style="padding-left: ${indent + 16}px; color: var(--neo-blue);">${name}</td>
+                        <td class="px-4 py-2 text-xs font-mono text-right" style="color: var(--neo-text-main);">${frames}</td>
+                        <td class="px-4 py-2 text-xs font-mono text-right" style="color: var(--neo-text-muted);">${(bytes/1024).toFixed(1)} KB</td>
                     </tr>`
                 );
             }
@@ -380,42 +426,58 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderConversationTable(lines) {
         if (!elements.conversationStatsBody) return;
         elements.conversationStatsBody.innerHTML = '';
-        const isLight = document.body.classList.contains("light-mode");
-        const textPrimary = isLight ? 'text-slate-700' : 'text-slate-300';
-        const textSecondary = isLight ? 'text-slate-500' : 'text-slate-500'; // Icon color
-        const hoverBg = isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/50';
-
+        const textSecondary = 'var(--neo-text-muted)';
+    
         const validLines = (lines || []).filter(l => l.includes('<->'));
-
+    
         if (validLines.length === 0) {
-            elements.conversationStatsBody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center ${textSecondary}">No conversations recorded.</td></tr>`;
+            elements.conversationStatsBody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center" style="color: var(--neo-text-muted);">No conversations recorded.</td></tr>`;
             return;
         }
-
+    
         validLines.forEach(line => {
-            const splitArrow = line.split('<->');
-            if (splitArrow.length !== 2) return;
-
-            const leftSide = splitArrow[0].trim();
-            const rightSideRaw = splitArrow[1].trim();
-
-            const rightParts = rightSideRaw.split(/\s+/);
-            const rightSide = rightParts[0]; 
-
-            let displayBytes = '-';
-            const bytesMatch = line.match(/\s(\d+)\s+bytes/); 
-            if(bytesMatch) {
-                displayBytes = bytesMatch[1];
-            } else if (rightParts.length >= 4) {
-                 displayBytes = rightParts[rightParts.length - 2] || '?';
+            if (!line.includes('\u2192') && !line.includes('<->')) return; // skip headers
+            
+            let leftSide, rightSide, bytes, proto;
+            
+            // Format 1: 1   0.000000 34.54.84.110 -> 192.168.29.48 TLSv1.2 140 Application Data
+            if (line.includes('\u2192')) {
+                const parts = line.split(/\s+/).filter(Boolean);
+                // The arrow is usually parts[3]
+                const arrowIdx = parts.indexOf('\u2192');
+                if (arrowIdx > 0) {
+                    leftSide = parts[arrowIdx - 1];
+                    rightSide = parts[arrowIdx + 1];
+                    proto = parts[arrowIdx + 2];
+                    bytes = parts[arrowIdx + 3] || '-';
+                    // Make it look conversational
+                    leftSide = `${leftSide} (${proto})`;
+                }
+            } else if (line.includes('<->')) {
+                // Format 2: raw tshark tstat format
+                const splitArrow = line.split('<->');
+                leftSide = splitArrow[0].trim();
+                const rightSideRaw = splitArrow[1].trim();
+                const rightParts = rightSideRaw.split(/\s+/);
+                rightSide = rightParts[0]; 
+        
+                bytes = '-';
+                const bytesMatch = line.match(/\s(\d+)\s+bytes/); 
+                if(bytesMatch) {
+                    bytes = bytesMatch[1];
+                } else if (rightParts.length >= 4) {
+                     bytes = rightParts[rightParts.length - 2] || '?';
+                }
             }
-
+            
+            if (!leftSide || !rightSide) return;
+    
             elements.conversationStatsBody.insertAdjacentHTML('beforeend',
-                `<tr class="${hoverBg} transition-colors">
-                    <td class="px-4 py-2 text-xs font-mono text-emerald-400 truncate max-w-[150px]" title="${leftSide}">${leftSide}</td>
-                    <td class="px-4 py-2 text-center"><i class="fas fa-exchange-alt text-[10px] ${textSecondary}"></i></td>
-                    <td class="px-4 py-2 text-xs font-mono text-blue-400 truncate max-w-[150px]" title="${rightSide}">${rightSide}</td>
-                    <td class="px-4 py-2 text-xs font-mono ${textPrimary} text-right">${displayBytes}</td>
+                `<tr style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='var(--neo-card-hover)'" onmouseout="this.style.backgroundColor='transparent'">
+                    <td class="px-4 py-2 text-xs font-mono truncate max-w-[150px]" style="color: var(--neo-green);" title="${leftSide}">${leftSide}</td>
+                    <td class="px-4 py-2 text-center"><i class="fas fa-exchange-alt text-[10px]" style="color: ${textSecondary};"></i></td>
+                    <td class="px-4 py-2 text-xs font-mono truncate max-w-[150px]" style="color: var(--neo-blue);" title="${rightSide}">${rightSide}</td>
+                    <td class="px-4 py-2 text-xs font-mono text-right" style="color: var(--neo-text-main);">${bytes}</td>
                 </tr>`
             );
         });
@@ -423,31 +485,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderFlows(report) {
         if (!elements.flowsTableBody) return;
-
+    
         const flowsObj = report.application_flow_analysis || {};
-        const flows = flowsObj.flows || [];
+        // Match both 'flows' and 'application_flows' depending on API
+        const flows = flowsObj.flows || flowsObj.application_flows || report.application_flows || [];
         
         elements.flowsTableBody.innerHTML = '';
         const isLight = document.body.classList.contains("light-mode");
         const textPrimary = isLight ? 'text-slate-700' : 'text-slate-300';
         const textSecondary = isLight ? 'text-slate-500' : 'text-slate-400';
         const hoverBg = isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/50';
-
+    
         if (!flows.length) {
-            elements.flowsTableBody.innerHTML = `<tr><td colspan="6" class="p-12 text-center ${textSecondary} text-sm">No HTTP/Application flows recorded.</td></tr>`;
+            elements.flowsTableBody.innerHTML = `<tr><td colspan="6" class="p-12 text-center text-sm ${textSecondary}">No HTTP/Application flows recorded.</td></tr>`;
             return;
         }
-
+    
         flows.forEach((flow) => {
-            const resp = (flow.response_code || flow.response_phrase) ? `${flow.response_code || ''} ${flow.response_phrase || ''}`.trim() : '-';
-
+            const resp = (flow.response_code || flow.response_phrase || flow.status) ? `${flow.response_code || flow.status || ''} ${flow.response_phrase || ''}`.trim() : '-';
+    
             elements.flowsTableBody.insertAdjacentHTML('beforeend',
                 `<tr class="${hoverBg} transition-colors">
                     <td class="px-6 py-3 text-xs font-mono ${textSecondary}">${flow.timestamp || ''}</td>
                     <td class="px-6 py-3 text-xs font-mono text-blue-400">${flow.src_ip || '-'}</td>
                     <td class="px-6 py-3 text-xs font-mono text-emerald-400">${flow.dst_ip || '-'}</td>
-                    <td class="px-6 py-3 text-xs ${textPrimary} font-bold">${flow.method || '-'}</td>
-                    <td class="px-6 py-3 text-xs ${textPrimary} truncate max-w-[200px]" title="${flow.uri}">${flow.uri || '-'}</td>
+                    <td class="px-6 py-3 text-xs font-bold ${textPrimary}">${flow.method || '-'}</td>
+                    <td class="px-6 py-3 text-xs truncate max-w-[200px] ${textPrimary}" title="${flow.uri}">${flow.uri || '-'}</td>
                     <td class="px-6 py-3 text-xs ${textPrimary}">${resp}</td>
                 </tr>`
             );
@@ -455,18 +518,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderAnomalies(report) {
-        const ar = report.security_anomaly_report || {};
+        let ar = report.security_anomaly_report || {};
+        
+        // Handle alternative backend payload structures
+        if (!ar.summary && report.security_anomalies_detected) {
+             ar = report.security_anomalies_detected;
+        }
+        
         if (elements.anomalySummaryText) elements.anomalySummaryText.textContent = ar.summary || 'No anomalies detected.';
         
         const isLight = document.body.classList.contains("light-mode");
         const textSecondary = isLight ? 'text-slate-500' : 'text-slate-500';
-        const textCode = isLight ? 'text-slate-700' : 'text-slate-300';
+        const textCode = isLight ? 'text-slate-800' : 'text-slate-300';
         const bgCode = isLight ? 'bg-slate-100' : 'bg-slate-950/50';
         const borderCode = isLight ? 'border-slate-200' : 'border-slate-800';
-
+    
         function renderList(bodyEl, arr) {
             if (!bodyEl) return;
             bodyEl.innerHTML = '';
+            
+            // if object array with details instead of objects 
+            if (arr && !Array.isArray(arr) && Object.keys(arr).length > 0) {
+                 arr = Object.entries(arr).map(([k, v]) => ({ event: k, details: v }));
+            }
             
             if (!arr || !arr.length) {
                 bodyEl.innerHTML = `<tr><td class="px-4 py-4 text-center ${textSecondary}">None detected.</td></tr>`;
@@ -477,22 +551,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 const jsonStr = typeof item === 'string' ? item : JSON.stringify(item, null, 2);
                 bodyEl.insertAdjacentHTML('beforeend',
                     `<tr>
-                        <td class="px-4 py-3 align-top">
-                            <div class="text-[10px] ${textSecondary} mb-1 font-mono">EVENT #${idx + 1}</div>
-                            <pre class="text-[11px] font-mono whitespace-pre-wrap ${textCode} ${bgCode} p-2 rounded border ${borderCode}">${jsonStr}</pre>
+                        <td class="px-4 py-3 align-top" style="border-bottom: 1px solid var(--neo-border);">
+                            <div class="text-[10px] mb-1 font-mono ${textSecondary}">EVENT #${idx + 1}</div>
+                            <pre class="text-[11px] font-mono whitespace-pre-wrap p-2 ${bgCode} ${textCode} rounded border ${borderCode}">${jsonStr}</pre>
                         </td>
                     </tr>`
                 );
             });
         }
-
-        renderList(elements.portScansBody, ar.port_scans);
-        renderList(elements.cleartextBody, ar.cleartext_credentials);
+    
+        renderList(elements.portScansBody, ar.port_scans || ar.suspicious_connections || []);
+        renderList(elements.cleartextBody, ar.cleartext_credentials || ar.cleartext_protocols || []);
     }
 
     function renderPackets(report) {
         if (!elements.packetsTableBody) return;
-
+    
         const packets = report.dissected_packets || [];
         elements.packetsTableBody.innerHTML = '';
         
@@ -501,44 +575,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const textSecondary = isLight ? 'text-slate-500' : 'text-slate-500';
         const textMuted = isLight ? 'text-slate-400' : 'text-slate-400';
         const hoverBg = isLight ? 'hover:bg-slate-100' : 'hover:bg-slate-800/50';
-
+    
         if (!packets.length) {
             elements.packetsTableBody.innerHTML = `
                 <tr>
                     <td colspan="7" class="p-12 text-center">
-                        <div class="text-slate-600 mb-2"><i class="fas fa-network-wired text-4xl opacity-20"></i></div>
+                        <div class="mb-2 text-slate-600"><i class="fas fa-network-wired text-4xl opacity-20"></i></div>
                         <p class="${textSecondary}">Start a capture to view dissected packets.</p>
                     </td>
                 </tr>`;
             return;
         }
-
+    
         const displayPackets = packets.slice(0, 500); 
-
+    
         displayPackets.forEach((pkt) => {
-            const layers = (pkt && pkt._source && pkt._source.layers) || {};
-            const frame = layers.frame || {};
-            const ip = layers.ip || layers.ipv6 || {};
-
-            const frameNum = frame['frame.number'] || '?';
-            const timeRel = frame['frame.time_relative'] || '0.0';
-            const len = frame['frame.len'] || '?';
-
-            const src = ip['ip.src'] || ip['ipv6.src'] || ip['ip.src_host'] || 'N/A';
-            const dst = ip['ip.dst'] || ip['ipv6.dst'] || ip['ip.dst_host'] || 'N/A';
-
-            let proto = 'TCP/UDP';
-            const protoStr = frame['frame.protocols'];
+            const layers = (pkt && pkt._source && pkt._source.layers) || pkt.layers || pkt || {};
+            const frame = layers.frame || layers || {};
+            const ip = layers.ip || layers.ipv6 || layers || {};
+    
+            const frameNum = frame['frame.number'] || frame.number || '?';
+            const timeRel = frame['frame.time_relative'] || frame.time_relative || '0.0';
+            const len = frame['frame.len'] || frame.length || '?';
+    
+            const src = ip['ip.src'] || ip['ipv6.src'] || ip['ip.src_host'] || ip.src || 'N/A';
+            const dst = ip['ip.dst'] || ip['ipv6.dst'] || ip['ip.dst_host'] || ip.dst || 'N/A';
+    
+            let proto = pkt.protocol || 'TCP/UDP';
+            const protoStr = frame['frame.protocols'] || frame.protocols;
             if (protoStr) {
                 const parts = protoStr.split(':');
                 proto = (parts[parts.length - 1] || 'DATA').toUpperCase();
             }
-
+    
             // [NEW] Risk Score Rendering
             const rawScore = pkt.predicted_risk_score !== undefined ? pkt.predicted_risk_score : 0;
             const scoreLabel = (rawScore * 10).toFixed(1);
             const scoreColor = rawScore > 0.7 ? '#ef4444' : (rawScore > 0.4 ? '#f97316' : '#3b82f6');
-
+    
             elements.packetsTableBody.insertAdjacentHTML('beforeend',
                 `<tr class="${hoverBg} transition-colors">
                     <td class="px-6 py-2 text-xs font-mono ${textSecondary}">${frameNum}</td>
@@ -643,20 +717,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const options = {
             nodes: {
                 shape: 'dot',
-                font: { face: 'Inter', size: 12, color: '#e2e8f0', strokeWidth: 3, strokeColor: '#050505' },
+                font: { face: 'IBM Plex Sans', size: 12, color: '#ffffff', strokeWidth: 0 },
                 scaling: { min: 10, max: 30 }, 
-                shadow: true
+                shadow: false
             },
             groups: {
                 local: {
                     color: { background: '#3b82f6', border: '#2563eb', highlight: { background: '#60a5fa', border: '#3b82f6' } }, 
                 },
                 external: {
-                    color: { background: '#f97316', border: '#ea580c', highlight: { background: '#fb923c', border: '#f97316' } }, 
+                    color: { background: '#ef4444', border: '#dc2626', highlight: { background: '#f87171', border: '#ef4444' } }, 
                 }
             },
             edges: {
-                color: { color: '#475569', highlight: '#94a3b8' },
+                color: { color: 'rgba(255,255,255,0.1)', highlight: '#3b82f6' },
                 smooth: { type: 'continuous' },
                 selectionWidth: 2
             },
@@ -900,18 +974,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxPackets = parseInt(elements.maxPacketsInput.value, 10) || 200;
         const bpfFilter = elements.bpfFilterInput.value.trim() || null;
 
+        if (isActionInProgress) return;
+
+        isActionInProgress = true;
+        if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, true);
         setStatus('Starting capture...', 'busy');
         switchTab('summary'); 
 
         appendLog('--- New Capture Initiated ---');
 
-        await apiPost('/start_capture', {
-            target_ip: targetIp,
-            duration,
-            max_packets: maxPackets,
-            interface_id: null, 
-            custom_bpf_filter: bpfFilter,
-        }, elements.startCaptureBtn);
+        try {
+            const data = await apiPost('/start_capture', {
+                target_ip: targetIp,
+                duration,
+                max_packets: maxPackets,
+                interface_id: elements.interfaceSelect ? elements.interfaceSelect.value || null : null, 
+                custom_bpf_filter: bpfFilter,
+            }, null); // Pass null so apiPost doesn't auto-stop spinner
+
+            if (!data || data.status !== 'success') {
+                isActionInProgress = false;
+                if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, false);
+                setStatus('Failed to start', 'error');
+            }
+        } catch (e) {
+            isActionInProgress = false;
+            if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, false);
+            setStatus('Failed to start', 'error');
+        }
     }
 
     async function stopCapture() {
@@ -924,6 +1014,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupEventListeners() {
         if(elements.startCaptureBtn) elements.startCaptureBtn.addEventListener('click', startCapture);
         if(elements.stopCaptureBtn) elements.stopCaptureBtn.addEventListener('click', stopCapture);
+
+        if(elements.advancedScanToggle) {
+            elements.advancedScanToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (elements.advancedScanOptions) {
+                    elements.advancedScanOptions.classList.toggle('hidden');
+                }
+            });
+        }
+        // Close dropdown when interacting outside
+        document.addEventListener('click', (e) => {
+            if (elements.advancedScanOptions && !elements.advancedScanOptions.classList.contains('hidden') && 
+                e.target !== elements.advancedScanToggle && !elements.advancedScanToggle.contains(e.target) &&
+                !elements.advancedScanOptions.contains(e.target)) {
+                elements.advancedScanOptions.classList.add('hidden');
+            }
+        });
 
         if(elements.summaryTabBtn) elements.summaryTabBtn.addEventListener('click', () => switchTab('summary'));
         if(elements.flowsTabBtn) elements.flowsTabBtn.addEventListener('click', () => switchTab('flows'));
@@ -1009,10 +1116,112 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function analyzeReport(llmMode) {
+        if (elements.snifferAnalyzeReportDropdown.disabled) return;
+        const target = elements.targetIpInput.value.trim();
+
+        if (!csrfToken) {
+            appendLog('[!] Error: CSRF Token missing. Refresh page.');
+            return;
+        }
+
+        // 1. LOCK UI & SHOW OVERLAY
+        if (elements.snifferLlmAnalysisOptions) elements.snifferLlmAnalysisOptions.classList.add('hidden');
+        if (elements.aiProcessingOverlay) {
+            elements.aiProcessingOverlay.classList.remove('hidden');
+            if (elements.aiProcessingText) {
+                elements.aiProcessingText.textContent = llmMode.includes('gemini') 
+                    ? 'CONTACTING GEMINI...' 
+                    : 'LOADING LOCAL MODEL...';
+            }
+        }
+
+        setStatus(`AI Analysis (${llmMode})...`, 'busy');
+        
+        // Disable dropdown interactions
+        elements.snifferAnalyzeReportDropdown.disabled = true;
+        
+        try {
+            let response = await fetch(`${API_BASE_URL}/trigger_ai_analysis`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ llm_mode: llmMode, target: target })
+            });
+            let data = await response.json();
+            
+            if (data.status !== 'success') throw new Error(data.message);
+            
+            if (elements.aiProcessingText) elements.aiProcessingText.textContent = 'SYNTHESIZING REPORT...';
+
+            response = await fetch(`${CHATBOT_REDIRECT_URL}/scanner_analysis`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    llm_mode: llmMode, 
+                    scanner_type: data.scanner_type,
+                    target: data.target, // Pass sanitized target
+                    force_new_session: true 
+                })
+            });
+
+            data = await response.json();
+
+            if (response.ok && data.status === 'success') {
+                if (elements.aiProcessingText) elements.aiProcessingText.textContent = 'REDIRECTING...';
+                appendLog(`[✓] Analysis complete. Redirecting...`);
+                
+                setTimeout(() => {
+                    const params = new URLSearchParams({
+                        mode: data.llm_mode,
+                        summary: data.summary,
+                        session_id: data.session_id
+                    });
+                    window.location.href = `${CHATBOT_REDIRECT_URL}?${params.toString()}`;
+                }, 800);
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            appendLog(`[!] AI Analysis Error: ${error.message}`);
+            setStatus('Analysis failed', 'error');
+            
+            // Hide overlay to allow retry
+            if (elements.aiProcessingOverlay) elements.aiProcessingOverlay.classList.add('hidden');
+            elements.snifferAnalyzeReportDropdown.disabled = false;
+        } finally {
+            checkReportAvailability(); 
+        }
+    }
+
+    async function loadInterfaces() {
+        if (!elements.interfaceSelect) return;
+        try {
+            const res = await fetch(`${API_BASE_URL}/get_interfaces`);
+            const data = await res.json();
+            if (data.status === 'success' && data.interfaces) {
+                data.interfaces.forEach(intf => {
+                    const opt = document.createElement('option');
+                    opt.value = intf.id;
+                    opt.textContent = intf.description || intf.name;
+                    elements.interfaceSelect.appendChild(opt);
+                });
+            }
+        } catch (e) {
+            console.error('Failed to load interfaces:', e);
+        }
+    }
+
     function init() {
         // Initial log message with delay to ensure DOM is ready
         setTimeout(() => appendLog('System Ready. Initializing Packet Sniffer interface...'), 100);
         
+        loadInterfaces();
         setupEventListeners();
         initializeLogStream();
         switchTab('summary'); // Default tab

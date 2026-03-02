@@ -225,22 +225,39 @@ def get_ssl_report_history():
 @ssl_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
+    """Robustly triggers AI analysis by finding the correct PDF report."""
     data = request.get_json() or {}
     target = data.get('target')
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    paths = ssl_scanner.get_output_paths(user_dir, target=target)
-    pdf_path = paths["pdf_report"]
+    # 1. Resolve PDF Path with Fallbacks
+    from pathlib import Path
+    pdf_path = None
+    
+    if target:
+        paths = ssl_scanner.get_output_paths(user_dir, target=target)
+        pdf_path = Path(paths["pdf_report"])
+    
+    # Fallback 1: History search (Recent for this scanner)
+    if not pdf_path or not pdf_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name="ssl_report", extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
+    
+    # Fallback 2: Any PDF in the results directory
+    if not pdf_path or not pdf_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
 
-    if not pdf_path.exists():
-        ssl_scanner.log(f"[!] Analysis failed: PDF report not found at {pdf_path}", user_identifier)
+    if not pdf_path or not pdf_path.exists():
+        ssl_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
         }), 404
 
-    # Returns the scanner type so the chatbot blueprint knows which file to read.
     return jsonify({
         "status": "success",
         "scanner_type": "ssl",
