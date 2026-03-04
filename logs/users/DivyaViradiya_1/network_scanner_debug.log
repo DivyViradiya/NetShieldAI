@@ -16,3 +16,4 @@
 [16:20:58] [INFO] [+] PDF report generated successfully
 [16:20:58] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
 [17:49:31] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[17:52:21] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
