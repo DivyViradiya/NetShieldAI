@@ -65,6 +65,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let cleanedMessage = msg.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '').trim();
+    
+    // 1. Remove the standard backend timestamp brackets, e.g., "[2026-03-04 15:29:11]"
+    cleanedMessage = cleanedMessage.replace(/^\[\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\]\s*/, '').trim();
+
+    // 2. Remove redundant repeating tags like "[START] [START]" -> "[START]"
+    cleanedMessage = cleanedMessage.replace(/(\[[A-Z]+\])\s*\1/g, '$1');
+
+    // 3. Remove internal ZAP Daemon Java noise and thread tags
+    cleanedMessage = cleanedMessage.replace(/\[(?:ZAP Daemon|ZAP-daemon|ZAP-IO-[^\]]+)\]\s*/gi, '');
+    cleanedMessage = cleanedMessage.replace(/^\d+\s+\[main\]\s+(?:INFO|WARN|ERROR)\s+org\.[\w\.]+\s+-\s+/, '');
+    
+    // 4. Remove standard Python wrapper noise prefix
     cleanedMessage = cleanedMessage.replace(/\[ZAP-CLI\]\s*/g, '').replace(/\[ZAP\]\s*/g, '').trim();
 
     if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
@@ -123,10 +135,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function toggleButtons(scanActive) {
     els.startBtn.disabled = scanActive;
+    
+    // UI updates for START SCAN button
+    const btnText = els.startBtn.querySelector(".button-text");
+    const playIcon = els.startBtn.querySelector(".material-symbols-outlined");
+    
     if (scanActive) {
       els.startBtn.querySelector(".spinner").classList.remove("hidden");
+      if (btnText) btnText.textContent = "SCANNING...";
+      if (playIcon) playIcon.classList.add("hidden");
+      els.startBtn.style.opacity = "0.7";
+      els.startBtn.style.cursor = "not-allowed";
     } else {
       els.startBtn.querySelector(".spinner").classList.add("hidden");
+      if (btnText) btnText.textContent = "START SCAN";
+      if (playIcon) playIcon.classList.remove("hidden");
+      els.startBtn.style.opacity = "1";
+      els.startBtn.style.cursor = "pointer";
     }
 
     const reportButtonsEnabled = !scanActive && currentScanId !== null;
@@ -418,22 +443,54 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. Vulnerabilities Table (Using data.all_findings)
     els.vulnTableBody.innerHTML = "";
     if (allFindings.length === 0) {
-      els.vulnTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 3rem; color: #555;">No vulnerabilities found.</td></tr>';
+      els.vulnTableBody.innerHTML = '<div style="text-align:center; padding: 4rem; color: var(--neo-text-muted); font-family: var(--font-mono);">No vulnerabilities found.</div>';
     } else {
       allFindings.forEach((v) => {
         const sev = (v.severity || v.risk || "info").toLowerCase(); // Normalize severity
-        let color = '#3b82f6'; // Default Blue
-        if (sev === 'critical') color = '#ef4444'; // Red
-        if (sev === 'high') color = '#f97316'; // Orange
-        if (sev === 'medium') color = '#eab308'; // Yellow
+        let riskClass = 'risk-low';
+        let score = "0.0";
+        if (sev === 'critical') { riskClass = 'risk-critical'; score = "9.5"; }
+        else if (sev === 'high') { riskClass = 'risk-high'; score = "7.5"; }
+        else if (sev === 'medium') { riskClass = 'risk-medium'; score = "5.5"; }
+        else if (sev === 'info') { riskClass = 'risk-safe'; score = "0.0"; }
 
-        const row = `
-            <tr>
-                <td style="color: ${color}; font-weight: 700;">${(v.severity || v.risk || "INFO").toUpperCase()}</td>
-                <td style="font-weight: 600;">${v.type || v.name || "Unknown"}</td>
-                <td style="font-family: monospace; font-size: 0.8rem; color: #a1a1aa; word-break: break-all;">${v.evidence || v.url || v.location || "-"}</td>
-            </tr>`;
-        els.vulnTableBody.insertAdjacentHTML("beforeend", row);
+        const title = v.type || v.name || "Unknown Vulnerability";
+        const evidence = v.evidence || v.url || v.location || "N/A";
+        const desc = v.description || "No description provided.";
+        const solution = v.solution || "No remediation provided.";
+
+        const cardHtml = `
+            <div class="finding-card">
+              <div class="finding-header" onclick="this.parentElement.classList.toggle('expanded')">
+                <div class="risk-indicator ${riskClass}">
+                  <div class="risk-dot"></div>
+                  <span>${sev.toUpperCase()}</span>
+                </div>
+                <div class="finding-title" title="${title}">${title}</div>
+                <div class="score-container">
+                  <span class="score-label">Risk</span>
+                  <span class="score-val">${score}</span>
+                </div>
+                <span class="material-symbols-outlined expand-icon">expand_more</span>
+              </div>
+              <div class="finding-details">
+                <div class="details-content">
+                  <div class="detail-section">
+                    <span class="detail-label">Location / Evidence</span>
+                    <span class="detail-text-mono">${evidence}</span>
+                  </div>
+                  <div class="detail-section">
+                    <span class="detail-label">Description</span>
+                    <div class="detail-text">${desc}</div>
+                  </div>
+                  <div class="detail-section">
+                    <span class="detail-label">Remediation</span>
+                    <div class="detail-text">${solution}</div>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        els.vulnTableBody.insertAdjacentHTML("beforeend", cardHtml);
       });
     }
 
@@ -441,16 +498,38 @@ document.addEventListener("DOMContentLoaded", () => {
     els.networkTableBody.innerHTML = "";
     if (data.network && data.network.nmap_scan && data.network.nmap_scan.ports && data.network.nmap_scan.ports.length > 0) {
       data.network.nmap_scan.ports.forEach((p) => {
-        const row = `
-            <tr>
-                <td style="color: #3b82f6; font-family: monospace; font-weight: 700;">${p.port}/${p.protocol}</td>
-                <td style="font-weight: 600;">${p.service}</td>
-                <td style="color: #a1a1aa; font-family: monospace;">${p.version || ""} ${p.product || ""}</td>
-            </tr>`;
-        els.networkTableBody.insertAdjacentHTML("beforeend", row);
+        const riskClass = "risk-safe";
+        const scoreWidth = "20%"; // Default mock representation for ports
+
+        const cardHtml = `
+            <div class="discovery-card animate-card ${riskClass}">
+                <div class="card-header">
+                    <div class="port-badge">
+                        <span class="port-num">${p.port}</span>
+                        <span class="protocol-label">${p.protocol}</span>
+                    </div>
+                </div>
+                <div class="service-main">
+                    <div class="service-title" title="${p.service}">${p.service}</div>
+                    <div class="service-ver">${p.version || p.product || "Unknown Version"}</div>
+                </div>
+                <div class="risk-section">
+                    <div class="risk-header">
+                        <span>Risk Profile</span>
+                        <span>LOW</span>
+                    </div>
+                    <div class="risk-score-bar">
+                        <div class="risk-score-fill" style="width: ${scoreWidth}"></div>
+                    </div>
+                </div>
+                <div class="analysis-footer">
+                    Active listener detected.
+                </div>
+            </div>`;
+        els.networkTableBody.insertAdjacentHTML("beforeend", cardHtml);
       });
     } else {
-      els.networkTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 3rem; color: #555;">No open ports found.</td></tr>';
+      els.networkTableBody.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; padding: 4rem; color: var(--neo-text-muted); font-family: var(--font-mono);">No open ports found.</div>';
     }
 
     // 4. Recon Table
@@ -473,16 +552,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (reconDataItems.length > 0) {
       reconDataItems.forEach((item) => {
-        const row = `
-            <tr>
-                <td style="color: #a1a1aa; font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">${item.type}</td>
-                <td style="color: #10b981; font-family: monospace;">${item.item}</td>
-                <td style="color: #a1a1aa;">${item.details || "-"}</td>
-            </tr>`;
-        els.reconTableBody.insertAdjacentHTML("beforeend", row);
+        const titleText = item.item.length > 40 ? item.item.substring(0, 37) + '...' : item.item;
+        const iconMap = {
+           "SUBDOMAIN": "dns",
+           "HOST IP": "router",
+           "CRAWLED URL": "link",
+           "API ENDPOINT": "api"
+        };
+        const icon = iconMap[item.type] || "radar";
+        
+        const cardHtml = `
+            <div class="discovery-card animate-card risk-safe">
+                <div class="card-header">
+                    <div style="font-size: 0.7rem; color: var(--neo-blue); font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                      <span class="material-symbols-outlined" style="font-size: 1.2rem;">${icon}</span>
+                      ${item.type}
+                    </div>
+                </div>
+                <div class="service-main" style="margin-top:0.5rem;">
+                    <div class="service-title" style="text-transform:none;word-break:break-all;" title="${item.item}">${titleText}</div>
+                    <div class="service-ver">${item.details || "Discovered asset"}</div>
+                </div>
+                <div class="analysis-footer" style="margin-top:auto;">
+                    Passive Reconnaissance Data
+                </div>
+            </div>`;
+        els.reconTableBody.insertAdjacentHTML("beforeend", cardHtml);
       });
     } else {
-      els.reconTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 3rem; color: #555;">No recon data found.</td></tr>';
+      els.reconTableBody.innerHTML = '<div style="grid-column: 1 / -1; text-align:center; padding: 4rem; color: var(--neo-text-muted); font-family: var(--font-mono);">No recon data found.</div>';
     }
 
 

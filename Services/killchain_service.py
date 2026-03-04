@@ -160,6 +160,14 @@ class KillChainService:
                         "delay": 0.2
                     }
                 },
+                "Stealth": {
+                    "phases": ["network_audit_phase"],
+                    "network_audit_params": {"scan_type": "stealth", "brute_force_level": "none"},
+                    "aggression_tuning": {
+                        "threads": 5,
+                        "delay": 1.0
+                    }
+                },
                 "Attack": {
                     "phases": ["network_audit_phase"],
                     "network_audit_params": {"scan_type": "full", "brute_force_level": "aggressive"},
@@ -226,6 +234,22 @@ class KillChainService:
                     "aggression_tuning": {
                         "threads": 10,
                         "delay": 0.5
+                    }
+                },
+                "Stealth": {
+                    "phases": ["recon_phase", "network_audit_phase", "waf_detect_phase", "web_audit_phase", "traffic_analysis_phase"],
+                    "recon_params": {"passive_only": True, "resolve_ips": False},
+                    "network_audit_params": {"scan_type": "stealth", "brute_force_level": "none"},
+                    "waf_detect_params": {"provocation": False},
+                    "web_audit_params": {
+                        "crawler_max_pages": 50, "crawler_max_threads": 3,
+                        "dirfuzz_enabled": False,
+                        "vuln_aggressive": False, "custom_aggressive": False
+                    },
+                    "traffic_analysis_params": {},
+                    "aggression_tuning": {
+                        "threads": 5,
+                        "delay": 1.0
                     }
                 },
                 "Attack": {

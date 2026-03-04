@@ -12,10 +12,10 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/NS_Logo.png') }}">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
     <style>
@@ -23,8 +23,8 @@
       /* --- GLOBAL VARIABLES & THEME SETUP --- */
       /*******************************************/
       :root {
-        /* ARCTIC TECHNICAL MINIMALISM - DARK (Institutional) */
-        --bg-primary: #050505;
+        /* NEO-TECH DARK (Aligned with scanner/dashboard pages) */
+        --bg-primary: #000000;
         --bg-secondary: #0a0a0b;
         --surface-primary: #0f0f11;
         --surface-elevated: #161618;
@@ -73,90 +73,89 @@
         --scrollbar-hover: var(--accent-primary);
       }
 
-      /* LIGHT MODE OVERRIDES (ARCTIC TECHNICAL MINIMALISM) */
+      /* LIGHT MODE — NEO-TECH SLATE-INDIGO */
       body.light-mode {
-        --bg-primary: #f8fafc; /* Soft cool-gray structure */
-        --bg-secondary: #eef2ff; /* Indigo-50 tinted wash */
+        --bg-primary: #f1f5f9;       /* Slate-100 — warm off-white base */
+        --bg-secondary: #e8edf5;     /* Indigo-tinted wash for sidebar/inputs */
         --surface-primary: #ffffff;
         --surface-elevated: #ffffff;
-        --surface-subtle: #f5f7ff; /* Faint indigo tint */
+        --surface-subtle: #f8faff;   /* Faint indigo tint for hover states */
 
-        --border-default: #e2e8f0; /* Slate-200 - Structure over shadow */
-        --border-subtle: #f1f5f9; /* Slate-100 */
+        --border-default: #cbd5e1;   /* Slate-300 — clearly visible borders */
+        --border-subtle: #e2e8f0;    /* Slate-200 — soft inner dividers */
 
-        --text-primary: #0f172a; /* Slate-900 - Strong contrast */
-        --text-secondary: #334155; /* Slate-700 */
-        --text-muted: #64748b; /* Slate-500 - High readability */
+        --text-primary: #0f172a;     /* Slate-900 — strong contrast */
+        --text-secondary: #1e293b;   /* Slate-800 — body text */
+        --text-muted: #64748b;       /* Slate-500 — high readability */
 
-        --accent-primary: #0f172a; /* Institutional Slate-900 */
-        --accent-hover: #1e293b;
+        --accent-primary: #4f46e5;   /* Indigo-600 — single unified accent */
+        --accent-hover: #4338ca;     /* Indigo-700 */
+        --accent-blue: #2563eb;      /* Blue-600 — secondary interactive */
 
-        /* Standardized Severity (Light - Technical Tones) */
-        --severity-critical: #991b1b;
+        /* Severity tokens — richer for light context */
+        --severity-critical: #dc2626;
         --severity-critical-bg: #fef2f2;
-        --severity-high: #92400e;
+        --severity-high: #d97706;
         --severity-high-bg: #fffbeb;
-        --severity-medium: #854d0e;
+        --severity-medium: #ca8a04;
         --severity-medium-bg: #fefce8;
-        --severity-low: #075985;
-        --severity-low-bg: #f0f9ff;
-        --severity-success: #166534;
-        --severity-success-bg: #f0fdf4;
-        --severity-info: #475569;
-        --severity-info-bg: #f8fafc;
+        --severity-low: #2563eb;
+        --severity-low-bg: #eff6ff;
+        --severity-success: #059669;
+        --severity-success-bg: #ecfdf5;
+        --severity-info: #4f46e5;
+        --severity-info-bg: #eef2ff;
 
-        /* Compatibility Mappings */
+        /* Compatibility mappings */
         --bg-color: var(--bg-primary);
         --surface-color: var(--surface-primary);
         --border-color: var(--border-default);
         --text-light: var(--text-primary);
-        --accent-blue: #2563eb; 
 
+        /* neo-* namespace unified */
         --neo-card: var(--surface-primary);
         --neo-border: var(--border-default);
-        --neo-blue: var(--accent-blue);
+        --neo-blue: var(--accent-primary);
         --neo-text-primary: var(--text-primary);
         --neo-text-secondary: var(--text-secondary);
         --neo-text-label: var(--text-muted);
-        --neo-card-hover: var(--bg-secondary);
-        --accent-vibrant-spinner: #00BFFF; /* Vibrant deep sky blue for spinner */
+        --neo-card-hover: var(--surface-subtle);
+        --accent-vibrant-spinner: #4f46e5;
 
-        --scrollbar-thumb: rgba(0, 0, 0, 0.1);
-        --scrollbar-hover: var(--text-muted);
+        --scrollbar-thumb: rgba(79, 70, 229, 0.15);
+        --scrollbar-hover: var(--accent-primary);
       }
-      
+
+      /* Subtle dot-grid background — indigo tint at 5% */
+      body.light-mode::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-image: radial-gradient(circle, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+        background-size: 28px 28px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
       body {
-        font-family: 'Inter', sans-serif;
+        font-family: 'IBM Plex Sans', 'Inter', sans-serif;
         background-color: var(--bg-color);
-      
         display: flex;
         flex-direction: column;
         min-height: 100vh;
         padding-top: var(--navbar-height);
         color: var(--text-secondary);
         position: relative;
-        overflow-x: hidden; 
+        overflow-x: hidden;
       }
 
       body.light-mode {
         color: var(--text-secondary);
       }
 
-      /* Frosted Arctic — Subtle dot grid background pattern */
-      body.light-mode::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: radial-gradient(circle, rgba(99, 102, 241, 0.07) 1px, transparent 1px);
-        background-size: 24px 24px;
-        pointer-events: none;
-        z-index: 0;
-      }
-
       /* Global Link Refinement */
+
       body.light-mode a:not(.btn-dash):not(.btn-neo-primary):not(.details):not(.logout-link) {
         color: var(--accent-blue);
         transition: color 0.2s ease;
@@ -212,8 +211,7 @@
 
       /* 2. WebKit approach (Chrome, Edge, Safari) */
       body {
-        /* This creates the overlay effect where supported */
-        overflow-y: overlay; 
+        overflow-y: auto;
       }
 
       ::-webkit-scrollbar {
@@ -258,6 +256,18 @@
       }
       
       /*******************************************/
+      /* --- NAVBAR ISOLATION --- */
+      /* Prevent child-page CSS from bleeding into navbar */
+      /*******************************************/
+      .navbar,
+      .navbar *:not(.material-symbols-outlined) {
+        font-family: 'IBM Plex Sans', 'Inter', sans-serif !important;
+      }
+      .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined' !important;
+      }
+
+      /*******************************************/
       /* --- NAVBAR STYLES --- */
       /*******************************************/
       .navbar-brand {
@@ -270,12 +280,12 @@
       }
       
       .navbar {
-        background-color: rgba(5, 5, 5, 0.95); 
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        background-color: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(20px) saturate(1.4);
+        -webkit-backdrop-filter: blur(20px) saturate(1.4);
         padding: 0 2rem;
         height: var(--navbar-height);
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid rgba(255,255,255,0.07);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -284,15 +294,24 @@
         top: 0;
         left: 0;
         z-index: 1000;
-        transition: all 0.3s ease;
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      }
+
+      /* Scroll-aware elevation */
+      .navbar.scrolled {
+        box-shadow: 0 4px 30px rgba(0,0,0,0.7);
+        border-bottom-color: rgba(255,255,255,0.1);
       }
 
       body.light-mode .navbar {
-        background-color: rgba(255, 255, 255, 0.85);
+        background-color: rgba(255, 255, 255, 0.9);
         border-bottom: 1px solid var(--border-default);
-        box-shadow: 0 1px 8px 0 rgba(99, 102, 241, 0.06); /* Frosted indigo shadow */
-        backdrop-filter: blur(16px); /* Frosted glass effect */
-        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 1px 8px 0 rgba(99, 102, 241, 0.06);
+        backdrop-filter: blur(20px) saturate(1.4);
+        -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      }
+      body.light-mode .navbar.scrolled {
+        box-shadow: 0 4px 20px rgba(99,102,241,0.12);
       }
       
       .navbar-container {
@@ -356,8 +375,19 @@
         transition: width 0.3s ease-out;
       }
       
-      .navbar-links li a:not(.highlight-link):hover::after {
+      .navbar-links li a:not(.highlight-link):hover::after,
+      .navbar-links li a:not(.highlight-link).active::after {
         width: 100%;
+      }
+
+      /* Active link: brighter color + faint glow */
+      .navbar-links li a:not(.highlight-link).active {
+        color: var(--text-primary);
+        text-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+      }
+      body.light-mode .navbar-links li a:not(.highlight-link).active {
+        color: var(--accent-primary);
+        text-shadow: none;
       }
       
       .navbar-links li a.highlight-link {
@@ -397,27 +427,28 @@
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.6rem;
         padding: 0;
         color: var(--text-light);
+        font-family: 'IBM Plex Sans', 'Inter', sans-serif;
         font-weight: 600;
-        font-size: 0.9rem;
-        transition: opacity 0.3s ease;
+        font-size: 0.85rem;
+        transition: opacity 0.2s ease;
       }
       
-      .profile-button-text:hover {
-        opacity: 0.8;
-      }
+      .profile-button-text:hover { opacity: 0.8; }
       
       .profile-button-text .arrow-down {
-        font-size: 1.1rem;
+        font-size: 1rem;
         transition: transform 0.2s ease-in-out;
+        color: var(--text-muted);
       }
       
       .profile-button-text.open .arrow-down {
         transform: rotate(180deg);
       }
-      
+
+
       /* Updated: Dropdown Container */
       .profile-dropdown-content {
         display: none;
@@ -586,45 +617,69 @@
         margin: 1rem auto 0 auto;
         padding: 0 2rem;
         z-index: 900;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      @keyframes alertSlideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes alertFadeOut {
+        from { opacity: 1; transform: translateY(0); max-height: 80px; }
+        to   { opacity: 0; transform: translateY(-6px); max-height: 0; padding-top: 0; padding-bottom: 0; margin: 0; }
       }
       .alert {
-        padding: 1rem;
-        border: 1px solid var(--border-color);
-        background-color: var(--surface-color);
+        padding: 0.85rem 1rem;
+        border: 1px solid rgba(255,255,255,0.07);
+        background: rgba(15, 15, 18, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         color: var(--text-muted);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 0.9rem;
-        border-radius: 4px;
+        gap: 1rem;
+        font-size: 0.875rem;
+        border-radius: 8px;
+        animation: alertSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        font-family: 'IBM Plex Sans', 'Inter', sans-serif;
+      }
+      .alert.hiding {
+        animation: alertFadeOut 0.35s ease forwards;
+        overflow: hidden;
       }
       body.light-mode .alert {
-        background-color: var(--surface-primary);
+        background: rgba(255,255,255,0.85);
         border-color: var(--border-default);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        backdrop-filter: blur(12px);
       }
 
-      .alert-success { border-left: 3px solid var(--severity-success); color: var(--severity-success); }
-      .alert-danger { border-left: 3px solid var(--severity-critical); color: var(--severity-critical); }
-      .alert-warning { border-left: 3px solid var(--severity-high); color: var(--severity-high); }
-      .alert-info { border-left: 3px solid var(--severity-low); color: var(--severity-low); }
+      .alert-success { border-left: 3px solid var(--severity-success); color: var(--severity-success); background: rgba(16,185,129,0.08); }
+      .alert-danger  { border-left: 3px solid var(--severity-critical); color: var(--severity-critical); background: rgba(239,68,68,0.08); }
+      .alert-warning { border-left: 3px solid var(--severity-high); color: var(--severity-high); background: rgba(245,158,11,0.08); }
+      .alert-info    { border-left: 3px solid var(--severity-low); color: var(--severity-low); background: rgba(59,130,246,0.08); }
 
       body.light-mode .alert-success { background-color: var(--severity-success-bg); }
-      body.light-mode .alert-danger { background-color: var(--severity-critical-bg); }
+      body.light-mode .alert-danger  { background-color: var(--severity-critical-bg); }
       body.light-mode .alert-warning { background-color: var(--severity-high-bg); }
-      body.light-mode .alert-info { background-color: var(--severity-low-bg); }
-      
+      body.light-mode .alert-info    { background-color: var(--severity-low-bg); }
+
       .alert-close {
         background: none;
         border: none;
         color: inherit;
-        font-size: 1.2rem;
+        font-size: 1rem;
         cursor: pointer;
-        opacity: 0.7;
+        opacity: 0.5;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        padding: 0;
+        transition: opacity 0.2s;
       }
-      .alert-close:hover {
-        opacity: 1;
-      }
+      .alert-close:hover { opacity: 1; }
       
       /*******************************************/
       /* --- LAYOUT UTILITIES --- */
@@ -642,44 +697,44 @@
       /*******************************************/
 
       footer {
-        /* Match navbar background exactly */
-        background-color: rgba(5, 5, 5, 0.95); 
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        
+        background-color: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(20px) saturate(1.4);
+        -webkit-backdrop-filter: blur(20px) saturate(1.4);
         color: var(--text-muted);
-        padding: 1.5rem 0; /* Slightly tighter padding for a sleeker look */
+        padding: 1.75rem 0;
         width: 100%;
         margin-top: auto;
         flex-shrink: 0;
-        font-size: 0.8rem;
-        border-top: 1px solid var(--border-color);
+        font-size: 0.75rem;
+        border-top: 1px solid rgba(255,255,255,0.06);
         position: relative;
         z-index: 10;
-        transition: background-color 0.3s ease;
+        font-family: 'JetBrains Mono', monospace;
       }
 
       body.light-mode footer {
-        background-color: rgba(255, 255, 255, 0.85);
+        background-color: rgba(255, 255, 255, 0.92);
         border-top: 1px solid var(--border-default);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 -4px 20px rgba(99,102,241,0.04);
       }
 
-      /* Subtle line on top of footer */
+      /* Gradient accent line on top of footer */
       footer::before {
         content: '';
         position: absolute;
-        top: 0;
+        top: -1px;
         left: 0;
         width: 100%;
         height: 1px;
-        background: var(--border-color);
-        opacity: 0.5;
+        background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        opacity: 0.4;
       }
 
       body.light-mode footer::before {
-        background: var(--border-default);
+        background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent);
+        opacity: 0.6;
       }
 
       .footer-content {
@@ -693,11 +748,29 @@
         text-align: center;
       }
 
+      /* Quick nav links in footer */
+      .footer-nav {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+      .footer-nav a {
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        opacity: 0.6;
+        transition: opacity 0.2s ease, color 0.2s ease;
+      }
+      .footer-nav a:hover { opacity: 1; color: var(--text-primary); }
+      body.light-mode .footer-nav a:hover { color: var(--accent-primary); }
+
       /* Container for Logo + Copyright */
       .footer-left {
         display: flex;
         align-items: center;
-        gap: 0.75rem; /* Tight spacing between logo and "© 2026..." */
+        gap: 0.75rem;
       }
 
       .footer-logo-img {
@@ -712,23 +785,23 @@
         opacity: 1;
       }
 
-      footer p {
-        margin: 0;
-        opacity: 0.7;
-      }
+      footer p { margin: 0; opacity: 0.6; letter-spacing: 0.03em; }
 
       footer .footer-brand {
-        color: var(--text-light);
-        font-weight: 500;
+        color: var(--text-muted);
+        font-weight: 400;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.1em;
+        opacity: 0.4;
+        font-size: 0.65rem;
       }
 
-      /* Desktop Layout: Logo/Copyright on left, Brand on right */
+      /* Desktop Layout: Logo/Copyright center, nav and brand on sides */
       @media (min-width: 768px) {
         .footer-content {
           flex-direction: row;
           justify-content: space-between;
+          align-items: center;
           text-align: left;
         }
       }
@@ -1107,7 +1180,8 @@
         }
       })();
     </script>
-    <nav class="navbar">
+    <nav class="navbar" id="main-navbar">
+      {% set hub_blueprints = ['network_scanner_bp', 'zap_scanner_bp', 'ssl_scanner_bp', 'packet_sniffer_bp', 'sql_scanner_bp', 'semgrep_bp', 'api_scanner_bp', 'killchain_bp'] %}
       <div class="navbar-brand">
         <a href="{{ url_for('index') }}">
           <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="navbar-logo-img dark-logo" />
@@ -1116,13 +1190,11 @@
       </div>
 
       <div class="navbar-container">
-        <!-- Original Desktop Links -->
         <ul class="navbar-links">
           <li>
             <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
           </li>
           <li>
-            {% set hub_blueprints = ['network_scanner_bp', 'zap_scanner_bp', 'ssl_scanner_bp', 'packet_sniffer_bp', 'sql_scanner_bp', 'semgrep_bp', 'api_scanner_bp', 'killchain_bp'] %}
             <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">Security Hub</a>
           </li>
 
@@ -1139,7 +1211,7 @@
 
         {% if current_user.is_authenticated %}
           <div class="profile-dropdown">
-            <button id="profile-button" class="profile-button-text">
+            <button id="profile-button" class="profile-button-text" aria-label="Profile menu">
               {{ current_user.full_name.split(' ')[0] if current_user.full_name else current_user.username }}
               <span class="material-symbols-outlined arrow-down">expand_more</span>
             </button>
@@ -1201,10 +1273,13 @@
                 Account Settings
               </a>
 
-              <a href="{{ url_for('auth.logout') }}" class="logout-link">
-                <span class="material-symbols-outlined">logout</span>
-                Logout
-              </a>
+              <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form" style="margin:0;padding:0;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="logout-link" style="width:100%;text-align:left;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 1rem;font-size:0.85rem;color:#ef4444;border-radius:6px;margin-top:0.5rem;border-top:1px solid rgba(255,255,255,0.05);font-family:inherit;">
+                  <span class="material-symbols-outlined">logout</span>
+                  Logout
+                </button>
+              </form>
             </div>
           </div>
         {% else %}
@@ -1257,27 +1332,26 @@
 
       <li>
         <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
-          Home
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">home</span>Home
         </a>
       </li>
       <li>
-        {% set hub_blueprints = ['network_scanner_bp', 'zap_scanner_bp', 'ssl_scanner_bp', 'packet_sniffer_bp', 'sql_scanner_bp', 'semgrep_bp', 'api_scanner_bp', 'killchain_bp'] %}
         <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">
-          Security Hub
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">security</span>Security Hub
         </a>
       </li>
 
       {% if current_user.is_authenticated %}
         <li>
           <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">
-            Security Posture
+            <span class="material-symbols-outlined" style="font-size:1.1rem;">bar_chart</span>Security Posture
           </a>
         </li>
       {% endif %}
 
       <li>
         <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="{% if request.blueprint == 'chatbot_bp' %}active{% endif %}">
-          AI Analyzer
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">smart_toy</span>AI Analyzer
         </a>
       </li>
 
@@ -1314,16 +1388,17 @@
           <a href="{{ url_for('auth.account_settings') }}">
             <span class="material-symbols-outlined">manage_accounts</span>Account Settings
           </a>
-          <a href="{{ url_for('auth.logout') }}" class="logout">
-            <span class="material-symbols-outlined">logout</span>Logout
-          </a>
+          <form method="POST" action="{{ url_for('auth.logout') }}" style="margin:0;padding:0 0.65rem;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="logout" style="width:100%;text-align:left;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:0.75rem;padding:0.55rem 0;font-size:0.9rem;color:#ef4444;font-weight:600;font-family:inherit;">
+              <span class="material-symbols-outlined">logout</span>Logout
+            </button>
+          </form>
         </div>
       </li>
       {% endif %}
 
     </ul>
-      </div>
-    </nav>
 
     <!-- Backdrop overlay for mobile drawer -->
     <div class="nav-backdrop" id="nav-backdrop"></div>
@@ -1334,7 +1409,9 @@
           {% for category, message in messages %}
             <div class="alert alert-{{ category }}">
               <span>{{ message }}</span>
-              <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
+              <button class="alert-close" aria-label="Close">
+                <span class="material-symbols-outlined" style="font-size:1.1rem;">close</span>
+              </button>
             </div>
           {% endfor %}
         {% endif %}
@@ -1354,7 +1431,7 @@
           <img src="{{ url_for('static', filename='images/NS_Logo_pdf.png') }}" alt="NS Logo" class="footer-logo-img light-logo" />
           <p>&copy; 2026 NetShieldAI. All rights reserved.</p>
         </div>
-        
+
         <p class="footer-brand">NetShield Pvt. Ltd. // Empowering Digital Trust</p>
       </div>
     </footer>
@@ -1363,7 +1440,7 @@
     <script>
       function updateThemeUI() {
         const isLight = document.body.classList.contains('light-mode');
-        // Desktop dropdown icons
+        // Desktop dropdown icons (in profile dropdown)
         const themeIcon = document.getElementById('theme-icon');
         const themeText = document.getElementById('theme-text');
         if (themeIcon && themeText) {
@@ -1389,11 +1466,43 @@
       document.addEventListener('DOMContentLoaded', function () {
         updateThemeUI();
 
+        // --- Scroll-Aware Navbar ---
+        const navbar = document.getElementById('main-navbar');
+        if (navbar) {
+          const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 10);
+          window.addEventListener('scroll', onScroll, { passive: true });
+          onScroll(); // init
+        }
+
+        // --- Flash Message Auto-Dismiss & Close (event delegation) ---
+        const flashContainer = document.querySelector('.flash-container');
+        if (flashContainer) {
+          // Auto-dismiss after 5s
+          flashContainer.querySelectorAll('.alert').forEach(function(alert) {
+            setTimeout(function() {
+              if (alert && alert.parentNode) {
+                alert.classList.add('hiding');
+                alert.addEventListener('animationend', () => alert.remove(), { once: true });
+              }
+            }, 5000);
+          });
+          // Close button via delegation (no inline onclick)
+          flashContainer.addEventListener('click', function(e) {
+            const btn = e.target.closest('.alert-close');
+            if (!btn) return;
+            const alert = btn.closest('.alert');
+            if (alert) {
+              alert.classList.add('hiding');
+              alert.addEventListener('animationend', () => alert.remove(), { once: true });
+            }
+          });
+        }
+
         // --- Mobile Drawer Logic ---
-        const toggle    = document.getElementById('mobile-menu-toggle');
-        const drawer    = document.getElementById('mobile-nav-drawer');
-        const backdrop  = document.getElementById('nav-backdrop');
-        const closeBtn  = document.getElementById('nav-drawer-close');
+        const toggle   = document.getElementById('mobile-menu-toggle');
+        const drawer   = document.getElementById('mobile-nav-drawer');
+        const backdrop = document.getElementById('nav-backdrop');
+        const closeBtn = document.getElementById('nav-drawer-close');
 
         function openDrawer() {
           if (!drawer) return;
@@ -1421,23 +1530,20 @@
         if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
         if (backdrop) backdrop.addEventListener('click', closeDrawer);
 
-        // Close drawer on ESC
         document.addEventListener('keydown', function(e) {
           if (e.key === 'Escape') closeDrawer();
         });
 
-        // Close drawer when a nav link is clicked (for same-page navigation)
         if (drawer) {
           drawer.querySelectorAll('a').forEach(function(link) {
             link.addEventListener('click', function() {
-              // Only close if it's a real navigation link (not JS void)
               if (!link.href.includes('javascript:void')) closeDrawer();
             });
           });
         }
 
-        // --- Desktop Profile Dropdown Logic ---
-        const profileButton  = document.getElementById('profile-button');
+        // --- Desktop Profile Dropdown ---
+        const profileButton   = document.getElementById('profile-button');
         const dropdownContent = document.getElementById('profile-dropdown-content');
 
         if (profileButton && dropdownContent) {
@@ -1456,7 +1562,7 @@
           });
         }
 
-        // --- Scroll Animation Logic ---
+        // --- Scroll Animation (Intersection Observer) ---
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {

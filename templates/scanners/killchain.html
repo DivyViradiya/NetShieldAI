@@ -7,7 +7,7 @@
 {% block extra_css %}
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+
 
   <style>
     /* --- 1. CRITICAL LAYOUT RESET --- */
@@ -42,14 +42,14 @@
     }
 
     body.light-mode {
-      --neo-bg: #ffffff;
-      --neo-card: #f8fafc;
-      --neo-card-hover: #f1f5f9;
+      --neo-bg: #f1f5f9;
+      --neo-card: #ffffff;
+      --neo-card-hover: #f8faff;
       --neo-input: #ffffff;
-      --neo-border: #e2e8f0;
+      --neo-border: #cbd5e1;
       --neo-text-main: #0f172a;
       --neo-text-muted: #64748b;
-      --neo-blue: #2563eb;
+      --neo-blue: #4f46e5;
       --neo-red: #dc2626;
       --neo-green: #059669;
       --neo-amber: #d97706;
@@ -75,12 +75,13 @@
     body.light-mode .btn-dash:hover:not(:disabled) { background: var(--bg-secondary); color: var(--text-primary); border-color: var(--text-muted); }
     body.light-mode .dash-input { background: var(--surface-primary) !important; color: var(--text-primary) !important; border-color: var(--border-default) !important; }
     body.light-mode .tab-pills { background: var(--bg-secondary); border-color: var(--border-default); }
-    body.light-mode .custom-dropdown { background: var(--surface-primary); border-color: var(--border-default); box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
-    body.light-mode .dropdown-link { color: var(--text-secondary); }
-    body.light-mode .dropdown-link:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    body.light-mode .custom-dropdown { background: var(--surface-primary) !important; border-color: var(--border-default) !important; box-shadow: 0 10px 40px rgba(0,0,0,0.08) !important; }
+    body.light-mode .dropdown-link { color: var(--text-secondary) !important; }
+    body.light-mode .dropdown-link:hover { background: var(--bg-secondary) !important; color: var(--text-primary) !important; }
     body.light-mode .processing-text { color: var(--text-primary); }
     body.light-mode .term-title { color: var(--text-muted); }
-    body.light-mode .timing-select { background: var(--surface-primary); color: var(--text-secondary); border-color: var(--border-default); }
+    body.light-mode .timing-select { background: var(--surface-primary) !important; color: var(--text-secondary) !important; border-color: var(--border-default) !important; }
+    body.light-mode .timing-select option { background: var(--surface-primary) !important; color: var(--text-secondary) !important; }
     body.light-mode #jsonOutput { background-color: var(--bg-secondary) !important; color: var(--text-secondary) !important; }
 
     /* --- GLOBAL WRAPPER --- */
@@ -452,6 +453,358 @@
       scrollbar-width: thin; scrollbar-color: #333 transparent;
     }
 
+      /* --- VIBRANT TECH CARD GRID (Service Discovery Redesign) --- */
+      .discovery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 0.5rem;
+        padding: 1rem;
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+  
+      .discovery-card {
+        background: linear-gradient(165deg, #050505 0%, #000000 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--neo-border);
+        border-radius: var(--radius-card);
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+  
+      .discovery-card:hover {
+        background: linear-gradient(165deg, #050505 0%, #000000 100%);
+        border-color: var(--neo-border);
+        transform: none;
+        box-shadow: none;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .port-badge {
+        background: var(--neo-bg);
+        padding: 0.5rem 0.75rem;
+        border-radius: 0px;
+        border: 1px solid var(--neo-border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 60px;
+      }
+
+      body.light-mode .port-badge {
+        background: #f4f4f4;
+        border-color: #e0e0e0;
+      }
+
+      .port-num {
+        font-family: var(--font-mono);
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--card-accent);
+      }
+
+      .protocol-label {
+        font-size: 0.6rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.6;
+      }
+
+      .service-main {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .service-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        color: var(--neo-text-main);
+      }
+
+      .service-ver {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--neo-text-muted);
+        opacity: 0.8;
+      }
+
+      .risk-section {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .risk-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .risk-score-bar {
+        height: 2px;
+        background: var(--neo-bg);
+        border-radius: 0px;
+        overflow: hidden;
+      }
+
+      body.light-mode .risk-score-bar {
+        background: #f4f4f4;
+      }
+
+      .risk-score-fill {
+        height: 100%;
+        background: var(--card-accent);
+        transition: width 1s ease-out;
+      }
+
+      .analysis-footer {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        line-height: 1.4;
+        color: var(--neo-text-muted);
+        background: transparent;
+        padding: 0.75rem;
+        border-radius: 0px;
+        border: 1px solid var(--neo-border);
+        text-transform: uppercase;
+      }
+
+      body.light-mode .analysis-footer {
+        background: transparent;
+        border-color: #e0e0e0;
+      }
+
+      @keyframes cardAppear {
+        from { opacity: 0; transform: translateY(20px) rotateX(-10deg); }
+        to { opacity: 1; transform: translateY(0) rotateX(0); }
+      }
+
+      .animate-card {
+        animation: cardAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+
+      /* Risk Level Variants */
+      .risk-critical { --card-accent: var(--neo-red); }
+      .risk-high { --card-accent: #f97316; }
+      .risk-medium { --card-accent: var(--neo-amber); }
+      .risk-low { --card-accent: var(--neo-blue); }
+      .risk-safe { --card-accent: var(--neo-green); }
+      
+      /* --- FINDING CARD DESIGNS --- */
+      .findings-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding-bottom: 2rem;
+      }
+
+      .finding-card {
+        background: linear-gradient(145deg, rgba(15,15,18,0.8) 0%, rgba(5,5,5,0.9) 100%);
+        border: 1px solid var(--neo-border);
+        border-radius: var(--radius-sm);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+      
+      body.light-mode .finding-card {
+        background: var(--surface-primary);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      }
+
+      .finding-card:hover {
+        border-color: var(--accent-gradient, var(--neo-text-muted));
+        transform: translateY(-2px);
+      }
+      
+      .finding-header {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        position: relative;
+        background: transparent;
+        transition: background 0.2s ease;
+        min-height: 64px;
+      }
+      
+      .finding-card.expanded .finding-header {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      body.light-mode .finding-card.expanded .finding-header {
+        background: var(--bg-secondary);
+      }
+
+      .finding-header::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--accent-gradient, var(--neo-blue));
+        opacity: 0.8;
+      }
+
+      .risk-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.70rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        width: 100px;
+        flex-shrink: 0;
+      }
+
+      .risk-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        box-shadow: 0 0 8px currentColor;
+      }
+
+      .finding-title {
+        flex: 1;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--neo-text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0 1.5rem;
+      }
+
+      .score-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        margin-right: 1.5rem;
+      }
+
+      .score-label {
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        color: var(--neo-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 2px;
+      }
+
+      .score-val {
+        font-family: var(--font-mono);
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--neo-text-main);
+        line-height: 1;
+      }
+
+      .expand-icon {
+        color: var(--neo-text-muted);
+        transition: transform 0.3s ease;
+      }
+
+      .finding-card.expanded .expand-icon {
+        transform: rotate(180deg);
+        color: var(--neo-text-main);
+      }
+
+      .finding-details {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .finding-card.expanded .finding-details {
+        grid-template-rows: 1fr;
+        border-top: 1px solid var(--neo-border);
+      }
+
+      .details-content {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .detail-section {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--neo-border);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      body.light-mode .detail-section {
+        border-bottom-color: var(--border-subtle);
+      }
+
+      .detail-section:last-child {
+        border-bottom: none;
+      }
+
+      .detail-label {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: var(--neo-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .detail-text {
+        font-size: 0.85rem;
+        color: var(--neo-text-main);
+        line-height: 1.6;
+        opacity: 0.9;
+      }
+
+      .detail-text-mono {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--neo-border);
+        color: #a1a1aa;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      body.light-mode .detail-text-mono {
+        background: #f8fafc;
+        border-color: #e2e8f0;
+        color: #475569;
+      }
+
     /* --- HISTORY MODAL --- */
     .history-modal-overlay {
       position: fixed; inset: 0; z-index: 200;
@@ -473,6 +826,11 @@
       border: 2px solid rgba(255,255,255,0.3);
       border-top-color: #fff; border-radius: 50%;
       animation: spin 0.7s linear infinite;
+    }
+    
+    #startScanBtn .spinner {
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #000;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -615,45 +973,24 @@
 
       <div class="panel-content" style="flex:1;min-height:0;width:100%;overflow:hidden;">
         <!-- Vulnerabilities Tab -->
-        <div id="contentVulns" class="absolute inset-0 overflow-auto">
-          <table class="dash-table">
-            <thead><tr>
-              <th style="width:15%;">Severity</th>
-              <th style="width:35%;">Vulnerability</th>
-              <th style="width:auto;">Evidence / Location</th>
-            </tr></thead>
-            <tbody id="vulnTableBody">
-              <tr><td colspan="3" style="text-align:center;padding:4rem;color:var(--neo-text-muted);font-family:var(--font-mono);">WAITING FOR TELEMETRY...</td></tr>
-            </tbody>
-          </table>
+        <div id="contentVulns" class="absolute inset-0 overflow-auto" style="padding: 1.5rem;">
+          <div id="vulnTableBody" class="findings-list">
+            <div style="text-align:center;padding:4rem;color:var(--neo-text-muted);font-family:var(--font-mono);">WAITING FOR TELEMETRY...</div>
+          </div>
         </div>
 
         <!-- Recon Tab -->
         <div id="contentRecon" class="hidden absolute inset-0 overflow-auto">
-          <table class="dash-table">
-            <thead><tr>
-              <th style="width:20%;">Type</th>
-              <th style="width:30%;">Item</th>
-              <th style="width:auto;">Details</th>
-            </tr></thead>
-            <tbody id="reconTableBody">
-              <tr><td colspan="3" style="text-align:center;padding:4rem;color:var(--neo-text-muted);font-family:var(--font-mono);">WAITING FOR DATA...</td></tr>
-            </tbody>
-          </table>
+          <div id="reconTableBody" class="discovery-grid">
+            <div style="grid-column: 1 / -1; text-align:center;padding:4rem;color:var(--neo-text-muted);font-family:var(--font-mono);">WAITING FOR DATA...</div>
+          </div>
         </div>
 
         <!-- Network Tab -->
         <div id="contentNetwork" class="hidden absolute inset-0 overflow-auto">
-          <table class="dash-table">
-            <thead><tr>
-              <th style="width:15%;">Port</th>
-              <th style="width:25%;">Service</th>
-              <th style="width:auto;">Version / Banner</th>
-            </tr></thead>
-            <tbody id="networkTableBody">
-              <tr><td colspan="3" style="text-align:center;padding:4rem;color:var(--neo-text-muted);font-family:var(--font-mono);">WAITING FOR DATA...</td></tr>
-            </tbody>
-          </table>
+          <div id="networkTableBody" class="discovery-grid">
+            <div style="grid-column: 1 / -1; text-align:center;padding:4rem;color:var(--neo-text-muted);font-family:var(--font-mono);">WAITING FOR DATA...</div>
+          </div>
         </div>
 
         <!-- Tech Stack Tab -->

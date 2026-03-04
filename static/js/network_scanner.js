@@ -116,8 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
         let cleanedMessage = message.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*/, '').trim();
+        cleanedMessage = cleanedMessage.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
+        cleanedMessage = cleanedMessage.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '');
+        cleanedMessage = cleanedMessage.replace(/(\[[A-Z]+\])\s*\1/g, '$1');
+        cleanedMessage = cleanedMessage.trim();
 
-        let contentStyle = '';
+        if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
         if (cleanedMessage.includes('[!]') || cleanedMessage.includes('[x]')) {
             contentStyle = 'color:#ef4444';
         } else if (cleanedMessage.includes('[✓]') || cleanedMessage.includes('[+]')) {

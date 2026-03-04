@@ -80,8 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to append log messages
     function appendLog(message) {
+        let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
+        cleanedMessage = cleanedMessage.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '');
+        cleanedMessage = cleanedMessage.replace(/(\[[A-Z]+\])\s*\1/g, '$1');
+        cleanedMessage = cleanedMessage.trim();
+
+        if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
+
         const p = document.createElement('p');
-        p.textContent = message;
+        p.textContent = cleanedMessage;
         logOutput.appendChild(p);
         logOutput.scrollTop = logOutput.scrollHeight; // Scroll to bottom
     }

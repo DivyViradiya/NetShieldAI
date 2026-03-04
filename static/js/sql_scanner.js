@@ -113,8 +113,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Cleanup timestamps from message
         message = message.replace(/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/, '');
-        message = message.replace(/\[\d{2}:\d{2}:\d{2}\]\s*/g, '');
+        message = message.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '');
+        message = message.replace(/(\[[A-Z]+\])\s*\1/g, '$1');
         message = message.replace(/\s\s+/g, ' ');
+        message = message.trim();
+
+        if (!message || message === '|' || message.includes('deprecated method')) return;
 
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
