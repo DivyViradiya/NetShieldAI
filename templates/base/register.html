@@ -4,46 +4,65 @@
 
 {% block extra_css %}
 <style>
+  :root {
+    --neo-card: rgba(10, 10, 12, 0.85);
+    --neo-border: rgba(255, 255, 255, 0.1);
+    --neo-text-primary: #ffffff;
+    --neo-text-secondary: #888888;
+    --neo-text-label: #555555;
+    --neo-blue: #3b82f6;
+    --neo-card-hover: rgba(15, 15, 18, 0.6);
+    --bg-color: #000000;
+    --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+  body.light-mode {
+    --neo-card: #f8fafc;
+    --neo-border: #e2e8f0;
+    --neo-text-primary: #0f172a;
+    --neo-text-secondary: #64748b;
+    --neo-text-label: #94a3b8;
+    --neo-blue: #2563eb;
+    --neo-card-hover: #f1f5f9;
+    --bg-color: #ffffff;
+  }
+  /* Scope IBM Plex Sans to the register card only */
+  #registerForm, #registerForm *, .max-w-\[1000px\], .max-w-\[1000px\] * {
+    font-family: var(--font-ui);
+  }
   body.light-mode .alert-danger {
-    background-color: var(--severity-critical-bg) !important;
-    color: var(--severity-critical) !important;
-    border-color: var(--severity-critical) !important;
+    background-color: rgba(220,38,38,0.1) !important;
+    color: #dc2626 !important;
+    border-color: #dc2626 !important;
   }
   body.light-mode .alert-info {
-    background-color: var(--severity-low-bg) !important;
-    color: var(--severity-low) !important;
-    border-color: var(--severity-low) !important;
+    background-color: rgba(37,99,235,0.1) !important;
+    color: #2563eb !important;
+    border-color: #2563eb !important;
   }
-  body.light-mode .md\:flex.w-1/2 {
+  body.light-mode .md\:flex.w-1\/2 {
     background-image: none !important;
-    background-color: var(--bg-secondary) !important;
+    background-color: #f1f5f9 !important;
   }
 
   /* ── Mobile-only fixes ── */
   @media (max-width: 768px) {
-    /* Outer wrapper */
     .min-h-\[85vh\] {
       min-height: unset !important;
       padding: 1.25rem 1rem !important;
       align-items: flex-start !important;
     }
-    /* Card */
     .max-w-\[1000px\] {
       min-height: unset !important;
       border-radius: 14px !important;
     }
-    /* Form pane */
     .w-full.md\:w-1\/2.p-8 {
       padding: 1.5rem 1.25rem !important;
     }
-    /* Step header: reduce bottom margin */
     .mb-8 { margin-bottom: 1rem !important; }
-    /* Button row: ensure Back button doesn't collapse */
     .flex.gap-3.mt-8 {
       margin-top: 1.25rem !important;
       gap: 0.5rem !important;
     }
-    /* "Already have an account" link closer */
     .mt-6 { margin-top: 1rem !important; }
   }
 </style>

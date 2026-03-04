@@ -1606,3 +1606,20 @@ requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5
 2026-03-02 22:48:57 - INFO - Stream updated local session ID to: 62886be1-1f3e-48c1-9230-e6b1ac2cce84
 2026-03-02 22:53:43 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
 2026-03-02 22:53:45 - INFO - Stream updated local session ID to: f6addcf5-d2e2-4d0f-a875-4b9ff1c49ff3
+2026-03-02 23:00:24 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Read timed out. (read timeout=2)
+2026-03-02 23:01:22 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-03-02 23:01:26 - INFO - Stream updated local session ID to: 2e729b3d-028e-4529-83ab-7d6f026dc495
+2026-03-02 23:02:13 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 2e729b3d-028e-4529-83ab-7d6f026dc495
+2026-03-02 23:02:17 - INFO - AI Action Execution requested: nmap_scan with params {'timing': 4, 'target_ip': 'testphp.vulnweb.com', 'scan_type': 'default'}
+2026-03-02 23:02:17 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-02 23:46:04 - INFO - Sending api path-based analysis request to backend (Target: )
+2026-03-02 23:46:07 - INFO - Stored session ID from server: 4c14667a-429d-46c2-8be5-705d6af1684d
+2026-03-02 23:46:08 - INFO - Session switched via URL parameter to: 4c14667a-429d-46c2-8be5-705d6af1684d
+2026-03-02 23:53:44 - INFO - Sending api path-based analysis request to backend (Target: )
+2026-03-02 23:53:51 - INFO - Stored session ID from server: 73dabfd4-b320-46a2-b558-8e6061a768e8
+2026-03-02 23:53:52 - INFO - Session switched via URL parameter to: 73dabfd4-b320-46a2-b558-8e6061a768e8
+2026-03-02 23:55:50 - INFO - Sending api path-based analysis request to backend (Target: )
+2026-03-02 23:55:54 - INFO - Stored session ID from server: 7932bd68-7e19-47f4-a7b9-0dde4322104f
+2026-03-02 23:55:55 - INFO - Session switched via URL parameter to: 7932bd68-7e19-47f4-a7b9-0dde4322104f
+2026-03-02 23:56:41 - INFO - Session switched via URL parameter to: 7932bd68-7e19-47f4-a7b9-0dde4322104f
+2026-03-02 23:57:56 - INFO - Session switched via URL parameter to: 7932bd68-7e19-47f4-a7b9-0dde4322104f

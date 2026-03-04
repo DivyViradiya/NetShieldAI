@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from Services import report_manager
+from .tctr_engine import tctr_engine
 
 # --- CONFIGURATION ---
 # BASE_DIR should be at the root of the project (one level up from Services folder)
@@ -258,7 +259,6 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
 
     # Apply ML Threat Re-ranking
     try:
-        from .tctr_engine import tctr_engine
         for vuln in report_data.get("vulnerabilities", []):
             prediction_obj = tctr_engine.predict_risk(
                 vuln["title"], 

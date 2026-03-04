@@ -131,88 +131,129 @@ def setup_api_auth(zap, auth_token=None, user_id=None):
 
 # --- Core API Scan Logic ---
 
-def wait_for_zap(port, timeout=120, user_id=None):
+def _stream_zap_output(process, user_id, ready_event, port):
+    """Background thread: streams ZAP stdout, logs it, and signals when ZAP is ready."""
+    for line in iter(process.stdout.readline, ''):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        log(stripped, user_id)
+        # ZAP logs this when it's fully up and listening
+        if (f":{port}" in stripped and "listen" in stripped.lower()) or \
+           "ZAP is now listening" in stripped or \
+           "Started" in stripped and str(port) in stripped:
+            ready_event.set()
+    process.stdout.close()
+
+
+def wait_for_zap(port, timeout=240, user_id=None, ready_event=None):
+    """Waits for ZAP to accept connections. Uses ready_event for early detection if available."""
     start_time = time.time()
-    log(f"[*] Waiting for ZAP to initialize on port {port}...", user_id)
+    log(f"[*] Waiting for ZAP on port {port} (timeout: {timeout}s)...", user_id)
     while time.time() - start_time < timeout:
+        # Fast path: output thread detected the listening message
+        if ready_event and ready_event.is_set():
+            try:
+                with socket.create_connection(('127.0.0.1', port), timeout=2):
+                    log(f"[+] ZAP is active on port {port}.", user_id)
+                    return True
+            except:
+                pass  # Not quite ready yet despite the log message — keep polling
+
+        # Slow path: TCP polling
         try:
-            # [Win-FIX] Use 127.0.0.1 explicitly to avoid IPv6 resolution delays/failures
-            with socket.create_connection(('127.0.0.1', port), timeout=1): 
-                log(f"[+] ZAP is active and responding on port {port}.", user_id)
+            with socket.create_connection(('127.0.0.1', port), timeout=1):
+                log(f"[+] ZAP is active on port {port}.", user_id)
                 return True
-        except: 
+        except:
             time.sleep(2)
+
     log(f"[!] ZAP failed to respond on port {port} after {timeout} seconds.", user_id)
     return False
+
 
 def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=None):
     if not os.path.exists(ZAP_EXECUTABLE_PATH):
         log(f"Error: ZAP executable not found at {ZAP_EXECUTABLE_PATH}", user_id)
         return False
 
-    assigned_port = 0
+    # Get a free port (same pattern as zap_scanner.py)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(('', 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         assigned_port = s.getsockname()[1]
 
     unique_zap_dir = os.path.join(TEMP_DIR, f"user_{user_id}_{assigned_port}")
     os.makedirs(unique_zap_dir, exist_ok=True)
+    os.makedirs(TEMP_DIR, exist_ok=True)
 
     log(f"--- Initializing API Scanner (Port: {assigned_port}) ---", user_id, to_console=True)
+    log(f"[*] Target: {target_url} | Definition: {definition_url}", user_id)
 
     command = [
-        ZAP_EXECUTABLE_PATH, '-daemon', '-port', str(assigned_port), 
-        '-dir', unique_zap_dir, '-config', 'api.disablekey=true',
-        '-config', 'api.addrs.addr.name=.*', '-config', 'api.addrs.addr.regex=true'
+        ZAP_EXECUTABLE_PATH,
+        '-daemon',
+        '-silent',          # Skip GUI component init — much faster startup
+        '-port', str(assigned_port),
+        '-dir', unique_zap_dir,
+        '-config', 'api.disablekey=true',
+        '-config', 'api.addrs.addr.name=.*',
+        '-config', 'api.addrs.addr.regex=true',
+        '-config', 'connection.timeoutInSecs=10',
     ]
 
     process = None
     zap = None
+    reader_thread = None
+    ready_event = threading.Event()
+
     try:
-        log(f"[*] Launching ZAP process...", user_id)
-        
-        # [DEBUG] Capture ZAP raw output to identify boot issues
-        zap_log_file = os.path.join(TEMP_DIR, f"zap_raw_{user_id}_{assigned_port}.log")
-        os.makedirs(TEMP_DIR, exist_ok=True)
-        
-        # Use a context manager to open the file for the subprocess
-        f_log = open(zap_log_file, "w")
-        process = subprocess.Popen(command, stdout=f_log, stderr=subprocess.STDOUT, 
-                                   cwd=os.path.dirname(ZAP_EXECUTABLE_PATH),
-                                   creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == 'win32' else 0)
+        log(f"[*] Launching ZAP daemon...", user_id, to_console=True)
+
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            cwd=os.path.dirname(ZAP_EXECUTABLE_PATH),
+            bufsize=1,
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == 'win32' else 0
+        )
 
         with scan_lock:
-            active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time(), "log_file": zap_log_file}
+            active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
 
-        if not wait_for_zap(assigned_port, timeout=120, user_id=user_id): 
-            # If ZAP failed to start, grab the last part of its log
-            f_log.flush()
-            f_log.close()
-            try:
-                with open(zap_log_file, "r") as f_read:
-                    err_tail = f_read.read()[-1500:] 
-                    log(f"[!] ZAP STARTUP ERROR LOG:\n{err_tail}", user_id, level='ERROR')
-            except: pass
+        # Stream ZAP output in background so we can detect readiness from its logs
+        reader_thread = threading.Thread(
+            target=_stream_zap_output,
+            args=(process, user_id, ready_event, assigned_port),
+            daemon=True
+        )
+        reader_thread.start()
+
+        if not wait_for_zap(assigned_port, timeout=240, user_id=user_id, ready_event=ready_event):
+            log(f"[!] ZAP did not start. Check ZAP installation at: {ZAP_EXECUTABLE_PATH}", user_id, level='ERROR')
             return False
-        
-        f_log.close() # Close it if it actually started (or we just let ZAP keep the handle? 
-                      # Windows might locking issues if we try to close before ZAP finishes.)
-                      # Actually, subprocess.Popen increments the ref count on the file object.
-        
-        log(f"[*] Connecting to ZAP API...", user_id)
-        # [Win-FIX] Connect to 127.0.0.1 
-        zap = ZAPv2(proxies={'http': f'http://127.0.0.1:{assigned_port}', 'https': f'http://127.0.0.1:{assigned_port}'})
-        
+
+        log(f"[*] Connecting to ZAP API on port {assigned_port}...", user_id)
+        zap = ZAPv2(proxies={
+            'http': f'http://127.0.0.1:{assigned_port}',
+            'https': f'http://127.0.0.1:{assigned_port}'
+        })
+
         if auth_token:
             setup_api_auth(zap, auth_token, user_id)
 
+        # Import API definition
         if "graphql" in definition_url.lower() or "graphql" in target_url.lower():
             log("[STAGE] Importing GraphQL Schema...", user_id)
             zap.graphql.import_url(definition_url)
         else:
             log("[STAGE] Importing OpenAPI Definition...", user_id)
             zap.openapi.import_url(definition_url)
-        
+
         time.sleep(2)
 
         log(f"[STAGE] Starting Web Spider...", user_id)
@@ -224,9 +265,9 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
             log(f"[PROGRESS] {bracket} {status}%", user_id)
             time.sleep(2)
 
-        log(f"[STAGE] Starting Active Scan (Core Analysis)...", user_id)
+        log(f"[STAGE] Starting Active Scan...", user_id)
         scan_id = zap.ascan.scan(target_url)
-        
+
         last_progress = -1
         while True:
             current_progress = int(zap.ascan.status(scan_id))
@@ -235,16 +276,16 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
                 bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"
                 log(f"[PROGRESS] {bracket} {current_progress}%", user_id)
                 last_progress = current_progress
-            
             if current_progress >= 100:
                 break
             time.sleep(5)
-        
-        log("Generating report...", user_id)
+
+        log("Generating XML report...", user_id)
         xml_report = zap.core.xmlreport()
-        with open(report_path, 'w', encoding='utf-8') as f: 
+        with open(report_path, 'w', encoding='utf-8') as f:
             f.write(xml_report)
         return True
+
     except Exception as e:
         log(f"Scan Error: {e}", user_id, level='ERROR')
         return False
@@ -252,16 +293,16 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
         with scan_lock:
             if user_id in active_scans:
                 del active_scans[user_id]
-
-        if zap: 
+        if zap:
             try: zap.core.shutdown()
             except: pass
         if process:
             process.terminate()
             try: process.wait(timeout=5)
             except: process.kill()
-        if os.path.exists(unique_zap_dir): 
+        if os.path.exists(unique_zap_dir):
             shutil.rmtree(unique_zap_dir, ignore_errors=True)
+
 
 def parse_xml_report(report_file, user_id=None):
     if not os.path.exists(report_file): return None

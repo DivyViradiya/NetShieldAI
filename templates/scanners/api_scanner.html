@@ -947,7 +947,252 @@
         font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted);
         padding: 1rem; white-space: pre-wrap; overflow: auto; height: 100%;
       }
-  
+
+      /* --- FINDING CARD DESIGNS --- */
+      .findings-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding-bottom: 2rem;
+      }
+
+      .finding-card {
+        background: linear-gradient(145deg, rgba(15,15,18,0.8) 0%, rgba(5,5,5,0.9) 100%);
+        border: 1px solid var(--neo-border);
+        border-radius: var(--radius-sm);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+      }
+      
+      body.light-mode .finding-card {
+        background: var(--surface-primary);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      }
+
+      .finding-card:hover {
+        border-color: var(--accent-gradient, var(--neo-text-muted));
+        transform: translateY(-2px);
+      }
+      
+      .finding-header {
+        display: flex;
+        align-items: center;
+        padding: 1.25rem;
+        cursor: pointer;
+        position: relative;
+        background: transparent;
+        transition: background 0.2s ease;
+        min-height: 64px;
+      }
+      
+      .finding-card.expanded .finding-header {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      body.light-mode .finding-card.expanded .finding-header {
+        background: var(--bg-secondary);
+      }
+
+      .finding-header::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--accent-gradient, var(--neo-blue));
+        opacity: 0.8;
+      }
+
+      .risk-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.70rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        width: 100px;
+        flex-shrink: 0;
+      }
+
+      .risk-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        box-shadow: 0 0 8px currentColor;
+      }
+
+      .finding-title {
+        flex: 1;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--neo-text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0 1.5rem;
+      }
+
+      .score-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        margin-right: 1.5rem;
+      }
+
+      .score-label {
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        color: var(--neo-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 2px;
+      }
+
+      .score-val {
+        font-family: var(--font-mono);
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--neo-text-main);
+        line-height: 1;
+      }
+
+      .expand-icon {
+        color: var(--neo-text-muted);
+        transition: transform 0.3s ease;
+      }
+
+      .finding-card.expanded .expand-icon {
+        transform: rotate(180deg);
+        color: var(--neo-text-main);
+      }
+
+      .finding-details {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .finding-card.expanded .finding-details {
+        grid-template-rows: 1fr;
+        border-top: 1px solid var(--neo-border);
+      }
+
+      .details-content {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .detail-section {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--neo-border);
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      body.light-mode .detail-section {
+        border-bottom-color: var(--border-subtle);
+      }
+
+      .detail-section:last-child {
+        border-bottom: none;
+      }
+
+      .detail-label {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: var(--neo-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .detail-text {
+        font-size: 0.85rem;
+        color: var(--neo-text-main);
+        line-height: 1.6;
+        opacity: 0.9;
+      }
+
+      .detail-text-mono {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--neo-border);
+        color: #a1a1aa;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      body.light-mode .detail-text-mono {
+        background: #f8fafc;
+        border-color: #e2e8f0;
+        color: #475569;
+      }
+
+      .finding-url-link {
+        color: var(--neo-blue);
+        text-decoration: none;
+        word-break: break-all;
+      }
+      .finding-url-link:hover { text-decoration: underline; }
+
+      /* --- RISK GAUGE COMPONENT --- */
+      .risk-score-gauge {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .gauge-svg {
+        transform: rotate(-90deg);
+        width: 100%;
+        height: 100%;
+      }
+
+      .gauge-bg {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.1);
+        stroke-width: 3;
+      }
+
+      .gauge-fill {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-dasharray: 100, 100;
+        transition: stroke-dasharray 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease;
+      }
+
+      .gauge-val {
+        position: absolute;
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: var(--neo-text-main);
+      }
+
+      .gauge-low     { stroke: var(--neo-green); }
+      .gauge-medium  { stroke: var(--neo-amber); }
+      .gauge-high    { stroke: var(--neo-red); }
+      .gauge-critical { stroke: #ef4444; filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.5)); }
+
+
       /* Responsive */
       @media (max-width: 1200px) {
         .scan-overview-grid { grid-template-columns: 1fr; height: auto; }
@@ -1087,20 +1332,20 @@
             </div>
         </div>
 
-        <div class="control-row-bottom" style="margin-top: 0.5rem; justify-content: space-between; align-items: center;">
-            <div class="flex items-center gap-3" style="flex: 1;">
+        <div class="control-row-bottom" style="margin-top: 0.5rem; justify-content: space-between; align-items: center; flex-wrap: nowrap; gap: 0.5rem;">
+            <div class="flex items-center gap-3" style="flex: 1; min-width: 0; overflow: hidden;">
                 <div class="search-container" style="width: 100%;">
                     <span class="material-symbols-outlined search-icon" style="font-size: 1rem;">key</span>
                     <input type="password" id="authToken" class="dash-input" placeholder="AUTH TOKEN (OPTIONAL)..." style="padding: 0 1rem 0 2.25rem; height: 38px; font-size: 0.8rem; width: 100%;" />
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
-                <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em; margin-right: 1rem;">TARGET: <span id="lastScannedUrlDisplay" style="color: var(--neo-text-main);">---</span></div>
-                <div class="badge-pill" style="padding: 2px 6px; border-radius: 2px; font-size: 0.55rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green); margin-right: 1rem;">
+            <div class="flex items-center gap-2" style="flex-shrink: 0;">
+                <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em; white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">TARGET: <span id="lastScannedUrlDisplay" style="color: var(--neo-text-main);">---</span></div>
+                <div class="badge-pill" style="padding: 2px 6px; border-radius: 2px; font-size: 0.55rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green); flex-shrink: 0;">
                     <span id="scanStatus">READY</span>
                 </div>
-                <button id="startScanBtn" class="btn-dash btn-primary" title="Start Scan" style="min-width: 130px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 4px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                <button id="startScanBtn" class="btn-dash btn-primary" title="Start Scan" style="min-width: 130px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 4px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.25rem; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="font-size:1.1rem">bolt</span>
                     <span class="button-text">START SCAN</span>
                     <span class="spinner hidden"></span>
@@ -1159,13 +1404,13 @@
           </div>
           <div class="tab-pills">
             <div id="findingsTabBtn" class="tab-pill active">Security Findings</div>
-            <div id="rawTabBtn" class="tab-pill">Raw Console</div>
+            <div id="rawTabBtn" class="tab-pill">Raw JSON</div>
           </div>
         </div>
 
         <div class="panel-content" style="flex: 1; min-height: 0; width: 100%; overflow: hidden;">
           <div id="findingsContent" style="display: flex; flex-direction: column; width:100%; height:100%; padding:0; overflow: hidden;">
-<div id="openPortsTableBody" class="findings-list" style="padding: 1rem; height: 100%; overflow-y: auto;">
+<div id="findingsList" class="findings-list" style="padding: 1rem; height: 100%; overflow-y: auto;">
     <div class="w-full flex flex-col items-center justify-center animate-card" style="padding: 6rem 2rem;">
         <div class="ai-pulse-container" style="opacity: 0.3;">
             <div class="ai-pulse-ring"></div>
@@ -1177,7 +1422,7 @@
     </div>
 </div>
 </div>
-          <div id="rawContent" class="hidden h-full flex flex-col p-4">
+          <div id="rawContent" class="hidden" style="height: 100%; display: flex; flex-direction: column; padding: 1rem; overflow: hidden; box-sizing: border-box;">
             <div id="resultsContent" style="flex: 1; overflow: auto; padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); background: var(--neo-input); border-radius: 8px; border: 1px solid var(--neo-border); white-space: pre-wrap;">// Buffer Empty</div>
           </div>
         </div>
@@ -1203,7 +1448,7 @@
 
           <div class="flex flex-col gap-3">
             <div class="relative w-full">
-              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;" onclick="toggleDropdown('llmAnalysisOptions')">
+              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
                 <span>AI Analysis</span>
                 <span class="material-symbols-outlined">expand_more</span>
               </button>
@@ -1220,7 +1465,7 @@
               </div>
             </div>
 
-            <button id="downloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+            <button id="downloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.5;">
               <span>Export PDF</span>
               <span class="material-symbols-outlined">picture_as_pdf</span>
             </button>

@@ -12,6 +12,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 from Services import report_manager
+from .tctr_engine import tctr_engine
 
 # --- Configuration ---
 BASE_DIR = Path(__file__).parent.parent
@@ -106,7 +107,7 @@ def get_output_paths(output_dir=None, user_id=None, target=None):
         "source_code": user_temp / f"source_{scan_uuid}"
     }
 
-def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=None):
+def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=None, target=None):
     semgrep_cmd = get_semgrep_path()
     if not semgrep_cmd: return None
 
@@ -136,8 +137,14 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
                "."] # Scan extracted source root
         
         log(f"[*] Executing Semgrep scan engine...", user_id)
+        # Force UTF-8 for subprocess to prevent UnicodeEncodeError on Windows
+        env = os.environ.copy()
+        env["PYTHONUTF8"] = "1"
+        
+        start_time = time.time()
         # Use cwd to ensure relative paths in output
-        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', cwd=str(source_dir))
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', cwd=str(source_dir), env=env)
+        scan_duration = time.time() - start_time
 
         # Log Semgrep's summary from stderr (contains file count and finding summary)
         if result.stderr:
@@ -154,7 +161,7 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
             log(f"[!] Semgrep finished but no results file was generated.", user_id)
             return None
             
-        return parse_semgrep_results(raw_report_path, output_dir, user_id, target=target_input)
+        return parse_semgrep_results(raw_report_path, output_dir, user_id, target=target, scan_duration=scan_duration)
     except Exception as e:
         log(f"Scan Error: {e}", user_id)
         return None
@@ -165,7 +172,7 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
         if source_dir.exists(): shutil.rmtree(source_dir, ignore_errors=True)
         if raw_report_path.exists(): raw_report_path.unlink()
 
-def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None, target=None):
+def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None, target=None, scan_duration=None):
     paths = get_output_paths(output_dir, user_id, target=target)
     output_file = paths["parsed_json"]
     try:
@@ -175,6 +182,8 @@ def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None, target=N
         report = {
             "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "tool": "Semgrep OSS",
+            "target": target or "Unknown",
+            "scan_duration": scan_duration,
             "total_findings": 0,
             "severity_counts": {"ERROR": 0, "WARNING": 0, "INFO": 0},
             "findings": []
@@ -207,7 +216,6 @@ def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None, target=N
         
         # Apply ML Threat Re-ranking
         try:
-            from .tctr_engine import tctr_engine
             for finding in report["findings"]:
                 # Try to extract CWE from message or check_id
                 cwe_id = None

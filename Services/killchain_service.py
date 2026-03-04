@@ -314,13 +314,16 @@ class KillChainService:
     def _run_web_audit_phase(self, target, tools, results, queue_id, params):
         log(queue_id, "[PHASE] WEB AUDIT - Application Assessment", "PHASE")
 
-        log(queue_id, "[STAGE] Checking for Web Application Firewall (WAF)...", "STAGE")
-        waf_data = tools["waf"].detect(target)
-        results["web_audit"]["waf_detection"] = waf_data
-        if waf_data.get("has_waf"):
-            log(queue_id, f"[!] WAF Detected: {waf_data.get('waf_name')}. Scanning will be adjusted.", "WARNING")
-        else:
-            log(queue_id, "[+] No WAF detected.", "INFO")
+        # NOTE: WAF detection is handled separately in waf_detect_phase for profiles
+        # that include it. Only run here if it hasn't been run already.
+        if "waf_detection" not in results.get("web_audit", {}):
+            log(queue_id, "[STAGE] Checking for Web Application Firewall (WAF)...", "STAGE")
+            waf_data = tools["waf"].detect(target)
+            results["web_audit"]["waf_detection"] = waf_data
+            if waf_data.get("has_waf"):
+                log(queue_id, f"[!] WAF Detected: {waf_data.get('waf_name')}. Scanning will be adjusted.", "WARNING")
+            else:
+                log(queue_id, "[+] No WAF detected.", "INFO")
 
         log(queue_id, f"[STAGE] Crawling web application (Max Pages: {params.get('crawler_max_pages')})...", "STAGE")
         crawled_urls = tools["crawler"].crawl(
@@ -435,8 +438,9 @@ class KillChainService:
         with scan_lock:
             active_scans[queue_id] = {"target": target, "start_time": time.time(), "profile": profile_name, "aggression": aggression_level}
 
-        paths = {} # Initialize paths here to ensure it's always defined for finally block
+        paths = {}  # Always defined so finally block can reference it
         traffic_analyzer_started = False
+        start_time = time.time()  # Always defined so error handlers can reference it
 
         try:
             # Validate profile and aggression level
@@ -469,8 +473,6 @@ class KillChainService:
 
             log(queue_id, f"[START] Kill Chain Audit: {target} (Profile: {profile_name}, Aggression: {aggression_level})", "START")
             send_sse_event(queue_id, "scan_status", {"message": "Starting scan...", "phase": "Initialization"})
-            
-            start_time = time.time() # Capture start time for duration calculation
 
             domain = target.replace("http://", "").replace("https://", "").split("/")[0]
             try: 

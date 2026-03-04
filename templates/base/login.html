@@ -4,41 +4,59 @@
 
 {% block extra_css %}
 <style>
+  :root {
+    --neo-card: rgba(10, 10, 12, 0.85);
+    --neo-border: rgba(255, 255, 255, 0.1);
+    --neo-text-primary: #ffffff;
+    --neo-text-secondary: #888888;
+    --neo-text-label: #555555;
+    --neo-blue: #3b82f6;
+    --neo-card-hover: rgba(15, 15, 18, 0.6);
+    --bg-color: #000000;
+    --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+  body.light-mode {
+    --neo-card: #f8fafc;
+    --neo-border: #e2e8f0;
+    --neo-text-primary: #0f172a;
+    --neo-text-secondary: #64748b;
+    --neo-text-label: #94a3b8;
+    --neo-blue: #2563eb;
+    --neo-card-hover: #f1f5f9;
+    --bg-color: #ffffff;
+  }
+  /* Scope IBM Plex Sans to the card only — navbar unaffected */
+  #login-card, #login-card * { font-family: var(--font-ui); }
   body.light-mode .alert-danger {
-    background-color: var(--severity-critical-bg) !important;
-    color: var(--severity-critical) !important;
-    border-color: var(--severity-critical) !important;
+    background-color: rgba(220,38,38,0.1) !important;
+    color: #dc2626 !important;
+    border-color: #dc2626 !important;
   }
   body.light-mode .alert-info {
-    background-color: var(--severity-low-bg) !important;
-    color: var(--severity-low) !important;
-    border-color: var(--severity-low) !important;
+    background-color: rgba(37,99,235,0.1) !important;
+    color: #2563eb !important;
+    border-color: #2563eb !important;
   }
-  body.light-mode .md\:flex.w-1/2 {
+  body.light-mode .md\:flex.w-1\/2 {
     background-image: none !important;
-    background-color: var(--bg-secondary) !important;
+    background-color: #f1f5f9 !important;
   }
 
   /* ── Mobile-only fixes ── */
   @media (max-width: 768px) {
-    /* Outer wrapper: less padding & no forced full viewport height */
     .min-h-\[85vh\] {
       min-height: unset !important;
       padding: 1.25rem 1rem !important;
       align-items: flex-start !important;
     }
-    /* Card: no forced min-height */
     .max-w-\[1000px\] {
       min-height: unset !important;
       border-radius: 14px !important;
     }
-    /* Form pane: compact padding */
     .w-full.md\:w-1\/2.p-8 {
       padding: 1.5rem 1.25rem !important;
     }
-    /* Title spacing */
     #loginForm ~ p { margin-top: 1rem !important; }
-    /* Remember / Forgot row — stack on very small screens */
     @media (max-width: 400px) {
       .flex.items-center.justify-between.text-xs {
         flex-direction: column !important;
@@ -46,7 +64,6 @@
         gap: 0.5rem !important;
       }
     }
-    /* OAuth grid: single column */
     .grid.grid-cols-2.gap-4 {
       grid-template-columns: 1fr !important;
       gap: 0.5rem !important;

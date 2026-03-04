@@ -15,6 +15,7 @@ import psutil
 from datetime import datetime, timezone
 from pathlib import Path
 from Services import report_manager
+from .tctr_engine import tctr_engine
 
 # --- Configuration Paths ---
 BASE_DIR = Path(__file__).parent.parent
@@ -427,7 +428,6 @@ def detect_anomalies(analysis_report_data, target_ip, user_id=None):
 
     # Apply ML Threat Re-ranking to anomalies
     try:
-        from .tctr_engine import tctr_engine
         for category in ['port_scans', 'fragmentation_alerts', 'web_attacks']:
             if anomalies[category]:
                 for item in anomalies[category]:
@@ -470,7 +470,6 @@ def analyze_pcap_to_json(pcap_path, target_ip, max_packets=50, user_id=None):
     # Apply ML Reranking to dissected packets
     if packet_data:
         try:
-            from .tctr_engine import tctr_engine
             for p in packet_data:
                 layers = p.get('_source', {}).get('layers', {})
                 proto_full = layers.get('frame', {}).get('frame.protocols', "")

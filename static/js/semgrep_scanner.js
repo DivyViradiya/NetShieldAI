@@ -288,6 +288,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderMetadata(data) {
+        if (elements.metricTarget && data.target) {
+            elements.metricTarget.textContent = data.target;
+        }
+
         var html = '';
         var createItem = function(label, val, color) {
             return '<div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">' +
@@ -295,7 +299,8 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         html += createItem("Tool", data.tool || "Semgrep OSS");
-        html += createItem("Rulesets", "Security, Secrets, Flask", "#10b981");
+        html += createItem("Target", data.target || "Unknown Source");
+        html += createItem("Rulesets", "Security, Secrets, Python", "#10b981");
         html += createItem("Scan Date", data.scan_date || "Just now");
         
         elements.serverConfigDetails.innerHTML = html;
@@ -396,6 +401,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderDetailView(f, cleanPath) {
         if(!elements.findingsDetailSide) return;
 
+        // Derive severity display vars from the finding
+        var severity = f.severity || 'INFO';
+        var severityColor = severity === 'ERROR' ? '#ef4444' : (severity === 'WARNING' ? '#f97316' : '#3b82f6');
+
         // [NEW] Risk Score Rendering
         const rawScore = f.predicted_risk_score !== undefined ? f.predicted_risk_score : 0;
         const displayScore = (rawScore * 10).toFixed(1);
@@ -438,6 +447,39 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
+    // --- Tab Switching ---
+    (function setupTabs() {
+        var findingsBtn = document.getElementById('findingsTabBtn');
+        var rawBtn = document.getElementById('rawTabBtn');
+        var findingsContent = document.getElementById('findingsContent');
+        var rawContent = document.getElementById('rawContent');
+        var searchBar = document.getElementById('findingsSearchBar');
+        var copyBtn = document.getElementById('copyResultsBtn');
+        var countBadge = document.getElementById('filteredCountBadge');
+
+        if (!findingsBtn || !rawBtn) return;
+
+        findingsBtn.addEventListener('click', function() {
+            findingsBtn.classList.add('active');
+            rawBtn.classList.remove('active');
+            if (findingsContent) findingsContent.style.display = 'flex';
+            if (rawContent) rawContent.classList.add('hidden');
+            if (searchBar) searchBar.style.display = '';
+            if (copyBtn) copyBtn.classList.add('hidden');
+            if (countBadge) countBadge.style.display = '';
+        });
+
+        rawBtn.addEventListener('click', function() {
+            rawBtn.classList.add('active');
+            findingsBtn.classList.remove('active');
+            if (rawContent) rawContent.classList.remove('hidden');
+            if (findingsContent) findingsContent.style.display = 'none';
+            if (searchBar) searchBar.style.display = 'none';
+            if (copyBtn) copyBtn.classList.remove('hidden');
+            if (countBadge) countBadge.style.display = 'none';
+        });
+    })();
+
     // Add search listener
     var searchInput = document.getElementById('findingsSearch');
     if(searchInput) {
@@ -458,10 +500,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 var report = data.content;
                 window.currentSemgrepReport = report; // Store globally for filtering
                 
-                // Update Metrics
-                if (elements.metricTotal) elements.metricTotal.textContent = report.total_findings || 0;
-                if (elements.metricHigh) elements.metricHigh.textContent = (report.severity_counts && report.severity_counts.ERROR) || 0;
+                // Update Metrics (ensure UI doesn't say --- if we have data)
+                if (elements.metricTotal) elements.metricTotal.textContent = report.total_findings !== undefined ? report.total_findings : 0;
+                if (elements.metricHigh) elements.metricHigh.textContent = (report.severity_counts && report.severity_counts.ERROR) !== undefined ? report.severity_counts.ERROR : 0;
                 
+                if (report.scan_duration) {
+                     if (elements.metricDuration) elements.metricDuration.textContent = parseFloat(report.scan_duration).toFixed(1) + 's';
+                }
+
                 // Render
                 renderMetadata(report);
                 renderSeverityTable(report.severity_counts);
@@ -692,10 +738,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 // Check keywords for completion
-                if (message.includes("PDF report generated") || message.includes("Semgrep scan complete") || message.includes("Scan complete")) {
+                if (message.includes("PDF report generated") || 
+                    message.includes("Semgrep scan complete") || 
+                    message.includes("Scan complete") ||
+                    message.includes("READY_FOR_ANALYSIS")) {
+                    
                     updateStatus('Complete', 'success');
                     toggleSpinner(elements.initiateScanBtn, false);
-                    fetchAndDisplayReport();
+                    setTimeout(fetchAndDisplayReport, 1000); // Small delay to ensure file write
                 }
 
                 if (message.includes("EVENT:") || message.startsWith("EVENT:")) return;
@@ -704,9 +754,31 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    async function checkActiveScan() {
+        try {
+            const res = await fetch('/semgrep_scanner/status');
+            const data = await res.json();
+            
+            if (data.status === 'success' && data.is_running) {
+                appendLog('[*] Resuming active scan for: ' + data.target);
+                updateStatus('Scanning...', 'busy');
+                toggleSpinner(elements.initiateScanBtn, true);
+                if (elements.metricTarget) elements.metricTarget.textContent = data.target;
+                
+                // Show "Scanning" in findings list
+                if (elements.findingsListSide) {
+                    elements.findingsListSide.innerHTML = '<div style="text-align:center; padding:2rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">SCANNING IN PROGRESS...</div>';
+                }
+            }
+        } catch (e) {
+            console.error('Failed to check active scan:', e);
+        }
+    }
+
     // --- Init ---
     setTimeout(function() { appendLog('System Ready. Initializing Semgrep SAST Engine...'); }, 100);
     setupLogStream();
+    checkActiveScan(); // [NEW] Check if a scan is already running
     fetchAndDisplayReport(); 
     checkReportAvailability(); 
 }); 

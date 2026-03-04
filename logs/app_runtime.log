@@ -9045,3 +9045,1525 @@
 [2026-03-02 22:59:14] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
 [2026-03-02 22:59:14] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
 [2026-03-02 22:59:30] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-02 22:59:35] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-02 22:59:35] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-02 22:59:36] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-02 22:59:36] [INFO    ] [run] [+] Database schema verified.
+[2026-03-02 22:59:36] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-02 23:00:21] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-02 23:00:21] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-02 23:00:22] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-02 23:00:22] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:00:22] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-02 23:00:22] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-02 23:00:22] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-02 23:00:22] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:00:22] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-02 23:00:22] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:00:22] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:00:22] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:00:24] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:00:24] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-02 23:00:24] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:00:24] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-02 23:00:27] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-02 23:00:27] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:00:36] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:00:38] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:00:45] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:00:47] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:00:59] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-02 23:00:59] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:01:22] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-03-02 23:01:29] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:02:13] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-03-02 23:02:17] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:02:17] [INFO    ] [run] [>] POST /chatbot/execute_action from 127.0.0.1
+[2026-03-02 23:02:17] [INFO    ] [run] [>] POST /network_scanner/scan from 127.0.0.1
+[2026-03-02 23:02:17] [INFO    ] [network_scanner] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T4...
+[2026-03-02 23:02:17] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:02:17] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T4...
+[2026-03-02 23:02:17] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_7ddd9eda.txt 44.228.249.3
+[2026-03-02 23:02:48] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-02 23:02:48] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:02:49] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-02 23:02:49] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-02 23:02:49] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:02:49] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:03:03] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-02 23:03:03] [INFO    ] [network_scanner] [!] JSON report not found. Cannot generate PDF.
+[2026-03-02 23:03:04] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-02 23:03:04] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-02 23:03:09] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:03:09] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:03:09] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:03:09] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:03:09] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:03:09] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:06:06] [INFO    ] [run] [>] GET /api_scanner/report_history from 127.0.0.1
+[2026-03-02 23:09:50] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:09:50] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:09:50] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:09:50] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:09:50] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:09:50] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:09:59] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:09:59] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:09:59] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:09:59] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:09:59] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:09:59] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:10:03] [INFO    ] [run] [>] GET /api_scanner/report_history from 127.0.0.1
+[2026-03-02 23:10:20] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-02 23:10:20] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-02 23:10:20] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:10:49] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:10:49] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:10:50] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:10:50] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:10:50] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:10:50] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:10:51] [INFO    ] [run] [>] GET /api_scanner/report_history from 127.0.0.1
+[2026-03-02 23:12:28] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-02 23:12:28] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-02 23:12:28] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:12:47] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:12:47] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:12:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:12:48] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:12:48] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:12:48] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:12:48] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:12:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:13:00] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:13:00] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:13:00] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:13:00] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:13:00] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:13:00] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:13:00] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:13:00] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:13:44] [INFO    ] [run] [>] GET /api_scanner/report_history from 127.0.0.1
+[2026-03-02 23:14:31] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:14:31] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:14:31] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:14:31] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:14:31] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:14:31] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:14:31] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:14:31] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:16:42] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:16:42] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:16:42] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:16:42] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:16:42] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:16:42] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:16:42] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:16:42] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:18:34] [INFO    ] [run] [>] POST /api_scanner/clear_log from 127.0.0.1
+[2026-03-02 23:19:47] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:19:47] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:19:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:19:48] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:19:48] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:19:48] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:19:48] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:19:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:23:23] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:23:23] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:23:24] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:23:24] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:23:24] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:23:24] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:23:24] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:23:24] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:23:38] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:23:38] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:23:38] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:06] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:06] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:06] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:06] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:06] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:06] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:06] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:06] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:06] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:06] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:07] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:07] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:07] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:07] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:07] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:08] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:08] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:08] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:08] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:24:08] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:08] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:24:16] [INFO    ] [run] [>] GET /api_scanner/report_history from 127.0.0.1
+[2026-03-02 23:24:34] [INFO    ] [run] [>] POST /api_scanner/scan from 127.0.0.1
+[2026-03-02 23:24:34] [INFO    ] [api_scanner_bp] [*] API Scan requested for TARGET: https://petstore.swagger.io/v2 (Auth: Anonymous) by DivyaViradiya
+[2026-03-02 23:24:34] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:24:34] [INFO    ] [api_scanner] [*] Starting API Scan for http://TARGET: https://petstore.swagger.io/v2 (Auth: Anonymous)...
+[2026-03-02 23:24:34] [INFO    ] [api_scanner] [*] Using Definition: TARGET: https://petstore.swagger.io/v2/Swagger.json
+[2026-03-02 23:24:34] [INFO    ] [api_scanner] --- Initializing API Scanner (Port: 17688) ---
+[2026-03-02 23:26:52] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-02 23:26:52] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-02 23:26:52] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:28:07] [INFO    ] [run] [>] POST /api_scanner/clear_log from 127.0.0.1
+[2026-03-02 23:33:46] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-02 23:33:46] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-02 23:33:49] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:33:55] [INFO    ] [run] [>] POST /api_scanner/scan from 127.0.0.1
+[2026-03-02 23:33:55] [INFO    ] [api_scanner_bp] [*] API Scan requested for https://petstore.swagger.io/v2 (Auth: Anonymous) by DivyaViradiya
+[2026-03-02 23:33:55] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:33:55] [INFO    ] [api_scanner] [*] Starting API Scan for https://petstore.swagger.io/v2 (Auth: Anonymous)...
+[2026-03-02 23:33:55] [INFO    ] [api_scanner] [*] Using Definition: TARGET: https://petstore.swagger.io/v2/Swagger.json
+[2026-03-02 23:33:55] [INFO    ] [api_scanner] --- Initializing API Scanner (Port: 9323) ---
+[2026-03-02 23:33:55] [INFO    ] [api_scanner] [*] Launching ZAP daemon...
+[2026-03-02 23:33:56] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:33:56] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:33:59] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:33:59] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:33:59] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:33:59] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:33:59] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=True, Memory=True
+[2026-03-02 23:33:59] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:37:43] [INFO    ] [api_scanner] [+] JSON report saved.
+[2026-03-02 23:37:43] [INFO    ] [api_scanner] [*] Generating PDF report for https://petstore.swagger.io/v2...
+[2026-03-02 23:37:43] [INFO    ] [network_scanner] [*] Starting WeasyPrint PDF generation for ZAP: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\api_scanner\api_scanner_petstore_swagger_io_v2.pdf
+[2026-03-02 23:37:44] [INFO    ] [network_scanner] [+] ZAP PDF report saved successfully
+[2026-03-02 23:37:46] [INFO    ] [api_scanner] [+] PDF generated successfully.
+[2026-03-02 23:37:46] [INFO    ] [api_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS:https://petstore.swagger.io/v2
+[2026-03-02 23:37:46] [INFO    ] [api_scanner] [*] API Scan complete.
+[2026-03-02 23:37:46] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:37:46] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:37:46] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:40:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-02 23:40:50] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-02 23:40:50] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:40:54] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:40:54] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:40:54] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:42:29] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:42:29] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:44:19] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:44:19] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:44:20] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:44:20] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:44:20] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:44:20] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:44:20] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=True, Memory=False
+[2026-03-02 23:44:20] [WARNING ] [api_scanner_bp] [!] Stale API Scan detected for DivyaViradiya (ID: 94). Cleaning up...
+[2026-03-02 23:44:20] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:44:21] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:44:21] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:44:21] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:44:47] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:44:47] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:44:47] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:44:47] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:44:47] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:44:47] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:44:47] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:44:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:44:48] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:44:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:44:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:45:28] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:45:28] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:45:29] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:45:29] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:45:29] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:45:29] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:45:29] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:45:29] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:45:29] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:45:29] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:45:29] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:46:04] [INFO    ] [run] [>] POST /api_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-03-02 23:46:04] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-02 23:46:07] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:46:08] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-03-02 23:46:08] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-02 23:46:08] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-02 23:53:37] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:53:39] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-02 23:53:39] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-02 23:53:39] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:53:42] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:53:42] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:53:43] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:53:43] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:53:43] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:53:43] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:53:43] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:53:43] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:53:43] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:53:43] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:53:43] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:53:44] [INFO    ] [run] [>] POST /api_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-03-02 23:53:44] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-02 23:53:51] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:53:52] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-03-02 23:53:52] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-02 23:53:52] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-02 23:54:06] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:54:08] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:54:33] [INFO    ] [run] [>] POST /chatbot/delete_session from 127.0.0.1
+[2026-03-02 23:54:35] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-02 23:55:44] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-02 23:55:44] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-02 23:55:48] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-02 23:55:48] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-02 23:55:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:55:48] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:55:48] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-02 23:55:48] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-02 23:55:48] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-02 23:55:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:55:48] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-02 23:55:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:55:48] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:55:50] [INFO    ] [run] [>] POST /api_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-03-02 23:55:50] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-02 23:55:54] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-02 23:55:55] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-03-02 23:55:55] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-02 23:55:55] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-02 23:56:41] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-02 23:56:41] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-02 23:57:56] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-02 23:57:56] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-02 23:57:56] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-03 00:01:08] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:01:08] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:01:10] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:01:10] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:01:10] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:01:10] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:01:19] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:01:27] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:01:36] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:01:44] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:01:53] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:02:01] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:02:10] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:02:18] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:02:27] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:02:29] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:02:29] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:02:31] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:02:31] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:02:39] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:02:48] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:02:56] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:03:05] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:03:13] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:03:22] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:03:31] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:03:39] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:03:48] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:03:56] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:04:05] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:04:13] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:04:22] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:04:30] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:04:39] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:04:47] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:04:56] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:05:04] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:05:13] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:05:21] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:05:30] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:05:38] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:05:47] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:05:56] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:06:04] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:06:13] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:06:21] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:06:30] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:06:38] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:06:47] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:06:55] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:07:04] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:07:12] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:07:21] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:07:29] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:07:38] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:07:46] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:07:55] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:08:04] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:08:12] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:08:21] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:08:29] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:08:38] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:08:46] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:08:55] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:09:03] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:09:12] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:09:20] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:09:29] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:09:37] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:09:46] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:09:54] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:10:03] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:10:12] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:10:19] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:10:19] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:10:19] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:10:19] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:10:19] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:10:19] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:10:28] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:10:37] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:10:41] [INFO    ] [run] [>] POST /semgrep_scanner/scan from 127.0.0.1
+[2026-03-03 00:10:41] [INFO    ] [semgrep_scanner_bp] [*] Semgrep SAST Scan requested by DivyaViradiya
+[2026-03-03 00:10:43] [INFO    ] [semgrep_scanner] [*] Starting Semgrep SAST scan on NetShieldAI.zip (User: DivyaViradiya_1)...
+[2026-03-03 00:10:45] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:10:48] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:10:48] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:10:50] [INFO    ] [run] [>] GET /sql_scanner/ from 127.0.0.1
+[2026-03-03 00:10:50] [INFO    ] [run] [>] GET /sql_scanner/report from 127.0.0.1
+[2026-03-03 00:10:50] [INFO    ] [run] [>] GET /sql_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:10:50] [INFO    ] [run] [>] GET /sql_scanner/report from 127.0.0.1
+[2026-03-03 00:10:50] [INFO    ] [run] [>] GET /sql_scanner/report from 127.0.0.1
+[2026-03-03 00:10:50] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 00:10:50] [INFO    ] [run] [>] GET /sql_scanner/report from 127.0.0.1
+[2026-03-03 00:10:50] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 00:10:50] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 00:10:51] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 00:10:51] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 00:10:55] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:10:55] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:10:57] [INFO    ] [run] [>] GET /ssl_scanner/ from 127.0.0.1
+[2026-03-03 00:10:57] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-03-03 00:10:57] [INFO    ] [run] [>] GET /ssl_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:10:57] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-03-03 00:10:58] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:10:58] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:11:00] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-03 00:11:00] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:11:00] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-03 00:11:00] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-03 00:11:00] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-03 00:11:00] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:11:00] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:11:00] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-03 00:11:00] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-03 00:11:00] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-03 00:11:00] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-03 00:11:29] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:11:29] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:11:33] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:11:33] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:11:33] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:11:33] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:11:33] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:11:33] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:12:28] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:12:29] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:12:37] [INFO    ] [run] [>] GET /api_scanner/ from 127.0.0.1
+[2026-03-03 00:12:37] [INFO    ] [api_scanner_bp] [*] Accessing API Security Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:12:38] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-03 00:12:38] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-03 00:12:38] [INFO    ] [run] [>] GET /api_scanner/status from 127.0.0.1
+[2026-03-03 00:12:38] [INFO    ] [run] [>] GET /api_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:12:38] [DEBUG   ] [api_scanner_bp] [DEBUG] API Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:12:38] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-03 00:12:41] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:12:42] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:12:43] [INFO    ] [run] [>] GET /api_scanner/report_files from 127.0.0.1
+[2026-03-03 00:12:43] [INFO    ] [run] [>] GET /api_scanner/scan_results from 127.0.0.1
+[2026-03-03 00:12:48] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:12:48] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:12:48] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:12:48] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:12:48] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:12:48] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:13:55] [INFO    ] [run] [>] POST /semgrep_scanner/scan from 127.0.0.1
+[2026-03-03 00:13:55] [INFO    ] [semgrep_scanner_bp] [*] Semgrep SAST Scan requested by DivyaViradiya
+[2026-03-03 00:13:56] [INFO    ] [semgrep_scanner] [*] Starting Semgrep SAST scan on NetShieldAI.zip (User: DivyaViradiya_1)...
+[2026-03-03 00:14:32] [INFO    ] [run] [>] GET /semgrep_scanner/report_history from 127.0.0.1
+[2026-03-03 00:15:11] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:15:11] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:15:11] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:15:11] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:15:11] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:15:11] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:15:13] [INFO    ] [run] [>] POST /semgrep_scanner/clear_log from 127.0.0.1
+[2026-03-03 00:15:54] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 00:15:54] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 00:15:55] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:16:02] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 00:16:02] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 00:16:02] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:16:31] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 00:16:31] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 00:16:31] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:16:50] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:16:50] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:16:51] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:16:51] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:16:51] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:16:51] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=True, Memory=False
+[2026-03-03 00:16:51] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:16:51] [WARNING ] [semgrep_scanner_bp] [!] Stale Semgrep Scan detected for DivyaViradiya (ID: 97). Cleaning up...
+[2026-03-03 00:16:51] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:17:00] [INFO    ] [run] [>] POST /semgrep_scanner/scan from 127.0.0.1
+[2026-03-03 00:17:00] [INFO    ] [semgrep_scanner_bp] [*] Semgrep SAST Scan requested by DivyaViradiya
+[2026-03-03 00:17:01] [INFO    ] [semgrep_scanner] [*] Starting Semgrep SAST scan on NetShieldAI.zip (User: DivyaViradiya_1)...
+[2026-03-03 00:17:51] [INFO    ] [semgrep_scanner] [!] Semgrep scan failed for NetShieldAI.zip.
+[2026-03-03 00:19:03] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 00:19:03] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 00:19:04] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:19:04] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:19:04] [INFO    ] [run] [>] POST /semgrep_scanner/clear_log from 127.0.0.1
+[2026-03-03 00:19:04] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:19:05] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:19:05] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:19:05] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:19:05] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=True, Memory=False
+[2026-03-03 00:19:05] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:19:05] [WARNING ] [semgrep_scanner_bp] [!] Stale Semgrep Scan detected for DivyaViradiya (ID: 96). Cleaning up...
+[2026-03-03 00:19:05] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:19:28] [INFO    ] [run] [>] POST /semgrep_scanner/scan from 127.0.0.1
+[2026-03-03 00:19:28] [INFO    ] [semgrep_scanner_bp] [*] Semgrep SAST Scan requested by DivyaViradiya
+[2026-03-03 00:19:31] [INFO    ] [semgrep_scanner] [*] Starting Semgrep SAST scan on NetShieldAI.zip (User: DivyaViradiya_1)...
+[2026-03-03 00:21:06] [INFO    ] [semgrep_scanner] [+] Semgrep scan complete. Generating PDF report for NetShieldAI.zip...
+[2026-03-03 00:21:06] [INFO    ] [network_scanner] [*] Starting Semgrep PDF generation: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\semgrep_scanner\semgrep_scanner_NetShieldAI_zip.pdf
+[2026-03-03 00:21:07] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:21:07] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:21:27] [INFO    ] [network_scanner] [+] Semgrep PDF saved: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\semgrep_scanner\semgrep_scanner_NetShieldAI_zip.pdf
+[2026-03-03 00:21:28] [INFO    ] [semgrep_scanner] [+] PDF report generated
+[2026-03-03 00:21:28] [INFO    ] [semgrep_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS:NetShieldAI.zip
+[2026-03-03 00:21:29] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:21:29] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:21:29] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:21:34] [INFO    ] [run] [>] GET /semgrep_scanner/report_history from 127.0.0.1
+[2026-03-03 00:21:36] [INFO    ] [run] [>] GET /semgrep_scanner/download_pdf from 127.0.0.1
+[2026-03-03 00:23:05] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 00:23:06] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 00:23:06] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:23:06] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:23:06] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:23:06] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:23:06] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:23:06] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:23:55] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:23:55] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=True, Memory=False
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:23:55] [WARNING ] [semgrep_scanner_bp] [!] Stale Semgrep Scan detected for DivyaViradiya (ID: 56). Cleaning up...
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:23:55] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:25:08] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 00:25:08] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 00:25:08] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:25:08] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:25:08] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:25:08] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:25:08] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:25:08] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:25:45] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 00:25:45] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 00:25:45] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:25:45] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:25:45] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:25:45] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:25:45] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:25:45] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:33] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 00:26:33] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 00:26:34] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:26:34] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:26:34] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:26:34] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:26:34] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:36] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:26:36] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:26:36] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:36] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:26:36] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:26:36] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:36] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:37] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:26:37] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:26:37] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:37] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:26:37] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:37] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:49] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:26:49] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:26:49] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:26:49] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:26:49] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:26:49] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:26:49] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:50] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:50] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:51] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:26:51] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:26:51] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:51] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:26:51] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:26:51] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:27:52] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:27:53] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:27:59] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:28:00] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:28:00] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:28:00] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:28:00] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:28:01] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:28:01] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:28:02] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:28:02] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:28:04] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:28:05] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:28:05] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:28:05] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:31:19] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:31:19] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:31:20] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:31:20] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:31:20] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:31:20] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:31:20] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:31:20] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:31:20] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:31:21] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:31:21] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:31:21] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:31:21] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:31:21] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:31:21] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:31:43] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:31:44] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:31:50] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:31:51] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:31:50] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:31:51] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:31:51] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:31:59] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:32:00] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:32:00] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:32:00] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:32:00] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:32:04] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:32:04] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:32:04] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:32:04] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:32:05] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:32:06] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:32:07] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:32:07] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:32:07] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:32:07] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:32:09] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:32:09] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:32:09] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:35:16] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:35:16] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:35:16] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:35:16] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:35:16] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:35:16] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:35:16] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:35:16] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:35:16] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:35:17] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:35:17] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:35:17] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:35:17] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:35:17] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:35:17] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:02] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:38:02] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:38:11] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:38:13] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:38:13] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:38:15] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:38:18] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:20] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:38:20] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:21] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:38:21] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:21] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:38:21] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:22] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:22] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:44] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:38:44] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:38:44] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:38:44] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:38:44] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:38:44] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:38:44] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:44] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:45] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:47] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:38:47] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:38:47] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:49] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:38:49] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:38:49] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:39:01] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:39:01] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:39:02] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:39:02] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:39:02] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:39:02] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:39:02] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:39:02] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:39:02] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:39:03] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:39:04] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:39:04] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:39:04] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:39:04] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:39:04] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:22] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:40:22] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:40:24] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:40:24] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:40:24] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:40:24] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:24] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:40:24] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:24] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:25] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:40:25] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:40:25] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:25] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:40:25] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:25] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:38] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:40:38] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:40:44] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:40:45] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:40:45] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:40:45] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:45] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:40:46] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:49] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:40:49] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:51] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:40:51] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:51] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:40:52] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:40:52] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:43:25] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:43:25] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:43:25] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:43:25] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:43:25] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:43:25] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:43:25] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:43:25] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:43:25] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:43:26] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:43:26] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:43:26] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:43:26] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:43:26] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:43:26] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:44:18] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:44:18] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:44:19] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 00:44:19] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 00:44:20] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 00:44:20] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-03-03 00:44:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 00:44:28] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 00:44:29] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 00:44:34] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:44:34] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:44:36] [INFO    ] [run] [>] GET /ssl_scanner/ from 127.0.0.1
+[2026-03-03 00:44:36] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-03-03 00:44:36] [INFO    ] [run] [>] GET /ssl_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:44:36] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-03-03 00:44:37] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 00:44:37] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 00:44:39] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:44:39] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:44:39] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:44:39] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:44:39] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:44:40] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:44:40] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:44:40] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:44:40] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:44:41] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:44:41] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:44:41] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:44:41] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:44:41] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:44:41] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:45:21] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:45:21] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:45:22] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:45:22] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:45:22] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:45:22] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:45:22] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:45:22] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:45:22] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:45:23] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:45:23] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:45:23] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:45:23] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:45:23] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:45:23] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:47:15] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:47:15] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:47:15] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:47:16] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:47:15] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:47:16] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:47:16] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:47:16] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:47:16] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:47:17] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:47:17] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:47:17] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:47:17] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:47:17] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:47:17] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:49:52] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 00:49:52] [INFO    ] [semgrep_scanner_bp] [*] Accessing Source Code Scanner Page (User: DivyaViradiya)
+[2026-03-03 00:49:53] [INFO    ] [run] [>] GET /semgrep_scanner/status from 127.0.0.1
+[2026-03-03 00:49:53] [DEBUG   ] [semgrep_scanner_bp] [DEBUG] Semgrep Status check for DivyaViradiya: DB=False, Memory=False
+[2026-03-03 00:49:53] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:49:53] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:49:53] [INFO    ] [run] [>] GET /semgrep_scanner/log_stream from 127.0.0.1
+[2026-03-03 00:49:53] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:49:53] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:49:54] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:49:54] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:49:54] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:49:54] [INFO    ] [run] [>] GET /semgrep_scanner/report from 127.0.0.1
+[2026-03-03 00:49:54] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 00:49:54] [INFO    ] [run] [>] GET /semgrep_scanner/report_files from 127.0.0.1
+[2026-03-03 09:46:18] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-03 09:55:03] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-03 09:55:13] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 09:55:13] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 09:55:13] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-03 09:55:13] [INFO    ] [run] [+] Database schema verified.
+[2026-03-03 09:55:13] [INFO    ] [run] [*] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-03 09:55:52] [INFO    ] [run] [+] ML models ready.
+[2026-03-03 09:55:52] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-03 09:56:04] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 09:56:05] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:02:17] [INFO    ] [run] [>] GET /semgrep_scanner/ from 127.0.0.1
+[2026-03-03 10:02:17] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-03 10:02:17] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-03 10:08:50] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-03 10:08:50] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-03 10:08:50] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-03 10:08:51] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-03 10:08:51] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-03 10:08:51] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-03 10:08:54] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 10:08:54] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 10:08:56] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:08:56] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:08:57] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:08:57] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-03-03 10:08:57] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:05] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:14] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:22] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:50] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:09:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:08] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:17] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:26] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:35] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:44] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:10:53] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:11:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:11:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:11:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:11:11] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:11:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:11:20] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:11:25] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-03 10:11:25] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-03 10:11:26] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:12:00] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-03 10:12:00] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-03 10:12:38] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-03 10:12:38] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-03 10:14:31] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-03 10:14:31] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-03 10:15:14] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-03 10:15:14] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-03 10:15:14] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-03 10:15:14] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-03 10:15:15] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-03 10:16:01] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:17:17] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-03 10:17:18] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-03 10:17:28] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-03 10:17:29] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:17:50] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-03 10:17:50] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-03 10:17:50] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:17:50] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:17:50] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:17:51] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:17:51] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:18:17] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 10:18:17] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-03 10:18:18] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-03 10:18:19] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-03 10:18:19] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:18:29] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-03 10:18:29] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-03 10:18:30] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-03 10:18:58] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:19:01] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-03 10:19:01] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-03 10:19:01] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:19:01] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:19:02] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:19:02] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:19:02] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:19:03] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 10:19:03] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 10:20:18] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 10:20:18] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 10:20:46] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 10:20:46] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 10:20:58] [INFO    ] [run] [>] GET /account/settings from 127.0.0.1
+[2026-03-03 10:21:03] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 10:21:03] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 10:21:09] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-03-03 10:21:09] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-03 10:21:09] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-03-03 10:21:09] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-03-03 10:21:09] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-03 10:21:09] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-03 10:21:12] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 10:21:12] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 10:21:23] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-03 10:21:23] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-03 10:21:23] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:21:23] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:21:23] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:21:23] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:21:23] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:21:39] [INFO    ] [run] [>] GET /logout from 127.0.0.1
+[2026-03-03 10:21:39] [INFO    ] [auth_bp] [*] User Logout: DivyaViradiya
+[2026-03-03 10:21:39] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-03 10:21:39] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-03 10:21:48] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-03 10:21:48] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-03 10:21:48] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-03 10:21:49] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-03 10:21:49] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-03 10:21:49] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-03 10:22:02] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-03 10:22:02] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-03 10:22:02] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-03 10:22:02] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-03 10:22:02] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-03 10:22:02] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-03 10:22:02] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-03 10:22:17] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 10:22:17] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 10:22:23] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:22:23] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:22:23] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:22:23] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-03-03 10:22:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:22:32] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:22:41] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:22:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:27:05] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 10:27:05] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:27:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 10:27:50] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:28:21] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:28:21] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:28:23] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:28:23] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-03-03 10:28:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:28:31] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:28:37] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 10:28:40] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:28:49] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:30:28] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:30:28] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:30:28] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:30:28] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-03-03 10:30:28] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:30:37] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:30:45] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:30:54] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:31:58] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:31:58] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:31:59] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:31:59] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-03-03 10:31:59] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:32:07] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:32:16] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:32:24] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:34:41] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 10:34:41] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:34:42] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:34:42] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:34:44] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:34:44] [WARNING ] [killchain_bp] [!] Stale 'Running' scan found for DivyaViradiya_1 — marking as Failed.
+[2026-03-03 10:34:44] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 10:35:19] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-03 10:35:26] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 10:35:26] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:35:26] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-03 10:35:26] [INFO    ] [run] [+] Database schema verified.
+[2026-03-03 10:35:26] [INFO    ] [run] [*] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-03 10:35:54] [INFO    ] [run] [+] ML models ready.
+[2026-03-03 10:35:54] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-03 10:36:04] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 10:36:04] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:36:04] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:36:04] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:36:05] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:36:05] [WARNING ] [killchain_bp] [!] Stale 'Running' scan found for DivyaViradiya_1 — marking as Failed.
+[2026-03-03 10:36:05] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 10:36:09] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:36:09] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:36:09] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:36:09] [WARNING ] [killchain_bp] [!] Stale 'Running' scan found for DivyaViradiya_1 — marking as Failed.
+[2026-03-03 10:36:09] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 10:36:15] [INFO    ] [run] [>] POST /killchain/dispatch from 127.0.0.1
+[2026-03-03 10:36:15] [INFO    ] [killchain_bp] [35m[*] Kill Chain Audit requested for testphp.vulnweb.com by DivyaViradiya[0m
+[2026-03-03 10:38:23] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 10:38:23] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:38:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 10:38:34] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:38:48] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:38:48] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:38:49] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:38:49] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 10:38:51] [INFO    ] [run] [>] POST /killchain/dispatch from 127.0.0.1
+[2026-03-03 10:38:51] [INFO    ] [killchain_bp] [35m[*] Kill Chain Audit requested for testphp.vulnweb.com by DivyaViradiya[0m
+[2026-03-03 10:38:51] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:38:53] [INFO    ] [killchain_service] [START] [START] Kill Chain Audit: testphp.vulnweb.com (Profile: Full Scan, Aggression: Normal)
+[2026-03-03 10:38:53] [INFO    ] [killchain_service] [INFO] [+] Resolved testphp.vulnweb.com to IP: 44.228.249.3
+[2026-03-03 10:38:53] [INFO    ] [killchain_service] [INFO] [SETUP] Starting background traffic capture...
+[2026-03-03 10:38:53] [INFO    ] [traffic_analyzer]    [*] TShark: Flight Recorder started on 44.228.249.3...
+[2026-03-03 10:38:53] [INFO    ] [killchain_service] [PHASE] [PHASE] RECONNAISSANCE - Surface Area Discovery
+[2026-03-03 10:38:53] [INFO    ] [killchain_service] [STAGE] [STAGE] Scanning for subdomains and active hosts...
+[2026-03-03 10:38:53] [INFO    ] [recon] [*] Searching for subdomains for: testphp.vulnweb.com...
+[2026-03-03 10:38:53] [INFO    ] [recon]    [>] Querying crt.sh...
+[2026-03-03 10:38:54] [INFO    ] [recon]    [+] crt.sh found 0 potential subdomains.
+[2026-03-03 10:38:54] [INFO    ] [recon]    [>] Querying HackerTarget...
+[2026-03-03 10:38:55] [INFO    ] [recon]    [+] HackerTarget found 1 subdomains.
+[2026-03-03 10:38:55] [INFO    ] [recon]    [>] Querying Wayback Machine (Archive.org)...
+[2026-03-03 10:38:57] [INFO    ] [recon]    [+] Wayback Machine added 0 historical subdomains.
+[2026-03-03 10:38:57] [INFO    ] [killchain_service] [INFO] [+] Found 1 potential subdomains.
+[2026-03-03 10:38:57] [INFO    ] [killchain_service] [STAGE] [STAGE] Resolving subdomain IPs...
+[2026-03-03 10:38:57] [INFO    ] [recon]    [>] Attempting DNS Zone Transfer (AXFR) on vulnweb.com...
+[2026-03-03 10:40:01] [INFO    ] [recon] [*] Resolving IPs for 1 subdomains...
+[2026-03-03 10:40:01] [INFO    ] [killchain_service] [INFO] [+] Resolved 1 host IPs.
+[2026-03-03 10:40:01] [INFO    ] [killchain_service] [STAGE] [STAGE] Detecting target technology stack...
+[2026-03-03 10:40:01] [INFO    ] [tech_detector] [*] Fingerprinting Technology for testphp.vulnweb.com...
+[2026-03-03 10:40:02] [INFO    ] [killchain_service] [INFO] [+] Detected technologies: Server, Language
+[2026-03-03 10:40:02] [INFO    ] [killchain_service] [PHASE] [PHASE] NETWORK AUDIT - Infrastructure Assessment
+[2026-03-03 10:40:02] [INFO    ] [killchain_service] [INFO] [+] Resolved testphp.vulnweb.com to IP: 44.228.249.3
+[2026-03-03 10:40:02] [INFO    ] [killchain_service] [STAGE] [STAGE] Running Nmap standard scan on 44.228.249.3...
+[2026-03-03 10:40:02] [INFO    ] [scanner] [*] Starting Nmap standard scan on 44.228.249.3...
+[2026-03-03 10:40:42] [INFO    ] [scanner]    [+] Performing Instant Banner Grab on open TCP ports...
+[2026-03-03 10:40:42] [INFO    ] [killchain_service] [INFO] [+] Nmap scan completed. Found 1 open ports.
+[2026-03-03 10:40:42] [INFO    ] [killchain_service] [STAGE] [STAGE] Attempting brute-force on open services (Level: normal)...
+[2026-03-03 10:40:42] [INFO    ] [network_exploiter] [*] Starting Brute Force Engine on 44.228.249.3...
+[2026-03-03 10:40:43] [INFO    ] [killchain_service] [INFO] [+] No exploitable services found or brute-force failed.
+[2026-03-03 10:40:43] [INFO    ] [killchain_service] [PHASE] [PHASE] WAF DETECTION
+[2026-03-03 10:40:43] [INFO    ] [killchain_service] [STAGE] [STAGE] Checking for Web Application Firewall (WAF)...
+[2026-03-03 10:40:43] [INFO    ] [waf_detector] [*] Checking for WAF/CDN on testphp.vulnweb.com...
+[2026-03-03 10:40:44] [INFO    ] [waf_detector]    [>] Sending provocation payloads (SQLi, XSS, LFI)...
+[2026-03-03 10:40:46] [INFO    ] [waf_detector]    [>] Testing for Rate Limiting (10 requests)...
+[2026-03-03 10:40:49] [INFO    ] [killchain_service] [INFO] [+] No WAF detected.
+[2026-03-03 10:40:49] [INFO    ] [killchain_service] [PHASE] [PHASE] WEB AUDIT - Application Assessment
+[2026-03-03 10:40:49] [INFO    ] [killchain_service] [STAGE] [STAGE] Crawling web application (Max Pages: 200)...
+[2026-03-03 10:40:49] [INFO    ] [crawler] [*] Starting Multi-Threaded Crawler on: testphp.vulnweb.com
+[2026-03-03 10:40:50] [INFO    ] [crawler]  [>] Pages Processed: 1 | Active Threads: 12
+[2026-03-03 10:40:50] [INFO    ] [crawler]  [>] Pages Processed: 2 | Active Threads: 11
+[2026-03-03 10:40:51] [INFO    ] [crawler]  [>] Pages Processed: 3 | Active Threads: 13
+[2026-03-03 10:40:51] [INFO    ] [crawler]  [>] Pages Processed: 7 | Active Threads: 13
+[2026-03-03 10:40:51] [INFO    ] [crawler]  [>] Pages Processed: 9 | Active Threads: 14
+[2026-03-03 10:40:51] [INFO    ] [crawler]  [>] Pages Processed: 11 | Active Threads: 13
+[2026-03-03 10:40:51] [INFO    ] [crawler]  [>] Pages Processed: 14 | Active Threads: 13
+[2026-03-03 10:40:51] [INFO    ] [crawler]  [>] Pages Processed: 16 | Active Threads: 12
+[2026-03-03 10:40:52] [INFO    ] [crawler]  [>] Pages Processed: 18 | Active Threads: 14
+[2026-03-03 10:40:52] [INFO    ] [crawler]  [>] Pages Processed: 21 | Active Threads: 23
+[2026-03-03 10:40:52] [INFO    ] [crawler]  [>] Pages Processed: 23 | Active Threads: 25
+[2026-03-03 10:40:52] [INFO    ] [crawler]  [>] Pages Processed: 24 | Active Threads: 24
+[2026-03-03 10:40:52] [INFO    ] [crawler]  [>] Pages Processed: 26 | Active Threads: 22
+[2026-03-03 10:40:53] [INFO    ] [crawler]  [>] Pages Processed: 27 | Active Threads: 22
+[2026-03-03 10:40:53] [INFO    ] [crawler]  [>] Pages Processed: 31 | Active Threads: 18
+[2026-03-03 10:40:53] [INFO    ] [crawler]  [>] Pages Processed: 32 | Active Threads: 17
+[2026-03-03 10:40:53] [INFO    ] [crawler]  [>] Pages Processed: 36 | Active Threads: 13
+[2026-03-03 10:40:54] [INFO    ] [crawler]  [>] Pages Processed: 37 | Active Threads: 12
+[2026-03-03 10:40:54] [INFO    ] [crawler]  [>] Pages Processed: 39 | Active Threads: 10
+[2026-03-03 10:40:54] [INFO    ] [crawler]  [>] Pages Processed: 40 | Active Threads: 9
+[2026-03-03 10:40:54] [INFO    ] [crawler]  [>] Pages Processed: 41 | Active Threads: 8
+[2026-03-03 10:40:54] [INFO    ] [crawler]  [>] Pages Processed: 43 | Active Threads: 6
+[2026-03-03 10:40:54] [INFO    ] [crawler]  [>] Pages Processed: 44 | Active Threads: 5
+[2026-03-03 10:40:54] [INFO    ] [crawler]  [>] Pages Processed: 45 | Active Threads: 4
+[2026-03-03 10:40:54] [INFO    ] [crawler]  [>] Pages Processed: 49 | Active Threads: 0
+[2026-03-03 10:40:54] [INFO    ] [crawler] 
+ [+] Crawl Complete.
+[2026-03-03 10:40:54] [INFO    ] [crawler]      - Pages: 49
+[2026-03-03 10:40:54] [INFO    ] [crawler]      - Params Found: 26
+[2026-03-03 10:40:54] [INFO    ] [crawler]      - Hidden APIs: 0
+[2026-03-03 10:40:54] [INFO    ] [crawler]      - Forms: 38
+[2026-03-03 10:40:54] [INFO    ] [killchain_service] [INFO] [+] Crawler found 26 URLs, 38 forms, and 0 API endpoints.
+[2026-03-03 10:40:54] [INFO    ] [killchain_service] [STAGE] [STAGE] Performing directory fuzzing (Max Depth: 2)...
+[2026-03-03 10:40:54] [INFO    ] [dir_fuzzer] [*] Starting Smart Fuzzing on testphp.vulnweb.com (Depth: 2)...
+[2026-03-03 10:40:55] [INFO    ] [dir_fuzzer]    [>] Generated 64 paths based on tech detected.
+[2026-03-03 10:40:56] [INFO    ] [dir_fuzzer]    [*] Found: /images (Status: 301, Len: 169)
+[2026-03-03 10:40:56] [INFO    ] [dir_fuzzer]    [*] Found: /admin (Status: 301, Len: 169)
+[2026-03-03 10:40:57] [INFO    ] [dir_fuzzer]    [+] Found: /login.php (Status: 200, Len: 5523)
+[2026-03-03 10:40:57] [INFO    ] [dir_fuzzer]    [>] Recursive Fuzzing inside: http://testphp.vulnweb.com/images/
+[2026-03-03 10:40:59] [INFO    ] [dir_fuzzer]    [>] Recursive Fuzzing inside: http://testphp.vulnweb.com/admin/
+[2026-03-03 10:41:02] [INFO    ] [killchain_service] [INFO] [+] Directory fuzzer found 3 potential paths.
+[2026-03-03 10:41:02] [INFO    ] [killchain_service] [STAGE] [STAGE] Running advanced web vulnerability checks...
+[2026-03-03 10:41:02] [INFO    ] [vuln_scanner] [*] Starting Advanced Vuln Scan on testphp.vulnweb.com...
+[2026-03-03 10:41:02] [INFO    ] [vuln_scanner] [*] Calibrating Soft 404 detection for http://testphp.vulnweb.com...
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [INFO] [+] Web vulnerability scanner found 3 findings.
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [STAGE] [STAGE] Running custom parameter injection scanner...
+[2026-03-03 10:41:10] [INFO    ] [custom_scanner] [*] Starting Deep Scan on testphp.vulnweb.com...
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [INFO] [+] Custom scanner found 0 findings.
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [STAGE] [STAGE] Running logic-based vulnerability checks...
+[2026-03-03 10:41:10] [INFO    ] [logic_scanner] [*] Starting Logic Scan on testphp.vulnweb.com...
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [INFO] [+] Logic scanner found 0 findings.
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [INFO] [SETUP] Stopping background traffic capture for analysis...
+[2026-03-03 10:41:10] [INFO    ] [traffic_analyzer]    [*] TShark: Stopping capture...
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [PHASE] [PHASE] TRAFFIC ANALYSIS - Post-Scan Forensics
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [STAGE] [STAGE] Analyzing captured network traffic...
+[2026-03-03 10:41:10] [ERROR   ] [killchain_service] [ERROR] [!] Traffic analysis encountered an error: No PCAP file generated.
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [PHASE] [PHASE] REPORT GENERATION - Finalizing Audit
+[2026-03-03 10:41:10] [INFO    ] [killchain_service] [STAGE] [STAGE] Applying ML Threat Re-ranking (TCTR)...
+[2026-03-03 10:41:32] [INFO    ] [killchain_service] [INFO] Generating Comprehensive Reports for testphp.vulnweb.com...
+[2026-03-03 10:41:32] [INFO    ] [network_scanner] [*] Starting Master Kill Chain PDF generation: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\killchain\reports\killchain_testphp_vulnweb_com.pdf
+[2026-03-03 10:41:33] [INFO    ] [network_scanner] [+] Master Kill Chain Report successfully generated
+[2026-03-03 10:41:34] [INFO    ] [killchain_service] [SUCCESS] AUDIT COMPLETED.
+[2026-03-03 10:41:34] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-03-03 10:41:34] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-03 10:41:35] [INFO    ] [killchain_service] [INFO] Scan context cleaned up.
+[2026-03-03 10:43:05] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 10:43:05] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:44:58] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:44:58] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:44:59] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:44:59] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 10:45:02] [INFO    ] [run] [>] POST /killchain/dispatch from 127.0.0.1
+[2026-03-03 10:45:02] [INFO    ] [killchain_bp] [35m[*] Kill Chain Audit requested for testphp.vulnweb.com by DivyaViradiya[0m
+[2026-03-03 10:45:02] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:45:04] [INFO    ] [killchain_service] [START] [START] Kill Chain Audit: testphp.vulnweb.com (Profile: Full Scan, Aggression: Normal)
+[2026-03-03 10:45:04] [INFO    ] [killchain_service] [INFO] [+] Resolved testphp.vulnweb.com to IP: 44.228.249.3
+[2026-03-03 10:45:04] [INFO    ] [killchain_service] [INFO] [SETUP] Starting background traffic capture...
+[2026-03-03 10:45:05] [INFO    ] [traffic_analyzer]    [*] TShark: Flight Recorder started on 44.228.249.3 (iface: 1)...
+[2026-03-03 10:45:05] [INFO    ] [killchain_service] [PHASE] [PHASE] RECONNAISSANCE - Surface Area Discovery
+[2026-03-03 10:45:05] [INFO    ] [killchain_service] [STAGE] [STAGE] Scanning for subdomains and active hosts...
+[2026-03-03 10:45:05] [INFO    ] [recon] [*] Searching for subdomains for: testphp.vulnweb.com...
+[2026-03-03 10:45:05] [INFO    ] [recon]    [>] Querying crt.sh...
+[2026-03-03 10:45:07] [INFO    ] [recon]    [+] crt.sh found 0 potential subdomains.
+[2026-03-03 10:45:07] [INFO    ] [recon]    [>] Querying HackerTarget...
+[2026-03-03 10:45:08] [INFO    ] [recon]    [+] HackerTarget found 1 subdomains.
+[2026-03-03 10:45:08] [INFO    ] [recon]    [>] Querying Wayback Machine (Archive.org)...
+[2026-03-03 10:45:24] [INFO    ] [recon]    [+] Wayback Machine added 0 historical subdomains.
+[2026-03-03 10:45:24] [INFO    ] [killchain_service] [INFO] [+] Found 1 potential subdomains.
+[2026-03-03 10:45:24] [INFO    ] [killchain_service] [STAGE] [STAGE] Resolving subdomain IPs...
+[2026-03-03 10:45:24] [INFO    ] [recon]    [>] Attempting DNS Zone Transfer (AXFR) on vulnweb.com...
+[2026-03-03 10:45:32] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 10:45:58] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 10:45:58] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 10:45:58] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:46:06] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 10:46:06] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 10:46:07] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 10:46:07] [WARNING ] [killchain_bp] [!] Stale 'Running' scan found for DivyaViradiya_1 — marking as Failed.
+[2026-03-03 10:46:08] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 10:46:12] [INFO    ] [run] [>] POST /killchain/dispatch from 127.0.0.1
+[2026-03-03 10:46:12] [INFO    ] [killchain_bp] [35m[*] Kill Chain Audit requested for testphp.vulnweb.com by DivyaViradiya[0m
+[2026-03-03 10:46:12] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-03 10:46:14] [INFO    ] [killchain_service] [START] [START] Kill Chain Audit: testphp.vulnweb.com (Profile: Full Scan, Aggression: Normal)
+[2026-03-03 10:46:14] [INFO    ] [killchain_service] [INFO] [+] Resolved testphp.vulnweb.com to IP: 44.228.249.3
+[2026-03-03 10:46:14] [INFO    ] [killchain_service] [INFO] [SETUP] Starting background traffic capture...
+[2026-03-03 10:46:15] [INFO    ] [traffic_analyzer]    [*] TShark: Flight Recorder started on 44.228.249.3 (iface: 1)...
+[2026-03-03 10:46:16] [INFO    ] [killchain_service] [PHASE] [PHASE] RECONNAISSANCE - Surface Area Discovery
+[2026-03-03 10:46:16] [INFO    ] [killchain_service] [STAGE] [STAGE] Scanning for subdomains and active hosts...
+[2026-03-03 10:46:16] [INFO    ] [recon] [*] Searching for subdomains for: testphp.vulnweb.com...
+[2026-03-03 10:46:16] [INFO    ] [recon]    [>] Querying crt.sh...
+[2026-03-03 10:46:16] [INFO    ] [recon]    [+] crt.sh found 0 potential subdomains.
+[2026-03-03 10:46:16] [INFO    ] [recon]    [>] Querying HackerTarget...
+[2026-03-03 10:46:17] [INFO    ] [recon]    [+] HackerTarget found 1 subdomains.
+[2026-03-03 10:46:17] [INFO    ] [recon]    [>] Querying Wayback Machine (Archive.org)...
+[2026-03-03 10:46:43] [INFO    ] [killchain_service] [INFO] [+] Found 1 potential subdomains.
+[2026-03-03 10:46:43] [INFO    ] [killchain_service] [STAGE] [STAGE] Resolving subdomain IPs...
+[2026-03-03 10:46:43] [INFO    ] [recon]    [>] Attempting DNS Zone Transfer (AXFR) on vulnweb.com...
+[2026-03-03 10:47:46] [INFO    ] [recon] [*] Resolving IPs for 1 subdomains...
+[2026-03-03 10:47:46] [INFO    ] [killchain_service] [INFO] [+] Resolved 1 host IPs.
+[2026-03-03 10:47:46] [INFO    ] [killchain_service] [STAGE] [STAGE] Detecting target technology stack...
+[2026-03-03 10:47:46] [INFO    ] [tech_detector] [*] Fingerprinting Technology for testphp.vulnweb.com...
+[2026-03-03 10:47:47] [INFO    ] [killchain_service] [INFO] [+] Detected technologies: Server, Language
+[2026-03-03 10:47:47] [INFO    ] [killchain_service] [PHASE] [PHASE] NETWORK AUDIT - Infrastructure Assessment
+[2026-03-03 10:47:47] [INFO    ] [killchain_service] [INFO] [+] Resolved testphp.vulnweb.com to IP: 44.228.249.3
+[2026-03-03 10:47:47] [INFO    ] [killchain_service] [STAGE] [STAGE] Running Nmap standard scan on 44.228.249.3...
+[2026-03-03 10:47:47] [INFO    ] [scanner] [*] Starting Nmap standard scan on 44.228.249.3...
+[2026-03-03 10:48:21] [INFO    ] [scanner]    [+] Performing Instant Banner Grab on open TCP ports...
+[2026-03-03 10:48:21] [INFO    ] [killchain_service] [INFO] [+] Nmap scan completed. Found 1 open ports.
+[2026-03-03 10:48:21] [INFO    ] [killchain_service] [STAGE] [STAGE] Attempting brute-force on open services (Level: normal)...
+[2026-03-03 10:48:21] [INFO    ] [network_exploiter] [*] Starting Brute Force Engine on 44.228.249.3...
+[2026-03-03 10:48:22] [INFO    ] [killchain_service] [INFO] [+] No exploitable services found or brute-force failed.
+[2026-03-03 10:48:22] [INFO    ] [killchain_service] [PHASE] [PHASE] WAF DETECTION
+[2026-03-03 10:48:22] [INFO    ] [killchain_service] [STAGE] [STAGE] Checking for Web Application Firewall (WAF)...
+[2026-03-03 10:48:22] [INFO    ] [waf_detector] [*] Checking for WAF/CDN on testphp.vulnweb.com...
+[2026-03-03 10:48:23] [INFO    ] [waf_detector]    [>] Sending provocation payloads (SQLi, XSS, LFI)...
+[2026-03-03 10:48:25] [INFO    ] [waf_detector]    [>] Testing for Rate Limiting (10 requests)...
+[2026-03-03 10:48:28] [INFO    ] [killchain_service] [INFO] [+] No WAF detected.
+[2026-03-03 10:48:28] [INFO    ] [killchain_service] [PHASE] [PHASE] WEB AUDIT - Application Assessment
+[2026-03-03 10:48:28] [INFO    ] [killchain_service] [STAGE] [STAGE] Crawling web application (Max Pages: 200)...
+[2026-03-03 10:48:28] [INFO    ] [crawler] [*] Starting Multi-Threaded Crawler on: testphp.vulnweb.com
+[2026-03-03 10:48:29] [INFO    ] [crawler]  [>] Pages Processed: 1 | Active Threads: 12
+[2026-03-03 10:48:29] [INFO    ] [crawler]  [>] Pages Processed: 2 | Active Threads: 11
+[2026-03-03 10:48:30] [INFO    ] [crawler]  [>] Pages Processed: 3 | Active Threads: 10
+[2026-03-03 10:48:30] [INFO    ] [crawler]  [>] Pages Processed: 7 | Active Threads: 13
+[2026-03-03 10:48:30] [INFO    ] [crawler]  [>] Pages Processed: 9 | Active Threads: 12
+[2026-03-03 10:48:30] [INFO    ] [crawler]  [>] Pages Processed: 11 | Active Threads: 13
+[2026-03-03 10:48:30] [INFO    ] [crawler]  [>] Pages Processed: 12 | Active Threads: 13
+[2026-03-03 10:48:30] [INFO    ] [crawler]  [>] Pages Processed: 13 | Active Threads: 13
+[2026-03-03 10:48:30] [INFO    ] [crawler]  [>] Pages Processed: 16 | Active Threads: 12
+[2026-03-03 10:48:31] [INFO    ] [crawler]  [>] Pages Processed: 17 | Active Threads: 11
+[2026-03-03 10:48:31] [INFO    ] [crawler]  [>] Pages Processed: 21 | Active Threads: 21
+[2026-03-03 10:48:31] [INFO    ] [crawler]  [>] Pages Processed: 22 | Active Threads: 21
+[2026-03-03 10:48:31] [INFO    ] [crawler]  [>] Pages Processed: 26 | Active Threads: 23
+[2026-03-03 10:48:31] [INFO    ] [crawler]  [>] Pages Processed: 28 | Active Threads: 21
+[2026-03-03 10:48:31] [INFO    ] [crawler]  [>] Pages Processed: 31 | Active Threads: 18
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 34 | Active Threads: 15
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 35 | Active Threads: 14
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 36 | Active Threads: 13
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 38 | Active Threads: 11
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 39 | Active Threads: 10
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 42 | Active Threads: 7
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 44 | Active Threads: 5
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 45 | Active Threads: 4
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 48 | Active Threads: 1
+[2026-03-03 10:48:32] [INFO    ] [crawler]  [>] Pages Processed: 49 | Active Threads: 0
+[2026-03-03 10:48:32] [INFO    ] [crawler] 
+ [+] Crawl Complete.
+[2026-03-03 10:48:32] [INFO    ] [crawler]      - Pages: 49
+[2026-03-03 10:48:32] [INFO    ] [crawler]      - Params Found: 26
+[2026-03-03 10:48:32] [INFO    ] [crawler]      - Hidden APIs: 0
+[2026-03-03 10:48:32] [INFO    ] [crawler]      - Forms: 38
+[2026-03-03 10:48:32] [INFO    ] [killchain_service] [INFO] [+] Crawler found 26 URLs, 38 forms, and 0 API endpoints.
+[2026-03-03 10:48:32] [INFO    ] [killchain_service] [STAGE] [STAGE] Performing directory fuzzing (Max Depth: 2)...
+[2026-03-03 10:48:32] [INFO    ] [dir_fuzzer] [*] Starting Smart Fuzzing on testphp.vulnweb.com (Depth: 2)...
+[2026-03-03 10:48:33] [INFO    ] [dir_fuzzer]    [>] Generated 64 paths based on tech detected.
+[2026-03-03 10:48:34] [INFO    ] [dir_fuzzer]    [*] Found: /images (Status: 301, Len: 169)
+[2026-03-03 10:48:34] [INFO    ] [dir_fuzzer]    [+] Found: /login.php (Status: 200, Len: 5523)
+[2026-03-03 10:48:35] [INFO    ] [dir_fuzzer]    [*] Found: /admin (Status: 301, Len: 169)
+[2026-03-03 10:48:36] [INFO    ] [dir_fuzzer]    [>] Recursive Fuzzing inside: http://testphp.vulnweb.com/images/
+[2026-03-03 10:48:38] [INFO    ] [dir_fuzzer]    [>] Recursive Fuzzing inside: http://testphp.vulnweb.com/admin/
+[2026-03-03 10:48:40] [INFO    ] [killchain_service] [INFO] [+] Directory fuzzer found 3 potential paths.
+[2026-03-03 10:48:40] [INFO    ] [killchain_service] [STAGE] [STAGE] Running advanced web vulnerability checks...
+[2026-03-03 10:48:40] [INFO    ] [vuln_scanner] [*] Starting Advanced Vuln Scan on testphp.vulnweb.com...
+[2026-03-03 10:48:40] [INFO    ] [vuln_scanner] [*] Calibrating Soft 404 detection for http://testphp.vulnweb.com...
+[2026-03-03 10:48:48] [INFO    ] [killchain_service] [INFO] [+] Web vulnerability scanner found 3 findings.
+[2026-03-03 10:48:48] [INFO    ] [killchain_service] [STAGE] [STAGE] Running custom parameter injection scanner...
+[2026-03-03 10:48:48] [INFO    ] [custom_scanner] [*] Starting Deep Scan on testphp.vulnweb.com...
+[2026-03-03 10:48:48] [INFO    ] [killchain_service] [INFO] [+] Custom scanner found 0 findings.
+[2026-03-03 10:48:48] [INFO    ] [killchain_service] [STAGE] [STAGE] Running logic-based vulnerability checks...
+[2026-03-03 10:48:48] [INFO    ] [logic_scanner] [*] Starting Logic Scan on testphp.vulnweb.com...
+[2026-03-03 10:48:48] [INFO    ] [killchain_service] [INFO] [+] Logic scanner found 0 findings.
+[2026-03-03 10:48:48] [INFO    ] [killchain_service] [INFO] [SETUP] Stopping background traffic capture for analysis...
+[2026-03-03 10:48:48] [INFO    ] [traffic_analyzer]    [*] TShark: Stopping capture...
+[2026-03-03 10:48:51] [INFO    ] [killchain_service] [PHASE] [PHASE] TRAFFIC ANALYSIS - Post-Scan Forensics
+[2026-03-03 10:48:51] [INFO    ] [killchain_service] [STAGE] [STAGE] Analyzing captured network traffic...
+[2026-03-03 10:48:51] [WARNING ] [traffic_analyzer]    [!] No PCAP data captured — traffic analysis skipped.
+[2026-03-03 10:48:51] [INFO    ] [killchain_service] [INFO] [+] Traffic analysis completed.
+[2026-03-03 10:48:51] [INFO    ] [killchain_service] [PHASE] [PHASE] REPORT GENERATION - Finalizing Audit
+[2026-03-03 10:48:51] [INFO    ] [killchain_service] [STAGE] [STAGE] Applying ML Threat Re-ranking (TCTR)...
+[2026-03-03 10:49:15] [INFO    ] [killchain_service] [INFO] Generating Comprehensive Reports for testphp.vulnweb.com...
+[2026-03-03 10:49:15] [INFO    ] [network_scanner] [*] Starting Master Kill Chain PDF generation: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\killchain\reports\killchain_testphp_vulnweb_com.pdf
+[2026-03-03 10:49:19] [INFO    ] [network_scanner] [+] Master Kill Chain Report successfully generated
+[2026-03-03 10:49:20] [INFO    ] [killchain_service] [SUCCESS] AUDIT COMPLETED.
+[2026-03-03 10:49:20] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-03-03 10:49:20] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-03 10:49:21] [INFO    ] [killchain_service] [INFO] Scan context cleaned up.
+[2026-03-03 10:49:54] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 14:07:51] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-03 14:08:40] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 14:08:41] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 14:08:41] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-03 14:08:41] [INFO    ] [run] [+] Database schema verified.
+[2026-03-03 14:08:41] [INFO    ] [run] [*] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-03 14:10:12] [INFO    ] [run] [+] ML models ready.
+[2026-03-03 14:10:12] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-03 14:10:31] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 14:10:32] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 14:14:47] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-03 14:14:55] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 14:14:55] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 14:14:55] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-03 14:14:55] [INFO    ] [run] [+] Database schema verified.
+[2026-03-03 14:14:55] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-03 14:14:55] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-03 14:15:02] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-03 14:15:02] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-03 14:15:06] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-03 14:15:06] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-03 14:15:09] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-03 14:15:09] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-03 14:15:18] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-03 14:15:18] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-03 14:15:19] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-03 14:15:19] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-03 14:15:19] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-03 14:15:19] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-03 14:15:22] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 14:15:22] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 14:15:25] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-03 14:15:25] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-03 14:15:25] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-03 14:15:25] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-03 14:15:30] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-03 14:15:31] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-03 14:15:32] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 14:15:32] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 14:15:33] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 14:15:33] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 14:15:34] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 14:15:34] [WARNING ] [killchain_bp] [!] Stale 'Running' scan found for DivyaViradiya_1 — marking as Failed.
+[2026-03-03 14:15:34] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 14:16:02] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 14:18:58] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-03 14:18:58] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-03 14:19:00] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-03 14:19:00] [WARNING ] [killchain_bp] [!] Stale 'Running' scan found for DivyaViradiya_1 — marking as Failed.
+[2026-03-03 14:19:00] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-03 14:19:00] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-03 14:19:26] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 14:19:26] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 14:19:30] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-03-03 14:19:30] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-03 14:19:30] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-03-03 14:19:30] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-03-03 14:19:30] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-03 14:19:31] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-03 14:19:32] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-03 14:19:32] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-03 14:19:34] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-03 14:19:34] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-03 14:19:34] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-03 14:19:34] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-03 14:19:41] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-03 14:19:47] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-04 08:34:05] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-04 08:34:33] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-04 08:34:33] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-04 08:34:33] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-04 08:34:33] [INFO    ] [run] [+] Database schema verified.
+[2026-03-04 08:34:33] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-04 08:34:33] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-04 08:34:41] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-04 08:34:41] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-04 08:35:58] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-04 08:39:30] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-04 08:39:30] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-04 08:39:40] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-04 08:39:40] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-04 08:39:49] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-04 08:39:49] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-04 08:39:49] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-04 08:39:49] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-04 08:39:49] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-04 08:39:49] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)

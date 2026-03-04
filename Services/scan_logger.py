@@ -17,39 +17,59 @@ def get_active_log_file(user_id, tool_name):
     os.makedirs(user_dir, exist_ok=True)
     return os.path.join(user_dir, f"{tool_name}_active.log")
 
+# Pattern to detect SSE event lines written by send_sse_event()
+# Format in log: [timestamp] [EVENT] EVENT: <event_name> | PAYLOAD: <json>
+import re as _re
+_SSE_EVENT_RE = _re.compile(r'\[EVENT\]\s+EVENT:\s+(\S+)\s+\|\s+PAYLOAD:\s+(.+)')
+
 def tail_log_file(user_id, tool_name):
     """
     Generator that tails the active log file for a user/tool.
     Yields new lines as they are written.
+    Named SSE events written by send_sse_event() are emitted as proper
+    'event: <name>\ndata: <payload>' SSE frames so JS EventSource.addEventListener
+    listeners receive them correctly.
     """
     log_file = get_active_log_file(user_id, tool_name)
     
-    # Wait for file to exist
+    # Wait for file to exist (up to 10 × 0.5 s = 5 s)
     tries = 0
     while not os.path.exists(log_file):
         time.sleep(0.5)
         tries += 1
-        if tries > 10: return # Give up if file doesn't appear
+        if tries > 10:
+            return  # Give up if file never appears
 
-    with open(log_file, "r") as f:
-        # Move to end if we only want new? No, we want full history for refresh.
-        # So we start from beginning.
+    with open(log_file, "r", encoding="utf-8", errors="replace") as f:
         while True:
-            # Check for file truncation (RC-FIX)
+            # Handle file truncation (new scan reset)
             try:
                 if os.path.exists(log_file) and os.path.getsize(log_file) < f.tell():
                     f.seek(0)
-            except:
+            except Exception:
                 pass
 
             line = f.readline()
             if line:
+                stripped = line.strip()
+                if not stripped:
+                    time.sleep(0.1)
+                    continue
                 try:
-                    yield f"data: {line.strip()}\n\n"
+                    # Check if this line encodes a named SSE event
+                    match = _SSE_EVENT_RE.search(stripped)
+                    if match:
+                        event_name = match.group(1)
+                        payload    = match.group(2)
+                        # Emit proper named SSE frame
+                        yield f"event: {event_name}\ndata: {payload}\n\n"
+                    else:
+                        # Regular log line — emit as plain data message
+                        yield f"data: {stripped}\n\n"
                 except (OSError, GeneratorExit):
-                    return # Client disconnected
+                    return  # Client disconnected
             else:
-                time.sleep(0.5) # Wait for new content
+                time.sleep(0.3)  # Wait for new content
 
 def sanitize_filename(target):
     r"""

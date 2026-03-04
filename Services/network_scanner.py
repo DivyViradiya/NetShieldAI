@@ -14,6 +14,7 @@ import json
 import uuid
 from pathlib import Path
 from Services import report_manager
+from .tctr_engine import tctr_engine
 
 # --- PHASE 2: Dynamic Path Setup ---
 # BASE_DIR should be at the root of the project (one level up from Services/network_scanner.py)
@@ -638,7 +639,6 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
     
     # Apply ML Threat Re-ranking
     try:
-        from .tctr_engine import tctr_engine
         for port in parsed_data["ports"]:
             prediction_obj = tctr_engine.predict_risk(
                 f"Service: {port['service']} ({port['port']}/{port['protocol']})", 
@@ -1045,7 +1045,6 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
 
         # Apply ML Threat Re-ranking for live data
         try:
-            from .tctr_engine import tctr_engine
             for p_obj in all_ports_list:
                  p_obj["predicted_risk_score"] = tctr_engine.predict_risk(
                     f"Service: {p_obj['service']} ({p_obj['port']}/{p_obj['protocol']})", 

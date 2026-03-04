@@ -1803,22 +1803,75 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 1. Load the sidebar session list
         await loadSessionList();
+
+        // 2. Check if we arrived from a scanner AI Analysis redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlSessionId = urlParams.get('session_id');
         
-        // 2. Restore history if an active session exists
+        // 3. Restore history if an active session exists
         if (window.ACTIVE_SESSION_ID && window.ACTIVE_SESSION_ID !== "None" && window.ACTIVE_SESSION_ID !== "") {
             console.log(`[*] Active session detected: ${window.ACTIVE_SESSION_ID}. Restoring...`);
             currentSessionId = window.ACTIVE_SESSION_ID;
-            await restoreSession();
+
+            // If we arrived via scanner redirect, poll until the LLM summary is ready
+            if (urlSessionId && urlSessionId === currentSessionId) {
+                await restoreSessionWithPolling();
+            } else {
+                await restoreSession();
+            }
         } else {
             console.log("[*] No active session. Waiting for user input.");
             ui.welcomeState.style.display = 'block';
             switchView('upload');
         }
         
-        // 3. Set a default model if not set
+        // 4. Set a default model if not set
         if (!ui.hiddenModelInput.value) {
             ui.hiddenModelInput.value = 'gemini-2.5-flash';
         }
+    }
+
+    /**
+     * Polls get_history up to MAX_POLL_ATTEMPTS times (every POLL_INTERVAL ms) 
+     * waiting for the LLM background summary to be stored.
+     * Shows a subtle "Generating AI Summary…" indicator while waiting.
+     */
+    async function restoreSessionWithPolling() {
+        const MAX_WAIT_MS = 45000;   // 45 seconds max
+        const POLL_INTERVAL_MS = 3000; // check every 3 seconds
+        const deadline = Date.now() + MAX_WAIT_MS;
+
+        // Show a placeholder so the user knows something is loading
+        ui.welcomeState.style.display = 'none';
+        ui.chatHistory.innerHTML = `
+            <div id="summary-loading-row" class="msg-row ai" style="justify-content:center; padding:2rem;">
+                <div class="msg-bubble" style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:1rem 1.5rem; border-radius:12px;">
+                    <span class="material-symbols-outlined spin" style="font-size:1.3rem; color:var(--neo-blue);">autorenew</span>
+                    <span style="font-size:0.8rem; color:var(--neo-text-muted); font-weight:600; letter-spacing:0.05em;">GENERATING AI SECURITY SUMMARY…</span>
+                </div>
+            </div>
+        `;
+
+        while (Date.now() < deadline) {
+            try {
+                const response = await fetchWithAuth('/chatbot/get_history');
+                const data = await response.json();
+                if (data.chat_history && data.chat_history.length > 0) {
+                    // History is ready — hand off to normal restoreSession
+                    ui.chatHistory.innerHTML = '';
+                    await restoreSession();
+                    return;
+                }
+            } catch (e) {
+                console.warn("[*] Polling get_history failed:", e);
+            }
+            // Wait before next poll
+            await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL_MS));
+        }
+
+        // Timed out — just do normal restore (may still be empty)
+        ui.chatHistory.innerHTML = '';
+        await restoreSession();
     }
 
     init();

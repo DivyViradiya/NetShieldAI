@@ -43,9 +43,13 @@
         --risk-info: var(--neo-blue);
         --status-online: var(--neo-green);
   
-        /* Radii - Sharp / Brutalist */
-        --radius-card: 0px;
-        --radius-sm: 0px;
+        /* Radii - Rounded / Modern */
+        --radius-card: 12px;
+        --radius-sm: 8px;
+
+        /* Shadows & Glows */
+        --shadow-blue: 0 0 15px rgba(59, 130, 246, 0.2);
+        --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
       }
   
       body.light-mode {
@@ -214,14 +218,14 @@
       
       /* --- COMPONENT: HUD CARDS (Shared Style) --- */
       .control-card, .metric-card, .dash-panel, .terminal-footer {
-        background: linear-gradient(165deg, #050505 0%, #000000 100%);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--neo-border);
+        background: rgba(10, 10, 12, 0.45);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: var(--radius-card);
         position: relative;
-        box-shadow: none;
-        transition: background 0.3s ease;
+        box-shadow: var(--shadow-glass);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
   
       body.light-mode .control-card, 
@@ -259,14 +263,15 @@
         margin-bottom: 0px;
         width: 100%;
         align-items: stretch;
+        height: 120px;  /* Fixed row height — cards never grow */
       }
   
       .main-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr) 340px; 
         gap: 0.5rem;
-        min-height: 600px;
         flex: 1;
+        min-height: 0;
         width: 100%;
       }
   
@@ -276,8 +281,8 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        min-height: 110px;
-        height: auto; 
+        height: 100%;       /* Fill the fixed scan-overview-grid row */
+        overflow: hidden;   /* Never grow beyond the row */
         z-index: 20;
       }
   
@@ -318,9 +323,9 @@
   
       .metrics-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr); /* Matches the 4-card HTML layout */
         gap: 0.5rem;
-        height: auto;
+        height: 100%;   /* Fill the fixed scan-overview-grid row */
         width: 100%;
       }
   
@@ -328,10 +333,9 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height: auto;
-        min-height: 110px;
-        padding: 0.85rem; 
+        height: 100%;    /* Fill the metrics-grid height exactly */
         overflow: hidden;
+        padding: 0.85rem; 
       }
   
       .metric-top {
@@ -428,9 +432,10 @@
         border-radius: var(--radius-sm);
         height: 48px;
         font-size: 0.85rem; 
-        transition: all 0.2s ease; 
+        transition: all 0.3s ease; 
         font-family: var(--font-mono);
         text-transform: uppercase;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
       }
   
       .dash-input:-webkit-autofill,
@@ -497,6 +502,7 @@
       .btn-primary:hover { 
         background: transparent; 
         color: var(--neo-text-main);
+        box-shadow: var(--shadow-blue);
       }
       
       .btn-danger-outline {
@@ -950,6 +956,7 @@
       @media (max-width: 1200px) {
         .scan-overview-grid { grid-template-columns: 1fr; height: auto; }
         .metrics-grid { height: auto; grid-template-columns: repeat(2, 1fr); }
+        .metric-card { height: auto; min-height: 100px; }
         .control-card { height: auto; }
         .main-grid { grid-template-columns: 1fr; height: auto; }
         .dash-panel { height: 500px; }
@@ -1055,118 +1062,168 @@
 
 {% block content %}
   <div class="dashboard-wrapper">
-    <!-- Top Bento Banner Block -->
+    <!-- Top Banner -->
     <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 1rem; min-height: auto;">
       <div class="scanner-title-area" style="margin: 0;">
         <h1 class="text-gradient" style="margin-bottom: 0.25rem;">Source Code <span style="color: var(--neo-green); -webkit-text-fill-color: initial;">Scanner</span></h1>
         <p style="color: var(--neo-text-muted); font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 12px;">
           <span style="height: 1px; width: 24px; background: var(--neo-blue); opacity: 0.5;"></span>
-          Static Application Security Testing (SAST)
+          Static Application Security Testing (SAST) · Powered by Semgrep OSS
         </p>
       </div>
-      
       <a href="{{ url_for('tools_hub') }}" class="btn-dash btn-secondary" style="height: 48px; width: auto; font-size: 0.75rem;">
         <span class="material-symbols-outlined" style="font-size: 1.1rem;">arrow_back</span>
         <span>Security Hub</span>
       </a>
     </div>
 
+    <!-- Command Center + Metrics -->
     <div class="scan-overview-grid">
+      <!-- Command Control Card -->
       <div class="control-card">
         <div class="control-row-top" style="gap: 0.5rem; flex-wrap: nowrap;">
-            <div class="search-container" style="flex: 2; min-width: 0;">
-                <span class="material-symbols-outlined search-icon" style="font-size: 1.1rem;">radar</span>
-                <input type="text" id="targetRepo" class="dash-input" placeholder="ENTER REPO PATH OR SELECT FOLDER..." style="padding: 0.5rem 1rem 0.5rem 2.25rem; height: 38px; font-size: 0.8rem; width: 100%;" />
-            </div>
+          <div class="search-container" style="flex: 2; min-width: 0;">
+            <span class="material-symbols-outlined search-icon" style="font-size: 1.1rem;">code</span>
+            <input type="text" id="gitUrlInput" class="dash-input"
+              placeholder="PASTE GIT URL OR UPLOAD ZIP..."
+              style="padding: 0.5rem 1rem 0.5rem 2.25rem; height: 38px; font-size: 0.8rem; width: 100%;" />
+          </div>
 
-            
-<select id="scanCategory" class="timing-select" title="Ruleset" style="flex: 1.5; min-width: 0; height: 38px;">
-    <option value="default" selected>AUTO DETECT</option>
-    <option value="p/ci">CI RULES</option>
-    <option value="p/security-audit">SECURITY AUDIT</option>
-    <option value="p/secrets">SECRETS MATCH</option>
-</select>
-<button id="folderSelectBtn" class="btn-dash btn-secondary" style="height: 38px; padding: 0 0.75rem; border-radius: 4px; border: 1px solid var(--neo-border); color: var(--neo-text-muted);">
-    <span class="material-symbols-outlined" style="font-size: 1.1rem;">folder_open</span>
-</button>
-<input type="file" id="targetDir" class="hidden" webkitdirectory directory multiple>
+          <select id="scanCategory" class="timing-select" title="Ruleset" style="flex: 1.5; min-width: 0; height: 38px;">
+            <option value="default" selected>AUTO DETECT</option>
+            <option value="p/ci">CI RULES</option>
+            <option value="p/security-audit">SECURITY AUDIT</option>
+            <option value="p/secrets">SECRETS MATCH</option>
+            <option value="p/python">PYTHON</option>
+          </select>
 
+          <!-- Hidden file input -->
+          <input type="file" id="fileUploadInput" class="hidden" accept=".zip" />
+
+          <!-- Upload Zip Button -->
+          <button id="triggerUploadBtn" class="btn-dash btn-secondary" title="Upload ZIP Archive"
+            style="height: 38px; padding: 0 0.75rem; flex-shrink: 0;">
+            <span class="material-symbols-outlined" style="font-size: 1.1rem;">upload_file</span>
+          </button>
+
+          <!-- Reset Button -->
+          <button id="resetScanBtn" class="btn-dash btn-secondary" title="Clear & Reset"
+            style="height: 38px; padding: 0 0.75rem; flex-shrink: 0;">
+            <span class="material-symbols-outlined" style="font-size: 1.1rem;">restart_alt</span>
+          </button>
         </div>
 
         <div class="control-row-bottom" style="margin-top: 0.5rem; justify-content: space-between; align-items: center;">
-            <div class="flex items-center gap-3">
-                <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">TARGET: <span id="localIpDisplay" style="color: var(--neo-text-main);">---</span></div>
-                <div class="badge-pill" style="padding: 2px 6px; border-radius: 2px; font-size: 0.55rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green);">
-                    <span id="scanStatus">READY</span>
-                </div>
+          <div class="flex items-center gap-3">
+            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">
+              STATUS: <span class="badge-pill" style="padding: 2px 8px; border-radius: 4px; font-size: 0.55rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green); margin-left: 6px;"><span id="scanStatus">READY</span></span>
             </div>
-
-            <div class="flex items-center gap-2 shrink-0">
-                <button 
-                <button id="scanBtn" class="btn-dash btn-primary" title="Start Scan" style="min-width: 120px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 4px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
-                    <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
-                    <span class="button-text">START SCAN</span>
-                    <span class="spinner hidden"></span>
-                </button>
-            </div>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button id="initiateScanBtn" class="btn-dash btn-primary" title="Start SAST Scan"
+              style="min-width: 130px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 8px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+              <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+              <span class="button-text">START SCAN</span>
+              <span class="spinner hidden"></span>
+            </button>
+          </div>
         </div>
       </div>
 
+      <!-- Metrics Grid (4 cards) -->
       <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-top">
-            <span class="metric-label">Threat Level</span>
+            <span class="metric-label">Target</span>
+            <div class="metric-icon-box"><span class="material-symbols-outlined">radar</span></div>
           </div>
-          <span id="threatLevelDisplay" class="metric-value" style="color: var(--status-unknown);">AWAITING</span>
-          <span class="metric-info">Risk Context</span>
+          <span id="metricTarget" class="metric-value" style="font-size: 0.9rem; word-break: break-all; margin: 0.5rem 0;">---</span>
+          <div class="metric-info"><span class="material-symbols-outlined" style="font-size:0.7rem;">folder_zip</span> Source</div>
         </div>
         <div class="metric-card">
           <div class="metric-top">
-            <span class="metric-label" style="color: var(--risk-med);">Files Analyzed</span>
+            <span class="metric-label" style="color: var(--neo-blue);">Findings</span>
+            <div class="metric-icon-box"><span class="material-symbols-outlined" style="color: var(--neo-blue);">bug_report</span></div>
           </div>
-          <span id="fileCountDisplay" class="metric-value" style="color: var(--risk-med);">0</span>
-          <span class="metric-info">Total Scanned</span>
+          <span id="metricTotal" class="metric-value" style="color: var(--neo-blue);">0</span>
+          <div class="metric-info"><span class="material-symbols-outlined" style="font-size:0.7rem;">checklist</span> Total</div>
         </div>
         <div class="metric-card">
           <div class="metric-top">
-            <span class="metric-label" style="color: var(--risk-high);">Findings</span>
+            <span class="metric-label" style="color: var(--neo-red);">Critical</span>
+            <div class="metric-icon-box"><span class="material-symbols-outlined" style="color: var(--neo-red);">warning</span></div>
           </div>
-          <span id="vulnCountDisplay" class="metric-value" style="color: var(--risk-high);">0</span>
-          <span class="metric-info">Vulnerable Lines</span>
+          <span id="metricHigh" class="metric-value" style="color: var(--neo-red);">0</span>
+          <div class="metric-info"><span class="material-symbols-outlined" style="font-size:0.7rem;">priority_high</span> ERROR / HIGH</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-top">
+            <span class="metric-label">Duration</span>
+            <div class="metric-icon-box"><span class="material-symbols-outlined">timer</span></div>
+          </div>
+          <span id="metricDuration" class="metric-value" style="font-size: 1.4rem;">---</span>
+          <div class="metric-info"><span class="material-symbols-outlined" style="font-size:0.7rem;">schedule</span> Scan Time</div>
         </div>
       </div>
     </div>
 
+    <!-- Main Grid -->
     <div class="main-grid">
-      <div class="dash-panel" style="display: flex; flex-direction: column; height: 100%;">
-        <div class="panel-header">
-          <span class="panel-title">Scan Results</span>
-          <div class="tab-pills"><div id="findingsTabBtn" class="tab-pill active">Code Findings</div><div id="rawTabBtn" class="tab-pill">Semgrep Log</div></div>
+
+      <!-- LEFT: Results Panel -->
+      <div class="dash-panel" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+        <div class="panel-header" style="gap: 0.5rem; flex-wrap: nowrap;">
+          <div class="flex items-center gap-3" style="flex-shrink: 0;">
+            <span class="panel-title">Scan Results</span>
+            <div class="tab-pills">
+              <div id="findingsTabBtn" class="tab-pill active">Code Findings</div>
+              <div id="rawTabBtn" class="tab-pill">JSON Output</div>
+            </div>
+          </div>
+          <!-- Search bar (visible on findings tab) -->
+          <div id="findingsSearchBar" class="search-container" style="flex: 1; max-width: 260px; margin-left: auto;">
+            <span class="material-symbols-outlined search-icon" style="font-size: 0.9rem;">search</span>
+            <input type="text" id="findingsSearch" class="dash-input"
+              placeholder="FILTER FINDINGS..."
+              style="height: 32px; font-size: 0.7rem; padding-left: 2rem;" />
+          </div>
+          <span id="filteredCountBadge" class="badge-pill" style="font-size: 0.6rem; flex-shrink: 0; display: none;"></span>
+          <!-- Copy button (visible on raw tab) -->
+          <button id="copyResultsBtn" class="btn-dash btn-secondary btn-icon-only hidden" style="height: 32px; width: 32px; flex-shrink: 0;" title="Copy JSON">
+            <span class="material-symbols-outlined" style="font-size: 1rem;">content_copy</span>
+          </button>
         </div>
 
-        <div class="panel-content" style="flex: 1; min-height: 0; width: 100%; overflow: hidden;">
-          <div id="findingsContent" style="display: flex; flex-direction: column; width:100%; height:100%; padding:0; overflow: hidden;">
-<div id="openPortsTableBody" class="findings-list" style="padding: 1rem; height: 100%; overflow-y: auto;">
-    <div class="w-full flex flex-col items-center justify-center animate-card" style="padding: 6rem 2rem;">
-        <div class="ai-pulse-container" style="opacity: 0.3;">
-            <div class="ai-pulse-ring"></div>
-            <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-text-muted);">code</span>
-        </div>
-        <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.2em; text-align: center;">
-            INITIATE A DAST SCAN TO VIEW VULNERABILITIES...
-        </div>
-    </div>
-</div>
-</div>
-          <div id="rawContent" class="hidden h-full flex flex-col p-4">
-            <div id="resultsContent" style="flex: 1; overflow: auto; padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); background: var(--neo-input); border-radius: 8px; border: 1px solid var(--neo-border); white-space: pre-wrap;">// Buffer Empty</div>
+        <div class="panel-content" style="flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+
+          <!-- Findings Tab: Split pane -->
+          <div id="findingsContent" style="display: flex; flex: 1; min-height: 0; overflow: hidden;">
+            <!-- LEFT: Findings list -->
+            <div id="findingsListSide" style="width: 38%; border-right: 1px solid var(--neo-border); overflow-y: auto; flex-shrink: 0; scrollbar-width: thin; scrollbar-color: #222 transparent;">
+              <div style="text-align:center; padding: 4rem 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">WAITING FOR CODE SCAN...</div>
+            </div>
+            <!-- RIGHT: Detail view -->
+            <div id="findingsDetailSide" style="flex: 1; overflow-y: auto; padding: 1.5rem; scrollbar-width: thin; scrollbar-color: #222 transparent;">
+              <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.2;">
+                <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem;">data_exploration</span>
+                <div style="font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">Select a finding to view analysis</div>
+              </div>
+            </div>
           </div>
+
+          <!-- Raw JSON Tab -->
+          <div id="rawContent" class="hidden" style="flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1rem; overflow: hidden;">
+            <div id="resultsContent" style="flex: 1; overflow: auto; font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); background: var(--neo-input); border-radius: 8px; border: 1px solid var(--neo-border); white-space: pre-wrap; padding: 1rem;">// Buffer Empty</div>
+          </div>
+
         </div>
       </div>
 
+      <!-- RIGHT: Sidebar -->
       <div class="flex flex-col gap-6" style="height: 100%; min-height: 0;">
-        <!-- INTELLIGENCE ACTIONS -->
-        <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1rem; overflow: visible !important;">
+
+        <!-- Intelligence Actions -->
+        <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1rem; overflow: visible !important; position: relative;">
           <div id="aiProcessingOverlay" class="processing-overlay hidden" style="overflow: hidden; border-radius: var(--radius-card);">
             <div class="ai-pulse-container">
               <div class="ai-pulse-ring"></div>
@@ -1174,22 +1231,21 @@
             </div>
             <span id="aiProcessingText" class="processing-text">INITIALIZING AI...</span>
           </div>
-          
+
           <div class="flex justify-between items-center mb-4">
             <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence</h5>
-            <button id="refreshResultsBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px; border-radius:6px;" title="Refresh Scan Data">
-                <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
+            <button id="refreshReportBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px; border-radius:6px;" title="Refresh Scan Data">
+              <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
             </button>
           </div>
 
           <div class="flex flex-col gap-3">
             <div class="relative w-full">
-              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;" onclick="toggleDropdown('llmAnalysisOptions')">
+              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
                 <span>AI Analysis</span>
                 <span class="material-symbols-outlined">expand_more</span>
               </button>
-
-              <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
+              <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown" style="z-index: 100;">
                 <a href="#" data-llm-mode="local" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
                   Local LLM (Private)
@@ -1206,42 +1262,56 @@
               <span class="material-symbols-outlined">picture_as_pdf</span>
             </button>
 
-            <button id="nmapHistoryBtn" class="btn-dash btn-secondary w-full justify-between">
+            <button id="semgrepHistoryBtn" class="btn-dash btn-secondary w-full justify-between">
               <span>Prior Scans</span>
               <span class="material-symbols-outlined">history</span>
             </button>
           </div>
         </div>
 
-        <!-- TARGET INTEL -->
-        <div class="dash-panel" style="flex: 1; min-height: 0; display: flex; flex-direction: column;">
+        <!-- Severity Summary -->
+        <div class="dash-panel" style="flex-shrink: 0; overflow: hidden;">
           <div class="panel-header" style="height: 44px;">
             <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">insights</span>
-                <span class="panel-title" style="font-size: 0.75rem;">Target Intel</span>
+              <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-amber);">bar_chart</span>
+              <span class="panel-title" style="font-size: 0.75rem;">Severity Breakdown</span>
             </div>
           </div>
-          <div class="panel-content overflow-auto" style="padding: 1.25rem;">
-            <div class="flex flex-col gap-4">
-                <div class="flex justify-between">
-                    <span style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800;">STACK</span>
-                    <span id="techStackDisplay" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-blue);">---</span>
-                </div>
-                <div class="flex justify-between">
-                    <span style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800;">LATENCY</span>
-                    <span id="latencyDisplay" style="font-family: var(--font-mono); font-size: 0.7rem;">---</span>
-                </div>
-                <div style="height: 1px; background: var(--neo-border);"></div>
-                <div>
-                    <label style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800; margin-bottom: 4px; display: block;">INSIGHTS</label>
-                    <p id="discoveryInsights" style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono); line-height: 1.4;">No infrastructure data.</p>
-                </div>
+          <div style="overflow: auto;">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Level</th>
+                  <th>Count</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="findingsTableBody">
+                <tr><td colspan="3" style="text-align:center; color: #555; padding: 1.5rem; font-family: var(--font-mono);">---</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Scan Metadata -->
+        <div class="dash-panel" style="flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+          <div class="panel-header" style="height: 44px;">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">info</span>
+              <span class="panel-title" style="font-size: 0.75rem;">Scan Config</span>
+            </div>
+          </div>
+          <div class="panel-content overflow-auto" style="padding: 1rem; font-size: 0.75rem; font-family: var(--font-mono);">
+            <div id="serverConfigDetails" style="display: flex; flex-direction: column; gap: 0.5rem; color: var(--neo-text-muted);">
+              Waiting for scan...
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
+    <!-- Terminal Log -->
     <div class="terminal-footer">
       <div class="terminal-header">
         <div class="term-title">
@@ -1250,39 +1320,37 @@
         </div>
         <button id="clearLogBtn">CLEAR CONSOLE</button>
       </div>
-
       <div id="logOutput" class="term-window"></div>
     </div>
   </div>
 
-  <!-- --- REPORT HISTORY MODAL --- -->
+  <!-- Report History Modal -->
   <div id="historyModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div class="dash-panel w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
-          <div class="panel-header">
-              <span class="panel-title">Scan History</span>
-              <button id="closeHistoryModal" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px;">
-                  <span class="material-symbols-outlined">close</span>
-              </button>
-          </div>
-          <div class="panel-content overflow-auto p-0">
-              <table class="dash-table">
-                  <thead>
-                      <tr>
-                          <th>Date</th>
-                          <th>Target</th>
-                          <th style="text-align: right;">Action</th>
-                      </tr>
-                  </thead>
-                  <tbody id="historyTableBody">
-                      <tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">LOADING HISTORY...</td></tr>
-                  </tbody>
-              </table>
-          </div>
+    <div class="dash-panel w-full max-w-2xl max-h-[80vh] flex flex-col overflow-hidden">
+      <div class="panel-header">
+        <span class="panel-title">Scan History</span>
+        <button id="closeHistoryModal" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px;">
+          <span class="material-symbols-outlined">close</span>
+        </button>
       </div>
+      <div class="panel-content overflow-auto p-0">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Target</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr><td colspan="3" style="text-align: center; padding: 2rem; color: var(--neo-text-muted);">LOADING HISTORY...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 {% endblock %}
 
 {% block extra_scripts %}
   <script src="{{ url_for('static', filename='js/semgrep_scanner.js') }}"></script>
 {% endblock %}
-

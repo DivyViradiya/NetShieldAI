@@ -12,6 +12,7 @@ import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from Services import report_manager
+from .tctr_engine import tctr_engine
 
 # MODIFIED: Define path to the local sslscan.exe
 BASE_DIR = Path(__file__).parent.parent
@@ -331,7 +332,6 @@ def parse_ssl_report(report_file, output_dir=None, user_id=None, target=None):
         
         # Apply ML Threat Re-ranking
         try:
-            from .tctr_engine import tctr_engine
             for vuln in vulnerabilities:
                 # Map to CWE-310 (Cryptographic Issues) by default for SSL
                 prediction_obj = tctr_engine.predict_risk(

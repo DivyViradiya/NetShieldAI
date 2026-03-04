@@ -13,3 +13,5 @@
 [23:03:03] [+] Processing results for PDF report...
 [23:03:03] [+] JSON Scan report saved
 [23:03:03] [!] JSON report not found. Cannot generate PDF.
+[14:15:25] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[14:19:34] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.

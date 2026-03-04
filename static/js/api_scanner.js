@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let allFindings = [];
     let currentFilter = 'all';
     let scanStartTime = null;
+    let resolvedTarget = ''; // Set when any report is found (from input or fallback)
 
     // Actions
     const refreshResultsBtn = document.getElementById('refreshResultsBtn');
@@ -172,15 +173,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
     
             if (data.status === "success" && data.pdf_report) {
+                // Track the resolved target for AI analysis
+                resolvedTarget = target || '';
+
                 if (downloadPdfBtn) {
-                    downloadPdfBtn.href = data.pdf_report; 
-                    downloadPdfBtn.setAttribute('download', `api_report_${target.replace(/[^a-z0-9]/gi, '_')}.pdf`); 
                     downloadPdfBtn.disabled = false;
                     downloadPdfBtn.style.opacity = '1';
-                    
-                    if (downloadPdfBtn.tagName === 'BUTTON') {
-                        downloadPdfBtn.onclick = () => window.location.href = data.pdf_report;
-                    }
+                    downloadPdfBtn.onclick = () => window.open(data.pdf_report, '_blank');
                 }
                 
                 if (analyzeReportDropdown) {
@@ -259,7 +258,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     async function analyzeReport(llmMode) {
         if (analyzeReportDropdown.disabled) return;
-        const target = targetUrlInput.value.trim();
+        // Use the typed target first; fall back to whatever the backend resolved
+        const target = targetUrlInput.value.trim() || resolvedTarget;
         
         if (!csrfToken) {
             appendLog('[!] Error: CSRF Token missing. Refresh page.');
@@ -343,6 +343,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const response = await fetch(RESULTS_ENDPOINT);
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #64748b; font-family: var(--font-mono); letter-spacing: 0.1em;">NO SCAN DATA FOUND. START A NEW SCAN.</div>`;
+                    return;
+                }
+                if (response.status === 401 || response.status === 403) {
+                    findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #f97316; font-family: monospace;">SESSION EXPIRED.</div>`;
+                    return;
+                }
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #f97316; font-family: monospace;">UNEXPECTED RESPONSE FROM SERVER.</div>`;
+                return;
+            }
+
             const result = await response.json();
 
             if (result.status === 'success' && result.data) {
@@ -351,6 +370,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 allFindings = report.findings || report.alerts || [];
                 renderFindings();
                 updateInsightsDisplay(report);
+
+                // Populate Raw JSON tab
+                const resultsContent = document.getElementById('resultsContent');
+                if (resultsContent) {
+                    resultsContent.textContent = JSON.stringify(report, null, 2);
+                }
             } else {
                 findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #555; font-family: monospace;">NO RESULTS AVAILABLE.</div>`;
             }
@@ -458,66 +483,135 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function createFindingCard(finding) {
         const risk = finding.risk || 'Info';
-        const confidence = finding.confidence || 'Medium';
+        const rawScore = parseFloat(finding.predicted_risk_score || 0);
+        const scoreVal = (rawScore * 10).toFixed(1);
         const color = getRiskColor(risk);
+
+        // SVG Gauge
+        const radius = 20;
+        const circumference = 2 * Math.PI * radius;
+        const offset = circumference - (rawScore * circumference);
+        let gaugeClass = 'gauge-low';
+        if (rawScore > 0.7) gaugeClass = 'gauge-critical';
+        else if (rawScore > 0.5) gaugeClass = 'gauge-high';
+        else if (rawScore > 0.3) gaugeClass = 'gauge-medium';
+
+        // priority_level comes as "P3 (Low)" — extract badge "P3" and label "Low"
+        const rawPriority = finding.priority_level || 'P3 (Low)';
+        const priorityBadge = rawPriority.split(' ')[0]; // "P3"
+        const priorityLabel = rawPriority.replace(priorityBadge, '').replace(/[()]/g, '').trim(); // "Low"
+        const priorityColor = priorityBadge === 'P0' ? '#ef4444'
+                            : priorityBadge === 'P1' ? '#f59e0b'
+                            : priorityBadge === 'P2' ? '#3b82f6'
+                            : '#10b981';
+
+        const tctrScore = typeof finding.tctr_priority === 'number'
+            ? finding.tctr_priority.toFixed(4) : (finding.tctr_priority || '—');
+        const baseScore = typeof finding.base_score === 'number'
+            ? finding.base_score.toFixed(1) : (finding.base_score || '—');
+
         const card = document.createElement('div');
         card.className = 'finding-card';
+        card.setAttribute('data-priority', priorityBadge);
         card.style.setProperty('--accent-gradient', color);
-        
+
         card.innerHTML = `
             <div class="finding-header">
                 <div class="risk-indicator" style="color: ${color};">
                     <div class="risk-dot" style="background: ${color};"></div>
                     <span>${risk}</span>
                 </div>
-                
-                <div class="finding-title">${finding.name || finding.alert}</div>
-                
-                <div class="score-container">
-                    <span class="score-label">Risk Score</span>
-                    <span class="score-val">${(parseFloat(finding.predicted_risk_score || 0) * 10).toFixed(1)}</span>
+
+                <div class="finding-title" title="${finding.name || finding.alert}">${finding.name || finding.alert}</div>
+
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
+                    <span class="badge-pill" style="background: ${priorityColor}22; border-color: ${priorityColor}55; color: ${priorityColor}; font-size: 0.65rem; font-weight: 800; padding: 2px 8px;">${priorityBadge}</span>
+                    <div class="risk-score-gauge">
+                        <svg class="gauge-svg" viewBox="0 0 48 48">
+                            <circle class="gauge-bg" cx="24" cy="24" r="${radius}"></circle>
+                            <circle class="gauge-fill ${gaugeClass}" cx="24" cy="24" r="${radius}"
+                                style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset};"></circle>
+                        </svg>
+                        <span class="gauge-val">${scoreVal}</span>
+                    </div>
                 </div>
 
                 <span class="material-symbols-outlined expand-icon" style="margin-left: 0.5rem; font-size: 1.25rem;">expand_more</span>
             </div>
-            
+
             <div class="finding-details">
                 <div class="details-content">
+
                     <div class="detail-section">
                         <span class="detail-label">Vulnerable Endpoint</span>
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3" style="flex-wrap: wrap;">
                             <div class="badge-pill" style="background: var(--neo-input); border: 1px solid var(--neo-border); color: var(--neo-text-main); font-family: var(--font-mono); font-size: 0.7rem; padding: 4px 8px;">${finding.method || 'GET'}</div>
-                            <a href="${finding.url || '#'}" target="_blank" class="finding-url-link" style="font-family: var(--font-mono); font-size: 0.8rem;">${finding.url || 'N/A'}</a>
+                            <a href="${finding.url || '#'}" target="_blank" class="finding-url-link" style="font-family: var(--font-mono); font-size: 0.75rem; word-break: break-all;">${finding.url || 'N/A'}</a>
                         </div>
                         ${finding.param ? `<div class="detail-text" style="font-size: 0.75rem; margin-top: 4px; color: var(--neo-text-muted);">PARAMETER: <span style="color: var(--neo-text-main);">${finding.param}</span></div>` : ''}
                     </div>
 
                     <div class="detail-section">
-                        <span class="detail-label">Vulnerability Analysis</span>
-                        <div class="detail-text">${finding.description || 'Detailed vulnerability analysis is unavailable for this finding.'}</div>
+                        <span class="detail-label">Vulnerability Description</span>
+                        <div class="detail-text" style="line-height: 1.7;">${finding.description || 'No description available.'}</div>
                     </div>
 
+                    ${finding.solution ? `
                     <div class="detail-section">
-                        <span class="detail-label">Remediation & Solution</span>
-                        <div class="detail-text" style="border-left: 3px solid var(--neo-green); padding-left: 1rem; opacity: 1;">${finding.solution || 'Consult industry best practices for specific remediation steps.'}</div>
-                    </div>
+                        <span class="detail-label">Remediation &amp; Solution</span>
+                        <div class="detail-text" style="border-left: 3px solid var(--neo-green); padding-left: 1rem;">${finding.solution}</div>
+                    </div>` : ''}
 
                     <div class="detail-section">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="detail-label">Technical Details</span>
-                            <div class="flex gap-4">
-                                <span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 700;">CONFIDENCE: <span style="color: var(--neo-text-main);">${confidence}</span></span>
-                                ${finding.cweid ? `<span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 700;">CWE: <span style="color: var(--neo-blue); cursor: pointer;" onclick="window.open('https://cwe.mitre.org/data/definitions/${finding.cweid}.html', '_blank')">${finding.cweid}</span></span>` : ''}
+                        <span class="detail-label">TCTR Analyst Metrics</span>
+                        <div class="flex flex-col gap-2 mt-2" style="background: rgba(0,0,0,0.25); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--neo-border);">
+                            <div class="flex justify-between items-center">
+                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">ANALYST PRIORITY</span>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span class="badge-pill" style="background: ${priorityColor}22; border-color: ${priorityColor}44; color: ${priorityColor}; font-size: 0.7rem; font-weight: 800;">${priorityBadge}</span>
+                                    <span style="font-size: 0.7rem; color: var(--neo-text-muted);">${priorityLabel}</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">TCTR SCORE</span>
+                                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main); font-weight: 600;">${tctrScore}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">BASE RISK SCORE</span>
+                                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main); font-weight: 600;">${baseScore}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">ZAP RISK LEVEL</span>
+                                <span style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; color: ${color};">${risk.toUpperCase()}</span>
+                            </div>
+                            <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.06);">
+                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 0.05em;">RISK JUSTIFICATION</span>
+                                <p style="font-size: 0.8rem; color: var(--neo-text-main); line-height: 1.6; opacity: 0.9; margin: 0;">${finding.risk_justification || 'Automated risk assessment performed by TCTR Engine.'}</p>
                             </div>
                         </div>
-                        <div class="detail-text detail-text-mono" style="color: #a1a1aa; background: #000; padding: 1rem; border-radius: 6px; border: 1px solid #222; overflow-x: auto; white-space: pre-wrap;">${finding.evidence || 'NO RAW EVIDENCE CAPTURED'}</div>
                     </div>
+
+                    ${finding.confidence || finding.cweid ? `
+                    <div class="detail-section">
+                        <span class="detail-label">Additional Details</span>
+                        <div class="flex gap-4 flex-wrap">
+                            ${finding.confidence ? `<span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 700;">CONFIDENCE: <span style="color: var(--neo-text-main);">${finding.confidence}</span></span>` : ''}
+                            ${finding.cweid ? `<span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 700;">CWE: <span style="color: var(--neo-blue); cursor: pointer;" onclick="window.open('https://cwe.mitre.org/data/definitions/${finding.cweid}.html','_blank')">${finding.cweid}</span></span>` : ''}
+                        </div>
+                    </div>` : ''}
+
+                    ${finding.evidence ? `
+                    <div class="detail-section">
+                        <span class="detail-label">Evidence</span>
+                        <div class="detail-text detail-text-mono" style="color: #a1a1aa; background: #000; padding: 1rem; border-radius: 6px; border: 1px solid #222; white-space: pre-wrap;">${finding.evidence}</div>
+                    </div>` : ''}
 
                     ${finding.reference ? `
                     <div class="detail-section" style="border-bottom: none; padding-bottom: 0;">
                         <span class="detail-label">References</span>
-                        <div class="detail-text" style="font-size: 0.75rem; line-height: 1.6; color: var(--neo-blue); opacity: 0.8;">${finding.reference.split('\n').map(ref => `<a href="${ref.trim()}" target="_blank" style="color: inherit; display: block; margin-bottom: 2px;">${ref.trim()}</a>`).join('')}</div>
+                        <div class="detail-text" style="font-size: 0.75rem; line-height: 1.8; color: var(--neo-blue);">${finding.reference.split('\n').map(ref => ref.trim() ? `<a href="${ref.trim()}" target="_blank" style="color: inherit; display: block;">${ref.trim()}</a>` : '').join('')}</div>
                     </div>` : ''}
+
                 </div>
             </div>
         `;
@@ -529,7 +623,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     }
 
-    // --- Filter & Search Listeners ---
+    // --- Filter &amp; Search Listeners ---
     filterChips.forEach(chip => {
         chip.addEventListener('click', () => {
             filterChips.forEach(c => c.classList.remove('active'));
@@ -745,19 +839,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Initialize the page with synchronization
+    // Initialize — match ZAP scanner pattern exactly
     async function init() {
         setTimeout(() => appendLog('System Ready. Initializing API Security Scanner...'), 100);
         checkReportStatus();
         fetchAndDisplayResults();
-        
-        // Wait for status check before starting log stream
-        const isRunning = await checkScanStatus();
+        checkScanStatus();
         setupLogStream();
-        
-        if (isRunning) {
-            appendLog(`[*] SSE Stream re-attached to active session.`);
-        }
     }
 
     init();

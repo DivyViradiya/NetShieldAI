@@ -17,8 +17,13 @@ from werkzeug.utils import secure_filename
 from urllib.parse import urlparse
 from extensions import db
 
-# [SERVICE] Import the Singleton instance and helpers
-from Services.killchain_service import killchain_service, cleanup_queue
+# [SERVICE] Import the Singleton instance and module-level helpers
+from Services.killchain_service import (
+    killchain_service,
+    cleanup_queue,
+    is_user_scanning,
+    active_scans,
+)
 # --- Import Scan Logger ---
 from Services import scan_logger
 from Services import report_manager
@@ -89,7 +94,7 @@ def dispatch_scan():
     # [NEW] Prevent Multiple Concurrent Scans for the same user
     # We use user_identifier for locking to match queue_id format
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    if killchain_service.is_user_scanning(user_identifier):
+    if is_user_scanning(user_identifier):
         logger.warning(f"[!] Kill Chain Audit already in progress for user {user_identifier}")
         return jsonify({
             "status": "error", 
@@ -261,17 +266,19 @@ def get_json_report():
         if not history:
              return jsonify({"status": "error", "message": "No reports found."}), 404
         json_path = history[0]['path']
-        filename = os.path.basename(json_path)
 
     if not os.path.exists(json_path):
         return jsonify({"status": "error", "message": "JSON report not found."}), 404
 
-    return send_from_directory(
-        directory=os.path.dirname(json_path),
-        path=filename,
-        as_attachment=True,
-        mimetype='application/json'
-    )
+    # Return inline JSON (not as attachment) so frontend fetch().json() works reliably
+    try:
+        import json as _json
+        with open(json_path, 'r', encoding='utf-8') as jf:
+            data = _json.load(jf)
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"[!] Error reading JSON report: {e}")
+        return jsonify({"status": "error", "message": "Failed to read report."}), 500
     
 @killchain_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
@@ -358,19 +365,43 @@ def check_active_scan():
     active_log = scan_logger.get_active_scan_log(current_user.id, "Kill Chain")
     
     if active_log:
-        return jsonify({
-            "status": "active",
-            "message": "Active scan found (DB)",
-            "queue_id": f"{user_identifier}::latest", # Queue ID might change on refresh, but logging path is stable
-            "scan_id": active_log.id,
-            "target": active_log.target,
-            "profile": active_log.scan_type,
-            "start_time": active_log.start_time.isoformat()
-        }), 200
+        # Cross-check: is this scan ACTUALLY running in memory right now?
+        # If not (server was restarted, scan crashed, etc.) it's a stale DB entry.
+        # Clean it up immediately so the button is not permanently disabled.
+        is_really_running = any(
+            qid.startswith(f"{user_identifier}::") for qid in active_scans
+        )
+
+        if not is_really_running:
+            logger.warning(f"[!] Stale 'Running' scan found for {user_identifier} — marking as Failed.")
+            scan_logger.mark_scan_failed(
+                active_log.id,
+                "Scan interrupted: server was restarted or scan process died unexpectedly."
+            )
+            # Fall through to return "inactive" below
+        else:
+            # Parse aggression from scan_type string e.g. "Full Scan (Attack)" -> "Attack"
+            import re as _re
+            scan_type_str = active_log.scan_type or ""
+            aggression = "Normal"
+            _agg_match = _re.search(r'\(([^)]+)\)', scan_type_str)
+            if _agg_match:
+                aggression = _agg_match.group(1)
+            profile = _re.sub(r'\s*\([^)]+\)', '', scan_type_str).strip() or scan_type_str
+
+            return jsonify({
+                "status": "active",
+                "message": "Active scan found (DB)",
+                "queue_id": f"{user_identifier}::latest",
+                "scan_id": active_log.id,
+                "target": active_log.target,
+                "profile": profile,
+                "aggression": aggression,
+                "start_time": active_log.start_time.isoformat()
+            }), 200
     
     # 2. Fallback: Check Memory (Legacy support or race condition handling)
     active_scan_info = None
-    from Services.killchain_service import active_scans 
 
     with threading.Lock(): 
         for queue_id, scan_info in active_scans.items():

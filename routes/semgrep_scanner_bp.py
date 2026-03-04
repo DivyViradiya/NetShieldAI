@@ -219,6 +219,52 @@ def scan_code():
     return jsonify({"status": "success", "message": f"Code scan started for {target_display}."})
 
 
+@semgrep_bp.route('/status', methods=['GET'])
+@login_required
+def get_semgrep_status():
+    """Checks if a Semgrep scan is currently running for the user."""
+    user_id = current_user.id
+    current_user_identifier = f"{secure_filename(current_user.username)}_{user_id}"
+    
+    # 1. CHECK DB (Primary Source of Truth)
+    active_log = scan_logger.get_active_scan_log(user_id, "Semgrep SAST")
+    
+    # 2. Check Memory
+    is_running_in_memory = semgrep_scanner.is_scan_running(current_user_identifier)
+    
+    logger.debug(f"[DEBUG] Semgrep Status check for {current_user.username}: DB={bool(active_log)}, Memory={is_running_in_memory}")
+
+    if active_log:
+        if not is_running_in_memory:
+            # [STALE SCAN FIX] DB says running, but memory process is gone.
+            logger.warning(f"[!] Stale Semgrep Scan detected for {current_user.username} (ID: {active_log.id}). Cleaning up...")
+            with current_app.app_context():
+                scan_logger.mark_scan_failed(active_log.id, "Scan interrupted (Stale/Restart)")
+            
+            return jsonify({
+                "status": "success",
+                "is_running": False,
+                "target": None
+            })
+
+        return jsonify({
+            "status": "success",
+            "is_running": True,
+            "target": active_log.target
+        })
+
+    # 3. Fallback: If memory is running but DB missed it (Rare)
+    target = None
+    if is_running_in_memory:
+        with semgrep_scanner.scan_lock:
+            target = semgrep_scanner.active_scans.get(current_user_identifier, {}).get('target')
+
+    return jsonify({
+        "status": "success",
+        "is_running": is_running_in_memory,
+        "target": target
+    })
+
 @semgrep_bp.route('/report_history', methods=['GET'])
 @login_required
 def get_semgrep_report_history():
@@ -278,8 +324,23 @@ def get_report_files():
     user_dir = get_user_results_dir()
     paths = semgrep_scanner.get_output_paths(user_dir, target=target)
     
-    json_exists = paths["parsed_json"].exists()
-    pdf_exists = paths["pdf_report"].exists()
+    json_path = paths["parsed_json"]
+    pdf_path = paths["pdf_report"]
+
+    # Fallback to latest if specific target not found
+    if not json_path.exists() or not pdf_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name="semgrep_scanner", extension="pdf")
+        if history:
+            pdf_path = Path(history[0]['path'])
+            # Derive JSON path from PDF path
+            json_path = pdf_path.with_suffix('.json')
+            # Extract target from filename to build URLs
+            # semgrep_scanner_target.pdf
+            filename = pdf_path.name
+            target = filename.split('semgrep_scanner_')[1].replace('.pdf', '') if 'semgrep_scanner_' in filename else None
+
+    json_exists = json_path.exists()
+    pdf_exists = pdf_path.exists()
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
@@ -349,6 +410,12 @@ def get_semgrep_report():
     user_dir = get_user_results_dir()
     paths = semgrep_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["parsed_json"]
+
+    # Fallback to latest if target not specified or file doesn't exist
+    if not json_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name="semgrep_scanner", extension="json")
+        if history:
+            json_path = Path(history[0]['path'])
 
     if not json_path.exists():
         return jsonify({

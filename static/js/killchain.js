@@ -45,10 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
     networkTableBody: document.getElementById("networkTableBody"),
     techStackContainer: document.getElementById("techStackContainer"),
     
-    // Custom dropdowns for Profiles
-    customProfileSelectTrigger: document.querySelector('#customProfileSelect .custom-select-trigger .selected-text'),
-    customAggressionSelectTrigger: document.querySelector('#customAggressionSelect .custom-select-trigger .selected-text'),
-
     // History
     killchainHistoryBtn: document.getElementById('killchainHistoryBtn'),
     historyModal: document.getElementById('historyModal'),
@@ -148,31 +144,10 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  function setSelectedOption(wrapperId, hiddenSelectId, valueToSelect) {
-    const wrapper = document.getElementById(wrapperId);
-    const hiddenSelect = document.getElementById(hiddenSelectId);
-    if (!wrapper || !hiddenSelect) return;
-
-    const options = wrapper.querySelectorAll('.custom-option');
-    const selectedTextSpan = wrapper.querySelector('.selected-text');
-
-    let found = false;
-    options.forEach(option => {
-      if (option.getAttribute('data-value') === valueToSelect) {
-        option.classList.add('selected');
-        selectedTextSpan.textContent = option.textContent;
-        hiddenSelect.value = valueToSelect;
-        found = true;
-      } else {
-        option.classList.remove('selected');
-      }
-    });
-
-    if (!found && options.length > 0) {
-      options[0].classList.add('selected');
-      selectedTextSpan.textContent = options[0].textContent;
-      hiddenSelect.value = options[0].getAttribute('data-value');
-    }
+  function setSelectedOption(selectId, valueToSelect) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    select.value = valueToSelect;
   }
 
   // --- MAIN SCANNING LOGIC ---
@@ -234,18 +209,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initLogStream(queueId) {
     if (eventSource) eventSource.close(); // Close any existing connection
+    eventSource = null;
 
     // Only establish EventSource if queueId is valid
     if (!queueId) {
         appendLog("[frontend] Error: Invalid queue ID for log stream.");
         return;
     }
-    
+
+    // Stale-queue guard: if no message arrives within 30s, assume the queue
+    // is dead (e.g. server restart / stale resumed scan) and stop reconnecting.
+    let messageReceived = false;
+    const staleTimer = setTimeout(() => {
+        if (!messageReceived && eventSource) {
+            appendLog("[SYSTEM] Log stream timed out (no data). Closing connection.");
+            eventSource.close();
+            eventSource = null;
+            isScanning = false;
+            toggleButtons(false);
+            updateStatus("Idle", "idle");
+        }
+    }, 30000);
+
+
     eventSource = new EventSource(`${API_BASE}/log_stream?queue_id=${queueId}`);
 
     eventSource.onmessage = (e) => {
       const msg = e.data;
-      if (msg.startsWith(":")) return; 
+      if (msg.startsWith(":")) return;
+      // Cancel stale-queue timeout on first real message
+      messageReceived = true;
+      clearTimeout(staleTimer);
       appendLog(msg);
 
       if (msg.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
@@ -263,34 +257,44 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     eventSource.addEventListener("scan_complete", () => {
+      clearTimeout(staleTimer);
+      messageReceived = true;
       appendLog("[SYSTEM] Scan Finished. Fetching report...");
       eventSource.close();
+      eventSource = null;
       isScanning = false;
-      toggleButtons(false); // Enable report buttons, disable start button
+      toggleButtons(false);
       updateStatus("Complete", "success");
       updateProgress(100, "Done");
       fetchReportData();
     });
 
     eventSource.addEventListener("scan_failed", (e) => {
+      clearTimeout(staleTimer);
+      messageReceived = true;
       const data = JSON.parse(e.data);
       appendLog(`[ERROR] Scan Aborted: ${data.message}`);
       eventSource.close();
+      eventSource = null;
       isScanning = false;
-      toggleButtons(false); // Enable start button, disable report buttons
+      toggleButtons(false);
       updateStatus("Error", "error");
     });
     
     eventSource.onerror = (err) => {
         console.error("EventSource failed:", err);
-        // Attempt to reconnect after a delay, but not if scan is complete/failed
-        if (isScanning && eventSource.readyState === EventSource.CONNECTING) { // Only try to reconnect if connecting
-            appendLog("[SYSTEM] Log stream disconnected. Attempting to reconnect...");
-            setTimeout(() => initLogStream(queueId), 3000); // Try reconnecting after 3 seconds
-        } else if (eventSource.readyState === EventSource.CLOSED) {
-            appendLog("[SYSTEM] Log stream closed.");
-        } else {
-            appendLog("[SYSTEM] Log stream error or connection closed.");
+
+        if (!isScanning) {
+            // No active scan — explicitly close so the browser does NOT auto-reconnect
+            eventSource.close();
+            eventSource = null;
+            return;
+        }
+
+        // isScanning === true: let the browser's native SSE auto-reconnect handle it
+        // (browser reconnects automatically after a few seconds per SSE spec)
+        if (eventSource && eventSource.readyState === EventSource.CLOSED) {
+            appendLog("[SYSTEM] Log stream closed unexpectedly. Browser will retry...");
         }
     };
   }
@@ -307,9 +311,9 @@ document.addEventListener("DOMContentLoaded", () => {
             currentQueueId = data.queue_id;
             
             els.targetInput.value = data.target;
-            // Set selected options for custom dropdowns
-            setSelectedOption('customProfileSelect', 'profileSelect', data.profile);
-            setSelectedOption('customAggressionSelect', 'aggressionSelect', data.aggression);
+            // Restore native select values
+            setSelectedOption('profileSelect', data.profile);
+            setSelectedOption('aggressionSelect', data.aggression);
 
             toggleButtons(true); // Disable start button, enable spinner
             updateStatus("Resuming Scan", "busy");
@@ -320,15 +324,16 @@ document.addEventListener("DOMContentLoaded", () => {
             initLogStream(data.queue_id);
             fetchReportData(); // Fetch existing report data to update tables if partial report exists
         } else {
-            // No active scan, load previous report history
-            toggleButtons(false); // Ensure start button is enabled, report buttons disabled
-            loadHistory();
+            // No active scan — restore last report and load history modal data in parallel
+            toggleButtons(false);
+            fetchHistory();        // populates the modal
+            fetchLatestReport();  // populates the main dashboard tables/metrics/telemetry
         }
     } catch (e) {
         console.error("Error checking active scan:", e);
         appendLog(`[frontend] Error checking for active scan: ${e.message}`);
         toggleButtons(false); // Ensure buttons are functional even on error
-        loadHistory(); // Attempt to load history anyway
+        fetchHistory(); // Attempt to load history anyway
     }
   }
 
@@ -351,11 +356,45 @@ document.addEventListener("DOMContentLoaded", () => {
         const report = await jsonRes.json();
         renderReport(report);
       } else if (checkData.status === "pending") {
-          // Reports not ready yet, keep reports/AI buttons disabled but scan can still be running
-          toggleButtons(true); // Keep start button disabled if scan is still active
+          // Reports not ready yet — only lock the start button if a scan is actively running
+          if (isScanning) {
+            toggleButtons(true);
+          }
       }
     } catch (e) {
       appendLog(`[ERROR] Failed to load report: ${e.message}`);
+    }
+  }
+
+  /**
+   * Fetches the latest saved report without requiring a target in the input.
+   * Called on page load when no scan is active to restore the last session's data.
+   */
+  async function fetchLatestReport() {
+    try {
+      // No target param → backend falls back to the newest file in the user's reports dir
+      const jsonRes = await fetch(`${API_BASE}/get_json_report`);
+      if (!jsonRes.ok) return; // 404 = no previous report, silently stay on empty state
+      const report = await jsonRes.json();
+      if (report.status === 'error') return;
+
+      // Restore target input so subsequent actions (PDF download, AI analysis) work
+      if (report.target && els.targetInput) {
+        els.targetInput.value = report.target;
+        if (document.getElementById('targetDisplay')) {
+          document.getElementById('targetDisplay').textContent = report.target;
+        }
+      }
+
+      // Mark currentScanId so report buttons are unlocked
+      currentScanId = 'latest';
+
+      updateStatus("Last Scan Loaded", "success");
+      toggleButtons(false); // enable PDF / AI buttons
+      renderReport(report);
+    } catch (e) {
+      // Silently ignore — no previous report is perfectly fine on first run
+      console.warn('[killchain] No previous report to restore:', e.message);
     }
   }
 
@@ -506,11 +545,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (els.refreshReportBtn) {
     els.refreshReportBtn.addEventListener("click", () => {
-      if (!currentScanId && !isScanning) { // Allow refresh only if scan_id exists or scan is running
-        appendLog("No active scan or previous scan to refresh report from.");
-        return;
+      // If there's a target in the input or an active scan, use normal fetchReportData.
+      // Otherwise fall back to fetchLatestReport so the button always does something useful.
+      if (els.targetInput.value.trim() || currentScanId || isScanning) {
+        fetchReportData();
+      } else {
+        fetchLatestReport();
       }
-      fetchReportData();
     });
   }
   
@@ -605,7 +646,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!target && !currentScanId) return;
 
     els.aiOverlay.classList.remove("hidden");
-    els.aiText.textContent = llmMode === "gemini" ? "CONTACTING GEMINI..." : "LOADING LOCAL LLM...";
+    els.aiText.textContent = llmMode.startsWith("gemini") ? "CONTACTING GEMINI..." : "LOADING LOCAL LLM...";
 
     try {
       const res = await fetch(`${API_BASE}/trigger_ai_analysis`, {

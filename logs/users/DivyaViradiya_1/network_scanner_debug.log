@@ -141,3 +141,5 @@
 [23:03:03] [INFO] [+] Processing results for PDF report...
 [23:03:03] [INFO] [+] JSON Scan report saved
 [23:03:03] [INFO] [!] JSON report not found. Cannot generate PDF.
+[14:15:25] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[14:19:34] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.

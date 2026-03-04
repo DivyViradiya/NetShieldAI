@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+import threading
 from pathlib import Path
 
 # ===========================================================================
@@ -120,7 +121,20 @@ if __name__ == '__main__':
             with app.app_context():
                 db.create_all()
             logger.info("[+] Database schema verified.")
-            
+
+            # --- Pre-warm ML models in a background thread so Flask starts immediately ---
+            def _prewarm_ml():
+                try:
+                    logger.info("[*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...")
+                    from Services.tctr_engine import get_engine
+                    get_engine()  # loads singleton once; all later callers reuse it
+                    logger.info("[+] [BG] ML models ready — cold-start cost eliminated.")
+                except Exception as _e:
+                    logger.error(f"[!] [BG] ML pre-load failed: {_e}")
+
+            _ml_thread = threading.Thread(target=_prewarm_ml, name="ML-Prewarm", daemon=True)
+            _ml_thread.start()
+
             logger.info("[+] System checks complete. Launching interface...\n")
 
         # Run Flask.

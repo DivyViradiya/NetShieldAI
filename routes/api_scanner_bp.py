@@ -246,7 +246,9 @@ def get_api_status():
 @login_required
 def get_api_report_history():
     user_dir = get_user_results_dir()
-    history = report_manager.get_report_history(user_dir, scanner_name="api_scanner")
+    # scanner_name filter omitted intentionally: user_dir already scopes to the api_scanner/
+    # subfolder, so we find ALL PDFs regardless of naming convention (api_report_* or api_scanner_*).
+    history = report_manager.get_report_history(user_dir, scanner_name=None)
     return jsonify({"status": "success", "history": history})
 
 
@@ -300,10 +302,17 @@ def trigger_ai_analysis_route():
 @api_scanner_bp.route('/scan_results', methods=['GET'])
 @login_required 
 def get_api_scan_results():
+    from pathlib import Path as _Path
     target = request.args.get('target')
     user_dir = get_user_results_dir()
     paths = api_scanner.get_output_paths(user_dir, target=target)
     json_path = paths["json_report"]
+
+    # If the exact path doesn't exist, fall back to the most recent JSON in the directory
+    if not json_path.exists():
+        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="json")
+        if history:
+            json_path = _Path(history[0]['path'])
 
     if not json_path.exists():
         return jsonify({"status": "pending", "message": "No API report available."}), 404
@@ -321,19 +330,32 @@ def get_api_scan_results():
 def get_report_files():
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = api_scanner.get_output_paths(user_dir, target=target)
-    
-    json_exists = paths["json_report"].exists()
-    pdf_exists = paths["pdf_report"].exists()
 
-    if not json_exists and not pdf_exists:
+    # Always search history to handle any filename convention (api_report_*, api_scanner_*, etc.)
+    history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
+
+    if not history:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
+
+    # Prefer the PDF matching the requested target; fall back to the most recent
+    best_pdf = history[0]
+    if target:
+        for item in history:
+            # Match by filename containing the sanitized target
+            from Services.scan_logger import sanitize_filename
+            if sanitize_filename(target) in item['filename']:
+                best_pdf = item
+                break
+
+    from pathlib import Path as _Path
+    pdf_url = f"/api_scanner/download_pdf?filename={best_pdf['filename']}"
+    json_candidate = _Path(best_pdf['path']).with_suffix('.json')
+    json_url = f"/api_scanner/scan_results" if json_candidate.exists() else None
 
     return jsonify({
         "status": "success",
-        # Note the prefix change to /api_scanner/
-        "json_report": f"/api_scanner/scan_results?target={target}" if json_exists else None,
-        "pdf_report": f"/api_scanner/download_pdf?target={target}" if pdf_exists else None
+        "json_report": json_url,
+        "pdf_report": pdf_url
     })
 
 

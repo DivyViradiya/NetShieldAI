@@ -5,37 +5,44 @@
 {% endblock %}
 
 {% block extra_css %}
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     /* --- INHERITED THEME VARIABLES --- */
     :root {
-      --neo-bg: var(--bg-primary);
-      --neo-card: var(--surface-primary);
-      --neo-border: var(--border-default);
-      --neo-accent: var(--text-primary);
-      --neo-blue: var(--accent-primary);
-      --neo-red: var(--severity-critical);
-      --input-bg: var(--bg-secondary);
-      --input-border: var(--border-default);
-      --input-text: var(--text-primary);
-      --input-placeholder: var(--text-muted);
-      --header-text: var(--text-primary);
-      --section-header-border: var(--border-subtle);
+      --neo-bg: #000000;
+      --neo-card: rgba(10, 10, 12, 0.5);
+      --neo-border: rgba(255, 255, 255, 0.1);
+      --neo-accent: #ffffff;
+      --neo-blue: #3b82f6;
+      --neo-red: #ef4444;
+      --input-bg: rgba(15, 15, 18, 0.6);
+      --input-border: rgba(255, 255, 255, 0.1);
+      --input-text: #ffffff;
+      --input-placeholder: #555555;
+      --header-text: #ffffff;
+      --neo-text-primary: #ffffff;
+      --neo-text-secondary: #888888;
+      --section-header-border: rgba(255,255,255,0.05);
       --settings-card-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
     
     body.light-mode {
-      --neo-bg: var(--bg-primary);
-      --neo-card: var(--surface-primary);
-      --neo-border: var(--border-default);
-      --neo-accent: var(--text-primary);
+      --neo-bg: #ffffff;
+      --neo-card: #f8fafc;
+      --neo-border: #e2e8f0;
+      --neo-accent: #0f172a;
       --neo-blue: #2563eb;
-      --neo-red: var(--severity-critical);
-      --input-bg: var(--surface-primary);
-      --input-border: var(--border-default);
-      --input-text: var(--text-primary);
-      --input-placeholder: var(--text-muted);
-      --header-text: var(--text-primary);
-      --section-header-border: var(--border-subtle);
+      --neo-red: #dc2626;
+      --input-bg: #ffffff;
+      --input-border: #e2e8f0;
+      --input-text: #0f172a;
+      --input-placeholder: #94a3b8;
+      --header-text: #0f172a;
+      --neo-text-primary: #0f172a;
+      --neo-text-secondary: #64748b;
+      --section-header-border: #e2e8f0;
       --settings-card-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
     }
 
@@ -84,6 +91,7 @@
 
     /* --- MAIN LAYOUT --- */
     .main-content {
+      font-family: var(--font-ui);
       width: 100%;
       padding: 0 4rem;
       min-height: 100vh;
