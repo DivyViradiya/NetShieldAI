@@ -1267,3 +1267,190 @@
 [2026-03-05 08:59:54] [PROGRESS] [====                ] 22% |
 [2026-03-05 08:59:54] [PROGRESS] [====                ] 23% /
 [2026-03-05 08:59:55] [PROGRESS] [====                ] 23% -
+[2026-03-05 11:17:21] [*] Starting ZAP Quick Scan for http://Testphp.vulnweb.com (User: DivyaViradiya_1)...
+[2026-03-05 11:17:21] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-05 11:17:21] Instance Config -> Port: 28683 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_28683
+[2026-03-05 11:17:21] Target: http://Testphp.vulnweb.com
+[2026-03-05 11:17:21] Report will be saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_Testphp_vulnweb_com.xml
+[2026-03-05 11:17:21] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 28683 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_28683 -quickurl http://Testphp.vulnweb.com -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_Testphp_vulnweb_com.xml -quickprogress
+[2026-03-05 11:17:21] --- ZAP Output Stream Started ---
+[2026-03-05 11:17:21] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-05 11:17:21] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 28683 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_28683 -quickurl http://Testphp.vulnweb.com -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_Testphp_vulnweb_com.xml -quickprogress
+[2026-03-05 11:17:54] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-03-05 11:17:54] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-03-05 11:17:54] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-03-05 11:17:54] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-03-05 11:17:57] Accessing URL
+[2026-03-05 11:17:58] Using traditional spider
+[2026-03-05 11:18:02] Active scanning
+[2026-03-05 11:18:03] [PROGRESS] [                    ] 4% |
+[2026-03-05 11:18:03] [PROGRESS] [                    ] 4% /
+[2026-03-05 11:18:04] [PROGRESS] [=                   ] 8% -
+[2026-03-05 11:18:04] [PROGRESS] [=                   ] 8% \
+[2026-03-05 11:18:05] [PROGRESS] [=                   ] 8% |
+[2026-03-05 11:18:05] [PROGRESS] [=                   ] 8% /
+[2026-03-05 11:18:06] [PROGRESS] [=                   ] 8% -
+[2026-03-05 11:18:06] [PROGRESS] [=                   ] 8% \
+[2026-03-05 11:18:07] [PROGRESS] [==                  ] 12% |
+[2026-03-05 11:18:07] [PROGRESS] [==                  ] 12% /
+[2026-03-05 11:18:08] [PROGRESS] [==                  ] 12% -
+[2026-03-05 11:18:08] [PROGRESS] [==                  ] 12% \
+[2026-03-05 11:18:09] [PROGRESS] [====                ] 22% |
+[2026-03-05 11:18:09] [PROGRESS] [====                ] 22% /
+[2026-03-05 11:18:10] [PROGRESS] [=======             ] 37% -
+[2026-03-05 11:18:10] [PROGRESS] [=======             ] 37% \
+[2026-03-05 11:18:11] [PROGRESS] [=======             ] 37% |
+[2026-03-05 11:18:11] [PROGRESS] [========            ] 42% /
+[2026-03-05 11:18:12] [PROGRESS] [========            ] 42% -
+[2026-03-05 11:18:12] [PROGRESS] [========            ] 44% \
+[2026-03-05 11:18:13] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:13] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:14] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:14] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:15] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:15] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:16] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:16] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:17] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:17] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:18] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:18] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:19] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:19] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:20] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:20] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:21] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:22] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:22] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:23] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:23] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:24] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:24] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:25] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:25] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:26] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:26] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:27] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:27] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:28] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:28] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:29] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:29] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:30] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:30] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:31] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:31] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:32] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:32] [PROGRESS] [===========         ] 55% -
+[2026-03-05 11:18:33] [PROGRESS] [===========         ] 55% \
+[2026-03-05 11:18:33] [PROGRESS] [===========         ] 55% |
+[2026-03-05 11:18:34] [PROGRESS] [===========         ] 55% /
+[2026-03-05 11:18:34] [PROGRESS] [============        ] 63% -
+[2026-03-05 11:18:35] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:35] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:36] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:36] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:37] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:37] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:38] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:38] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:39] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:39] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:40] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:40] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:41] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:41] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:42] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:42] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:43] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:43] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:44] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:44] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:45] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:45] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:46] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:46] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:47] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:47] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:48] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:48] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:49] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:49] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:50] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:50] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:51] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:51] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:52] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:52] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:53] [PROGRESS] [=============       ] 65% \
+[2026-03-05 11:18:53] [PROGRESS] [=============       ] 65% |
+[2026-03-05 11:18:54] [PROGRESS] [=============       ] 65% /
+[2026-03-05 11:18:54] [PROGRESS] [=============       ] 65% -
+[2026-03-05 11:18:55] [PROGRESS] [==============      ] 74% \
+[2026-03-05 11:18:55] [PROGRESS] [===============     ] 78% |
+[2026-03-05 11:18:56] [PROGRESS] [================    ] 81% /
+[2026-03-05 11:18:56] [PROGRESS] [================    ] 84% -
+[2026-03-05 11:18:57] [PROGRESS] [================    ] 84% \
+[2026-03-05 11:18:57] [PROGRESS] [================    ] 84% |
+[2026-03-05 11:18:58] [PROGRESS] [================    ] 84% /
+[2026-03-05 11:18:58] [PROGRESS] [================    ] 84% -
+[2026-03-05 11:18:59] [PROGRESS] [================    ] 84% \
+[2026-03-05 11:18:59] [PROGRESS] [================    ] 84% |
+[2026-03-05 11:19:00] [PROGRESS] [================    ] 84% /
+[2026-03-05 11:19:00] [PROGRESS] [================    ] 84% -
+[2026-03-05 11:19:01] [PROGRESS] [================    ] 84% \
+[2026-03-05 11:19:01] [PROGRESS] [================    ] 84% |
+[2026-03-05 11:19:02] [PROGRESS] [================    ] 84% /
+[2026-03-05 11:19:02] [PROGRESS] [================    ] 84% -
+[2026-03-05 11:19:03] [PROGRESS] [================    ] 84% \
+[2026-03-05 11:19:03] [PROGRESS] [================    ] 84% |
+[2026-03-05 11:19:04] [PROGRESS] [================    ] 84% /
+[2026-03-05 11:19:04] [PROGRESS] [================    ] 84% -
+[2026-03-05 11:19:05] [PROGRESS] [================    ] 84% \
+[2026-03-05 11:19:05] [PROGRESS] [================    ] 84% |
+[2026-03-05 11:19:06] [PROGRESS] [================    ] 84% /
+[2026-03-05 11:19:06] [PROGRESS] [================    ] 84% -
+[2026-03-05 11:19:07] [PROGRESS] [================    ] 84% \
+[2026-03-05 11:19:07] [PROGRESS] [================    ] 84% |
+[2026-03-05 11:19:08] [PROGRESS] [================    ] 84% /
+[2026-03-05 11:19:08] [PROGRESS] [================    ] 84% -
+[2026-03-05 11:19:09] [PROGRESS] [================    ] 84% \
+[2026-03-05 11:19:09] [PROGRESS] [================    ] 84% |
+[2026-03-05 11:19:10] [PROGRESS] [================    ] 84% /
+[2026-03-05 11:19:11] [PROGRESS] [================    ] 84% -
+[2026-03-05 11:19:11] [PROGRESS] [================    ] 84% \
+[2026-03-05 11:19:12] [PROGRESS] [================    ] 84% |
+[2026-03-05 11:19:12] [PROGRESS] [================    ] 84% /
+[2026-03-05 11:19:13] [PROGRESS] [================    ] 84% -
+[2026-03-05 11:19:13] [PROGRESS] [================    ] 84% \
+[2026-03-05 11:19:14] [PROGRESS] [================    ] 84% |
+[2026-03-05 11:19:14] [PROGRESS] [================    ] 84% /
+[2026-03-05 11:19:15] [PROGRESS] [==================  ] 93% -
+[2026-03-05 11:19:15] [PROGRESS] [==================  ] 93% \
+[2026-03-05 11:19:16] [PROGRESS] [==================  ] 93% |
+[2026-03-05 11:19:16] [PROGRESS] [==================  ] 93% /
+[2026-03-05 11:19:17] [PROGRESS] [==================  ] 93% -
+[2026-03-05 11:19:17] [PROGRESS] [==================  ] 93% \
+[2026-03-05 11:19:18] [PROGRESS] [==================  ] 93% |
+[2026-03-05 11:19:18] [PROGRESS] [==================  ] 93% /
+[2026-03-05 11:19:19] [PROGRESS] [==================  ] 93% -
+[2026-03-05 11:19:19] [PROGRESS] [==================  ] 93% \
+[2026-03-05 11:19:20] [PROGRESS] [==================  ] 93% |
+[2026-03-05 11:19:20] [PROGRESS] [==================  ] 93% /
+[2026-03-05 11:19:21] [PROGRESS] [=================== ] 96% -
+[2026-03-05 11:19:21] [PROGRESS] [====================] 100%
+[2026-03-05 11:19:21] Attack complete
+[2026-03-05 11:19:21] Writing results to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_Testphp_vulnweb_com.xml
+[2026-03-05 11:19:29] --- End of ZAP Output ---
+[2026-03-05 11:19:29] Scan completed successfully!
+[2026-03-05 11:19:29] Cleaning up temporary ZAP directory: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_28683
+[2026-03-05 11:19:29] [+] ZAP scan command finished. Parsing...
+[2026-03-05 11:19:29] Parsing ZAP report: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_Testphp_vulnweb_com.xml
+[2026-03-05 11:19:29] Report parsed and enriched successfully.
+[2026-03-05 11:19:29] JSON report saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_Testphp_vulnweb_com.json
+[2026-03-05 11:19:29] [+] JSON report saved.
+[2026-03-05 11:19:29] [*] Generating PDF report...
+[2026-03-05 11:19:33] [+] PDF generated successfully.
+[2026-03-05 11:19:33] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-03-05 11:19:33] [*] Scan, analysis, and prediction complete.

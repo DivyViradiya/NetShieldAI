@@ -273,15 +273,25 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--neo-border);
       font-family: var(--font-mono);
-      font-size: 0.75rem;
+      font-size: 0.65rem;
     }
 
     .badge-pill {
-      display: inline-flex; align-items: center; padding: 4px 10px;
-      border-radius: 4px; background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green);
-      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.1);
+      color: var(--neo-green);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     /* DROPDOWNS */
@@ -292,11 +302,12 @@
       padding: 0 1rem; display: flex; align-items: center; justify-content: space-between;
       cursor: pointer; transition: all 0.2s;
     }
+    .dropdown-trigger:active { border-color: var(--neo-blue); background: rgba(59, 130, 246, 0.05); }
     .trigger-text { font-size: 0.85rem; font-family: var(--font-mono); color: var(--neo-text-main); font-weight: 600; }
     .dropdown-menu {
       position: absolute; top: calc(100% + 8px); left: 0; width: 100%;
-      background: var(--neo-card); border: 1px solid var(--neo-border);
-      border-radius: var(--radius-sm); padding: 6px; flex-direction: column; z-index: 100;
+      background: #0a0a0c; border: 1px solid var(--neo-border);
+      border-radius: var(--radius-sm); padding: 6px; flex-direction: column; z-index: 1000;
       display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     .dropdown-menu.show { display: flex; }
@@ -305,7 +316,7 @@
       color: var(--neo-text-muted); border-radius: 4px; cursor: pointer; 
       display: flex; align-items: center; gap: 10px; border-left: 2px solid transparent; transition: all 0.2s; 
     }
-    .dropdown-item:active { background: rgba(59, 130, 246, 0.1); color: var(--neo-blue); border-left-color: var(--neo-blue); }
+    .dropdown-item:active, .dropdown-item.active { background: rgba(59, 130, 246, 0.1); color: var(--neo-blue); border-left-color: var(--neo-blue); }
 
     /* --- METRICS STRIP --- */
     .metrics-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
@@ -314,19 +325,59 @@
     .metric-value { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--neo-text-main); }
 
     /* --- TABS SYSTEM --- */
-    .tabs-nav {
-      display: flex; gap: 4px; padding: 4px; background: var(--neo-input);
-      border: 1px solid var(--neo-border); border-radius: var(--radius-sm);
-      position: sticky; top: 74px; z-index: 90;
+    .dash-panel {
+      margin-bottom: 1rem;
+      overflow: hidden;
     }
-    .tab-btn {
-      flex: 1; padding: 10px 4px; border-radius: 4px; border: 1px solid transparent;
-      background: transparent; color: var(--neo-text-muted); font-family: var(--font-mono);
-      font-size: 0.65rem; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+
+    .panel-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
     }
-    .tab-btn.active { background: var(--neo-card-hover); color: var(--neo-blue); border: 1px solid var(--neo-border); }
-    
-    .tab-panel { display: none; height: 450px; overflow-y: auto; padding: 1rem; scrollbar-width: none; }
+
+    .panel-header:active { background: rgba(255, 255, 255, 0.05); }
+
+    .panel-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+    }
+
+    .dash-panel.open .panel-content {
+      max-height: 1000px;
+      padding: 1.25rem;
+      border-top: 1px solid var(--neo-border);
+      opacity: 1;
+    }
+
+    .expand-icon {
+      transition: transform 0.3s ease;
+      color: var(--neo-text-muted);
+    }
+
+    .dash-panel.open .expand-icon { transform: rotate(180deg); color: var(--neo-blue); }
+
+    .findings-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .findings-scroll-area {
+      max-height: 50vh;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--neo-border) transparent;
+    }
+
+    .tab-panel { display: none; }
     .tab-panel.active { display: block; animation: panelFade 0.3s ease-out; }
     @keyframes panelFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -468,26 +519,34 @@
     </div>
 
     <div class="input-group">
-      <button class="btn-dash" onclick="document.getElementById('advancedScanOptions').classList.toggle('hidden')">
-        <span class="material-symbols-outlined" style="font-size:1.1rem">tune</span>
-        <span>Advanced Config</span>
-      </button>
-      
-      <div id="advancedScanOptions" class="hidden flex flex-col gap-3 mt-2 p-3" style="background: rgba(0,0,0,0.2); border: 1px solid var(--neo-border); border-radius: var(--radius-sm);">
-        <label class="custom-checkbox">
-          <input type="checkbox" id="useAjax" />
-          <span>Use AJAX Spider (Heavy)</span>
-        </label>
-        <div style="height: 1px; background: var(--neo-border); margin: 4px 0;"></div>
-        <label class="input-label" style="color: var(--neo-blue);">Authentication</label>
-        <input type="text" id="loginUrl" class="dash-input" placeholder="LOGIN ENDPOINT URL" style="height: 40px; padding-left: 12px; font-size: 0.75rem;" />
-        <div class="flex gap-2">
-            <input type="text" id="userField" class="dash-input" placeholder="USER HTML ID" style="height: 40px; padding-left: 12px; font-size: 0.75rem; flex: 1;" />
-            <input type="text" id="passField" class="dash-input" placeholder="PASS HTML ID" style="height: 40px; padding-left: 12px; font-size: 0.75rem; flex: 1;" />
+      <label class="input-label">Advanced Configuration</label>
+      <div class="mobile-dropdown" id="advancedDropdown">
+        <div class="dropdown-trigger" onclick="toggleMobileDropdown('advancedDropdown')">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-size:1.1rem; color: var(--neo-blue);">tune</span>
+            <span class="trigger-text">Modify Auth & Crawler</span>
+          </div>
+          <span class="material-symbols-outlined">expand_more</span>
         </div>
-        <div class="flex gap-2">
-            <input type="text" id="username" class="dash-input" placeholder="USERNAME" style="height: 40px; padding-left: 12px; font-size: 0.75rem; flex: 1;" />
-            <input type="password" id="password" class="dash-input" placeholder="PASSWORD" style="height: 40px; padding-left: 12px; font-size: 0.75rem; flex: 1;" />
+        <div id="advancedScanOptions" class="dropdown-menu p-4" style="gap: 1rem;">
+          <label class="custom-checkbox">
+            <input type="checkbox" id="useAjax" />
+            <span>Use AJAX Spider (Heavy)</span>
+          </label>
+          <div style="height: 1px; background: var(--neo-border); margin: 4px 0;"></div>
+          <div class="flex flex-col gap-2">
+            <label class="input-label" style="color: var(--neo-blue); font-size: 0.6rem;">Authentication Details</label>
+            <input type="text" id="loginUrl" class="dash-input" placeholder="LOGIN ENDPOINT URL" style="height: 40px; padding-left: 12px; font-size: 0.75rem;" autocomplete="off" />
+            <div class="flex gap-2">
+                <input type="text" id="userField" class="dash-input" placeholder="USER HTML ID" style="height: 40px; padding-left: 12px; font-size: 0.75rem; flex: 1;" autocomplete="off" />
+                <input type="text" id="passField" class="dash-input" placeholder="PASS HTML ID" style="height: 40px; padding-left: 12px; font-size: 0.75rem; flex: 1;" autocomplete="off" />
+            </div>
+            <div class="flex gap-2">
+                <input type="text" id="username" class="dash-input" placeholder="USERNAME" style="height: 40px; padding-left: 12px; font-size: 0.75rem; flex: 1;" autocomplete="username" />
+                <input type="password" id="password" class="dash-input" placeholder="PASSWORD" style="height: 40px; padding-left: 12px; font-size: 0.75rem; flex: 1;" autocomplete="new-password" />
+            </div>
+          </div>
+          <button class="btn-primary" style="height: 40px; font-size: 0.7rem;" onclick="event.stopPropagation(); toggleMobileDropdown('advancedDropdown')">SAVE CONFIG</button>
         </div>
       </div>
     </div>
@@ -526,20 +585,9 @@
     </div>
   </div>
 
-  <div class="tabs-nav">
-    <button id="findingsTabBtn" class="tab-btn active">
-      <span class="material-symbols-outlined">bug_report</span>
-      <span>Findings</span>
-    </button>
-    <button id="rawTabBtn" class="tab-btn">
-      <span class="material-symbols-outlined">data_object</span>
-      <span>Raw JSON</span>
-    </button>
-  </div>
-
-  <div id="findingsContent" class="tab-panel active" style="display: flex; flex-direction: column; padding: 0;">
-    
-    <div style="padding: 1rem 1rem 0 1rem;">
+  <!-- Findings Area -->
+  <div id="findingsContent" class="findings-list-container">
+    <div style="padding: 0;">
       <div class="search-container" style="margin-bottom: 0.75rem;">
         <span class="material-symbols-outlined search-icon" style="font-size: 1rem;">search</span>
         <input type="text" id="findingsSearch" class="dash-input" placeholder="SEARCH VULNERABILITIES..." style="height: 40px; font-size: 0.75rem; padding-left: 36px; border-radius: 20px;" />
@@ -552,22 +600,13 @@
       </div>
     </div>
 
-    <div id="openPortsTableBody" class="findings-list" style="padding: 0 1rem 1rem 1rem; overflow-y: auto; flex: 1;">
-      <div style="text-align:center; padding: 3rem 0; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.75rem;">
-        WAITING FOR DAST SCAN...
+    <div class="findings-scroll-area">
+      <div id="openPortsTableBody" class="findings-list">
+        <div style="text-align:center; padding: 3rem 0; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.75rem;">
+          WAITING FOR DAST SCAN...
+        </div>
       </div>
     </div>
-  </div>
-
-  <div id="rawContent" class="tab-panel" style="display: none; padding: 1rem;">
-    <div class="flex justify-between items-center" style="margin-bottom: 0.75rem;">
-      <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-text-muted);">ZAP ENGINE OUTPUT</span>
-      <button id="copyResultsBtn" class="btn-dash" style="width: auto; height: 32px; padding: 0 12px;">
-        <span class="material-symbols-outlined" style="font-size: 1rem;">content_copy</span>
-        <span>COPY</span>
-      </button>
-    </div>
-    <div id="resultsContent" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-text-muted); background: var(--neo-input); padding: 1rem; border-radius: 8px; white-space: pre-wrap; border: 1px solid var(--neo-border); height: calc(100% - 44px); overflow-y: auto;">// Buffer Empty</div>
   </div>
 
   <div id="acc-intel">
@@ -605,11 +644,11 @@
 
       <div class="flex flex-col gap-3">
         <div class="mobile-dropdown" id="aiDropdown">
-          <button id="analyzeReportDropdown" class="dropdown-trigger" onclick="toggleMobileDropdown('aiDropdown')" disabled style="background: var(--neo-input); border-color: var(--neo-border);">
+          <button id="analyzeReportDropdown" class="dropdown-trigger" onclick="toggleMobileDropdown('aiDropdown')">
             <span class="trigger-text">AI Analysis</span>
             <span class="material-symbols-outlined">expand_more</span>
           </button>
-          <div id="llmAnalysisOptions" class="dropdown-menu hidden">
+          <div id="llmAnalysisOptions" class="dropdown-menu p-4">
             <div class="dropdown-item" data-llm-mode="local" style="text-decoration: none;">
               <span class="material-symbols-outlined" style="font-size: 1.1rem; margin-right: 8px;">dns</span> Local LLM
             </div>
@@ -639,6 +678,27 @@
       </div>
     </div>
   </div>
+
+  <!-- Scan Details Accordion -->
+  <section class="dash-panel" id="acc-raw-panel">
+    <div class="panel-header" onclick="this.parentElement.classList.toggle('open'); if(typeof loadRawScanResults === 'function') loadRawScanResults();">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--neo-blue);">data_object</span>
+            <span style="font-size: 0.85rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase;">Scan Details</span>
+        </div>
+        <span class="material-symbols-outlined expand-icon">expand_more</span>
+    </div>
+    <div class="panel-content" id="rawContent">
+        <div class="flex justify-between items-center" style="margin-bottom: 0.75rem;">
+            <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-text-muted);">ZAP RAW JSON</span>
+            <button id="copyResultsBtn" class="btn-dash" style="width: auto; height: 32px; padding: 0 12px;">
+                <span class="material-symbols-outlined" style="font-size: 1rem;">content_copy</span>
+                <span>COPY</span>
+            </button>
+        </div>
+        <div id="resultsContent" class="detail-text-mono" style="height: 300px;">// Buffer Empty</div>
+    </div>
+  </section>
 </div>
 
 <button class="fab-terminal" onclick="toggleTerminal()">
@@ -689,5 +749,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/zap_scanner.js') }}"></script>
+<script src="{{ url_for('static', filename='js/mobile_zap_scanner.js') }}"></script>
 {% endblock %}

@@ -107,12 +107,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const content = document.getElementById('resultsContent');
         if (content) {
             navigator.clipboard.writeText(content.innerText).then(() => {
-                const btn = event.currentTarget;
+                const btn = document.getElementById('copyResultsBtn');
+                if (!btn) return;
                 const originalIcon = btn.innerHTML;
                 btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.1rem;">check</span>';
                 setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
             });
         }
+    };
+
+    window.loadRawScanResults = function() {
+        fetchAndDisplayReport();
     };
 
     // --- Core Functions ---
@@ -355,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function checkReportAvailability() {
-        var target = elements.targetHostInput.value.trim();
+        var target = elements.targetHostInput.value.trim().toLowerCase();
         try {
             var url = target ? REPORT_FILES_ENDPOINT + '?target=' + encodeURIComponent(target) : REPORT_FILES_ENDPOINT;
             var response = await fetch(url);
@@ -374,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function analyzeReport(llmMode) {
-        var target = elements.targetHostInput.value.trim();
+        var target = elements.targetHostInput.value.trim().toLowerCase();
         if (!target) return;
         elements.aiProcessingOverlay.classList.remove('hidden');
         elements.aiProcessingText.textContent = 'INITIATING AI...';
@@ -429,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Event Listeners ---
     if(elements.initiateScanBtn) {
         elements.initiateScanBtn.addEventListener('click', async function() {
-            var target = elements.targetHostInput.value.trim();
+            var target = elements.targetHostInput.value.trim().toLowerCase();
             if (!target) return;
             toggleSpinner(elements.initiateScanBtn, true);
             updateStatus('Scanning...', 'busy');

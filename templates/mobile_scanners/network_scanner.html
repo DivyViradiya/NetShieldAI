@@ -154,26 +154,43 @@ NetShieldAI - Network Scanner
         width: 100%;
     }
 
-    /* --- COMPONENT: HUD CARDS --- */
-    .control-card, .metric-card, .dash-panel, .bottom-sheet {
-        background: rgba(10, 10, 12, 0.45);
+    /* --- COMPONENT: HUD CARDS (Shared Style) --- */
+    .control-card, .metric-card, .dash-panel, .bottom-sheet, .tab-panel {
+        background: var(--neo-card);
         backdrop-filter: blur(24px);
         -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--neo-border);
         border-radius: var(--radius-card);
         position: relative;
         box-shadow: var(--shadow-glass);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Light Mode Overrides */
-    body.light-mode .control-card,
-    body.light-mode .metric-card,
+    body.light-mode .control-card, 
+    body.light-mode .metric-card, 
     body.light-mode .dash-panel,
-    body.light-mode .bottom-sheet {
+    body.light-mode .bottom-sheet,
+    body.light-mode .tab-panel {
         background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,244,255,0.7) 100%);
         border: 1px solid var(--neo-border);
         box-shadow: none;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+
+    /* Card Hover States */
+    .control-card:hover, .metric-card:hover, .dash-panel:hover {
+        background: linear-gradient(165deg, #050505 0%, #000000 100%);
+        border-color: var(--neo-border) !important;
+        box-shadow: none !important;
+    }
+
+    body.light-mode .control-card:hover,
+    body.light-mode .metric-card:hover,
+    body.light-mode .dash-panel:hover {
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1) !important;
+        background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,244,255,0.7) 100%) !important;
     }
 
     /* --- SCAN SESSION CARD --- */
@@ -236,22 +253,30 @@ NetShieldAI - Network Scanner
         align-items: center;
         justify-content: space-between;
         cursor: pointer;
+        transition: all 0.2s;
     }
+
+    .dropdown-trigger:active { border-color: var(--neo-blue); background: rgba(59, 130, 246, 0.05); }
 
     .dropdown-menu {
         position: absolute;
         top: calc(100% + 8px);
         left: 0;
         width: 100%;
-        background: var(--neo-card);
+        background: #0a0a0c;
         border: 1px solid var(--neo-border);
         border-radius: var(--radius-sm);
         box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        z-index: 100;
+        z-index: 1000;
         padding: 6px;
         display: none;
         flex-direction: column;
         gap: 2px;
+    }
+
+    body.light-mode .dropdown-menu {
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
     .dropdown-menu.show { display: flex; }
@@ -281,6 +306,69 @@ NetShieldAI - Network Scanner
         background: var(--neo-text-main);
     }
 
+    .status-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--neo-border);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.1);
+      color: var(--neo-green);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Accordion Styles */
+    .dash-panel {
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .panel-header:active { background: rgba(255, 255, 255, 0.05); }
+
+    .panel-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+    }
+
+    .dash-panel.open .panel-content {
+      max-height: 1000px;
+      padding: 1.25rem;
+      border-top: 1px solid var(--neo-border);
+      opacity: 1;
+    }
+
+    .expand-icon {
+      transition: transform 0.3s ease;
+      color: var(--neo-text-muted);
+    }
+
+    .dash-panel.open .expand-icon { transform: rotate(180deg); color: var(--neo-blue); }
+
     /* --- METRICS --- */
     .metrics-strip {
         display: grid;
@@ -289,6 +377,8 @@ NetShieldAI - Network Scanner
     }
 
     .metric-card {
+        display: flex;
+        flex-direction: column;
         padding: 1rem;
         align-items: center;
         text-align: center;
@@ -307,24 +397,166 @@ NetShieldAI - Network Scanner
         font-weight: 700;
     }
 
-    /* --- DISCOVERY LIST --- */
-    .discovery-item {
-        background: linear-gradient(165deg, #050505 0%, #000000 100%);
-        border: 1px solid var(--neo-border);
-        border-radius: var(--radius-card);
-        padding: 1rem;
-        margin-bottom: 0.5rem;
+    /* --- VIBRANT TECH CARD GRID (Service Discovery) --- */
+    .discovery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 0.5rem;
+      width: 100%;
+    }
+
+    .discovery-card {
+      background: linear-gradient(165deg, #050505 0%, #000000 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--neo-border);
+      border-radius: var(--radius-card);
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    body.light-mode .discovery-card {
+      background: var(--surface-primary, #ffffff);
+      border: 1px solid var(--neo-border);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      color: var(--text-primary, #0f172a);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
     }
 
     .port-badge {
-        background: var(--neo-bg);
-        padding: 0.5rem 0.75rem;
-        border: 1px solid var(--neo-border);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-width: 60px;
+      background: var(--neo-bg);
+      padding: 0.5rem 0.75rem;
+      border-radius: 0px;
+      border: 1px solid var(--neo-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 60px;
     }
+
+    body.light-mode .port-badge {
+      background: #f4f4f4;
+      border-color: #e0e0e0;
+    }
+
+    .port-num {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--card-accent);
+    }
+
+    .protocol-label {
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.6;
+    }
+
+    .service-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .service-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: var(--neo-text-main);
+    }
+
+    .service-ver {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--neo-text-muted);
+      opacity: 0.8;
+    }
+
+    .risk-section {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .risk-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .risk-score-bar {
+      height: 2px;
+      background: var(--neo-bg);
+      border-radius: 0px;
+      overflow: hidden;
+    }
+
+    body.light-mode .risk-score-bar {
+      background: #f4f4f4;
+    }
+
+    .risk-score-fill {
+      height: 100%;
+      background: var(--card-accent);
+      transition: width 1s ease-out;
+    }
+
+    .analysis-footer {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.4;
+      color: var(--neo-text-muted);
+      background: transparent;
+      padding: 0.75rem;
+      border-radius: 0px;
+      border: 1px solid var(--neo-border);
+      text-transform: uppercase;
+    }
+
+    body.light-mode .analysis-footer {
+      background: transparent;
+      border-color: #e0e0e0;
+    }
+
+    @keyframes cardAppear {
+      from { opacity: 0; transform: translateY(20px) rotateX(-10deg); }
+      to { opacity: 1; transform: translateY(0) rotateX(0); }
+    }
+
+    .animate-card {
+      animation: cardAppear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* Risk Level Variants */
+    .risk-critical { --card-accent: var(--neo-red); }
+    .risk-high { --card-accent: #f97316; }
+    .risk-medium { --card-accent: var(--neo-amber); }
+    .risk-low { --card-accent: var(--neo-blue); }
+    .risk-safe { --card-accent: var(--neo-green); }
+
+    /* AI Overlay */
+    .processing-overlay { position: absolute; inset: 0; background: rgba(5,5,5,0.85); border-radius: 12px; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .ai-pulse-container { position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+    .ai-pulse-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--neo-blue); opacity: 0; animation: pulse-ring 2s infinite; }
+    @keyframes pulse-ring { 0% { transform: scale(0.3); opacity: 0; } 40% { opacity: 0.8; } 100% { transform: scale(1.5); opacity: 0; } }
 
     /* --- INTEL --- */
     .intel-row {
@@ -359,13 +591,49 @@ NetShieldAI - Network Scanner
         width: 100%;
         height: 60vh;
         z-index: 1001;
+        display: flex;
+        flex-direction: column;
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         transform: translateY(100%);
         border-radius: 20px 20px 0 0;
         background: #050505 !important;
     }
-
     .bottom-sheet.open { transform: translateY(0); }
+    .sheet-header {
+        padding: 12px 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--neo-border);
+        background: rgba(255,255,255,0.02);
+        flex-shrink: 0;
+    }
+
+    /* --- LOG LINE FORMATTING --- */
+    .log-line {
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        margin-bottom: 4px;
+    }
+    .log-time { color: #444; font-weight: 700; }
+    .log-content { color: #999; word-break: break-all; }
+
+    .detail-text-mono { 
+        font-family: var(--font-mono); 
+        font-size: 0.7rem; 
+        background: rgba(0, 0, 0, 0.4); 
+        padding: 0.75rem; 
+        border-radius: var(--radius-sm); 
+        border: 1px solid var(--neo-border); 
+        color: #a1a1aa; 
+        overflow-x: auto; 
+        white-space: pre-wrap; 
+        max-height: 300px; 
+        overflow-y: auto; 
+    }
 </style>
 {% endblock %}
 
@@ -400,7 +668,7 @@ NetShieldAI - Network Scanner
                     <span class="trigger-text" id="profileTriggerText">Quick Discovery</span>
                     <span class="material-symbols-outlined">expand_more</span>
                 </div>
-                <div class="dropdown-menu">
+                <div class="dropdown-menu hidden">
                     <div class="dropdown-item active" data-value="default" onclick="selectDropdownItem('profileDropdown', 'default', 'Quick Discovery')">Quick Discovery</div>
                     <div class="dropdown-item" data-value="aggressive" onclick="selectDropdownItem('profileDropdown', 'aggressive', 'Aggressive Scan')">Aggressive Scan</div>
                     <div class="dropdown-item" data-value="tcp_syn" onclick="selectDropdownItem('profileDropdown', 'tcp_syn', 'SYN Stealth')">SYN Stealth</div>
@@ -439,8 +707,8 @@ NetShieldAI - Network Scanner
         <div class="section-title">
             <span class="material-symbols-outlined">lan</span> Service Discovery
         </div>
-        <div id="openPortsTableBody" class="discovery-list">
-            <div style="text-align:center; padding: 3rem 0; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">
+        <div id="openPortsTableBody" class="discovery-grid">
+            <div style="text-align:center; padding: 3rem 0; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem; width: 100%;">
                 READY FOR INFRASTRUCTURE SCAN...
             </div>
         </div>
@@ -483,25 +751,40 @@ NetShieldAI - Network Scanner
                     <span class="trigger-text">Export PDF</span>
                     <span class="material-symbols-outlined">picture_as_pdf</span>
                 </button>
+
+                <button id="nmapHistoryBtn" class="dropdown-trigger">
+                    <span class="trigger-text">Prior Scans</span>
+                    <span class="material-symbols-outlined">history</span>
+                </button>
+            </div>
+
+            <div id="aiProcessingOverlay" class="processing-overlay hidden">
+                <div class="ai-pulse-container">
+                  <div class="ai-pulse-ring"></div>
+                  <div class="ai-pulse-ring" style="border-color: var(--neo-red);"></div>
+                </div>
+                <span id="aiProcessingText" style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; color: var(--neo-blue); font-weight: 800;">ANALYZING...</span>
             </div>
         </div>
     </section>
 
-    <section class="dash-panel" id="acc-raw-panel">
-        <div class="panel-header" onclick="toggleDashPanel('acc-raw-panel')">
-            <div class="section-title" style="margin-bottom: 0;">
-                <span class="material-symbols-outlined">terminal</span> Raw Engine Logs
-            </div>
-            <span class="material-symbols-outlined" style="color: var(--neo-text-muted);">expand_more</span>
+  <section class="dash-panel" id="acc-raw-panel">
+    <div class="panel-header" onclick="toggleDashPanel('acc-raw-panel'); loadRawScanResults();">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--neo-blue);">data_object</span>
+            <span style="font-size: 0.85rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase;">Scan Details</span>
         </div>
-        <div class="panel-content">
-            <div style="position: relative;">
-                <div id="resultsContent" style="font-family: var(--font-mono); font-size: 0.7rem; background: var(--neo-input); padding: 1rem; border-radius: 8px; max-height: 300px; overflow-y: auto;">
-                    // Engine Standby
-                </div>
-            </div>
+        <div class="flex items-center gap-2">
+            <button onclick="event.stopPropagation(); copyRawLogs();" id="copyResultsBtn" class="btn-dash btn-secondary" style="height: 28px; padding: 0 8px; font-size: 0.6rem;">
+                <span class="material-symbols-outlined" style="font-size: 1rem;">content_copy</span>
+            </button>
+            <span class="material-symbols-outlined expand-icon">expand_more</span>
         </div>
-    </section>
+    </div>
+    <div class="panel-content">
+        <div id="resultsContent" class="detail-text-mono" style="height: 300px;">// Buffer Empty</div>
+    </div>
+  </section>
 </div>
 
 <button class="fab-terminal" onclick="toggleTerminal()">
@@ -511,13 +794,45 @@ NetShieldAI - Network Scanner
 <div id="terminalSheet" class="bottom-sheet">
     <div class="sheet-header">
         <div style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800; color: var(--neo-text-muted); display: flex; align-items: center; gap: 8px;">
-            <div style="width: 6px; height: 6px; background: var(--neo-blue); border-radius: 50%;"></div>
+            <div style="width: 6px; height: 6px; background: var(--neo-blue); border-radius: 50%; box-shadow: 0 0 8px var(--neo-blue);"></div>
             LIVE ACTIVITY STREAM
         </div>
-        <button onclick="toggleTerminal()" style="background:none; border:none; color:var(--neo-text-main);">
-            <span class="material-symbols-outlined">close</span>
-        </button>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <button id="clearLogBtn" style="background:none; border:none; color:var(--neo-text-muted); font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer;">Clear</button>
+            <button onclick="toggleTerminal()" style="background:none; border:none; color:var(--neo-text-main); padding: 4px; cursor: pointer;">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
     </div>
     <div id="logOutput" style="flex:1; padding: 1rem; overflow-y: auto;"></div>
 </div>
+
+<div id="historyModal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);">
+    <div class="dash-panel w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden" style="background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 20px; width: 100%; max-width: 32rem; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="panel-header" style="padding: 1.25rem; border-bottom: 1px solid var(--neo-border); display: flex; justify-content: space-between; align-items: center;">
+            <span class="panel-title" style="font-size: 1rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase;">Scan History</span>
+            <button id="closeHistoryModal" style="background: none; border: none; color: var(--neo-text-muted); padding: 4px; cursor: pointer;">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="panel-content overflow-auto" style="padding:0; max-height: none; flex: 1; overflow: auto;">
+            <table class="dash-table">
+                <thead>
+                    <tr style="background: rgba(255,255,255,0.02);">
+                        <th style="padding: 1rem; font-size: 0.7rem; color: var(--neo-text-muted);">DATE</th>
+                        <th style="padding: 1rem; font-size: 0.7rem; color: var(--neo-text-muted);">TARGET</th>
+                        <th style="padding: 1rem; font-size: 0.7rem; color: var(--neo-text-muted); text-align: right;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <tr><td colspan="3" style="text-align: center; padding: 3rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">LOADING HISTORY...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/mobile_network_scanner.js') }}"></script>
 {% endblock %}

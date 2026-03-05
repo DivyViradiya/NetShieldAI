@@ -3497,3 +3497,154 @@
 [2026-03-05 09:20:40] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
 [2026-03-05 09:23:09] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
 [2026-03-05 09:23:31] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-05 09:23:38] [INFO    ] [run_ngrok] [*] Registering Core Modules...
+[2026-03-05 09:23:39] [INFO    ] [run_ngrok] [+] 11 Modules Loaded Successfully.
+[2026-03-05 09:23:39] [INFO    ] [run_ngrok] [*] Establishing Ngrok Tunnel...
+[2026-03-05 09:23:42] [INFO    ] [run_ngrok] [*] Initializing Secure Database...
+[2026-03-05 09:23:42] [INFO    ] [run_ngrok] [+] Database schema verified.
+[2026-03-05 09:23:42] [INFO    ] [run_ngrok] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-05 09:23:42] [INFO    ] [run_ngrok] [+] System checks complete. Launching interface...
+
+[2026-03-05 09:23:43] [INFO    ] [run_ngrok] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:23:54] [INFO    ] [run_ngrok] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-03-05 09:23:55] [INFO    ] [run_ngrok] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-05 09:23:55] [INFO    ] [run_ngrok] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-03-05 09:23:55] [INFO    ] [run_ngrok] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-03-05 09:23:55] [INFO    ] [run_ngrok] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:23:55] [INFO    ] [run_ngrok] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-05 09:23:58] [INFO    ] [run_ngrok] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:23:58] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:23:59] [INFO    ] [run_ngrok] [>] GET /killchain/ from 127.0.0.1
+[2026-03-05 09:23:59] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-05 09:23:59] [INFO    ] [run_ngrok] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-05 09:23:59] [INFO    ] [run_ngrok] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-05 09:23:59] [INFO    ] [run_ngrok] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-05 09:24:08] [INFO    ] [run_ngrok] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:24:08] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:24:17] [INFO    ] [run_ngrok] [>] GET /login from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:17] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-05 09:24:22] [INFO    ] [run_ngrok] [>] POST /login from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:22] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-05 09:24:22] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-05 09:24:22] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-05 09:24:23] [INFO    ] [run_ngrok] [>] GET /admin from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:23] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-05 09:24:26] [INFO    ] [run_ngrok] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-05 09:24:27] [INFO    ] [run_ngrok] [>] GET /arsenal from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:27] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:24:28] [INFO    ] [run_ngrok] [>] GET /killchain/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:28] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-05 09:24:28] [INFO    ] [run_ngrok] [>] GET /killchain/check_active_scan from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:28] [INFO    ] [run_ngrok] [>] GET /killchain/get_json_report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:31] [INFO    ] [run_ngrok] [>] GET /arsenal from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:31] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:24:34] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:34] [INFO    ] [run_ngrok] [>] GET /network_scanner/log_stream from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:34] [INFO    ] [run_ngrok] [>] GET /network_scanner/init_data from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:34] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:34] [INFO    ] [run_ngrok] [>] GET /network_scanner/get_scan_results from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:34] [INFO    ] [run_ngrok] [>] GET /network_scanner/open_ports from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:34] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:36] [INFO    ] [run_ngrok] [>] GET /arsenal from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:24:36] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:28:49] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:28:50] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:29:00] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:29:01] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:31:21] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:32:17] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:32:20] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:32:38] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:34:21] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-05 09:34:22] [INFO    ] [run_ngrok] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-05 09:34:22] [INFO    ] [run_ngrok] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:34:22] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-05 09:34:22] [INFO    ] [run_ngrok] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-05 09:34:22] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-05 09:34:22] [INFO    ] [run_ngrok] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-05 09:36:01] [INFO    ] [run_ngrok] [>] GET /arsenal from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:01] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:36:03] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:03] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:03] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:03] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/log_stream from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:03] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:04] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:04] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:05] [INFO    ] [run_ngrok] [>] GET /arsenal from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:05] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:36:08] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:09] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:12] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:12] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:12] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:12] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/log_stream from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:12] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:13] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:36:13] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:37:49] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-05 09:37:49] [INFO    ] [run_ngrok] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-05 09:37:49] [INFO    ] [run_ngrok] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:37:49] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-05 09:37:49] [INFO    ] [run_ngrok] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-05 09:37:49] [INFO    ] [run_ngrok] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-05 09:37:49] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-05 09:38:14] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/log_stream from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:14] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:14] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:14] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:14] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/log_stream from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:14] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:14] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:14] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:15] [INFO    ] [run_ngrok] [>] GET /arsenal from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:15] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:38:16] [INFO    ] [run_ngrok] [>] GET /killchain/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:16] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-05 09:38:16] [INFO    ] [run_ngrok] [>] GET /killchain/check_active_scan from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:16] [INFO    ] [run_ngrok] [>] GET /killchain/get_json_report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:16] [INFO    ] [run_ngrok] [>] GET /killchain/report_history from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:22] [INFO    ] [run_ngrok] [>] GET /arsenal from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:22] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:38:23] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:26] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:26] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:26] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:26] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/log_stream from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:26] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:26] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:26] [INFO    ] [run_ngrok] [>] GET /ssl_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:38:38] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:42] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:46] [INFO    ] [run_ngrok] [>] GET /dashboard/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/ssl from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/zap from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/compliance from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/network from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/killchain from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/sniffer from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /sql_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/usage from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/sql from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /chatbot/get_sessions from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/semgrep from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/reports from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:47] [INFO    ] [run_ngrok] [>] GET /dashboard/api/stats/api from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:39:50] [INFO    ] [run_ngrok] [>] GET /chatbot/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:41:58] [INFO    ] [run_ngrok] [>] GET /arsenal from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:41:58] [INFO    ] [run_ngrok] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:42:00] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:01] [INFO    ] [run_ngrok] [>] GET /network_scanner/init_data from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:01] [INFO    ] [run_ngrok] [>] GET /network_scanner/log_stream from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:01] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:01] [INFO    ] [run_ngrok] [>] GET /network_scanner/open_ports from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:01] [INFO    ] [run_ngrok] [>] GET /network_scanner/get_scan_results from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:01] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:03] [INFO    ] [run_ngrok] [>] GET /network_scanner/ from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:03] [INFO    ] [run_ngrok] [>] GET /network_scanner/init_data from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:03] [INFO    ] [run_ngrok] [>] GET /network_scanner/log_stream from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:03] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:03] [INFO    ] [run_ngrok] [>] GET /network_scanner/get_scan_results from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:03] [INFO    ] [run_ngrok] [>] GET /network_scanner/open_ports from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 09:42:03] [INFO    ] [run_ngrok] [>] GET /network_scanner/report_files from 2405:201:f:204c:fa5:35ec:62c5:92f0
+[2026-03-05 10:17:40] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...

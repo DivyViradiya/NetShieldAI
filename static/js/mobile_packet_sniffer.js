@@ -68,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
         portScansBody: document.getElementById('portScansBody'),
         cleartextBody: document.getElementById('cleartextBody'),
         packetsTableBody: document.getElementById('packetsTableBody'),
+        resultsContent: document.getElementById('resultsContent'),
+        copyResultsBtn: document.getElementById('copyResultsBtn'),
     };
 
     const API_BASE_URL = '/packet_sniffer';
@@ -117,6 +119,34 @@ document.addEventListener('DOMContentLoaded', () => {
     window.toggleTerminal = function() {
         const sheet = document.getElementById('terminalSheet');
         if (sheet) sheet.classList.toggle('open');
+    };
+
+    window.loadRawScanResults = async function() {
+        if (!elements.resultsContent) return;
+        elements.resultsContent.textContent = '// Fetching engine report...';
+        try {
+            const response = await fetch(`${API_BASE_URL}/get_json_report`);
+            const data = await response.json();
+            if (response.ok) {
+                elements.resultsContent.textContent = JSON.stringify(data.report || data, null, 2);
+            } else {
+                elements.resultsContent.textContent = '// Failed to load engine report.';
+            }
+        } catch (error) {
+            elements.resultsContent.textContent = '// Error communicating with engine.';
+        }
+    };
+
+    window.copyRawLogs = function() {
+        if (elements.resultsContent) {
+            navigator.clipboard.writeText(elements.resultsContent.innerText).then(() => {
+                const btn = elements.copyResultsBtn || document.getElementById('copyResultsBtn');
+                if (!btn) return;
+                const originalIcon = btn.innerHTML;
+                btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.1rem;">check</span>';
+                setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
+            });
+        }
     };
 
     // --- State & UI Helpers ---
@@ -539,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DOWNLOAD & AI LOGIC ---
 
     async function checkReportAvailability() {
-        const target = elements.targetIpInput ? elements.targetIpInput.value.trim() : "";
+        const target = elements.targetIpInput ? elements.targetIpInput.value.trim().toLowerCase() : "";
         try {
             const url = target ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report_files`;
             const res = await fetch(url);
@@ -575,7 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const button = elements.snifferAnalyzeReportDropdown;
             const overlay = elements.aiProcessingOverlay;
             const processingText = elements.aiProcessingText;
-            const target = elements.targetIpInput.value.trim();
+            const target = elements.targetIpInput.value.trim().toLowerCase();
 
             if (!button || button.disabled) return;
             if (overlay) overlay.classList.remove('hidden');
@@ -617,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function setupEventListeners() {
             if(elements.startCaptureBtn) {
                 elements.startCaptureBtn.addEventListener('click', () => {
-                    const target = elements.targetIpInput.value.trim();
+                    const target = elements.targetIpInput.value.trim().toLowerCase();
                     const dur = elements.durationInput.value;
                     const max = elements.maxPacketsInput.value;
                     const bpf = elements.bpfFilterInput.value;

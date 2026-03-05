@@ -10,3 +10,5 @@
 2026-03-04 19:16:30 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session cb2e2ca8-510c-4388-abca-dafdddfb67f7
 2026-03-04 19:16:30 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session cb2e2ca8-510c-4388-abca-dafdddfb67f7
 2026-03-05 09:13:20 - INFO - New local chat session started: 00af2f20-f4d9-4bde-94f8-8fa729e0427b
+2026-03-05 09:39:50 - INFO - New local chat session started: 0eb282d8-3977-498f-b839-36cce7d40747
+2026-03-05 09:39:52 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1fced1dd590>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))

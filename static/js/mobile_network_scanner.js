@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Live Terminal
         logOutput: document.getElementById('logOutput'),
+        clearLogBtn: document.getElementById('clearLogBtn'),
     };
 
     // --- State Variables ---
@@ -104,16 +105,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         if (dropdownId === 'profileDropdown') {
-            elements.mobileScanType.value = value;
+            if (elements.mobileScanType) elements.mobileScanType.value = value;
             // Direct state update instead of trigger click
             currentScanMode = value;
             currentProtocol = (value === 'udp') ? 'UDP' : 'TCP';
             appendLog(`[*] Mode selected: ${value.toUpperCase()}. Click INITIATE SCAN to begin.`);
         } else if (dropdownId === 'timingDropdown') {
-            elements.scanTiming.value = value;
+            if (elements.scanTiming) elements.scanTiming.value = value;
         }
         
         menu.classList.remove('show');
+        menu.classList.add('hidden');
     };
 
     window.toggleDashPanel = function(id) {
@@ -134,7 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.copyRawLogs = function() {
         if (elements.resultsContent) {
             navigator.clipboard.writeText(elements.resultsContent.innerText).then(() => {
-                const btn = event.currentTarget;
+                const btn = document.getElementById('copyResultsBtn');
+                if (!btn) return;
                 const originalIcon = btn.innerHTML;
                 btn.innerHTML = '<span class="material-symbols-outlined" style="font-size: 1.1rem;">check</span>';
                 setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
@@ -292,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (isReady && (!ports || ports.length === 0)) {
                 elements.openPortsTableBody.innerHTML = `
-                    <div class="animate-mobile-card" style="text-align: center; padding: 4rem 1rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">
+                    <div class="animate-card" style="text-align: center; padding: 4rem 1rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem; width: 100%;">
                         <span class="material-symbols-outlined" style="font-size: 2.5rem; opacity: 0.3; margin-bottom: 1rem; display: block;">
                             radar
                         </span>
@@ -304,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             elements.openPortsTableBody.innerHTML = `
-                <div class="animate-mobile-card" style="text-align: center; padding: 4rem 1rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">
+                <div class="animate-card" style="text-align: center; padding: 4rem 1rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem; width: 100%;">
                     <span class="material-symbols-outlined" style="font-size: 2.5rem; opacity: 0.3; margin-bottom: 1rem; display: block;">
                         ${isScanning ? 'radar' : 'cloud_off'}
                     </span>
@@ -319,39 +322,39 @@ document.addEventListener('DOMContentLoaded', () => {
             const rawScore = p.predicted_risk_score !== undefined ? p.predicted_risk_score : 0;
             const displayScore = (rawScore * 10).toFixed(1);
             
-            let riskClass = 'mobile-risk-safe';
-            if (rawScore >= 0.8) { riskClass = 'mobile-risk-critical'; }
-            else if (rawScore >= 0.6) { riskClass = 'mobile-risk-high'; }
-            else if (rawScore >= 0.4) { riskClass = 'mobile-risk-medium'; }
-            else if (rawScore >= 0.1) { riskClass = 'mobile-risk-low'; }
+            let riskClass = 'risk-safe';
+            if (rawScore >= 0.8) { riskClass = 'risk-critical'; }
+            else if (rawScore >= 0.6) { riskClass = 'risk-high'; }
+            else if (rawScore >= 0.4) { riskClass = 'risk-medium'; }
+            else if (rawScore >= 0.1) { riskClass = 'risk-low'; }
 
             const assessment = p.vulnerability || (p.vulnerability_notes ? 'Notes Available' : 'Safe / Low Priority');
 
             const card = `
-                <div class="discovery-item ${riskClass} animate-mobile-card" style="animation-delay: ${index * 0.05}s">
-                    <div class="discovery-header">
+                <div class="discovery-card ${riskClass} animate-card" style="animation-delay: ${index * 0.05}s">
+                    <div class="card-header">
                         <div class="port-badge">
-                            <span class="port-id">${p.port}</span>
-                            <span class="port-tag">${p.protocol}</span>
+                            <span class="port-num">${p.port}</span>
+                            <span class="protocol-label">${p.protocol}</span>
                         </div>
-                        <div class="service-info" style="margin-left: 0.75rem; flex: 1;">
-                            <span class="service-name">${p.service}</span>
-                            <span class="service-version">${p.version || 'UNKNOWN VERSION'}</span>
+                        <div class="service-main" style="text-align: right;">
+                            <span class="service-title">${p.service}</span>
+                            <span class="service-ver">${p.version || 'UNKNOWN VERSION'}</span>
                         </div>
                     </div>
 
-                    <div class="risk-section-mobile">
-                        <div class="risk-header-mobile">
+                    <div class="risk-section">
+                        <div class="risk-header">
                             <span style="color: var(--neo-text-muted);">RISK SCORE</span>
-                            <span class="risk-val">${displayScore}</span>
+                            <span class="risk-val" style="font-family: var(--font-mono); color: var(--card-accent); font-weight: 800;">${displayScore} / 10.0</span>
                         </div>
-                        <div class="risk-score-bar-mobile">
-                            <div class="risk-score-fill-mobile" style="width: ${rawScore * 100}%;"></div>
+                        <div class="risk-score-bar">
+                            <div class="risk-score-fill" style="width: ${rawScore * 100}%;"></div>
                         </div>
                     </div>
 
-                    <div class="analysis-footer-mobile">
-                        <span style="color: var(--card-accent, var(--neo-blue)); font-weight: 800; font-size: 0.6rem;">[ANALYSIS] </span>${assessment}
+                    <div class="analysis-footer">
+                        <span style="color: var(--card-accent); font-weight: 800; font-size: 0.6rem;">[ANALYSIS] </span>${assessment}
                     </div>
                 </div>`;
             elements.openPortsTableBody.insertAdjacentHTML('beforeend', card);
@@ -398,8 +401,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    window.loadRawScanResults = function() {
+        loadScanResults(lastScanType);
+    };
+
     async function checkReportAvailability() {
-        const target = elements.targetIpInput.value.trim();
+        const target = elements.targetIpInput.value.trim().toLowerCase();
         try {
             const url = target ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report_files`;
             const response = await fetch(url);
@@ -436,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const overlay = elements.aiProcessingOverlay;
         const processingText = elements.aiProcessingText;
         const llmOptions = elements.llmAnalysisOptions;
-        const target = elements.targetIpInput.value.trim();
+        const target = elements.targetIpInput.value.trim().toLowerCase();
 
         if (!button || button.disabled) return;
         
@@ -544,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function initiateScan(protocolType, scanType, button) {
-        const targetIp = elements.targetIpInput.value.trim();
+        const targetIp = elements.targetIpInput.value.trim().toLowerCase();
         const timingVal = elements.scanTiming ? elements.scanTiming.value : 4;
 
         if (!targetIp) {
@@ -666,15 +673,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
     }
-    
     // --- Event Listeners ---
     function setupEventListeners() {
-        if(elements.scanTcpBtn) {
+        if (elements.scanTcpBtn) {
             elements.scanTcpBtn.addEventListener('click', () => {
                 if (currentScanMode === 'vuln') {
                     initiateScan('TCP', 'vuln', elements.scanTcpBtn);
                 } else {
                     initiateScan(currentProtocol, currentScanMode, elements.scanTcpBtn);
+                }
+            });
+        }
+        
+        if (elements.clearLogBtn) {
+            elements.clearLogBtn.addEventListener('click', () => {
+                if (elements.logOutput) {
+                    elements.logOutput.innerHTML = '';
+                    appendLog('// Terminal cleared.');
                 }
             });
         }
@@ -692,6 +707,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (option) {
                     const llmMode = option.dataset.llmMode;
                     analyzeReport(llmMode);
+                    
+                    const aiDropdown = document.getElementById('aiDropdown');
+                    if (aiDropdown) {
+                        const menu = aiDropdown.querySelector('.dropdown-menu');
+                        if (menu) {
+                            menu.classList.remove('show');
+                            menu.classList.add('hidden');
+                        }
+                    }
                 }
             });
         }

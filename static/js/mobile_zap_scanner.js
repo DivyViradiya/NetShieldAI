@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Action: Start Scan ---
 
     async function handleScanButtonClick() {
-        const targetUrl = targetUrlInput.value.trim();
+        const targetUrl = targetUrlInput.value.trim().toLowerCase();
         const scanMode = scanCategorySelect ? scanCategorySelect.value : 'default';
         const useAjax = useAjaxCheckbox ? useAjaxCheckbox.checked : false;
 
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return card;
     }
 
-    async function loadRawScanResults() {
+    window.loadRawScanResults = async function() {
         if (!resultsContent) return;
         resultsContent.textContent = '// LOADING RAW DATA...';
         try {
@@ -515,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (analyzeReportDropdown) { analyzeReportDropdown.disabled = true; analyzeReportDropdown.style.opacity = '0.5'; }
 
         try {
-            const target = targetUrlInput.value.trim();
+            const target = targetUrlInput.value.trim().toLowerCase();
             const url = target ? `${REPORT_FILES_ENDPOINT}?target=${encodeURIComponent(target)}` : REPORT_FILES_ENDPOINT;
             const response = await fetch(url);
             if (!response.ok) return;
@@ -543,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- AI Analysis ---
     
     async function analyzeReport(llmMode) {
-        const target = targetUrlInput.value.trim();
+        const target = targetUrlInput.value.trim().toLowerCase();
         if (!csrfToken) return appendLog('[!] Error: CSRF Token missing.');
 
         if (aiProcessingOverlay) aiProcessingOverlay.classList.remove('hidden');

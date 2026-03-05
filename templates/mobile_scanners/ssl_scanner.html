@@ -297,16 +297,64 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--neo-border);
       font-family: var(--font-mono);
-      font-size: 0.75rem;
+      font-size: 0.65rem;
     }
 
     .badge-pill {
-      display: inline-flex; align-items: center; padding: 4px 10px;
-      border-radius: 4px; background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green);
-      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.1);
+      color: var(--neo-green);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
+
+    /* Accordion Styles */
+    .dash-panel {
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .panel-header:active { background: rgba(255, 255, 255, 0.05); }
+
+    .panel-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+    }
+
+    .dash-panel.open .panel-content {
+      max-height: 1000px;
+      padding: 1.25rem;
+      border-top: 1px solid var(--neo-border);
+      opacity: 1;
+    }
+
+    .expand-icon {
+      transition: transform 0.3s ease;
+      color: var(--neo-text-muted);
+    }
+
+    .dash-panel.open .expand-icon { transform: rotate(180deg); color: var(--neo-blue); }
 
     /* --- BEAUTIFIED MOBILE DROPDOWN --- */
     .mobile-dropdown { position: relative; width: 100%; }
@@ -452,12 +500,6 @@
     .intel-label { font-size: 0.7rem; font-weight: 800; color: var(--neo-text-muted); text-transform: uppercase; }
     .intel-val { font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-blue); }
 
-    /* --- DASH PANEL (Accordion) --- */
-    .dash-panel { background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 12px; overflow: hidden; }
-    .panel-header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-    .panel-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.2); }
-    .dash-panel.open .panel-content { max-height: 1000px; padding: 1rem; border-top: 1px solid var(--neo-border); }
-
     /* --- FLOATING TERMINAL --- */
     .fab-terminal {
       position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 28px;
@@ -483,6 +525,20 @@
     }
     .log-time { color: #444; font-weight: 700; }
     .log-content { color: #999; word-break: break-all; }
+
+    .detail-text-mono { 
+        font-family: var(--font-mono); 
+        font-size: 0.7rem; 
+        background: rgba(0, 0, 0, 0.4); 
+        padding: 0.75rem; 
+        border-radius: var(--radius-sm); 
+        border: 1px solid var(--neo-border); 
+        color: #a1a1aa; 
+        overflow-x: auto; 
+        white-space: pre-wrap; 
+        max-height: 300px; 
+        overflow-y: auto; 
+    }
 
     /* AI Overlay */
     .processing-overlay { position: absolute; inset: 0; background: rgba(5,5,5,0.85); border-radius: 12px; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -678,23 +734,23 @@
     </div>
   </div>
 
-  <div class="dash-panel" id="acc-raw-panel" style="margin-top: 0.5rem;">
-    <div class="panel-header" onclick="toggleDashPanel('acc-raw-panel')">
-      <div class="section-title" style="margin-bottom: 0;">
-        <span class="material-symbols-outlined">data_object</span>
-        Raw Scan Data
-      </div>
-      <span class="material-symbols-outlined" style="color: var(--neo-text-muted); transition: transform 0.3s;">expand_more</span>
+  <section class="dash-panel" id="acc-raw-panel">
+    <div class="panel-header" onclick="toggleDashPanel('acc-raw-panel'); loadRawScanResults();">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--neo-blue);">data_object</span>
+            <span style="font-size: 0.85rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase;">Scan Details</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="event.stopPropagation(); copyRawLogs();" id="copyResultsBtn" class="btn-dash btn-secondary" style="height: 28px; padding: 0 8px; font-size: 0.6rem;">
+                <span class="material-symbols-outlined" style="font-size: 1rem;">content_copy</span>
+            </button>
+            <span class="material-symbols-outlined expand-icon">expand_more</span>
+        </div>
     </div>
     <div class="panel-content">
-      <div style="position: relative;">
-        <div id="resultsContent" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-text-muted); background: var(--neo-input); padding: 1rem; border-radius: 8px; white-space: pre-wrap; max-height: 300px; overflow-y: auto; border: 1px solid var(--neo-border);">// JSON Standby</div>
-        <button onclick="copyRawLogs()" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--neo-border); color: var(--neo-blue); padding: 8px; border-radius: 8px; backdrop-filter: blur(4px); z-index: 10; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-          <span class="material-symbols-outlined" style="font-size: 1.1rem;">content_copy</span>
-        </button>
-      </div>
+        <div id="resultsContent" class="detail-text-mono" style="height: 300px;">// Buffer Empty</div>
     </div>
-  </div>
+  </section>
 </div>
 
 <button class="fab-terminal" onclick="toggleTerminal()">

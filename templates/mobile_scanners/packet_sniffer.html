@@ -308,16 +308,64 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--neo-border);
       font-family: var(--font-mono);
-      font-size: 0.75rem;
+      font-size: 0.65rem;
     }
 
     .badge-pill {
-      display: inline-flex; align-items: center; padding: 4px 10px;
-      border-radius: 4px; background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green);
-      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.1);
+      color: var(--neo-green);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
+
+    /* Accordion Styles */
+    .dash-panel {
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .panel-header:active { background: rgba(255, 255, 255, 0.05); }
+
+    .panel-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+    }
+
+    .dash-panel.open .panel-content {
+      max-height: 1000px;
+      padding: 1.25rem;
+      border-top: 1px solid var(--neo-border);
+      opacity: 1;
+    }
+
+    .expand-icon {
+      transition: transform 0.3s ease;
+      color: var(--neo-text-muted);
+    }
+
+    .dash-panel.open .expand-icon { transform: rotate(180deg); color: var(--neo-blue); }
 
     /* --- METRICS STRIP --- */
     .metrics-strip {
@@ -488,6 +536,20 @@
     }
     .log-time { color: #444; font-weight: 700; }
     .log-content { color: #999; word-break: break-all; }
+
+    .detail-text-mono { 
+        font-family: var(--font-mono); 
+        font-size: 0.7rem; 
+        background: rgba(0, 0, 0, 0.4); 
+        padding: 0.75rem; 
+        border-radius: var(--radius-sm); 
+        border: 1px solid var(--neo-border); 
+        color: #a1a1aa; 
+        overflow-x: auto; 
+        white-space: pre-wrap; 
+        max-height: 300px; 
+        overflow-y: auto; 
+    }
 
     /* --- GRAPH CANVAS --- */
     #networkGraphCanvas { width: 100%; height: 100%; background: #000; border: 1px solid var(--neo-border); }
@@ -721,21 +783,43 @@
     </div>
   </div>
 
-  <div class="dash-panel" style="margin-top: 0.5rem;">
-    <div style="padding: 1.25rem 1.25rem 0.5rem 1.25rem;">
-        <div class="section-title" style="margin-bottom: 0;">
-            <span class="material-symbols-outlined">layers</span> Protocols
+  <!-- Protocol Accordion -->
+  <section class="dash-panel" id="acc-proto-panel">
+    <div class="panel-header" onclick="this.parentElement.classList.toggle('open');">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--neo-blue);">layers</span>
+            <span style="font-size: 0.85rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase;">Protocols</span>
         </div>
+        <span class="material-symbols-outlined expand-icon">expand_more</span>
     </div>
-    <div style="padding: 0 1.25rem 1.25rem 1.25rem; max-height: 240px; overflow-y: auto; scrollbar-width: thin;">
-        <table class="dash-table">
-            <tbody id="protocolStatsBody">
-                <tr><td style="text-align: center; padding: 2rem; color: var(--neo-text-muted)">Scanning for traffic...</td></tr>
-            </tbody>
-        </table>
-    </div>
+    <div class="panel-content" id="rawContent">
+        <div style="max-height: 240px; overflow-y: auto; scrollbar-width: thin;">
+            <table class="dash-table">
+                <tbody id="protocolStatsBody">
+                    <tr><td style="text-align: center; padding: 2rem; color: var(--neo-text-muted)">Scanning for traffic...</td></tr>
+                </tbody>
+            </table>
+        </div>
+  <!-- Scan Details Section -->
+  <div class="dash-panel" id="acc-raw-panel">
+      <div class="panel-header" onclick="toggleDashPanel('acc-raw-panel'); loadRawScanResults();">
+          <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined" style="color: var(--neo-text-muted);">terminal</span>
+              <span class="panel-title">Scan Details</span>
+          </div>
+          <div class="flex items-center gap-2">
+              <button class="btn-dash btn-secondary" onclick="event.stopPropagation(); copyRawLogs();" id="copyResultsBtn" style="height: 28px; padding: 0 8px; font-size: 0.6rem;">
+                  <span class="material-symbols-outlined" style="font-size: 1rem;">content_copy</span>
+              </button>
+              <span class="material-symbols-outlined expand-icon">expand_more</span>
+          </div>
+      </div>
+      <div class="panel-content">
+          <div class="detail-text-mono" id="resultsContent">
+              // NO RAW DATA CAPTURED
+          </div>
+      </div>
   </div>
-
 </div>
 
 <button class="fab-terminal" onclick="toggleTerminal()">
