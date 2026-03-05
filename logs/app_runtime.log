@@ -3369,3 +3369,131 @@
 [2026-03-05 09:01:40] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
 [2026-03-05 09:01:40] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
 [2026-03-05 09:04:04] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-05 09:04:32] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-05 09:04:33] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-05 09:04:33] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-05 09:04:33] [INFO    ] [run] [+] Database schema verified.
+[2026-03-05 09:04:33] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-05 09:04:42] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-05 09:04:43] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-05 09:04:43] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-05 09:05:07] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-03-05 09:05:11] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-05 09:05:11] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-03-05 09:05:11] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:05:14] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-03-05 09:05:14] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:05:14] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-05 09:05:14] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-03-05 09:05:21] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:05:21] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:05:24] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-05 09:05:26] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-05 09:05:26] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:05:26] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-05 09:05:26] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-05 09:05:26] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-05 09:05:26] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-05 09:05:28] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:05:28] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:05:30] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-05 09:05:30] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-05 09:05:31] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-05 09:05:32] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-05 09:05:34] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:05:34] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:05:36] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-05 09:05:37] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:05:37] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-05 09:05:37] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-05 09:05:37] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-05 09:05:37] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-05 09:05:37] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-05 09:05:39] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:05:39] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:07:46] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-05 09:12:45] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:12:46] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:12:50] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-03-05 09:12:51] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:12:51] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-05 09:12:51] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-03-05 09:12:51] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-03-05 09:12:52] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-05 09:12:58] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:12:58] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:13:00] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-05 09:13:00] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-05 09:13:01] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-05 09:13:01] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-05 09:13:01] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-05 09:13:19] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-05 09:13:21] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-05 09:13:23] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-05 09:13:23] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-05 09:15:56] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:15:56] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:15:59] [INFO    ] [run] [>] GET /ssl_scanner/ from 127.0.0.1
+[2026-03-05 09:16:00] [INFO    ] [run] [>] GET /ssl_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:16:00] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-03-05 09:16:01] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-03-05 09:16:01] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-03-05 09:16:01] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-03-05 09:16:01] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-03-05 09:16:01] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-03-05 09:16:02] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:16:02] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:16:38] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-05 09:16:39] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-05 09:18:32] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-05 09:18:32] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-05 09:18:33] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:18:33] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:18:39] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-05 09:18:40] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-05 09:18:40] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-05 09:18:40] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-05 09:18:40] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-05 09:18:40] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-05 09:18:41] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-05 09:18:41] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-05 09:18:41] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-05 09:18:41] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-05 09:18:41] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-05 09:18:41] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-05 09:18:41] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-05 09:18:41] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-05 09:19:39] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-05 09:19:39] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-05 09:19:59] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-05 09:19:59] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-05 09:20:01] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-05 09:20:01] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-05 09:20:01] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-05 09:20:02] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-05 09:20:02] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-05 09:20:26] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-05 09:20:26] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-05 09:20:27] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-05 09:20:27] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-05 09:20:27] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-05 09:20:27] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-05 09:20:27] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-05 09:20:33] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:20:33] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:20:34] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-05 09:20:34] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-05 09:20:35] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-05 09:20:35] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-05 09:20:35] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-05 09:20:36] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-05 09:20:36] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-05 09:20:39] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-03-05 09:20:39] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-03-05 09:20:39] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-05 09:20:40] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-03-05 09:20:40] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-05 09:20:40] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-05 09:23:09] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-05 09:23:31] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...

@@ -96,27 +96,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.selectDropdownItem = function(dropdownId, value, text) {
         const dropdown = document.getElementById(dropdownId);
-        if (!dropdown) return;
         const triggerText = dropdown.querySelector('.trigger-text');
         const items = dropdown.querySelectorAll('.dropdown-item');
         const menu = dropdown.querySelector('.dropdown-menu');
         
-        if (triggerText) triggerText.textContent = text;
+        triggerText.textContent = text;
         items.forEach(item => item.classList.toggle('active', item.dataset.value === value));
         
         if (dropdownId === 'profileDropdown' && elements.scanCategorySelect) {
             elements.scanCategorySelect.value = value;
         }
-
-        // AI Dropdown
-        if (dropdownId === 'aiDropdown') {
-            analyzeReport(value);
-        }
         
-        if (menu) {
-            menu.classList.remove('show');
-            menu.style.display = 'none';
-        }
+        menu.classList.remove('show');
+        menu.style.display = 'none';
     };
 
     window.toggleTerminal = function() {
