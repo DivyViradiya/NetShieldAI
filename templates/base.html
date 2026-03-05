@@ -13,8 +13,9 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
     <style>
@@ -22,64 +23,162 @@
       /* --- GLOBAL VARIABLES & THEME SETUP --- */
       /*******************************************/
       :root {
-        /* NEO-FUTURISM PALETTE */
-        --bg-color: #050505; /* Deepest Black */
-        --surface-color: #0f0f11; /* Card Background */
-        --border-color: #27272a; /* Zinc-800 for subtle borders */
-        --text-light: #f8fafc; /* Stark White */
-        --text-muted: #94a3b8; /* Slate-400 */
-        --accent-blue: #3b82f6; /* Vibrant Blue */
+        /* NEO-TECH DARK (Aligned with scanner/dashboard pages) */
+        --bg-primary: #000000;
+        --bg-secondary: #0a0a0b;
+        --surface-primary: #0f0f11;
+        --surface-elevated: #161618;
+        --surface-subtle: #121214;
+        
+        --border-default: #27272a;
+        --border-subtle: #18181b;
+        
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        
+        --accent-primary: #3b82f6;
         --accent-hover: #2563eb;
 
-        /* NEO-FUTURISM ADDITIONS */
-        --neo-card: var(--surface-color);
-        --neo-border: var(--border-color);
-        --neo-blue: var(--accent-blue);
-        --neo-text-primary: var(--text-light);
+        /* Standardized Severity (Dark) */
+        --severity-critical: #ef4444;
+        --severity-high: #f59e0b;
+        --severity-medium: #fbbf24;
+        --severity-low: #60a5fa;
+        --severity-success: #10b981;
+        --severity-info: #94a3b8;
+
+        /* Compatibility Mappings */
+        --bg-color: var(--bg-primary);
+        --surface-color: var(--surface-primary);
+        --border-color: var(--border-default);
+        --text-light: var(--text-primary);
+        --text-muted-old: var(--text-muted); /* Internal mapping */
+        --accent-blue: var(--accent-primary);
+        
+        --neo-card: var(--surface-primary);
+        --neo-border: var(--border-default);
+        --neo-blue: var(--accent-primary);
+        --neo-text-primary: var(--text-primary);
         --neo-text-secondary: var(--text-muted);
         --neo-text-label: #64748b;
-        --neo-card-hover: #161618;
+        --neo-card-hover: var(--surface-elevated);
+        --accent-vibrant-spinner: #00FFFF; /* Vibrant cyan for spinner */
 
         /* Standardized Heights */
         --navbar-height: 64px;
+
+        /* Scrollbar */
+        --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+        --scrollbar-hover: var(--accent-primary);
       }
 
-      /* LIGHT MODE OVERRIDES */
+      /* LIGHT MODE — NEO-TECH SLATE-INDIGO */
       body.light-mode {
-        --bg-color: #f8fafc;
-        --surface-color: #ffffff;
-        --border-color: #e2e8f0;
-        --text-light: #0f172a;
-        --text-muted: #475569;
-        --accent-blue: #2563eb;
-        --accent-hover: #1d4ed8;
+        --bg-primary: #f1f5f9;       /* Slate-100 — warm off-white base */
+        --bg-secondary: #e8edf5;     /* Indigo-tinted wash for sidebar/inputs */
+        --surface-primary: #ffffff;
+        --surface-elevated: #ffffff;
+        --surface-subtle: #f8faff;   /* Faint indigo tint for hover states */
 
-        --neo-card: var(--surface-color);
-        --neo-border: var(--border-color);
-        --neo-blue: var(--accent-blue);
-        --neo-text-primary: var(--text-light);
-        --neo-text-secondary: var(--text-muted);
-        --neo-text-label: #94a3b8;
-        --neo-card-hover: #f1f5f9;
+        --border-default: #cbd5e1;   /* Slate-300 — clearly visible borders */
+        --border-subtle: #e2e8f0;    /* Slate-200 — soft inner dividers */
+
+        --text-primary: #0f172a;     /* Slate-900 — strong contrast */
+        --text-secondary: #1e293b;   /* Slate-800 — body text */
+        --text-muted: #64748b;       /* Slate-500 — high readability */
+
+        --accent-primary: #4f46e5;   /* Indigo-600 — single unified accent */
+        --accent-hover: #4338ca;     /* Indigo-700 */
+        --accent-blue: #2563eb;      /* Blue-600 — secondary interactive */
+
+        /* Severity tokens — richer for light context */
+        --severity-critical: #dc2626;
+        --severity-critical-bg: #fef2f2;
+        --severity-high: #d97706;
+        --severity-high-bg: #fffbeb;
+        --severity-medium: #ca8a04;
+        --severity-medium-bg: #fefce8;
+        --severity-low: #2563eb;
+        --severity-low-bg: #eff6ff;
+        --severity-success: #059669;
+        --severity-success-bg: #ecfdf5;
+        --severity-info: #4f46e5;
+        --severity-info-bg: #eef2ff;
+
+        /* Compatibility mappings */
+        --bg-color: var(--bg-primary);
+        --surface-color: var(--surface-primary);
+        --border-color: var(--border-default);
+        --text-light: var(--text-primary);
+
+        /* neo-* namespace unified */
+        --neo-card: var(--surface-primary);
+        --neo-border: var(--border-default);
+        --neo-blue: var(--accent-primary);
+        --neo-text-primary: var(--text-primary);
+        --neo-text-secondary: var(--text-secondary);
+        --neo-text-label: var(--text-muted);
+        --neo-card-hover: var(--surface-subtle);
+        --accent-vibrant-spinner: #4f46e5;
+
+        --scrollbar-thumb: rgba(79, 70, 229, 0.15);
+        --scrollbar-hover: var(--accent-primary);
       }
-      
+
+      /* Subtle dot-grid background — indigo tint at 5% */
+      body.light-mode::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-image: radial-gradient(circle, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+        background-size: 28px 28px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
       body {
-        font-family: 'Inter', sans-serif;
+        font-family: 'IBM Plex Sans', 'Inter', sans-serif;
         background-color: var(--bg-color);
-        background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        background-size: 50px 50px;
-      
         display: flex;
         flex-direction: column;
         min-height: 100vh;
         padding-top: var(--navbar-height);
-        color: var(--text-muted);
+        color: var(--text-secondary);
         position: relative;
-        overflow-x: hidden; 
+        overflow-x: hidden;
       }
 
       body.light-mode {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+        color: var(--text-secondary);
+      }
+
+      /* Global Link Refinement */
+
+      body.light-mode a:not(.btn-dash):not(.btn-neo-primary):not(.details):not(.logout-link) {
+        color: var(--accent-blue);
+        transition: color 0.2s ease;
+      }
+      body.light-mode a:not(.btn-dash):not(.btn-neo-primary):not(.details):not(.logout-link):hover {
+        color: var(--accent-hover);
+      }
+
+      /* Global Button/Input Refinements for Institutional feel */
+      body.light-mode input, 
+      body.light-mode select, 
+      body.light-mode textarea {
+        background-color: var(--surface-primary);
+        border-color: var(--border-default);
+        color: var(--text-primary);
+      }
+
+      body.light-mode input::placeholder {
+        color: var(--text-muted);
+      }
+
+      body.light-mode button:not(.alert-close):not(.profile-button-text):not(.sidebar-toggle) {
+        transition: all 0.2s ease;
       }
 
       /* Logo Visibility Logic */
@@ -94,7 +193,7 @@
       /* 1. Standard approach (Firefox) */
       html {
         scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+        scrollbar-color: var(--scrollbar-thumb) transparent;
         font-size: 16px;
         overflow-x: hidden;
       }
@@ -112,8 +211,7 @@
 
       /* 2. WebKit approach (Chrome, Edge, Safari) */
       body {
-        /* This creates the overlay effect where supported */
-        overflow-y: overlay; 
+        overflow-y: auto;
       }
 
       ::-webkit-scrollbar {
@@ -129,7 +227,7 @@
 
       ::-webkit-scrollbar-thumb {
         /* The thumb itself */
-        background-color: rgba(255, 255, 255, 0.15); 
+        background-color: var(--scrollbar-thumb); 
         border-radius: 20px;
         
         /* This border trick makes the visual bar thinner (6px) 
@@ -141,7 +239,7 @@
 
       ::-webkit-scrollbar-thumb:hover {
         /* On hover, make it the accent color or a brighter white */
-        background-color: var(--accent-blue); 
+        background-color: var(--scrollbar-hover); 
         border: 2px solid transparent; /* Make it slightly thicker on hover */
       }
 
@@ -158,20 +256,36 @@
       }
       
       /*******************************************/
+      /* --- NAVBAR ISOLATION --- */
+      /* Prevent child-page CSS from bleeding into navbar */
+      /*******************************************/
+      .navbar,
+      .navbar *:not(.material-symbols-outlined) {
+        font-family: 'IBM Plex Sans', 'Inter', sans-serif !important;
+      }
+      .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined' !important;
+      }
+
+      /*******************************************/
       /* --- NAVBAR STYLES --- */
       /*******************************************/
+      .navbar-brand {
+        flex-shrink: 0;
+      }
       .navbar-logo-img {
         width: auto;
         height: 28px; 
+        object-fit: contain;
       }
       
       .navbar {
-        background-color: rgba(5, 5, 5, 0.95); 
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        background-color: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(20px) saturate(1.4);
+        -webkit-backdrop-filter: blur(20px) saturate(1.4);
         padding: 0 2rem;
         height: var(--navbar-height);
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid rgba(255,255,255,0.07);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -180,10 +294,24 @@
         top: 0;
         left: 0;
         z-index: 1000;
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      }
+
+      /* Scroll-aware elevation */
+      .navbar.scrolled {
+        box-shadow: 0 4px 30px rgba(0,0,0,0.7);
+        border-bottom-color: rgba(255,255,255,0.1);
       }
 
       body.light-mode .navbar {
-        background-color: rgba(255, 255, 255, 0.95);
+        background-color: rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid var(--border-default);
+        box-shadow: 0 1px 8px 0 rgba(99, 102, 241, 0.06);
+        backdrop-filter: blur(20px) saturate(1.4);
+        -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      }
+      body.light-mode .navbar.scrolled {
+        box-shadow: 0 4px 20px rgba(99,102,241,0.12);
       }
       
       .navbar-container {
@@ -191,6 +319,20 @@
         align-items: center;
         gap: 3rem;
         margin-left: auto;
+      }
+      
+      .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text-light);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      body.light-mode .mobile-menu-btn {
+        color: var(--text-primary);
       }
       
       .navbar-links {
@@ -214,12 +356,15 @@
         white-space: nowrap;
       }
       
-      .navbar-links li a:hover,
-      .navbar-links li a.active {
+      .navbar-links li a:hover {
         color: var(--text-light);
       }
+
+      body.light-mode .navbar-links li a:hover {
+        color: var(--accent-primary);
+      }
       
-      .navbar-links li a::after {
+      .navbar-links li a:not(.highlight-link)::after {
         content: '';
         position: absolute;
         width: 0;
@@ -230,9 +375,19 @@
         transition: width 0.3s ease-out;
       }
       
-      .navbar-links li a:hover::after,
-      .navbar-links li a.active::after {
+      .navbar-links li a:not(.highlight-link):hover::after,
+      .navbar-links li a:not(.highlight-link).active::after {
         width: 100%;
+      }
+
+      /* Active link: brighter color + faint glow */
+      .navbar-links li a:not(.highlight-link).active {
+        color: var(--text-primary);
+        text-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+      }
+      body.light-mode .navbar-links li a:not(.highlight-link).active {
+        color: var(--accent-primary);
+        text-shadow: none;
       }
       
       .navbar-links li a.highlight-link {
@@ -242,9 +397,20 @@
         border-radius: 2px;
         transition: all 0.3s ease;
       }
+
+      body.light-mode .navbar-links li a.highlight-link {
+        color: var(--text-primary);
+        border-color: var(--border-default);
+      }
+
       .navbar-links li a.highlight-link:hover {
         border-color: var(--text-light);
         background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      body.light-mode .navbar-links li a.highlight-link:hover {
+        border-color: var(--accent-primary);
+        background-color: var(--bg-secondary);
       }
       
       /*******************************************/
@@ -261,27 +427,28 @@
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.6rem;
         padding: 0;
         color: var(--text-light);
+        font-family: 'IBM Plex Sans', 'Inter', sans-serif;
         font-weight: 600;
-        font-size: 0.9rem;
-        transition: opacity 0.3s ease;
+        font-size: 0.85rem;
+        transition: opacity 0.2s ease;
       }
       
-      .profile-button-text:hover {
-        opacity: 0.8;
-      }
+      .profile-button-text:hover { opacity: 0.8; }
       
       .profile-button-text .arrow-down {
-        font-size: 1.1rem;
+        font-size: 1rem;
         transition: transform 0.2s ease-in-out;
+        color: var(--text-muted);
       }
       
       .profile-button-text.open .arrow-down {
         transform: rotate(180deg);
       }
-      
+
+
       /* Updated: Dropdown Container */
       .profile-dropdown-content {
         display: none;
@@ -299,7 +466,11 @@
       }
 
       body.light-mode .profile-dropdown-content {
-        box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.1);
+        background-color: rgba(255, 255, 255, 0.95);
+        border-color: var(--border-default);
+        box-shadow: 0px 10px 40px rgba(99, 102, 241, 0.1); /* Frosted indigo */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
       }
       
       /* New: User Header (Name & Email) */
@@ -309,6 +480,10 @@
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
+      }
+
+      body.light-mode .profile-dropdown-content .user-header {
+        border-bottom-color: var(--border-subtle);
       }
 
       .profile-dropdown-content .user-header .full-name {
@@ -331,7 +506,8 @@
       }
 
       body.light-mode .profile-dropdown-content .meta-data {
-        background-color: rgba(0, 0, 0, 0.02);
+        background-color: var(--bg-secondary);
+        border-bottom-color: var(--border-subtle);
       }
 
       .meta-row {
@@ -387,13 +563,19 @@
       }
 
       body.light-mode .profile-dropdown-content a.details:hover {
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
       }
       
       .profile-dropdown-content a.logout-link {
         color: #ef4444;
         margin-top: 0.5rem;
         border-top: 1px solid rgba(255,255,255,0.05);
+      }
+
+      body.light-mode .profile-dropdown-content a.logout-link {
+        border-top-color: var(--border-subtle);
+        color: #dc2626;
       }
       
       .profile-dropdown-content a.logout-link:hover {
@@ -410,6 +592,22 @@
           transform: translateY(0);
         }
       }
+
+      /* Global Spinner Style - VIBRANT */
+      .spinner {
+        width: 18px; /* Slightly larger for better visibility */
+        height: 18px; /* Slightly larger for better visibility */
+        border: 3px solid rgba(255, 255, 255, 0.2); /* Thicker, subtle base */
+        border-top-color: var(--accent-vibrant-spinner); /* Use the vibrant accent color */
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite; /* Consistent speed */
+        display: inline-block; /* Ensure it respects width/height */
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
       
       /*******************************************/
       /* --- FLASH MESSAGES --- */
@@ -419,45 +617,69 @@
         margin: 1rem auto 0 auto;
         padding: 0 2rem;
         z-index: 900;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      @keyframes alertSlideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes alertFadeOut {
+        from { opacity: 1; transform: translateY(0); max-height: 80px; }
+        to   { opacity: 0; transform: translateY(-6px); max-height: 0; padding-top: 0; padding-bottom: 0; margin: 0; }
       }
       .alert {
-        padding: 1rem;
-        border: 1px solid var(--border-color);
-        background-color: var(--surface-color);
+        padding: 0.85rem 1rem;
+        border: 1px solid rgba(255,255,255,0.07);
+        background: rgba(15, 15, 18, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         color: var(--text-muted);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 0.9rem;
+        gap: 1rem;
+        font-size: 0.875rem;
+        border-radius: 8px;
+        animation: alertSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        font-family: 'IBM Plex Sans', 'Inter', sans-serif;
       }
-      .alert-success {
-        border-left: 3px solid #10b981;
-        color: #10b981;
+      .alert.hiding {
+        animation: alertFadeOut 0.35s ease forwards;
+        overflow: hidden;
       }
-      .alert-danger {
-        border-left: 3px solid #ef4444;
-        color: #ef4444;
+      body.light-mode .alert {
+        background: rgba(255,255,255,0.85);
+        border-color: var(--border-default);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        backdrop-filter: blur(12px);
       }
-      .alert-warning {
-        border-left: 3px solid #f59e0b;
-        color: #f59e0b;
-      }
-      .alert-info {
-        border-left: 3px solid #3b82f6;
-        color: #3b82f6;
-      }
-      
+
+      .alert-success { border-left: 3px solid var(--severity-success); color: var(--severity-success); background: rgba(16,185,129,0.08); }
+      .alert-danger  { border-left: 3px solid var(--severity-critical); color: var(--severity-critical); background: rgba(239,68,68,0.08); }
+      .alert-warning { border-left: 3px solid var(--severity-high); color: var(--severity-high); background: rgba(245,158,11,0.08); }
+      .alert-info    { border-left: 3px solid var(--severity-low); color: var(--severity-low); background: rgba(59,130,246,0.08); }
+
+      body.light-mode .alert-success { background-color: var(--severity-success-bg); }
+      body.light-mode .alert-danger  { background-color: var(--severity-critical-bg); }
+      body.light-mode .alert-warning { background-color: var(--severity-high-bg); }
+      body.light-mode .alert-info    { background-color: var(--severity-low-bg); }
+
       .alert-close {
         background: none;
         border: none;
         color: inherit;
-        font-size: 1.2rem;
+        font-size: 1rem;
         cursor: pointer;
-        opacity: 0.7;
+        opacity: 0.5;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        padding: 0;
+        transition: opacity 0.2s;
       }
-      .alert-close:hover {
-        opacity: 1;
-      }
+      .alert-close:hover { opacity: 1; }
       
       /*******************************************/
       /* --- LAYOUT UTILITIES --- */
@@ -475,37 +697,44 @@
       /*******************************************/
 
       footer {
-        /* Match navbar background exactly */
-        background-color: rgba(5, 5, 5, 0.95); 
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        
+        background-color: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(20px) saturate(1.4);
+        -webkit-backdrop-filter: blur(20px) saturate(1.4);
         color: var(--text-muted);
-        padding: 1.5rem 0; /* Slightly tighter padding for a sleeker look */
+        padding: 1.75rem 0;
         width: 100%;
         margin-top: auto;
         flex-shrink: 0;
-        font-size: 0.8rem;
-        border-top: 1px solid var(--border-color);
+        font-size: 0.75rem;
+        border-top: 1px solid rgba(255,255,255,0.06);
         position: relative;
         z-index: 10;
-        transition: background-color 0.3s ease;
+        font-family: 'JetBrains Mono', monospace;
       }
 
       body.light-mode footer {
-        background-color: rgba(255, 255, 255, 0.95);
+        background-color: rgba(255, 255, 255, 0.92);
+        border-top: 1px solid var(--border-default);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 -4px 20px rgba(99,102,241,0.04);
       }
 
-      /* Subtle gradient line on top of footer */
+      /* Gradient accent line on top of footer */
       footer::before {
         content: '';
         position: absolute;
-        top: 0;
+        top: -1px;
         left: 0;
         width: 100%;
         height: 1px;
-        background: linear-gradient(90deg, transparent, var(--border-color), transparent);
-        opacity: 0.5;
+        background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+        opacity: 0.4;
+      }
+
+      body.light-mode footer::before {
+        background: linear-gradient(90deg, transparent, rgba(99,102,241,0.5), transparent);
+        opacity: 0.6;
       }
 
       .footer-content {
@@ -519,11 +748,29 @@
         text-align: center;
       }
 
+      /* Quick nav links in footer */
+      .footer-nav {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+      .footer-nav a {
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        opacity: 0.6;
+        transition: opacity 0.2s ease, color 0.2s ease;
+      }
+      .footer-nav a:hover { opacity: 1; color: var(--text-primary); }
+      body.light-mode .footer-nav a:hover { color: var(--accent-primary); }
+
       /* Container for Logo + Copyright */
       .footer-left {
         display: flex;
         align-items: center;
-        gap: 0.75rem; /* Tight spacing between logo and "© 2026..." */
+        gap: 0.75rem;
       }
 
       .footer-logo-img {
@@ -538,23 +785,23 @@
         opacity: 1;
       }
 
-      footer p {
-        margin: 0;
-        opacity: 0.7;
-      }
+      footer p { margin: 0; opacity: 0.6; letter-spacing: 0.03em; }
 
       footer .footer-brand {
-        color: var(--text-light);
-        font-weight: 500;
+        color: var(--text-muted);
+        font-weight: 400;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.1em;
+        opacity: 0.4;
+        font-size: 0.65rem;
       }
 
-      /* Desktop Layout: Logo/Copyright on left, Brand on right */
+      /* Desktop Layout: Logo/Copyright center, nav and brand on sides */
       @media (min-width: 768px) {
         .footer-content {
           flex-direction: row;
           justify-content: space-between;
+          align-items: center;
           text-align: left;
         }
       }
@@ -564,6 +811,18 @@
         border: 1px solid var(--border-color);
         padding: 3rem;
         box-shadow: none;
+        transition: all 0.3s ease;
+      }
+
+      body.light-mode .section-card {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%); /* Ice-blue wash */
+        border-color: var(--border-default);
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06); /* Soft indigo glow */
+      }
+
+      body.light-mode .section-card:hover {
+        border-color: rgba(99, 102, 241, 0.3); /* Indigo-tinted border */
+        box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1); /* Deeper indigo glow */
       }
       
       .fade-in-element {
@@ -576,13 +835,336 @@
         transform: translateY(0);
       }
       
+      /* ==========================================
+         MOBILE NAV DRAWER — Full Redesign
+         ========================================== */
       @media (max-width: 768px) {
-        .navbar-links {
+
+        /* --- Navbar shell --- */
+        .navbar { padding: 0 1.25rem; }
+
+        /* --- Hamburger button: visible on mobile --- */
+        .mobile-menu-btn {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          width: 40px;
+          height: 40px;
+          gap: 0;
+          background: transparent;
+          border: 1px solid var(--border-default);
+          border-radius: 8px;
+          cursor: pointer;
+          padding: 0;
+          margin-left: 0.75rem;
+          transition: border-color 0.2s;
+          position: relative;
+          flex-shrink: 0;
+        }
+        .mobile-menu-btn:hover { border-color: var(--accent-primary); }
+
+        /* Animated 3-bar → X via CSS spans */
+        .mobile-menu-btn .hb-bar {
+          display: block;
+          width: 18px;
+          height: 2px;
+          background: var(--text-muted);
+          border-radius: 2px;
+          transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease;
+          position: absolute;
+        }
+        .mobile-menu-btn .hb-bar:nth-child(1) { transform: translateY(-5px); }
+        .mobile-menu-btn .hb-bar:nth-child(2) { transform: translateY(0); }
+        .mobile-menu-btn .hb-bar:nth-child(3) { transform: translateY(5px); }
+
+        /* Open state → X */
+        .mobile-menu-btn.is-open .hb-bar:nth-child(1) { transform: translateY(0) rotate(45deg); }
+        .mobile-menu-btn.is-open .hb-bar:nth-child(2) { opacity: 0; width: 0; }
+        .mobile-menu-btn.is-open .hb-bar:nth-child(3) { transform: translateY(0) rotate(-45deg); }
+        .mobile-menu-btn.is-open { border-color: var(--accent-primary); }
+
+        body.light-mode .mobile-menu-btn .hb-bar { background: var(--text-primary); }
+
+        /* --- Backdrop overlay --- */
+        .nav-backdrop {
           display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.6);
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+          z-index: 998;
+          animation: backdropIn 0.25s ease;
         }
-        .navbar {
-          padding: 0.8rem 1.5rem;
+        .nav-backdrop.visible { display: block; }
+        @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Hide original desktop links on mobile */
+        .navbar-links { display: none !important; }
+        .profile-dropdown { display: none !important; }
+
+        /* --- Slide-in Drawer (Glassmorphism Floating Card) --- */
+        .mobile-drawer-links {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          position: fixed;
+          top: 10px;
+          right: 10px;
+          width: min(85vw, 330px);
+          height: auto;
+          max-height: calc(100dvh - 20px);
+          border-radius: 20px;
+          background: rgba(8, 8, 14, 0.88);
+          backdrop-filter: blur(45px) saturate(1.6);
+          -webkit-backdrop-filter: blur(45px) saturate(1.6);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow:
+            0 0 0 1px rgba(255,255,255,0.06) inset,
+            0 24px 60px rgba(0, 0, 0, 0.8),
+            0 8px 24px rgba(0, 0, 0, 0.6);
+          z-index: 1100;
+          display: flex !important;
+          flex-direction: column;
+          overflow-y: auto;
+          overscroll-behavior: contain;
+          gap: 0;
+          transform: translateX(calc(100% + 20px));
+          transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          padding-top: 2.8rem; /* space for floating close button */
+          padding-bottom: 1rem;
         }
+        body.light-mode .mobile-drawer-links {
+          background: rgba(248, 250, 252, 0.92);
+          backdrop-filter: blur(45px) saturate(1.6);
+          -webkit-backdrop-filter: blur(45px) saturate(1.6);
+          border: 1px solid rgba(99, 102, 241, 0.18);
+          box-shadow:
+            0 0 0 1px rgba(255,255,255,0.85) inset,
+            0 24px 60px rgba(99, 102, 241, 0.18),
+            0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+        .mobile-drawer-links.show-mobile { transform: translateX(0); }
+
+        /* --- Close button: floats top-right of drawer --- */
+        .nav-drawer-close {
+          position: absolute;
+          top: 0.7rem;
+          right: 0.7rem;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 8px;
+          color: var(--text-muted);
+          cursor: pointer;
+          transition: all 0.2s;
+          z-index: 2;
+          flex-shrink: 0;
+        }
+        body.light-mode .nav-drawer-close {
+          background: rgba(0,0,0,0.04);
+          border-color: var(--border-default);
+        }
+        .nav-drawer-close:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+
+        /* --- Inline Profile Card (top of drawer) --- */
+        .nav-profile-card {
+          display: flex;
+          align-items: center;
+          gap: 0.7rem;
+          padding: 0.6rem 1rem;
+          background: rgba(255,255,255,0.02);
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+          flex-shrink: 0;
+        }
+        body.light-mode .nav-profile-card { background: var(--bg-secondary); border-bottom-color: var(--border-default); }
+        .nav-profile-avatar {
+          width: 38px;
+          height: 38px;
+          border-radius: 10px;
+          background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 800;
+          font-size: 1rem;
+          color: white;
+          flex-shrink: 0;
+          text-transform: uppercase;
+        }
+        .nav-profile-info { display: flex; flex-direction: column; min-width: 0; }
+        .nav-profile-name {
+          font-size: 0.9rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .nav-profile-email {
+          font-size: 0.68rem;
+          color: var(--text-muted);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* --- Nav section label --- */
+        .nav-section-label {
+          font-size: 0.58rem;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          color: var(--text-muted);
+          font-weight: 700;
+          padding: 0.45rem 1rem 0.2rem;
+          opacity: 0.45;
+        }
+
+        /* --- Nav link items --- */
+        .mobile-drawer-links li {
+          width: 100%;
+          padding: 0 0.5rem;
+          margin: 0;
+          line-height: 1;
+        }
+        /* Kill browser default list spacing for special li wrappers */
+        .mobile-drawer-links li[style*="padding:0"],
+        .mobile-drawer-links li[style*="list-style:none"] { padding: 0 !important; margin: 0 !important; }
+        .mobile-drawer-links li a:not(.highlight-link) {
+          display: flex;
+          align-items: center;
+          gap: 0.65rem;
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: var(--text-muted);
+          text-decoration: none;
+          padding: 0.55rem 0.65rem;
+          border-radius: 7px;
+          transition: all 0.18s;
+          letter-spacing: 0.01em;
+          width: 100%;
+        }
+        .mobile-drawer-links li a:not(.highlight-link)::after { display: none; } /* remove underline */
+        .mobile-drawer-links li a:not(.highlight-link):hover {
+          background: rgba(255,255,255,0.04);
+          color: var(--text-primary);
+        }
+        body.light-mode .mobile-drawer-links li a:not(.highlight-link):hover {
+          background: var(--bg-secondary);
+          color: var(--accent-primary);
+        }
+        .mobile-drawer-links li a:not(.highlight-link).active {
+          background: rgba(59,130,246,0.1);
+          color: var(--accent-primary);
+        }
+        body.light-mode .mobile-drawer-links li a:not(.highlight-link).active {
+          background: rgba(99,102,241,0.09);
+          color: var(--accent-primary);
+        }
+
+        /* Register highlight link in drawer */
+        .mobile-drawer-links li a.highlight-link {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          margin: 0;
+          padding: 0.7rem;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.07em;
+        }
+
+        /* --- Drawer divider --- */
+        .nav-drawer-divider {
+          height: 1px;
+          background: var(--border-default);
+          margin: 0.5rem 1.25rem;
+          flex-shrink: 0;
+        }
+
+        /* --- Profile action links inside drawer --- */
+        .nav-profile-actions {
+          display: flex;
+          flex-direction: column;
+          padding: 0 0.75rem;
+          gap: 0;
+        }
+        .nav-profile-actions a {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: var(--text-muted);
+          text-decoration: none;
+          padding: 0.55rem 0.65rem;
+          border-radius: 7px;
+          transition: all 0.18s;
+          cursor: pointer;
+        }
+        .nav-profile-actions a .material-symbols-outlined { font-size: 1.1rem; }
+        .nav-profile-actions a:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+        body.light-mode .nav-profile-actions a:hover { background: var(--bg-secondary); color: var(--accent-primary); }
+        .nav-profile-actions a.logout { color: #ef4444; }
+        .nav-profile-actions a.logout:hover { background: rgba(239,68,68,0.08); color: #ef4444; }
+        body.light-mode .nav-profile-actions a.logout { color: #dc2626; }
+
+        /* Hide the old desktop dropdown trigger entirely on mobile */
+        .profile-dropdown { display: none !important; }
+
+        /* Prevent body scroll when drawer open */
+        body.nav-open { overflow: hidden; }
+
+      }
+
+      /* --- Footer mobile --- */
+      @media (max-width: 640px) {
+        .footer-content {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 0.5rem;
+          padding: 0 1.25rem;
+        }
+        .footer-left { justify-content: center; }
+        .footer-brand {
+          font-size: 0.7rem;
+          opacity: 0.5;
+          padding-top: 0.35rem;
+          border-top: 1px solid var(--border-default);
+          width: 100%;
+          text-align: center;
+        }
+      }
+      /* --- Desktop nav: always visible above 768px --- */
+      .navbar-links-desktop { display: flex; }
+      /* Hide desktop nav on mobile (handled by mobile_menu_btn) */
+      @media (max-width: 768px) {
+        .navbar-links-desktop { display: none !important; }
+        /* Drawer nav links list is always in DOM — shown via transform */
+        .nav-drawer-header,
+        .nav-profile-card,
+        .nav-section-label,
+        .nav-drawer-divider,
+        .nav-profile-actions { display: flex; } /* visible inside drawer */
+      }
+      /* Hide drawer-only elements on desktop */
+      @media (min-width: 769px) {
+        .mobile-drawer-links { display: none !important; }
+        .nav-backdrop { display: none !important; }
+        .nav-drawer-header,
+        .nav-profile-card,
+        .nav-section-label,
+        .nav-drawer-divider,
+        .nav-profile-actions { display: none; }
       }
     </style>
     {% block extra_css %}
@@ -598,7 +1180,8 @@
         }
       })();
     </script>
-    <nav class="navbar">
+    <nav class="navbar" id="main-navbar">
+      {% set hub_blueprints = ['network_scanner_bp', 'zap_scanner_bp', 'ssl_scanner_bp', 'packet_sniffer_bp', 'sql_scanner_bp', 'semgrep_bp', 'api_scanner_bp', 'killchain_bp'] %}
       <div class="navbar-brand">
         <a href="{{ url_for('index') }}">
           <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="navbar-logo-img dark-logo" />
@@ -612,7 +1195,6 @@
             <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
           </li>
           <li>
-            {% set hub_blueprints = ['network_scanner_bp', 'zap_scanner_bp', 'ssl_scanner_bp', 'packet_sniffer_bp', 'sql_scanner_bp', 'semgrep_bp', 'api_scanner_bp', 'killchain_bp'] %}
             <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">Security Hub</a>
           </li>
 
@@ -629,7 +1211,7 @@
 
         {% if current_user.is_authenticated %}
           <div class="profile-dropdown">
-            <button id="profile-button" class="profile-button-text">
+            <button id="profile-button" class="profile-button-text" aria-label="Profile menu">
               {{ current_user.full_name.split(' ')[0] if current_user.full_name else current_user.username }}
               <span class="material-symbols-outlined arrow-down">expand_more</span>
             </button>
@@ -691,10 +1273,13 @@
                 Account Settings
               </a>
 
-              <a href="{{ url_for('auth.logout') }}" class="logout-link">
-                <span class="material-symbols-outlined">logout</span>
-                Logout
-              </a>
+              <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form" style="margin:0;padding:0;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="logout-link" style="width:100%;text-align:left;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 1rem;font-size:0.85rem;color:#ef4444;border-radius:6px;margin-top:0.5rem;border-top:1px solid rgba(255,255,255,0.05);font-family:inherit;">
+                  <span class="material-symbols-outlined">logout</span>
+                  Logout
+                </button>
+              </form>
             </div>
           </div>
         {% else %}
@@ -707,8 +1292,116 @@
             </li>
           </ul>
         {% endif %}
+
+        <!-- Mobile Drawer Menu Toggle -->
+        <button id="mobile-menu-toggle" class="mobile-menu-btn" aria-label="Toggle navigation" aria-expanded="false">
+          <span class="hb-bar"></span>
+          <span class="hb-bar"></span>
+          <span class="hb-bar"></span>
+        </button>
       </div>
     </nav>
+
+    <!-- Mobile sliding drawer menu moved outside navbar container for reliability -->
+    <ul class="mobile-drawer-links" id="mobile-nav-drawer">
+
+      <!-- Floating close button (absolute on drawer card) -->
+      <li style="list-style:none; padding:0; margin:0; height:0; overflow:visible; position:static;">
+        <button class="nav-drawer-close" id="nav-drawer-close" aria-label="Close menu">
+          <span class="material-symbols-outlined" style="font-size:1rem;">close</span>
+        </button>
+      </li>
+
+      {% if current_user.is_authenticated %}
+      <!-- Inline profile card (mobile only) -->
+      <li style="list-style:none; padding:0;">
+        <div class="nav-profile-card">
+          <div class="nav-profile-avatar">
+            {{ (current_user.full_name.split(' ')[0] if current_user.full_name else current_user.username)[0] }}
+          </div>
+          <div class="nav-profile-info">
+            <span class="nav-profile-name">{{ current_user.full_name if current_user.full_name else current_user.username }}</span>
+            <span class="nav-profile-email">{{ current_user.email }}</span>
+          </div>
+        </div>
+      </li>
+      {% endif %}
+
+      <!-- Navigation label -->
+      <li style="list-style:none; padding:0;"><div class="nav-section-label">Navigation</div></li>
+
+      <li>
+        <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">home</span>Home
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">security</span>Security Hub
+        </a>
+      </li>
+
+      {% if current_user.is_authenticated %}
+        <li>
+          <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">
+            <span class="material-symbols-outlined" style="font-size:1.1rem;">bar_chart</span>Security Posture
+          </a>
+        </li>
+      {% endif %}
+
+      <li>
+        <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="{% if request.blueprint == 'chatbot_bp' %}active{% endif %}">
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">smart_toy</span>AI Analyzer
+        </a>
+      </li>
+
+      {% if not current_user.is_authenticated %}
+        <li>
+          <a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active{% endif %}">
+            <span class="material-symbols-outlined" style="font-size:1.1rem;">login</span>Login
+          </a>
+        </li>
+        <li style="padding: 0 0.75rem; margin-top: 0.5rem;">
+          <a href="{{ url_for('auth.register') }}" class="highlight-link {% if request.endpoint == 'auth.register' %}active{% endif %}">
+            Register
+          </a>
+        </li>
+      {% endif %}
+
+      {% if current_user.is_authenticated %}
+      <!-- Divider -->
+      <li style="list-style:none; padding:0;"><div class="nav-drawer-divider"></div></li>
+      <li style="list-style:none; padding:0;"><div class="nav-section-label">Account</div></li>
+
+      <!-- Profile actions -->
+      <li style="list-style:none; padding:0;">
+        <div class="nav-profile-actions">
+          {% if current_user.is_admin %}
+          <a href="{{ url_for('auth.admin_dashboard') }}">
+            <span class="material-symbols-outlined">admin_panel_settings</span>Admin Panel
+          </a>
+          {% endif %}
+          <a href="javascript:void(0)" onclick="toggleTheme()">
+            <span class="material-symbols-outlined" id="mob-theme-icon">light_mode</span>
+            <span id="mob-theme-text">Light Mode</span>
+          </a>
+          <a href="{{ url_for('auth.account_settings') }}">
+            <span class="material-symbols-outlined">manage_accounts</span>Account Settings
+          </a>
+          <form method="POST" action="{{ url_for('auth.logout') }}" style="margin:0;padding:0 0.65rem;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="logout" style="width:100%;text-align:left;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:0.75rem;padding:0.55rem 0;font-size:0.9rem;color:#ef4444;font-weight:600;font-family:inherit;">
+              <span class="material-symbols-outlined">logout</span>Logout
+            </button>
+          </form>
+        </div>
+      </li>
+      {% endif %}
+
+    </ul>
+
+    <!-- Backdrop overlay for mobile drawer -->
+    <div class="nav-backdrop" id="nav-backdrop"></div>
 
     <div class="flash-container">
       {% with messages=get_flashed_messages(with_categories=true) %}
@@ -716,7 +1409,9 @@
           {% for category, message in messages %}
             <div class="alert alert-{{ category }}">
               <span>{{ message }}</span>
-              <button class="alert-close" onclick="this.parentElement.style.display='none'">&times;</button>
+              <button class="alert-close" aria-label="Close">
+                <span class="material-symbols-outlined" style="font-size:1.1rem;">close</span>
+              </button>
             </div>
           {% endfor %}
         {% endif %}
@@ -736,7 +1431,7 @@
           <img src="{{ url_for('static', filename='images/NS_Logo_pdf.png') }}" alt="NS Logo" class="footer-logo-img light-logo" />
           <p>&copy; 2026 NetShieldAI. All rights reserved.</p>
         </div>
-        
+
         <p class="footer-brand">NetShield Pvt. Ltd. // Empowering Digital Trust</p>
       </div>
     </footer>
@@ -745,12 +1440,19 @@
     <script>
       function updateThemeUI() {
         const isLight = document.body.classList.contains('light-mode');
+        // Desktop dropdown icons (in profile dropdown)
         const themeIcon = document.getElementById('theme-icon');
         const themeText = document.getElementById('theme-text');
-        
         if (themeIcon && themeText) {
           themeIcon.textContent = isLight ? 'dark_mode' : 'light_mode';
           themeText.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+        }
+        // Mobile drawer icons
+        const mobIcon = document.getElementById('mob-theme-icon');
+        const mobText = document.getElementById('mob-theme-text');
+        if (mobIcon && mobText) {
+          mobIcon.textContent = isLight ? 'dark_mode' : 'light_mode';
+          mobText.textContent = isLight ? 'Dark Mode' : 'Light Mode';
         }
       }
 
@@ -763,45 +1465,114 @@
 
       document.addEventListener('DOMContentLoaded', function () {
         updateThemeUI();
-        // Dropdown Logic
-        const profileButton = document.getElementById('profile-button')
-        const dropdownContent = document.getElementById('profile-dropdown-content')
-      
-        if (profileButton) {
-          profileButton.addEventListener('click', function (event) {
-            event.stopPropagation()
-            const isVisible = dropdownContent.style.display === 'block'
-            dropdownContent.style.display = isVisible ? 'none' : 'block'
-            profileButton.classList.toggle('open', !isVisible)
-          })
+
+        // --- Scroll-Aware Navbar ---
+        const navbar = document.getElementById('main-navbar');
+        if (navbar) {
+          const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 10);
+          window.addEventListener('scroll', onScroll, { passive: true });
+          onScroll(); // init
         }
-      
-        window.addEventListener('click', function (event) {
-          if (dropdownContent && !dropdownContent.contains(event.target) && (!profileButton || !profileButton.contains(event.target))) {
-            dropdownContent.style.display = 'none'
-            if (profileButton) {
-              profileButton.classList.remove('open')
+
+        // --- Flash Message Auto-Dismiss & Close (event delegation) ---
+        const flashContainer = document.querySelector('.flash-container');
+        if (flashContainer) {
+          // Auto-dismiss after 5s
+          flashContainer.querySelectorAll('.alert').forEach(function(alert) {
+            setTimeout(function() {
+              if (alert && alert.parentNode) {
+                alert.classList.add('hiding');
+                alert.addEventListener('animationend', () => alert.remove(), { once: true });
+              }
+            }, 5000);
+          });
+          // Close button via delegation (no inline onclick)
+          flashContainer.addEventListener('click', function(e) {
+            const btn = e.target.closest('.alert-close');
+            if (!btn) return;
+            const alert = btn.closest('.alert');
+            if (alert) {
+              alert.classList.add('hiding');
+              alert.addEventListener('animationend', () => alert.remove(), { once: true });
             }
-          }
-        })
-      
-        // Scroll Animation Logic
+          });
+        }
+
+        // --- Mobile Drawer Logic ---
+        const toggle   = document.getElementById('mobile-menu-toggle');
+        const drawer   = document.getElementById('mobile-nav-drawer');
+        const backdrop = document.getElementById('nav-backdrop');
+        const closeBtn = document.getElementById('nav-drawer-close');
+
+        function openDrawer() {
+          if (!drawer) return;
+          drawer.classList.add('show-mobile');
+          backdrop && backdrop.classList.add('visible');
+          toggle && toggle.classList.add('is-open');
+          toggle && toggle.setAttribute('aria-expanded', 'true');
+          document.body.classList.add('nav-open');
+        }
+
+        function closeDrawer() {
+          if (!drawer) return;
+          drawer.classList.remove('show-mobile');
+          backdrop && backdrop.classList.remove('visible');
+          toggle && toggle.classList.remove('is-open');
+          toggle && toggle.setAttribute('aria-expanded', 'false');
+          document.body.classList.remove('nav-open');
+        }
+
+        if (toggle) toggle.addEventListener('click', function(e) {
+          e.stopPropagation();
+          drawer && drawer.classList.contains('show-mobile') ? closeDrawer() : openDrawer();
+        });
+
+        if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+        if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') closeDrawer();
+        });
+
+        if (drawer) {
+          drawer.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+              if (!link.href.includes('javascript:void')) closeDrawer();
+            });
+          });
+        }
+
+        // --- Desktop Profile Dropdown ---
+        const profileButton   = document.getElementById('profile-button');
+        const dropdownContent = document.getElementById('profile-dropdown-content');
+
+        if (profileButton && dropdownContent) {
+          profileButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            const isVisible = dropdownContent.style.display === 'block';
+            dropdownContent.style.display = isVisible ? 'none' : 'block';
+            profileButton.classList.toggle('open', !isVisible);
+          });
+
+          window.addEventListener('click', function(event) {
+            if (!dropdownContent.contains(event.target) && !profileButton.contains(event.target)) {
+              dropdownContent.style.display = 'none';
+              profileButton.classList.remove('open');
+            }
+          });
+        }
+
+        // --- Scroll Animation (Intersection Observer) ---
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible')
-              }
-            })
+              if (entry.isIntersecting) entry.target.classList.add('is-visible');
+            });
           },
           { threshold: 0.1 }
-        )
-      
-        const elementsToAnimate = document.querySelectorAll('.fade-in-element')
-        elementsToAnimate.forEach((el) => {
-          observer.observe(el)
-        })
-      })
+        );
+        document.querySelectorAll('.fade-in-element').forEach((el) => observer.observe(el));
+      });
     </script>
     {% block extra_scripts %}
 
