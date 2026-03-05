@@ -145,12 +145,15 @@ def get_local_ip():
 
 def get_packet_capture_cmd():
     """Checks for the availability of the TShark tool."""
-    try:
-        subprocess.run(['tshark', '-h'], capture_output=True, text=True, check=True,
-                       creationflags=_get_subprocess_creation_flags())
-        return 'tshark'
-    except:
-        return None
+    candidates = ['tshark', r'C:\Program Files\Wireshark\tshark.exe', r'C:\Program Files (x86)\Wireshark\tshark.exe']
+    for cmd in candidates:
+        try:
+            subprocess.run([cmd, '-h'], capture_output=True, text=True, check=True,
+                           creationflags=_get_subprocess_creation_flags())
+            return cmd
+        except:
+            continue
+    return None
 
 def list_available_interfaces(user_id=None):
     tshark_cmd = get_packet_capture_cmd()
@@ -245,8 +248,7 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
     Runs a TShark capture in a subprocess in the background.
     Isolated per user.
     """
-    if not ensure_admin_privileges(user_id):
-        return None
+    ensure_admin_privileges(user_id) # Just logs a warning now if not admin
 
     capture_cmd = get_packet_capture_cmd()
     if not capture_cmd:

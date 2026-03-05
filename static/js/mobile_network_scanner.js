@@ -330,26 +330,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = `
                 <div class="discovery-item ${riskClass} animate-mobile-card" style="animation-delay: ${index * 0.05}s">
                     <div class="discovery-header">
-                        <div class="service-info">
-                            <span class="service-name">${p.service}</span>
-                            <span class="service-version">${p.version || 'UNKNOWN VERSION'}</span>
-                        </div>
-                        <div class="port-box">
+                        <div class="port-badge">
                             <span class="port-id">${p.port}</span>
                             <span class="port-tag">${p.protocol}</span>
                         </div>
-                    </div>
-                    
-                    <div class="risk-indicator">
-                        <div class="risk-bar">
-                            <div class="risk-fill" style="width: ${rawScore * 100}%;"></div>
+                        <div class="service-info" style="margin-left: 0.75rem; flex: 1;">
+                            <span class="service-name">${p.service}</span>
+                            <span class="service-version">${p.version || 'UNKNOWN VERSION'}</span>
                         </div>
-                        <span class="risk-val">${displayScore}</span>
                     </div>
 
-                    <div class="vuln-detail-row">
-                        <span style="color: var(--card-accent, var(--neo-blue)); font-weight: 800; font-size: 0.6rem;">[ANALYSIS]</span>
-                        ${assessment}
+                    <div class="risk-section-mobile">
+                        <div class="risk-header-mobile">
+                            <span style="color: var(--neo-text-muted);">RISK SCORE</span>
+                            <span class="risk-val">${displayScore}</span>
+                        </div>
+                        <div class="risk-score-bar-mobile">
+                            <div class="risk-score-fill-mobile" style="width: ${rawScore * 100}%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-footer-mobile">
+                        <span style="color: var(--card-accent, var(--neo-blue)); font-weight: 800; font-size: 0.6rem;">[ANALYSIS] </span>${assessment}
                     </div>
                 </div>`;
             elements.openPortsTableBody.insertAdjacentHTML('beforeend', card);

@@ -53,6 +53,9 @@ SERVER_PROXY_URL = "http://localhost:5100"
 @login_required 
 def zap_scanner_page():
     logger.info(f"\033[34m[*] Accessing Web App Scanner Page (User: {current_user.username})\033[0m")
+    user_agent = request.headers.get('User-Agent')
+    if user_agent and any(word in user_agent for word in ['Mobile', 'Android', 'iPhone', 'iPad']):
+        return render_template('mobile_scanners/zap_scanner.html')
     return render_template('scanners/zap_scanner.html')
 
 

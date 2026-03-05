@@ -59,6 +59,9 @@ PDF_FILENAME = "sql_report.pdf"
 def sql_scanner_page():
     """Renders the SQL scanner page."""
     logger.info(f"\033[33m[*] Accessing SQL Scanner Page (User: {current_user.username})\033[0m")
+    user_agent = request.headers.get('User-Agent')
+    if user_agent and any(word in user_agent for word in ['Mobile', 'Android', 'iPhone', 'iPad']):
+        return render_template('mobile_scanners/sql_scanner.html')
     return render_template('scanners/sql_scanner.html')
 
 @sql_scanner_bp.route('/scan', methods=['POST'])

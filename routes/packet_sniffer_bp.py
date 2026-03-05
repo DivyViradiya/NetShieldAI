@@ -106,13 +106,9 @@ def start_capture_route():
         packet_sniffer.log("[!] No target IP provided for capture filter.", user_identifier)
         return jsonify({"status": "error", "message": "No target IP provided."}), 400
 
-    # Check admin privileges.
+    # Check admin privileges (Warning only, as Npcap can be configured for non-admins)
     if not packet_sniffer.is_admin():
-        packet_sniffer.log("[!] Sniffing requires administrator/root privileges. Server is not elevated.", user_identifier)
-        return jsonify({
-            "status": "error",
-            "message": "Server process lacks administrator/root privileges. Restart the Flask server as admin/root and retry."
-        }), 403
+        packet_sniffer.log("[!] Warning: Sniffing typically requires administrator/root privileges. Proceeding anyway...", user_identifier)
 
     if not packet_sniffer.get_packet_capture_cmd():
         return jsonify({"status": "error", "message": "TShark (Wireshark) not found."}), 500
@@ -445,19 +441,23 @@ def get_json_report_file():
         filename = report_manager.generate_report_filename("pcap_analysis_report", target, "json")
         json_path = os.path.join(user_dir, filename)
     else:
+        # Check history endpoint to resolve
         history = report_manager.get_report_history(user_dir, scanner_name="pcap_analysis_report", extension="json")
         if not history:
-             return jsonify({"status": "error", "message": "No reports found."}), 404
+            return jsonify({"status": "error", "message": "No reports found."}), 404
+        # Extract the correct string from the dict
         filename = history[0]['filename']
         json_path = os.path.join(user_dir, filename)
 
     if not os.path.exists(json_path):
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
 
-    directory = os.path.dirname(json_path)
-    # Re-assign filename cleanly just in case
-    filename = os.path.basename(json_path)
-    return send_from_directory(directory, filename, as_attachment=True, mimetype='application/json')
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            report_data = json.load(f)
+        return jsonify({"status": "success", "report": report_data})
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Failed to parse report: {e}"}), 500
 
 
 @packet_sniffer_bp.route('/clear_log', methods=['POST'])
@@ -473,6 +473,14 @@ def clear_log_route():
 def log_stream():
     """Streams logs from the packet_sniffer queue to the frontend (SSE)."""
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    
+    # Ensure log file exists before tailing
+    log_file_path = scan_logger.get_active_log_file(user_identifier, "packet_sniffer")
+    if not os.path.exists(log_file_path):
+        os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+        with open(log_file_path, 'w', encoding='utf-8') as f:
+            f.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] Log stream opened.\n")
+            
     return Response(
         scan_logger.tail_log_file(user_identifier, "packet_sniffer"),
         mimetype='text/event-stream'

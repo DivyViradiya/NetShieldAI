@@ -17,3 +17,57 @@
 [16:20:58] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
 [17:49:31] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
 [17:52:21] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:02:29] [INFO] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[18:02:29] [INFO] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[18:02:29] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[18:02:29] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_c9ecab88.txt 192.168.29.48
+[18:02:40] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[18:02:40] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[18:04:17] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:04:21] [INFO] [*] Log file cleared.
+[18:04:24] [INFO] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[18:04:24] [INFO] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[18:04:24] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[18:04:24] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_c0004e26.txt 192.168.29.48
+[18:04:33] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[18:04:33] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[18:05:27] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -4.9339, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -4.705, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -5.0854, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}], "vulnerabilities_count": 0}
+[18:05:27] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[18:05:27] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.48", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -4.9339, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -4.705, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -5.0854, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}]}
+[18:05:27] [INFO] [+] Processing results for PDF report...
+[18:05:29] [INFO] [+] JSON Scan report saved
+[18:05:29] [INFO] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[18:05:32] [INFO] [+] PDF report generated successfully
+[18:05:32] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[18:09:03] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:09:47] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:09:53] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[18:14:19] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:22:00] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:33:23] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:37:12] [INFO] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[19:37:12] [INFO] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[19:37:12] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[19:37:12] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_d17cd4fd.txt 192.168.29.48
+[19:37:20] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[19:37:20] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[19:37:24] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -4.9339, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -4.705, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -5.0854, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}], "vulnerabilities_count": 0}
+[19:37:24] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown / Not Detected", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[19:37:24] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.48", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -4.9339, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -4.705, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1, "tctr_priority": -5.0854, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}]}
+[19:37:24] [INFO] [+] Processing results for PDF report...
+[19:37:25] [INFO] [+] JSON Scan report saved
+[19:37:25] [INFO] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[19:37:29] [INFO] [+] PDF report generated successfully
+[19:37:29] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[19:39:31] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:40:13] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:00:14] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:01:07] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:02:55] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:04:20] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:05:02] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:05:14] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[20:14:14] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[08:48:37] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[09:05:26] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[09:05:37] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.

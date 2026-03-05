@@ -116,13 +116,19 @@ if __name__ == '__main__':
         if not os.environ.get("WERKZEUG_RUN_MAIN"):
             os.system('cls' if os.name == 'nt' else 'clear')
             print_banner()
-            
+
             logger.info("[*] Initializing Secure Database...")
             with app.app_context():
                 db.create_all()
             logger.info("[+] Database schema verified.")
+            logger.info("[+] System checks complete. Launching interface...\n")
 
-            # --- Pre-warm ML models in a background thread so Flask starts immediately ---
+        # --- Pre-warm ML models only in the HTTP-serving process.
+        # With use_reloader=True, Flask spawns two processes:
+        #   - Parent (watcher):  WERKZEUG_RUN_MAIN is NOT set  -> skip pre-warm
+        #   - Child (HTTP server): WERKZEUG_RUN_MAIN=true      -> pre-warm HERE
+        # This prevents the model from loading twice (once per process).
+        if os.environ.get("WERKZEUG_RUN_MAIN"):
             def _prewarm_ml():
                 try:
                     logger.info("[*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...")
@@ -134,8 +140,6 @@ if __name__ == '__main__':
 
             _ml_thread = threading.Thread(target=_prewarm_ml, name="ML-Prewarm", daemon=True)
             _ml_thread.start()
-
-            logger.info("[+] System checks complete. Launching interface...\n")
 
         # Run Flask.
         app.run(host='0.0.0.0', port=5100, debug=True, use_reloader=True, threaded=True)

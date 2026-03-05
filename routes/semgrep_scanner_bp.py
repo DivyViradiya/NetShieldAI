@@ -49,6 +49,9 @@ def get_user_results_dir():
 def semgrep_scanner_page():
     """Renders the Semgrep scanner page."""
     logger.info(f"[*] Accessing Source Code Scanner Page (User: {current_user.username})")
+    user_agent = request.headers.get('User-Agent')
+    if user_agent and any(word in user_agent for word in ['Mobile', 'Android', 'iPhone', 'iPad']):
+        return render_template('mobile_scanners/semgrep_scanner.html')
     return render_template('scanners/semgrep_scanner.html')
 
 @semgrep_bp.route('/scan', methods=['POST'])

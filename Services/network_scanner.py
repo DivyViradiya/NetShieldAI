@@ -81,6 +81,12 @@ def load_results_from_json(output_dir, user_id):
     """Loads scan results from the persisted JSON report into memory."""
     paths = get_output_paths(output_dir)
     json_file = paths["json_report"]
+    
+    if not json_file.exists():
+        history = report_manager.get_report_history(output_dir, scanner_name="network_scanner", extension="json")
+        if history:
+            json_file = Path(history[0]['path'])
+
     user_data = get_user_open_ports(user_id)
     
     if json_file.exists():
@@ -1046,11 +1052,16 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
         # Apply ML Threat Re-ranking for live data
         try:
             for p_obj in all_ports_list:
-                 p_obj["predicted_risk_score"] = tctr_engine.predict_risk(
+                 prediction_obj = tctr_engine.predict_risk(
                     f"Service: {p_obj['service']} ({p_obj['port']}/{p_obj['protocol']})", 
                     f"Version: {p_obj['version']}\nVulnerability: {p_obj['vulnerability']}",
                     cwe_id=None
                 )
+                 p_obj["predicted_risk_score"] = prediction_obj["score"]
+                 p_obj["tctr_priority"] = prediction_obj["tctr_priority"]
+                 p_obj["base_score"] = prediction_obj["base_score"]
+                 p_obj["priority_level"] = prediction_obj["priority_level"]
+                 p_obj["risk_justification"] = prediction_obj["risk_justification"]
             
             # Sort by predicted score
             all_ports_list.sort(

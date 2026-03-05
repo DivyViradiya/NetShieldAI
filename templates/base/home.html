@@ -5,76 +5,97 @@
 {% endblock %}
 
 {% block extra_css %}
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css" />
   <style>
-    /* --- PROFESSIONAL SAAS THEME --- */
+    /* --- NEO-FUTURISM THEME OVERRIDES --- */
     :root {
-      --neo-card: rgba(10, 10, 12, 0.5);
-      --neo-card-hover: rgba(15, 15, 18, 0.6);
-      --neo-border: rgba(255, 255, 255, 0.1);
-      --neo-accent: #ffffff;
+      --neo-bg: #050505;
+      --neo-card: rgba(15, 15, 17, 0.7);
+      --neo-card-hover: rgba(20, 20, 23, 0.8);
+      --neo-border: rgba(255, 255, 255, 0.08);
+      --neo-accent: #f8fafc;
       --neo-text-primary: #ffffff;
-      --neo-text-secondary: #888888;
+      --neo-text-secondary: #94a3b8;
       --neo-text-tertiary: #555555;
       --neo-blue: #3b82f6;
+      --neo-hero-gradient: radial-gradient(circle at 70% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 60%);
       --neo-card-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
-      --glass-blur: blur(24px);
-      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --glass-blur: blur(12px);
     }
 
     body.light-mode {
-      --neo-card: #ffffff;
-      --neo-card-hover: #f8faff;
-      --neo-border: #cbd5e1;
+      --neo-bg: #ffffff;
+      --neo-card: rgba(255, 255, 255, 0.8);
+      --neo-card-hover: rgba(255, 255, 255, 0.95);
+      --neo-border: rgba(59, 130, 246, 0.12);
       --neo-accent: #0f172a;
       --neo-text-primary: #0f172a;
-      --neo-text-secondary: #1e293b;
-      --neo-text-tertiary: #64748b;
-      --neo-blue: #4f46e5;
-      --neo-card-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
+      --neo-text-secondary: #475569;
+      --neo-text-tertiary: #94a3b8;
+      --neo-blue: #2563eb;
+      --neo-hero-gradient: radial-gradient(circle at 70% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 60%);
+      --neo-card-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.12), 0 10px 15px -5px rgba(0, 0, 0, 0.02);
       --chat-bg: #ffffff;
-      --chat-user-bg: #4f46e5;
-      --code-bg: #f1f5f9;
+      --chat-user-bg: #2563eb;
+      --code-bg: #f8fafc;
     }
 
+    /* --- LIGHT MODE SPECIFIC OVERRIDES (TECHNICAL ARCTIC) --- */
+    body.light-mode .bg-master-container { background: #ffffff; }
+    body.light-mode .bg-noise { opacity: 0.02; }
+    body.light-mode .nebula-blue { background: radial-gradient(circle, rgba(37, 99, 235, 0.15), transparent 70%); opacity: 0.5; }
+    body.light-mode .nebula-indigo { background: radial-gradient(circle, rgba(124, 58, 237, 0.1), transparent 70%); opacity: 0.4; }
+    
+    body.light-mode .active-grid { 
+      background-image: 
+        linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.6;
+    }
+    body.light-mode .circuit-lines { 
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 H90 V90 H10 Z' fill='none' stroke='rgba(37,99,235,0.08)' stroke-width='0.5'/%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(37,99,235,0.15)'/%3E%3Ccircle cx='90' cy='10' r='1' fill='rgba(37,99,235,0.15)'/%3E%3Ccircle cx='90' cy='90' r='1' fill='rgba(37,99,235,0.15)'/%3E%3Ccircle cx='10' cy='90' r='1' fill='rgba(37,99,235,0.15)'/%3E%3C/svg%3E");
+      opacity: 0.5; 
+    }
+    
     body.light-mode .neo-card {
-      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%); /* Ice-blue wash */
-      border: 1px solid var(--border-default);
+      background: var(--neo-card);
+      border: 1px solid rgba(37, 99, 235, 0.15);
       box-shadow: var(--neo-card-shadow);
     }
     body.light-mode .neo-card:hover { 
-      border-color: rgba(99, 102, 241, 0.3); /* Indigo-tinted border */
-      background: linear-gradient(135deg, #ffffff 0%, #e8edff 100%);
-      box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1); /* Deeper indigo glow */
+      border-color: var(--neo-blue); 
+      background: var(--neo-card-hover);
+      box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.2);
     }
     
     body.light-mode .lifecycle-step { 
-      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%); /* Ice-blue wash */
-      border-color: var(--border-default);
+      background: var(--neo-card); 
+      border-color: rgba(37, 99, 235, 0.15);
       box-shadow: var(--neo-card-shadow);
     }
-    body.light-mode .lifecycle-step:hover { border-color: rgba(99, 102, 241, 0.3); box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1); }
-    body.light-mode .step-number { color: var(--bg-secondary); }
+    body.light-mode .lifecycle-step:hover { border-color: var(--neo-blue); }
+    body.light-mode .step-number { color: rgba(37, 99, 235, 0.05); }
 
     body.light-mode .reporting-card { 
-      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%); /* Ice-blue wash */
-      border-color: var(--border-default);
+      background: var(--neo-card); 
+      border-color: rgba(37, 99, 235, 0.15);
       box-shadow: var(--neo-card-shadow);
     }
     body.light-mode .report-preview-box, 
-    body.light-mode .mock-hud-card { background: var(--bg-secondary); border-color: var(--border-subtle); }
+    body.light-mode .mock-hud-card { background: rgba(37, 99, 235, 0.03); border-color: rgba(37, 99, 235, 0.1); }
 
     body.light-mode .analyst-simple-section {
-      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
-      border-color: rgba(99, 102, 241, 0.15);
-      box-shadow: 0 40px 100px -20px rgba(99, 102, 241, 0.08);
+      background: var(--neo-card);
+      border-color: rgba(37, 99, 235, 0.15);
+      box-shadow: 0 40px 100px -20px rgba(37, 99, 235, 0.15);
     }
-    body.light-mode .code-snippet-abstract { background: var(--surface-primary); border-color: var(--border-subtle); }
+    body.light-mode .code-snippet-abstract { background: #ffffff; border-color: rgba(37, 99, 235, 0.1); }
    
     .main-content {
-      font-family: var(--font-ui);
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -90,6 +111,60 @@
       padding: 0 4rem;
     }
     
+    /* --- BACKGROUND ENHANCEMENTS --- */
+    .bg-master-container {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      background: var(--neo-bg);
+      pointer-events: none;
+    }
+
+    .bg-noise {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      mix-blend-mode: overlay;
+    }
+
+    .nebula {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      animation: drift 25s infinite ease-in-out;
+    }
+    .nebula-blue { width: 60vw; height: 60vw; background: radial-gradient(circle, var(--neo-blue), transparent 70%); top: -10%; left: -10%; }
+    .nebula-indigo { width: 50vw; height: 50vw; background: radial-gradient(circle, #4f46e5, transparent 70%); bottom: -10%; right: -5%; animation-delay: -5s; }
+
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(5%, 10%) scale(1.1); }
+      66% { transform: translate(-5%, 5%) scale(0.9); }
+    }
+
+    .active-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: grid-pulse 8s infinite alternate;
+    }
+
+    @keyframes grid-pulse { from { opacity: 0.3; } to { opacity: 0.7; } }
+
+    .circuit-lines {
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 H90 V90 H10 Z' fill='none' stroke='rgba(59,130,246,0.03)' stroke-width='0.5'/%3E%3Ccircle cx='10' cy='10' r='1' fill='rgba(59,130,246,0.1)'/%3E%3Ccircle cx='90' cy='10' r='1' fill='rgba(59,130,246,0.1)'/%3E%3Ccircle cx='90' cy='90' r='1' fill='rgba(59,130,246,0.1)'/%3E%3Ccircle cx='10' cy='90' r='1' fill='rgba(59,130,246,0.1)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      opacity: 0.5;
+    }
+
     /* --- HERO SECTION --- */
     .hero-wrapper {
       display: flex;
@@ -102,6 +177,7 @@
       padding-bottom: 4rem;
       position: relative;
       border-bottom: 1px solid var(--neo-border);
+      background: var(--neo-hero-gradient);
     }
     
     .hero-content { max-width: 800px; width: 100%; }
@@ -135,12 +211,12 @@
     .section-title { font-size: clamp(1.75rem, 5vw, 3rem); text-transform: uppercase; font-weight: 300; color: var(--neo-text-primary); line-height: 1.1; }
     .section-title b { font-weight: 800; display: block; color: var(--neo-text-primary); }
     
-    .neo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 6rem; }
-    .neo-card { background: linear-gradient(180deg, rgba(20,20,23,0.6) 0%, rgba(5,5,5,0) 100%); border: 1px solid var(--neo-border); border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 1 / 1; position: relative; text-decoration: none; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); overflow: hidden; }
+    .neo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 6rem; }
+    .neo-card, .reporting-card { background: linear-gradient(180deg, rgba(20,20,23,0.6) 0%, rgba(5,5,5,0) 100%); border: 1px solid var(--neo-border); border-radius: 12px; padding: 2rem; display: flex; flex-direction: column; min-height: 280px; position: relative; text-decoration: none; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); overflow: hidden; }
     .neo-card:hover, .reporting-card:hover { border-color: var(--neo-blue); transform: translateY(-5px); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.8); }
     
     .card-icon-box, .report-icon-wrap { width: 52px; height: 52px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--neo-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--neo-blue); margin-bottom: 1.5rem; transition: all 0.4s ease; }
-    .neo-card:hover .card-icon-box, .reporting-card:hover .report-icon-wrap { background: var(--neo-blue); color: white; border-color: var(--neo-blue); }
+    .neo-card:hover .card-icon-box, .reporting-card:hover .report-icon-wrap { background: var(--neo-blue); color: white; box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); border-color: var(--neo-blue); }
     .card-icon-box span, .report-icon-wrap span { font-size: 1.8rem; }
     
     .card-content { position: relative; z-index: 2; flex-grow: 1; }
@@ -176,14 +252,13 @@
       background: linear-gradient(180deg, rgba(20,20,23,0.6) 0%, rgba(5,5,5,0) 100%);
       border: 1px solid var(--neo-border);
       border-radius: 12px;
-      padding: 1.5rem 2rem;
+      padding: 2rem;
       position: relative;
       overflow: hidden;
       transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
       display: flex;
       flex-direction: column;
       text-decoration: none;
-      min-height: auto;
     }
 
     .reporting-card:hover {
@@ -202,6 +277,7 @@
       align-items: center;
       justify-content: center;
       color: var(--neo-blue);
+      margin-bottom: 1.5rem;
       transition: all 0.4s ease;
     }
 
@@ -215,244 +291,317 @@
     .reporting-card h3 {
       font-size: 1.25rem;
       color: white;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
       font-weight: 600;
     }
 
     .reporting-card p {
       font-size: 0.9rem;
       color: var(--neo-text-secondary);
-      line-height: 1.5;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .report-preview-box {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 1.25rem;
       margin-bottom: 1rem;
     }
 
-    body.light-mode .reporting-card { background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%); border-color: var(--border-default); box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06); }
-    body.light-mode .report-icon-wrap { background: var(--bg-secondary); border-color: var(--border-default); }
+    .dashboard-preview-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .mock-hud-card {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 0.75rem;
+    }
+
+    body.light-mode .reporting-card { background: #ffffff; border-color: #e2e8f0; }
+    body.light-mode .report-icon-wrap { background: #f1f5f9; border-color: #e2e8f0; }
     body.light-mode .reporting-card h3 { color: #0f172a; }
+    body.light-mode .report-preview-box, 
+    body.light-mode .mock-hud-card { background: #f8fafc; border-color: #e2e8f0; }
+
+    /* --- OVERWATCH MOCKUP --- */
+    .overwatch-mockup {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 6rem;
+    }
+
+    .overwatch-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .over-card {
+      background: rgba(15, 15, 17, 0.6);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    
+    body.light-mode .over-card {
+        background: rgba(255, 255, 255, 0.8);
+        border-color: #e2e8f0;
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+    }
+
+    .over-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 2px;
+      opacity: 0.5;
+    }
+    .over-card.blue::before { background: linear-gradient(90deg, transparent, var(--neo-blue), transparent); }
+    .over-card.red::before { background: linear-gradient(90deg, transparent, #ef4444, transparent); }
+    .over-card.green::before { background: linear-gradient(90deg, transparent, #10b981, transparent); }
+    .over-card.amber::before { background: linear-gradient(90deg, transparent, #f59e0b, transparent); }
+
+    .over-label { font-size: 0.7rem; text-transform: uppercase; color: var(--neo-text-muted); margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+    .over-value { font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--neo-text-primary); margin-bottom: 0.25rem; }
+    .over-sub { font-size: 0.75rem; color: var(--neo-text-tertiary); }
+
+    .overwatch-main-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .over-panel {
+      background: rgba(15, 15, 17, 0.4);
+      border: 1px solid var(--neo-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    body.light-mode .over-panel {
+        background: #ffffff;
+        border-color: #e2e8f0;
+    }
+
+    .over-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--neo-text-tertiary);
+      letter-spacing: 0.1em;
+    }
+
+    .live-tag {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.6rem;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+    .standard-tag {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--neo-blue);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.6rem;
+    }
+
+    .over-vuln-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .over-vuln-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--neo-border);
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+    
+    body.light-mode .over-vuln-item { background: #f8fafc; border-color: #f1f5f9; }
 
-            /* --- OVERWATCH MOCKUP --- */
+    .over-vuln-item .risk { padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; }
+    .over-vuln-item.high .risk { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+    .over-vuln-item.med .risk { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+    .over-vuln-item.low .risk { color: var(--neo-blue); background: rgba(59, 130, 246, 0.1); }
+    .over-vuln-item .name { color: var(--neo-text-primary); flex: 1; }
+    .over-vuln-item .target { color: var(--neo-text-tertiary); font-size: 0.7rem; }
 
-            .overwatch-mockup {
+    .over-comp-grid { display: flex; flex-direction: column; gap: 1rem; }
+    .over-comp-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .comp-info { display: flex; justify-content: space-between; font-size: 0.75rem; }
+    .comp-info strong { color: var(--neo-text-primary); }
+    .comp-info span { color: #10b981; font-family: var(--font-mono); font-weight: 700; }
+    .over-comp-item.fail .comp-info span { color: #f59e0b; }
 
-              margin-bottom: 6rem;
+    .comp-bar { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 2px; overflow: hidden; }
+    .comp-bar div { height: 100%; background: #10b981; }
+    .over-comp-item.fail .comp-bar div { background: #f59e0b; }
 
-            }
+        /* --- MINIMAL ANALYST SECTION --- */
 
-        
+        .analyst-minimal-section {
 
-            .overwatch-metrics {
+          margin: 2rem auto;
 
-              display: grid;
+          display: grid;
 
-              gap: 1.5rem;
+          grid-template-columns: 1.2fr 1fr;
 
-            }
+          gap: 3rem;
 
-        
+          align-items: center;
 
-            .over-card {
+          background: rgba(10, 10, 12, 0.4);
 
-              background: rgba(15, 15, 17, 0.6);
+          border: 1px solid var(--neo-border);
 
-              border: 1px solid var(--neo-border);
+          border-radius: 16px;
 
-              border-radius: 12px;
+          padding: 2rem 3rem;
 
-              padding: 1.5rem;
+          position: relative;
 
-              position: relative;
+          overflow: hidden;
 
-              overflow: hidden;
+          backdrop-filter: blur(10px);
 
-              backdrop-filter: blur(10px);
-
-              transition: all 0.3s ease;
-
-            }
-
-            
-
-            .over-card:hover { transform: translateY(-2px); border-color: var(--neo-blue); }
-
-        
-
-            body.light-mode .over-card {
-
-                background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 244, 255, 0.8) 100%);
-
-                border-color: var(--border-default);
-
-                box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
-
-            }
-
-        
-
-            .over-panel {
-
-              background: rgba(15, 15, 17, 0.4);
-
-              border: 1px solid var(--neo-border);
-
-              border-radius: 12px;
-
-              padding: 1.5rem;
-
-              backdrop-filter: blur(10px);
-
-            }
-
-            
-
-            body.light-mode .over-panel {
-
-                background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
-
-                border-color: var(--border-default);
-
-            }
-
-        
-
-                .over-card::before {
-
-        
-
-                  content: '';
-
-        
-
-                  position: absolute;
-
-        
-
-                  top: 0; left: 0; width: 100%; height: 3px;
-
-        
-
-                  opacity: 0.8;
-
-        
-
-                }
-
-        
-
-                .over-card.blue::before { background: var(--neo-blue); }
-
-        
-
-                .over-card.red::before { background: #ef4444; }
-
-        
-
-                .over-card.green::before { background: #10b981; }
-
-        
-
-                .over-card.amber::before { background: #f59e0b; }
-
-        
-
-            .over-label { font-size: 0.7rem; text-transform: uppercase; color: var(--neo-text-muted); margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
-
-            .over-value { font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--neo-text-primary); margin-bottom: 0.25rem; }
-
-            .over-sub { font-size: 0.75rem; color: var(--neo-text-tertiary); }
-
-        
-
-            @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-
-        
-
-            .over-vuln-item:hover { background: rgba(255, 255, 255, 0.05) !important; border-color: var(--neo-blue) !important; }
+        }
 
     
 
-        /* --- REFINED ANALYST SECTION --- */
-        .analyst-minimal-section {
-          margin-bottom: 6rem;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          background: linear-gradient(135deg, rgba(30, 41, 59, 0.3) 0%, rgba(15, 23, 42, 0.1) 100%);
-          border: 1px solid var(--neo-border);
-          border-radius: 20px;
-          padding: 3rem;
-          gap: 3rem;
-          align-items: center;
-          position: relative;
-          overflow: hidden;
-          backdrop-filter: var(--glass-blur);
-        }
-
-        .analyst-minimal-section::after {
-          content: '';
-          position: absolute;
-          top: -20%;
-          right: -10%;
-          width: 300px;
-          height: 300px;
-          background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
-          z-index: 0;
-          pointer-events: none;
-        }
-
         body.light-mode .analyst-minimal-section {
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 244, 255, 0.7) 100%);
-          border-color: rgba(99, 102, 241, 0.15);
+
+          background: rgba(255, 255, 255, 0.8);
+
+          border-color: #e2e8f0;
+
         }
+
+    
 
         .minimal-ai-content { position: relative; z-index: 1; }
-        .minimal-desc { font-size: 1rem; color: var(--neo-text-secondary); line-height: 1.6; margin-bottom: 2rem; }
+
+        .minimal-header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem; }
+
+        .minimal-btn { padding: 0.5rem 1.2rem; font-size: 0.75rem; }
+
         
-        .mini-feature { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--neo-text-primary); font-weight: 500; }
-        .mini-feature .material-symbols-outlined { color: var(--neo-blue); font-size: 1.2rem; opacity: 0.9; }
+
+        .minimal-desc { font-size: 0.9rem; color: var(--neo-text-secondary); line-height: 1.5; margin-bottom: 1.5rem; }
+
+        
+
+        .minimal-feature-row { display: flex; gap: 1.5rem; }
+
+        .mini-feature { display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem; color: var(--neo-text-primary); font-weight: 600; }
+
+        .mini-feature .material-symbols-outlined { color: var(--neo-blue); font-size: 1.1rem; }
+
+    
 
         .mini-terminal {
+
           background: #09090b;
+
           border: 1px solid var(--neo-border);
-          border-radius: 12px;
+
+          border-radius: 10px;
+
           overflow: hidden;
-          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-          position: relative;
-          z-index: 1;
+
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+
         }
+
         
+
         body.light-mode .mini-terminal {
-          background: linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%);
-          border-color: rgba(99, 102, 241, 0.15);
-          box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.1);
+
+          background: #ffffff;
+
+          border-color: #e2e8f0;
+
         }
+
+    
 
         .mini-term-head {
+
           background: rgba(255, 255, 255, 0.03);
-          padding: 0.75rem 1.2rem;
+
+          padding: 0.6rem 1rem;
+
           display: flex;
+
           align-items: center;
+
           gap: 1rem;
+
           border-bottom: 1px solid var(--neo-border);
-          font-size: 0.65rem;
+
+          font-size: 0.6rem;
+
           font-weight: 800;
+
           color: var(--neo-text-tertiary);
+
           letter-spacing: 0.1em;
+
         }
+
+        
 
         body.light-mode .mini-term-head {
-          background: var(--bg-secondary);
-          border-bottom-color: rgba(99, 102, 241, 0.1);
+
+          background: #f8fafc;
+
+          border-bottom-color: #e2e8f0;
+
         }
 
-        .mini-dots { display: flex; gap: 6px; }
-        .mini-dots span { width: 8px; height: 8px; border-radius: 50%; background: #334155; }
+    
 
-        .mini-term-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; }
-        .mini-msg { padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.8rem; line-height: 1.5; max-width: 85%; }
-        .mini-msg.user { align-self: flex-end; background: var(--neo-blue); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
-        .mini-msg.ai { background: rgba(255, 255, 255, 0.03); color: var(--neo-text-secondary); border: 1px solid var(--neo-border); }
+        .mini-dots { display: flex; gap: 4px; }
+
+        .mini-dots span { width: 6px; height: 6px; border-radius: 50%; background: #333; }
+
+    
+
+        .mini-term-body { padding: 1.2rem; display: flex; flex-direction: column; gap: 1rem; }
+
+        .mini-msg { padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.75rem; line-height: 1.4; max-width: 90%; }
+
+        .mini-msg.user { align-self: flex-end; background: var(--neo-blue); color: white; }
+
+        .mini-msg.ai { background: rgba(255, 255, 255, 0.05); color: var(--neo-text-secondary); border: 1px solid var(--neo-border); }
+
         
-        body.light-mode .mini-msg.ai { background: var(--bg-secondary); color: #334155; border-color: rgba(99, 102, 241, 0.1); }
 
+        body.light-mode .mini-msg.ai { background: #f1f5f9; color: #334155; border-color: #e2e8f0; }
 
         .mini-msg code { color: var(--neo-blue); font-family: var(--font-mono); }
 
@@ -460,30 +609,7 @@
 
     
 
-        /* Desktop equal-height panels — stretch both columns to same height */
-    .overwatch-main-grid {
-      align-items: stretch;
-    }
-    .mob-tab-panel {
-      display: flex;
-      flex-direction: column;
-    }
-    .mob-tab-panel .over-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    /* usage stats should grow to fill panel */
-    #home-usage-stats {
-      flex: 1;
-    }
-    /* reports grid should fill panel too */
-    #home-reports-grid {
-      flex: 1;
-      align-content: start;
-    }
-
-    @media (max-width: 1024px) {
+        @media (max-width: 1024px) {
 
           .analyst-minimal-section { grid-template-columns: 1fr; padding: 2rem; }
 
@@ -503,335 +629,25 @@
     .typing-dots span { width: 6px; height: 6px; background: var(--neo-blue); border-radius: 50%; }
 
     @media (max-width: 1024px) {
-      .neo-grid { grid-template-columns: repeat(2, 1fr); }
       .mock-sidebar { display: none; }
       .mock-messages { padding: 2rem 5%; }
       .mock-input-zone { padding: 0 1rem 2rem 1rem; }
-      .reporting-grid { grid-template-columns: 1fr; }
+      .reporting-section { grid-template-columns: 1fr; }
       .lifecycle-grid { grid-template-columns: 1fr; }
       .status-container { grid-template-columns: 1fr 1fr; }
-      .overwatch-metrics { grid-template-columns: repeat(2, 1fr); }
-      .overwatch-main-grid { grid-template-columns: 1fr !important; }
-    }
-
-    @media (max-width: 768px) {
-      /* --- Container & Hero --- */
-      .page-container { padding: 0 1.25rem; padding-bottom: 3rem; } /* #14 bottom padding */
-      .hero-wrapper {
-        min-height: auto;
-        padding-top: 2rem;
-        padding-bottom: 2.5rem;
-        border-bottom: none;
-        align-items: flex-start;
-      }
-      .hero-content { max-width: 100%; }
-      .hero-tagline { font-size: 0.7rem; margin-bottom: 0.75rem; }
-      .hero-title { font-size: clamp(2.2rem, 9vw, 3.2rem); margin-bottom: 1rem; }
-      .hero-title br { display: none; } /* #2 remove extra gap from hardcoded br */
-      .hero-sub {
-        font-size: 0.9rem;
-        margin-bottom: 1.5rem;
-        padding-left: 1rem;
-        border-left-width: 2px;
-      }
-      .hero-actions { flex-direction: column; width: 100%; gap: 0.75rem; }
-      /* #3 touch target height + full-width */
-      .btn-neo-primary { justify-content: center; text-align: center; width: 100%; box-sizing: border-box; padding-top: 0.9rem; padding-bottom: 0.9rem; }
-
-      /* --- Status Bar --- */
-      .status-bar { display: none; }
-
-      /* --- Section Headers --- */
-      .section-header { margin-bottom: 1.25rem; } /* #13 tighter spacing */
-      .section-header .section-label { display: none; }
-      .section-title {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.1rem;
-        line-height: 1;
-        font-weight: 300;
-        color: var(--neo-text-secondary);
-      }
-      .section-title b { font-size: 2rem; font-weight: 800; color: var(--neo-text-primary); }
-
-      /* --- Module Cards (neo-grid) --- */
-      /* #5 — 2-column at 768px, drops to 1-col at 480px below */
-      .neo-grid { grid-template-columns: repeat(2, 1fr); gap: 0.9rem; margin-bottom: 3rem; }
-      .neo-card {
-        padding: 1.1rem;
-        min-height: 180px; /* #4 consistent card height */
-        aspect-ratio: auto;
-        display: flex;
-        flex-direction: column;
-      }
-      .card-content { flex-grow: 1; } /* #4 push action to bottom */
-      .neo-card h3 {
-        font-size: 1rem !important;
-        font-weight: 700 !important;
-        margin-top: 0.6rem !important;
-        margin-bottom: 0.35rem !important;
-      }
-      .neo-card p {
-        font-size: 0.8rem !important;
-        line-height: 1.45 !important;
-        color: var(--neo-text-secondary) !important;
-      }
-      .neo-card .card-action {
-        color: var(--neo-blue) !important;
-        font-size: 0.68rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.08em !important;
-        margin-top: 0.75rem;
-      }
-      .neo-card .card-action span.material-symbols-outlined { font-size: 1rem !important; }
-
-      /* --- Lifecycle Grid --- */
-      .lifecycle-grid { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 3rem; }
-      .lifecycle-step { padding: 1.25rem 1.25rem 1.5rem; overflow: hidden; } /* #6 ensure overflow hidden */
-      .lifecycle-step h3 { font-size: 1.05rem; }
-      .lifecycle-step p { font-size: 0.88rem; }
-      /* #6 — reduce size + anchor to bottom-right so it doesn't fight icon */
-      .step-number {
-        font-size: 4.5rem;
-        top: auto;
-        bottom: -0.75rem;
-        right: 0.5rem;
-      }
-
-      /* --- Reporting Grid --- */
-      .reporting-grid { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 3rem; }
-      .reporting-card { padding: 1.25rem 1.5rem; }
-      .reporting-card h3 { font-size: 1.05rem; }
-      .reporting-card p { font-size: 0.88rem; }
-
-      /* --- Analyst Section --- */
-      .analyst-minimal-section {
-        grid-template-columns: 1fr;
-        padding: 1.5rem;
-        gap: 1.5rem;
-        margin-bottom: 3rem;
-        border-radius: 14px;
-      }
-      .minimal-ai-content h3 { font-size: 1.2rem !important; }
-      .minimal-desc { font-size: 0.9rem; margin-bottom: 1.25rem; }
-
-      /* #8 — reliable class-based 1-col for feature grid */
-      .mob-1col { grid-template-columns: 1fr !important; gap: 0.75rem !important; margin-bottom: 1.25rem !important; }
-      /* fallback: attribute selector for backwards compat */
-      .analyst-minimal-section [style*="grid-template-columns: 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-        gap: 0.75rem !important;
-        margin-bottom: 1.25rem !important;
-      }
-      .mini-feature { font-size: 0.82rem; }
-
-      /* Terminal mock */
-      .minimal-ai-visual { order: -1; }
-      .mini-term-body { padding: 1rem !important; gap: 0.9rem !important; }
-      /* #9 — prevent log lines from overflowing */
-      .mini-term-body > div { overflow-x: hidden; word-break: break-word; }
-      .mini-msg { font-size: 0.78rem !important; }
-
-      /* #10 — analyst CTA button full-width */
-      .analyst-minimal-section .btn-neo-primary { width: 100%; box-sizing: border-box; justify-content: center; }
-
-      /* --- Overwatch Mockup — Mobile Redesign --- */
-      .overwatch-mockup { margin-bottom: 3rem; }
-
-      /* 2×2 compact metric grid */
-      .overwatch-metrics {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 0.6rem !important;
-        margin-bottom: 0.75rem !important;
-      }
-      .over-card {
-        padding: 0.9rem 0.85rem 0.85rem !important;
-        border-radius: 10px !important;
-        overflow: hidden; /* #12 contain long content */
-      }
-      .over-card::before { height: 2px !important; }
-      .over-label {
-        font-size: 0.6rem !important;
-        letter-spacing: 0.06em !important;
-        margin-bottom: 0.35rem !important;
-        flex-wrap: wrap;
-        gap: 0.25rem;
-      }
-      .over-label .material-symbols-outlined { font-size: 0.85rem !important; }
-      .over-value {
-        font-size: 1.3rem !important;
-        line-height: 1.1 !important;
-        margin-bottom: 0.2rem !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      /* #11 — truncate long sub-text (e.g. scan dates) */
-      .over-sub {
-        font-size: 0.62rem !important;
-        line-height: 1.3 !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      /* Tab bar replaces the side-by-side panel grid */
-      .overwatch-main-grid { display: block !important; }
-
-      /* Mobile tab bar */
-      .mob-tab-bar {
-        display: flex;
-        gap: 0;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid var(--neo-border);
-        border-radius: 10px;
-        padding: 4px;
-        margin-bottom: 0.75rem;
-      }
-      body.light-mode .mob-tab-bar {
-        background: var(--bg-secondary);
-        border-color: var(--border-default);
-      }
-      .mob-tab-btn {
-        flex: 1;
-        padding: 0.5rem 0;
-        font-size: 0.65rem;
-        font-weight: 800;
-        letter-spacing: 0.09em;
-        text-transform: uppercase;
-        border: none;
-        background: transparent;
-        color: var(--neo-text-tertiary);
-        border-radius: 7px;
-        cursor: pointer;
-        transition: all 0.25s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.3rem;
-      }
-      .mob-tab-btn.active {
-        background: var(--neo-blue);
-        color: #fff;
-        box-shadow: 0 2px 10px rgba(59,130,246,0.35);
-      }
-      body.light-mode .mob-tab-btn.active { background: #2563eb; }
-      .mob-tab-btn .material-symbols-outlined { font-size: 0.9rem !important; }
-
-      /* Tab panels — flex so over-panel can fill full height */
-      .mob-tab-panel { display: none; }
-      .mob-tab-panel.active {
-        display: flex;
-        flex-direction: column;
-        min-height: 280px;
-      }
-      .mob-tab-panel .over-panel {
-        flex: 1;
-        border-radius: 10px;
-        padding: 1rem;
-        min-height: 280px;
-      }
-      .mob-tab-panel .over-panel-header {
-        margin-bottom: 0.9rem !important;
-      }
-      .over-vuln-item {
-        padding: 0.6rem 0.75rem !important;
-        font-size: 0.75rem !important;
-        border-radius: 7px !important;
-        gap: 0.6rem !important;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .neo-grid { grid-template-columns: 1fr; }
-      .status-container { grid-template-columns: 1fr; }
-      .overwatch-metrics { grid-template-columns: 1fr 1fr !important; }
-    }
-
-    @media (max-width: 480px) {
-      /* Extra-small phones */
-      .page-container { padding: 0 1rem; padding-bottom: 2.5rem; }
-      .hero-title { font-size: clamp(1.9rem, 8vw, 2.6rem); }
-      /* #1 — remove left border on hero-sub at tiny widths */
-      .hero-sub { font-size: 0.85rem; border-left: none; padding-left: 0; }
-      .section-title b { font-size: 1.75rem; }
-      .over-card { padding: 0.75rem 0.7rem !important; }
-      .over-value { font-size: 1.1rem !important; }
-      .mini-msg { max-width: 95% !important; }
-      .analyst-minimal-section { padding: 1.25rem; }
-      /* #5 — 1-column cards on tiny phones */
-      .neo-grid { grid-template-columns: 1fr; gap: 0.85rem; }
-      .neo-card { min-height: 150px; }
-      .neo-card, .lifecycle-step, .reporting-card { padding: 1rem; }
-    }
-
-    /* --- HOME REPORT CARDS --- */
-    .home-report-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 1rem 0.75rem 0.85rem;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--neo-border);
-      border-radius: 10px;
-      text-decoration: none;
-      gap: 0.25rem;
-      transition: all 0.25s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .home-report-card:hover {
-      border-color: var(--neo-blue);
-      background: rgba(59, 130, 246, 0.05);
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.15);
-    }
-    .home-report-type {
-      font-size: 0.58rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--neo-text-tertiary);
-      font-weight: 700;
-    }
-    .home-report-label {
-      font-size: 0.7rem;
-      color: var(--neo-text-primary);
-      font-weight: 600;
-      font-family: var(--font-mono);
-      word-break: break-all;
-      line-height: 1.2;
-    }
-    .home-report-date {
-      font-size: 0.58rem;
-      color: var(--neo-text-tertiary);
-      margin-top: 0.1rem;
-    }
-    .home-report-dl-icon {
-      font-size: 0.85rem !important;
-      color: var(--neo-text-tertiary);
-      opacity: 0;
-      margin-top: 0.25rem;
-      transition: opacity 0.2s;
-    }
-    .home-report-card:hover .home-report-dl-icon { opacity: 1; color: var(--neo-blue); }
-
-    body.light-mode .home-report-card {
-      background: linear-gradient(135deg, #ffffff 0%, #f4f7ff 100%);
-      border-color: var(--border-default);
-    }
-    body.light-mode .home-report-card:hover {
-      border-color: rgba(99, 102, 241, 0.4);
-      background: linear-gradient(135deg, #ffffff 0%, #eaefff 100%);
     }
   </style>
 {% endblock %}
 
 {% block content %}
+  <div class="bg-master-container">
+    <div class="bg-noise"></div>
+    <div class="nebula nebula-blue"></div>
+    <div class="nebula nebula-indigo"></div>
+    <div class="active-grid" id="grid-bg"></div>
+    <div class="circuit-lines"></div>
+  </div>
+
   <div class="page-container">
     <div class="hero-wrapper">
     <div class="hero-content fade-in-element">
@@ -841,10 +657,10 @@
         <span>Autonomous.</span>
         <span>Secure.</span>
       </h1>
-      <p class="hero-sub">NetShieldAI provides a unified platform to assess the security posture of your infrastructure, networks, and applications. Leverage automated penetration testing and advanced AI-driven intelligence.</p>
+      <p class="hero-sub">NetShieldAI is the unified service to test the security posture of your website, network, and databases. Perform automated penetration testing and get AI-based insights.</p>
 
       <div class="hero-actions">
-        <a href="{{ url_for('tools_hub') }}" class="btn-neo-primary">Access Security Suite <span class="material-symbols-outlined">arrow_forward</span></a>
+        <a href="{{ url_for('tools_hub') }}" class="btn-neo-primary">Launch Arsenal <span class="material-symbols-outlined">arrow_forward</span></a>
         <a href="{{ url_for('dashboard_bp.dashboard') }}" class="btn-neo-primary" style="background: transparent; border-color: var(--neo-border); color: var(--neo-text-primary);">Security Posture</a>
       </div>
     </div>
@@ -872,421 +688,333 @@
   </div>
 
   <div class="section-header fade-in-element">
-    <span class="section-label">Security Operations Center</span>
-    <h2 class="section-title">Core <b>Security Modules</b></h2>
+    <span class="section-label">System Modules</span>
+    <h2 class="section-title">Operational <b>Capabilities</b></h2>
   </div>
 
   <div class="neo-grid fade-in-element">
-    <a href="{{ url_for('killchain_bp.killchain_page') }}" class="neo-card">
-      <div style="display:flex; align-items:center; justify-content: space-between;">
-        <div class="card-icon-box" style="margin-bottom: 0; background: rgba(59, 130, 246, 0.1); border-color: var(--neo-blue);"><span class="material-symbols-outlined" style="color: var(--neo-blue);">view_in_ar</span></div>
-        <span class="status-badge" style="background: var(--neo-blue); color: white; border-color: var(--neo-blue);">SOC</span>
-      </div>
-      <div class="card-content">
-        <h3 style="font-size: 1.1rem; margin-top: 1rem; margin-bottom: 0.5rem;">Attack Simulation</h3>
-        <p style="font-size: 0.75rem; line-height: 1.4; color: var(--neo-text-tertiary); margin-bottom: 0;">Full-spectrum penetration testing orchestration.</p>
-      </div>
-      <div class="card-action" style="font-size: 0.65rem;"><span>Initialize</span><span class="material-symbols-outlined" style="font-size: 1rem;">double_arrow</span></div>
-    </a>
-
     <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="neo-card">
-      <div style="display:flex; align-items:center; justify-content: space-between;">
+      <div style="display:flex; align-items:center; margin-bottom: 1.5rem;">
         <div class="card-icon-box" style="margin-bottom: 0;"><span class="material-symbols-outlined">hub</span></div>
         <span class="status-badge" style="border-color: rgba(59,130,246,0.3); color: var(--neo-blue);">Active</span>
       </div>
       <div class="card-content">
-        <h3 style="font-size: 1.1rem; margin-top: 1rem; margin-bottom: 0.5rem;">Network Discovery</h3>
-        <p style="font-size: 0.75rem; line-height: 1.4; color: var(--neo-text-tertiary); margin-bottom: 0;">Map infrastructure and detect hidden services.</p>
+        <h3>Network Scanner</h3>
+        <p>Map open ports, detect operating systems, and identify hidden services with Nmap precision.</p>
       </div>
-      <div class="card-action" style="font-size: 0.65rem;"><span>Begin Scan</span><span class="material-symbols-outlined" style="font-size: 1rem;">arrow_forward</span></div>
-    </a>
-
-    <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="neo-card">
-      <div style="display:flex; align-items:center; justify-content: space-between;">
-        <div class="card-icon-box" style="margin-bottom: 0;"><span class="material-symbols-outlined">language</span></div>
-        <span class="status-badge" style="border-color: rgba(59,130,246,0.3); color: var(--neo-blue);">v1.0</span>
-      </div>
-      <div class="card-content">
-        <h3 style="font-size: 1.1rem; margin-top: 1rem; margin-bottom: 0.5rem;">Application Security</h3>
-        <p style="font-size: 0.75rem; line-height: 1.4; color: var(--neo-text-tertiary); margin-bottom: 0;">Automated web auditing and CVE ranking.</p>
-      </div>
-      <div class="card-action" style="font-size: 0.65rem;"><span>Security Audit</span><span class="material-symbols-outlined" style="font-size: 1rem;">arrow_forward</span></div>
+      <div class="card-action"><span>Initialize Grid Scan</span><span class="material-symbols-outlined">arrow_forward</span></div>
     </a>
 
     <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="neo-card">
-      <div style="display:flex; align-items:center; justify-content: space-between;">
+      <div style="display:flex; align-items:center; margin-bottom: 1.5rem;">
         <div class="card-icon-box" style="margin-bottom: 0;"><span class="material-symbols-outlined">troubleshoot</span></div>
-        <span class="status-badge" style="border-color: rgba(59,130,246,0.3); color: var(--neo-blue);">Live</span>
+        <span class="status-badge" style="border-color: rgba(59,130,246,0.3); color: var(--neo-blue);">Active</span>
       </div>
       <div class="card-content">
-        <h3 style="font-size: 1.1rem; margin-top: 1rem; margin-bottom: 0.5rem;">Traffic Analysis</h3>
-        <p style="font-size: 0.75rem; line-height: 1.4; color: var(--neo-text-tertiary); margin-bottom: 0;">Real-time telemetry and payload inspection.</p>
+        <h3>Network Monitor</h3>
+        <p>Real-time traffic analysis. Intercept packets and analyze handshake sequences securely.</p>
       </div>
-      <div class="card-action" style="font-size: 0.65rem;"><span>Monitor</span><span class="material-symbols-outlined" style="font-size: 1rem;">arrow_forward</span></div>
+      <div class="card-action"><span>Start Capture</span><span class="material-symbols-outlined">arrow_forward</span></div>
+    </a>
+
+    <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="neo-card">
+      <div style="display:flex; align-items:center; margin-bottom: 1.5rem;">
+        <div class="card-icon-box" style="margin-bottom: 0;"><span class="material-symbols-outlined">language</span></div>
+        <span class="status-badge" style="border-color: rgba(59,130,246,0.3); color: var(--neo-blue);">AI Enhanced</span>
+      </div>
+      <div class="card-content">
+        <h3>Web App Security</h3>
+        <p>ZAP-powered crawling with automated CVE/CWE ranking and deep vulnerability auditing.</p>
+      </div>
+      <div class="card-action"><span>Audit Application</span><span class="material-symbols-outlined">arrow_forward</span></div>
+    </a>
+
+    <a href="{{ url_for('ssl_scanner_bp.ssl_scanner_page') }}" class="neo-card">
+      <div style="display:flex; align-items:center; margin-bottom: 1.5rem;">
+        <div class="card-icon-box" style="margin-bottom: 0;"><span class="material-symbols-outlined">encrypted</span></div>
+        <span class="status-badge" style="border-color: rgba(59,130,246,0.3); color: var(--neo-blue);">TLS 1.3</span>
+      </div>
+      <div class="card-content">
+        <h3>SSL/TLS Scanner</h3>
+        <p>Verify certificate chains and analyze cipher strength against modern encryption standards.</p>
+      </div>
+      <div class="card-action"><span>Verify Encryption</span><span class="material-symbols-outlined">arrow_forward</span></div>
+    </a>
+
+    <a href="{{ url_for('killchain_bp.killchain_page') }}" class="neo-card">
+      <div style="display:flex; align-items:center; margin-bottom: 1.5rem;">
+        <div class="card-icon-box" style="margin-bottom: 0; background: rgba(59, 130, 246, 0.1); border-color: var(--neo-blue);"><span class="material-symbols-outlined" style="color: var(--neo-blue);">view_in_ar</span></div>
+        <span class="status-badge" style="background: var(--neo-blue); color: white; border-color: var(--neo-blue);">Orchestrator</span>
+      </div>
+      <div class="card-content">
+        <h3>Kill Chain</h3>
+        <p>Full-spectrum attack simulation. Automatically chain Nmap, SSL, and ZAP into a unified flow.</p>
+      </div>
+      <div class="card-action"><span>Run Simulation</span><span class="material-symbols-outlined">double_arrow</span></div>
+    </a>
+
+    <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="neo-card">
+      <div style="display:flex; align-items:center; margin-bottom: 1.5rem;">
+        <div class="card-icon-box" style="margin-bottom: 0;"><span class="material-symbols-outlined">database</span></div>
+        <span class="status-badge" style="border-color: #f59e0b; color: #f59e0b;">Deep Scan</span>
+      </div>
+      <div class="card-content">
+        <h3>SQL Injection</h3>
+        <p>Identify injection flaws and extract schema information using automated penetration tests.</p>
+      </div>
+      <div class="card-action"><span>Scan Database</span><span class="material-symbols-outlined">arrow_forward</span></div>
+    </a>
+
+    <a href="{{ url_for('api_scanner_bp.api_scanner_page') }}" class="neo-card">
+      <div style="display:flex; align-items:center; margin-bottom: 1.5rem;">
+        <div class="card-icon-box" style="margin-bottom: 0;"><span class="material-symbols-outlined">api</span></div>
+        <span class="status-badge" style="border-color: rgba(59,130,246,0.3); color: var(--neo-blue);">RESTful</span>
+      </div>
+      <div class="card-content">
+        <h3>API Security</h3>
+        <p>Test endpoints for broken authentication, injection, and sensitive data exposure vulnerabilities.</p>
+      </div>
+      <div class="card-action"><span>Scan Endpoints</span><span class="material-symbols-outlined">arrow_forward</span></div>
+    </a>
+
+    <a href="{{ url_for('semgrep_bp.semgrep_scanner_page') }}" class="neo-card">
+      <div style="display:flex; align-items:center; margin-bottom: 1.5rem;">
+        <div class="card-icon-box" style="margin-bottom: 0;"><span class="material-symbols-outlined">code</span></div>
+        <span class="status-badge" style="border-color: rgba(59,130,246,0.3); color: var(--neo-blue);">SAST</span>
+      </div>
+      <div class="card-content">
+        <h3>Source Code</h3>
+        <p>Analyze source code for vulnerabilities and hardcoded secrets using static analysis engine.</p>
+      </div>
+      <div class="card-action"><span>Analyze Repository</span><span class="material-symbols-outlined">arrow_forward</span></div>
     </a>
   </div>
 
   <div class="section-header fade-in-element">
-    <span class="section-label">Core Methodology</span>
-    <h2 class="section-title">Continuous <b>Threat Exposure</b> Management</h2>
+    <span class="section-label">Integrated Workflow</span>
+    <h2 class="section-title">The <b>Attack Surface</b> Lifecycle</h2>
   </div>
 
   <div class="lifecycle-grid fade-in-element">
     <div class="lifecycle-step">
       <div class="step-number">01</div>
       <div class="step-icon-wrap"><span class="material-symbols-outlined">radar</span></div>
-      <h3>Asset Discovery</h3>
-      <p>Systematically map infrastructure and identify critical endpoints using advanced reconnaissance techniques.</p>
+      <h3>Autonomous Discovery</h3>
+      <p>Map infrastructure and identify hidden endpoints using Nmap and advanced crawling techniques.</p>
     </div>
     <div class="lifecycle-step">
       <div class="step-number">02</div>
       <div class="step-icon-wrap"><span class="material-symbols-outlined">bug_report</span></div>
-      <h3>Vulnerability Management</h3>
-      <p>Execute deep-level audits (SQLi, XSS, SSRF) and analyze application logic for systemic security gaps.</p>
+      <h3>Deep Vulnerability Audit</h3>
+      <p>Simulate attacks (SQLi, XSS, SSRF) and analyze source code for logic flaws and security gaps.</p>
     </div>
     <div class="lifecycle-step">
       <div class="step-number">03</div>
       <div class="step-icon-wrap"><span class="material-symbols-outlined">healing</span></div>
-      <h3>Intelligent Remediation</h3>
-      <p>Receive actionable insights and automated patching recommendations to fortify your security posture.</p>
+      <h3>AI-Assisted Remediation</h3>
+      <p>Receive decoded insights and automated patches to fortify your security posture instantly.</p>
     </div>
   </div>
 
   <div class="section-header fade-in-element">
-    <span class="section-label">Enterprise Intelligence</span>
-    <h2 class="section-title">Agentic <b>Security Core</b></h2>
+    <span class="section-label">Enterprise Reporting</span>
+    <h2 class="section-title">Automated <b>Compliance</b> Reports</h2>
+  </div>
+  
+  <div class="reporting-grid fade-in-element">
+    <div class="reporting-card">
+      <div class="report-icon-wrap">
+        <span class="material-symbols-outlined">picture_as_pdf</span>
+      </div>
+      <h3>Professional Audit</h3>
+      <p>Generate detailed, executive-ready PDF reports for every scan session. Includes severity rankings and remediation steps.</p>
+      
+      <div class="report-preview-box">
+        <div class="mock-report-header">
+          <div style="height: 10px; width: 50px; background: #333; border-radius: 2px;"></div>
+          <div style="height: 10px; width: 30px; background: var(--neo-blue); border-radius: 2px;"></div>
+        </div>
+        <div class="mock-report-line" style="width: 100%;"></div>
+        <div class="mock-report-line" style="width: 80%;"></div>
+        <div class="mock-badge-row">
+          <div class="mock-badge" style="background: rgba(244, 63, 94, 0.2); border: 1px solid #f43f5e;"></div>
+          <div class="mock-badge" style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b;"></div>
+        </div>
+      </div>
+
+      <div class="card-action" style="border-top: none; padding-top: 0;">
+        <span>View Sample Reports</span>
+        <span class="material-symbols-outlined">description</span>
+      </div>
+    </div>
+
+    <a href="{{ url_for('dashboard_bp.dashboard') }}" class="reporting-card">
+      <div class="report-icon-wrap">
+        <span class="material-symbols-outlined">monitoring</span>
+      </div>
+      <h3>Security Posture</h3>
+      <p>Monitor your overall risk level and vulnerability trends in a unified, data-driven dashboard environment.</p>
+      
+      <div class="dashboard-preview-box">
+        <div class="mock-hud-card">
+          <div class="mock-hud-label" style="font-size: 0.5rem;">Threat Radar</div>
+          <div class="mock-hud-val" style="font-size: 1rem;">84%</div>
+        </div>
+        <div class="mock-hud-card">
+          <div class="mock-hud-label" style="font-size: 0.5rem;">Risk Level</div>
+          <div class="mock-hud-val" style="color: #f43f5e; font-size: 1rem;">HIGH</div>
+        </div>
+      </div>
+
+      <div class="card-action" style="border-top: none; padding-top: 0;">
+        <span>Open Security Dashboard</span>
+        <span class="material-symbols-outlined">dashboard</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="section-header fade-in-element">
+    <span class="section-label">Real-Time Telemetry</span>
+    <h2 class="section-title">Live Security <b>Overwatch</b></h2>
+  </div>
+
+  <div class="overwatch-mockup fade-in-element">
+    <!-- Top Metrics Row Mockup -->
+    <div class="overwatch-metrics">
+      <div class="over-card blue">
+        <div class="over-label">Attack Surface <span class="material-symbols-outlined">hub</span></div>
+        <div class="over-value">12</div>
+        <div class="over-sub">Open Ports Detected</div>
+      </div>
+      <div class="over-card red">
+        <div class="over-label">Critical Vulns <span class="material-symbols-outlined">bug_report</span></div>
+        <div class="over-value">04</div>
+        <div class="over-sub">Urgent Action Required</div>
+      </div>
+      <div class="over-card green">
+        <div class="over-label">Encryption <span class="material-symbols-outlined">verified_user</span></div>
+        <div class="over-value">92%</div>
+        <div class="over-sub">TLS 1.3 Compliance</div>
+      </div>
+      <div class="over-card amber">
+        <div class="over-label">Threat Level <span class="material-symbols-outlined">warning</span></div>
+        <div class="over-value">Elevated</div>
+        <div class="over-sub">Network Anomaly Detected</div>
+      </div>
+    </div>
+
+    <!-- Main Grid Mockup -->
+    <div class="overwatch-main-grid">
+      <!-- Radar/Vuln List Mockup -->
+      <div class="over-panel">
+        <div class="over-panel-header">
+          <span>THREAT RADAR</span>
+          <span class="live-tag">LIVE FEED</span>
+        </div>
+        <div class="over-vuln-list">
+          <div class="over-vuln-item high">
+            <span class="risk">HIGH</span>
+            <span class="name">SQL Injection Detected</span>
+            <span class="target">api/v1/login</span>
+          </div>
+          <div class="over-vuln-item med">
+            <span class="risk">MED</span>
+            <span class="name">Cross-Site Scripting (XSS)</span>
+            <span class="target">/search?q=...</span>
+          </div>
+          <div class="over-vuln-item low">
+            <span class="risk">LOW</span>
+            <span class="name">Missing Security Headers</span>
+            <span class="target">Global</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compliance Grid Mockup -->
+      <div class="over-panel">
+        <div class="over-panel-header">
+          <span>REGULATORY COMPLIANCE</span>
+          <span class="standard-tag">NIST v2.0</span>
+        </div>
+        <div class="over-comp-grid">
+          <div class="over-comp-item pass">
+            <div class="comp-info">
+              <strong>Data Encryption</strong>
+              <span>Pass</span>
+            </div>
+            <div class="comp-bar"><div style="width: 100%;"></div></div>
+          </div>
+          <div class="over-comp-item fail">
+            <div class="comp-info">
+              <strong>Access Control</strong>
+              <span>Warning</span>
+            </div>
+            <div class="comp-bar"><div style="width: 65%;"></div></div>
+          </div>
+          <div class="over-comp-item pass">
+            <div class="comp-info">
+              <strong>Network Logging</strong>
+              <span>Pass</span>
+            </div>
+            <div class="comp-bar"><div style="width: 100%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="analyst-minimal-section fade-in-element">
     <div class="minimal-ai-content">
-      <h3 style="font-size: 1.5rem; color: #ffffff; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-        AI-Driven Active Defense
-        <span class="status-badge" style="border-color: var(--neo-blue); color: var(--neo-blue); margin-left: 0;">v1.0</span>
-      </h3>
+      <div class="minimal-header-row">
+        <div>
+          <span class="section-label">AI-Powered Analysis</span>
+          <h2 class="section-title">Insights, <b>Demystified.</b></h2>
+        </div>
+        <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="btn-neo-primary minimal-btn">
+          Launch <span class="material-symbols-outlined">bolt</span>
+        </a>
+      </div>
       
       <p class="minimal-desc">
-        NetShield's AI Analyst functions as a sophisticated <b>security orchestrator</b>. It interprets complex directives, manages multi-tool execution sequences, and applies real-time security logic to mitigate risks.
+        NetShield's AI Analyst decodes complex scan results into plain English remediation steps.
       </p>
-
-      <div class="mob-1col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2.5rem;">
-        <div class="mini-feature"><span class="material-symbols-outlined">smart_toy</span> Policy Orchestration</div>
-        <div class="mini-feature"><span class="material-symbols-outlined">bolt</span> Automated Execution</div>
-        <div class="mini-feature"><span class="material-symbols-outlined">fact_check</span> Requirement Mapping</div>
-        <div class="mini-feature"><span class="material-symbols-outlined">shield</span> Risk Prioritization</div>
+      
+      <div class="minimal-feature-row">
+        <div class="mini-feature">
+          <span class="material-symbols-outlined">translate</span>
+          <span>Natural Language Queries</span>
+        </div>
+        <div class="mini-feature">
+          <span class="material-symbols-outlined">code</span>
+          <span>Auto-Remediation</span>
+        </div>
+        <div class="mini-feature">
+          <span class="material-symbols-outlined">history</span>
+          <span>Context Awareness</span>
+        </div>
       </div>
-
-      <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="btn-neo-primary">
-        Access Analyst Console <span class="material-symbols-outlined">arrow_outward</span>
-      </a>
     </div>
 
     <div class="minimal-ai-visual">
       <div class="mini-terminal">
         <div class="mini-term-head">
           <div class="mini-dots"><span></span><span></span><span></span></div>
-          <span>ANALYSIS_SESSION_v3.0</span>
+          <span>NETSHIELD ANALYST</span>
         </div>
-        <div class="mini-term-body" style="padding: 1.25rem;">
-          <div class="mini-msg user" style="font-size: 0.75rem; margin-bottom: 0.5rem;">"Assess local infrastructure for data exposure risks."</div>
-          
-          <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; line-height: 1.6; color: var(--neo-text-tertiary);">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; opacity: 0.8;">
-              <span class="material-symbols-outlined" style="font-size: 0.9rem;">terminal</span>
-              <span style="font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em;">ORCHESTRATION_LOG</span>
-            </div>
-            <div style="font-size: 0.7rem;">
-              <div><span style="opacity: 0.4;">[09:14:02]</span> > Initializing reconnaissance...</div>
-              <div><span style="opacity: 0.4;">[09:14:15]</span> > Service: HTTP-Proxy (8080/tcp)</div>
-              <div><span style="color: var(--neo-blue);">[09:14:16]</span> > Triggering application audit...</div>
-              <div><span style="color: #ef4444; font-weight: 700;">[09:14:45] > Violation:</span> Unprotected debug endpoint.</div>
-              <div><span style="opacity: 0.4;">[09:14:46]</span> > Orchestration complete.</div>
-            </div>
+        <div class="mini-term-body">
+          <div class="mini-msg user">Explain SQL Injection</div>
+          <div class="mini-msg ai">
+            The <code>id</code> parameter is unsanitized. Use prepared statements.
           </div>
         </div>
       </div>
     </div>
   </div>
-
-
-  <div class="section-header fade-in-element">
-    <span class="section-label">Real-Time Telemetry</span>
-    <h2 class="section-title">Security <b>Posture</b> Overview</h2>
-  </div>
-
-  <div class="overwatch-mockup fade-in-element">
-    {% if current_user.is_authenticated %}
-      <div class="overwatch-metrics" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
-        <div class="over-card blue">
-          <div class="over-label">Scan Target <span class="material-symbols-outlined">hub</span></div>
-          <div class="over-value" id="home-target" style="font-size: 1.2rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">N/A</div>
-          <div class="over-sub" id="home-scan-date">Last scan: Never</div>
-        </div>
-        <div class="over-card red">
-          <div class="over-label">Critical Risks <span class="material-symbols-outlined">bug_report</span></div>
-          <div class="over-value" id="home-critical">0</div>
-          <div class="over-sub">Urgent Remediation Required</div>
-        </div>
-        <div class="over-card green">
-          <div class="over-label">Data Captured <span class="material-symbols-outlined">verified_user</span></div>
-          <div class="over-value" id="home-sniffer">0</div>
-          <div class="over-sub">Total Network Packets</div>
-        </div>
-        <div class="over-card amber">
-          <div class="over-label">Compliance <span class="material-symbols-outlined">warning</span></div>
-          <div class="over-value" id="home-compliance">Unknown</div>
-          <div class="over-sub">NIST / OWASP Alignment</div>
-        </div>
-      </div>
-
-      <div class="overwatch-main-grid" style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem;">
-
-        <!-- Mobile-only tab bar -->
-        <div class="mob-tab-bar" id="overwatch-tab-bar" style="display:none;">
-          <button class="mob-tab-btn active" data-tab="reports" onclick="switchOverwatchTab('reports')">
-            <span class="material-symbols-outlined">folder_shared</span> Reports
-          </button>
-          <button class="mob-tab-btn" data-tab="usage" onclick="switchOverwatchTab('usage')">
-            <span class="material-symbols-outlined">bar_chart</span> System Usage
-          </button>
-        </div>
-
-        <div class="mob-tab-panel active" id="overwatch-panel-reports">
-          <div class="over-panel">
-            <div class="over-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; font-size: 0.75rem; font-weight: 800; color: var(--neo-text-tertiary); letter-spacing: 0.1em;">
-              <span style="display:flex; align-items:center; gap:0.5rem;"><span class="material-symbols-outlined" style="font-size:1rem; color:var(--neo-blue);">folder_shared</span>SCAN REPORTS</span>
-              <a href="{{ url_for('dashboard_bp.dashboard') }}" style="font-size:0.6rem; color:var(--neo-blue); text-decoration:none; display:flex; align-items:center; gap:0.25rem; opacity:0.8;">
-                Full Dashboard <span class="material-symbols-outlined" style="font-size:0.8rem;">open_in_new</span>
-              </a>
-            </div>
-            <!-- Reports grid, populated by JS -->
-            <div id="home-reports-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; min-height: 120px;">
-              <div style="grid-column: 1/-1; text-align:center; color:var(--neo-text-tertiary); padding:2rem; font-size:0.8rem; font-family:var(--font-mono);">
-                <span class="material-symbols-outlined" style="font-size:1.5rem; display:block; margin-bottom:0.5rem; opacity:0.4;">sync</span>
-                Loading reports...
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mob-tab-panel active" id="overwatch-panel-usage">
-          <div class="over-panel">
-            <div class="over-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.75rem; font-weight: 800; color: var(--neo-text-tertiary); letter-spacing: 0.1em;">
-              <span>SYSTEM USAGE</span>
-              <span class="standard-tag" style="background: rgba(59, 130, 246, 0.1); color: var(--neo-blue); padding: 2px 8px; border-radius: 4px; font-size: 0.6rem;">TELEMETRY</span>
-            </div>
-            <div id="home-usage-stats" style="display: flex; flex-direction: column; gap: 1rem;">
-               <!-- Stats populated by JS -->
-            </div>
-          </div>
-        </div>
-      </div>
-    {% else %}
-      <div class="over-card blue" style="text-align: center; padding: 3rem;">
-        <div class="over-label">Authentication Required</div>
-        <div class="over-value" style="font-size: 1.5rem;">Login to view live telemetry</div>
-        <p style="margin-top: 1rem; color: var(--neo-text-secondary);">Real-time security posture monitoring is available for registered users.</p>
-        <div style="margin-top: 1.5rem;">
-          <a href="{{ url_for('auth.login') }}" class="btn-neo-primary">Authenticate Now</a>
-        </div>
-      </div>
-    {% endif %}
-  </div>
-
   </div>
 {% endblock %}
 
 {% block extra_scripts %}
   <script>
-    {% if current_user.is_authenticated %}
-    document.addEventListener('DOMContentLoaded', async function() {
-      // 1. Fetch Kill Chain Stats for Top Risks and Metrics
-      try {
-        const kcResponse = await fetch('/dashboard/api/stats/killchain');
-        const kcData = await kcResponse.json();
-        
-        if (kcData.status !== "Not Scanned") {
-          document.getElementById('home-target').textContent = kcData.target || 'N/A';
-          document.getElementById('home-scan-date').textContent = 'Last scan: ' + (kcData.scan_date || 'N/A');
-          document.getElementById('home-critical').textContent = (kcData.vuln_summary.Critical + kcData.vuln_summary.High) || 0;
-          
-          const vulnList = document.getElementById('home-vuln-list');
-          vulnList.innerHTML = '';
-          
-          if (kcData.top_risks.length > 0) {
-            kcData.top_risks.forEach(risk => {
-              const div = document.createElement('div');
-              div.className = `over-vuln-item ${risk.severity.toLowerCase()}`;
-              div.style = "display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--neo-border); border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem;";
-              
-              // Internal styling for severity tags
-              let sevColor = "#ef4444";
-              let sevBg = "rgba(239, 68, 68, 0.1)";
-              if (risk.severity === 'Medium') { sevColor = "#f59e0b"; sevBg = "rgba(245, 158, 11, 0.1)"; }
-              
-              div.innerHTML = `
-                <span style="padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; color: ${sevColor}; background: ${sevBg};">${risk.severity.toUpperCase()}</span>
-                <span style="color: var(--neo-text-primary); flex: 1;">${risk.type}</span>
-                <span style="color: var(--neo-text-tertiary); font-size: 0.7rem;">${risk.param}</span>
-              `;
-              vulnList.appendChild(div);
-            });
-          } else {
-            vulnList.innerHTML = '<div style="text-align: center; color: var(--neo-text-tertiary); padding: 2rem;">No vulnerabilities detected.</div>';
-          }
-        }
-      } catch (e) { console.error('Error fetching Killchain stats:', e); }
-
-      // 2. Fetch Sniffer Stats
-      try {
-        const snifferResponse = await fetch('/dashboard/api/stats/sniffer');
-        const snifferData = await snifferResponse.json();
-        document.getElementById('home-sniffer').textContent = snifferData.total_packets || 0;
-      } catch (e) { console.error('Error fetching Sniffer stats:', e); }
-
-      // 3. Fetch Compliance Status
-      try {
-        const compResponse = await fetch('/dashboard/api/stats/compliance');
-        const compData = await compResponse.json();
-        if (compData.compliance_summary) {
-          const passCount  = compData.compliance_summary.passed || 0;
-          const totalCount = compData.compliance_summary.total  || 0;
-          document.getElementById('home-compliance').textContent =
-            totalCount > 0 ? Math.round((passCount / totalCount) * 100) + '%' : 'Unknown';
-        }
-      } catch (e) { console.error('Error fetching Compliance stats:', e); }
-
-      // 4. Fetch Usage Stats for the usage panel
-      try {
-        const usageResponse = await fetch('/dashboard/api/stats/usage');
-        const usageData = await usageResponse.json();
-        const usagePanel = document.getElementById('home-usage-stats');
-        
-        const scans = usageData.scans;
-        const scanTypes = [
-          { label: 'Network Scans', value: scans.nmap },
-          { label: 'Web Audits', value: scans.zap },
-          { label: 'AI Analyses', value: scans.ai_analysis },
-          { label: 'Kill Chain Runs', value: scans.killchain }
-        ];
-
-        usagePanel.innerHTML = '';
-        scanTypes.forEach(s => {
-          const div = document.createElement('div');
-          div.style = "display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem; border-bottom: 1px solid var(--neo-border);";
-          div.innerHTML = `
-            <span style="font-size: 0.85rem; color: var(--neo-text-secondary);">${s.label}</span>
-            <span style="font-family: var(--font-mono); font-weight: 700; color: var(--neo-blue);">${s.value}</span>
-          `;
-          usagePanel.appendChild(div);
-        });
-
-        const totalUsage = document.createElement('div');
-        totalUsage.style = "margin-top: 1rem; padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 8px; text-align: center;";
-        totalUsage.innerHTML = `
-          <div style="font-size: 0.7rem; color: var(--neo-text-tertiary); text-transform: uppercase;">Total Orchestrations</div>
-          <div style="font-size: 1.5rem; font-weight: 800; color: var(--neo-text-primary);">${usageData.total_system_usage}</div>
-        `;
-        usagePanel.appendChild(totalUsage);
-
-      } catch (e) { console.error('Error fetching Usage stats:', e); }
-    });
-    {% endif %}
-
-    // --- Mobile Overwatch Tab Switcher ---
-    function switchOverwatchTab(tab) {
-      const panels = document.querySelectorAll('.mob-tab-panel');
-      const btns   = document.querySelectorAll('.mob-tab-btn');
-      panels.forEach(p => p.classList.remove('active'));
-      btns.forEach(b => b.classList.remove('active'));
-      const panel = document.getElementById('overwatch-panel-' + tab);
-      if (panel) panel.classList.add('active');
-      const btn = document.querySelector('.mob-tab-btn[data-tab="' + tab + '"]');
-      if (btn) btn.classList.add('active');
-    }
-
-    function initOverwatchLayout() {
-      const isMobile = window.innerWidth <= 768;
-      const tabBar   = document.getElementById('overwatch-tab-bar');
-      const panels   = document.querySelectorAll('.mob-tab-panel');
-      if (!tabBar) return;
-
-      if (isMobile) {
-        tabBar.style.display = 'flex';
-        // Enter tab mode — show only reports panel by default
-        panels.forEach(p => p.classList.remove('active'));
-        const reportsPanel = document.getElementById('overwatch-panel-reports');
-        if (reportsPanel) reportsPanel.classList.add('active');
-        document.querySelectorAll('.mob-tab-btn').forEach(b => b.classList.remove('active'));
-        const reportsBtn = document.querySelector('.mob-tab-btn[data-tab="reports"]');
-        if (reportsBtn) reportsBtn.classList.add('active');
-      } else {
-        tabBar.style.display = 'none';
-        // Desktop: show all panels (grid handles layout)
-        panels.forEach(p => p.classList.add('active'));
-      }
-    }
-
-    // --- Home PDF Reports Panel ---
-    function getReportIcon(filename, folder) {
-      const name = (filename + folder).toLowerCase();
-      if (name.includes('killchain'))  return { icon: 'security',      color: '#a855f7' };
-      if (name.includes('network') || name.includes('nmap')) return { icon: 'hub', color: 'var(--neo-blue)' };
-      if (name.includes('zap') || name.includes('web'))      return { icon: 'language',    color: '#ef4444'   };
-      if (name.includes('ssl'))        return { icon: 'verified_user', color: '#10b981'   };
-      if (name.includes('sniffer') || name.includes('pcap')) return { icon: 'query_stats', color: '#f59e0b'   };
-      if (name.includes('sql'))        return { icon: 'storage',       color: 'var(--neo-blue)' };
-      if (name.includes('api'))        return { icon: 'api',           color: '#a855f7'   };
-      if (name.includes('semgrep') || name.includes('sast')) return { icon: 'code',   color: '#ec4899'   };
-      return { icon: 'description', color: 'var(--neo-text-tertiary)' };
-    }
-
-    async function fetchHomeReports() {
-      const grid = document.getElementById('home-reports-grid');
-      if (!grid) return;
-      try {
-        const resp = await fetch('/dashboard/api/stats/reports');
-        const data = await resp.json();
-        const reports = data.reports || [];
-
-        if (reports.length === 0) {
-          grid.innerHTML = `
-            <div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--neo-text-tertiary); font-size:0.8rem; font-family:var(--font-mono);">
-              <span class="material-symbols-outlined" style="font-size:1.8rem; display:block; margin-bottom:0.5rem; opacity:0.3;">folder_open</span>
-              No reports yet. Run a scan to generate one.
-            </div>`;
-          return;
-        }
-
-        // Show up to 8 most recent reports
-        grid.innerHTML = reports.slice(0, 8).map(r => {
-          const { icon, color } = getReportIcon(r.filename, r.folder || '');
-          const dlUrl = '/dashboard/download/report?path=' + encodeURIComponent(r.rel_path);
-          // Truncate label: remove _report_ prefix & .pdf suffix
-          const label = r.filename
-            .replace(/^.*?_report_/i, '')
-            .replace(/\.pdf$/i, '')
-            .replace(/_/g, ' ')
-            .slice(0, 20);
-          return `
-            <a href="${dlUrl}" download class="home-report-card" title="${r.filename}">
-              <span class="material-symbols-outlined" style="font-size:1.6rem; color:${color}; margin-bottom:0.4rem;">${icon}</span>
-              <span class="home-report-type">${r.type}</span>
-              <span class="home-report-label">${label}</span>
-              <span class="home-report-date">${r.date}</span>
-              <span class="material-symbols-outlined home-report-dl-icon">download</span>
-            </a>`;
-        }).join('');
-
-      } catch (e) {
-        console.error('Error fetching reports:', e);
-        if (grid) grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:1.5rem; color:var(--neo-text-tertiary); font-size:0.8rem;">Failed to load reports.</div>';
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      initOverwatchLayout();
-      fetchHomeReports();
-    });
-    window.addEventListener('resize', initOverwatchLayout);
+    /* No additional scripts required */
   </script>
 {% endblock %}

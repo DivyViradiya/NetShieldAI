@@ -229,9 +229,13 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.toggle('active', key === name);
         });
         
-        if (name === 'graph' && networkInstance) {
+        if (name === 'graph') {
              setTimeout(() => {
-                 networkInstance.fit();
+                 mountGraphIfNeeded(); // Deferred graph creation — canvas now has real dimensions
+                 if (networkInstance) {
+                     networkInstance.redraw();
+                     networkInstance.fit();
+                 }
              }, 100);
         }
     }
@@ -263,7 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => loadAndRenderReport(), 1000); 
             }
 
-            if (msg.includes("[!] Scan failed") || msg.includes("Scan failed to produce") || msg.includes("Failed")) {
+            // Only trigger UI failure on definitive scan-failure events, not incidental log lines.
+            if (msg.includes("[!] Packet capture failed") || msg.includes("Scan failed to produce") || msg.includes("capture_failed") || msg.includes("analysis_failed")) {
                 setStatus('Scan Failed', 'error');
                 isActionInProgress = false;
                 if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, false);
@@ -272,13 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (msg.includes("EVENT:") || msg.startsWith("EVENT:")) return;
             appendLog(msg);
         };
-
-        eventSource.onerror = () => {
-            if (eventSource.readyState !== EventSource.CLOSED) {
-                appendLog('[!] Log stream disconnected.');
-                eventSource.close();
-            }
-        };
+        // Let the browser handle SSE auto-reconnects natively if disconnected
     }
 
     // --- RENDERING LOGIC ---
@@ -637,6 +636,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Stores the last processed graph data so renderGraph can be called lazily
+    let pendingGraphData = null;
+
     function processGraphData(report) {
         const ts = report.traffic_summary || {};
         const lines = ts.tcp_conversation_stats || ts.tcp_conversations || [];
@@ -653,16 +655,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const leftParts = leftFull.split(':');
             const rightParts = rightFull.split(':');
 
-            const srcIp = leftParts[0];
+            const srcIp = leftParts[0].trim();
             const srcPort = leftParts[1] || '?';
-            const dstIp = rightParts[0];
+            const dstIp = rightParts[0].trim();
             const dstPort = rightParts[1] || '?';
             
             if(!srcIp || !dstIp) return;
 
+            // Parse bytes — tshark uses formats like "6061 bytes", "77 kB", "1.2 MB"
             let bytes = 0;
-            const bytesMatch = line.match(/\s(\d+)\s+bytes/); 
-            if(bytesMatch) bytes = parseInt(bytesMatch[1], 10);
+            const bytesRaw = parts[1];
+            const mbMatch = bytesRaw.match(/([\d.]+)\s*MB/);
+            const kbMatch = bytesRaw.match(/([\d.]+)\s*kB/);
+            const bMatch  = bytesRaw.match(/(\d+)\s+bytes/);
+            if (mbMatch)      bytes = parseFloat(mbMatch[1]) * 1024 * 1024;
+            else if (kbMatch) bytes = parseFloat(kbMatch[1]) * 1024;
+            else if (bMatch)  bytes = parseInt(bMatch[1], 10);
 
             const isLocal = (ip) => /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(ip);
 
@@ -695,8 +703,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 to: dstIp, 
                 label: displayPort !== '?' ? displayPort : '', 
                 font: { align: 'top', size: 10, strokeWidth: 2, strokeColor: '#050505', color: '#94a3b8' },
-                width: bytes > 5000 ? 3 : 1, 
-                title: `${bytes} Bytes Transferred` 
+                width: bytes > 50000 ? 4 : bytes > 10000 ? 2 : 1, 
+                title: `${(bytes/1024).toFixed(1)} KB Transferred` 
             });
         });
 
@@ -712,11 +720,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderGraph(report) {
-        if (!elements.networkGraphCanvas) return;
-        
+        // Process and cache graph data but do NOT create vis.Network yet.
+        // The canvas is hidden (display:none) when other tabs are active,
+        // which causes vis.js to render into a 0x0 element → blank graph.
+        // We defer actual rendering until the Graph tab is clicked.
         const data = processGraphData(report);
-        
-        if (data.nodes.length === 0) return;
+        if (data.nodes.length > 0) {
+            pendingGraphData = data;
+        }
+    }
+
+    function mountGraphIfNeeded() {
+        if (!elements.networkGraphCanvas || !pendingGraphData) return;
 
         const options = {
             nodes: {
@@ -734,12 +749,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             },
             edges: {
-                color: { color: 'rgba(255,255,255,0.1)', highlight: '#3b82f6' },
+                color: { color: 'rgba(255,255,255,0.15)', highlight: '#3b82f6' },
                 smooth: { type: 'continuous' },
                 selectionWidth: 2
             },
             physics: {
-                stabilization: { enabled: true, iterations: 1000 },
+                stabilization: { enabled: true, iterations: 500 },
                 barnesHut: {
                     gravitationalConstant: -12000, 
                     centralGravity: 0.3,           
@@ -760,10 +775,20 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (networkInstance) {
-            networkInstance.setData(data);
+            networkInstance.setData(pendingGraphData);
+            networkInstance.redraw();
         } else {
-            networkInstance = new vis.Network(elements.networkGraphCanvas, data, options);
+            networkInstance = new vis.Network(elements.networkGraphCanvas, pendingGraphData, options);
         }
+
+        setTimeout(() => {
+            if (networkInstance) {
+                networkInstance.redraw();
+                networkInstance.fit();
+            }
+        }, 150);
+
+        pendingGraphData = null; // consumed
     }
 
     // --- DOWNLOAD & AI LOGIC ---
@@ -978,39 +1003,56 @@ document.addEventListener('DOMContentLoaded', () => {
         const maxPackets = parseInt(elements.maxPacketsInput.value, 10) || 200;
         const bpfFilter = elements.bpfFilterInput.value.trim() || null;
 
-        if (isActionInProgress) return;
+        // NOTE: Do NOT set isActionInProgress here — apiPost() manages it.
+        // Setting it before calling apiPost() caused apiPost to immediately
+        // return null (its own guard), which triggered "Failed to start".
 
-        isActionInProgress = true;
-        if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, true);
         setStatus('Starting capture...', 'busy');
-        switchTab('summary'); 
-
+        switchTab('summary');
         appendLog('--- New Capture Initiated ---');
 
-        try {
-            const data = await apiPost('/start_capture', {
-                target_ip: targetIp,
-                duration,
-                max_packets: maxPackets,
-                interface_id: elements.interfaceSelect ? elements.interfaceSelect.value || null : null, 
-                custom_bpf_filter: bpfFilter,
-            }, null); // Pass null so apiPost doesn't auto-stop spinner
+        // Pass the button so apiPost shows/hides spinner during the HTTP call
+        const data = await apiPost('/start_capture', {
+            target_ip: targetIp,
+            duration,
+            max_packets: maxPackets,
+            interface_id: elements.interfaceSelect ? elements.interfaceSelect.value || null : null,
+            custom_bpf_filter: bpfFilter,
+        }, elements.startCaptureBtn);
 
-            if (!data || data.status !== 'success') {
-                isActionInProgress = false;
-                if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, false);
-                setStatus('Failed to start', 'error');
-            }
-        } catch (e) {
-            isActionInProgress = false;
-            if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, false);
+        if (!data || data.status !== 'success') {
+            // apiPost already reset isActionInProgress in its finally block
             setStatus('Failed to start', 'error');
+            return;
         }
+
+        // Capture initiated successfully — keep button in spinner/busy state
+        // until the SSE log stream signals SYSTEM_EVENT: READY_FOR_ANALYSIS
+        if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, true);
+        if (elements.stopCaptureBtn) elements.stopCaptureBtn.disabled = false;
+        setStatus('Capture running...', 'busy');
+        // isActionInProgress stays true until SSE signals completion
+        isActionInProgress = true;
     }
 
     async function stopCapture() {
+        // Use fetch directly — apiPost() is blocked by isActionInProgress during a scan.
         setStatus('Stopping...', 'busy');
-        await apiPost('/stop_capture', {}, elements.stopCaptureBtn);
+        try {
+            const res = await fetch(`${API_BASE_URL}/stop_capture`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify({}),
+            });
+            const data = await res.json();
+            appendLog(data.status === 'success' ? '[✓] Stop signal sent.' : `[!] Stop: ${data.message}`);
+        } catch (e) {
+            appendLog(`[x] Stop error: ${e.message}`);
+        } finally {
+            isActionInProgress = false;
+            if (elements.startCaptureBtn) toggleSpinner(elements.startCaptureBtn, false);
+            if (elements.stopCaptureBtn) elements.stopCaptureBtn.disabled = true;
+        }
     }
 
     // --- INIT ---

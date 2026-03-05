@@ -460,7 +460,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const solution = v.solution || "No remediation provided.";
 
         const cardHtml = `
-            <div class="finding-card">
+            <div class="finding-card ${riskClass}">
               <div class="finding-header" onclick="this.parentElement.classList.toggle('expanded')">
                 <div class="risk-indicator ${riskClass}">
                   <div class="risk-dot"></div>

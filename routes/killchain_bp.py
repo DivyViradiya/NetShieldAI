@@ -65,6 +65,9 @@ def get_fixed_scan_dir():
 @login_required
 def killchain_page():
     logger.info(f"[*] Accessing Kill Chain Audit Page (User: {current_user.username})")
+    user_agent = request.headers.get('User-Agent')
+    if user_agent and any(word in user_agent for word in ['Mobile', 'Android', 'iPhone', 'iPad']):
+        return render_template('mobile_scanners/killchain.html')
     return render_template('scanners/killchain.html')
 
 

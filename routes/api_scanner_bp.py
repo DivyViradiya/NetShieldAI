@@ -41,7 +41,9 @@ def get_user_results_dir():
 @login_required 
 def api_scanner_page():
     logger.info(f"[*] Accessing API Security Scanner Page (User: {current_user.username})")
-    # You will need a distinct HTML template for this
+    user_agent = request.headers.get('User-Agent')
+    if user_agent and any(word in user_agent for word in ['Mobile', 'Android', 'iPhone', 'iPad']):
+        return render_template('mobile_scanners/api_scanner.html')
     return render_template('scanners/api_scanner.html')
 
 

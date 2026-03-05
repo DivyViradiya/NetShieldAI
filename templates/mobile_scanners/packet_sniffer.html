@@ -10,166 +10,99 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
 
   <style>
-    /* --- 1. CRITICAL LAYOUT RESET --- */
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-    
-    html {
-      overflow-y: scroll;
-    }
-
     /* --- NEO-TECH THEME VARIABLES --- */
     :root {
       /* Palette */
-      --neo-bg: var(--bg-primary, #050505);
-      --neo-card: var(--surface-primary, #0f0f11);
-      --neo-card-hover: var(--surface-elevated, #161618);
-      --neo-input: var(--surface-subtle, #121214);
-      --neo-border: var(--border-default, #27272a);
+      --neo-bg: #050505;
+      --neo-card: #0a0a0c;
+      --neo-card-hover: #0e0e11;
+      --neo-input: #111111;
+      --neo-border: #27272a;
       
       /* Typography */
-      --neo-text-main: var(--text-primary, #f8fafc);
-      --neo-text-muted: var(--text-secondary, #cbd5e1);
+      --neo-text-main: #ffffff;
+      --neo-text-muted: #9ca3af;
       --font-ui: 'Inter', system-ui, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
       /* Accents */
-      --neo-blue: var(--accent-primary, #3b82f6);
-      --neo-red: var(--severity-critical, #ef4444);
-      --neo-green: var(--severity-success, #10b981);
-      --neo-amber: var(--severity-high, #f59e0b);
+      --neo-blue: #3b82f6;
+      --neo-red: #f43f5e;
+      --neo-green: #10b981;
+      --neo-amber: #f59e0b;
       
+      /* Functional Mapping */
+      --risk-high: var(--neo-red);
+      --risk-med: var(--neo-amber);
+      --risk-low: var(--neo-blue);
+      --status-online: var(--neo-green);
+
       /* Radii */
-      --radius-card: 12px;
-      --radius-sm: 8px;
+      --radius-card: 8px;
+      --radius-sm: 6px;
     }
-
-    body.light-mode {
-      --neo-bg: var(--bg-primary);
-      --neo-card: var(--surface-primary);
-      --neo-card-hover: var(--bg-secondary);
-      --neo-input: var(--surface-primary);
-      --neo-border: var(--border-default);
-      
-      --neo-text-main: var(--text-primary);
-      --neo-text-muted: var(--text-secondary);
-      
-      --neo-blue: #4f46e5;
-      --neo-red: var(--severity-critical);
-      --neo-green: var(--severity-success);
-      --neo-amber: var(--severity-high);
-    }
-
+    
     /* --- GLOBAL BASE --- */
     body {
       background-color: var(--neo-bg);
       color: var(--neo-text-main);
       font-family: var(--font-ui);
-      margin: 0;
-      line-height: 1.5;
-      padding-bottom: 80px; /* Space for FAB */
     }
-
-    .mobile-wrapper {
-      width: 100%;
+    
+    .dashboard-wrapper {
+      max-width: 1600px;
       margin: 0 auto;
-      max-width: 600px;
+      padding: 2rem;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      padding: 1rem;
-      overflow-x: hidden;
+      gap: 1.5rem;
     }
-
-    .hidden { display: none !important; }
+    
+    /* Utilities */
     .relative { position: relative; }
     .absolute { position: absolute; }
     .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .hidden { display: none !important; }
     .w-full { width: 100%; }
-
-    /* --- 1. TOP APP BAR --- */
-    .top-app-bar {
-      height: 72px;
+    .h-full { height: 100%; }
+    .overflow-auto { overflow: auto; }
+    .overflow-hidden { overflow: hidden; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .items-center { align-items: center; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.5rem; }
+    .grid { display: grid; }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .p-6 { padding: 1.5rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .pb-2 { padding-bottom: 0.5rem; }
+    .bg-black { background-color: #000; }
+    
+    /* --- LAYOUT GRID --- */
+    .scan-overview-grid {
       display: grid;
-      grid-template-columns: 40px 1fr 40px;
-      align-items: center;
-      gap: 1rem;
-      padding: 0 1.25rem;
-      background: rgba(5, 5, 5, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--neo-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .top-app-bar .back-btn {
-      color: var(--neo-text-muted);
-      text-decoration: none;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--neo-border);
-      border-radius: 10px;
-      transition: all 0.2s;
-    }
-    .top-app-bar .back-btn:active { background: rgba(255,255,255,0.1); transform: scale(0.95); }
-
-    .top-app-bar .title-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .top-app-bar .title {
-      font-weight: 800;
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      line-height: 1.2;
-    }
-
-    .top-app-bar .info-line {
-      font-size: 0.65rem;
-      font-weight: 600;
-      color: var(--neo-text-muted);
-      font-family: var(--font-mono);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      grid-template-columns: 2fr 3fr; 
+      gap: 1.5rem;
+      margin-bottom: 0.5rem;
       width: 100%;
     }
 
-    /* --- COMPONENT: HUD CARDS --- */
-    .control-card, .metric-card, .dash-panel, .bottom-sheet {
-      background: linear-gradient(180deg, rgba(20,20,23,0.6) 0%, rgba(5,5,5,0) 100%);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+    /* --- COMPONENT: HUD CARDS (Shared Style) --- */
+    .control-card, .metric-card, .dash-panel, .terminal-footer {
+      background: var(--neo-card);
       border: 1px solid var(--neo-border);
-      border-radius: 12px;
+      border-radius: var(--radius-card);
       position: relative;
-      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
     }
 
-    body.light-mode .control-card, 
-    body.light-mode .metric-card, 
-    body.light-mode .dash-panel,
-    body.light-mode .bottom-sheet {
-      background: var(--surface-primary);
-      border: 1px solid var(--border-default);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
-
-    /* Top Glow */
-    .control-card::before, .metric-card::before, .dash-panel::before {
+    /* Top Glow Gradient */
+    .control-card::before, .metric-card::before, .dash-panel::before, .terminal-footer::before {
       content: '';
       position: absolute;
       top: 0; left: 0; width: 100%; height: 2px;
@@ -179,205 +112,289 @@
       z-index: 1;
     }
 
-    /* --- SCANNER CONTROLS --- */
+    /* 1. Control Panel Card */
     .control-card {
-      padding: 1.25rem;
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      justify-content: center;
+      gap: 1.25rem;
+      height: 140px; 
+      z-index: 20; /* Keep dropdowns above */
     }
 
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
+    .input-group { display: flex; gap: 0.5rem; width: 100%; }
+    .search-container { position: relative; flex: 1; }
 
-    .input-label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--neo-text-muted);
-      font-weight: 700;
-    }
-
-    .search-container { position: relative; width: 100%; }
-    .search-icon {
-      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-      color: var(--neo-text-muted); font-size: 1.1rem; z-index: 5;
-    }
-    
-    .dash-input {
-      width: 100%; background: var(--neo-input); border: 1px solid var(--neo-border);
-      color: var(--neo-text-main); padding: 0 12px 0 40px; border-radius: var(--radius-sm);
-      height: 48px; font-size: 0.85rem; font-family: var(--font-mono);
-    }
-    .dash-input:focus { outline: none; border-color: var(--neo-blue); background: rgba(59, 130, 246, 0.05); }
-
-    .btn-primary {
-      height: 54px; width: 100%; border-radius: var(--radius-sm);
-      font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
-      gap: 0.5rem; cursor: pointer; transition: all 0.2s;
-      border: 1px solid var(--neo-border); color: var(--neo-text-muted);
-      text-transform: uppercase; letter-spacing: 0.05em;
-      background: var(--neo-input);
-    }
-    .btn-primary:active { background: var(--neo-blue); color: white; border-color: var(--neo-blue); }
-
-    .btn-danger-outline {
-      height: 54px; width: 100%; border-radius: var(--radius-sm);
-      font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
-      gap: 0.5rem; cursor: pointer; transition: all 0.2s;
-      border: 1px solid rgba(244, 63, 94, 0.3); color: var(--neo-red);
-      text-transform: uppercase; letter-spacing: 0.05em;
-      background: rgba(244, 63, 94, 0.05);
-    }
-    .btn-danger-outline:active { background: var(--neo-red); color: white; border-color: var(--neo-red); }
-
-    .status-line {
+    .status-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--neo-border);
     }
 
-    .badge-pill {
-      display: inline-flex; align-items: center; padding: 4px 10px;
-      border-radius: 4px; background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green);
-      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
-    }
-
-    /* --- METRICS STRIP --- */
-    .metrics-strip {
+    /* 2. Metrics Grid */
+    .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.75rem;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      height: 140px;
       width: 100%;
     }
 
     .metric-card {
       display: flex;
       flex-direction: column;
-      padding: 1rem;
-      align-items: center;
-      text-align: center;
+      align-items: flex-start; 
+      justify-content: center;
+      height: 100%;
+      padding: 1.5rem; 
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+      border-color: #444;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     }
 
     .metric-label {
-      font-size: 0.6rem;
+      font-size: 0.7rem; 
       text-transform: uppercase;
+      letter-spacing: 0.1em;
       color: var(--neo-text-muted);
+      margin-bottom: 8px;
       font-weight: 700;
-      margin-bottom: 0.25rem;
+      z-index: 2;
     }
 
     .metric-value {
       font-family: var(--font-mono);
-      font-size: 1.1rem;
+      font-size: 1.75rem;
       font-weight: 700;
-      color: var(--neo-text-main);
+      line-height: 1;
+      color: white;
+      position: relative;
+      z-index: 2;
+      margin-bottom: 4px;
     }
 
-    /* --- TABS SYSTEM --- */
-    .tabs-nav {
+    .metric-info {
+      margin-top: 4px;
+      font-size: 0.7rem;
+      color: #666;
+      font-weight: 400;
+      position: relative;
+      z-index: 2;
       display: flex;
+      align-items: center;
       gap: 4px;
-      padding: 4px;
+    }
+
+    /* --- INPUTS & BUTTONS --- */
+    .search-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--neo-text-muted); font-size: 1.1rem;
+    }
+    
+    .dash-input {
+      width: 100%; background: var(--neo-input); border: 1px solid var(--neo-border);
+      color: white; padding: 0 12px 0 40px; border-radius: var(--radius-sm);
+      height: 42px;
+      font-size: 0.85rem; transition: border-color 0.2s; font-family: var(--font-mono);
+    }
+
+    /* Stop white background on autofill */
+    .dash-input:-webkit-autofill,
+    .dash-input:-webkit-autofill:hover, 
+    .dash-input:-webkit-autofill:focus, 
+    .dash-input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px var(--neo-input) inset !important;
+        -webkit-text-fill-color: white !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+    .dash-input:focus { outline: none; border-color: var(--neo-blue); background: #000; }
+    
+    /* Buttons */
+    .btn-dash {
+      height: 42px; padding: 0 1rem; border-radius: var(--radius-sm);
+      font-weight: 600; font-size: 0.8rem; display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; cursor: pointer; transition: all 0.2s;
+      border: 1px solid var(--neo-border); color: var(--neo-text-muted); text-decoration: none;
+      white-space: nowrap; text-transform: uppercase; letter-spacing: 0.05em;
       background: var(--neo-input);
-      border: 1px solid var(--neo-border);
-      border-radius: 10px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      position: sticky;
-      top: 74px;
-      z-index: 90;
     }
-    .tabs-nav::-webkit-scrollbar { display: none; }
-    .tab-btn {
-      flex: 0 0 90px;
-      padding: 10px 4px; border-radius: 6px; border: none;
-      background: transparent; color: var(--neo-text-muted);
-      font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-      cursor: pointer; transition: all 0.2s;
-      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    .btn-dash:hover:not(:disabled) { color: white; border-color: var(--neo-blue); background: var(--neo-card-hover); }
+    .btn-icon-only { padding: 0; width: 42px; justify-content: center; }
+    
+    .btn-primary {
+      background: var(--neo-input); color: var(--neo-text-muted); border: 1px solid var(--neo-border);
     }
-    .tab-btn.active {
-      background: var(--neo-card); color: var(--neo-blue);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    .btn-primary:hover { 
+      background: var(--neo-blue); color: white; border-color: var(--neo-blue);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
     }
-    .tab-btn .material-symbols-outlined { font-size: 1.1rem; }
+    
+    .btn-danger-outline {
+      background: rgba(244, 63, 94, 0.05);
+      color: var(--neo-red);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+    .btn-danger-outline:hover { 
+      background: var(--neo-red); color: white; border-color: var(--neo-red);
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+    }
 
-    .tab-panel { 
-      display: none; height: 400px; overflow-y: auto; padding: 1rem;
-      background: var(--neo-card); border: 1px solid var(--neo-border);
-      border-radius: 12px;
+    .btn-secondary { background: var(--neo-input); }
+    
+    /* --- MAIN CONTENT & TABLES --- */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2.5fr 1fr;
+      gap: 1.5rem;
+      height: 600px;
     }
-    .tab-panel.active { display: block; animation: panelFade 0.3s ease-out; }
-    @keyframes panelFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* --- SECTION TITLES --- */
-    .section-title {
-      font-size: 0.75rem; font-weight: 800; color: var(--neo-blue);
-      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;
-      display: flex; align-items: center; gap: 0.5rem;
+    .dash-panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden; /* Often good, but sometimes needs visible for dropdowns. Specific panels can override. */
     }
-    .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--neo-border), transparent); }
-
-    /* --- TABLE STYLING --- */
+    .panel-header {
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--neo-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--neo-card);
+      flex-shrink: 0;
+      z-index: 10;
+      height: 50px;
+    }
+    .panel-title { 
+      font-size: 0.9rem; font-weight: 700; color: white; 
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    
+    /* Tab Pills */
+    .tab-pills {
+      display: flex; gap: 4px; background: #000;
+      padding: 4px; border-radius: 6px; border: 1px solid var(--neo-border);
+    }
+    .tab-pill {
+      padding: 6px 12px; font-size: 0.7rem; color: var(--neo-text-muted);
+      cursor: pointer; border-radius: 4px; font-weight: 600; transition: all 0.2s;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .tab-pill.active {
+      background: var(--neo-blue); color: black;
+    }
+    .tab-pill:hover:not(.active) { color: white; }
+    
+    .panel-content { position: relative; flex: 1; overflow: hidden; width: 100%; height: 100%; }
+    
+    /* Tables */
     .dash-table { width: 100%; border-collapse: collapse; }
     .dash-table th {
-      text-align: left; padding: 0.75rem 0.5rem; font-size: 0.6rem;
+      text-align: left; padding: 0.75rem 1.5rem; font-size: 0.7rem;
       text-transform: uppercase; letter-spacing: 0.1em; color: var(--neo-text-muted);
-      border-bottom: 1px solid var(--neo-border); background: var(--neo-card);
+      border-bottom: 1px solid var(--neo-border);
+      background: var(--neo-card); 
       position: sticky; top: 0; z-index: 5;
     }
     .dash-table td {
-      padding: 0.75rem 0.5rem; color: var(--neo-text-main);
-      border-bottom: 1px solid var(--neo-border); font-size: 0.7rem;
+      padding: 0.75rem 1.5rem; color: #e4e4e7;
+      border-bottom: 1px solid #1a1a1a; font-size: 0.8rem;
+      font-family: var(--font-mono);
+    }
+    .dash-table tr:last-child td { border-bottom: none; }
+
+    /* --- DROPDOWNS --- */
+    .custom-dropdown {
+      background: #0a0a0c;
+      border: 1px solid var(--neo-border);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+      padding: 4px;
+      min-width: 100%;
+      z-index: 999;
+      animation: dropdownSlide 0.2s ease-out forwards;
+      transform-origin: top;
+    }
+
+    .dropdown-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      color: var(--neo-text-muted);
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      border-left: 2px solid transparent;
       font-family: var(--font-mono);
     }
 
-    /* --- DROPDOWNS --- */
-    .mobile-dropdown { position: relative; width: 100%; }
-    .dropdown-trigger {
-      width: 100%; height: 48px; background: var(--neo-input);
-      border: 1px solid var(--neo-border); border-radius: var(--radius-sm);
-      padding: 0 1rem; display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer;
+    .dropdown-link:hover {
+      background: #151515;
+      color: white;
+      border-left-color: var(--neo-blue);
+      padding-left: 16px; 
     }
-    .trigger-text { font-size: 0.8rem; font-family: var(--font-mono); color: var(--neo-text-main); font-weight: 600; }
-    .dropdown-menu {
-      position: absolute; top: calc(100% + 8px); left: 0; width: 100%;
-      background: var(--neo-card); border: 1px solid var(--neo-border);
-      border-radius: var(--radius-sm); padding: 6px; flex-direction: column; z-index: 100;
-      display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-    .dropdown-menu.show { display: flex; }
-    .dropdown-item { padding: 12px 1rem; font-size: 0.75rem; font-family: var(--font-mono); color: var(--neo-text-muted); border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
-    .dropdown-item:active { background: rgba(59, 130, 246, 0.1); color: var(--neo-blue); }
 
-    /* --- AI OVERLAY --- */
+    @keyframes dropdownSlide {
+      from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* --- AI PROCESSING OVERLAY --- */
     .processing-overlay {
-      background: rgba(5, 5, 5, 0.9); backdrop-filter: blur(2px);
-      z-index: 50; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 2rem; border-radius: var(--radius-card);
-      border: 1px solid var(--neo-border);
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 5, 5, 0.9);
+      backdrop-filter: blur(2px);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.3s ease;
     }
 
     .ai-pulse-container {
-      position: relative; width: 40px; height: 40px;
-      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 1rem;
     }
 
     .ai-pulse-ring {
-      position: absolute; width: 100%; height: 100%;
-      border-radius: 50%; border: 2px solid var(--neo-blue);
-      opacity: 0; animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid var(--neo-blue);
+      box-shadow: 0 0 10px var(--neo-blue);
+      opacity: 0;
+      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+
+    .ai-pulse-ring:nth-child(2) {
+      animation-delay: 0.6s;
+      border-color: var(--neo-red); box-shadow: 0 0 10px var(--neo-red);
+    }
+
+    .processing-text {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: white;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      animation: text-fade 1s ease-in-out infinite alternate;
     }
 
     @keyframes pulse-ring {
@@ -386,339 +403,471 @@
       100% { transform: scale(1.5); opacity: 0; }
     }
 
-    /* --- FLOATING TERMINAL --- */
-    .fab-terminal {
-      position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 28px;
-      background: var(--neo-blue); color: white; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5); z-index: 1000; border: none;
+    @keyframes text-fade {
+      from { opacity: 0.4; text-shadow: 0 0 0 transparent; }
+      to { opacity: 1; text-shadow: 0 0 10px var(--neo-blue); }
+    }
+    
+    /* --- TERMINAL --- */
+    .terminal-footer { 
+      height: 160px; /* Reduced Height */
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden;
     }
 
-    .bottom-sheet {
-      position: fixed; bottom: 0; left: 0; width: 100%; height: 60vh; z-index: 1001;
-      display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      transform: translateY(100%); border-radius: 20px 20px 0 0; background: #050505 !important;
+    .terminal-header {
+      padding: 0.5rem 1.5rem;
+      border-bottom: 1px solid var(--neo-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #080808;
+      flex-shrink: 0;
+      height: 36px;
     }
-    .bottom-sheet.open { transform: translateY(0); }
 
-    .sheet-header {
-      padding: 12px 1.25rem; display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--neo-border); background: rgba(255,255,255,0.02); flex-shrink: 0;
+    .term-title {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      color: var(--neo-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .log-line {
-      display: grid; grid-template-columns: 80px 1fr; gap: 0.5rem;
-      font-family: var(--font-mono); font-size: 0.7rem; margin-bottom: 4px;
+    .term-window { 
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      background: #050505;
+      overflow-y: auto; 
     }
-    .log-time { color: #444; font-weight: 700; }
-    .log-content { color: #999; word-break: break-all; }
 
-    /* --- GRAPH CANVAS --- */
-    #networkGraphCanvas { width: 100%; height: 100%; background: #000; }
+    /* Minimal Scrollbar */
+    .term-window::-webkit-scrollbar { width: 6px; }
+    .term-window::-webkit-scrollbar-track { background: transparent; }
+    .term-window::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    
+    /* Log Layout */
+    .log-line { 
+        display: flex; 
+        gap: 1.5rem; 
+        font-family: var(--font-mono); 
+        font-size: 0.75rem;
+        line-height: 1.5;
+        padding: 2px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .log-line:last-child { border-bottom: none; }
+    
+    .log-time { 
+        color: #555; 
+        font-size: 0.7rem; 
+        white-space: nowrap; 
+        width: 70px;
+        flex-shrink: 0;
+    }
+    
+    .log-content {
+        color: #ccc;
+        word-break: break-all;
+    }
 
-    /* --- TEXT STYLES --- */
     .text-gradient {
+      /* Simplified solid or subtle gradient for high contrast */
       background: linear-gradient(180deg, #fff 0%, #ccc 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-
-    /* --- HIDE FOOTER --- */
-    footer { display: none !important; }
+    
+    /* Badges */
+    .badge-pill {
+      display: inline-flex; align-items: center; padding: 4px 10px;
+      border-radius: 4px; background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green);
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    
+    /* Glow Button */
+    .btn-text-glow {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--neo-text-muted); 
+      transition: all 0.3s ease; 
+      text-decoration: none; 
+      display: inline-flex; 
+      align-items: center;
+      font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    
+    .btn-text-glow:hover {
+      color: var(--neo-blue) !important; 
+      transform: translateX(-4px);
+    }
+    
+    /* Graph Canvas */
+    #networkGraphCanvas { width: 100%; height: 100%; }
+    
+    .spinner { width: 14px; height: 14px; border: 2px solid rgba(255, 255, 255, 0.1); border-top-color: var(--neo-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .scan-overview-grid { grid-template-columns: 1fr; height: auto; }
+      .metrics-grid { height: auto; grid-template-columns: repeat(2, 1fr); }
+      .control-card { height: auto; }
+      .main-grid { grid-template-columns: 1fr; height: auto; }
+      .dash-panel { height: 500px; }
+    }
   </style>
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<div class="top-app-bar">
-  <a href="{{ url_for('tools_hub') }}" class="back-btn">
-    <span class="material-symbols-outlined">arrow_back</span>
-  </a>
-  <div class="title-group">
-    <div class="title text-gradient">Network <span style="color: var(--neo-blue); -webkit-text-fill-color: initial;">Monitor</span></div>
-    <div class="info-line">Packet Capture & Traffic Analysis</div>
-  </div>
-  <div style="width: 40px;"></div>
-</div>
+  <div class="dashboard-wrapper fade-in-element">
+    <div class="flex flex-col items-start mb-6">
+      <a href="{{ url_for('tools_hub') }}" class="btn-text-glow" style="padding-left: 0; margin-bottom: 1rem;">
+        <span class="material-symbols-outlined" style="font-size: 1.1rem; margin-right: 8px;">arrow_back</span>
+        <span>Security Hub</span>
+      </a>
 
-<div class="mobile-wrapper">
-  
-  <!-- 1. CAPTURE CONTROLS -->
-  <div class="control-card">
-    <div class="input-group">
-      <label class="input-label">Capture Target</label>
-      <div class="search-container">
-        <span class="material-symbols-outlined search-icon">wifi_find</span>
-        <input type="text" id="snifferTargetIp" class="dash-input" placeholder="ENTER TARGET IP..." />
-        <button id="advancedScanToggle" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-slate-500 hover:text-blue-400 bg-transparent border-none">
-            <span class="material-symbols-outlined" style="font-size: 1.25rem;">tune</span>
-        </button>
+      <div>
+        <h1 class="text-gradient" style="font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-transform: uppercase;">Network <span style="color: var(--neo-blue); -webkit-text-fill-color: initial;">Monitor</span></h1>
+        <p style="color: var(--neo-text-muted); font-size: 0.8rem; margin-top: 6px; font-weight: 400; font-family: var(--font-mono);">Packet Capture & Traffic Analysis</p>
       </div>
     </div>
 
-    <!-- Advanced Configuration -->
-    <div id="advancedScanOptions" class="hidden flex flex-col gap-4 p-4 mt-2 bg-black/20 border border-white/5 rounded-lg">
-        <label class="input-label" style="font-size: 0.6rem; color: var(--neo-blue);">Advanced Config</label>
-        <div class="grid grid-cols-2 gap-3">
-            <div class="input-group">
-                <label class="input-label" style="font-size: 0.55rem;">Duration (s)</label>
-                <input type="number" id="captureDuration" value="30" class="dash-input" style="height: 36px; padding-left: 12px;" />
-            </div>
-            <div class="input-group">
-                <label class="input-label" style="font-size: 0.55rem;">Max Packets</label>
-                <input type="number" id="maxPackets" value="100" class="dash-input" style="height: 36px; padding-left: 12px;" />
-            </div>
-        </div>
+    <div class="scan-overview-grid">
+      <div class="control-card">
         <div class="input-group">
-            <label class="input-label" style="font-size: 0.55rem;">BPF Filter</label>
-            <input type="text" id="bpfFilter" placeholder="tcp port 80" class="dash-input" style="height: 36px; padding-left: 12px;" />
+          <div class="search-container">
+            <span class="material-symbols-outlined search-icon">wifi_find</span>
+            <input type="text" id="snifferTargetIp" class="dash-input" placeholder="ENTER TARGET IP..." />
+            </div>
+          <button id="startCaptureBtn" class="btn-dash btn-primary" title="Start Capture" style="padding: 0 1rem;">
+            <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
+            <span>START SCAN</span>
+            <span class="spinner hidden"></span>
+            </button>
+          <button id="stopCaptureBtn" class="btn-dash btn-danger-outline btn-icon-only" title="Stop Capture">
+            <span class="material-symbols-outlined" style="font-size:1.1rem">stop</span>
+            <span class="spinner hidden"></span>
+            </button>
+
+          <div class="relative">
+            <button id="advancedScanToggle" class="btn-dash btn-secondary btn-icon-only" title="Configuration">
+              <span class="material-symbols-outlined">tune</span>
+            </button>
+            <div id="advancedScanOptions" class="hidden"
+              style="position: absolute; top: 50px; right: 0; width: 300px; background: #0a0a0c; border: 1px solid var(--neo-border); padding: 1.5rem; border-radius: 8px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,0.9);">
+              <h4 style="color:white; margin-bottom:1rem; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em;">Scan Configuration</h4>
+              <div style="display:flex; flex-direction:column; gap:1rem;">
+                <div>
+                  <label style="color:#666; font-size:0.7rem; font-family: var(--font-mono); text-transform:uppercase;">Duration (sec)</label>
+                  <input type="number" id="captureDuration" value="30" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
+                  </div>
+                  <div>
+                    <label style="color:#666; font-size:0.7rem; font-family: var(--font-mono); text-transform:uppercase;">Max Packets</label>
+                  <input type="number" id="maxPackets" value="100" class="dash-input" style="padding: 8px 12px; margin-top:4px;" />
+                  </div>
+                  <div>
+                    <label style="color:#666; font-size:0.7rem; font-family: var(--font-mono); text-transform:uppercase;">BPF Filter</label>
+                  <input type="text" id="bpfFilter" placeholder="tcp port 80" class="dash-input"
+                    style="padding: 8px 12px; margin-top:4px;" />
+                  </div>
+              </div>
+              </div>
+          </div>
+          </div>
+
+        <div class="status-row">
+          <div style="font-size: 0.8rem; color: var(--neo-text-muted); font-family: var(--font-mono);">
+            STATUS: <span id="snifferStatus" style="color: white; margin-left: 5px;">IDLE</span>
+          </div>
+          <div class="badge-pill">
+            <span class="material-symbols-outlined" style="font-size: 0.8rem; margin-right: 4px;">fiber_manual_record</span>
+            Ready to capture
+          </div>
         </div>
-    </div>
+      </div>
 
-    <div class="flex flex-col gap-3">
-        <button id="startCaptureBtn" class="btn-primary">
-          <span class="material-symbols-outlined">play_arrow</span>
-          <span class="button-text">START SCAN</span>
-          <span class="spinner hidden"></span>
-        </button>
-        <button id="stopCaptureBtn" class="btn-danger-outline">
-          <span class="material-symbols-outlined">stop</span>
-          <span class="button-text">STOP CAPTURE</span>
-          <span class="spinner hidden"></span>
-        </button>
-    </div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label" style="color: var(--neo-red);">Total Packets</span>
+          <span id="summaryTotalPackets" class="metric-value">0</span>
+          <span class="metric-info">
+            <span class="material-symbols-outlined" style="font-size:0.9rem; color: var(--neo-green);">dataset</span>
+            <span>+ Live</span> captured
+          </span>
+        </div>
 
-    <div class="status-line">
-      <div style="color: var(--neo-text-muted)">STATUS: <span id="snifferStatus" style="color: var(--neo-text-main)">IDLE</span></div>
-      <div class="badge-pill">
-        <span id="scanStatus">READY</span>
+        <div class="metric-card">
+          <span class="metric-label" style="color: var(--neo-blue);">Data Volume</span>
+          <span id="summaryTotalBytes" class="metric-value">0 B</span>
+          <span class="metric-info">
+            <span class="material-symbols-outlined" style="font-size:0.9rem;">data_usage</span>
+            Payload size
+          </span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label" style="color: #666;">Top Protocol</span>
+          <span id="summaryPrimaryProto" class="metric-value" style="color: var(--neo-blue);">-</span>
+          <span class="metric-info">
+            <span class="material-symbols-outlined" style="font-size:0.9rem;">dns</span>
+            Most frequent
+          </span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label" style="color: var(--neo-green);">Throughput</span>
+          <span id="avgRateDisplay" class="metric-value">0 <span style="font-size:1rem;">Kbps</span></span>
+          <span class="metric-info">
+            <span class="material-symbols-outlined" style="font-size:0.9rem;">speed</span>
+            Avg rate
+          </span>
+        </div>
       </div>
     </div>
 
-  </div>
-
-  <!-- 2. METRICS STRIP -->
-  <div class="metrics-strip">
-    <div class="metric-card">
-      <span class="metric-label">Packets</span>
-      <span id="summaryTotalPackets" class="metric-value" style="color: var(--neo-red)">0</span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Volume</span>
-      <span id="summaryTotalBytes" class="metric-value" style="color: var(--neo-blue)">0 B</span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Top Proto</span>
-      <span id="summaryPrimaryProto" class="metric-value" style="color: var(--neo-amber)">-</span>
-    </div>
-    <div class="metric-card">
-      <span class="metric-label">Rate</span>
-      <span id="avgRateDisplay" class="metric-value" style="color: var(--neo-green)">0 Kbps</span>
-    </div>
-  </div>
-
-  <!-- 3. TABS NAVIGATION -->
-  <div class="tabs-nav">
-    <button id="summaryTabBtn" class="tab-btn active">
-      <span class="material-symbols-outlined">dashboard</span>
-      <span>Summary</span>
-    </button>
-    <button id="packetsTabBtn" class="tab-btn">
-      <span class="material-symbols-outlined">list</span>
-      <span>Packets</span>
-    </button>
-    <button id="graphTabBtn" class="tab-btn">
-      <span class="material-symbols-outlined">hub</span>
-      <span>Graph</span>
-    </button>
-    <button id="anomaliesTabBtn" class="tab-btn">
-      <span class="material-symbols-outlined">report_problem</span>
-      <span>Anomalies</span>
-    </button>
-    <button id="flowsTabBtn" class="tab-btn">
-      <span class="material-symbols-outlined">swap_horiz</span>
-      <span>Flows</span>
-    </button>
-  </div>
-
-  <!-- 4. TAB PANELS -->
-  <div id="summaryContent" class="tab-panel active">
-    <div class="section-title">Metadata</div>
-    <table class="dash-table">
-        <tbody id="captureMetaBody">
-            <tr><td style="color: var(--neo-text-muted)">WAITING...</td></tr>
-        </tbody>
-    </table>
-    <div class="section-title" style="margin-top: 1.5rem;">Traffic Distribution</div>
-    <table class="dash-table">
-        <tbody id="conversationStatsBody">
-            <tr><td style="color: var(--neo-text-muted)">WAITING...</td></tr>
-        </tbody>
-    </table>
-  </div>
-
-  <div id="packetsContent" class="tab-panel">
-    <div class="section-title">Captured Packets</div>
-    <div style="overflow-x: auto;">
-        <table class="dash-table">
-          <thead>
-            <tr>
-              <th style="width: 40px;">No.</th>
-              <th>Source</th>
-              <th>Dest</th>
-              <th>Proto</th>
-              <th style="width: 40px;">Len</th>
-            </tr>
-          </thead>
-          <tbody id="packetsTableBody">
-            <tr><td colspan="5" style="text-align:center; padding: 4rem; color: var(--neo-text-muted);">IDLE</td></tr>
-          </tbody>
-        </table>
-    </div>
-  </div>
-
-  <div id="graphContent" class="tab-panel">
-    <div class="section-title">Network Visualization</div>
-    <div id="networkGraphCanvas" style="height: 300px; border-radius: 8px;"></div>
-    <button id="graphFitBtn" class="btn-primary" style="height: 36px; margin-top: 1rem;">
-        <span class="material-symbols-outlined">fit_screen</span> FIT VIEW
-    </button>
-  </div>
-
-  <div id="anomaliesContent" class="tab-panel">
-    <div class="section-title">Security Intelligence</div>
-    <div style="background: rgba(244, 63, 94, 0.05); border: 1px solid rgba(244, 63, 94, 0.3); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-        <p id="anomalySummaryText" style="color: var(--neo-text-muted); font-size: 0.75rem; font-family: var(--font-mono);">No active threats detected.</p>
-    </div>
-    <div class="section-title" style="color: var(--neo-text-muted); font-size: 0.65rem;">Cleartext Credentials</div>
-    <div id="cleartextBody" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-green);">SAFE</div>
-    <div class="section-title" style="color: var(--neo-text-muted); font-size: 0.65rem; margin-top: 1rem;">Reconnaissance</div>
-    <div id="portScansBody" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-text-muted);">NONE</div>
-  </div>
-
-  <div id="flowsContent" class="tab-panel">
-    <div class="section-title">Conversations</div>
-    <table class="dash-table">
-      <thead>
-        <tr><th>Source</th><th>Dest</th><th>Method</th></tr>
-      </thead>
-      <tbody id="flowsTableBody">
-        <tr><td colspan="3" style="text-align:center; padding: 2rem; color: var(--neo-text-muted);">---</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-
-  <!-- 5. INTELLIGENCE & AI -->
-  <div id="acc-intel">
-    <div class="section-title">
-      <span class="material-symbols-outlined">insights</span>
-      Intelligence
-    </div>
-    <div class="control-card" style="background: var(--neo-card); border-radius: 12px; padding: 1.25rem;">
-      <div class="flex flex-col gap-3">
-        <div class="mobile-dropdown" id="aiDropdown">
-          <button id="snifferAnalyzeReportDropdown" class="dropdown-trigger" onclick="toggleMobileDropdown('aiDropdown')" disabled>
-            <span class="trigger-text">AI Analysis</span>
-            <span class="material-symbols-outlined">expand_more</span>
-          </button>
-          <div id="snifferLlmAnalysisOptions" class="dropdown-menu hidden">
-            <a href="#" class="dropdown-item" data-llm-mode="local" style="text-decoration: none;">
-              <span class="material-symbols-outlined">dns</span> Local LLM (Private)
-            </a>
-            <a href="#" class="dropdown-item" data-llm-mode="gemini-2.5-flash" style="text-decoration: none;">
-              <span class="material-symbols-outlined">bolt</span> Gemini Flash (Cloud)
-            </a>
+    <div class="main-grid">
+      <div class="dash-panel">
+        <div class="panel-header">
+          <span class="panel-title">Network Visualization</span>
+          <div class="tab-pills">
+            <div id="packetsTabBtn" class="tab-pill active">Packet List</div>
+            <div id="graphTabBtn" class="tab-pill">Graph</div>
+            <div id="flowsTabBtn" class="tab-pill">Flows</div>
+            <div id="anomaliesTabBtn" class="tab-pill">Anomalies</div>
           </div>
         </div>
 
-        <button id="snifferDownloadReportBtn" disabled class="dropdown-trigger">
-          <span class="trigger-text">Export PDF</span>
-          <span class="material-symbols-outlined">picture_as_pdf</span>
-        </button>
+        <div class="panel-content">
+          <div id="graphContent" class="hidden absolute inset-0 bg-black">
+            <div id="networkGraphCanvas"></div>
+            <div style="position: absolute; bottom: 16px; right: 16px; display: flex; gap: 8px;">
+              <button id="graphFitBtn" class="btn-dash btn-secondary" style="padding: 0 8px; height: 32px;"><span class="material-symbols-outlined" style="font-size:1rem;">fit_screen</span></button>
+            </div>
+          </div>
 
-        <button id="snifferHistoryBtn" class="dropdown-trigger">
-          <span class="trigger-text">Prior Scans</span>
-          <span class="material-symbols-outlined">history</span>
-        </button>
-      </div>
-
-      <div id="aiProcessingOverlay" class="processing-overlay hidden">
-        <div class="ai-pulse-container">
-          <div class="ai-pulse-ring"></div>
-          <div class="ai-pulse-ring" style="border-color: var(--neo-red);"></div>
-        </div>
-        <span id="aiProcessingText" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-blue); font-weight: 800;">ANALYZING...</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- 6. PROTOCOL STATS -->
-  <div class="dash-panel" style="margin-top: 0.5rem;">
-    <div style="padding: 1.25rem 1.25rem 0.5rem 1.25rem;">
-        <div class="section-title" style="margin-bottom: 0;">
-            <span class="material-symbols-outlined">layers</span> Protocols
-        </div>
-    </div>
-    <div style="padding: 0 1.25rem 1.25rem 1.25rem; max-height: 240px; overflow-y: auto; scrollbar-width: thin;">
-        <table class="dash-table">
-            <tbody id="protocolStatsBody">
-                <tr><td style="text-align: center; padding: 2rem; color: var(--neo-text-muted)">Scanning for traffic...</td></tr>
-            </tbody>
-        </table>
-    </div>
-  </div>
-
-</div>
-
-<!-- FLOATING ACTION TERMINAL -->
-<button class="fab-terminal" onclick="toggleTerminal()">
-  <span class="material-symbols-outlined">code_blocks</span>
-</button>
-
-<div id="terminalSheet" class="bottom-sheet">
-  <div class="sheet-header">
-    <div style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800; color: var(--neo-text-muted); display: flex; align-items: center; gap: 8px;">
-      <div style="width: 6px; height: 6px; background: var(--neo-blue); border-radius: 50%; box-shadow: 0 0 8px var(--neo-blue);"></div>
-      LIVE STREAM
-    </div>
-    <div class="flex items-center gap-4">
-        <button id="clearSnifferLogBtn" style="background:none; border:none; color:var(--neo-text-muted); font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer;">Clear</button>
-        <button onclick="toggleTerminal()" style="background:none; border:none; color:var(--neo-text-main); cursor: pointer;">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-    </div>
-  </div>
-  <div id="snifferLogOutput" style="flex:1; padding: 1rem; overflow-y: auto;"></div>
-</div>
-
-<!-- --- REPORT HISTORY MODAL --- -->
-<div id="historyModal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-    <div class="dash-panel w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden" style="background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 20px;">
-        <div class="panel-header" style="padding: 1.25rem; border-bottom: 1px solid var(--neo-border); display: flex; justify-content: space-between; align-items: center;">
-            <span class="panel-title" style="font-size: 1rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase;">Scan History</span>
-            <button id="closeHistoryModal" style="background: none; border: none; color: var(--neo-text-muted); padding: 4px;">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div class="panel-content overflow-auto" style="padding:0; max-height: none; flex: 1;">
+          <div id="packetsContent" class="absolute inset-0 overflow-auto">
             <table class="dash-table">
-                <thead>
-                    <tr style="background: rgba(255,255,255,0.02);">
-                        <th style="padding: 1rem; font-size: 0.7rem; color: var(--neo-text-muted);">DATE</th>
-                        <th style="padding: 1rem; font-size: 0.7rem; color: var(--neo-text-muted);">TARGET</th>
-                        <th style="padding: 1rem; font-size: 0.7rem; color: var(--neo-text-muted); text-align: right;">ACTION</th>
-                    </tr>
-                </thead>
-                <tbody id="historyTableBody">
-                    <tr><td colspan="3" style="text-align: center; padding: 3rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">LOADING HISTORY...</td></tr>
-                </tbody>
+              <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>Time</th>
+                  <th>Source</th>
+                  <th>Dest</th>
+                  <th>Proto</th>
+                  <th>Len</th>
+                </tr>
+              </thead>
+              <tbody id="packetsTableBody">
+                <tr>
+                  <td colspan="6" style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono);">WAITING FOR DATA STREAM...</td>
+                </tr>
+              </tbody>
             </table>
+          </div>
+
+          <div id="flowsContent" class="hidden absolute inset-0 overflow-auto">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Source</th>
+                  <th>Destination</th>
+                  <th>Method</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="flowsTableBody">
+                <tr>
+                  <td colspan="5" style="text-align:center; padding: 3rem; color: #444; font-family: var(--font-mono);">NO FLOWS DETECTED.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="anomaliesContent" class="hidden absolute inset-0 overflow-auto p-6">
+            <div style="background: rgba(244, 63, 94, 0.05); border: 1px solid rgba(244, 63, 94, 0.3); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+              <h5 style="color: var(--neo-red); margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 700; text-transform: uppercase;">Security Analysis</h5>
+              <p id="anomalySummaryText" style="color: #ccc; font-size: 0.8rem; font-family: var(--font-mono);">No active threats detected in current stream.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <h6 style="color: var(--neo-text-muted); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 0.1em;">Cleartext Creds</h6>
+                <table class="dash-table">
+                  <tbody id="cleartextBody">
+                    <tr>
+                      <td style="color: var(--neo-green);">SAFE</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <h6 style="color: var(--neo-text-muted); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing: 0.1em;">Port Scans</h6>
+                <table class="dash-table">
+                  <tbody id="portScansBody">
+                    <tr>
+                      <td style="color: #666;">NONE</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="summaryContent" class="hidden"></div>
         </div>
+      </div>
+
+      <div class="flex flex-col gap-6" style="height: 100%; min-height: 0;">
+        <div class="dash-panel" style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+          <div class="panel-header">
+            <span class="panel-title" style="font-size: 0.9rem;">Protocols</span>
+          </div>
+          <div class="panel-content" style="flex: 1; overflow-y: auto;">
+            <table class="dash-table">
+              <tbody id="protocolStatsBody">
+                <tr>
+                  <td style="color:#555; font-family: var(--font-mono); text-align: center;">NO DATA</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="snifferIntelligencePanel" class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1.5rem; overflow: visible !important;">
+          <div id="aiProcessingOverlay" class="processing-overlay hidden" style="overflow: hidden; border-radius: var(--radius-card);">
+             <div class="ai-pulse-container">
+               <div class="ai-pulse-ring"></div>
+               <div class="ai-pulse-ring"></div>
+               </div>
+             <span id="aiProcessingText" class="processing-text">INITIALIZING AI...</span>
+          </div>
+
+          <div class="flex justify-between items-center mb-4">
+            <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence</h5>
+            <button id="refreshSnifferResultsBtn" class="btn-dash btn-secondary btn-icon-only"
+              style="height:32px; width:32px; border-radius: 6px;" title="Refresh Results">
+              <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <div class="relative w-full">
+              <button id="snifferAnalyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between"
+                style="opacity: 0.7;">
+                <span>AI Analysis</span>
+                <span class="material-symbols-outlined">expand_more</span>
+              </button>
+              
+              <div id="snifferLlmAnalysisOptions"
+                class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
+                <a href="#" data-llm-mode="local"
+                  class="dropdown-link">
+                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
+                   Local LLM
+                </a>
+                <a href="#" data-llm-mode="gemini"
+                  class="dropdown-link">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">auto_awesome</span>
+                  Gemini AI
+                </a>
+              </div>
+            </div>
+
+            <button id="snifferDownloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between"
+              style="opacity: 0.7;">
+              <span>Export PDF</span>
+              <span class="material-symbols-outlined">picture_as_pdf</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+      
+      <div class="terminal-footer">
+        <div class="terminal-header">
+          <div class="term-title">
+                <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">terminal</span>
+                Live Capture Log
+          </div>
+          <button id="clearSnifferLogBtn" style="background: none; border: none; color: #444; font-size: 0.7rem; cursor: pointer; transition: color 0.2s; font-family: var(--font-mono); text-transform: uppercase;">Clear Output</button>
+        </div>
+        
+        <div id="snifferLogOutput" class="term-window">
+           </div>
+      </div>
 
-
+  </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
-<script src="{{ url_for('static', filename='js/mobile_packet_sniffer.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/packet_sniffer.js') }}"></script>
+  <script>
+    // --- UI INTERACTION LOGIC ---
+    
+    // 1. Toggle Advanced Config
+    const configBtn = document.getElementById('advancedScanToggle')
+    const configMenu = document.getElementById('advancedScanOptions')
+    if (configBtn && configMenu) {
+      configBtn.addEventListener('click', (e) => {
+        configMenu.classList.toggle('hidden')
+        e.stopPropagation()
+      })
+      document.addEventListener('click', (e) => {
+        if (!configBtn.contains(e.target) && !configMenu.contains(e.target)) {
+          configMenu.classList.add('hidden')
+        }
+      })
+    }
+    
+    // 2. Tab Switcher Logic (Pills)
+    const tabs = [
+      { btn: 'graphTabBtn', content: 'graphContent' },
+      { btn: 'packetsTabBtn', content: 'packetsContent' },
+      { btn: 'flowsTabBtn', content: 'flowsContent' },
+      { btn: 'anomaliesTabBtn', content: 'anomaliesContent' }
+    ]
+    
+    function activateTab(targetBtnId) {
+      const targetTab = tabs.find((t) => t.btn === targetBtnId)
+      if (!targetTab) return
+    
+      // Hide all
+      tabs.forEach((t) => {
+        const b = document.getElementById(t.btn)
+        const c = document.getElementById(t.content)
+        if (b) b.classList.remove('active')
+        if (c) c.classList.add('hidden')
+      })
+    
+      // Show target
+      const activeBtn = document.getElementById(targetTab.btn)
+      const activeContent = document.getElementById(targetTab.content)
+      if (activeBtn) activeBtn.classList.add('active')
+      if (activeContent) activeContent.classList.remove('hidden')
+    }
+    
+    // Initialize Click Listeners
+    tabs.forEach((tab) => {
+      const btn = document.getElementById(tab.btn)
+      if (btn) {
+        btn.addEventListener('click', () => {
+          activateTab(tab.btn)
+        })
+      }
+    })
+    
+    // 3. Force "Packet List" to be visible on load
+    document.addEventListener('DOMContentLoaded', function () {
+      // Ensure Packets tab is the default active one
+      activateTab('packetsTabBtn')
+    })
+  </script>
 {% endblock %}

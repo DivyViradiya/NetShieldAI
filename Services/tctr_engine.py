@@ -334,18 +334,20 @@ class TCTREngine:
         tctr_priority = 0.0
         try:
             if self._ranker:
-                tctr_priority = float(self._ranker.predict(features)[0])
-                # Scaling tctr_priority (usually 0-4 range for rankers)
-                # To a 0.0 - 1.0 risk score
-                risk_score = np.clip(tctr_priority / 4.0, 0.1, 1.0)
+                raw_tctr = float(self._ranker.predict(features)[0])
+                # Scaling raw_tctr via sigmoid from -6.0...0.0 to 0.0...10.0
+                tctr_priority = 10.0 / (1.0 + np.exp(-(raw_tctr + 3.0)))
+                
+                # To a 0.1 - 1.0 risk score
+                risk_score = np.clip(tctr_priority / 10.0, 0.1, 1.0)
                 final_score = round(float(risk_score * heuristic_multiplier), 4)
             else:
                 final_score = round((base_score / 10.0) * heuristic_multiplier, 4)
-                tctr_priority = final_score * 4.0
+                tctr_priority = final_score * 10.0
         except Exception as e:
             logger.error(f"Inference failed for {name}: {e}")
             final_score = round((base_score / 10.0) * heuristic_multiplier, 4)
-            tctr_priority = final_score * 4.0
+            tctr_priority = final_score * 10.0
 
         # Determine Level (P0-P3)
         if final_score >= 0.85:

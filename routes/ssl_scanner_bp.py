@@ -8,9 +8,8 @@ from queue import Empty
 import requests
 import uuid
 import logging
-from werkzeug.utils import secure_filename 
-
-# --- Logging Setup ---
+from pathlib import Path
+from werkzeug.utils import secure_filename
 logger = logging.getLogger(__name__)
 
 # [NEW] Import db to update user stats
@@ -373,6 +372,7 @@ def get_ssl_report():
             "report_file": json_path.name
         })
     except Exception as e:
+        user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
         ssl_scanner.log(f"[!] Error reading or parsing SSL scan report: {e}", user_identifier)
         return jsonify({
             "status": "error",
