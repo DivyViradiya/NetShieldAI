@@ -12,3 +12,86 @@
 2026-03-05 09:13:20 - INFO - New local chat session started: 00af2f20-f4d9-4bde-94f8-8fa729e0427b
 2026-03-05 09:39:50 - INFO - New local chat session started: 0eb282d8-3977-498f-b839-36cce7d40747
 2026-03-05 09:39:52 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1fced1dd590>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-03-06 20:59:26 - INFO - New local chat session started: d3922776-2081-43f4-b6f3-b5273e2d5db4
+2026-03-06 20:59:39 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session d3922776-2081-43f4-b6f3-b5273e2d5db4
+2026-03-06 20:59:43 - INFO - Stream updated local session ID to: 559bae0f-f359-4fbd-a175-1451555f8cc4
+2026-03-06 21:00:02 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 559bae0f-f359-4fbd-a175-1451555f8cc4
+2026-03-06 21:00:34 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 559bae0f-f359-4fbd-a175-1451555f8cc4
+2026-03-06 21:00:37 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com', 'timing': 4, 'scan_type': 'aggressive'}
+2026-03-06 21:00:37 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-06 21:07:13 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 559bae0f-f359-4fbd-a175-1451555f8cc4
+2026-03-06 21:07:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 559bae0f-f359-4fbd-a175-1451555f8cc4
+2026-03-06 21:08:10 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-03-06 21:08:10 - INFO - Stream updated local session ID to: e2419df0-fedf-422d-9a6d-af8bc9e52840
+2026-03-06 21:08:41 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session e2419df0-fedf-422d-9a6d-af8bc9e52840
+2026-03-06 21:09:06 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session e2419df0-fedf-422d-9a6d-af8bc9e52840
+2026-03-06 21:09:08 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com', 'timing': 4, 'scan_type': 'aggressive'}
+2026-03-06 21:09:08 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-06 21:10:10 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-03-06 21:10:14 - INFO - Stored session ID from server: e2419df0-fedf-422d-9a6d-af8bc9e52840
+2026-03-06 21:19:51 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session e2419df0-fedf-422d-9a6d-af8bc9e52840
+2026-03-06 21:20:13 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-03-06 21:20:14 - INFO - Stream updated local session ID to: b4efa1ce-54d7-47c7-89cb-23864a75848a
+2026-03-06 21:20:56 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session b4efa1ce-54d7-47c7-89cb-23864a75848a
+2026-03-06 21:20:59 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com', 'timing': 3, 'scan_type': 'xmas'}
+2026-03-06 21:20:59 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-06 21:24:28 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-03-06 21:24:31 - INFO - Stored session ID from server: b4efa1ce-54d7-47c7-89cb-23864a75848a
+2026-03-06 21:31:58 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-03-06 21:32:02 - INFO - Stream updated local session ID to: 93d42836-52a8-4910-81fd-4586b4315ce9
+2026-03-06 21:32:49 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 93d42836-52a8-4910-81fd-4586b4315ce9
+2026-03-06 21:32:51 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.48', 'timing': 4, 'protocol_type': 'TCP', 'scan_type': 'default'}
+2026-03-06 21:32:51 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-06 21:33:10 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-03-06 21:33:20 - INFO - Stored session ID from server: 93d42836-52a8-4910-81fd-4586b4315ce9
+2026-03-06 21:56:31 - INFO - New local chat session started: 8398126e-1f86-4274-915c-e4c8dcc42d22
+2026-03-07 12:56:36 - INFO - New local chat session started: 97b6ec40-6525-4244-94f3-0dfbfbf97e13
+2026-03-07 13:00:18 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 97b6ec40-6525-4244-94f3-0dfbfbf97e13
+2026-03-07 13:00:24 - INFO - Stream updated local session ID to: e0d0fb1b-d45e-4dde-b185-1915110108c6
+2026-03-07 13:01:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session e0d0fb1b-d45e-4dde-b185-1915110108c6
+2026-03-07 13:01:44 - INFO - AI Action Execution requested: nmap_scan with params {'timing': 4, 'target_ip': 'navigateaif.com', 'scan_type': 'default'}
+2026-03-07 13:01:44 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-07 13:03:37 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-03-07 13:03:48 - INFO - Stored session ID from server: e0d0fb1b-d45e-4dde-b185-1915110108c6
+2026-03-07 13:23:01 - INFO - Sending zap path-based analysis request to backend (Target: )
+2026-03-07 13:23:27 - INFO - Stored session ID from server: 560bf0c9-04a7-48fd-abb0-807e8b129bec
+2026-03-07 13:23:28 - INFO - Session switched via URL parameter to: 560bf0c9-04a7-48fd-abb0-807e8b129bec
+2026-03-07 13:29:29 - INFO - Sending zap path-based analysis request to backend (Target: DJSCE.ac.in)
+2026-03-07 13:29:59 - INFO - Stored session ID from server: 8a57c5e5-5b56-4b2c-a9bf-641d21c7c187
+2026-03-07 13:30:00 - INFO - Session switched via URL parameter to: 8a57c5e5-5b56-4b2c-a9bf-641d21c7c187
+2026-03-07 13:30:36 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 8a57c5e5-5b56-4b2c-a9bf-641d21c7c187
+2026-03-07 13:31:16 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-03-07 13:31:17 - INFO - Stream updated local session ID to: 2fafde69-f85d-4675-8cf7-70068070ab84
+2026-03-07 13:31:43 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 2fafde69-f85d-4675-8cf7-70068070ab84
+2026-03-07 13:31:45 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': 'testphp.vulnweb.com', 'timing': 4, 'scan_type': 'aggressive'}
+2026-03-07 13:31:45 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-07 13:32:08 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-03-07 13:32:15 - INFO - Stored session ID from server: 2fafde69-f85d-4675-8cf7-70068070ab84
+2026-03-07 13:51:39 - INFO - Sending ssl path-based analysis request to backend (Target: google.com)
+2026-03-07 13:52:11 - INFO - Stored session ID from server: 7db4d5d9-db83-4847-a7e8-53efdcd12c8c
+2026-03-07 13:55:17 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session None
+2026-03-07 13:55:21 - INFO - Stream updated local session ID to: 4647da5a-3ff5-49db-9d7f-54944d68ea52
+2026-03-07 13:55:41 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4647da5a-3ff5-49db-9d7f-54944d68ea52
+2026-03-07 13:56:05 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 4647da5a-3ff5-49db-9d7f-54944d68ea52
+2026-03-07 13:56:09 - INFO - AI Action Execution requested: nmap_scan with params {'timing': 4, 'target_ip': 'testphp.vulnweb.com', 'scan_type': 'default'}
+2026-03-07 13:56:09 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-07 13:57:23 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-03-07 13:57:35 - INFO - Stored session ID from server: 4647da5a-3ff5-49db-9d7f-54944d68ea52
+2026-03-07 14:01:04 - INFO - Sending nmap path-based analysis request to backend (Target: 10.120.107.165)
+2026-03-07 14:01:15 - INFO - Stored session ID from server: 3e7762e6-6722-40a5-a876-eea675dfd7c5
+2026-03-07 14:01:16 - INFO - Session switched via URL parameter to: 3e7762e6-6722-40a5-a876-eea675dfd7c5
+2026-03-07 14:02:36 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 3e7762e6-6722-40a5-a876-eea675dfd7c5
+2026-03-07 14:03:33 - INFO - Session switched via URL parameter to: 3e7762e6-6722-40a5-a876-eea675dfd7c5
+2026-03-14 14:25:15 - INFO - New local chat session started: c4a1cffd-3b72-437e-bacc-96cf1a73cf6a
+2026-03-14 14:25:34 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session c4a1cffd-3b72-437e-bacc-96cf1a73cf6a
+2026-03-14 14:25:38 - INFO - Stream updated local session ID to: 0fb98abb-8448-4874-8e9e-a30054f95ad3
+2026-03-14 14:26:14 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 0fb98abb-8448-4874-8e9e-a30054f95ad3
+2026-03-14 14:26:17 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.1668.29.48', 'timing': 4, 'scan_type': 'default'}
+2026-03-14 14:26:17 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-14 14:26:38 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 0fb98abb-8448-4874-8e9e-a30054f95ad3
+2026-03-14 14:26:40 - INFO - AI Action Execution requested: nmap_scan with params {'target_ip': '192.168.29.48', 'timing': 4, 'scan_type': 'default'}
+2026-03-14 14:26:40 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user DivyaViradiya
+2026-03-14 14:29:24 - INFO - Sending semgrep path-based analysis request to backend (Target: )
+2026-03-14 14:29:34 - INFO - Stored session ID from server: 875c6a5b-a1c0-40c7-bee3-1f0990f28ab9
+2026-03-14 14:29:35 - INFO - Session switched via URL parameter to: 875c6a5b-a1c0-40c7-bee3-1f0990f28ab9
+2026-03-14 14:30:13 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 560bf0c9-04a7-48fd-abb0-807e8b129bec

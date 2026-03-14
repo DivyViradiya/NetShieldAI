@@ -37,13 +37,23 @@ def get_user_results_dir():
 
 def load_json_safe(path):
     """Helper to load JSON without crashing if file is missing/corrupt."""
-    if not os.path.exists(path):
+    if not path or not os.path.exists(path):
         return None
     try:
         with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except Exception:
         return None
+
+def get_latest_report_path(user_dir, scanner_folder, pattern="*.json"):
+    """Finds the most recently modified report file matching the pattern."""
+    target_dir = os.path.join(user_dir, scanner_folder)
+    if not os.path.exists(target_dir):
+        return None
+    candidates = glob.glob(os.path.join(target_dir, pattern))
+    if candidates:
+        return max(candidates, key=os.path.getmtime)
+    return None
 
 def get_all_reports(user_dir):
     """
@@ -145,15 +155,8 @@ def get_killchain_stats():
 
     if not user_dir: return jsonify(response)
 
-    # --- FIX 1: Service saves killchain_report_<target>.json (not a fixed name) ---
-    # Use glob to find the most recently modified JSON in the reports folder.
-    kc_reports_dir = os.path.join(user_dir, 'killchain', 'reports')
-    kc_path = None
-    if os.path.isdir(kc_reports_dir):
-        candidates = glob.glob(os.path.join(kc_reports_dir, 'killchain_report*.json'))
-        if candidates:
-            # Pick the most recently modified file
-            kc_path = max(candidates, key=os.path.getmtime)
+    # --- FIX 1: Service saves killchain_<target>.json (not a fixed name) ---
+    kc_path = get_latest_report_path(user_dir, 'killchain/reports', 'killchain_*.json')
 
     if not kc_path:
         return jsonify(response)
@@ -240,7 +243,9 @@ def get_network_stats():
 
     if not user_dir: return jsonify(response)
 
-    nmap_path = os.path.join(user_dir, 'network_scanner', report_manager.generate_report_filename("nmap_report", None, "json"))
+    nmap_path = get_latest_report_path(user_dir, 'network_scanner', 'network_scanner_*.json')
+    if not nmap_path:
+        nmap_path = get_latest_report_path(user_dir, 'network_scanner', 'nmap_report*.json')
     nmap_data = load_json_safe(nmap_path)
 
     if nmap_data:
@@ -291,7 +296,9 @@ def get_zap_stats():
 
     if not user_dir: return jsonify(response)
 
-    zap_path = os.path.join(user_dir, 'zap_scanner', 'zap_report.json')
+    zap_path = get_latest_report_path(user_dir, 'zap_scanner', 'zap_scanner_*.json')
+    if not zap_path:
+        zap_path = get_latest_report_path(user_dir, 'zap_scanner', 'zap_report*.json')
     zap_data = load_json_safe(zap_path)
 
     if zap_data:
@@ -364,7 +371,7 @@ def get_ssl_stats():
 
     if not user_dir: return jsonify(response)
 
-    ssl_path = os.path.join(user_dir, 'ssl_scanner', 'ssl_report.json')
+    ssl_path = get_latest_report_path(user_dir, 'ssl_scanner', 'ssl_report*.json')
     ssl_data = load_json_safe(ssl_path)
 
     if ssl_data:
@@ -432,7 +439,7 @@ def get_sniffer_stats():
 
     if not user_dir: return jsonify(response)
 
-    sniffer_path = os.path.join(user_dir, 'packet_sniffer', 'pcap_analysis_report.json')
+    sniffer_path = get_latest_report_path(user_dir, 'packet_sniffer', 'pcap_analysis_report*.json')
     sniffer_data = load_json_safe(sniffer_path)
 
     if sniffer_data:
@@ -505,7 +512,9 @@ def get_api_stats():
 
     if not user_dir: return jsonify(response)
 
-    api_path = os.path.join(user_dir, 'api_scanner', 'api_scan_report.json')
+    api_path = get_latest_report_path(user_dir, 'api_scanner', 'api_scanner_*.json')
+    if not api_path:
+        api_path = get_latest_report_path(user_dir, 'api_scanner', 'api_scan_report*.json')
     api_data = load_json_safe(api_path)
 
     if api_data:
@@ -568,11 +577,9 @@ def get_sql_stats():
 
     if not user_dir: return jsonify(response)
 
-    # Note: SQL Scanner uses a dynamic user-specific folder inside results/sql_scanner/ but 
-    # based on the tool code, it saves `sql_report.json` in the user_dir passed to it.
-    # We need to verify where the controller saves it. 
-    # Assuming standard pattern: Services/results/<user_id>/sql_scanner/sql_report.json
-    sql_path = os.path.join(user_dir, 'sql_scanner', 'sql_report.json')
+    sql_path = get_latest_report_path(user_dir, 'sql_scanner', 'sql_scanner_*.json')
+    if not sql_path:
+        sql_path = get_latest_report_path(user_dir, 'sql_scanner', 'sql_report*.json')
     sql_data = load_json_safe(sql_path)
 
     if sql_data:
@@ -619,7 +626,9 @@ def get_semgrep_stats():
 
     if not user_dir: return jsonify(response)
 
-    semgrep_path = os.path.join(user_dir, 'semgrep_scanner', 'semgrep_report.json')
+    semgrep_path = get_latest_report_path(user_dir, 'semgrep_scanner', 'semgrep_scanner_*.json')
+    if not semgrep_path:
+        semgrep_path = get_latest_report_path(user_dir, 'semgrep_scanner', 'semgrep_report*.json')
     semgrep_data = load_json_safe(semgrep_path)
 
     if semgrep_data:

@@ -265,18 +265,18 @@
         display: grid;
         grid-template-columns: 50fr 50fr;
         gap: 0.5rem;
-        margin-bottom: 0px;
+        margin-bottom: 0.5rem;
         width: 100%;
         align-items: stretch;
-        height: 120px;  /* Fixed row height — cards never grow */
+        min-height: 120px;  /* Let content expand height */
       }
   
       .main-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr) 340px; 
         gap: 0.5rem;
-        flex: 1;
-        min-height: 0;
+        flex: 1 1 auto; /* Allow flexible height */
+        min-height: 500px;
         width: 100%;
       }
   
@@ -286,8 +286,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height: 100%;       /* Fill the fixed scan-overview-grid row */
-        overflow: hidden;   /* Never grow beyond the row */
+        min-height: 100%;   /* Fill parent naturally without restricting content */
         z-index: 20;
       }
   
@@ -330,7 +329,7 @@
         display: grid;
         grid-template-columns: repeat(4, 1fr); /* Matches the 4-card HTML layout */
         gap: 0.5rem;
-        height: 100%;   /* Fill the fixed scan-overview-grid row */
+        min-height: 100%;
         width: 100%;
       }
   
@@ -338,8 +337,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height: 100%;    /* Fill the metrics-grid height exactly */
-        overflow: hidden;
+        min-height: 100%;
         padding: 0.85rem; 
       }
   
@@ -1187,7 +1185,7 @@
     <div class="main-grid">
 
       <!-- LEFT: Results Panel -->
-      <div class="dash-panel" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+      <div class="dash-panel" style="display: flex; flex-direction: column; height: 700px; overflow: hidden;">
         <div class="panel-header" style="gap: 0.5rem; flex-wrap: nowrap;">
           <div class="flex items-center gap-3" style="flex-shrink: 0;">
             <span class="panel-title">Scan Results</span>
@@ -1213,13 +1211,13 @@
         <div class="panel-content" style="flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
 
           <!-- Findings Tab: Split pane -->
-          <div id="findingsContent" style="display: flex; flex: 1; min-height: 0; overflow: hidden;">
+          <div id="findingsContent" style="display: flex; flex: 1; min-height: 0; overflow: hidden; gap: 1rem; padding: 1rem;">
             <!-- LEFT: Findings list -->
-            <div id="findingsListSide" style="width: 38%; border-right: 1px solid var(--neo-border); overflow-y: auto; flex-shrink: 0; scrollbar-width: thin; scrollbar-color: #222 transparent;">
+            <div id="findingsListSide" style="width: 38%; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); overflow-y: auto; flex-shrink: 0; scrollbar-width: thin; scrollbar-color: #222 transparent;">
               <div style="text-align:center; padding: 4rem 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">WAITING FOR CODE SCAN...</div>
             </div>
             <!-- RIGHT: Detail view -->
-            <div id="findingsDetailSide" style="flex: 1; overflow-y: auto; padding: 1.5rem; scrollbar-width: thin; scrollbar-color: #222 transparent;">
+            <div id="findingsDetailSide" style="flex: 1; overflow-y: auto; padding: 1.5rem; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); scrollbar-width: thin; scrollbar-color: #222 transparent;">
               <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.2;">
                 <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem;">data_exploration</span>
                 <div style="font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">Select a finding to view analysis</div>
@@ -1236,7 +1234,7 @@
       </div>
 
       <!-- RIGHT: Sidebar -->
-      <div class="flex flex-col gap-6" style="height: 100%; min-height: 0;">
+      <div class="flex flex-col gap-6" style="min-height: 400px; height: 100%;">
 
         <!-- Intelligence Actions -->
         <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1rem; overflow: visible !important; position: relative;">
@@ -1310,7 +1308,7 @@
         </div>
 
         <!-- Scan Metadata -->
-        <div class="dash-panel" style="flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="dash-panel" style="flex: 1; min-height: 150px; display: flex; flex-direction: column; overflow: hidden;">
           <div class="panel-header" style="height: 44px;">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">info</span>

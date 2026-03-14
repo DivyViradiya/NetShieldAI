@@ -1,0 +1,846 @@
+[19:11:19] [INFO] [*] Starting API Scan for https://petstore.swagger.io/v2 (Auth: Anonymous)...
+[19:11:19] [INFO] [*] Using Definition: https://petstore.swagger.io/v2/swagger.json
+[19:11:19] [INFO] --- Initializing API Scanner (Port: 32448) ---
+[19:11:19] [INFO] [*] Target: https://petstore.swagger.io/v2 | Definition: https://petstore.swagger.io/v2/swagger.json
+[19:11:19] [INFO] [*] Launching ZAP daemon...
+[19:11:20] [INFO] [*] Waiting for ZAP on port 32448 (timeout: 240s)...
+[19:11:20] [INFO] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[19:11:20] [INFO] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -daemon -silent -port 32448 -dir D:\NetShield\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_32448 -config api.disablekey=true -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config connection.timeoutInSecs=10
+[19:11:21] [INFO] 1445 [main] INFO  org.parosproxy.paros.Constant - Copying default configuration to D:\NetShield\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_32448\config.xml
+[19:11:22] [INFO] 1717 [main] INFO  org.parosproxy.paros.Constant - Creating directory D:\NetShield\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_32448\session
+[19:11:22] [INFO] 1719 [main] INFO  org.parosproxy.paros.Constant - Creating directory D:\NetShield\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_32448\dirbuster
+[19:11:22] [INFO] 1719 [main] INFO  org.parosproxy.paros.Constant - Creating directory D:\NetShield\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_32448\fuzzers
+[19:11:22] [INFO] 1720 [main] INFO  org.parosproxy.paros.Constant - Creating directory D:\NetShield\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_32448\plugin
+[19:11:22] [INFO] 1931 [main] INFO  org.zaproxy.zap.DaemonBootstrap - ZAP 2.17.0 started 06/03/2026, 19:11:22 with home: D:\NetShield\NetShieldAI\Services\temp\api_scanner\user_DivyaViradiya_1_32448\ cores: 12 maxMemory: 512 MB
+[19:11:22] [INFO] 1976 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config api.disablekey = true was null
+[19:11:22] [INFO] 1977 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config api.addrs.addr.name = .* was null
+[19:11:22] [INFO] 1977 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config api.addrs.addr.regex = true was null
+[19:11:22] [INFO] 1978 [main] INFO  org.parosproxy.paros.common.AbstractParam - Setting config connection.timeoutInSecs = 10 was null
+[19:11:46] [INFO] 26243 [ZAP-daemon] INFO  org.zaproxy.zap.control.ExtensionFactory - Installed add-ons: [[id=alertFilters, version=26.0.0], [id=ascanrules, version=78.0.0], [id=authhelper, version=0.34.0], [id=automation, version=0.58.0], [id=bruteforce, version=20.0.0], [id=callhome, version=0.20.0], [id=client, version=0.20.0], [id=commonlib, version=1.39.0], [id=database, version=0.9.0], [id=diff, version=18.0.0], [id=directorylistv1, version=9.0.0], [id=domxss, version=23.0.0], [id=encoder, version=1.8.0], [id=exim, version=0.16.0], [id=formhandler, version=6.8.0], [id=fuzz, version=13.16.0], [id=gettingStarted, version=20.0.0], [id=graaljs, version=0.12.0], [id=graphql, version=0.29.0], [id=help, version=22.0.0], [id=hud, version=0.19.0], [id=insights, version=0.0.1], [id=invoke, version=17.0.0], [id=network, version=0.25.0], [id=oast, version=0.24.0], [id=onlineMenu, version=15.0.0], [id=openapi, version=48.0.0], [id=postman, version=0.9.0], [id=pscan, version=0.6.0], [id=pscanrules, version=70.0.0], [id=quickstart, version=53.0.0], [id=replacer, version=21.0.0], [id=reports, version=0.43.0], [id=requester, version=7.9.0], [id=retest, version=0.11.0], [id=retire, version=0.52.0], [id=reveal, version=10.0.0], [id=scanpolicies, version=0.7.0], [id=scripts, version=45.17.0], [id=selenium, version=15.43.0], [id=sequence, version=9.0.0], [id=soap, version=29.0.0], [id=spider, version=0.18.0], [id=spiderAjax, version=23.29.0], [id=tips, version=16.0.0], [id=webdriverwindows, version=170.0.0], [id=websocket, version=35.0.0], [id=zest, version=48.11.0]]
+[19:11:46] [INFO] 26253 [ZAP-daemon] INFO  org.zaproxy.zap.control.ExtensionFactory - Loading extensions
+[19:11:49] [INFO] 29305 [ZAP-daemon] INFO  org.zaproxy.addon.network.internal.TlsUtils - Using supported SSL/TLS protocols: [TLSv1.2, TLSv1.3]
+[19:11:52] [INFO] 31691 [ZAP-daemon] INFO  org.zaproxy.zap.control.ExtensionFactory - Extensions loaded
+[19:11:54] [INFO] 33787 [ZAP-daemon] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:hsqldb:file:D:/NetShield/NetShieldAI/Services/temp/api_scanner/user_DivyaViradiya_1_32448/session/untitled1 (HSQL Database Engine 2.7)
+[19:11:54] [INFO] 34176 [ZAP-daemon] INFO  org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory - Schema history table "PUBLIC"."AUTHHELPER_FLYWAY_SCHEMA_HISTORY" does not exist yet
+[19:11:54] [INFO] 34201 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbValidate - Successfully validated 6 migrations (execution time 00:00.102s)
+[19:11:54] [INFO] 34266 [ZAP-daemon] INFO  org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory - Creating Schema History table "PUBLIC"."AUTHHELPER_FLYWAY_SCHEMA_HISTORY" with baseline ...
+[19:11:54] [INFO] 34555 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbBaseline - Successfully baselined schema with version: 0
+[19:11:54] [INFO] 34651 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Current version of schema "PUBLIC": 0
+[19:11:55] [INFO] 34783 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version "1 - Create tables"
+[19:11:55] [INFO] 34899 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version "2 - Create storage tables"
+[19:11:55] [INFO] 34985 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version "3 - Improve diags"
+[19:11:55] [INFO] 35064 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version "4 - Web element selector"
+[19:11:55] [INFO] 35146 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version "5 - Af plan"
+[19:11:55] [INFO] 35212 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Migrating schema "PUBLIC" to version "6 - Auth report data"
+[19:11:55] [INFO] 35319 [ZAP-daemon] INFO  org.flywaydb.core.internal.command.DbMigrate - Successfully applied 6 migrations to schema "PUBLIC", now at version v6 (execution time 00:00.139s)
+[19:12:03] [INFO] 43322 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Auto-update Extension - Allows ZAP to check for updates
+[19:12:03] [INFO] 43345 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Options Extension - Options Extension
+[19:12:03] [INFO] 43346 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Edit Menu Extension - Edit Menu Extension
+[19:12:03] [INFO] 43348 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing API Extension - Provides a rest based API for controlling and accessing ZAP
+[19:12:03] [INFO] 43396 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing History Extension - History Extension
+[19:12:03] [INFO] 43402 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionReveal - Show hidden fields and enable disabled fields
+[19:12:03] [INFO] 43406 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Search Extension - Search messages for strings and regular expressions
+[19:12:03] [INFO] 43415 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Breakpoint Extension - Allows you to intercept and modify requests and responses
+[19:12:03] [INFO] 43427 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Passive Scan Extension - Passive scanner
+[19:12:03] [INFO] 43430 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Alerts Extension - Allows you to view and manage alerts
+[19:12:03] [INFO] 43441 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Active Scan Extension - Active scanner, heavily based on the original Paros active scanner, but with additional tests added
+[19:12:03] [INFO] 43488 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionSequence - ExtensionSequence
+[19:12:03] [INFO] 43490 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Standard Menus Extension - A set of common popup menus for miscellaneous tasks
+[19:12:03] [INFO] 43496 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionBruteForce - Forced browsing of files and directories using code from the OWASP DirBuster tool
+[19:12:03] [INFO] 43503 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Compare Extension - Compares 2 sessions and generates an HTML file showing the differences
+[19:12:03] [INFO] 43509 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionInvoke - Invoke external applications passing context related information such as URLs and parameters
+[19:12:03] [INFO] 43513 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Anti-CSRF Extension - Handles anti cross site request forgery (CSRF) tokens
+[19:12:03] [INFO] 43555 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Authentication Extension - Authentication Extension
+[19:12:03] [INFO] 43593 [ZAP-daemon] INFO  org.zaproxy.zap.extension.authentication.ExtensionAuthentication - Loaded authentication method types: [Form-based Authentication, HTTP/NTLM Authentication, Manual Authentication, Script-based Authentication, JSON-based Authentication]
+[19:12:03] [INFO] 43606 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Users Extension - Users Extension
+[19:12:03] [INFO] 43611 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Parameters Extension - Summarise and analyse FORM and URL parameters as well as cookies
+[19:12:03] [INFO] 43617 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Script Extension - Script integration
+[19:12:04] [INFO] 43666 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionScripts - Scripting console, supports all JSR 223 scripting languages
+[19:12:04] [INFO] 43733 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Forced User Extension - Forced User Extension
+[19:12:04] [INFO] 43737 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Sessions Extension - Extension handling HTTP sessions
+[19:12:04] [INFO] 43752 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionZest - Zest is a specialized scripting language, originally, from Mozilla specifically designed to be used in security tools
+[19:12:05] [INFO] 44782 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionDiff - ExtensionDiff
+[19:12:05] [INFO] 44782 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Post Table View Extension - HTTP Panel Post Table View Extension
+[19:12:05] [INFO] 44784 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Encoder Addon - Adds support for scriptable encoders to ZAP.
+[19:12:05] [INFO] 44786 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Session Management Extension - Session Management Extension
+[19:12:05] [INFO] 44802 [ZAP-daemon] INFO  org.zaproxy.zap.extension.sessions.ExtensionSessionManagement - Loaded session management method types: [Cookie-based Session Management, HTTP Authentication Session Management, Script-based Session Management]
+[19:12:05] [INFO] 44804 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Form Table View Extension - HTTP Panel Form Table View Extension
+[19:12:05] [INFO] 44805 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing WebSockets Support - Capture messages from WebSockets with the ability to set breakpoints.
+[19:12:05] [INFO] 44854 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing SOAP/WSDL Support - Allows you to import a WSDL file containing operations which ZAP will access, adding them to the Sites tree.
+[19:12:05] [INFO] 44861 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Core UI Extension - Core UI related functionality.
+[19:12:05] [INFO] 44861 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Authorization Extension - Authorization Extension
+[19:12:05] [INFO] 44863 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Requester - Allows to manually edit and send messages.
+[19:12:05] [INFO] 44880 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing AJAX Spider - AJAX Spider, uses Crawljax
+[19:12:05] [INFO] 44912 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing WebDriver Provider - Provides WebDrivers to control several browsers using Selenium and includes HtmlUnit browser.
+[19:12:05] [INFO] 45004 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Refresh Sites Tree Extension - Adds menu item to refresh the Sites tree
+[19:12:05] [INFO] 45012 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Help Extension - ZAP User Guide
+[19:12:05] [INFO] 45015 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Call Home - Handles all of the calls to ZAP services
+[19:12:05] [INFO] 45026 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Network Extension - Provides core networking capabilities.
+[19:12:05] [INFO] 45161 [ZAP-daemon] INFO  org.zaproxy.addon.network.ConnectionOptions - Unsafe SSL/TLS renegotiation disabled.
+[19:12:05] [INFO] 45173 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Extension Configuration Extension - Allows you to configure which extensions are loaded when ZAP starts
+[19:12:05] [INFO] 45176 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Combined HTTP Panels Extension - Combined HTTP Panels Extension
+[19:12:05] [INFO] 45177 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Hex View Extension - HTTP Panel Hex View Extension
+[19:12:05] [INFO] 45181 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Image View Extension - HTTP Panel Image View Extension
+[19:12:05] [INFO] 45182 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Query Table View Extension - HTTP Panel Query Table View Extension
+[19:12:05] [INFO] 45182 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Panel Syntax Highlighter View Extension - HTTP Panel Syntax Highlighter View Extension
+[19:12:05] [INFO] 45184 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Keyboard Configuration Extension - Adds support for configurable keyboard shortcuts for all of the ZAP menus.
+[19:12:05] [INFO] 45184 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Scanner Rule Configuration Extension - Active and passive rule configuration
+[19:12:05] [INFO] 45193 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Statistics Extension - Statistics
+[19:12:05] [INFO] 45198 [ZAP-daemon] INFO  org.zaproxy.zap.extension.stats.ExtensionStats - Start recording in memory stats
+[19:12:05] [INFO] 45199 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Custom Pages Extension - Custom Pages Definition
+[19:12:05] [INFO] 45205 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionAlertFilters - Context alert rules filter
+[19:12:05] [INFO] 45213 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Alert Filters Automation - Alert Filters Automation Framework Integration
+[19:12:05] [INFO] 45224 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Active Scan Rules - Release status active scan rules
+[19:12:05] [INFO] 45225 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Authentication Helper - Authentication Helper
+[19:12:05] [INFO] 45245 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Client Spider Browser Based Authentication Support - Enables browser based authentication when performing an authenticated Client Spider scan.
+[19:12:05] [INFO] 45248 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Authentication Helper Reports - Authentication Helper Reports
+[19:12:05] [INFO] 45254 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing AJAX Spider Browser Based Authentication Support - Enables browser based authentication when performing an authenticated AJAX Spider scan.
+[19:12:05] [INFO] 45259 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Automation Framework - Provides functionality to simplify using ZAP in an automated manner
+[19:12:05] [INFO] 45268 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionClientIntegration - Client Side Integration
+[19:12:05] [INFO] 45293 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Client Spider Automation - Client Spider Automation Framework Integration
+[19:12:05] [INFO] 45306 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Client Zest Script Recording Support - Allows recording client events as Zest scripts.
+[19:12:05] [INFO] 45315 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Common Library - A library of shared functionality
+[19:12:05] [INFO] 45319 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Database Extension - Provides databases and persistence capabilities.
+[19:12:05] [INFO] 45320 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionDomXSS - DOM XSS Active Scan Rule
+[19:12:06] [INFO] 45702 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Import/Export - Import and Export functionality supporting multiple formats.
+[19:12:06] [INFO] 45710 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Import/Export Automation - Import/Export Automation Framework Integration
+[19:12:06] [INFO] 45730 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionFormHandler - This extension allows a user to change the default values used for generated content (e.g. spiders, importers).
+[19:12:06] [INFO] 45747 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Advance Fuzzer - Provides the foundation for concrete message types (for example, HTTP, WebSockets) expose fuzzer implementations.
+[19:12:06] [INFO] 45758 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing HTTP Fuzzer - Allows to fuzz HTTP messages.
+[19:12:06] [INFO] 45759 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionGettingStarted - The ZAP Getting Started Guide
+[19:12:06] [INFO] 45765 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing GraalVM JavaScript Engine Extension - Provides the GraalVM JavaScript engine for ZAP scripting.
+[19:12:08] [INFO] 48013 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionGraphQl - Allows you to inspect and attack GraphQL endpoints.
+[19:12:08] [INFO] 48032 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing GraphQL Automation - GraphQL Automation Framework Integration
+[19:12:08] [INFO] 48041 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing GraphQL Spider - GraphQL Spider Integration
+[19:12:08] [INFO] 48049 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionHUD - Heads Up Display
+[19:12:12] [INFO] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[19:12:12] [INFO] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[19:12:12] [INFO] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[19:12:12] [INFO] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[19:12:13] [INFO] 53099 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionHUDlaunch - ExtensionHUDlaunch
+[19:12:13] [INFO] 53104 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionInsights - Insights Extension
+[19:12:13] [INFO] 53112 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Alert Filters Automation - Alert Filters Automation Framework Integration
+[19:12:13] [INFO] 53120 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Insights Reports Extension - Adds Insights to the report data
+[19:12:13] [INFO] 53123 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Out-of-band Application Security Testing - Adds Out-of-band Application Security Testing functionality.
+[19:12:13] [INFO] 53218 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing OAST Scripts - Adds OAST scripts.
+[19:12:13] [INFO] 53219 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionOnlineMenu - The Online menu links
+[19:12:13] [INFO] 53219 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing OpenAPI Import - Allows you to spider and import OpenAPI (Swagger) definitions
+[19:12:13] [INFO] 53227 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing OpenAPI Automation - OpenAPI Automation Framework Integration
+[19:12:13] [INFO] 53233 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing OpenAPI Spider - OpenAPI Spider Integration
+[19:12:13] [INFO] 53245 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Postman Import - Allows you to spider and import Postman collections
+[19:12:13] [INFO] 53249 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Postman Automation - Postman Automation Framework Integration
+[19:12:13] [INFO] 53256 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Passive Scanner Extension - Provides core passive scanning capabilities.
+[19:12:13] [INFO] 53349 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Passive Scanner Automation Framework Extension - Provides jobs and result data related to the passive scanner.
+[19:12:13] [INFO] 53352 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Passive Scan Rules - Release status passive scan rules.
+[19:12:13] [INFO] 53356 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start panel  - Adds the Quick Start panel for scanning and exploring applications
+[19:12:13] [INFO] 53360 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start Ajax Spider integration - Add the option to use the Ajax Spider in the Quick Start scan
+[19:12:13] [INFO] 53360 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start HUD Integration - HUD integration for the quick start panel
+[19:12:13] [INFO] 53361 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start Browser Launcher - Launch browsers preset proxying through ZAP
+[19:12:13] [INFO] 53366 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Quick Start Spider Integration - Adds the option to use the traditional Spider in the Quick Start scan.
+[19:12:13] [INFO] 53377 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Match and Replace - Easy way to replace strings in requests and responses
+[19:12:13] [INFO] 53395 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Replacer Automation - Replacer Automation Framework Integration
+[19:12:13] [INFO] 53408 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Report Generator - Templated and themed report generation functionality
+[19:12:13] [INFO] 53419 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Report Generation Automation Integration - Report Generation Automation Integration
+[19:12:13] [INFO] 53431 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Retest - Facilitates the verification of presence/absence of certain alerts.
+[19:12:13] [INFO] 53436 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Scripts Automation Framework Integration - Scripts Automation
+[19:12:13] [INFO] 53498 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Sequence Automation - Sequence Automation Framework Integration
+[19:12:13] [INFO] 53525 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing SOAP Automation - SOAP Automation Framework Integration
+[19:12:13] [INFO] 53532 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing SOAP Spider - SOAP Spider Integration
+[19:12:13] [INFO] 53535 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Spider Extension - Spider used for automatically finding URIs on a site.
+[19:12:13] [INFO] 53649 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Spider Automation - Spider Automation Integration
+[19:12:14] [INFO] 53668 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing Ajax Spider Automation - Ajax Spider Automation Framework Integration
+[19:12:14] [INFO] 53697 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing ExtensionTipsAndTricks - Tips and Tricks
+[19:12:14] [INFO] 53698 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing WebSocket Fuzzer - Allows to fuzz WebSocket messages.
+[19:12:14] [INFO] 53706 [ZAP-daemon] INFO  org.parosproxy.paros.extension.ExtensionLoader - Initializing WebSocket Message Editor - Provides the WebSocket Message Editor dialogues.
+[19:12:15] [INFO] 54710 [ZAP-daemon] WARN  org.openqa.selenium.manager.SeleniumManager - Unable to discover proper geckodriver version in offline mode
+[19:12:15] [INFO] 54875 [ZAP-daemon] WARN  org.zaproxy.zap.extension.selenium.internal.FirefoxProfileManager - Unable to find Firefox binary through SeleniumManager.
+[19:12:15] [INFO] 54882 [ZAP-daemon] ERROR org.zaproxy.addon.client.ExtensionClientIntegration - Failed to get or create Firefox profile zap-client-profile
+[19:12:16] [INFO] 56025 [ZAP-daemon] INFO  org.zaproxy.addon.oast.services.callback.CallbackService - Started callback service on 0.0.0.0:32571
+[19:12:16] [INFO] 56134 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Authentication Request Identified
+[19:12:16] [INFO] 56138 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Session Management Response Identified
+[19:12:16] [INFO] 56139 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Verification Request Identified
+[19:12:16] [INFO] 56397 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Anti-clickjacking Header
+[19:12:16] [INFO] 56398 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Application Error Disclosure
+[19:12:16] [INFO] 56398 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Big Redirect Detected (Potential Sensitive Information Leak)
+[19:12:16] [INFO] 56399 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Re-examine Cache-control Directives
+[19:12:16] [INFO] 56402 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Charset Mismatch
+[19:12:16] [INFO] 56403 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Content Security Policy (CSP) Header Not Set
+[19:12:16] [INFO] 56406 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: CSP
+[19:12:16] [INFO] 56407 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Content-Type Header Missing
+[19:12:16] [INFO] 56407 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie No HttpOnly Flag
+[19:12:16] [INFO] 56407 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Loosely Scoped Cookie
+[19:12:16] [INFO] 56408 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie without SameSite Attribute
+[19:12:16] [INFO] 56408 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie Without Secure Flag
+[19:12:16] [INFO] 56408 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cross-Domain Misconfiguration
+[19:12:16] [INFO] 56408 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cross-Domain JavaScript Source File Inclusion
+[19:12:16] [INFO] 56409 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Absence of Anti-CSRF Tokens
+[19:12:16] [INFO] 56409 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Directory Browsing
+[19:12:16] [INFO] 56413 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Hash Disclosure
+[19:12:16] [INFO] 56417 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Heartbleed OpenSSL Vulnerability (Indicative)
+[19:12:16] [INFO] 56418 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: In Page Banner Information Leak
+[19:12:16] [INFO] 56418 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Private IP Disclosure
+[19:12:16] [INFO] 56418 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Session ID in URL Rewrite
+[19:12:16] [INFO] 56419 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Information Disclosure - Debug Error Messages
+[19:12:16] [INFO] 56423 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Information Disclosure - Sensitive Information in URL
+[19:12:16] [INFO] 56423 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Information Disclosure - Sensitive Information in HTTP Referrer Header
+[19:12:16] [INFO] 56424 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Information Disclosure - Suspicious Comments
+[19:12:16] [INFO] 56428 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Weak Authentication Method
+[19:12:16] [INFO] 56429 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: HTTP to HTTPS Insecure Transition in Form Post
+[19:12:16] [INFO] 56429 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: HTTPS to HTTP Insecure Transition in Form Post
+[19:12:16] [INFO] 56429 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Insecure JSF ViewState
+[19:12:16] [INFO] 56430 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Java Serialization Object
+[19:12:16] [INFO] 56430 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Reverse Tabnabbing
+[19:12:17] [INFO] 56430 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Secure Pages Include Mixed Content
+[19:12:17] [INFO] 56435 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Modern Web Application
+[19:12:17] [INFO] 56435 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: PII Disclosure
+[19:12:17] [INFO] 56435 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Script Served From Malicious Domain (polyfill)
+[19:12:17] [INFO] 56439 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Retrieved from Cache
+[19:12:17] [INFO] 56439 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: HTTP Server Response Header
+[19:12:17] [INFO] 56439 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Strict-Transport-Security Header
+[19:12:17] [INFO] 56441 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Sub Resource Integrity Attribute Missing
+[19:12:17] [INFO] 56444 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Timestamp Disclosure
+[19:12:17] [INFO] 56445 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable Charset
+[19:12:17] [INFO] 56445 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Cookie Poisoning
+[19:12:17] [INFO] 56447 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable HTML Element Attribute (Potential XSS)
+[19:12:17] [INFO] 56448 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: User Controllable JavaScript Event (XSS)
+[19:12:17] [INFO] 56449 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Off-site Redirect
+[19:12:17] [INFO] 56449 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Username Hash Found
+[19:12:17] [INFO] 56454 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Viewstate
+[19:12:17] [INFO] 56455 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-AspNet-Version Response Header
+[19:12:17] [INFO] 56455 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Backend-Server Header Information Leak
+[19:12:17] [INFO] 56458 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-ChromeLogger-Data (XCOLD) Header Information Leak
+[19:12:17] [INFO] 56459 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Content-Type-Options Header Missing
+[19:12:17] [INFO] 56459 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: X-Debug-Token Information Leak
+[19:12:17] [INFO] 56464 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s)
+[19:12:17] [INFO] 56464 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: ZAP is Out of Date
+[19:12:17] [INFO] 56475 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Vulnerable JS Library (Powered by Retire.js)
+[19:12:17] [INFO] 56490 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Script Passive Scan Rules
+[19:12:17] [INFO] 56496 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: WSDL File Detection
+[19:12:17] [INFO] 56501 [ZAP-daemon] INFO  org.zaproxy.addon.pscan.internal.ScanRuleManager - Loaded passive scan rule: Stats Passive Scan Rule
+[19:12:17] [INFO] 56501 [ZAP-daemon] INFO  org.zaproxy.zap.extension.quickstart.ExtensionQuickStart - Shh! No check-for-news - silent mode enabled
+[19:12:17] [INFO] 56502 [ZAP-daemon] INFO  org.zaproxy.addon.network.ExtensionNetwork - Creating new root CA certificate.
+[19:12:20] [INFO] 60553 [ZAP-daemon] INFO  org.zaproxy.addon.network.ExtensionNetwork - New root CA certificate created.
+[19:12:20] [INFO] 60638 [ZAP-daemon] INFO  org.zaproxy.zap.extension.autoupdate.ExtensionAutoUpdate - Shh! No check-for-update - silent mode enabled
+[19:12:20] [INFO] 60649 [ZAP-daemon] INFO  org.zaproxy.addon.callhome.ExtensionCallHome - Shh! Silent mode or telemetry turned off
+[19:12:21] [INFO] 60742 [ZAP-daemon] INFO  org.zaproxy.addon.network.ExtensionNetwork - ZAP is now listening on localhost:32448
+[19:12:23] [INFO] [+] ZAP is active on port 32448.
+[19:12:23] [INFO] [*] Connecting to ZAP API on port 32448...
+[19:12:23] [INFO] [STAGE] Importing OpenAPI Definition...
+[19:12:47] [INFO] 87229 [ZAP-PassiveScan-9] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Parameter Scanner took 5 seconds to scan https://petstore.swagger.io:443/v2/pet/10/uploadImage application/json 29
+[19:12:47] [INFO] 87651 [ZAP-PassiveScan-5] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Parameter Scanner took 5 seconds to scan https://petstore.swagger.io/v2/pet application/json 134
+[19:12:48] [INFO] 87912 [ZAP-PassiveScan-7] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Parameter Scanner took 5 seconds to scan https://petstore.swagger.io/v2/pet application/json 134
+[19:12:48] [INFO] 87716 [ZAP-PassiveScan-8] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Parameter Scanner took 5 seconds to scan https://petstore.swagger.io:443/v2/pet application/json 134
+[19:12:50] [INFO] 90250 [ZAP-PassiveScan-4] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Parameter Scanner took 8 seconds to scan http://petstore.swagger.io/v2/pet/10/uploadImage text/html 110
+[19:12:52] [INFO] 90252 [ZAP-PassiveScan-11] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Parameter Scanner took 5 seconds to scan http://petstore.swagger.io/v2/pet/findByStatus?status=available text/html 110
+[19:12:53] [INFO] 92470 [ZAP-PassiveScan-10] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Parameter Scanner took 8 seconds to scan https://petstore.swagger.io:443/v2/pet application/xml 102
+[19:13:16] [INFO] 99960 [ZAP-PassiveScan-8] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Authentication Request Identified took 6 seconds to scan https://petstore.swagger.io:443/v2/pet application/json 134
+[19:13:16] [INFO] 105486 [ZAP-PassiveScan-2] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Parameter Scanner took 15 seconds to scan https://petstore.swagger.io:443/v2/pet/findByStatus?status=available application/json 54835
+[19:13:19] [INFO] [STAGE] Starting Web Spider...
+[19:13:19] [INFO] 119077 [ZAP-SpiderInitThread-0] INFO  org.zaproxy.addon.spider.SpiderThread - Starting spidering scan on https://petstore.swagger.io/v2 at 2026-03-06T19:13:19.412+0530
+[19:13:19] [INFO] 119084 [ZAP-SpiderInitThread-0] INFO  org.zaproxy.addon.spider.Spider - Spider initializing...
+[19:13:19] [INFO] 119111 [ZAP-SpiderInitThread-0] INFO  org.zaproxy.addon.spider.Spider - Starting spider...
+[19:13:19] [INFO] [PROGRESS] [                    ] 0%
+[19:13:20] [INFO] 120056 [ZAP-SpiderThreadPool-0-thread-1] INFO  org.zaproxy.addon.spider.Spider - Spidering process is complete. Shutting down...
+[19:13:20] [INFO] 120063 [ZAP-SpiderShutdownThread-0] INFO  org.zaproxy.addon.spider.SpiderThread - Spider scanning complete: true on https://petstore.swagger.io/v2 at 2026-03-06T19:13:20.397+0530
+[19:13:21] [INFO] [STAGE] Starting Active Scan...
+[19:13:24] [INFO] 124140 [ZAP-IO-Server-1-1] INFO  org.parosproxy.paros.core.scanner.Scanner - scanner with ID 0 started
+[19:13:24] [INFO] [PROGRESS] [                    ] 0%
+[19:13:26] [INFO] 126545 [ZAP-PassiveScan-10] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 20 seconds to scan https://petstore.swagger.io:443/v2/pet application/xml 102
+[19:13:26] [INFO] 126555 [ZAP-PassiveScan-3] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 33 seconds to scan http://petstore.swagger.io/v2/pet text/html 110
+[19:13:29] [INFO] 124373 [ZAP-PassiveScan-9] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 33 seconds to scan https://petstore.swagger.io:443/v2/pet/10/uploadImage application/json 29
+[19:13:32] [INFO] 132315 [ZAP-PassiveScan-4] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 39 seconds to scan http://petstore.swagger.io/v2/pet/10/uploadImage text/html 110
+[19:13:33] [INFO] 132829 [ZAP-PassiveScan-12] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 40 seconds to scan https://petstore.swagger.io/v2/pet/10/uploadImage application/json 118
+[19:13:33] [INFO] 132894 [ZAP-PassiveScan-3] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Big Redirect Detected (Potential Sensitive Information Leak) took 6 seconds to scan http://petstore.swagger.io/v2/pet text/html 110
+[19:13:33] [INFO] 132825 [ZAP-PassiveScan-10] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Re-examine Cache-control Directives took 5 seconds to scan https://petstore.swagger.io:443/v2/pet application/xml 102
+[19:13:33] [INFO] 128031 [ZAP-PassiveScan-11] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 17 seconds to scan http://petstore.swagger.io/v2/pet/findByStatus?status=available text/html 110
+[19:13:33] [INFO] 132907 [ZAP-PassiveScan-2] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule html_type_upload took 11 seconds to scan https://petstore.swagger.io:443/v2/pet/findByStatus?status=available application/json 54835
+[19:13:33] [INFO] 132914 [ZAP-PassiveScan-7] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 37 seconds to scan https://petstore.swagger.io/v2/pet application/json 134
+[19:13:33] [INFO] 132927 [ZAP-PassiveScan-5] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 39 seconds to scan https://petstore.swagger.io/v2/pet application/json 134
+[19:13:33] [INFO] 132914 [ZAP-PassiveScan-6] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 40 seconds to scan http://petstore.swagger.io/v2/pet text/html 110
+[19:13:33] [INFO] 132939 [ZAP-PassiveScan-8] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Application Error Disclosure took 16 seconds to scan https://petstore.swagger.io:443/v2/pet application/json 134
+[19:13:33] [INFO] 133124 [ZAP-PassiveScan-1] WARN  org.zaproxy.addon.pscan.internal.scanner.PassiveScanTask - Passive Scan rule Session Management Response Identified took 45 seconds to scan https://petstore.swagger.io/v2/swagger.json application/json 13843
+[19:13:37] [INFO] 136998 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - Scanning 33 node(s) from https://petstore.swagger.io
+[19:13:37] [INFO] 136999 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | PathTraversalScanRule strength MEDIUM threshold MEDIUM
+[19:13:40] [INFO] [PROGRESS] [                    ] 1%
+[19:16:50] [INFO] 330225 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | PathTraversalScanRule in 193.225s with 1263 message(s) sent and 0 alert(s) raised.
+[19:16:50] [INFO] 330238 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | RemoteFileIncludeScanRule strength MEDIUM threshold MEDIUM
+[19:16:50] [INFO] [PROGRESS] [                    ] 2%
+[19:16:55] [INFO] [PROGRESS] [                    ] 3%
+[19:19:02] [INFO] 462219 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | RemoteFileIncludeScanRule in 131.98s with 790 message(s) sent and 0 alert(s) raised.
+[19:19:02] [INFO] 462251 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SourceCodeDisclosureWebInfScanRule strength MEDIUM threshold MEDIUM
+[19:19:02] [INFO] 462264 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | ShellShockScanRule strength MEDIUM threshold MEDIUM
+[19:19:03] [INFO] 463139 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SourceCodeDisclosureWebInfScanRule in 0.888s with 2 message(s) sent and 0 alert(s) raised.
+[19:19:06] [INFO] [PROGRESS] [=                   ] 7%
+[19:19:28] [INFO] 487725 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | ShellShockScanRule in 25.46s with 158 message(s) sent and 0 alert(s) raised.
+[19:19:28] [INFO] 487727 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | HeartBleedActiveScanRule strength MEDIUM threshold MEDIUM
+[19:19:28] [INFO] 487755 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SourceCodeDisclosureCve20121823ScanRule strength MEDIUM threshold MEDIUM
+[19:19:31] [INFO] [PROGRESS] [=                   ] 8%
+[19:19:39] [INFO] 499013 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | HeartBleedActiveScanRule in 11.285s with 6 message(s) sent and 0 alert(s) raised.
+[19:19:39] [INFO] 499014 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SourceCodeDisclosureCve20121823ScanRule in 11.26s with 20 message(s) sent and 0 alert(s) raised.
+[19:19:39] [INFO] 499015 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | RemoteCodeExecutionCve20121823ScanRule strength MEDIUM threshold MEDIUM
+[19:19:41] [INFO] [PROGRESS] [==                  ] 12%
+[19:19:45] [INFO] 505432 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | RemoteCodeExecutionCve20121823ScanRule in 6.415s with 66 message(s) sent and 0 alert(s) raised.
+[19:19:45] [INFO] 505432 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | ExternalRedirectScanRule strength MEDIUM threshold MEDIUM
+[19:19:46] [INFO] [PROGRESS] [==                  ] 14%
+[19:19:51] [INFO] [PROGRESS] [===                 ] 15%
+[19:21:46] [INFO] 626265 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | ExternalRedirectScanRule in 120.833s with 711 message(s) sent and 0 alert(s) raised.
+[19:21:46] [INFO] 626399 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | ServerSideIncludeScanRule strength MEDIUM threshold MEDIUM
+[19:21:52] [INFO] [PROGRESS] [===                 ] 16%
+[19:22:32] [INFO] 671735 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | ServerSideIncludeScanRule in 45.336s with 316 message(s) sent and 0 alert(s) raised.
+[19:22:32] [INFO] 671741 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | CrossSiteScriptingScanRule strength MEDIUM threshold MEDIUM
+[19:22:32] [INFO] [PROGRESS] [===                 ] 17%
+[19:22:37] [INFO] [PROGRESS] [===                 ] 18%
+[19:23:33] [INFO] 733075 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | CrossSiteScriptingScanRule in 61.334s with 290 message(s) sent and 0 alert(s) raised.
+[19:23:33] [INFO] 733077 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | PersistentXssPrimeScanRule strength MEDIUM threshold MEDIUM
+[19:23:37] [INFO] [PROGRESS] [====                ] 20%
+[19:23:45] [INFO] 745562 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | PersistentXssPrimeScanRule in 12.485s with 79 message(s) sent and 0 alert(s) raised.
+[19:23:45] [INFO] 745563 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | PersistentXssSpiderScanRule strength MEDIUM threshold MEDIUM
+[19:23:47] [INFO] [PROGRESS] [====                ] 22%
+[19:23:49] [INFO] 749056 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | PersistentXssSpiderScanRule in 3.493s with 33 message(s) sent and 0 alert(s) raised.
+[19:23:49] [INFO] 749057 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | PersistentXssScanRule strength MEDIUM threshold MEDIUM
+[19:23:51] [INFO] 750961 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | PersistentXssScanRule in 1.904s with 0 message(s) sent and 0 alert(s) raised.
+[19:23:51] [INFO] 750962 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SqlInjectionScanRule strength MEDIUM threshold MEDIUM
+[19:23:52] [INFO] [PROGRESS] [=====               ] 25%
+[19:23:57] [INFO] [PROGRESS] [=====               ] 26%
+[19:29:27] [INFO] 1087066 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionScanRule in 336.103s with 1956 message(s) sent and 0 alert(s) raised.
+[19:29:27] [INFO] 1087069 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SqlInjectionMySqlTimingScanRule strength MEDIUM threshold MEDIUM
+[19:29:29] [INFO] [PROGRESS] [=====               ] 27%
+[19:29:39] [INFO] [PROGRESS] [=====               ] 28%
+[19:31:35] [INFO] 1215477 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionMySqlTimingScanRule in 128.408s with 790 message(s) sent and 0 alert(s) raised.
+[19:31:35] [INFO] 1215495 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SqlInjectionHypersonicTimingScanRule strength MEDIUM threshold MEDIUM
+[19:31:39] [INFO] [PROGRESS] [======              ] 30%
+[19:33:58] [INFO] 1358288 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionHypersonicTimingScanRule in 142.794s with 790 message(s) sent and 0 alert(s) raised.
+[19:33:58] [INFO] 1358294 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SqlInjectionOracleTimingScanRule strength MEDIUM threshold MEDIUM
+[19:34:00] [INFO] [PROGRESS] [======              ] 31%
+[19:34:05] [INFO] [PROGRESS] [======              ] 32%
+[19:35:17] [INFO] 1437582 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionOracleTimingScanRule in 79.287s with 395 message(s) sent and 0 alert(s) raised.
+[19:35:17] [INFO] 1437584 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SqlInjectionPostgreSqlTimingScanRule strength MEDIUM threshold MEDIUM
+[19:35:20] [INFO] [PROGRESS] [======              ] 33%
+[19:36:17] [INFO] 1497383 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionPostgreSqlTimingScanRule in 59.799s with 395 message(s) sent and 0 alert(s) raised.
+[19:36:17] [INFO] 1497385 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SqlInjectionSqLiteTimingScanRule strength MEDIUM threshold MEDIUM
+[19:36:20] [INFO] [PROGRESS] [=======             ] 35%
+[19:36:46] [INFO] 1526069 [ZAP-ActiveScanner-12] ERROR org.zaproxy.zap.extension.ascan.ActiveScan - java.sql.SQLException: The actual Response Body length 53963438 is greater than the configured response body length 16777216 for GET https://petstore.swagger.io/v2/pet/findByStatus?status=available
+[19:36:46] [INFO] org.parosproxy.paros.db.DatabaseException: java.sql.SQLException: The actual Response Body length 53963438 is greater than the configured response body length 16777216 for GET https://petstore.swagger.io/v2/pet/findByStatus?status=available
+[19:36:46] [INFO] at org.parosproxy.paros.db.paros.ParosTableHistory.write(ParosTableHistory.java:435)
+[19:36:46] [INFO] at org.parosproxy.paros.model.HistoryReference.<init>(HistoryReference.java:409)
+[19:36:46] [INFO] at org.zaproxy.zap.extension.ascan.ActiveScan.notifyNewMessage(ActiveScan.java:296)
+[19:36:46] [INFO] at org.parosproxy.paros.core.scanner.HostProcess.notifyNewMessage(HostProcess.java:890)
+[19:36:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:336)
+[19:36:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:265)
+[19:36:46] [INFO] at org.zaproxy.zap.extension.ascanrules.SqlInjectionSqLiteTimingScanRule.scan(SqlInjectionSqLiteTimingScanRule.java:209)
+[19:36:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[19:36:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[19:36:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[19:36:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[19:36:46] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[19:36:46] [INFO] Caused by: java.sql.SQLException: The actual Response Body length 53963438 is greater than the configured response body length 16777216 for GET https://petstore.swagger.io/v2/pet/findByStatus?status=available
+[19:36:46] [INFO] at org.parosproxy.paros.db.paros.ParosTableHistory.write(ParosTableHistory.java:469)
+[19:36:46] [INFO] at org.parosproxy.paros.db.paros.ParosTableHistory.write(ParosTableHistory.java:419)
+[19:36:46] [INFO] ... 11 more
+[19:37:18] [INFO] 1558570 [ZAP-ActiveScanner-12] ERROR org.zaproxy.zap.extension.ascan.ActiveScan - java.sql.SQLException: The actual Response Body length 53963154 is greater than the configured response body length 16777216 for GET https://petstore.swagger.io/v2/pet/findByStatus?status=available
+[19:37:18] [INFO] org.parosproxy.paros.db.DatabaseException: java.sql.SQLException: The actual Response Body length 53963154 is greater than the configured response body length 16777216 for GET https://petstore.swagger.io/v2/pet/findByStatus?status=available
+[19:37:18] [INFO] at org.parosproxy.paros.db.paros.ParosTableHistory.write(ParosTableHistory.java:435)
+[19:37:18] [INFO] at org.parosproxy.paros.model.HistoryReference.<init>(HistoryReference.java:409)
+[19:37:18] [INFO] at org.zaproxy.zap.extension.ascan.ActiveScan.notifyNewMessage(ActiveScan.java:296)
+[19:37:18] [INFO] at org.parosproxy.paros.core.scanner.HostProcess.notifyNewMessage(HostProcess.java:890)
+[19:37:18] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:336)
+[19:37:18] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:265)
+[19:37:18] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:238)
+[19:37:18] [INFO] at org.zaproxy.zap.extension.ascanrules.SqlInjectionSqLiteTimingScanRule.scan(SqlInjectionSqLiteTimingScanRule.java:216)
+[19:37:18] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[19:37:18] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[19:37:18] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[19:37:18] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[19:37:18] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[19:37:18] [INFO] Caused by: java.sql.SQLException: The actual Response Body length 53963154 is greater than the configured response body length 16777216 for GET https://petstore.swagger.io/v2/pet/findByStatus?status=available
+[19:37:18] [INFO] at org.parosproxy.paros.db.paros.ParosTableHistory.write(ParosTableHistory.java:469)
+[19:37:18] [INFO] at org.parosproxy.paros.db.paros.ParosTableHistory.write(ParosTableHistory.java:419)
+[19:37:18] [INFO] ... 12 more
+[19:38:05] [INFO] 1605172 [ZAP-ActiveScanner-12] ERROR org.zaproxy.zap.extension.ascan.ActiveScan - java.sql.SQLException: The actual Response Body length 53962006 is greater than the configured response body length 16777216 for GET https://petstore.swagger.io/v2/pet/findByStatus?status=available
+[19:38:05] [INFO] org.parosproxy.paros.db.DatabaseException: java.sql.SQLException: The actual Response Body length 53962006 is greater than the configured response body length 16777216 for GET https://petstore.swagger.io/v2/pet/findByStatus?status=available
+[19:38:05] [INFO] at org.parosproxy.paros.db.paros.ParosTableHistory.write(ParosTableHistory.java:435)
+[19:38:05] [INFO] at org.parosproxy.paros.model.HistoryReference.<init>(HistoryReference.java:409)
+[19:38:05] [INFO] at org.zaproxy.zap.extension.ascan.ActiveScan.notifyNewMessage(ActiveScan.java:296)
+[19:38:05] [INFO] at org.parosproxy.paros.core.scanner.HostProcess.notifyNewMessage(HostProcess.java:890)
+[19:38:05] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:336)
+[19:38:05] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:265)
+[19:38:05] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:238)
+[19:38:05] [INFO] at org.zaproxy.zap.extension.ascanrules.SqlInjectionSqLiteTimingScanRule.scan(SqlInjectionSqLiteTimingScanRule.java:236)
+[19:38:05] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[19:38:05] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[19:38:05] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[19:38:05] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[19:38:05] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[19:38:05] [INFO] Caused by: java.sql.SQLException: The actual Response Body length 53962006 is greater than the configured response body length 16777216 for GET https://petstore.swagger.io/v2/pet/findByStatus?status=available
+[19:38:05] [INFO] at org.parosproxy.paros.db.paros.ParosTableHistory.write(ParosTableHistory.java:469)
+[19:38:05] [INFO] at org.parosproxy.paros.db.paros.ParosTableHistory.write(ParosTableHistory.java:419)
+[19:38:05] [INFO] ... 12 more
+[19:38:05] [INFO] 1605177 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionSqLiteTimingScanRule in 107.792s with 732 message(s) sent and 0 alert(s) raised.
+[19:38:05] [INFO] 1605177 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | DomXssScanRule strength MEDIUM threshold MEDIUM
+[19:38:06] [INFO] [PROGRESS] [=======             ] 36%
+[19:38:09] [INFO] 1608714 [ZAP-ActiveScanner-15] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608714 [ZAP-ActiveScanner-0] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608715 [ZAP-ActiveScanner-18] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608715 [ZAP-ActiveScanner-9] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608715 [ZAP-ActiveScanner-10] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608718 [ZAP-ActiveScanner-21] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608717 [ZAP-ActiveScanner-1] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608718 [ZAP-ActiveScanner-16] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608715 [ZAP-ActiveScanner-6] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608717 [ZAP-ActiveScanner-8] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608715 [ZAP-ActiveScanner-12] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608717 [ZAP-ActiveScanner-4] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608714 [ZAP-ActiveScanner-22] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608714 [ZAP-ActiveScanner-19] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608714 [ZAP-ActiveScanner-5] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608714 [ZAP-ActiveScanner-3] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608714 [ZAP-ActiveScanner-14] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608717 [ZAP-ActiveScanner-7] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608716 [ZAP-ActiveScanner-13] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608716 [ZAP-ActiveScanner-20] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608716 [ZAP-ActiveScanner-2] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608716 [ZAP-ActiveScanner-11] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608716 [ZAP-ActiveScanner-17] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1608840 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - skipped plugin [failed to start or connect to the browser] https://petstore.swagger.io | DomXssScanRule in 3.663s with 0 message(s) sent and 0 alert(s) raised.
+[19:38:09] [INFO] 1608812 [ZAP-ActiveScanner-23] WARN  org.zaproxy.zap.extension.domxss.DomXssScanRule - Skipping scanner, failed to start browser: Could not start a new session. Response code 500. Message: Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line
+[19:38:09] [INFO] Host info: host: 'DELL-INS7420', ip: '192.168.29.48'
+[19:38:09] [INFO] Build info: version: '4.39.0', revision: '126f156aee'
+[19:38:09] [INFO] System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
+[19:38:09] [INFO] Driver info: org.openqa.selenium.firefox.FirefoxDriver
+[19:38:09] [INFO] Command: [null, newSession {capabilities=[Capabilities {acceptInsecureCerts: true, browserName: firefox, moz:firefoxOptions: {args: [-headless], prefs: {browser.tabs.documentchannel: false, devtools.jsonview.enabled: false, dom.serviceWorkers.enabled: true, network.captive-portal-service.enabled: false, network.proxy.allow_hijacking_localhost: true, network.proxy.http: 127.0.0.1, network.proxy.http_port: 56524, network.proxy.no_proxies_on: , network.proxy.share_proxy_settings: true, network.proxy.ssl: 127.0.0.1, network.proxy.ssl_port: 56524, network.proxy.type: 1, remote.active-protocols: 1}}, unhandledPromptBehavior: ignore, webSocketUrl: true}]}]
+[19:38:09] [INFO] 1609032 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SqlInjectionMsSqlTimingScanRule strength MEDIUM threshold MEDIUM
+[19:38:11] [INFO] [PROGRESS] [=======             ] 38%
+[19:38:16] [INFO] [PROGRESS] [=======             ] 39%
+[19:39:59] [INFO] 1719080 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SqlInjectionMsSqlTimingScanRule in 110.049s with 790 message(s) sent and 0 alert(s) raised.
+[19:39:59] [INFO] 1719083 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | Log4ShellScanRule strength MEDIUM threshold MEDIUM
+[19:39:59] [INFO] 1719087 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - skipped plugin [no Active Scan OAST service is selected] https://petstore.swagger.io | Log4ShellScanRule in 0.004s with 0 message(s) sent and 0 alert(s) raised.
+[19:39:59] [INFO] 1719087 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | Spring4ShellScanRule strength MEDIUM threshold MEDIUM
+[19:40:01] [INFO] [PROGRESS] [========            ] 42%
+[19:40:03] [INFO] 1723599 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | Spring4ShellScanRule in 4.512s with 66 message(s) sent and 0 alert(s) raised.
+[19:40:03] [INFO] 1723602 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | React2ShellScanRule strength MEDIUM threshold MEDIUM
+[19:40:03] [INFO] 1723605 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | CodeInjectionScanRule strength MEDIUM threshold MEDIUM
+[19:40:04] [INFO] 1723895 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | React2ShellScanRule in 0.294s with 1 message(s) sent and 0 alert(s) raised.
+[19:40:06] [INFO] [PROGRESS] [=========           ] 46%
+[19:40:11] [INFO] [PROGRESS] [=========           ] 47%
+[19:41:35] [INFO] 1815437 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | CodeInjectionScanRule in 91.832s with 632 message(s) sent and 0 alert(s) raised.
+[19:41:35] [INFO] 1815440 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | CommandInjectionScanRule strength MEDIUM threshold MEDIUM
+[19:41:41] [INFO] [PROGRESS] [=========           ] 48%
+[19:45:06] [INFO] 2025759 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | CommandInjectionScanRule in 210.319s with 1501 message(s) sent and 0 alert(s) raised.
+[19:45:06] [INFO] 2025762 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | XpathInjectionScanRule strength MEDIUM threshold MEDIUM
+[19:45:07] [INFO] [PROGRESS] [=========           ] 49%
+[19:45:12] [INFO] [PROGRESS] [==========          ] 50%
+[19:45:38] [INFO] 2057726 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | XpathInjectionScanRule in 31.964s with 237 message(s) sent and 0 alert(s) raised.
+[19:45:38] [INFO] 2057732 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | XxeScanRule strength MEDIUM threshold MEDIUM
+[19:45:42] [INFO] 2062021 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | XxeScanRule in 4.289s with 0 message(s) sent and 0 alert(s) raised.
+[19:45:42] [INFO] 2062022 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | PaddingOracleScanRule strength MEDIUM threshold MEDIUM
+[19:45:42] [INFO] [PROGRESS] [==========          ] 53%
+[19:45:45] [INFO] 2065609 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | PaddingOracleScanRule in 3.587s with 0 message(s) sent and 0 alert(s) raised.
+[19:45:45] [INFO] 2065609 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | CloudMetadataScanRule strength MEDIUM threshold MEDIUM
+[19:45:45] [INFO] 2065615 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SstiScanRule strength MEDIUM threshold MEDIUM
+[19:45:47] [INFO] [PROGRESS] [===========         ] 55%
+[19:45:48] [INFO] 2068105 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | CloudMetadataScanRule in 2.496s with 9 message(s) sent and 0 alert(s) raised.
+[19:45:52] [INFO] [PROGRESS] [===========         ] 58%
+[19:59:40] [INFO] 2900351 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SstiScanRule in 834.735s with 1106 message(s) sent and 0 alert(s) raised.
+[19:59:40] [INFO] 2900357 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SstiBlindScanRule strength MEDIUM threshold MEDIUM
+[19:59:44] [INFO] [PROGRESS] [============        ] 60%
+[20:01:55] [INFO] 3035117 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SstiBlindScanRule in 134.76s with 948 message(s) sent and 0 alert(s) raised.
+[20:01:55] [INFO] 3035119 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | CommandInjectionTimingScanRule strength MEDIUM threshold MEDIUM
+[20:01:59] [INFO] [PROGRESS] [============        ] 62%
+[20:04:53] [INFO] 3213602 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | CommandInjectionTimingScanRule in 178.482s with 1264 message(s) sent and 0 alert(s) raised.
+[20:04:53] [INFO] 3213604 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | DirectoryBrowsingScanRule strength MEDIUM threshold MEDIUM
+[20:04:55] [INFO] [PROGRESS] [============        ] 63%
+[20:04:58] [INFO] 3218107 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | DirectoryBrowsingScanRule in 4.504s with 33 message(s) sent and 0 alert(s) raised.
+[20:04:58] [INFO] 3218109 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | HttpOnlySiteScanRule strength MEDIUM threshold MEDIUM
+[20:04:58] [INFO] 3218111 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | BufferOverflowScanRule strength MEDIUM threshold MEDIUM
+[20:04:58] [INFO] 3218119 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | HttpOnlySiteScanRule in 0.01s with 0 message(s) sent and 0 alert(s) raised.
+[20:05:00] [INFO] [PROGRESS] [=============       ] 67%
+[20:05:11] [INFO] 3230807 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | BufferOverflowScanRule in 12.697s with 79 message(s) sent and 0 alert(s) raised.
+[20:05:11] [INFO] 3230829 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | FormatStringScanRule strength MEDIUM threshold MEDIUM
+[20:05:15] [INFO] [PROGRESS] [=============       ] 69%
+[20:05:40] [INFO] 3260089 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | FormatStringScanRule in 29.26s with 193 message(s) sent and 0 alert(s) raised.
+[20:05:40] [INFO] 3260090 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | CrlfInjectionScanRule strength MEDIUM threshold MEDIUM
+[20:05:40] [INFO] [PROGRESS] [==============      ] 70%
+[20:05:45] [INFO] [PROGRESS] [==============      ] 71%
+[20:07:13] [INFO] 3352840 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | CrlfInjectionScanRule in 92.751s with 552 message(s) sent and 0 alert(s) raised.
+[20:07:13] [INFO] 3352842 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | ParameterTamperScanRule strength MEDIUM threshold MEDIUM
+[20:07:14] [INFO] 3354387 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule - Error occurred while scanning a message:
+[20:07:14] [INFO] java.lang.NullPointerException: Cannot invoke "String.length()" because "str" is null
+[20:07:14] [INFO] at java.base/java.lang.AbstractStringBuilder.replace(AbstractStringBuilder.java:1019)
+[20:07:14] [INFO] at java.base/java.lang.StringBuilder.replace(StringBuilder.java:307)
+[20:07:14] [INFO] at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:283)
+[20:07:14] [INFO] at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:243)
+[20:07:14] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.setParameter(AbstractAppParamPlugin.java:247)
+[20:07:14] [INFO] at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:166)
+[20:07:14] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[20:07:14] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[20:07:14] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[20:07:14] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[20:07:14] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[20:07:15] [INFO] 3355152 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule - Error occurred while scanning a message:
+[20:07:15] [INFO] java.lang.NullPointerException: Cannot invoke "String.length()" because "str" is null
+[20:07:15] [INFO] at java.base/java.lang.AbstractStringBuilder.replace(AbstractStringBuilder.java:1019)
+[20:07:15] [INFO] at java.base/java.lang.StringBuilder.replace(StringBuilder.java:307)
+[20:07:15] [INFO] at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:283)
+[20:07:15] [INFO] at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:243)
+[20:07:15] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.setParameter(AbstractAppParamPlugin.java:247)
+[20:07:15] [INFO] at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:166)
+[20:07:15] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[20:07:15] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[20:07:15] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[20:07:15] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[20:07:15] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[20:07:15] [INFO] [PROGRESS] [==============      ] 72%
+[20:07:16] [INFO] 3356048 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule - Error occurred while scanning a message:
+[20:07:16] [INFO] java.lang.NullPointerException: Cannot invoke "String.length()" because "str" is null
+[20:07:16] [INFO] at java.base/java.lang.AbstractStringBuilder.replace(AbstractStringBuilder.java:1019)
+[20:07:16] [INFO] at java.base/java.lang.StringBuilder.replace(StringBuilder.java:307)
+[20:07:16] [INFO] at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:283)
+[20:07:16] [INFO] at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:243)
+[20:07:16] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.setParameter(AbstractAppParamPlugin.java:247)
+[20:07:16] [INFO] at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:166)
+[20:07:16] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[20:07:16] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[20:07:16] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[20:07:16] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[20:07:16] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[20:07:16] [INFO] 3356660 [ZAP-ActiveScanner-0] ERROR org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule - Error occurred while scanning a message:
+[20:07:17] [INFO] java.lang.NullPointerException: Cannot invoke "String.length()" because "str" is null
+[20:07:17] [INFO] at java.base/java.lang.AbstractStringBuilder.replace(AbstractStringBuilder.java:1019)
+[20:07:17] [INFO] at java.base/java.lang.StringBuilder.replace(StringBuilder.java:307)
+[20:07:17] [INFO] at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:283)
+[20:07:17] [INFO] at org.parosproxy.paros.core.scanner.VariantMultipartFormParameters.setParameter(VariantMultipartFormParameters.java:243)
+[20:07:17] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.setParameter(AbstractAppParamPlugin.java:247)
+[20:07:17] [INFO] at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:166)
+[20:07:17] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[20:07:17] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[20:07:17] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[20:07:17] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[20:07:17] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[20:07:20] [INFO] [PROGRESS] [==============      ] 73%
+[20:07:28] [INFO] 3368611 [ZAP-ActiveScanner-9] WARN  org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule - Read timed out
+[20:07:28] [INFO] org.zaproxy.addon.network.common.ZapSocketTimeoutException: Read timed out
+[20:07:28] [INFO] at java.base/sun.nio.ch.NioSocketImpl.timedRead(NioSocketImpl.java:277)
+[20:07:28] [INFO] at java.base/sun.nio.ch.NioSocketImpl.implRead(NioSocketImpl.java:303)
+[20:07:28] [INFO] at java.base/sun.nio.ch.NioSocketImpl.read(NioSocketImpl.java:345)
+[20:07:28] [INFO] at java.base/sun.nio.ch.NioSocketImpl$1.read(NioSocketImpl.java:790)
+[20:07:28] [INFO] at java.base/java.net.Socket$SocketInputStream.implRead(Socket.java:983)
+[20:07:28] [INFO] at java.base/java.net.Socket$SocketInputStream.read(Socket.java:970)
+[20:07:28] [INFO] at java.base/sun.security.ssl.SSLSocketInputRecord.read(SSLSocketInputRecord.java:489)
+[20:07:28] [INFO] at java.base/sun.security.ssl.SSLSocketInputRecord.readHeader(SSLSocketInputRecord.java:483)
+[20:07:28] [INFO] at java.base/sun.security.ssl.SSLSocketInputRecord.bytesInCompletePacket(SSLSocketInputRecord.java:70)
+[20:07:28] [INFO] at java.base/sun.security.ssl.SSLSocketImpl.readApplicationRecord(SSLSocketImpl.java:1461)
+[20:07:28] [INFO] at java.base/sun.security.ssl.SSLSocketImpl$AppInputStream.read(SSLSocketImpl.java:1068)
+[20:07:28] [INFO] at org.apache.hc.core5.http.impl.io.SessionInputBufferImpl.fillBuffer(SessionInputBufferImpl.java:149)
+[20:07:28] [INFO] at org.apache.hc.core5.http.impl.io.SessionInputBufferImpl.readLine(SessionInputBufferImpl.java:280)
+[20:07:28] [INFO] at org.apache.hc.core5.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:247)
+[20:07:29] [INFO] at org.apache.hc.core5.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:54)
+[20:07:29] [INFO] at org.apache.hc.core5.http.impl.io.DefaultBHttpClientConnection.receiveResponseHeader(DefaultBHttpClientConnection.java:299)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.ZapHttpRequestExecutor.execute(ZapHttpRequestExecutor.java:78)
+[20:07:29] [INFO] at org.apache.hc.core5.http.impl.io.HttpRequestExecutor.execute(HttpRequestExecutor.java:218)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager$InternalConnectionEndpoint.execute(PoolingHttpClientConnectionManager.java:712)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.execute(InternalExecRuntime.java:216)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.MainClientExec.execute(MainClientExec.java:116)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.ConnectExec.execute(ConnectExec.java:188)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.ZapProtocolExec.execute(ZapProtocolExec.java:179)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.ZapHttpRequestRetryExec.execute(ZapHttpRequestRetryExec.java:81)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.ZapInternalHttpClient.doExecute(ZapInternalHttpClient.java:173)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:245)
+[20:07:29] [INFO] at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:188)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.HttpSenderApache.sendImpl0(HttpSenderApache.java:486)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.HttpSenderApache.sendImpl(HttpSenderApache.java:365)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.HttpSenderApache.sendImpl(HttpSenderApache.java:116)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendRateLimited(BaseHttpSender.java:415)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendAuthenticated(BaseHttpSender.java:383)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendNoRedirections(BaseHttpSender.java:351)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.send(BaseHttpSender.java:307)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendAndReceive(BaseHttpSender.java:278)
+[20:07:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendAndReceive(BaseHttpSender.java:234)
+[20:07:29] [INFO] at org.parosproxy.paros.network.HttpSender.sendImpl(HttpSender.java:536)
+[20:07:29] [INFO] at org.parosproxy.paros.network.HttpSender.sendAndReceive(HttpSender.java:529)
+[20:07:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendMessageImpl(AbstractPlugin.java:344)
+[20:07:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:331)
+[20:07:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:265)
+[20:07:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:238)
+[20:07:29] [INFO] at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:140)
+[20:07:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[20:07:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[20:07:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[20:07:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[20:07:29] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[20:07:46] [INFO] 3386400 [ZAP-ActiveScanner-1] WARN  org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule - Read timed out
+[20:07:46] [INFO] org.zaproxy.addon.network.common.ZapSocketTimeoutException: Read timed out
+[20:07:46] [INFO] at java.base/sun.nio.ch.NioSocketImpl.timedRead(NioSocketImpl.java:277)
+[20:07:46] [INFO] at java.base/sun.nio.ch.NioSocketImpl.implRead(NioSocketImpl.java:303)
+[20:07:46] [INFO] at java.base/sun.nio.ch.NioSocketImpl.read(NioSocketImpl.java:345)
+[20:07:46] [INFO] at java.base/sun.nio.ch.NioSocketImpl$1.read(NioSocketImpl.java:790)
+[20:07:46] [INFO] at java.base/java.net.Socket$SocketInputStream.implRead(Socket.java:983)
+[20:07:46] [INFO] at java.base/java.net.Socket$SocketInputStream.read(Socket.java:970)
+[20:07:46] [INFO] at java.base/sun.security.ssl.SSLSocketInputRecord.read(SSLSocketInputRecord.java:489)
+[20:07:46] [INFO] at java.base/sun.security.ssl.SSLSocketInputRecord.readHeader(SSLSocketInputRecord.java:483)
+[20:07:46] [INFO] at java.base/sun.security.ssl.SSLSocketInputRecord.bytesInCompletePacket(SSLSocketInputRecord.java:70)
+[20:07:46] [INFO] at java.base/sun.security.ssl.SSLSocketImpl.readApplicationRecord(SSLSocketImpl.java:1461)
+[20:07:46] [INFO] at java.base/sun.security.ssl.SSLSocketImpl$AppInputStream.read(SSLSocketImpl.java:1068)
+[20:07:46] [INFO] at org.apache.hc.core5.http.impl.io.SessionInputBufferImpl.fillBuffer(SessionInputBufferImpl.java:149)
+[20:07:46] [INFO] at org.apache.hc.core5.http.impl.io.SessionInputBufferImpl.readLine(SessionInputBufferImpl.java:280)
+[20:07:46] [INFO] at org.apache.hc.core5.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:247)
+[20:07:46] [INFO] at org.apache.hc.core5.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:54)
+[20:07:46] [INFO] at org.apache.hc.core5.http.impl.io.DefaultBHttpClientConnection.receiveResponseHeader(DefaultBHttpClientConnection.java:299)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.ZapHttpRequestExecutor.execute(ZapHttpRequestExecutor.java:78)
+[20:07:46] [INFO] at org.apache.hc.core5.http.impl.io.HttpRequestExecutor.execute(HttpRequestExecutor.java:218)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager$InternalConnectionEndpoint.execute(PoolingHttpClientConnectionManager.java:712)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.execute(InternalExecRuntime.java:216)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.MainClientExec.execute(MainClientExec.java:116)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.ConnectExec.execute(ConnectExec.java:188)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.ZapProtocolExec.execute(ZapProtocolExec.java:179)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.ZapHttpRequestRetryExec.execute(ZapHttpRequestRetryExec.java:81)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.ZapInternalHttpClient.doExecute(ZapInternalHttpClient.java:173)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:245)
+[20:07:46] [INFO] at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:188)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.HttpSenderApache.sendImpl0(HttpSenderApache.java:486)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.HttpSenderApache.sendImpl(HttpSenderApache.java:365)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.HttpSenderApache.sendImpl(HttpSenderApache.java:116)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendRateLimited(BaseHttpSender.java:415)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendAuthenticated(BaseHttpSender.java:383)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendNoRedirections(BaseHttpSender.java:351)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.send(BaseHttpSender.java:307)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendAndReceive(BaseHttpSender.java:278)
+[20:07:46] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendAndReceive(BaseHttpSender.java:234)
+[20:07:46] [INFO] at org.parosproxy.paros.network.HttpSender.sendImpl(HttpSender.java:536)
+[20:07:46] [INFO] at org.parosproxy.paros.network.HttpSender.sendAndReceive(HttpSender.java:529)
+[20:07:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendMessageImpl(AbstractPlugin.java:344)
+[20:07:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:331)
+[20:07:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:265)
+[20:07:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:238)
+[20:07:46] [INFO] at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:174)
+[20:07:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[20:07:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[20:07:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[20:07:46] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[20:07:46] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[20:09:29] [INFO] 3488920 [ZAP-ActiveScanner-6] WARN  org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule - Read timed out
+[20:09:29] [INFO] org.zaproxy.addon.network.common.ZapSocketTimeoutException: Read timed out
+[20:09:29] [INFO] at java.base/sun.nio.ch.NioSocketImpl.timedRead(NioSocketImpl.java:277)
+[20:09:29] [INFO] at java.base/sun.nio.ch.NioSocketImpl.implRead(NioSocketImpl.java:303)
+[20:09:29] [INFO] at java.base/sun.nio.ch.NioSocketImpl.read(NioSocketImpl.java:345)
+[20:09:29] [INFO] at java.base/sun.nio.ch.NioSocketImpl$1.read(NioSocketImpl.java:790)
+[20:09:29] [INFO] at java.base/java.net.Socket$SocketInputStream.implRead(Socket.java:983)
+[20:09:29] [INFO] at java.base/java.net.Socket$SocketInputStream.read(Socket.java:970)
+[20:09:29] [INFO] at java.base/sun.security.ssl.SSLSocketInputRecord.read(SSLSocketInputRecord.java:489)
+[20:09:29] [INFO] at java.base/sun.security.ssl.SSLSocketInputRecord.readHeader(SSLSocketInputRecord.java:483)
+[20:09:29] [INFO] at java.base/sun.security.ssl.SSLSocketInputRecord.bytesInCompletePacket(SSLSocketInputRecord.java:70)
+[20:09:29] [INFO] at java.base/sun.security.ssl.SSLSocketImpl.readApplicationRecord(SSLSocketImpl.java:1461)
+[20:09:29] [INFO] at java.base/sun.security.ssl.SSLSocketImpl$AppInputStream.read(SSLSocketImpl.java:1068)
+[20:09:29] [INFO] at org.apache.hc.core5.http.impl.io.SessionInputBufferImpl.fillBuffer(SessionInputBufferImpl.java:149)
+[20:09:29] [INFO] at org.apache.hc.core5.http.impl.io.SessionInputBufferImpl.readLine(SessionInputBufferImpl.java:280)
+[20:09:29] [INFO] at org.apache.hc.core5.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:247)
+[20:09:29] [INFO] at org.apache.hc.core5.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:54)
+[20:09:29] [INFO] at org.apache.hc.core5.http.impl.io.DefaultBHttpClientConnection.receiveResponseHeader(DefaultBHttpClientConnection.java:299)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.ZapHttpRequestExecutor.execute(ZapHttpRequestExecutor.java:78)
+[20:09:29] [INFO] at org.apache.hc.core5.http.impl.io.HttpRequestExecutor.execute(HttpRequestExecutor.java:218)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager$InternalConnectionEndpoint.execute(PoolingHttpClientConnectionManager.java:712)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.InternalExecRuntime.execute(InternalExecRuntime.java:216)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.MainClientExec.execute(MainClientExec.java:116)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.ConnectExec.execute(ConnectExec.java:188)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.ZapProtocolExec.execute(ZapProtocolExec.java:179)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.ZapHttpRequestRetryExec.execute(ZapHttpRequestRetryExec.java:81)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.ExecChainElement.execute(ExecChainElement.java:51)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.ZapInternalHttpClient.doExecute(ZapInternalHttpClient.java:173)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:245)
+[20:09:29] [INFO] at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:188)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.HttpSenderApache.sendImpl0(HttpSenderApache.java:486)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.HttpSenderApache.sendImpl(HttpSenderApache.java:365)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.apachev5.HttpSenderApache.sendImpl(HttpSenderApache.java:116)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendRateLimited(BaseHttpSender.java:415)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendAuthenticated(BaseHttpSender.java:383)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendNoRedirections(BaseHttpSender.java:351)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.send(BaseHttpSender.java:307)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendAndReceive(BaseHttpSender.java:278)
+[20:09:29] [INFO] at org.zaproxy.addon.network.internal.client.BaseHttpSender.sendAndReceive(BaseHttpSender.java:234)
+[20:09:29] [INFO] at org.parosproxy.paros.network.HttpSender.sendImpl(HttpSender.java:536)
+[20:09:29] [INFO] at org.parosproxy.paros.network.HttpSender.sendAndReceive(HttpSender.java:529)
+[20:09:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendMessageImpl(AbstractPlugin.java:344)
+[20:09:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:331)
+[20:09:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:265)
+[20:09:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.sendAndReceive(AbstractPlugin.java:238)
+[20:09:29] [INFO] at org.zaproxy.zap.extension.ascanrules.ParameterTamperScanRule.scan(ParameterTamperScanRule.java:174)
+[20:09:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:233)
+[20:09:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:136)
+[20:09:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractAppParamPlugin.scan(AbstractAppParamPlugin.java:96)
+[20:09:29] [INFO] at org.parosproxy.paros.core.scanner.AbstractPlugin.run(AbstractPlugin.java:402)
+[20:09:29] [INFO] at java.base/java.lang.Thread.run(Thread.java:1447)
+[20:09:34] [INFO] 3494179 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | ParameterTamperScanRule in 141.337s with 520 message(s) sent and 0 alert(s) raised.
+[20:09:34] [INFO] 3494185 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | ElmahScanRule strength MEDIUM threshold MEDIUM
+[20:09:34] [INFO] 3494348 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | TraceAxdScanRule strength MEDIUM threshold MEDIUM
+[20:09:35] [INFO] 3495007 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | ElmahScanRule in 0.823s with 1 message(s) sent and 0 alert(s) raised.
+[20:09:36] [INFO] [PROGRESS] [===============     ] 76%
+[20:09:41] [INFO] 3500829 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | TraceAxdScanRule in 6.482s with 13 message(s) sent and 0 alert(s) raised.
+[20:09:41] [INFO] 3500831 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | HtAccessScanRule strength MEDIUM threshold MEDIUM
+[20:09:41] [INFO] [PROGRESS] [===============     ] 78%
+[20:09:50] [INFO] 3510046 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | HtAccessScanRule in 9.216s with 13 message(s) sent and 0 alert(s) raised.
+[20:09:50] [INFO] 3510053 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | EnvFileScanRule strength MEDIUM threshold MEDIUM
+[20:09:51] [INFO] [PROGRESS] [================    ] 80%
+[20:09:53] [INFO] 3512716 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | EnvFileScanRule in 2.663s with 13 message(s) sent and 0 alert(s) raised.
+[20:09:53] [INFO] 3512717 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | HiddenFilesScanRule strength MEDIUM threshold MEDIUM
+[20:09:53] [INFO] 3512891 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SpringActuatorScanRule strength MEDIUM threshold MEDIUM
+[20:09:53] [INFO] 3512904 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | ExponentialEntityExpansionScanRule strength MEDIUM threshold MEDIUM
+[20:09:54] [INFO] 3514176 [ZAP-ActiveScanner-1] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SpringActuatorScanRule in 1.285s with 2 message(s) sent and 0 alert(s) raised.
+[20:09:56] [INFO] [PROGRESS] [================    ] 83%
+[20:10:05] [INFO] 3524891 [ZAP-ActiveScanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | HiddenFilesScanRule in 12.174s with 52 message(s) sent and 0 alert(s) raised.
+[20:10:05] [INFO] 3524894 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | ExponentialEntityExpansionScanRule in 11.991s with 0 message(s) sent and 0 alert(s) raised.
+[20:10:05] [INFO] 3524894 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | XsltInjectionScanRule strength MEDIUM threshold MEDIUM
+[20:10:06] [INFO] [PROGRESS] [=================   ] 87%
+[20:10:11] [INFO] [PROGRESS] [=================   ] 88%
+[20:10:17] [INFO] 3537080 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | XsltInjectionScanRule in 12.185s with 136 message(s) sent and 0 alert(s) raised.
+[20:10:17] [INFO] 3537080 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | HttpsAsHttpScanRule strength MEDIUM threshold MEDIUM
+[20:10:21] [INFO] [PROGRESS] [==================  ] 90%
+[20:10:22] [INFO] 3541686 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | HttpsAsHttpScanRule in 4.606s with 20 message(s) sent and 0 alert(s) raised.
+[20:10:22] [INFO] 3541687 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | GetForPostScanRule strength MEDIUM threshold MEDIUM
+[20:10:26] [INFO] 3545994 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | GetForPostScanRule in 4.307s with 1 message(s) sent and 0 alert(s) raised.
+[20:10:26] [INFO] 3545995 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | UserAgentScanRule strength MEDIUM threshold MEDIUM
+[20:10:26] [INFO] [PROGRESS] [==================  ] 93%
+[20:10:36] [INFO] [PROGRESS] [==================  ] 94%
+[20:10:43] [INFO] 3563101 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | UserAgentScanRule in 17.107s with 396 message(s) sent and 67 alert(s) raised.
+[20:10:43] [INFO] 3563106 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | ScriptsActiveScanner strength MEDIUM threshold MEDIUM
+[20:10:43] [INFO] 3563127 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - skipped plugin [no scripts enabled] https://petstore.swagger.io | ScriptsActiveScanner in 0.019s with 0 message(s) sent and 0 alert(s) raised.
+[20:10:43] [INFO] 3563131 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SOAPActionSpoofingActiveScanRule strength MEDIUM threshold MEDIUM
+[20:10:46] [INFO] [PROGRESS] [=================== ] 97%
+[20:10:47] [INFO] 3567183 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SOAPActionSpoofingActiveScanRule in 4.052s with 0 message(s) sent and 0 alert(s) raised.
+[20:10:47] [INFO] 3567184 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - start host https://petstore.swagger.io | SOAPXMLInjectionActiveScanRule strength MEDIUM threshold MEDIUM
+[20:10:51] [INFO] 3570986 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host/plugin https://petstore.swagger.io | SOAPXMLInjectionActiveScanRule in 3.802s with 0 message(s) sent and 0 alert(s) raised.
+[20:10:51] [INFO] 3570987 [ZAP-Scanner-0] INFO  org.parosproxy.paros.core.scanner.HostProcess - completed host https://petstore.swagger.io in 3437.933s with 67 alert(s) raised.
+[20:10:51] [INFO] 3570989 [Thread-5] INFO  org.parosproxy.paros.core.scanner.Scanner - scanner with ID 0 completed in 3446.847s
+[20:10:51] [INFO] [PROGRESS] [====================] 100%
+[20:10:51] [INFO] Generating XML report...
+[20:10:53] [INFO] [+] API scan command finished. Parsing...
+[20:10:56] [INFO] [+] JSON report saved.
+[20:10:56] [INFO] [*] Generating PDF report for https://petstore.swagger.io/v2...
+[20:10:57] [INFO] 3576991 [ZAP-Shutdown] INFO  org.zaproxy.zap.extension.api.CoreAPI - ZAP 2.17.0 terminated.
+[20:11:06] [INFO] [+] PDF generated successfully.
+[20:11:06] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:https://petstore.swagger.io/v2
+[20:11:06] [INFO] [*] API Scan complete.

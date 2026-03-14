@@ -842,7 +842,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         with scan_lock:
             # We use a dummy process object since run() is blocking, 
             # but for consistency with others, we'll use a thread-local identifier
-            active_scans[user_id] = {"target": target_ip, "start_time": time.time()}
+            active_scans[user_id] = {"target": original_input, "start_time": time.time()}
 
         try:
             result = subprocess.run(
@@ -890,20 +890,20 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         if scan_type != "ping_sweep":
             open_ports_list = extract_open_ports(output_file, protocol_type="TCP" if protocol_type == "TCP" or scan_type == "vuln" else protocol_type, user_id=user_id, queue_id=queue_id)
             send_sse_event("scan_complete", {
-                "target": target_ip, "protocol": protocol_type,
+                "target": original_input, "protocol": protocol_type,
                 "scan_type": scan_type, "open_ports": open_ports_list
             }, user_id=user_id, queue_id=queue_id)
         else:
              log(f"[*] Ping sweep complete. Check log or JSON report for host details.", user_id, queue_id)
              send_sse_event("scan_complete", {
-                "target": target_ip, "protocol": protocol_type,
+                "target": original_input, "protocol": protocol_type,
                 "scan_type": scan_type, "open_ports": [] # Ping sweep doesn't return open ports
             }, user_id=user_id, queue_id=queue_id)
 
         # 2. Generate JSON Report (PDF)
         log(f"[+] Processing results for PDF report...", user_id, queue_id)
         scan_data = parse_nmap_grepable_output(output_file, user_id=user_id, queue_id=queue_id)
-        save_nmap_json(scan_data, output_dir=output_dir, user_id=user_id, queue_id=queue_id, target=target_ip)
+        save_nmap_json(scan_data, output_dir=output_dir, user_id=user_id, queue_id=queue_id, target=original_input)
         
         return str(output_file)
 

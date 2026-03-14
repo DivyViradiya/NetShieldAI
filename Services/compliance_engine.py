@@ -64,13 +64,13 @@ class ComplianceEngine:
         }
         
         # Load Raw Data
-        self.killchain = self._load_json("killchain/reports/killchain_report.json")
-        self.zap = self._load_json("zap_scanner/zap_report.json")
-        self.ssl = self._load_json("ssl_scanner/ssl_report.json")
-        self.sql = self._load_json("sql_scanner/sql_report.json")
-        self.nmap = self._load_json(f"network_scanner/{report_manager.generate_report_filename('nmap_report', None, 'json')}")
-        self.api = self._load_json("api_scanner/api_scan_report.json")
-        self.semgrep = self._load_json("semgrep_scanner/semgrep_report.json")
+        self.killchain = self._load_latest_json("killchain/reports", ["killchain_*.json", "killchain_report*.json"])
+        self.zap = self._load_latest_json("zap_scanner", ["zap_scanner_*.json", "zap_report*.json"])
+        self.ssl = self._load_latest_json("ssl_scanner", ["ssl_report*.json"])
+        self.sql = self._load_latest_json("sql_scanner", ["sql_scanner_*.json", "sql_report*.json"])
+        self.nmap = self._load_latest_json("network_scanner", ["network_scanner_*.json", "nmap_report*.json"])
+        self.api = self._load_latest_json("api_scanner", ["api_scanner_*.json", "api_scan_report*.json"])
+        self.semgrep = self._load_latest_json("semgrep_scanner", ["semgrep_scanner_*.json", "semgrep_report*.json"])
 
         # Consolidated list of all technical findings
         self.all_findings = self._consolidate_findings()
@@ -83,6 +83,32 @@ class ComplianceEngine:
         if os.path.exists(path):
             try:
                 with open(path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception:
+                return {}
+        return {}
+        
+    def _load_latest_json(self, scanner_folder, patterns):
+        """Helper to find and load the latest JSON file matching any of the patterns."""
+        if not self.base_dir:
+            return {}
+            
+        import glob
+        target_dir = os.path.join(self.base_dir, scanner_folder)
+        if not os.path.exists(target_dir):
+            return {}
+            
+        if not isinstance(patterns, list):
+            patterns = [patterns]
+            
+        candidates = []
+        for pattern in patterns:
+            candidates.extend(glob.glob(os.path.join(target_dir, pattern)))
+            
+        if candidates:
+            latest_path = max(candidates, key=os.path.getmtime)
+            try:
+                with open(latest_path, 'r', encoding='utf-8') as f:
                     return json.load(f)
             except Exception:
                 return {}

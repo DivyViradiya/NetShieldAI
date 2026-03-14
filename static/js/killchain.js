@@ -449,10 +449,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const sev = (v.severity || v.risk || "info").toLowerCase(); // Normalize severity
         let riskClass = 'risk-low';
         let score = "0.0";
-        if (sev === 'critical') { riskClass = 'risk-critical'; score = "9.5"; }
-        else if (sev === 'high') { riskClass = 'risk-high'; score = "7.5"; }
-        else if (sev === 'medium') { riskClass = 'risk-medium'; score = "5.5"; }
-        else if (sev === 'info') { riskClass = 'risk-safe'; score = "0.0"; }
+        let color = '#3b82f6'; // low / info color by default
+        
+        if (sev === 'critical') { riskClass = 'risk-critical'; score = "9.5"; color = '#ef4444'; }
+        else if (sev === 'high') { riskClass = 'risk-high'; score = "7.5"; color = '#f97316'; }
+        else if (sev === 'medium') { riskClass = 'risk-medium'; score = "5.5"; color = '#eab308'; }
+        else if (sev === 'info' || sev === 'safe') { riskClass = 'risk-safe'; score = "0.0"; color = '#10b981'; }
 
         const title = v.type || v.name || "Unknown Vulnerability";
         const evidence = v.evidence || v.url || v.location || "N/A";
@@ -460,10 +462,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const solution = v.solution || "No remediation provided.";
 
         const cardHtml = `
-            <div class="finding-card ${riskClass}">
+            <div class="finding-card ${riskClass}" style="--accent-gradient: ${color};">
               <div class="finding-header" onclick="this.parentElement.classList.toggle('expanded')">
-                <div class="risk-indicator ${riskClass}">
-                  <div class="risk-dot"></div>
+                <div class="risk-indicator ${riskClass}" style="color: ${color};">
+                  <div class="risk-dot" style="background: ${color};"></div>
                   <span>${sev.toUpperCase()}</span>
                 </div>
                 <div class="finding-title" title="${title}">${title}</div>

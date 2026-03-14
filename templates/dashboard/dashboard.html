@@ -1040,26 +1040,49 @@
             allReports.forEach(file => {
                 let key = generalLabel;
                 
-                // Parse Filename: <tool>_report_<target>.pdf
-                // Regex: ^(.*?)_report_(.*)\.pdf$
-                const match = file.filename.match(/^(.*?)_report_(.*)\.pdf$/i);
-                
                 let toolName = "Unknown";
                 let targetName = generalLabel;
 
-                if (match) {
-                    toolName = match[1]; // prefix
-                    targetName = match[2]; // suffix
+                // Known prefixes to strip to find the target name
+                const prefixes = [
+                    "zap_scanner_", "zap_report_",
+                    "network_scanner_", "nmap_report_",
+                    "ssl_report_", "ssl_scanner_",
+                    "pcap_analysis_report_", "sniffer_report_",
+                    "killchain_report_", "killchain_",
+                    "sql_scanner_", "sql_report_",
+                    "api_scanner_", "api_scan_report_",
+                    "semgrep_scanner_", "semgrep_report_"
+                ];
+
+                // Remove .pdf extension for parsing the target
+                let baseName = file.filename.replace(/\.pdf$/i, "");
+                
+                // Try to find a matching prefix
+                let matchedPrefix = null;
+                for (const prefix of prefixes) {
+                    if (baseName.toLowerCase().startsWith(prefix)) {
+                        matchedPrefix = prefix;
+                        break;
+                    }
+                }
+
+                if (matchedPrefix) {
+                    // Extract toolName from prefix (e.g., "zap_scanner_" -> "zap_scanner")
+                    toolName = matchedPrefix.endsWith('_') ? matchedPrefix.slice(0, -1) : matchedPrefix;
+                    // Target is everything after the prefix
+                    targetName = baseName.slice(matchedPrefix.length);
+                    // If target is empty (e.g. just "zap_report.pdf"), use generalLabel
+                    if (!targetName) {
+                        targetName = generalLabel;
+                    }
                 } else {
-                    // Fallback parsing if naming convention isn't exact
+                    // Fallback
                     if(file.folder) toolName = file.folder.replace("_scanner", "");
-                    
-                     // Try to extract target from filename if _report_ exists but regex failed (unlikely)
-                     // or if simple format
-                     if(file.filename.includes("_")) {
-                         const portions = file.filename.split("_");
-                         if(portions.length > 1) targetName = portions[portions.length-1].replace(".pdf", "");
-                     }
+                    if (baseName.includes("_")) {
+                         const portions = baseName.split("_");
+                         if(portions.length > 1) targetName = portions[portions.length-1];
+                    }
                 }
 
                 if (groupingMode === 'target') {
@@ -1069,6 +1092,9 @@
                     // Clean up tool name for display
                     key = toolName.charAt(0).toUpperCase() + toolName.slice(1).replace(/_/g, " ");
                 }
+
+                file.extractedTarget = targetName;
+                file.extractedTool = toolName;
 
                 if(!grouped[key]) grouped[key] = [];
                 grouped[key].push(file);
@@ -1113,10 +1139,8 @@
                     if (groupingMode === 'target') {
                          mainLabel = file.type; // Show Scanner Type
                     } else {
-                        // Grouping by Tool, so show Target Name in card
-                        const m = file.filename.match(/^(.*?)_report_(.*)\.pdf$/i);
-                        if(m) mainLabel = m[2];
-                        else mainLabel = file.filename;
+                         // Grouping by Tool, so show Target Name
+                         mainLabel = file.extractedTarget || "Unknown";
                     }
 
                     paneHtml += `

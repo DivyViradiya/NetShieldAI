@@ -1,30 +1,16 @@
-[2026-03-05 10:19:41] Log cleared for new network_scanner scan.
-[10:19:41] [*] Preparing DEFAULT scan for target: 192.168.0.102 with T4...
-[10:19:41] [+] Running TCP (Top 1000) scan on 192.168.0.102 with timing -T4...
-[10:19:41] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
-[10:19:41] Executing Network Scan...
-[10:19:49] [+] TCP (Top 1000) scan complete. Results synchronized.
-[10:19:49] [*] Raw results persisted to: scan_result_tcp.txt
-[10:19:52] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.2632, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1538, "tctr_priority": 1.5381, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1105, "tctr_priority": 1.1053, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}], "vulnerabilities_count": 0}
-[10:19:52] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown / Not Detected", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
-[10:19:52] EVENT: scan_complete | PAYLOAD: {"target": "192.168.0.102", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.2632, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1538, "tctr_priority": 1.5381, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1105, "tctr_priority": 1.1053, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}]}
-[10:19:52] [+] Processing results for PDF report...
-[10:19:53] [+] JSON Scan report saved
-[10:19:53] [*] Scan complete. Generating PDF report for 192.168.0.102...
-[10:19:56] [+] PDF report generated successfully
-[10:19:56] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.0.102
-[10:22:44] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[10:33:20] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[10:33:38] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[10:35:31] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[10:39:12] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[10:40:51] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[10:57:50] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[10:57:53] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:00:14] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:03:29] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:04:01] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:07:48] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:12:56] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:37:00] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
-[11:40:15] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[2026-03-14 14:26:40] Log cleared for new network_scanner scan.
+[14:26:40] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[14:26:40] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[14:26:40] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[14:26:40] Executing Network Scan...
+[14:27:01] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.
+[14:28:30] [+] TCP (Top 1000) scan complete. Results synchronized.
+[14:28:30] [*] Raw results persisted to: scan_result_tcp.txt
+[14:28:30] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[14:28:30] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown / Not Detected", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[14:28:30] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.48", "protocol": "TCP", "scan_type": "default", "open_ports": []}
+[14:28:30] [+] Processing results for PDF report...
+[14:28:30] [+] JSON Scan report saved
+[14:28:30] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[14:28:35] [+] PDF report generated successfully
+[14:28:35] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48

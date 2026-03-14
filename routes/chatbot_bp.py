@@ -551,7 +551,8 @@ def scanner_analysis_proxy():
             'llm_mode': llm_mode,
             'user_id': user_identifier,
             'file_path': pdf_path, # Send the path to backend
-            'session_id': current_session_id
+            'session_id': current_session_id,
+            'background': 'false' # Ensure synchronous response
         }
         
         proxy_upload_url = f"{SERVER_PROXY_URL}/upload_report"

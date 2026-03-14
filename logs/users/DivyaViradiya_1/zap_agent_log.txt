@@ -1454,3 +1454,612 @@
 [2026-03-05 11:19:33] [+] PDF generated successfully.
 [2026-03-05 11:19:33] SYSTEM_EVENT: READY_FOR_ANALYSIS
 [2026-03-05 11:19:33] [*] Scan, analysis, and prediction complete.
+[2026-03-07 13:24:02] [*] Starting ZAP Quick Scan for http://DJSCE.ac.in (User: DivyaViradiya_1)...
+[2026-03-07 13:24:02] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-07 13:24:02] Instance Config -> Port: 59821 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_59821
+[2026-03-07 13:24:02] Target: http://DJSCE.ac.in
+[2026-03-07 13:24:02] Report will be saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_DJSCE_ac_in.xml
+[2026-03-07 13:24:02] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 59821 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_59821 -quickurl http://DJSCE.ac.in -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_DJSCE_ac_in.xml -quickprogress
+[2026-03-07 13:24:02] --- ZAP Output Stream Started ---
+[2026-03-07 13:24:02] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-07 13:24:02] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 59821 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_59821 -quickurl http://DJSCE.ac.in -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_DJSCE_ac_in.xml -quickprogress
+[2026-03-07 13:24:43] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-03-07 13:24:43] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-03-07 13:24:43] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-03-07 13:24:43] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-03-07 13:24:48] Accessing URL
+[2026-03-07 13:24:50] Using traditional spider
+[2026-03-07 13:24:54] Active scanning
+[2026-03-07 13:24:55] [PROGRESS] [                    ] 0% |
+[2026-03-07 13:24:55] [PROGRESS] [                    ] 0% /
+[2026-03-07 13:24:56] [PROGRESS] [                    ] 0% -
+[2026-03-07 13:24:56] [PROGRESS] [                    ] 0% \
+[2026-03-07 13:24:57] [PROGRESS] [                    ] 0% |
+[2026-03-07 13:24:57] [PROGRESS] [                    ] 4% /
+[2026-03-07 13:24:58] [PROGRESS] [                    ] 4% -
+[2026-03-07 13:24:58] [PROGRESS] [                    ] 4% \
+[2026-03-07 13:24:59] [PROGRESS] [                    ] 4% |
+[2026-03-07 13:24:59] [PROGRESS] [=                   ] 8% /
+[2026-03-07 13:25:00] [PROGRESS] [=                   ] 8% -
+[2026-03-07 13:25:01] [PROGRESS] [=                   ] 8% \
+[2026-03-07 13:25:01] [PROGRESS] [=                   ] 8% |
+[2026-03-07 13:25:02] [PROGRESS] [=                   ] 8% /
+[2026-03-07 13:25:02] [PROGRESS] [==                  ] 12% -
+[2026-03-07 13:25:03] [PROGRESS] [===                 ] 16% \
+[2026-03-07 13:25:03] [PROGRESS] [=======             ] 37% |
+[2026-03-07 13:25:04] [PROGRESS] [=======             ] 37% /
+[2026-03-07 13:25:04] [PROGRESS] [=======             ] 37% -
+[2026-03-07 13:25:05] [PROGRESS] [========            ] 42% \
+[2026-03-07 13:25:05] [PROGRESS] [========            ] 42% |
+[2026-03-07 13:25:06] [PROGRESS] [========            ] 42% /
+[2026-03-07 13:25:06] [PROGRESS] [========            ] 42% -
+[2026-03-07 13:25:07] [PROGRESS] [========            ] 42% \
+[2026-03-07 13:25:07] [PROGRESS] [========            ] 42% |
+[2026-03-07 13:25:08] [PROGRESS] [========            ] 42% /
+[2026-03-07 13:25:08] [PROGRESS] [==========          ] 50% -
+[2026-03-07 13:25:09] [PROGRESS] [===========         ] 55% \
+[2026-03-07 13:25:09] [PROGRESS] [===========         ] 55% |
+[2026-03-07 13:25:10] [PROGRESS] [===========         ] 55% /
+[2026-03-07 13:25:10] [PROGRESS] [===========         ] 55% -
+[2026-03-07 13:25:11] [PROGRESS] [===========         ] 55% \
+[2026-03-07 13:25:11] [PROGRESS] [===========         ] 55% |
+[2026-03-07 13:25:12] [PROGRESS] [===========         ] 55% /
+[2026-03-07 13:25:12] [PROGRESS] [============        ] 63% -
+[2026-03-07 13:25:13] [PROGRESS] [============        ] 63% \
+[2026-03-07 13:25:13] [PROGRESS] [============        ] 63% |
+[2026-03-07 13:25:14] [PROGRESS] [============        ] 63% /
+[2026-03-07 13:25:15] [PROGRESS] [=============       ] 65% -
+[2026-03-07 13:25:15] [PROGRESS] [=============       ] 65% \
+[2026-03-07 13:25:16] [PROGRESS] [=============       ] 65% |
+[2026-03-07 13:25:16] [PROGRESS] [==============      ] 74% /
+[2026-03-07 13:25:17] [PROGRESS] [================    ] 80% -
+[2026-03-07 13:25:17] [PROGRESS] [================    ] 81% \
+[2026-03-07 13:25:18] [PROGRESS] [================    ] 81% |
+[2026-03-07 13:25:18] [PROGRESS] [================    ] 81% /
+[2026-03-07 13:25:19] [PROGRESS] [================    ] 81% -
+[2026-03-07 13:25:19] [PROGRESS] [================    ] 81% \
+[2026-03-07 13:25:20] [PROGRESS] [================    ] 84% |
+[2026-03-07 13:25:20] [PROGRESS] [================    ] 84% /
+[2026-03-07 13:25:21] [PROGRESS] [================    ] 84% -
+[2026-03-07 13:25:21] [PROGRESS] [================    ] 84% \
+[2026-03-07 13:25:22] [PROGRESS] [================    ] 84% |
+[2026-03-07 13:25:22] [PROGRESS] [================    ] 84% /
+[2026-03-07 13:25:23] [PROGRESS] [================    ] 84% -
+[2026-03-07 13:25:23] [PROGRESS] [================    ] 84% \
+[2026-03-07 13:25:24] [PROGRESS] [================    ] 84% |
+[2026-03-07 13:25:24] [PROGRESS] [================    ] 84% /
+[2026-03-07 13:25:25] [PROGRESS] [================    ] 84% -
+[2026-03-07 13:25:25] [PROGRESS] [================    ] 84% \
+[2026-03-07 13:25:26] [PROGRESS] [================    ] 84% |
+[2026-03-07 13:25:26] [PROGRESS] [================    ] 84% /
+[2026-03-07 13:25:27] [PROGRESS] [================    ] 84% -
+[2026-03-07 13:25:27] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:28] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:28] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:29] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:29] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:30] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:30] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:31] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:31] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:32] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:32] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:33] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:33] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:34] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:35] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:35] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:36] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:36] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:37] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:37] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:38] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:38] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:39] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:39] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:40] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:40] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:41] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:41] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:42] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:42] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:43] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:43] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:44] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:44] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:45] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:45] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:46] [PROGRESS] [==================  ] 93% \
+[2026-03-07 13:25:46] [PROGRESS] [==================  ] 93% |
+[2026-03-07 13:25:47] [PROGRESS] [==================  ] 93% /
+[2026-03-07 13:25:47] [PROGRESS] [==================  ] 93% -
+[2026-03-07 13:25:48] [PROGRESS] [=================== ] 98% \
+[2026-03-07 13:25:48] [PROGRESS] [====================] 100%
+[2026-03-07 13:25:48] Attack complete
+[2026-03-07 13:25:48] Writing results to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_DJSCE_ac_in.xml
+[2026-03-07 13:25:58] --- End of ZAP Output ---
+[2026-03-07 13:25:58] Scan completed successfully!
+[2026-03-07 13:25:58] Cleaning up temporary ZAP directory: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_59821
+[2026-03-07 13:25:58] [+] ZAP scan command finished. Parsing...
+[2026-03-07 13:25:58] Parsing ZAP report: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_DJSCE_ac_in.xml
+[2026-03-07 13:25:58] Report parsed and enriched successfully.
+[2026-03-07 13:25:58] JSON report saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_DJSCE_ac_in.json
+[2026-03-07 13:25:58] [+] JSON report saved.
+[2026-03-07 13:25:58] [*] Generating PDF report...
+[2026-03-07 13:26:06] [+] PDF generated successfully.
+[2026-03-07 13:26:06] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-03-07 13:26:06] [*] Scan, analysis, and prediction complete.
+[2026-03-07 13:35:11] [*] Starting ZAP Quick Scan for https://bankofbaroda.bank.in/ (User: DivyaViradiya_1)...
+[2026-03-07 13:35:11] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-07 13:35:11] Instance Config -> Port: 54936 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_54936
+[2026-03-07 13:35:11] Target: https://bankofbaroda.bank.in/
+[2026-03-07 13:35:11] Report will be saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_bankofbaroda_bank_in.xml
+[2026-03-07 13:35:11] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 54936 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_54936 -quickurl https://bankofbaroda.bank.in/ -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_bankofbaroda_bank_in.xml -quickprogress
+[2026-03-07 13:35:11] --- ZAP Output Stream Started ---
+[2026-03-07 13:35:11] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-07 13:35:11] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 54936 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_54936 -quickurl https://bankofbaroda.bank.in/ -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_bankofbaroda_bank_in.xml -quickprogress
+[2026-03-07 13:35:58] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-03-07 13:35:58] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-03-07 13:35:58] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-03-07 13:35:58] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-03-07 13:36:07] Accessing URL
+[2026-03-07 13:36:07] Failed to attack the URL: The certificate chain length (11) exceeds the maximum allowed length (10)
+[2026-03-07 13:36:08] Writing results to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_bankofbaroda_bank_in.xml
+[2026-03-07 13:36:17] --- End of ZAP Output ---
+[2026-03-07 13:36:17] Scan completed successfully!
+[2026-03-07 13:36:17] Cleaning up temporary ZAP directory: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_54936
+[2026-03-07 13:36:18] [+] ZAP scan command finished. Parsing...
+[2026-03-07 13:36:18] Parsing ZAP report: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_bankofbaroda_bank_in.xml
+[2026-03-07 13:36:18] Report parsed and enriched successfully.
+[2026-03-07 13:36:18] JSON report saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_bankofbaroda_bank_in.json
+[2026-03-07 13:36:18] [+] JSON report saved.
+[2026-03-07 13:36:18] [*] Generating PDF report...
+[2026-03-07 13:36:22] [+] PDF generated successfully.
+[2026-03-07 13:36:22] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-03-07 13:36:22] [*] Scan, analysis, and prediction complete.
+[2026-03-07 13:36:48] [*] Starting ZAP Quick Scan for https://www.sebi.gov.in/ (User: DivyaViradiya_1)...
+[2026-03-07 13:36:48] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-07 13:36:48] Instance Config -> Port: 35317 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_35317
+[2026-03-07 13:36:48] Target: https://www.sebi.gov.in/
+[2026-03-07 13:36:48] Report will be saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_www_sebi_gov_in.xml
+[2026-03-07 13:36:48] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 35317 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_35317 -quickurl https://www.sebi.gov.in/ -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_www_sebi_gov_in.xml -quickprogress
+[2026-03-07 13:36:48] --- ZAP Output Stream Started ---
+[2026-03-07 13:36:48] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-07 13:36:48] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 35317 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_35317 -quickurl https://www.sebi.gov.in/ -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_www_sebi_gov_in.xml -quickprogress
+[2026-03-07 13:37:46] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-03-07 13:37:46] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-03-07 13:37:46] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-03-07 13:37:46] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-03-07 13:37:57] Accessing URL
+[2026-03-07 13:37:58] Using traditional spider
+[2026-03-07 13:38:03] [PROGRESS] [========            ] 44% |
+[2026-03-07 13:38:04] [PROGRESS] [========            ] 44% /
+[2026-03-07 13:38:04] [PROGRESS] [========            ] 44% -
+[2026-03-07 13:38:05] [PROGRESS] [========            ] 44% \
+[2026-03-07 13:38:05] [PROGRESS] [========            ] 44% |
+[2026-03-07 13:38:06] [PROGRESS] [=======             ] 35% /
+[2026-03-07 13:38:06] [PROGRESS] [=                   ] 8% -
+[2026-03-07 13:38:07] [PROGRESS] [=                   ] 8% \
+[2026-03-07 13:38:08] [PROGRESS] [=                   ] 8% |
+[2026-03-07 13:38:08] [PROGRESS] [=                   ] 8% /
+[2026-03-07 13:38:09] [PROGRESS] [=                   ] 8% -
+[2026-03-07 13:38:09] [PROGRESS] [=                   ] 8% \
+[2026-03-07 13:38:10] [PROGRESS] [=                   ] 8% |
+[2026-03-07 13:38:10] [PROGRESS] [                    ] 2% /
+[2026-03-07 13:38:11] [PROGRESS] [                    ] 3% -
+[2026-03-07 13:38:11] [PROGRESS] [                    ] 3% \
+[2026-03-07 13:38:12] [PROGRESS] [                    ] 3% |
+[2026-03-07 13:38:12] [PROGRESS] [                    ] 3% /
+[2026-03-07 13:38:13] [PROGRESS] [                    ] 3% -
+[2026-03-07 13:38:14] [PROGRESS] [                    ] 3% \
+[2026-03-07 13:38:15] [PROGRESS] [=                   ] 7% |
+[2026-03-07 13:38:15] [PROGRESS] [==                  ] 10% /
+[2026-03-07 13:38:16] [PROGRESS] [=                   ] 9% -
+[2026-03-07 13:38:16] [PROGRESS] [==                  ] 10% \
+[2026-03-07 13:38:16] [Fatal Error] :2:10: DOCTYPE is disallowed when the feature "http://apache.org/xml/features/disallow-doctype-decl" set to true.
+[2026-03-07 13:38:17] [PROGRESS] [==                  ] 11% |
+[2026-03-07 13:38:17] [PROGRESS] [==                  ] 13% /
+[2026-03-07 13:38:18] [PROGRESS] [==                  ] 13% -
+[2026-03-07 13:38:18] [PROGRESS] [==                  ] 13% \
+[2026-03-07 13:38:18] [Fatal Error] :2:10: DOCTYPE is disallowed when the feature "http://apache.org/xml/features/disallow-doctype-decl" set to true.
+[2026-03-07 13:38:21] [PROGRESS] [==                  ] 13% |
+[2026-03-07 13:38:22] [PROGRESS] [==                  ] 13% /
+[2026-03-07 13:38:22] [PROGRESS] [==                  ] 13% -
+[2026-03-07 13:38:23] [PROGRESS] [==                  ] 13% \
+[2026-03-07 13:38:23] [PROGRESS] [==                  ] 13% |
+[2026-03-07 13:38:24] [PROGRESS] [==                  ] 13% /
+[2026-03-07 13:38:24] [PROGRESS] [==                  ] 13% -
+[2026-03-07 13:38:26] [PROGRESS] [==                  ] 13% \
+[2026-03-07 13:38:27] [PROGRESS] [==                  ] 12% |
+[2026-03-07 13:38:28] [PROGRESS] [==                  ] 13% /
+[2026-03-07 13:38:28] [PROGRESS] [==                  ] 13% -
+[2026-03-07 13:38:29] [PROGRESS] [==                  ] 13% \
+[2026-03-07 13:38:29] [PROGRESS] [==                  ] 13% |
+[2026-03-07 13:38:30] [PROGRESS] [==                  ] 13% /
+[2026-03-07 13:38:30] [PROGRESS] [==                  ] 13% -
+[2026-03-07 13:38:31] [PROGRESS] [==                  ] 13% \
+[2026-03-07 13:38:31] [PROGRESS] [==                  ] 13% |
+[2026-03-07 13:38:32] [PROGRESS] [==                  ] 13% /
+[2026-03-07 13:38:32] [PROGRESS] [==                  ] 14% -
+[2026-03-07 13:38:33] [PROGRESS] [==                  ] 13% \
+[2026-03-07 13:38:33] [PROGRESS] [==                  ] 13% |
+[2026-03-07 13:38:34] [PROGRESS] [==                  ] 13% /
+[2026-03-07 13:38:34] [PROGRESS] [==                  ] 14% -
+[2026-03-07 13:38:35] [PROGRESS] [==                  ] 14% \
+[2026-03-07 13:38:36] [PROGRESS] [==                  ] 14% |
+[2026-03-07 13:38:36] [PROGRESS] [==                  ] 14% /
+[2026-03-07 13:38:40] [PROGRESS] [==                  ] 14% -
+[2026-03-07 13:38:40] [PROGRESS] [==                  ] 14% \
+[2026-03-07 13:38:41] [PROGRESS] [==                  ] 14% |
+[2026-03-07 13:38:41] [PROGRESS] [==                  ] 14% /
+[2026-03-07 13:38:42] [PROGRESS] [==                  ] 14% -
+[2026-03-07 13:38:43] [PROGRESS] [==                  ] 14% \
+[2026-03-07 13:38:44] [PROGRESS] [==                  ] 14% |
+[2026-03-07 13:38:44] [PROGRESS] [==                  ] 14% /
+[2026-03-07 13:38:45] [PROGRESS] [==                  ] 14% -
+[2026-03-07 13:38:46] [PROGRESS] [===                 ] 15% \
+[2026-03-07 13:38:47] [PROGRESS] [===                 ] 15% |
+[2026-03-07 13:38:48] [PROGRESS] [===                 ] 15% /
+[2026-03-07 13:38:49] [PROGRESS] [===                 ] 15% -
+[2026-03-07 13:38:49] [PROGRESS] [===                 ] 15% \
+[2026-03-07 13:38:50] [PROGRESS] [===                 ] 15% |
+[2026-03-07 13:39:10] [PROGRESS] [===                 ] 15% /
+[2026-03-07 13:39:11] [PROGRESS] [===                 ] 16% -
+[2026-03-07 13:39:13] [PROGRESS] [===                 ] 16% \
+[2026-03-07 13:39:14] [PROGRESS] [===                 ] 16% |
+[2026-03-07 13:39:14] [PROGRESS] [===                 ] 17% /
+[2026-03-07 13:39:15] [PROGRESS] [===                 ] 17% -
+[2026-03-07 13:39:15] [PROGRESS] [===                 ] 17% \
+[2026-03-07 13:39:16] [PROGRESS] [===                 ] 17% |
+[2026-03-07 13:39:17] [PROGRESS] [===                 ] 17% /
+[2026-03-07 13:39:18] [PROGRESS] [===                 ] 17% -
+[2026-03-07 13:39:18] [PROGRESS] [===                 ] 17% \
+[2026-03-07 13:39:19] [PROGRESS] [===                 ] 18% |
+[2026-03-07 13:39:20] [PROGRESS] [===                 ] 18% /
+[2026-03-07 13:39:21] [PROGRESS] [===                 ] 18% -
+[2026-03-07 13:39:21] [PROGRESS] [===                 ] 18% \
+[2026-03-07 13:39:22] [PROGRESS] [===                 ] 19% |
+[2026-03-07 13:39:22] [PROGRESS] [===                 ] 19% /
+[2026-03-07 13:39:23] [PROGRESS] [===                 ] 19% -
+[2026-03-07 13:39:23] [PROGRESS] [===                 ] 19% \
+[2026-03-07 13:39:24] [PROGRESS] [===                 ] 19% |
+[2026-03-07 13:39:24] [PROGRESS] [====                ] 20% /
+[2026-03-07 13:39:27] [PROGRESS] [====                ] 20% -
+[2026-03-07 13:39:28] [PROGRESS] [====                ] 20% \
+[2026-03-07 13:39:29] [PROGRESS] [====                ] 20% |
+[2026-03-07 13:39:29] [PROGRESS] [====                ] 20% /
+[2026-03-07 13:39:30] [PROGRESS] [====                ] 20% -
+[2026-03-07 13:39:30] [PROGRESS] [====                ] 21% \
+[2026-03-07 13:39:31] [PROGRESS] [====                ] 22% |
+[2026-03-07 13:39:31] [PROGRESS] [====                ] 22% /
+[2026-03-07 13:39:32] [PROGRESS] [====                ] 22% -
+[2026-03-07 13:39:32] [PROGRESS] [====                ] 23% \
+[2026-03-07 13:39:33] [PROGRESS] [====                ] 23% |
+[2026-03-07 13:39:33] [PROGRESS] [====                ] 23% /
+[2026-03-07 13:39:34] [PROGRESS] [====                ] 23% -
+[2026-03-07 13:39:36] [PROGRESS] [====                ] 23% \
+[2026-03-07 13:39:36] [PROGRESS] [====                ] 23% |
+[2026-03-07 13:39:37] [PROGRESS] [====                ] 24% /
+[2026-03-07 13:39:37] [PROGRESS] [=====               ] 25% -
+[2026-03-07 13:39:38] [PROGRESS] [=====               ] 25% \
+[2026-03-07 13:39:38] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:39:39] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:39:40] [PROGRESS] [=====               ] 25% -
+[2026-03-07 13:39:40] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:39:44] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:39:44] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:39:45] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:39:45] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:39:46] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:39:46] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:39:47] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:39:47] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:39:48] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:39:48] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:39:49] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:39:49] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:39:50] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:39:50] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:39:51] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:39:52] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:39:52] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:39:53] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:39:53] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:39:56] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:39:57] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:39:58] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:39:58] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:39:59] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:02] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:03] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:04] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:04] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:05] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:06] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:07] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:10] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:11] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:12] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:12] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:13] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:15] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:16] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:17] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:19] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:20] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:22] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:23] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:34] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:34] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:36] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:38] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:39] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:41] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:42] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:42] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:46] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:46] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:47] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:49] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:50] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:50] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:51] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:52] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:53] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:53] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:54] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:55] [PROGRESS] [=====               ] 26% -
+[2026-03-07 13:40:55] [PROGRESS] [=====               ] 26% \
+[2026-03-07 13:40:56] [PROGRESS] [=====               ] 26% |
+[2026-03-07 13:40:57] [PROGRESS] [=====               ] 26% /
+[2026-03-07 13:40:57] [PROGRESS] [=====               ] 27% -
+[2026-03-07 13:40:58] [PROGRESS] [=====               ] 27% \
+[2026-03-07 13:40:59] [PROGRESS] [=====               ] 27% |
+[2026-03-07 13:41:00] [PROGRESS] [=====               ] 27% /
+[2026-03-07 13:41:00] [PROGRESS] [=====               ] 27% -
+[2026-03-07 13:41:01] [PROGRESS] [=====               ] 27% \
+[2026-03-07 13:41:02] [PROGRESS] [=====               ] 27% |
+[2026-03-07 13:41:02] [PROGRESS] [=====               ] 27% /
+[2026-03-07 13:41:03] [PROGRESS] [=====               ] 27% -
+[2026-03-07 13:41:03] [PROGRESS] [=====               ] 27% \
+[2026-03-07 13:41:04] [PROGRESS] [=====               ] 28% |
+[2026-03-07 13:41:04] [PROGRESS] [=====               ] 28% /
+[2026-03-07 13:41:05] [PROGRESS] [=====               ] 28% -
+[2026-03-07 13:41:05] [PROGRESS] [=====               ] 28% \
+[2026-03-07 13:41:06] [PROGRESS] [=====               ] 28% |
+[2026-03-07 13:41:06] [PROGRESS] [=====               ] 28% /
+[2026-03-07 13:41:07] [PROGRESS] [=====               ] 28% -
+[2026-03-07 13:41:07] [PROGRESS] [=====               ] 28% \
+[2026-03-07 13:41:08] [PROGRESS] [=====               ] 28% |
+[2026-03-07 13:41:08] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:41:09] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:41:10] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:41:10] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:41:11] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:41:12] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:41:12] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:41:14] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:41:15] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:41:16] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:41:17] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:41:17] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:41:18] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:41:19] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:41:26] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:41:30] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:41:39] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:41:45] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:41:48] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:41:51] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:41:51] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:41:52] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:41:53] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:41:53] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:41:54] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:41:54] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:41:55] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:41:55] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:41:56] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:41:56] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:41:57] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:41:57] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:41:58] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:41:58] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:41:59] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:41:59] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:42:00] [PROGRESS] [=====               ] 29% /
+[2026-03-07 13:42:00] [PROGRESS] [=====               ] 29% -
+[2026-03-07 13:42:01] [PROGRESS] [=====               ] 29% \
+[2026-03-07 13:42:03] [PROGRESS] [=====               ] 29% |
+[2026-03-07 13:42:04] [PROGRESS] [======              ] 30% /
+[2026-03-07 13:42:05] [PROGRESS] [======              ] 30% -
+[2026-03-07 13:42:06] [PROGRESS] [======              ] 30% \
+[2026-03-07 13:42:06] [PROGRESS] [======              ] 30% |
+[2026-03-07 13:42:07] [PROGRESS] [======              ] 30% /
+[2026-03-07 13:42:07] [PROGRESS] [======              ] 30% -
+[2026-03-07 13:42:08] [PROGRESS] [======              ] 30% \
+[2026-03-07 13:42:08] [PROGRESS] [======              ] 30% |
+[2026-03-07 13:42:09] [PROGRESS] [======              ] 30% /
+[2026-03-07 13:42:09] [PROGRESS] [======              ] 30% -
+[2026-03-07 13:42:11] [PROGRESS] [======              ] 30% \
+[2026-03-07 13:42:12] [PROGRESS] [======              ] 30% |
+[2026-03-07 13:42:14] [PROGRESS] [======              ] 30% /
+[2026-03-07 13:42:15] [PROGRESS] [======              ] 30% -
+[2026-03-07 13:42:15] [PROGRESS] [======              ] 30% \
+[2026-03-07 13:42:16] [PROGRESS] [======              ] 30% |
+[2026-03-07 13:42:16] [PROGRESS] [======              ] 30% /
+[2026-03-07 13:42:17] [PROGRESS] [======              ] 30% -
+[2026-03-07 13:42:18] [PROGRESS] [======              ] 30% \
+[2026-03-07 13:42:19] [PROGRESS] [======              ] 30% |
+[2026-03-07 13:42:19] [PROGRESS] [======              ] 30% /
+[2026-03-07 13:42:20] [PROGRESS] [======              ] 30% -
+[2026-03-07 13:42:21] [PROGRESS] [======              ] 30% \
+[2026-03-07 13:42:22] [PROGRESS] [======              ] 30% |
+[2026-03-07 13:42:22] [PROGRESS] [======              ] 30% /
+[2026-03-07 13:42:23] [PROGRESS] [======              ] 30% -
+[2026-03-07 13:42:24] [PROGRESS] [======              ] 30% \
+[2026-03-07 13:42:24] [PROGRESS] [======              ] 30% |
+[2026-03-07 13:42:25] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:42:26] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:42:27] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:42:27] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:42:29] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:42:33] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:42:35] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:42:36] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:42:38] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:42:42] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:42:44] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:42:46] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:42:50] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:42:54] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:43:17] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:43:18] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:43:20] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:43:20] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:43:25] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:43:29] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:43:41] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:43:44] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:43:45] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:43:45] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:43:50] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:43:50] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:43:51] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:43:52] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:43:52] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:43:53] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:43:54] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:43:54] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:43:55] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:43:55] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:43:56] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:43:56] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:43:57] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:43:57] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:43:58] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:43:58] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:43:59] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:43:59] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:44:00] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:44:01] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:44:01] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:44:02] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:44:02] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:44:03] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:44:03] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:44:04] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:44:04] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:44:05] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:44:05] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:44:06] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:44:07] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:44:07] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:44:08] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:44:08] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:44:09] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:44:09] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:44:10] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:44:10] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:44:11] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:44:12] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:44:12] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:44:13] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:44:13] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:44:14] [PROGRESS] [======              ] 31% |
+[2026-03-07 13:44:14] [PROGRESS] [======              ] 31% /
+[2026-03-07 13:44:15] [PROGRESS] [======              ] 31% -
+[2026-03-07 13:44:16] [PROGRESS] [======              ] 31% \
+[2026-03-07 13:44:16] [PROGRESS] [======              ] 32% |
+[2026-03-07 13:44:17] [PROGRESS] [======              ] 32% /
+[2026-03-07 13:44:17] [PROGRESS] [======              ] 32% -
+[2026-03-07 13:44:18] [PROGRESS] [======              ] 32% \
+[2026-03-07 13:44:19] [PROGRESS] [======              ] 32% |
+[2026-03-07 13:44:20] [PROGRESS] [======              ] 32% /
+[2026-03-07 13:44:20] [PROGRESS] [======              ] 32% -
+[2026-03-07 13:44:21] [PROGRESS] [======              ] 32% \
+[2026-03-07 13:44:21] [PROGRESS] [======              ] 32% |
+[2026-03-07 13:44:22] [PROGRESS] [======              ] 32% /
+[2026-03-07 13:44:23] [PROGRESS] [======              ] 32% -
+[2026-03-07 13:44:23] [PROGRESS] [======              ] 32% \
+[2026-03-07 13:44:24] [PROGRESS] [======              ] 32% |
+[2026-03-07 13:44:24] [PROGRESS] [======              ] 32% /
+[2026-03-07 13:44:25] [PROGRESS] [======              ] 32% -
+[2026-03-07 13:44:25] [PROGRESS] [======              ] 32% \
+[2026-03-07 13:44:26] [PROGRESS] [======              ] 32% |
+[2026-03-07 13:44:26] [PROGRESS] [======              ] 32% /
+[2026-03-07 13:44:27] [PROGRESS] [======              ] 32% -
+[2026-03-07 13:44:27] [PROGRESS] [======              ] 32% \
+[2026-03-07 13:44:28] [PROGRESS] [======              ] 32% |
+[2026-03-07 13:44:29] [PROGRESS] [======              ] 32% /
+[2026-03-07 13:44:29] [PROGRESS] [======              ] 32% -
+[2026-03-07 13:44:30] [PROGRESS] [======              ] 32% \
+[2026-03-07 13:44:30] [PROGRESS] [======              ] 32% |
+[2026-03-07 13:44:31] [PROGRESS] [======              ] 32% /
+[2026-03-07 13:44:31] [PROGRESS] [======              ] 32% -
+[2026-03-07 13:44:32] [PROGRESS] [======              ] 32% \
+[2026-03-07 13:44:33] [PROGRESS] [======              ] 32% |
+[2026-03-07 13:44:33] [PROGRESS] [======              ] 32% /
+[2026-03-07 13:44:34] [PROGRESS] [======              ] 32% -
+[2026-03-07 13:44:35] [PROGRESS] [======              ] 32% \
+[2026-03-07 13:44:36] [PROGRESS] [======              ] 32% |
+[2026-03-07 13:44:37] [PROGRESS] [======              ] 32% /
+[2026-03-07 13:46:26] [PROGRESS] [======              ] 32% -
+[2026-03-07 13:46:26] --- End of ZAP Output ---
+[2026-03-07 13:46:26] Error: ZAP process failed. Return code: 3221225786.
+[2026-03-07 13:46:26] Cleaning up temporary ZAP directory: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_35317
+[2026-03-07 13:46:26] [!] ZAP scan failed for target: https://www.sebi.gov.in/.
+[2026-03-14 14:27:53] [*] Starting ZAP Quick Scan for https://air-improvement.vercel.app/ (User: DivyaViradiya_1)...
+[2026-03-14 14:27:53] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-14 14:27:53] Instance Config -> Port: 19885 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_19885
+[2026-03-14 14:27:53] Target: https://air-improvement.vercel.app/
+[2026-03-14 14:27:53] Report will be saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_air-improvement_vercel_app.xml
+[2026-03-14 14:27:53] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 19885 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_19885 -quickurl https://air-improvement.vercel.app/ -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_air-improvement_vercel_app.xml -quickprogress
+[2026-03-14 14:27:53] --- ZAP Output Stream Started ---
+[2026-03-14 14:27:53] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-14 14:27:53] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 19885 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_19885 -quickurl https://air-improvement.vercel.app/ -quickout D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_air-improvement_vercel_app.xml -quickprogress
+[2026-03-14 14:28:41] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-03-14 14:28:41] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-03-14 14:28:41] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-03-14 14:28:41] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-03-14 14:28:48] Accessing URL
+[2026-03-14 14:28:51] Using traditional spider
+[2026-03-14 14:28:54] [PROGRESS] [=============       ] 66% |
+[2026-03-14 14:28:54] [PROGRESS] [================    ] 83% /
+[2026-03-14 14:28:54] [PROGRESS] [====================] 100%
+[2026-03-14 14:28:56] Active scanning
+[2026-03-14 14:28:57] [PROGRESS] [                    ] 0% |
+[2026-03-14 14:28:58] [PROGRESS] [                    ] 4% /
+[2026-03-14 14:28:58] [PROGRESS] [                    ] 4% -
+[2026-03-14 14:28:59] [PROGRESS] [                    ] 4% \
+[2026-03-14 14:28:59] [PROGRESS] [                    ] 4% |
+[2026-03-14 14:29:00] [PROGRESS] [                    ] 4% /
+[2026-03-14 14:29:00] [PROGRESS] [                    ] 4% -
+[2026-03-14 14:29:01] [PROGRESS] [==                  ] 11% \
+[2026-03-14 14:29:01] [PROGRESS] [=======             ] 35% |
+[2026-03-14 14:29:02] [PROGRESS] [=======             ] 35% /
+[2026-03-14 14:29:02] [PROGRESS] [=======             ] 35% -
+[2026-03-14 14:29:03] [PROGRESS] [=======             ] 35% \
+[2026-03-14 14:29:04] [PROGRESS] [===========         ] 55% |
+[2026-03-14 14:29:04] [PROGRESS] [================    ] 81% /
+[2026-03-14 14:29:05] [PROGRESS] [================    ] 84% -
+[2026-03-14 14:29:05] [PROGRESS] [================    ] 84% \
+[2026-03-14 14:29:05] [PROGRESS] [====================] 100%
+[2026-03-14 14:29:05] Attack complete
+[2026-03-14 14:29:05] Writing results to D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_air-improvement_vercel_app.xml
+[2026-03-14 14:29:16] --- End of ZAP Output ---
+[2026-03-14 14:29:16] Scan completed successfully!
+[2026-03-14 14:29:16] Cleaning up temporary ZAP directory: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_1_19885
+[2026-03-14 14:29:17] [+] ZAP scan command finished. Parsing...
+[2026-03-14 14:29:17] Parsing ZAP report: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_air-improvement_vercel_app.xml
+[2026-03-14 14:29:24] Report parsed and enriched successfully.
+[2026-03-14 14:29:24] JSON report saved to: D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\zap_scanner\zap_scanner_air-improvement_vercel_app.json
+[2026-03-14 14:29:24] [+] JSON report saved.
+[2026-03-14 14:29:24] [*] Generating PDF report...
+[2026-03-14 14:29:39] [+] PDF generated successfully.
+[2026-03-14 14:29:39] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-03-14 14:29:39] [*] Scan, analysis, and prediction complete.

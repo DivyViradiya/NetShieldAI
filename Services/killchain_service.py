@@ -593,8 +593,9 @@ class KillChainService:
                 name = f.get("name") or f.get("type") or f.get("alert") or "Unknown Finding"
                 desc = f.get("description") or f.get("evidence") or f.get("solution") or ""
                 original_risk = f.get("risk") or f.get("severity") or "Info"
+                cwe_id = f.get("cwe_id") or f.get("cweid") or None
                 
-                prediction = tctr_engine.predict_risk(name, desc, original_risk)
+                prediction = tctr_engine.predict_risk(name, desc, cwe_id)
                 
                 # Enrich finding with SOC Dashboard Metrics
                 f["predicted_risk_score"] = prediction["score"]

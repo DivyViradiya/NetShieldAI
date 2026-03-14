@@ -1377,16 +1377,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 headerText.textContent = `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.`;
                 row.querySelector('.status-badge').innerHTML = `
                     <span class="material-symbols-outlined" style="font-size: 1rem;">analytics</span>
-                    DATASET READY. INITIATING AI REASONING...
+                    DATASET READY.
                 `;
                 row.querySelector('.action-footer').style.display = 'flex';
                 btnDownload.style.display = 'block';
-                triggerAutoAnalysis(toolName);
+                promptForAnalysis(toolName);
             }
         };
 
         eventSource.onerror = () => {
             eventSource.close();
+        };
+    }
+
+    function promptForAnalysis(tool) {
+        scrollToBottom();
+        
+        const row = document.createElement('div');
+        row.className = 'msg-row system system-action';
+        row.innerHTML = `
+            <div class="msg-bubble action-bubble" style="border-radius: 12px; border-color: rgba(59, 130, 246, 0.5) !important;">
+                <div class="action-header" style="display: flex; align-items: center; gap: 10px; color: var(--neo-blue); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em;">
+                    <span class="material-symbols-outlined" style="font-size: 1.2rem;">help</span>
+                    <span class="header-text">Scan Complete. Would you like the AI to analyze the PDF report?</span>
+                </div>
+                <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;" class="prompt-actions">
+                    <button class="action-btn btn-yes" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981;">YES, ANALYZE</button>
+                    <button class="action-btn btn-no" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444;">NO, SKIP</button>
+                </div>
+            </div>
+        `;
+        
+        ui.chatHistory.appendChild(row);
+        scrollToBottom();
+
+        const btnYes = row.querySelector('.btn-yes');
+        const btnNo = row.querySelector('.btn-no');
+
+        btnYes.onclick = () => {
+            row.remove();
+            addMessage('user', "Yes, please analyze the recent scan report.", true);
+            triggerAutoAnalysis(tool);
+        };
+
+        btnNo.onclick = () => {
+            row.remove();
+            addMessage('system', "SYSTEM_NOTIFICATION: Scan Analysis Skipped. The report is saved and can be viewed or downloaded from the module page.", false);
         };
     }
 

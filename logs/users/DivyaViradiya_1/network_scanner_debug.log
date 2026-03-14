@@ -106,3 +106,154 @@
 [11:12:56] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
 [11:37:00] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
 [11:40:15] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:00:13] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[19:07:49] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[21:00:37] [INFO] [*] Preparing AGGRESSIVE scan for target: testphp.vulnweb.com with T4...
+[21:00:37] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[21:00:37] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[21:00:37] [INFO] [+] Running AGGRESSIVE scan on 44.228.249.3 with timing -T4...
+[21:00:37] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[21:00:37] [INFO] [*] Executing: nmap -A -T4 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_99af983a.txt 44.228.249.3
+[21:01:42] [INFO] [+] AGGRESSIVE scan complete. Results synchronized.
+[21:01:42] [INFO] [*] Raw results persisted to: scan_result_aggressive.txt
+[21:01:42] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[21:01:42] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown / Not Detected", "host_status": "Online", "latency": "0ms", "insights": "Actively running AGGRESSIVE scan..."}
+[21:01:42] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "44.228.249.3", "protocol": "TCP", "scan_type": "aggressive", "open_ports": []}
+[21:01:42] [INFO] [+] Processing results for PDF report...
+[21:01:42] [INFO] [+] JSON Scan report saved
+[21:01:42] [INFO] [!] JSON report not found. Cannot generate PDF.
+[21:09:08] [INFO] [*] Preparing AGGRESSIVE scan for target: testphp.vulnweb.com with T4...
+[21:09:08] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[21:09:08] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[21:09:09] [INFO] [+] Running AGGRESSIVE scan on 44.228.249.3 with timing -T4...
+[21:09:09] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[21:09:09] [INFO] [*] Executing: nmap -A -T4 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_84a43ba6.txt 44.228.249.3
+[21:10:07] [INFO] [+] AGGRESSIVE scan complete. Results synchronized.
+[21:10:07] [INFO] [*] Raw results persisted to: scan_result_aggressive.txt
+[21:10:07] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[21:10:07] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "Actively running AGGRESSIVE scan..."}
+[21:10:07] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "testphp.vulnweb.com", "protocol": "TCP", "scan_type": "aggressive", "open_ports": []}
+[21:10:07] [INFO] [+] Processing results for PDF report...
+[21:10:07] [INFO] [+] JSON Scan report saved
+[21:10:07] [INFO] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[21:10:10] [INFO] [+] PDF report generated successfully
+[21:10:10] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[21:20:59] [INFO] [*] Preparing XMAS scan for target: testphp.vulnweb.com with T3...
+[21:20:59] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[21:20:59] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[21:20:59] [INFO] [+] Running XMAS scan on 44.228.249.3 with timing -T3...
+[21:20:59] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[21:20:59] [INFO] [*] Executing: nmap -T3 -Pn -sX -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_d86011ff.txt 44.228.249.3
+[21:24:23] [INFO] [+] XMAS scan complete. Results synchronized.
+[21:24:23] [INFO] [*] Raw results persisted to: scan_result_xmas.txt
+[21:24:23] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[21:24:23] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "Actively running XMAS scan..."}
+[21:24:23] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "testphp.vulnweb.com", "protocol": "TCP", "scan_type": "xmas", "open_ports": []}
+[21:24:23] [INFO] [+] Processing results for PDF report...
+[21:24:23] [INFO] [+] JSON Scan report saved
+[21:24:23] [INFO] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[21:24:25] [INFO] [+] PDF report generated successfully
+[21:24:25] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[21:32:52] [INFO] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[21:32:52] [INFO] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[21:32:52] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[21:32:52] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_4add3293.txt 192.168.29.48
+[21:33:00] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[21:33:00] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[21:33:03] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.2632, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1538, "tctr_priority": 1.5381, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1105, "tctr_priority": 1.1053, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}], "vulnerabilities_count": 0}
+[21:33:03] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[21:33:03] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.48", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.2632, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1538, "tctr_priority": 1.5381, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1105, "tctr_priority": 1.1053, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}]}
+[21:33:03] [INFO] [+] Processing results for PDF report...
+[21:33:04] [INFO] [+] JSON Scan report saved
+[21:33:04] [INFO] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[21:33:07] [INFO] [+] PDF report generated successfully
+[21:33:07] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[21:57:07] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[13:01:44] [INFO] [*] Preparing DEFAULT scan for target: navigateaif.com with T4...
+[13:01:44] [INFO] [*] Attempting to resolve hostname: navigateaif.com
+[13:01:45] [INFO] [+] Resolved navigateaif.com to 3.169.71.60
+[13:01:45] [INFO] [+] Running TCP (Top 1000) scan on 3.169.71.60 with timing -T4...
+[13:01:45] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[13:01:45] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_e3e54d2c.txt 3.169.71.60
+[13:03:06] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[13:03:06] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[13:03:09] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "Amazon CloudFront httpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.2632, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}], "vulnerabilities_count": 0}
+[13:03:09] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[13:03:09] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "navigateaif.com", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "Amazon CloudFront httpd", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.2632, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}]}
+[13:03:09] [INFO] [+] Processing results for PDF report...
+[13:03:09] [INFO] [+] JSON Scan report saved
+[13:03:09] [INFO] [*] Scan complete. Generating PDF report for navigateaif.com...
+[13:03:14] [INFO] [+] PDF report generated successfully
+[13:03:14] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:navigateaif.com
+[13:23:37] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[13:31:46] [INFO] [*] Preparing AGGRESSIVE scan for target: testphp.vulnweb.com with T4...
+[13:31:46] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[13:31:46] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[13:31:46] [INFO] [+] Running AGGRESSIVE scan on 44.228.249.3 with timing -T4...
+[13:31:46] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[13:31:46] [INFO] [*] Executing: nmap -A -T4 -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_3f50be7c.txt 44.228.249.3
+[13:31:57] [INFO] [+] AGGRESSIVE scan complete. Results synchronized.
+[13:31:57] [INFO] [*] Raw results persisted to: scan_result_aggressive.txt
+[13:31:57] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[13:31:57] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Scanning", "latency": "0ms", "insights": "Actively running AGGRESSIVE scan..."}
+[13:31:57] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "testphp.vulnweb.com", "protocol": "TCP", "scan_type": "aggressive", "open_ports": []}
+[13:31:57] [INFO] [+] Processing results for PDF report...
+[13:31:57] [INFO] [+] JSON Scan report saved
+[13:31:57] [INFO] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[13:32:00] [INFO] [+] PDF report generated successfully
+[13:32:00] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[13:49:59] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[13:50:19] [INFO] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T4...
+[13:50:19] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[13:50:19] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[13:50:19] [INFO] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T4...
+[13:50:19] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[13:50:19] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_7cfd588f.txt 44.228.249.3
+[13:51:23] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[13:51:23] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[13:51:26] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1468, "tctr_priority": 1.4678, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}], "vulnerabilities_count": 0}
+[13:51:26] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown / Not Detected", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[13:51:26] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "testphp.vulnweb.com", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1468, "tctr_priority": 1.4678, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}]}
+[13:51:26] [INFO] [+] Processing results for PDF report...
+[13:51:26] [INFO] [+] JSON Scan report saved
+[13:51:26] [INFO] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[13:51:31] [INFO] [+] PDF report generated successfully
+[13:51:31] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[13:54:21] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[13:56:09] [INFO] [*] Preparing DEFAULT scan for target: testphp.vulnweb.com with T4...
+[13:56:09] [INFO] [*] Attempting to resolve hostname: testphp.vulnweb.com
+[13:56:09] [INFO] [+] Resolved testphp.vulnweb.com to 44.228.249.3
+[13:56:09] [INFO] [+] Running TCP (Top 1000) scan on 44.228.249.3 with timing -T4...
+[13:56:09] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[13:56:09] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_6c139c06.txt 44.228.249.3
+[13:57:12] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[13:57:12] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[13:57:12] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1468, "tctr_priority": 1.4678, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}], "vulnerabilities_count": 0}
+[13:57:12] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown / Not Detected", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[13:57:12] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "testphp.vulnweb.com", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "nginx 1.19.0", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1468, "tctr_priority": 1.4678, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}]}
+[13:57:12] [INFO] [+] Processing results for PDF report...
+[13:57:12] [INFO] [+] JSON Scan report saved
+[13:57:12] [INFO] [*] Scan complete. Generating PDF report for testphp.vulnweb.com...
+[13:57:16] [INFO] [+] PDF report generated successfully
+[13:57:16] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:testphp.vulnweb.com
+[14:00:49] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[14:26:17] [INFO] [*] Preparing DEFAULT scan for target: 192.1668.29.48 with T4...
+[14:26:17] [INFO] [*] Attempting to resolve hostname: 192.1668.29.48
+[14:26:17] [INFO] [!] DNS Resolution failed for: 192.1668.29.48
+[14:26:17] [INFO] [!] Invalid target or resolution failed: 192.1668.29.48
+[14:26:17] [INFO] [!] Scan failed to produce a result file.
+[14:26:40] [INFO] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[14:26:40] [INFO] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[14:26:40] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[14:26:40] [INFO] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG D:\NetShield\NetShieldAI\Services\temp\nmap\scan_DivyaViradiya_1_6f49d6d3.txt 192.168.29.48
+[14:27:01] [INFO] [*] Whitelist file 'D:\NetShield\NetShieldAI\Services\results\DivyaViradiya_1\network_scanner\whitelisted_ports.json' not found. Starting with empty whitelist.
+[14:28:30] [INFO] [+] TCP (Top 1000) scan complete. Results synchronized.
+[14:28:30] [INFO] [*] Raw results persisted to: scan_result_tcp.txt
+[14:28:30] [INFO] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[14:28:30] [INFO] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown / Not Detected", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[14:28:30] [INFO] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.48", "protocol": "TCP", "scan_type": "default", "open_ports": []}
+[14:28:30] [INFO] [+] Processing results for PDF report...
+[14:28:30] [INFO] [+] JSON Scan report saved
+[14:28:30] [INFO] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[14:28:35] [INFO] [+] PDF report generated successfully
+[14:28:35] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48

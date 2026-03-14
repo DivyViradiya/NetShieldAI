@@ -350,7 +350,7 @@
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         transition: color 0.3s ease;
         position: relative;
         white-space: nowrap;
@@ -422,21 +422,36 @@
       }
       
       .profile-button-text {
-        background: none;
-        border: none;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 8px; /* rounded rectangle */
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 0.6rem;
-        padding: 0;
+        gap: 0.5rem;
+        padding: 0.35rem 0.75rem;
         color: var(--text-light);
         font-family: 'IBM Plex Sans', 'Inter', sans-serif;
-        font-weight: 600;
-        font-size: 0.85rem;
-        transition: opacity 0.2s ease;
+        font-weight: 500;
+        font-size: 0.9rem; /* Match the 0.9rem of navbar links */
+        transition: all 0.2s ease;
       }
       
-      .profile-button-text:hover { opacity: 0.8; }
+      .profile-button-text:hover, .profile-button-text.open { 
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      body.light-mode .profile-button-text {
+        background: var(--surface-primary);
+        border: 1px solid var(--border-default);
+        color: var(--text-primary);
+      }
+
+      body.light-mode .profile-button-text:hover, body.light-mode .profile-button-text.open {
+        background: var(--bg-secondary);
+        border-color: var(--accent-primary);
+      }
       
       .profile-button-text .arrow-down {
         font-size: 1rem;
@@ -454,15 +469,15 @@
         display: none;
         position: absolute;
         right: 0;
-        top: 150%; /* Pushed down slightly for better separation */
-        background-color: var(--surface-color); /* Use variable */
-        min-width: 280px; /* Wider to fit emails */
-        box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.6);
+        top: calc(100% + 10px); /* Cleanly positioned below button */
+        background-color: #121212; /* Darker, solid background matching screenshot */
+        min-width: 260px; /* Slightly narrower, more elegant */
+        box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.8);
         z-index: 1001;
-        border: 1px solid var(--border-color);
-        border-radius: 12px; /* Modern rounded corners */
+        border: 1px solid rgba(255, 255, 255, 0.08); /* Faint border */
+        border-radius: 12px;
         animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        padding: 0.5rem; /* Inner padding */
+        padding: 0.5rem;
       }
 
       body.light-mode .profile-dropdown-content {
@@ -475,11 +490,11 @@
       
       /* New: User Header (Name & Email) */
       .profile-dropdown-content .user-header {
-        padding: 0.75rem 1rem;
-        border-bottom: 1px solid var(--border-color);
+        padding: 0.75rem 0.5rem;
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: 0.1rem; /* Tighter gap */
+        /* Removed bottom border directly on header and handled by meta-data top border */
       }
 
       body.light-mode .profile-dropdown-content .user-header {
@@ -487,22 +502,23 @@
       }
 
       .profile-dropdown-content .user-header .full-name {
-        font-weight: 600;
-        color: var(--text-light);
-        font-size: 1rem;
+        font-weight: 700;
+        color: #f3f4f6; /* Brighter white */
+        font-size: 1.1rem;
       }
 
       .profile-dropdown-content .user-header .user-email {
-        font-size: 0.8rem;
-        color: var(--text-muted);
+        font-size: 0.85rem;
+        color: #9ca3af; /* A softer gray */
       }
       
       /* New: Meta Data Section (Job/Org/Audit) */
       .profile-dropdown-content .meta-data {
-        padding: 0.75rem 1rem;
-        background-color: rgba(255, 255, 255, 0.02);
+        padding: 0.75rem 0.5rem;
+        background-color: transparent; /* Remove background diff */
         margin-bottom: 0.5rem;
-        border-bottom: 1px solid var(--border-color);
+        border-top: 1px solid rgba(255, 255, 255, 0.05); /* Faint separator */
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Faint separator */
       }
 
       body.light-mode .profile-dropdown-content .meta-data {
@@ -513,10 +529,10 @@
       .meta-row {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-bottom: 0.4rem;
+        gap: 0.75rem;
+        font-size: 0.85rem;
+        color: #9ca3af;
+        margin-bottom: 0.6rem;
       }
 
       .meta-row:last-child {
@@ -524,8 +540,8 @@
       }
 
       .meta-row .material-symbols-outlined {
-        font-size: 1rem;
-        opacity: 0.6;
+        font-size: 1.1rem;
+        opacity: 0.7;
       }
 
       .meta-row.audit-text {
@@ -542,13 +558,13 @@
       .profile-dropdown-content a {
         display: flex;
         align-items: center;
-        gap: 0.75rem; /* Space between icon and text */
-        padding: 0.6rem 1rem;
-        font-size: 0.85rem;
-        color: var(--text-muted);
+        gap: 1rem; /* More breathing room for icons */
+        padding: 0.6rem 0.5rem;
+        font-size: 0.95rem; /* Larger text like screenshot */
+        color: #d1d5db; /* Softer white for unselected links */
         text-decoration: none;
         transition: all 0.2s;
-        border-radius: 6px; /* Rounded items */
+        border-radius: 8px; /* Tighter rounding */
         margin-bottom: 2px;
       }
 
@@ -558,8 +574,8 @@
       }
       
       .profile-dropdown-content a.details:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-        color: var(--text-light);
+        background-color: rgba(255, 255, 255, 0.03);
+        color: #f3f4f6;
       }
 
       body.light-mode .profile-dropdown-content a.details:hover {
@@ -568,9 +584,9 @@
       }
       
       .profile-dropdown-content a.logout-link {
-        color: #ef4444;
-        margin-top: 0.5rem;
-        border-top: 1px solid rgba(255,255,255,0.05);
+        color: #ef4444; /* Clean red */
+        margin-top: 0.2rem; /* Reduce gap before logout */
+        /* Remove top border here since meta-data handles it, or let it sit normally */
       }
 
       body.light-mode .profile-dropdown-content a.logout-link {

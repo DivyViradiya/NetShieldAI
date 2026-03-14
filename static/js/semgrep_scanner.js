@@ -362,16 +362,9 @@ document.addEventListener('DOMContentLoaded', function() {
             item.style.cssText = 'padding: 1rem; border-bottom: 1px solid var(--neo-border); cursor: pointer; transition: background 0.2s;';
             if (window.selectedFindingIndex === index) item.style.background = 'rgba(59, 130, 246, 0.1)';
 
-            // [NEW] Risk Score Rendering
-            const rawScore = f.predicted_risk_score !== undefined ? f.predicted_risk_score : 0;
-            const displayScore = (rawScore * 10).toFixed(1);
-
             item.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
                     <div style="font-size: 0.7rem; color: ${color}; font-weight: 800; text-transform: uppercase;">${severity}</div>
-                    <div style="font-size: 0.65rem; color: var(--neo-text-muted); font-family: var(--font-mono); background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">
-                        ML: <span style="color: ${rawScore > 0.5 ? '#ef4444' : 'var(--neo-text-main)'}">${displayScore}</span>
-                    </div>
                 </div>
                 <div style="font-size: 0.85rem; color: var(--neo-text-main); font-weight: 600; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${f.check_id || 'Unknown Rule'}</div>
                 <div style="font-size: 0.7rem; color: var(--neo-text-muted); font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${cleanPath}</div>
@@ -409,17 +402,10 @@ document.addEventListener('DOMContentLoaded', function() {
         var severity = f.severity || 'INFO';
         var severityColor = severity === 'ERROR' ? '#ef4444' : (severity === 'WARNING' ? '#f97316' : '#3b82f6');
 
-        // [NEW] Risk Score Rendering
-        const rawScore = f.predicted_risk_score !== undefined ? f.predicted_risk_score : 0;
-        const displayScore = (rawScore * 10).toFixed(1);
-
         elements.findingsDetailSide.innerHTML = `
             <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--neo-border); padding-bottom: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                     <div style="font-size: 0.7rem; color: ${severityColor}; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">${severity} FINDING</div>
-                    <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); background: rgba(255,255,255,0.03); border: 1px solid var(--neo-border); padding: 4px 12px; border-radius: 6px;">
-                        ML PREDICTED RISK: <span style="color: ${rawScore > 0.5 ? '#ef4444' : 'var(--neo-blue)'}; font-weight: 800; font-size: 0.9rem; margin-left: 8px;">${displayScore}</span>
-                    </div>
                 </div>
                 <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--neo-text-main); margin-bottom: 0.5rem;">${f.check_id || 'Unknown Rule'}</h2>
                 <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted); word-break: break-all;">${cleanPath || 'Unknown Path'}</div>

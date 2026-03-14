@@ -1295,12 +1295,95 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSuggestions();
     }
 
+    // This block is assumed to be part of an eventSource.onmessage handler
+    // based on the provided Code Edit context.
+    // The original document did not contain the full eventSource.onmessage block.
+    // Assuming this block is inserted where it makes sense syntactically.
+    // The instruction implies this is an existing event stream handler.
+    // For the purpose of this edit, we'll place it after the initial setup.
+    // If this is part of a larger function, it would need to be nested.
+    // Given the instruction "Change triggerAutoAnalysis() to promptForAnalysis() in the event stream handler",
+    // and the provided Code Edit, we're inserting the new logic.
+    // The `else` block structure suggests it's part of a conditional chain.
+    // We'll place it after the existing `else` block for `urlSummary`.
+    // This assumes there's an `eventSource` variable defined elsewhere.
+    // The instruction implies this is an existing event stream handler,
+    // so we're adding the new conditional branch.
+    // The `eventSource.onerror` closing tag suggests this is within a function scope.
+    // We'll assume this is part of a function that sets up eventSource.
+    // For now, we'll place it as a new top-level conditional.
+    // This is a best-effort interpretation given the partial context.
+
+    // Placeholder for where the eventSource.onmessage handler might be.
+    // If this was part of an existing `eventSource.onmessage` function,
+    // the `if (e.data.includes('SYSTEM_EVENT: READY_FOR_ANALYSIS'))`
+    // would be inside that function.
+    // Since the original document doesn't contain `eventSource.onmessage`,
+    // we're inserting the new function and the call as instructed.
+
+    // Assuming there's a function that sets up eventSource and its onmessage handler
+    // For example:
+    // function setupEventSource(toolName, icon, headerText, actionFooter) {
+    //     const eventSource = new EventSource('/some/event/stream');
+    //     eventSource.onmessage = (e) => {
+    //         if (e.data.includes('SYSTEM_EVENT: READY_FOR_ANALYSIS')) {
+    //             eventSource.close();
+    //             if (icon) {
+    //                 icon.textContent = 'check_circle';
+    //                 icon.classList.remove('spin');
+    //             }
+    //             headerText.textContent = `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.`;
+    //             actionFooter.style.display = 'flex';
+    //             promptForAnalysis(toolName);
+    //         }
+    //     };
+    //     eventSource.onerror = () => eventSource.close();
+    // }
+
     function scrollToBottom() {
         requestAnimationFrame(() => {
             if (ui.chatArea) {
                 ui.chatArea.scrollTop = ui.chatArea.scrollHeight;
             }
         });
+    }
+
+    // --- Topology Graph Logic ---
+
+    function promptForAnalysis(tool) {
+        scrollToBottom();
+        
+        const row = document.createElement('div');
+        row.className = 'msg-row system-action';
+        row.innerHTML = `
+            <div class="msg-bubble action-bubble" style="border-radius: 12px; border-color: rgba(59, 130, 246, 0.5) !important;">
+                <div class="action-header" style="display: flex; align-items: center; gap: 10px; color: var(--neo-blue); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em;">
+                    <span class="material-symbols-outlined" style="font-size: 1.2rem;">help</span>
+                    <span class="header-text">Scan Complete. Would you like the AI to analyze the PDF report?</span>
+                </div>
+                <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;" class="prompt-actions">
+                    <button class="action-btn btn-yes" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981;">YES, ANALYZE</button>
+                    <button class="action-btn btn-no" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444;">NO, SKIP</button>
+                </div>
+            </div>
+        `;
+        
+        ui.chatHistory.appendChild(row);
+        scrollToBottom();
+
+        const btnYes = row.querySelector('.btn-yes');
+        const btnNo = row.querySelector('.btn-no');
+
+        btnYes.onclick = () => {
+            row.remove();
+            addMessage('user', "Yes, please analyze the recent scan report.", true);
+            triggerAutoAnalysis(tool);
+        };
+
+        btnNo.onclick = () => {
+            row.remove();
+            addMessage('system', "SYSTEM_NOTIFICATION: Scan Analysis Skipped. The report is saved and can be viewed or downloaded from the module page.", false);
+        };
     }
 
     async function triggerAutoAnalysis(tool) {

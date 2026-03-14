@@ -120,6 +120,29 @@ document.addEventListener('DOMContentLoaded', () => {
         cleanedMessage = cleanedMessage.replace(/(\[[A-Z]+\])\s*\1/g, '$1');
         cleanedMessage = cleanedMessage.trim();
 
+        // --- NEW FILTERING RULES ---
+        // Hide spammy and non-essential ZAP Java internal logs
+        if (
+            cleanedMessage.includes('Starting ZAP Engine...') ||
+            cleanedMessage.includes('org.parosproxy.paros.') ||
+            cleanedMessage.includes('org.zaproxy.addon.') ||
+            cleanedMessage.includes('org.zaproxy.zap.extension.') ||
+            cleanedMessage.includes('WARNING: sun.misc.Unsafe') ||
+            cleanedMessage.includes('WARNING: Please consider reporting this to the maintainers of class') ||
+            cleanedMessage.includes('java.sql.SQLException') ||
+            cleanedMessage.includes('at java.base') ||
+            cleanedMessage.includes('Caused by:') ||
+            cleanedMessage.includes('Host info:') ||
+            cleanedMessage.includes('Build info:') ||
+            cleanedMessage.includes('System info:') ||
+            cleanedMessage.includes('Driver info:') ||
+            cleanedMessage.includes('Command: [null,') ||
+            cleanedMessage.includes('file:[FILE_PATH]') || // Common in Java warnings printed
+            (cleanedMessage.startsWith('...') && cleanedMessage.includes('more'))
+        ) {
+            return;
+        }
+
         if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
 
         const isProgressBar = cleanedMessage.startsWith('[PROGRESS]') || (cleanedMessage.startsWith('[') && cleanedMessage.includes('%'));

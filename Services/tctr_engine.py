@@ -14,11 +14,13 @@ logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parent
 MODELS_DIR = BASE_DIR.parent / "models" / "TCTR"
 LGB_MODEL_PATH = MODELS_DIR / "lgb_ranker.pkl"
+CWE_MAPPING_PATH = BASE_DIR.parent / "Data" / "cwe_profiles_mapping.json"
 
 class TCTREngine:
     _instance = None
     _ranker = None
     _sentence_model = None
+    _cwe_profiles = {}
     
     # CWE to CVSS Base Score Mapping (Industry Averages)
     CWE_MAP = {
@@ -248,6 +250,40 @@ class TCTREngine:
         'NoSQL Injection - MongoDB (Time Based)': 'CWE-943',
         'Retrieved from Cache': 'CWE-524',
     }
+    
+    # OWASP Top 10 (2017 & 2021) and SANS Top 25 (2023) mapped to CWEs
+    OWASP_TOP_10_CWES = {
+        "11", "16", "22", "59", "78", "79", "89", "94", "200", 
+        "285", "287", "306", "310", "311", "319", "352", "434", 
+        "502", "522", "601", "611", "798", "862", "863", "918", "943"
+    }
+    
+    SANS_TOP_25_CWES = {
+        "787", "79", "89", "20", "125", "78", "416", "22", "352", "434", 
+        "436", "476", "502", "190", "287", "273", "862", "276", "200", 
+        "522", "732", "611", "918", "798", "295"
+    }
+
+    # Used for Zero-Shot NLP Classification of Unmapped Findings
+    COMMON_CWES_TEXT = {
+        "89": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+        "78": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+        "79": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+        "22": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+        "200": "Exposure of Sensitive Information to an Unauthorized Actor",
+        "319": "Cleartext Transmission of Sensitive Information",
+        "16": "Configuration",
+        "284": "Improper Access Control",
+        "693": "Protection Mechanism Failure",
+        "310": "Cryptographic Issues",
+        "94": "Improper Control of Generation of Code ('Code Injection')",
+        "287": "Improper Authentication",
+        "352": "Cross-Site Request Forgery (CSRF)",
+        "434": "Unrestricted Upload of File with Dangerous Type",
+        "749": "Exposed Dangerous Method or Function",
+        "119": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+    }
+    _cwe_text_embeddings = None
 
     def __new__(cls):
         if cls._instance is None:
@@ -269,10 +305,24 @@ class TCTREngine:
                 try:
                     from sentence_transformers import SentenceTransformer
                     cls._sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+                    
+                    # Precompute embeddings for zero-shot CWE matching
+                    texts = list(cls.COMMON_CWES_TEXT.values())
+                    cls._cwe_text_embeddings = cls._sentence_model.encode(texts, convert_to_numpy=True)
                 except ImportError:
                     logger.warning("sentence_transformers not installed. NLP features disabled.")
             except Exception as e:
                 logger.error(f"Failed to load TCTR components: {e}")
+                
+            try:
+                if CWE_MAPPING_PATH.exists():
+                    with open(CWE_MAPPING_PATH, 'r') as f:
+                        cls._cwe_profiles = json.load(f)
+                        logger.info(f"Loaded {len(cls._cwe_profiles)} CWE profiles mapping.")
+                else:
+                    logger.warning(f"CWE profiles mapping not found at {CWE_MAPPING_PATH}")
+            except Exception as e:
+                logger.error(f"Failed to load CWE profiles: {e}")
 
     def get_base_score(self, cwe_id):
         """Returns the base CVSS score for a given CWE ID."""
@@ -290,14 +340,41 @@ class TCTREngine:
         desc_length = len(desc)
         num_keywords = len(name.split()) + min(len([w for w in desc.split() if len(w) > 5]), 15)
         
-        num_platforms = 1
-        num_affected_products = 1
+        # Default fallback values (equivalent to the old static mock values)
+        num_platforms = 1.0
+        num_affected_products = 1.0
         days_since_pub = 2.0 
         days_to_modify = 1.0 
-        
-        # Velocity/Acceleration derived from severity proxy (0-10)
         velocity = base_score / days_since_pub
         acceleration = velocity / days_since_pub
+        
+        # Dynamic extraction from cwe_profiles_mapping.json
+        clean_cwe = str(cwe_id).upper().replace("CWE-", "") if cwe_id else None
+        profile = self._cwe_profiles.get(clean_cwe)
+        
+        if profile:
+            # Map 'av_weight' -> num_platforms
+            num_platforms = profile.get("av_weight", 1.0)
+            
+            # Map 'pr_weight' -> num_affected_products
+            num_affected_products = profile.get("pr_weight", 1.0)
+            
+            # Map scaled cve_count -> days_since_pub_at_horizon
+            # We use log1p to significantly scale down large CVE counts (e.g. 15,000 -> ~9.6) to keep vectors well-behaved
+            cve_c = profile.get("cve_count", 0)
+            # Clip between [1.0, 10.0] equivalent proxy values
+            days_since_pub = max(1.0, np.log1p(cve_c)) 
+            
+            # Map base_score_max -> days_to_last_modify
+            days_to_modify = profile.get("base_score_max", 1.0)
+            
+            # Use actual risk score for velocity calculation
+            actual_risk = profile.get("actual_risk_score", base_score)
+            if actual_risk == 0: actual_risk = base_score
+            
+            velocity = actual_risk / days_since_pub
+            acceleration = velocity / days_since_pub
+
         semantic_centrality = 0.0
         
         features_raw = [
@@ -317,11 +394,58 @@ class TCTREngine:
         except ImportError:
             return np.array([features_raw])
 
+    def _infer_cwe(self, name, description):
+        """Dynamic rule-based and NLP Zero-Shot inference for unknown findings."""
+        name_lower = str(name).lower()
+        desc_lower = str(description).lower()
+        
+        # 1. Rule-Based Fallback for Monitoring Tools (Nmap / TShark)
+        if "service:" in name_lower and "tcp" in name_lower or "udp" in name_lower or "port" in name_lower:
+            # It's an Nmap open port finding (format typically like "Service: ssh (22/TCP)")
+            if any(p in name_lower for p in ["(21/", "(23/", "(80/"]): return "319" # FTP/Telnet/HTTP = Cleartext
+            if any(p in name_lower for p in ["(22/", "(3389/", "(445/"]): return "16" # SSH/RDP/SMB = Config/Exposed
+            if any(p in name_lower for p in ["(3306/", "(5432/", "(27017/", "(1433/"]): return "200" # DBs = Exposure
+            return None # Fallback
+            
+        if "anomaly" in name_lower or "packet" in name_lower or "scan" in name_lower:
+            if "port scan" in name_lower: return "200"
+            if "fragmentation" in name_lower: return "693"
+            if "web" in name_lower: return "319"
+            
+        # 2. NLP Zero-Shot Inference
+        if self._sentence_model and self._cwe_text_embeddings is not None:
+            try:
+                query_text = f"{name} {description}"
+                query_embedding = self._sentence_model.encode([query_text], convert_to_numpy=True)
+                
+                # Cosine similarity using NumPy
+                norm_q = np.linalg.norm(query_embedding[0])
+                norms_cwe = np.linalg.norm(self._cwe_text_embeddings, axis=1)
+                
+                if norm_q > 0:
+                    similarities = np.dot(self._cwe_text_embeddings, query_embedding[0]) / (norms_cwe * norm_q)
+                    best_match_idx = np.argmax(similarities)
+                    best_score = similarities[best_match_idx]
+                    
+                    if best_score > 0.3: # Minimum similarity threshold
+                        matched_cwe = list(self.COMMON_CWES_TEXT.keys())[best_match_idx]
+                        logger.info(f"Zero-Shot NLP matched '{name}' to CWE-{matched_cwe} with score {best_score:.2f}")
+                        return matched_cwe
+            except Exception as e:
+                logger.error(f"NLP CWE Inference failed: {e}")
+                
+        return None
+
     def predict_risk(self, name, description, cwe_id=None):
         """Returns a rich prediction object for SOC Dashboard."""
         # Fallback to internal mapping if cwe_id is missing or generic
-        if not cwe_id or cwe_id == "-1" or str(cwe_id) == "0":
-            cwe_id = self.VULN_TO_CWE_MAP.get(name) or cwe_id
+        if not cwe_id or cwe_id == "-1" or str(cwe_id) == "0" or str(cwe_id).lower() == "none":
+            cwe_id = self.VULN_TO_CWE_MAP.get(name)
+
+        if not cwe_id or cwe_id == "-1" or str(cwe_id) == "0" or str(cwe_id).lower() == "none":
+            inferred = self._infer_cwe(name, description)
+            if inferred:
+                cwe_id = inferred
 
         features = self.extract_features(name, description, cwe_id)
         base_score = self.get_base_score(cwe_id)
@@ -330,6 +454,14 @@ class TCTREngine:
         name_lower = name.lower()
         if "reflected" in name_lower: heuristic_multiplier *= 0.85
         if "banner" in name_lower or "version" in name_lower: heuristic_multiplier *= 0.7
+        
+        # Apply Top Threat Penalties
+        clean_cwe = str(cwe_id).upper().replace("CWE-", "") if cwe_id else None
+        is_owasp = clean_cwe in self.OWASP_TOP_10_CWES
+        is_sans = clean_cwe in self.SANS_TOP_25_CWES
+        
+        if is_owasp or is_sans:
+            heuristic_multiplier *= 1.25
         
         tctr_priority = 0.0
         try:
@@ -341,6 +473,7 @@ class TCTREngine:
                 # To a 0.1 - 1.0 risk score
                 risk_score = np.clip(tctr_priority / 10.0, 0.1, 1.0)
                 final_score = round(float(risk_score * heuristic_multiplier), 4)
+                tctr_priority = final_score * 10.0
             else:
                 final_score = round((base_score / 10.0) * heuristic_multiplier, 4)
                 tctr_priority = final_score * 10.0
@@ -348,6 +481,10 @@ class TCTREngine:
             logger.error(f"Inference failed for {name}: {e}")
             final_score = round((base_score / 10.0) * heuristic_multiplier, 4)
             tctr_priority = final_score * 10.0
+
+        # Cap scores to maximum values
+        final_score = min(final_score, 1.0)
+        tctr_priority = min(tctr_priority, 10.0)
 
         # Determine Level (P0-P3)
         if final_score >= 0.85:
@@ -361,6 +498,13 @@ class TCTREngine:
 
         # Generate Justification
         reasons = []
+        if is_owasp and is_sans:
+            reasons.append("OWASP Top 10 & SANS Top 25 Threat")
+        elif is_owasp:
+            reasons.append("OWASP Top 10 Threat")
+        elif is_sans:
+            reasons.append("SANS Top 25 Threat")
+
         if base_score >= 9.0: reasons.append("Critical base impact")
         if "injection" in name_lower or "rce" in name_lower: reasons.append("Highly exploitable vulnerability class")
         if "disclosure" in name_lower or "exposure" in name_lower: reasons.append("Data leak potential")
