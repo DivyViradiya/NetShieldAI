@@ -5832,3 +5832,261 @@
 [2026-03-14 14:31:51] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
 [2026-03-14 14:31:59] [INFO    ] [run] [>] GET /admin from 127.0.0.1
 [2026-03-14 14:31:59] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-14 18:20:25] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-14 18:20:25] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-14 18:25:55] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-14 18:25:55] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-14 18:26:12] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-14 18:26:19] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-14 18:26:19] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-14 18:26:19] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-14 18:26:19] [INFO    ] [run] [+] Database schema verified.
+[2026-03-14 18:26:19] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-14 18:26:28] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-14 18:26:28] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-14 18:26:28] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-14 18:26:29] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-14 18:26:29] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-14 18:26:33] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-14 18:26:33] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-14 18:26:39] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-14 18:26:39] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-14 18:26:45] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-14 18:26:45] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-14 18:26:45] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: DivyaViradiya
+[2026-03-14 18:27:07] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-14 18:27:07] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-14 18:27:07] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-14 18:27:23] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-14 18:27:23] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-14 18:27:47] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-14 18:27:52] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-14 18:27:52] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-14 18:27:52] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-14 18:27:52] [INFO    ] [run] [+] Database schema verified.
+[2026-03-14 18:27:52] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-14 18:27:57] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-14 18:27:57] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-14 18:27:57] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-14 18:28:14] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-14 18:29:05] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-14 18:29:05] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-14 18:29:05] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-14 18:29:06] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-14 18:29:06] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-14 18:29:06] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-14 18:29:11] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-14 18:29:12] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-14 18:29:12] [ERROR   ] [compliance_engine] Error saving compliance report: [Errno 2] No such file or directory: 'D:\\NetShield\\NetShieldAI\\results\\DivyaViradiya_1\\compliance_report.json'
+[2026-03-14 18:29:12] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-14 18:29:12] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-14 18:29:13] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-14 18:29:15] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-14 18:29:17] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-14 18:29:17] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-14 18:31:32] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-14 18:31:32] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-14 18:31:32] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-14 18:31:32] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-14 18:31:32] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-14 18:40:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-14 18:40:50] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-14 18:40:50] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:23:46] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:23:46] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:25:37] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 10:25:43] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:25:43] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:25:43] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-15 10:25:43] [INFO    ] [run] [+] Database schema verified.
+[2026-03-15 10:25:43] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-15 10:25:52] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:25:53] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:25:53] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:26:33] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 10:26:33] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 10:26:38] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 10:26:38] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 10:26:40] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 10:26:40] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 10:26:51] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 10:26:51] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 10:26:51] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-15 10:26:52] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': False
+[2026-03-15 10:26:52] [WARNING ] [auth_bp] [!] Login failed (Incorrect Password) for username: DivyaViradiya (Attempt 1)
+[2026-03-15 10:26:59] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 10:26:59] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 10:26:59] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-15 10:26:59] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-15 10:26:59] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-15 10:26:59] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: DivyaViradiya)
+[2026-03-15 10:27:09] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 10:27:09] [INFO    ] [run] [>] GET /favicon.ico from 127.0.0.1
+[2026-03-15 10:27:17] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 10:27:54] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 10:28:24] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:28:25] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:28:25] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:28:43] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 10:28:47] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 10:28:47] [INFO    ] [auth_bp] [*] User Logout: DivyaViradiya
+[2026-03-15 10:28:47] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 10:28:47] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 10:29:06] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 10:29:24] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:30:58] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:30:59] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:30:59] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:31:04] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:31:12] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:31:31] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 10:31:41] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:31:42] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:31:42] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-15 10:31:42] [INFO    ] [run] [+] Database schema verified.
+[2026-03-15 10:31:42] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-15 10:31:51] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:31:51] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:31:51] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:31:52] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 10:31:58] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:32:33] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 10:33:33] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 10:33:47] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:33:47] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:34:34] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 10:34:41] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:34:41] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:34:41] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-15 10:34:41] [INFO    ] [run] [+] Database schema verified.
+[2026-03-15 10:34:41] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-15 10:34:47] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:34:47] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:34:47] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:35:04] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 10:35:07] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 10:35:15] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-15 10:35:15] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-15 10:35:57] [INFO    ] [run] [>] POST /register from 127.0.0.1
+[2026-03-15 10:35:57] [INFO    ] [auth_bp] [+] New User Registration Attempt: DivyaViradiya
+[2026-03-15 10:35:57] [INFO    ] [auth_bp] [+] User DivyaViradiya registered successfully.
+[2026-03-15 10:35:57] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 10:35:57] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 10:36:07] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 10:36:13] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:36:13] [INFO    ] [auth_bp] [*] SMTP email trigger to: divya.viradiya.7@gmail.com
+[2026-03-15 10:36:13] [INFO    ] [auth_bp] [*] Config server: smtp.gmail.com
+[2026-03-15 10:36:13] [INFO    ] [auth_bp] [*] Config port: 587
+[2026-03-15 10:36:13] [INFO    ] [auth_bp] [*] Config sender: admin.netshieldai@gmail.com
+[2026-03-15 10:37:03] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 10:37:40] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:37:40] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:37:40] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:38:23] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 10:38:26] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 10:38:31] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:38:36] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:38:36] [INFO    ] [auth_bp] [*] SMTP email trigger to: divya.viradiya.7@gmail.com
+[2026-03-15 10:38:36] [INFO    ] [auth_bp] [*] Config server: smtp.gmail.com
+[2026-03-15 10:38:36] [INFO    ] [auth_bp] [*] Config port: 587
+[2026-03-15 10:38:36] [INFO    ] [auth_bp] [*] Config sender: admin.netshieldai@gmail.com
+[2026-03-15 10:42:21] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 10:42:27] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:42:27] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:42:27] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-15 10:42:27] [INFO    ] [run] [+] Database schema verified.
+[2026-03-15 10:42:27] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-15 10:42:32] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:42:32] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:42:32] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:42:43] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 10:42:43] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 10:42:45] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 10:42:45] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 10:42:49] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 10:42:49] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 10:42:49] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-15 10:42:50] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-15 10:42:50] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 10:42:50] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 10:42:50] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-15 10:42:50] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-15 10:42:50] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-15 10:42:50] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-15 10:42:50] [ERROR   ] [compliance_engine] Error saving compliance report: [Errno 2] No such file or directory: 'D:\\NetShield\\NetShieldAI\\results\\DivyaViradiya_2\\compliance_report.json'
+[2026-03-15 10:42:50] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-15 10:42:53] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 10:42:53] [INFO    ] [auth_bp] [*] User Logout: DivyaViradiya
+[2026-03-15 10:42:53] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 10:42:53] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 10:42:55] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 10:43:10] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 10:43:25] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:43:25] [INFO    ] [auth_bp] [*] SMTP email trigger to: divya.viradiya.7@gmail.com
+[2026-03-15 10:43:25] [INFO    ] [auth_bp] [*] Config server: smtp.gmail.com
+[2026-03-15 10:43:25] [INFO    ] [auth_bp] [*] Config port: 587
+[2026-03-15 10:43:25] [INFO    ] [auth_bp] [*] Config sender: admin.netshieldai@gmail.com
+[2026-03-15 10:43:29] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 10:43:29] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 10:43:45] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:43:46] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:43:46] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:43:59] [INFO    ] [run] [>] GET /reset_password/eyJ1c2VyX2lkIjoyfQ.abY_9Q.B-My83P3Li2o0Xr59Myk1dU_iKo from 127.0.0.1
+[2026-03-15 10:44:10] [INFO    ] [run] [>] POST /reset_password/eyJ1c2VyX2lkIjoyfQ.abY_9Q.B-My83P3Li2o0Xr59Myk1dU_iKo from 127.0.0.1
+[2026-03-15 10:44:23] [INFO    ] [run] [>] POST /reset_password/eyJ1c2VyX2lkIjoyfQ.abY_9Q.B-My83P3Li2o0Xr59Myk1dU_iKo from 127.0.0.1
+[2026-03-15 10:44:23] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 10:44:23] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 10:44:31] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 10:44:31] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 10:44:31] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-15 10:44:32] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-15 10:44:32] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 10:44:32] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 10:44:32] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-15 10:44:32] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-15 10:44:32] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-15 10:44:32] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-15 10:44:32] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-15 10:44:33] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 10:49:27] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:49:27] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:49:27] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:49:51] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 10:52:47] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:52:47] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:52:47] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:53:15] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 10:53:21] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 10:53:25] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:53:31] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 10:53:31] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 10:56:26] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 10:56:32] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 10:56:37] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 10:56:37] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 10:58:30] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 10:58:30] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 10:58:30] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 10:59:00] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 11:02:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 11:02:34] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 11:02:34] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 11:02:59] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 11:15:03] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 11:15:03] [INFO    ] [run] [+] 11 Modules Loaded Successfully.

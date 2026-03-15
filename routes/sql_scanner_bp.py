@@ -32,7 +32,7 @@ sql_scanner_bp = Blueprint('sql_scanner_bp', __name__)
 # --- PHASE 3: User-Specific Directory Helper ---
 def get_user_results_dir():
     """
-    Constructs the path: Services/results/<username_id>/sql_scanner
+    Constructs the path: results/<username_id>/sql_scanner
     """
     if not current_user.is_authenticated:
         return None
@@ -41,7 +41,7 @@ def get_user_results_dir():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'Services', 'results', user_identifier, 'sql_scanner')
+    user_dir = os.path.join(base_dir, 'results', user_identifier, 'sql_scanner')
     
     # Create directory if it doesn't exist
     os.makedirs(user_dir, exist_ok=True)

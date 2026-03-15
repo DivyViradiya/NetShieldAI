@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).parent.parent
 SSLSCAN_EXECUTABLE = Path(r"C:\Program Files\sslscan\sslscan.exe")
 
 # Define default paths for storing results (Fallback)
-DEFAULT_RESULTS_DIR = BASE_DIR / "Services" / "results" / "ssl_scanner"
+DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "ssl_scanner"
 
 # Logs (Shared)
 LOG_FILE = BASE_DIR / "logs" / "ssl_agent_log.txt"

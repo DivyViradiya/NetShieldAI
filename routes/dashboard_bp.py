@@ -22,7 +22,7 @@ dashboard_bp = Blueprint('dashboard_bp', __name__)
 
 def get_user_results_dir():
     """
-    Constructs the path: Services/results/<username_id>
+    Constructs the path: results/<username_id>
     """
     if not current_user.is_authenticated:
         return None
@@ -31,7 +31,7 @@ def get_user_results_dir():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'Services', 'results', user_identifier)
+    user_dir = os.path.join(base_dir, 'results', user_identifier)
     
     return user_dir
 
@@ -78,7 +78,7 @@ def get_all_reports(user_dir):
     }
 
     # Walk through the directory
-    # Structure: Services/results/<user>/<scanner_folder>/.../*.pdf
+    # Structure: results/<user>/<scanner_folder>/.../*.pdf
     # Killchain has an extra 'reports' subfolder: .../killchain/reports/*.pdf
     
     for root, dirs, files in os.walk(user_dir):

@@ -126,3 +126,43 @@ class ChangePasswordForm(FlaskForm):
     ])
     
     submit_security = SubmitField('Update Password')
+
+
+class ForgotPasswordForm(FlaskForm):
+    """
+    Form to request a password reset link.
+    """
+    email = StringField('Email Address', validators=[
+        DataRequired(),
+        Email(message="Please enter a valid email address.")
+    ])
+    submit = SubmitField('Request Reset')
+
+
+class ResetPasswordForm(FlaskForm):
+    """
+    Form to enter a new password.
+    """
+    password = PasswordField('New Password', validators=[
+        DataRequired(),
+        Length(min=8, message="Password must be at least 8 characters long."),
+        Regexp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$',
+               message="Password must contain at least 1 letter, 1 number, and 1 special character.")
+    ])
+    
+    confirm_password = PasswordField('Confirm New Password', validators=[
+        DataRequired(),
+        EqualTo('password', message='Passwords must match.')
+    ])
+    
+    submit = SubmitField('Update Password')
+
+class VerifyOTPForm(FlaskForm):
+    """
+    Form to verify the 6-digit OTP code sent via email.
+    """
+    code = StringField('Verification Code', validators=[
+        DataRequired(),
+        Length(min=6, max=6, message="Code must be exactly 6 digits.")
+    ])
+    submit = SubmitField('Verify Code')

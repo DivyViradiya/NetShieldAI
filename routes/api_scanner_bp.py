@@ -27,7 +27,7 @@ def get_user_results_dir():
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     # NOTE: distinct folder 'api_scanner'
-    user_dir = os.path.join(base_dir, 'Services', 'results', user_identifier, 'api_scanner')
+    user_dir = os.path.join(base_dir, 'results', user_identifier, 'api_scanner')
     
     os.makedirs(user_dir, exist_ok=True)
         

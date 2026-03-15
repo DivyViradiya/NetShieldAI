@@ -58,6 +58,32 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def get_reset_token(self, expires_sec=1800):
+        from flask import current_app
+        from itsdangerous import URLSafeTimedSerializer as Serializer
+        s = Serializer(current_app.config['SECRET_KEY'])
+        hash_fragment = self.password_hash[-10:] if self.password_hash else ''
+        return s.dumps({'user_id': self.id, 'p_hash': hash_fragment})
+
+    @staticmethod
+    def verify_reset_token(token):
+        from flask import current_app
+        from itsdangerous import URLSafeTimedSerializer as Serializer
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token, max_age=1800)
+            user_id = data['user_id']
+            p_hash = data.get('p_hash', '')
+        except:
+            return None
+        
+        user = db.session.get(User, user_id)
+        if user:
+            current_hash = user.password_hash[-10:] if user.password_hash else ''
+            if current_hash != p_hash:
+                return None
+        return user
+
     def update_login_stats(self, ip_address):
         """Helper to update audit fields on successful login."""
         self.last_login_at = datetime.utcnow()
@@ -109,3 +135,16 @@ class ScanLog(db.Model):
 
     def __repr__(self):
         return f"<ScanLog {self.tool_name} on {self.target} - {self.status}>"
+
+class PasswordResetOTP(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    code = db.Column(db.String(6), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    attempts = db.Column(db.Integer, default=0) # Track invalid guesses for rate limiting
+
+    user = db.relationship('User', backref=db.backref('otp_resets', lazy=True))
+
+    def __repr__(self):
+        return f"<PasswordResetOTP for User {self.user_id} - Code {self.code}>"

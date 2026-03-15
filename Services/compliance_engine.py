@@ -320,6 +320,7 @@ class ComplianceEngine:
         """Saves the generated compliance report to disk."""
         if not self.base_dir:
             return
+        os.makedirs(self.base_dir, exist_ok=True)
         output_path = os.path.join(self.base_dir, "compliance_report.json")
         try:
             with open(output_path, 'w', encoding='utf-8') as f:

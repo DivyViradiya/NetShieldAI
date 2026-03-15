@@ -141,7 +141,7 @@ This section illustrates the lifecycle of a standard user interaction with NetSh
 
 ### 1. User Onboarding & Session
 *   **Entry:** Users register or login via the secure `auth_bp` routes.
-*   **Isolation:** Upon login, a unique composite identifier (`username_id`) is generated. This ensures that all scan results, logs, and generated PDFs are stored in a private directory (`Services/results/<user_id>/`), preventing data leakage between users.
+*   **Isolation:** Upon login, a unique composite identifier (`username_id`) is generated. This ensures that all scan results, logs, and generated PDFs are stored in a private directory (`results/<user_id>/`), preventing data leakage between users.
 
 ### 2. The Scanning Lifecycle
 When a user initiates a scan (e.g., Nmap or ZAP) from the "Tools Hub":
@@ -229,8 +229,8 @@ NetShieldAI/
 ├── models/             # Pre-trained ML models for vulnerability ranking
 ├── notebooks/          # Data analysis and model training notebooks
 ├── routes/             # Flask Blueprints for different modules
+├── results/            # User-specific scan results and PDFs
 ├── Services/           # Core scanning and analysis logic
-│   ├── results/        # User-specific scan results and PDFs
 │   └── PDF_templates/  # HTML templates for PDF reports
 ├── static/             # CSS, JS, and image assets
 ├── templates/          # Jinja2 HTML templates for the web UI

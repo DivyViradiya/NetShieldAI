@@ -16,7 +16,7 @@ from .tctr_engine import tctr_engine
 
 # --- Configuration ---
 BASE_DIR = Path(__file__).parent.parent
-DEFAULT_RESULTS_DIR = BASE_DIR / "Services" / "results" / "semgrep_scanner"
+DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "semgrep_scanner"
 LOG_DIR = BASE_DIR / "logs"
 TEMP_DIR = BASE_DIR / "Services" / "temp" / "semgrep"
 

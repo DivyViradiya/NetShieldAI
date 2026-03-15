@@ -29,7 +29,7 @@ MAX_UPLOAD_SIZE = 1024 * 1024 * 1024  # 1 GB limit
 # --- User-Specific Directory Helper ---
 def get_user_results_dir():
     """
-    Constructs the path: Services/results/<username_id>/semgrep_scanner
+    Constructs the path: results/<username_id>/semgrep_scanner
     """
     if not current_user.is_authenticated:
         return None
@@ -38,7 +38,7 @@ def get_user_results_dir():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'Services', 'results', user_identifier, 'semgrep_scanner')
+    user_dir = os.path.join(base_dir, 'results', user_identifier, 'semgrep_scanner')
     
     os.makedirs(user_dir, exist_ok=True)
         

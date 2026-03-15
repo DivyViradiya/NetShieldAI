@@ -26,7 +26,7 @@ ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
-DEFAULT_RESULTS_DIR = os.path.join(BASE_DIR, "results", "api_scanner")
+DEFAULT_RESULTS_DIR = os.path.join(PROJECT_ROOT, "results", "api_scanner")
 
 LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
 TEMP_DIR = os.path.join(BASE_DIR, "temp", "api_scanner")

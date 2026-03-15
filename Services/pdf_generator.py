@@ -60,6 +60,12 @@ PROJECT_ROOT = os.path.dirname(BASE_DIR)
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'PDF_templates')
 CSS_FILE_PATH = os.path.join(PROJECT_ROOT, 'static', 'css', 'PDF_style', 'report_style.css')
 
+# [SECURITY] Shared Jinja2 Environment with autoescape enabled
+jinja_env = Environment(
+    loader=FileSystemLoader(TEMPLATE_DIR),
+    autoescape=True  # CRITICAL: Prevent SSTI/XSS
+)
+
 # --- Template File Names ---
 ZAP_TEMPLATE_FILE = "zap_report_template.html"
 NMAP_TEMPLATE_FILE = "nmap_report_template.html"
@@ -137,8 +143,7 @@ def create_nmap_report_pdf(source_data, pdf_path):
 
     # 5. Render using Jinja2
     try:
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
-        template = env.get_template(NMAP_TEMPLATE_FILE)
+        template = jinja_env.get_template(NMAP_TEMPLATE_FILE)
         
         # --- FIX IS HERE ---
         # We removed 'has_vulns=has_vulns' because it is already in **template_data
@@ -197,10 +202,8 @@ def create_zap_report_pdf(source_data, pdf_path):
     }
 
     css = CSS(filename=CSS_FILE_PATH) if os.path.exists(CSS_FILE_PATH) else None
-    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
-    
     try:
-        template = env.get_template(ZAP_TEMPLATE_FILE)
+        template = jinja_env.get_template(ZAP_TEMPLATE_FILE)
         # FIX: Pass as data=template_data
         rendered_html = template.render(data=template_data)
     except Exception as e:
@@ -336,9 +339,8 @@ def create_ssl_report_pdf(source_data, pdf_path):
     }
 
     # 7. Render HTML
-    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     try:
-        template = env.get_template(SSL_TEMPLATE_FILE)
+        template = jinja_env.get_template(SSL_TEMPLATE_FILE)
         rendered_html = template.render(data=template_data)
     except Exception as e:
         log(f"[!] Template Rendering Error: {e}")
@@ -470,8 +472,7 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path):
     }
 
     try:
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
-        template = env.get_template(SNIFFER_TEMPLATE_FILE)
+        template = jinja_env.get_template(SNIFFER_TEMPLATE_FILE)
         rendered_html = template.render(data=template_data)
         
         base_url = pathlib.Path(PROJECT_ROOT).as_uri()
@@ -528,11 +529,11 @@ def create_killchain_report_pdf(source_data, pdf_path):
         severity_counts[normalized_severity] += 1
         grouped_findings[normalized_severity].append(finding)
 
-    stats = {sev: severity_counts[sev] for sev in ["Critical", "High", "Medium", "Low", "Info"]}
+    stats = {sev: severity_counts.get(sev, 0) for sev in ["Critical", "High", "Medium", "Low", "Info"]}
     stats["Total"] = sum(stats.values())
 
     # 3. Technology Mapping (from results["tech"])
-    tech_node = data.get("tech", {})
+    tech_node = data.get("tech", {}) if isinstance(data, dict) else {}
     
     # 4. Comprehensive Template Context
     logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
@@ -542,18 +543,18 @@ def create_killchain_report_pdf(source_data, pdf_path):
         "logo_url": pathlib.Path(logo_path).as_uri(),
         "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
         # --- Metadata ---
-        "target": data.get("target", "Unknown Target"),
-        "target_ip": data.get("target_ip", "N/A"),
-        "profile": data.get("profile", "Unknown Profile").replace("_", " ").title(),
-        "aggression": data.get("aggression", "Normal").replace("_", " ").title(),
-        "scan_date": data.get("scan_date", datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+        "target": str(data.get("target", "Unknown Target")),
+        "target_ip": str(data.get("target_ip", "N/A")),
+        "profile": str(data.get("profile", "Unknown Profile")).replace("_", " ").title(),
+        "aggression": str(data.get("aggression", "Normal")).replace("_", " ").title(),
+        "scan_date": str(data.get("scan_date", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
         "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "report_id": f"KC-{int(datetime.now().timestamp())}",
         
         # --- Recon & Discovery (from results["recon"]) ---
         "recon": {
-            "subdomains": data.get("recon", {}).get("subdomains", []),
-            "resolved_hosts": data.get("recon", {}).get("resolved_hosts", [])
+            "subdomains": data.get("recon", {}).get("subdomains", []) if isinstance(data.get("recon"), dict) else [],
+            "resolved_hosts": data.get("recon", {}).get("resolved_hosts", []) if isinstance(data.get("recon"), dict) else []
         },
         
         # --- Network & Infrastructure (from results["network"]) ---
@@ -601,10 +602,7 @@ def create_killchain_report_pdf(source_data, pdf_path):
 
     # 5. PDF Rendering
     try:
-        # Initialize Jinja2 Environment
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
-        
-        template = env.get_template(KILLCHAIN_TEMPLATE_FILE)
+        template = jinja_env.get_template(KILLCHAIN_TEMPLATE_FILE)
         
         # Render HTML
         rendered_html = template.render(data=template_data)
@@ -660,21 +658,20 @@ def create_sql_report_pdf(source_data, pdf_path):
     # appear in contiguous blocks in the PDF, rather than mixed.
     sorted_vulns = sorted(raw_vulns, key=lambda x: x.get("type", "Unknown"))
 
-    # STATS: Calculate overview metrics
-    stats = {
-        "total_vulns": len(raw_vulns),
-        "by_type": {},
-        "unique_titles": set()
-    }
+    # STATS: Calculate overview metrics using separate variables to help linter
+    total_vulns_count = len(raw_vulns) if isinstance(raw_vulns, list) else 0
+    vulns_by_type = {}
+    unique_titles_set = set()
 
-    for v in raw_vulns:
-        # Count occurences of specific types (e.g., "boolean-based blind")
-        v_type = v.get("type", "Unknown")
-        stats["by_type"][v_type] = stats["by_type"].get(v_type, 0) + 1
-        
-        # Track unique titles to differentiate between payload variations vs distinct flaws
-        if "title" in v:
-            stats["unique_titles"].add(v["title"])
+    if isinstance(raw_vulns, list):
+        for v in raw_vulns:
+            if not isinstance(v, dict): continue
+            v_type = str(v.get("type", "Unknown"))
+            vulns_by_type[v_type] = int(vulns_by_type.get(v_type, 0)) + 1
+            
+            v_title = v.get("title")
+            if v_title:
+                unique_titles_set.add(str(v_title))
 
     # 3. Prepare Template Context
     # Structure this to match the specific keys in your JSON (target, scan_time, db_info)
@@ -698,9 +695,9 @@ def create_sql_report_pdf(source_data, pdf_path):
 
         # Findings
         "stats": {
-            "total_vulns": stats["total_vulns"],
-            "types": stats["by_type"],
-            "unique_issues": len(stats["unique_titles"])
+            "total_vulns": total_vulns_count,
+            "types": vulns_by_type,
+            "unique_issues": len(unique_titles_set)
         },
         "vulnerabilities": sorted_vulns, 
         
@@ -711,8 +708,7 @@ def create_sql_report_pdf(source_data, pdf_path):
 
     # 4. Render HTML using Jinja2
     try:
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
-        template = env.get_template(SQL_TEMPLATE_FILE)
+        template = jinja_env.get_template(SQL_TEMPLATE_FILE)
         
         # Render with the organized context
         rendered_html = template.render(data=template_data)
@@ -807,8 +803,7 @@ def create_semgrep_report_pdf(source_data, pdf_path):
 
     # 4. Render
     try:
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
-        template = env.get_template(SEMGREP_TEMPLATE_FILE)
+        template = jinja_env.get_template(SEMGREP_TEMPLATE_FILE)
         rendered_html = template.render(data=template_data)
     except Exception as e:
         log(f"[!] Semgrep Template Rendering Error: {e}")

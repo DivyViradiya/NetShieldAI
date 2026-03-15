@@ -32,7 +32,7 @@ def get_report_history(user_results_dir, scanner_name=None, extension="pdf"):
         return []
 
     # If scanner_name is provided, we might be looking in a subfolder or filtering files
-    # NetShield usually uses: Services/results/<user>/<scanner_name>/
+    # NetShield usually uses: results/<user>/<scanner_name>/
     # But some logic might call this on the base user results dir.
     
     pattern = f"*.{extension}"
@@ -52,7 +52,7 @@ def get_report_history(user_results_dir, scanner_name=None, extension="pdf"):
         reports.append({
             "filename": report_file.name,
             "path": str(report_file),
-            "relative_path": str(report_file.relative_to(results_path.parent.parent)), # Relative to Services/results
+            "relative_path": str(report_file.relative_to(results_path.parent.parent)), # Relative to root/results
             "scanner": detected_scanner,
             "size_bytes": stats.st_size,
             "created_at": datetime.fromtimestamp(stats.st_ctime).strftime("%Y-%m-%d %H:%M:%S"),

@@ -37,10 +37,10 @@ def get_user_root_dir():
     """Returns the ROOT result directory for the current user."""
     if not current_user.is_authenticated: return None
     
-    # Base user folder: Services/results/Username_ID
+    # Base user folder: results/Username_ID
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'Services', 'results', user_identifier)
+    user_dir = os.path.join(base_dir, 'results', user_identifier)
     
     os.makedirs(user_dir, exist_ok=True)
     return user_dir
@@ -48,7 +48,7 @@ def get_user_root_dir():
 def get_fixed_scan_dir():
     """
     Returns the FIXED directory for the killchain reports.
-    Path: Services/results/Username_ID/killchain
+    Path: results/Username_ID/killchain
     """
     user_root = get_user_root_dir()
     if not user_root: return None

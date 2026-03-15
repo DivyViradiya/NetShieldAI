@@ -95,3 +95,6 @@
 2026-03-14 14:29:34 - INFO - Stored session ID from server: 875c6a5b-a1c0-40c7-bee3-1f0990f28ab9
 2026-03-14 14:29:35 - INFO - Session switched via URL parameter to: 875c6a5b-a1c0-40c7-bee3-1f0990f28ab9
 2026-03-14 14:30:13 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 560bf0c9-04a7-48fd-abb0-807e8b129bec
+2026-03-14 18:29:13 - INFO - New local chat session started: ac16af68-0be1-4802-9503-ad60b5dbe8b2
+2026-03-14 18:29:15 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_1 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x122860bd810>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
+2026-03-14 18:29:17 - WARNING - Could not fetch history from backend: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_history?user_id=DivyaViradiya_1&session_id=ac16af68-0be1-4802-9503-ad60b5dbe8b2 (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))

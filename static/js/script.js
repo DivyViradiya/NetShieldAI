@@ -164,25 +164,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     console.error("Error fetching open ports:", data.message || "Unknown error");
                     // Clear the table on error
-                    openPortsTableBody.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="px-4 py-2 whitespace-nowrap text-sm text-red-400 text-center">
-                                Error fetching open ports: ${data.message || 'Unknown error'}
-                            </td>
-                        </tr>
-                    `;
+                    openPortsTableBody.innerHTML = '';
+                    const errorRow = document.createElement('tr');
+                    const errorCell = document.createElement('td');
+                    errorCell.setAttribute('colspan', '6');
+                    errorCell.className = 'px-4 py-2 whitespace-nowrap text-sm text-red-400 text-center';
+                    errorCell.textContent = `Error fetching open ports: ${data.message || 'Unknown error'}`;
+                    errorRow.appendChild(errorCell);
+                    openPortsTableBody.appendChild(errorRow);
                 }
             })
             .catch(error => {
                 console.error("Error fetching open ports:", error);
                 // Clear the table on error
-                openPortsTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-4 py-2 whitespace-nowrap text-sm text-red-400 text-center">
-                            Failed to fetch open ports: ${error.message}
-                        </td>
-                    </tr>
-                `;
+                openPortsTableBody.innerHTML = '';
+                const errorRow = document.createElement('tr');
+                const errorCell = document.createElement('td');
+                errorCell.setAttribute('colspan', '6');
+                errorCell.className = 'px-4 py-2 whitespace-nowrap text-sm text-red-400 text-center';
+                errorCell.textContent = `Failed to fetch open ports: ${error.message}`;
+                errorRow.appendChild(errorCell);
+                openPortsTableBody.appendChild(errorRow);
             });
     }
 
@@ -194,25 +196,25 @@ document.addEventListener('DOMContentLoaded', () => {
         openPortsTableBody.innerHTML = '';
         
         // Check if we have valid data
-        if (!portsData || (Object.keys(portsData.TCP).length === 0 && Object.keys(portsData.UDP).length === 0)) {
-            openPortsTableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-4 py-2 whitespace-nowrap text-sm text-gray-400 text-center">No open ports detected.</td>
-                </tr>
-            `;
+        if (!portsData || (Object.keys(portsData.TCP || {}).length === 0 && Object.keys(portsData.UDP || {}).length === 0)) {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.setAttribute('colspan', '6');
+            emptyCell.className = 'px-4 py-2 whitespace-nowrap text-sm text-gray-400 text-center';
+            emptyCell.textContent = 'No open ports detected.';
+            emptyRow.appendChild(emptyCell);
+            openPortsTableBody.appendChild(emptyRow);
             return;
         }
         
         // Combine TCP and UDP ports into a single array
         const allPorts = [];
-        let rowNumber = 1;
         
         // Process TCP ports
         if (portsData.TCP && Array.isArray(portsData.TCP)) {
             portsData.TCP.forEach(port => {
                 if (port && port.port) {
                     allPorts.push({
-                        number: rowNumber++,
                         port: port.port,
                         protocol: 'TCP',
                         service: port.service || 'unknown',
@@ -228,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
             portsData.UDP.forEach(port => {
                 if (port && port.port) {
                     allPorts.push({
-                        number: rowNumber++,
                         port: port.port,
                         protocol: 'UDP',
                         service: port.service || 'unknown',
@@ -241,11 +242,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // If no valid ports were found
         if (allPorts.length === 0) {
-            openPortsTableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-4 py-2 whitespace-nowrap text-sm text-gray-400 text-center">No open ports detected.</td>
-                </tr>
-            `;
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.setAttribute('colspan', '6');
+            emptyCell.className = 'px-4 py-2 whitespace-nowrap text-sm text-gray-400 text-center';
+            emptyCell.textContent = 'No open ports detected.';
+            emptyRow.appendChild(emptyCell);
+            openPortsTableBody.appendChild(emptyRow);
             return;
         }
         
@@ -254,18 +257,24 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update row numbers after sorting
         allPorts.forEach((port, index) => {
-            port.number = index + 1;
-            
             const row = document.createElement('tr');
             row.className = 'hover:bg-gray-700';
-            row.innerHTML = `
-                <td class="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-300">${port.number}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">${port.port}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">${port.protocol}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">${port.service}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">${port.version}</td>
-                <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">${port.process}</td>
-            `;
+
+            const cells = [
+                { text: index + 1, class: 'px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-300' },
+                { text: port.port, class: 'px-4 py-2 whitespace-nowrap text-sm text-gray-300' },
+                { text: port.protocol, class: 'px-4 py-2 whitespace-nowrap text-sm text-gray-300' },
+                { text: port.service, class: 'px-4 py-2 whitespace-nowrap text-sm text-gray-300' },
+                { text: port.version, class: 'px-4 py-2 whitespace-nowrap text-sm text-gray-300' },
+                { text: port.process, class: 'px-4 py-2 whitespace-nowrap text-sm text-gray-300' }
+            ];
+
+            cells.forEach(c => {
+                const td = document.createElement('td');
+                td.className = c.class;
+                td.textContent = c.text;
+                row.appendChild(td);
+            });
             
             openPortsTableBody.appendChild(row);
         });

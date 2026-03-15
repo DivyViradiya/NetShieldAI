@@ -21,7 +21,7 @@ from .tctr_engine import tctr_engine
 BASE_DIR = Path(__file__).parent.parent
 
 # We keep the default global path for backward compatibility or system-wide actions.
-DEFAULT_RESULTS_DIR = BASE_DIR / "Services" / "results" / "network_scanner"
+DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "network_scanner"
 
 # Ensure logs directory exists
 LOG_DIR = BASE_DIR / "logs"
@@ -99,22 +99,30 @@ def load_results_from_json(output_dir, user_id):
                     user_data["TCP"].clear()
                     user_data["UDP"].clear()
                     for p in data.get("ports", []):
-                        if p.get("protocol") == "UDP":
-                            user_data["UDP"].append(p)
+                        protocol = p.get("protocol")
+                        if protocol == "UDP":
+                            if isinstance(user_data["UDP"], list):
+                                user_data["UDP"].append(p)
                         else:
-                            user_data["TCP"].append(p)
+                            if isinstance(user_data["TCP"], list):
+                                user_data["TCP"].append(p)
                     
-                    user_data["metadata"]["os_guess"] = data.get("os_guess", "Unknown")
-                    user_data["metadata"]["host_status"] = data.get("host_status", "Unknown")
+                    if isinstance(user_data.get("metadata"), dict):
+                        user_data["metadata"]["os_guess"] = data.get("os_guess", "Unknown")
+                        user_data["metadata"]["host_status"] = data.get("host_status", "Unknown")
                     
                     # Insights usually from raw processing, but we can synthesize if missing
-                    current_insights = user_data["metadata"].get("insights", "")
+                    metadata = user_data.get("metadata", {})
+                    current_insights = metadata.get("insights", "") if isinstance(metadata, dict) else ""
                     if "waiting" in current_insights.lower() or "scanning" in current_insights.lower() or "detected" in current_insights.lower():
-                        total_found = len(data.get("ports", []))
+                        ports_list = data.get("ports", [])
+                        total_found = len(ports_list) if isinstance(ports_list, list) else 0
                         if total_found > 0:
-                            user_data["metadata"]["insights"] = f"Detected {total_found} active services from persisted report."
+                            if isinstance(user_data.get("metadata"), dict):
+                                user_data["metadata"]["insights"] = f"Detected {total_found} active services from persisted report."
                         else:
-                            user_data["metadata"]["insights"] = "No open services detected in last scan."
+                            if isinstance(user_data.get("metadata"), dict):
+                                user_data["metadata"]["insights"] = "No open services detected in last scan."
                     
                 return True
         except Exception as e:
@@ -130,10 +138,14 @@ def get_scan_summary(user_id=None, output_dir=None):
         if not user_data["TCP"] and not user_data["UDP"] and output_dir:
             # Drop lock to call loader (it has its own lock)
             pass
-        else:
+            # Ensure list types for joining
+            tcp_ports = user_data.get("TCP", []) if isinstance(user_data, dict) else []
+            udp_ports = user_data.get("UDP", []) if isinstance(user_data, dict) else []
+            all_ports = (tcp_ports if isinstance(tcp_ports, list) else []) + (udp_ports if isinstance(udp_ports, list) else [])
+            
             return {
-                "open_ports": sorted(user_data["TCP"] + user_data["UDP"], key=lambda x: int(x['port']) if str(x['port']).isdigit() else 0),
-                "metadata": user_data["metadata"]
+                "open_ports": sorted(all_ports, key=lambda x: int(x.get('port', 0)) if isinstance(x, dict) and str(x.get('port', '')).isdigit() else 0),
+                "metadata": user_data.get("metadata", {}) if isinstance(user_data, dict) else {}
             }
             
     # Load from disk if memory was empty
@@ -599,8 +611,10 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
                 'CVE' in line or 'VULNERABLE' in line or 'risk' in line.lower() or 'exploit' in line.lower()
             ):
                 note = line.split("Host:")[0].strip()
-                if note and note not in port_vuln_notes[current_port_key]:
-                    port_vuln_notes[current_port_key].append(note)
+            if current_port_key and note and note not in port_vuln_notes.get(current_port_key, []):
+                if current_port_key not in port_vuln_notes:
+                    port_vuln_notes[current_port_key] = []
+                port_vuln_notes[current_port_key].append(note)
             
             if line.endswith(")") and not line.startswith("Host:") and not line.startswith("# Nmap"):
                  current_port_key = None
@@ -645,23 +659,27 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
     
     # Apply ML Threat Re-ranking
     try:
-        for port in parsed_data["ports"]:
-            prediction_obj = tctr_engine.predict_risk(
-                f"Service: {port['service']} ({port['port']}/{port['protocol']})", 
-                f"Version: {port['version']}\nVulnerability: {port['vulnerability_notes']}",
-                cwe_id=None # Engine will fallback to 5.0 unless we add a service-to-CWE map
+        ports_to_rank = parsed_data.get("ports", [])
+        if isinstance(ports_to_rank, list):
+            for port in ports_to_rank:
+                if not isinstance(port, dict): continue
+                
+                prediction_obj = tctr_engine.predict_risk(
+                    f"Service: {port.get('service', 'unknown')} ({port.get('port', '0')}/{port.get('protocol', 'TCP')})", 
+                    f"Version: {port.get('version', '')}\nVulnerability: {port.get('vulnerability_notes', '')}",
+                    cwe_id=None
+                )
+                port["predicted_risk_score"] = float(prediction_obj.get("score", 0.0))
+                port["tctr_priority"] = float(prediction_obj.get("tctr_priority", 5.0))
+                port["base_score"] = float(prediction_obj.get("base_score", 5.0))
+                port["priority_level"] = str(prediction_obj.get("priority_level", "Medium"))
+                port["risk_justification"] = str(prediction_obj.get("risk_justification", "Default assessment."))
+            
+            # Sort by predicted score
+            ports_to_rank.sort(
+                key=lambda x: float(x.get('predicted_risk_score', 0.0)) if isinstance(x, dict) else 0.0,
+                reverse=True
             )
-            port["predicted_risk_score"] = prediction_obj["score"]
-            port["tctr_priority"] = prediction_obj["tctr_priority"]
-            port["base_score"] = prediction_obj["base_score"]
-            port["priority_level"] = prediction_obj["priority_level"]
-            port["risk_justification"] = prediction_obj["risk_justification"]
-        
-        # Sort by predicted score
-        parsed_data["ports"].sort(
-            key=lambda x: x.get('predicted_risk_score', 0),
-            reverse=True
-        )
     except Exception as e:
         log(f"[!] ML Re-ranking skipped or failed: {e}", user_id, queue_id)
 
@@ -999,9 +1017,11 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
                 'CVE' in line or 'VULNERABLE' in line or 'http-title' in line or 'risk' in line.lower()
             ):
                 note = line.split("Host:")[0].strip()
-                if note and len(port_vuln_notes[current_port_key]) == 0:
+                if note and current_port_key in port_vuln_notes and len(port_vuln_notes[current_port_key]) == 0:
                     port_vuln_notes[current_port_key].append(note[:50].replace('\t', ' ') + "...") 
-                    total_vuln_count += 1
+                    # total_vuln_count needs to be defined in scope or global
+                    if 'total_vuln_count' in locals() or 'total_vuln_count' in globals():
+                        total_vuln_count += 1
         
         # Step 2: Extract final port list
         for line in lines:
@@ -1098,10 +1118,17 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
 # --- Firewall Management ---
 def block_port_windows(port, protocol="TCP", user_id=None, queue_id=None):
     """Blocks a specified port and protocol using Windows Defender Firewall."""
+    # [SECURITY] Strict validation of inputs
+    if not str(port).isdigit() or protocol.upper() not in ["TCP", "UDP"]:
+        log(f"[!] Invalid port or protocol for firewall rule: {port}/{protocol}", user_id, queue_id)
+        return False
+        
     rule_name = f"Block_NetShieldAI_{protocol}_Port_{port}"
+    # [SECURITY] Use argument list to prevent command injection
     cmd = [
-        "powershell", "-Command",
-        f"New-NetFirewallRule -DisplayName '{rule_name}' -Direction Inbound -LocalPort {port} -Protocol {protocol} -Action Block -Enabled True"
+        "powershell", "-ExecutionPolicy", "Bypass", "-Command",
+        "New-NetFirewallRule", "-DisplayName", rule_name, "-Direction", "Inbound", 
+        "-LocalPort", str(port), "-Protocol", protocol.upper(), "-Action", "Block", "-Enabled", "True"
     ]
     try:
         subprocess.run(cmd, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
@@ -1113,8 +1140,13 @@ def block_port_windows(port, protocol="TCP", user_id=None, queue_id=None):
 
 def is_port_blocked_windows(port, protocol="TCP"):
     """Checks if a specific firewall rule exists and is enabled on Windows."""
+    # [SECURITY] Strict validation of inputs
+    if not str(port).isdigit() or protocol.upper() not in ["TCP", "UDP"]:
+        return False
+
     rule_name = f"Block_NetShieldAI_{protocol}_Port_{port}"
-    cmd = ["powershell", "-Command", f"Get-NetFirewallRule -DisplayName '{rule_name}'"]
+    # [SECURITY] Use argument list to prevent command injection
+    cmd = ["powershell", "-ExecutionPolicy", "Bypass", "-Command", "Get-NetFirewallRule", "-DisplayName", rule_name]
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
         return "True" in result.stdout
@@ -1123,6 +1155,11 @@ def is_port_blocked_windows(port, protocol="TCP"):
 
 def block_port_linux(port, protocol="TCP", user_id=None, queue_id=None):
     """Blocks a specified port and protocol using UFW (Uncomplicated Firewall) on Linux."""
+    # [SECURITY] Strict validation of inputs
+    if not str(port).isdigit() or protocol.upper() not in ["TCP", "UDP"]:
+        log(f"[!] Invalid port or protocol for firewall rule: {port}/{protocol}", user_id, queue_id)
+        return False
+
     try:
         status_result = subprocess.run(['ufw', 'status'], capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
         if "inactive" in status_result.stdout:
@@ -1135,6 +1172,7 @@ def block_port_linux(port, protocol="TCP", user_id=None, queue_id=None):
         log(f"[!] Error checking UFW status: {e.stderr.strip()}", user_id, queue_id)
         return False
 
+    # [SECURITY] Use argument list to prevent command injection
     rule_command = ['ufw', 'deny', f"{port}/{protocol.lower()}"]
     try:
         subprocess.run(rule_command, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())
@@ -1146,6 +1184,10 @@ def block_port_linux(port, protocol="TCP", user_id=None, queue_id=None):
 
 def is_port_blocked_linux(port, protocol="TCP"):
     """Checks if a specific UFW rule to block the port exists and is active on Linux."""
+    # [SECURITY] Strict validation of inputs
+    if not str(port).isdigit() or protocol.upper() not in ["TCP", "UDP"]:
+        return False
+
     try:
         status_cmd = ['ufw', 'status', 'verbose']
         result = subprocess.run(status_cmd, capture_output=True, text=True, check=True, creationflags=_get_subprocess_creation_flags())

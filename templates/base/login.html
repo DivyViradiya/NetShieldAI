@@ -1,82 +1,87 @@
 {% extends 'base.html' %}
 
-{% block title %}NetShieldAI - Access Control{% endblock %}
+{% block title %}
+  NetShieldAI - Access Control
+{% endblock %}
 
 {% block extra_css %}
-<style>
-  :root {
-    --neo-card: rgba(10, 10, 12, 0.85);
-    --neo-border: rgba(255, 255, 255, 0.1);
-    --neo-text-primary: #ffffff;
-    --neo-text-secondary: #888888;
-    --neo-text-label: #555555;
-    --neo-blue: #3b82f6;
-    --neo-card-hover: rgba(15, 15, 18, 0.6);
-    --bg-color: #000000;
-    --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-  }
-  body.light-mode {
-    --neo-card: #ffffff;
-    --neo-border: #cbd5e1;
-    --neo-text-primary: #0f172a;
-    --neo-text-secondary: #1e293b;
-    --neo-text-label: #64748b;
-    --neo-blue: #4f46e5;
-    --neo-card-hover: #f8faff;
-    --bg-color: #f1f5f9;
-  }
-  /* Scope IBM Plex Sans to the card only — navbar unaffected */
-  #login-card, #login-card * { font-family: var(--font-ui); }
-  body.light-mode .alert-danger {
-    background-color: rgba(220,38,38,0.1) !important;
-    color: #dc2626 !important;
-    border-color: #dc2626 !important;
-  }
-  body.light-mode .alert-info {
-    background-color: rgba(37,99,235,0.1) !important;
-    color: #2563eb !important;
-    border-color: #2563eb !important;
-  }
-  body.light-mode .md\:flex.w-1\/2 {
-    background-image: none !important;
-    background-color: #f1f5f9 !important;
-  }
-
-  /* ── Mobile-only fixes ── */
-  @media (max-width: 768px) {
-    .min-h-\[85vh\] {
-      min-height: unset !important;
-      padding: 1.25rem 1rem !important;
-      align-items: flex-start !important;
+  <style>
+    :root {
+      --neo-card: rgba(10, 10, 12, 0.85);
+      --neo-border: rgba(255, 255, 255, 0.1);
+      --neo-text-primary: #ffffff;
+      --neo-text-secondary: #888888;
+      --neo-text-label: #555555;
+      --neo-blue: #3b82f6;
+      --neo-card-hover: rgba(15, 15, 18, 0.6);
+      --bg-color: #000000;
+      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
     }
-    .max-w-\[1000px\] {
-      min-height: unset !important;
-      border-radius: 14px !important;
+    body.light-mode {
+      --neo-card: #ffffff;
+      --neo-border: #cbd5e1;
+      --neo-text-primary: #0f172a;
+      --neo-text-secondary: #1e293b;
+      --neo-text-label: #64748b;
+      --neo-blue: #4f46e5;
+      --neo-card-hover: #f8faff;
+      --bg-color: #f1f5f9;
     }
-    .w-full.md\:w-1\/2.p-8 {
-      padding: 1.5rem 1.25rem !important;
+    /* Scope IBM Plex Sans to the card only — navbar unaffected */
+    #login-card,
+    #login-card * {
+      font-family: var(--font-ui);
     }
-    #loginForm ~ p { margin-top: 1rem !important; }
-    @media (max-width: 400px) {
-      .flex.items-center.justify-between.text-xs {
-        flex-direction: column !important;
+    body.light-mode .alert-danger {
+      background-color: rgba(220, 38, 38, 0.1) !important;
+      color: #dc2626 !important;
+      border-color: #dc2626 !important;
+    }
+    body.light-mode .alert-info {
+      background-color: rgba(37, 99, 235, 0.1) !important;
+      color: #2563eb !important;
+      border-color: #2563eb !important;
+    }
+    body.light-mode .md\:flex.w-1\/2 {
+      background-image: none !important;
+      background-color: #f1f5f9 !important;
+    }
+    
+    /* ── Mobile-only fixes ── */
+    @media (max-width: 768px) {
+      .min-h-\[85vh\] {
+        min-height: unset !important;
+        padding: 1.25rem 1rem !important;
         align-items: flex-start !important;
+      }
+      .max-w-\[1000px\] {
+        min-height: unset !important;
+        border-radius: 14px !important;
+      }
+      .w-full.md\:w-1\/2.p-8 {
+        padding: 1.5rem 1.25rem !important;
+      }
+      #loginForm ~ p {
+        margin-top: 1rem !important;
+      }
+      @media (max-width: 400px) {
+        .flex.items-center.justify-between.text-xs {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 0.5rem !important;
+        }
+      }
+      .grid.grid-cols-2.gap-4 {
+        grid-template-columns: 1fr !important;
         gap: 0.5rem !important;
       }
     }
-    .grid.grid-cols-2.gap-4 {
-      grid-template-columns: 1fr !important;
-      gap: 0.5rem !important;
-    }
-  }
-</style>
+  </style>
 {% endblock %}
 
 {% block content %}
   <div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
-    
     <div id="login-card" class="relative z-10 flex w-full max-w-[1000px] min-h-[600px] h-auto bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden transition-all duration-700 ease-in-out">
-      
       <div class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[var(--bg-color)] bg-[radial-gradient(var(--neo-text-label)_1px,transparent_1px)] [background-size:20px_20px] border-r border-[var(--neo-border)]">
         <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-color)] via-transparent to-transparent"></div>
 
@@ -86,17 +91,12 @@
         </div>
 
         <div class="relative z-10 mb-8">
-          <h2 class="text-3xl font-bold text-[var(--neo-text-primary)] mb-4 tracking-tight drop-shadow-md" style="font-size: clamp(1.5rem, 4vw, 2.5rem);">
-            Secure.<br />Autonomous.<br />Verified.
-          </h2>
-          <p class="text-[var(--neo-text-secondary)] text-sm max-w-xs border-l-2 border-[var(--neo-blue)] pl-4">
-            Monitor threats, analyze vulnerabilities, and secure infrastructure in real time.
-          </p>
+          <h2 class="text-3xl font-bold text-[var(--neo-text-primary)] mb-4 tracking-tight drop-shadow-md" style="font-size: clamp(1.5rem, 4vw, 2.5rem);">Secure.<br />Autonomous.<br />Verified.</h2>
+          <p class="text-[var(--neo-text-secondary)] text-sm max-w-xs border-l-2 border-[var(--neo-blue)] pl-4">Monitor threats, analyze vulnerabilities, and secure infrastructure in real time.</p>
         </div>
       </div>
 
       <div class="w-full md:w-1/2 p-8 md:p-12 bg-[var(--neo-card)] flex flex-col justify-center relative">
-        
         <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2" style="font-size: clamp(1.25rem, 3vw, 1.75rem);">Welcome back</h3>
         <p class="text-[var(--neo-text-secondary)] text-sm mb-8">Please enter your details to sign in.</p>
 
@@ -106,12 +106,14 @@
               {% for category, message in messages %}
                 <div class="p-3 rounded text-sm border 
                   {% if category == 'danger' %}
+                    
                     bg-red-900/20 text-red-400 border-red-900 alert-danger
+
                   {% else %}
+                    
                     bg-blue-900/20 text-blue-400 border-blue-900 alert-info
-                  {% endif %}">
-                  {{ message }}
-                </div>
+
+                  {% endif %}">{{ message }}</div>
               {% endfor %}
             </div>
           {% endif %}
@@ -120,33 +122,28 @@
         <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-5" id="loginForm">
           {{ form.hidden_tag() }}
 
-          <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+          <input type="hidden" name="next" value="{{ request.args.get('next', '') }}" />
 
-          <div>
-            {{ form.username.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-            {{ form.username(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='Enter your ID') }}
-          </div>
+          <div>{{ form.username.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+            {{ form.username(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='Enter your ID') }}</div>
 
-          <div>
-            {{ form.password.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-            {{ form.password(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='••••••••') }}
-          </div>
+          <div>{{ form.password.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+            {{ form.password(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='••••••••') }}</div>
 
           <div class="flex items-center justify-between text-xs pt-1">
-            <label class="flex items-center gap-2 text-[var(--neo-text-secondary)] cursor-pointer hover:text-[var(--neo-text-primary)] transition">
-              <input type="checkbox" class="rounded border-[var(--neo-border)] bg-[var(--bg-color)] text-[var(--neo-blue)] focus:ring-0 focus:ring-offset-0" />
-              Remember me
-            </label>
-            <a href="#" class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] transition opacity-80 hover:opacity-100">Forgot password?</a>
+            <label class="flex items-center gap-2 text-[var(--neo-text-secondary)] cursor-pointer hover:text-[var(--neo-text-primary)] transition"><input type="checkbox" class="rounded border-[var(--neo-border)] bg-[var(--bg-color)] text-[var(--neo-blue)] focus:ring-0 focus:ring-offset-0" />Remember me</label>
+            <a href="{{ url_for('auth.forgot_password') }}" class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] transition opacity-80 hover:opacity-100">Forgot password?</a>
           </div>
 
-          <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-            <span>Sign In</span>
-          </button>
-          
+          <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"><span>Sign In</span></button>
+
           <div class="relative py-4">
-            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-[var(--neo-border)]"></span></div>
-            <div class="relative flex justify-center text-xs uppercase"><span class="bg-[var(--neo-card)] px-4 text-[var(--neo-text-label)] font-medium z-10">Or continue with</span></div>
+            <div class="absolute inset-0 flex items-center">
+              <span class="w-full border-t border-[var(--neo-border)]"></span>
+            </div>
+            <div class="relative flex justify-center text-xs uppercase">
+              <span class="bg-[var(--neo-card)] px-4 text-[var(--neo-text-label)] font-medium z-10">Or continue with</span>
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
@@ -154,7 +151,7 @@
             <button type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition">GitHub</button>
           </div>
         </form>
-        
+
         <p class="text-sm text-[var(--neo-text-secondary)] mt-8 text-center">
           Don’t have an account? <a href="{{ url_for('auth.register') }}" class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] font-medium transition opacity-80 hover:opacity-100">Create account</a>
         </p>
@@ -163,20 +160,20 @@
   </div>
 
   <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      const card = document.getElementById('login-card');
-      
-      const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
-      btn.innerHTML = spinner + "Authenticating...";
-      btn.classList.add('opacity-75', 'cursor-not-allowed');
-      
-      card.classList.add('opacity-0', 'scale-95'); 
-      
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault()
+      const btn = document.getElementById('submitBtn')
+      const card = document.getElementById('login-card')
+    
+      const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`
+      btn.innerHTML = spinner + 'Authenticating...'
+      btn.classList.add('opacity-75', 'cursor-not-allowed')
+    
+      card.classList.add('opacity-0', 'scale-95')
+    
       setTimeout(() => {
-        e.target.submit();
-      }, 600);
-    });
+        e.target.submit()
+      }, 600)
+    })
   </script>
 {% endblock %}

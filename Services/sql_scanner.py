@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).parent.parent
 SQLMAP_PATH = Path(r"D:\SQLmap_setup\sqlmap.py")
 
 # Default Fallback Directory
-DEFAULT_RESULTS_DIR = BASE_DIR / "Services" / "results" / "sql_scanner"
+DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "sql_scanner"
 
 # Logs (Shared)
 LOG_FILE = BASE_DIR / "logs" / "sql_agent_log.txt"

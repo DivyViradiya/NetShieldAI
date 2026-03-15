@@ -4,9 +4,11 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from urllib.parse import urlparse  
 from sqlalchemy import func 
-from models import User, ScanLog # [UPDATED] Import ScanLog
-from extensions import db
-from forms import RegistrationForm, LoginForm, UpdateProfileForm, ChangePasswordForm
+from models import User, ScanLog, PasswordResetOTP
+from extensions import db, mail
+from forms import RegistrationForm, LoginForm, UpdateProfileForm, ChangePasswordForm, ForgotPasswordForm, ResetPasswordForm, VerifyOTPForm
+from flask_mail import Message
+from flask import session
 from logger_setup import logger
 
 auth_bp = Blueprint('auth', __name__)
@@ -33,6 +35,13 @@ def login():
 
         # 3. Check credentials
         if user:
+            # [SECURITY] Check if account is locked due to too many failed attempts
+            MAX_FAILED_ATTEMPTS = 5
+            if user.failed_login_attempts >= MAX_FAILED_ATTEMPTS:
+                flash('Your account is locked due to too many failed login attempts. Please contact an administrator.', 'danger')
+                logger.warning(f"[!] Login blocked for locked account: {user.username}")
+                return render_template('base/login.html', form=form)
+
             logger.debug(f"[+] User '{user.username}' found in database.")
             is_valid_pw = user.check_password(form.password.data)
             logger.debug(f"[?] Password match for '{user.username}': {is_valid_pw}")
@@ -42,6 +51,10 @@ def login():
                 if not user.is_active_account:
                     flash('Your account has been suspended. Please contact the administrator.', 'danger')
                     return render_template('base/login.html', form=form)
+
+                # Reset failed attempts on successful login
+                user.failed_login_attempts = 0
+                db.session.commit()
 
                 login_user(user)
                 
@@ -62,12 +75,11 @@ def login():
                 
                 return redirect(next_page)
             else:
-                # [NEW] Track failed login attempt
-                if user:
-                    user.failed_login_attempts += 1
-                    db.session.commit()
+                # [SECURITY] Track failed login attempt for lockout
+                user.failed_login_attempts += 1
+                db.session.commit()
                 flash('Invalid username or password.', 'danger')
-                logger.warning(f"[!] Login failed (Incorrect Password) for username: {form.username.data}")
+                logger.warning(f"[!] Login failed (Incorrect Password) for username: {form.username.data} (Attempt {user.failed_login_attempts})")
         else:
             flash('Invalid username or password.', 'danger')
             logger.warning(f"[!] Login failed (User Not Found) for username: {form.username.data}")
@@ -110,9 +122,8 @@ def register():
         )
         new_user.set_password(form.password.data)
         
-        # Auto-Assign Admin to the First User
-        if User.query.count() == 0:
-            new_user.is_admin = True
+        # [SECURITY] Removed automatic admin assignment for the first user.
+        # Admins should be created via init_db.py or by an existing admin.
             
         try:
             db.session.add(new_user)
@@ -129,7 +140,7 @@ def register():
     return render_template('base/register.html', form=form)
 
 
-@auth_bp.route('/logout')
+@auth_bp.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
     logger.info(f"[*] User Logout: {current_user.username}")
@@ -186,10 +197,16 @@ def admin_dashboard():
 
     # Graph B: Top Power Users (For Bar Chart)
     # Sort users by total_scans (descending) and take top 5
-    # Note: User.total_scans property in models.py now includes Kill Chain count automatically
-    sorted_users = sorted(users, key=lambda u: u.total_scans, reverse=True)[:5]
-    top_users_labels = [u.username for u in sorted_users]
-    top_users_data = [u.total_scans for u in sorted_users]
+    # Use a try-except to handle cases where total_scans might not be an int
+    try:
+        sorted_users = sorted(users, key=lambda u: u.total_scans if isinstance(u.total_scans, int) else 0, reverse=True)
+        top_5_users = list(sorted_users)[:5]
+        top_users_labels = [u.username for u in top_5_users]
+        top_users_data = [u.total_scans for u in top_5_users]
+    except Exception as e:
+        logger.error(f"Error sorting users for telemetry: {e}")
+        top_users_labels = []
+        top_users_data = []
 
     # --- 3. [NEW] Advanced Telemetry ---
     
@@ -198,24 +215,36 @@ def admin_dashboard():
     successful_scans = ScanLog.query.filter_by(status='Completed').count()
     failed_scans = ScanLog.query.filter(ScanLog.status.like('%Failed%')).count()
     
-    success_rate = round((successful_scans / total_logged_scans * 100), 1) if total_logged_scans > 0 else 0
+    
+    # Calculate success rate as a safe float
+    try:
+        if total_logged_scans > 0:
+            success_rate = round(float(successful_scans) / float(total_logged_scans) * 100.0, 1)
+        else:
+            success_rate = 0.0
+    except (ZeroDivisionError, TypeError):
+        success_rate = 0.0
     
     # B. Performance Metrics
-    avg_duration = db.session.query(func.avg(ScanLog.duration_seconds)).filter(ScanLog.status == 'Completed').scalar() or 0
+    avg_duration_query = db.session.query(func.avg(ScanLog.duration_seconds)).filter(ScanLog.status == 'Completed').scalar()
+    avg_duration = float(avg_duration_query) if avg_duration_query is not None else 0.0
     avg_duration = round(avg_duration, 1)
     
     # C. Global Threat Summary
-    total_findings = db.session.query(func.sum(ScanLog.finding_count)).scalar() or 0
-    total_critical = db.session.query(func.sum(ScanLog.severity_critical)).scalar() or 0
+    findings_sum = db.session.query(func.sum(ScanLog.finding_count)).scalar()
+    total_findings = int(findings_sum) if findings_sum is not None else 0
+    
+    critical_sum = db.session.query(func.sum(ScanLog.severity_critical)).scalar()
+    total_critical = int(critical_sum) if critical_sum is not None else 0
     
     # D. System Health (Storage)
     try:
         # Get disk usage for the partition where the project resides
         total, used, free = shutil.disk_usage(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         storage_info = {
-            "percent": round((used / total) * 100, 1),
-            "used_gb": round(used / (1024**3), 1),
-            "total_gb": round(total / (1024**3), 1)
+            "percent": round(float((used / total) * 100), 1) if total > 0 else 0.0,
+            "used_gb": round(float(used / (1024**3)), 1),
+            "total_gb": round(float(total / (1024**3)), 1)
         }
     except:
         storage_info = {"percent": 0, "used_gb": 0, "total_gb": 0}
@@ -298,7 +327,7 @@ def delete_user(user_id):
             flash('Safety Protocol: You cannot delete your own account.', 'danger')
         else:
             # Note: In a real production app, you might want to delete their 
-            # 'Services/results/<user_id>' folder here using shutil.rmtree
+            # 'results/<user_id>' folder here using shutil.rmtree
             db.session.delete(user)
             db.session.commit()
             flash(f'User {user.username} has been permanently deleted.', 'info')
@@ -352,3 +381,141 @@ def account_settings():
     return render_template('base/account_settings.html', 
                            profile_form=profile_form, 
                            security_form=security_form)
+
+
+def send_reset_email(user):
+    from flask import current_app, render_template
+    from datetime import datetime, timedelta
+    import random
+    
+    # 1. Generate 6-Digit OTP code
+    otp_code = str(random.randint(100000, 999999))
+    expires_at = datetime.utcnow() + timedelta(minutes=10)
+    
+    # 2. Overwrite any existing active resets for this user in DB
+    PasswordResetOTP.query.filter_by(user_id=user.id).delete()
+    
+    otp_entry = PasswordResetOTP(user_id=user.id, code=otp_code, expires_at=expires_at)
+    db.session.add(otp_entry)
+    db.session.commit()
+    
+    # 3. Store active context in session for anti-hijack session binding
+    session['reset_user_id'] = user.id
+
+    msg = Message('Password Reset Verification Code',
+                  sender=current_app.config['MAIL_DEFAULT_SENDER'],
+                  recipients=[user.email])
+                  
+    # --- [DESIGN] Render HTML Email with Design ---
+    html_content = render_template('email/reset_password.html', 
+                                   user=user, 
+                                   otp_code=otp_code, 
+                                   current_year=datetime.now().year)
+                                   
+    logo_path = os.path.join(current_app.root_path, 'static', 'images', 'NS_Logo.png')
+    if os.path.exists(logo_path):
+        try:
+            with open(logo_path, 'rb') as fp:
+                msg.attach("NS_Logo.png", "image/png", fp.read(), headers={'Content-ID': '<logo_img>'})
+        except Exception as e:
+             logger.warning(f"[!] Failed to attach logo to email: {e}")
+            
+    msg.html = html_content
+    mail.send(msg)
+
+
+@auth_bp.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            send_reset_email(user)
+        # Act like it always works to avoid email enumeration leaks
+        flash('A 6-digit verification code has been sent to your email.', 'info')
+        return redirect(url_for('auth.verify_otp'))
+    return render_template('base/forgot_password.html', form=form)
+
+
+@auth_bp.route('/verify_otp', methods=['GET', 'POST'])
+def verify_otp():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+        
+    reset_user_id = session.get('reset_user_id')
+    if not reset_user_id:
+        flash('Session expired or invalid request. Please request a new code.', 'warning')
+        return redirect(url_for('auth.forgot_password'))
+        
+    form = VerifyOTPForm()
+    if form.validate_on_submit():
+        otp_entry = PasswordResetOTP.query.filter_by(user_id=reset_user_id).order_by(PasswordResetOTP.created_at.desc()).first()
+        
+        if not otp_entry:
+            flash('No active verification request found. Please retry.', 'danger')
+            return redirect(url_for('auth.forgot_password'))
+            
+        from datetime import datetime
+        if otp_entry.expires_at < datetime.utcnow():
+            db.session.delete(otp_entry)
+            db.session.commit()
+            flash('This verification code has expired. Please request a new one.', 'danger')
+            return redirect(url_for('auth.forgot_password'))
+            
+        if otp_entry.code != form.code.data:
+            otp_entry.attempts += 1
+            db.session.commit()
+            
+            if otp_entry.attempts >= 3:
+                db.session.delete(otp_entry)
+                db.session.commit()
+                session.pop('reset_user_id', None)
+                flash('Too many failed attempts. Code invalidated for security. Please request a new one.', 'danger')
+                return redirect(url_for('auth.forgot_password'))
+                
+            flash(f'Invalid code. You have {3 - otp_entry.attempts} attempts remaining.', 'danger')
+            return render_template('base/verify_otp.html', form=form)
+            
+        # Success
+        session['otp_verified'] = True
+        flash('Code verified! Please create your new password.', 'success')
+        return redirect(url_for('auth.reset_password'))
+        
+    return render_template('base/verify_otp.html', form=form)
+
+
+@auth_bp.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+        
+    if not session.get('otp_verified') or not session.get('reset_user_id'):
+        flash('Access denied. Please verify your OTP code first.', 'danger')
+        return redirect(url_for('auth.forgot_password'))
+        
+    user_id = session.get('reset_user_id')
+    user = db.session.get(User, user_id)
+    
+    if not user:
+        flash('User account not found.', 'danger')
+        return redirect(url_for('auth.forgot_password'))
+        
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        if user.check_password(form.password.data):
+            flash('Your new password cannot be the same as your old password.', 'danger')
+            return render_template('base/reset_password.html', form=form)
+            
+        user.set_password(form.password.data)
+        
+        session.pop('otp_verified', None)
+        session.pop('reset_user_id', None)
+        PasswordResetOTP.query.filter_by(user_id=user_id).delete()
+        db.session.commit()
+        
+        flash('Your password has been updated! You are now able to log in', 'success')
+        return redirect(url_for('auth.login'))
+        
+    return render_template('base/reset_password.html', form=form)

@@ -16,6 +16,11 @@ if __name__ == '__main__':
     ensure_admin_privileges()
     # If we reach here, we ARE admin (either already were, or just re-elevated).
 
+from dotenv import load_dotenv
+# --- [FIX] Load .env using absolute path for elevated process context ---
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
+
 from flask import Flask, render_template, jsonify, request
 from flask_login import current_user
 from flask_wtf.csrf import CSRFProtect
@@ -27,7 +32,7 @@ init(autoreset=True)
 # --- Logging Setup ---
 from logger_setup import logger
 
-from extensions import db, login_manager
+from extensions import db, login_manager, mail
 from models import User
 from routes.network_scanner_bp import network_scanner_bp
 from routes.zap_scanner_bp import zap_scanner_bp
@@ -44,7 +49,7 @@ from routes.api_scanner_bp import api_scanner_bp
 
 
 app = Flask(__name__)
-app.secret_key = 'NetShieldAI' 
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24)) 
 
 # --- [FIX] Use Absolute Path for Database ---
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -57,6 +62,16 @@ db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 csrf = CSRFProtect(app)
+
+# --- Mail Configuration ---
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True').lower() == 'true'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+
+mail.init_app(app)  # --- [FIX] Initialize after configuration set ---
 
 # Register Blueprints
 logger.info("[*] Registering Core Modules...")
@@ -142,7 +157,8 @@ if __name__ == '__main__':
             _ml_thread.start()
 
         # Run Flask.
-        app.run(host='0.0.0.0', port=5100, debug=True, use_reloader=True, threaded=True)
+        debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+        app.run(host='0.0.0.0', port=5100, debug=debug_mode, use_reloader=True, threaded=True)
 
     except Exception as e:
         logger.error("[!] CRITICAL SYSTEM ERROR:")

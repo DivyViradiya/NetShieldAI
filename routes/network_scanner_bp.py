@@ -30,7 +30,7 @@ network_scanner_bp = Blueprint('network_scanner_bp', __name__)
 # --- PHASE 3: User-Specific Directory Helper ---
 def get_user_results_dir():
     """
-    Constructs the path: Services/results/<username_id>/network_scanner
+    Constructs the path: results/<username_id>/network_scanner
     """
     if not current_user.is_authenticated:
         # Fallback for testing/unauthenticated (though routes are protected)
@@ -39,9 +39,9 @@ def get_user_results_dir():
     # NEW LOGIC: Composite Identifier
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
 
-    # We navigate up from 'routes/' to root, then into Services/results
+    # We navigate up from 'routes/' to root, then into results
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'Services', 'results', user_identifier, 'network_scanner')
+    user_dir = os.path.join(base_dir, 'results', user_identifier, 'network_scanner')
     
     # FIXED: Added exist_ok=True to prevent race condition crashes
     os.makedirs(user_dir, exist_ok=True)

@@ -36,7 +36,7 @@ def get_user_results_dir():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
 
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'Services', 'results', user_identifier, 'zap_scanner')
+    user_dir = os.path.join(base_dir, 'results', user_identifier, 'zap_scanner')
     
     # FIXED: Added exist_ok=True to prevent race condition crashes
     os.makedirs(user_dir, exist_ok=True)

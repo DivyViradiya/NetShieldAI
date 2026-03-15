@@ -30,3 +30,4 @@ torch-geometric
 networkx
 scipy
 shap
+flask-mail
