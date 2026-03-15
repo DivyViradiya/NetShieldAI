@@ -1,10 +1,14 @@
 import os
 import sys
+from dotenv import load_dotenv
 
 # Ensure the project root is in the path for imports
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
+
+# Load environment variables
+load_dotenv(os.path.join(PROJECT_ROOT, '.env'))
 
 try:
     from run import app
@@ -21,17 +25,28 @@ def init_database():
         db.create_all()
         print("Database tables created/verified.")
 
-        # 2. Create an Admin User
-        if not User.query.filter_by(username='Admin').first():
-            admin = User(username='Admin', email='admin.netshieldai@gmail.com', is_admin=True)
-            # [SECURITY] Use a placeholder that MUST be changed
-            admin.set_password('Dv@020904') 
-            db.session.add(admin)
-            print("Admin user created (User: Admin, Pass: Dv@020904)")
-            print("IMPORTANT: Change this password immediately after first login!")
-        else:
-            print("Admin user already exists.")
+        # 2. Read Admin credentials from Environment (or use defaults)
+        admin_username = os.environ.get('ADMIN_USERNAME', 'Admin')
+        admin_email = os.environ.get('ADMIN_EMAIL', 'admin.netshieldai@gmail.com')
+        admin_password = os.environ.get('ADMIN_PASSWORD', 'ChangeMe123!')
 
+        # 3. Create an Admin User
+        existing_user = User.query.filter(
+            (User.username == admin_username) | (User.email == admin_email)
+        ).first()
+
+        if not existing_user:
+            admin = User(username=admin_username, email=admin_email, is_admin=True)
+            admin.set_password(admin_password) 
+            db.session.add(admin)
+            print(f"Admin user created (User: {admin_username}, Email: {admin_email})")
+            if admin_password == 'ChangeMe123!':
+                print("WARNING: Using default admin password. Change this immediately!")
+        else:
+            print(f"User with username '{admin_username}' or email '{admin_email}' already exists.")
+            if not existing_user.is_admin:
+                print(f"User '{admin_username}' exists but is not an admin. Promoting to admin...")
+                existing_user.is_admin = True
 
         # 4. Save changes
         db.session.commit()
