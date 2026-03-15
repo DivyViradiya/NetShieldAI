@@ -1,0 +1,62 @@
+{
+    "target": "testphp.vulnweb.com",
+    "profile": "Full Scan",
+    "aggression": "Attack",
+    "scan_date": "2026-03-15 16:13:12",
+    "recon": {
+        "subdomains": [
+            "testphp.vulnweb.com"
+        ],
+        "resolved_hosts": [
+            {
+                "domain": "testphp.vulnweb.com",
+                "ip": "44.228.249.3"
+            }
+        ]
+    },
+    "network": {
+        "nmap_scan": {
+            "target": "44.228.249.3",
+            "status": "up",
+            "ports": [],
+            "vulnerabilities": []
+        }
+    },
+    "web_audit": {
+        "waf_detection": {
+            "has_waf": false,
+            "error": "Target unreachable",
+            "recommendation": "abort"
+        },
+        "crawled_urls": [],
+        "forms_found": [],
+        "api_endpoints": [],
+        "directory_fuzzing": {
+            "target": "http://testphp.vulnweb.com/",
+            "tool": "Smart Directory Fuzzer",
+            "found_count": 0,
+            "findings": []
+        },
+        "vuln_scanner_findings": [],
+        "custom_scanner_findings": [],
+        "logic_scanner_findings": [],
+        "zap_findings": {
+            "error": "AScan initialization failed, ZAP returned: url_not_found"
+        }
+    },
+    "vulns": [],
+    "urls": [],
+    "tech": {
+        "error": "Fingerprinting failed: HTTPConnectionPool(host='testphp.vulnweb.com', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPConnection(host='testphp.vulnweb.com', port=80) at 0x1ef05b9d370>, 'Connection to testphp.vulnweb.com timed out. (connect timeout=5)'))"
+    },
+    "target_ip": "44.228.249.3",
+    "traffic_analysis": {
+        "stats": {
+            "packet_count": "0"
+        },
+        "anomalies": [],
+        "credentials": [],
+        "note": "No traffic captured."
+    },
+    "all_findings": []
+}

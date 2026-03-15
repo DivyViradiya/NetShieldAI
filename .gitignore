@@ -1,6 +1,8 @@
 venv
 instance
 run_ngrok.py
+init_db.py
+
 Services/results
 .env
 scan_results

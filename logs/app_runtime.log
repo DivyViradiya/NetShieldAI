@@ -6363,3 +6363,161 @@
 [2026-03-15 16:08:52] [INFO    ] [run] [>] POST /login from 127.0.0.1
 [2026-03-15 16:08:52] [INFO    ] [auth_bp] [*] Login attempt for: Divy Viradiya
 [2026-03-15 16:08:52] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: Divy Viradiya
+[2026-03-15 16:10:29] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 16:10:29] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 16:10:29] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-15 16:10:30] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': False
+[2026-03-15 16:10:30] [WARNING ] [auth_bp] [!] Login failed (Incorrect Password) for username: DivyaViradiya (Attempt 1)
+[2026-03-15 16:10:39] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 16:10:39] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 16:10:39] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-15 16:10:39] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': False
+[2026-03-15 16:10:39] [WARNING ] [auth_bp] [!] Login failed (Incorrect Password) for username: DivyaViradiya (Attempt 2)
+[2026-03-15 16:11:39] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 16:11:42] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 16:11:47] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-15 16:12:01] [INFO    ] [run] [>] POST /verify_otp from 127.0.0.1
+[2026-03-15 16:12:01] [INFO    ] [run] [>] GET /reset_password from 127.0.0.1
+[2026-03-15 16:12:11] [INFO    ] [run] [>] POST /reset_password from 127.0.0.1
+[2026-03-15 16:12:11] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 16:12:11] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 16:12:21] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 16:12:21] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 16:12:21] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-15 16:12:21] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-15 16:12:21] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 16:12:21] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 16:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-15 16:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-15 16:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-15 16:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-15 16:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-15 16:12:34] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-15 16:12:36] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-15 16:12:37] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-15 16:12:38] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-15 16:12:44] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-15 16:12:44] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-15 16:12:45] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-15 16:12:45] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: Admin)
+[2026-03-15 16:12:46] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-15 16:12:46] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-15 16:12:46] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-15 16:12:52] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-15 16:12:52] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-15 16:12:55] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-15 16:12:55] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-15 16:12:57] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-15 16:12:57] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: Admin)
+[2026-03-15 16:12:57] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-15 16:12:57] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-15 16:12:57] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-15 16:13:10] [INFO    ] [run] [>] POST /killchain/dispatch from 127.0.0.1
+[2026-03-15 16:13:10] [INFO    ] [killchain_bp] [35m[*] Kill Chain Audit requested for testphp.vulnweb.com by Admin[0m
+[2026-03-15 16:13:10] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-15 16:13:12] [INFO    ] [killchain_service] [START] [START] Kill Chain Audit: testphp.vulnweb.com (Profile: Full Scan, Aggression: Attack)
+[2026-03-15 16:13:12] [INFO    ] [killchain_service] [INFO] [+] Resolved testphp.vulnweb.com to IP: 44.228.249.3
+[2026-03-15 16:13:12] [INFO    ] [killchain_service] [INFO] [SETUP] Starting background traffic capture...
+[2026-03-15 16:13:14] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-15 16:13:14] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-15 16:13:14] [INFO    ] [traffic_analyzer]    [*] TShark: Flight Recorder started on 44.228.249.3 (iface: 1)...
+[2026-03-15 16:13:14] [INFO    ] [killchain_service] [PHASE] [PHASE] RECONNAISSANCE - Surface Area Discovery
+[2026-03-15 16:13:14] [INFO    ] [killchain_service] [STAGE] [STAGE] Scanning for subdomains and active hosts...
+[2026-03-15 16:13:14] [INFO    ] [recon] [*] Searching for subdomains for: testphp.vulnweb.com...
+[2026-03-15 16:13:14] [INFO    ] [recon]    [>] Querying crt.sh...
+[2026-03-15 16:13:15] [INFO    ] [recon]    [+] crt.sh found 0 potential subdomains.
+[2026-03-15 16:13:15] [INFO    ] [recon]    [>] Querying HackerTarget...
+[2026-03-15 16:13:15] [INFO    ] [recon]    [+] HackerTarget found 1 subdomains.
+[2026-03-15 16:13:15] [INFO    ] [recon]    [>] Querying Wayback Machine (Archive.org)...
+[2026-03-15 16:13:16] [INFO    ] [killchain_service] [INFO] [+] Found 1 potential subdomains.
+[2026-03-15 16:13:16] [INFO    ] [killchain_service] [STAGE] [STAGE] Resolving subdomain IPs...
+[2026-03-15 16:13:16] [INFO    ] [recon]    [>] Attempting DNS Zone Transfer (AXFR) on vulnweb.com...
+[2026-03-15 16:13:17] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-15 16:13:17] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-15 16:13:17] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-15 16:13:17] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-15 16:13:17] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-15 16:13:23] [INFO    ] [run] [>] POST /killchain/dispatch from 127.0.0.1
+[2026-03-15 16:13:23] [INFO    ] [killchain_bp] [35m[*] Kill Chain Audit requested for example.com by DivyaViradiya[0m
+[2026-03-15 16:13:23] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-15 16:13:24] [INFO    ] [killchain_service] [START] [START] Kill Chain Audit: example.com (Profile: Full Scan, Aggression: Attack)
+[2026-03-15 16:13:24] [INFO    ] [killchain_service] [INFO] [+] Resolved example.com to IP: 104.18.27.120
+[2026-03-15 16:13:24] [INFO    ] [killchain_service] [INFO] [SETUP] Starting background traffic capture...
+[2026-03-15 16:13:25] [INFO    ] [traffic_analyzer]    [*] TShark: Flight Recorder started on 104.18.27.120 (iface: 1)...
+[2026-03-15 16:13:25] [INFO    ] [killchain_service] [PHASE] [PHASE] RECONNAISSANCE - Surface Area Discovery
+[2026-03-15 16:13:25] [INFO    ] [killchain_service] [STAGE] [STAGE] Scanning for subdomains and active hosts...
+[2026-03-15 16:13:25] [INFO    ] [recon] [*] Searching for subdomains for: example.com...
+[2026-03-15 16:13:25] [INFO    ] [recon]    [>] Querying crt.sh...
+[2026-03-15 16:13:46] [ERROR   ] [recon]    [!] crt.sh failed: HTTPSConnectionPool(host='crt.sh', port=443): Read timed out. (read timeout=20)
+[2026-03-15 16:13:46] [INFO    ] [recon]    [>] Querying HackerTarget...
+[2026-03-15 16:13:46] [INFO    ] [recon]    [+] HackerTarget found 1 subdomains.
+[2026-03-15 16:13:46] [INFO    ] [recon]    [>] Querying Wayback Machine (Archive.org)...
+[2026-03-15 16:14:12] [INFO    ] [killchain_service] [INFO] [+] Found 1 potential subdomains.
+[2026-03-15 16:14:12] [INFO    ] [killchain_service] [STAGE] [STAGE] Resolving subdomain IPs...
+[2026-03-15 16:14:12] [INFO    ] [recon]    [>] Attempting DNS Zone Transfer (AXFR) on example.com...
+[2026-03-15 16:14:12] [INFO    ] [recon] [*] Resolving IPs for 1 subdomains...
+[2026-03-15 16:14:12] [INFO    ] [killchain_service] [INFO] [+] Resolved 1 host IPs.
+[2026-03-15 16:14:12] [INFO    ] [killchain_service] [STAGE] [STAGE] Detecting target technology stack...
+[2026-03-15 16:14:12] [INFO    ] [tech_detector] [*] Fingerprinting Technology for example.com...
+[2026-03-15 16:14:12] [INFO    ] [killchain_service] [INFO] [+] Detected technologies: Server
+[2026-03-15 16:14:12] [INFO    ] [killchain_service] [PHASE] [PHASE] NETWORK AUDIT - Infrastructure Assessment
+[2026-03-15 16:14:12] [INFO    ] [killchain_service] [INFO] [+] Resolved example.com to IP: 104.18.27.120
+[2026-03-15 16:14:12] [INFO    ] [killchain_service] [STAGE] [STAGE] Running Nmap full scan on 104.18.27.120...
+[2026-03-15 16:14:12] [INFO    ] [scanner] [*] Starting Nmap full scan on 104.18.27.120...
+[2026-03-15 16:14:19] [INFO    ] [recon] [*] Resolving IPs for 1 subdomains...
+[2026-03-15 16:14:19] [INFO    ] [killchain_service] [INFO] [+] Resolved 1 host IPs.
+[2026-03-15 16:14:19] [INFO    ] [killchain_service] [STAGE] [STAGE] Detecting target technology stack...
+[2026-03-15 16:14:19] [INFO    ] [tech_detector] [*] Fingerprinting Technology for testphp.vulnweb.com...
+[2026-03-15 16:14:24] [INFO    ] [killchain_service] [INFO] [+] Detected technologies: 
+[2026-03-15 16:14:24] [INFO    ] [killchain_service] [PHASE] [PHASE] NETWORK AUDIT - Infrastructure Assessment
+[2026-03-15 16:14:24] [INFO    ] [killchain_service] [INFO] [+] Resolved testphp.vulnweb.com to IP: 44.228.249.3
+[2026-03-15 16:14:24] [INFO    ] [killchain_service] [STAGE] [STAGE] Running Nmap full scan on 44.228.249.3...
+[2026-03-15 16:14:24] [INFO    ] [scanner] [*] Starting Nmap full scan on 44.228.249.3...
+[2026-03-15 16:14:32] [INFO    ] [killchain_service] [INFO] [+] Nmap scan completed. Found 0 open ports.
+[2026-03-15 16:14:32] [INFO    ] [killchain_service] [PHASE] [PHASE] WAF DETECTION
+[2026-03-15 16:14:32] [INFO    ] [killchain_service] [STAGE] [STAGE] Checking for Web Application Firewall (WAF)...
+[2026-03-15 16:14:32] [INFO    ] [waf_detector] [*] Checking for WAF/CDN on testphp.vulnweb.com...
+[2026-03-15 16:14:37] [ERROR   ] [waf_detector]    [!] WAF Error: Could not connect to baseline URL.
+[2026-03-15 16:14:37] [INFO    ] [killchain_service] [INFO] [+] No WAF detected.
+[2026-03-15 16:14:37] [INFO    ] [killchain_service] [PHASE] [PHASE] WEB AUDIT - Application Assessment
+[2026-03-15 16:14:37] [INFO    ] [killchain_service] [STAGE] [STAGE] Crawling web application (Max Pages: 1000)...
+[2026-03-15 16:14:37] [INFO    ] [crawler] [*] Starting Multi-Threaded Crawler on: testphp.vulnweb.com
+[2026-03-15 16:14:47] [ERROR   ] [crawler]  [!] Error accessing http://testphp.vulnweb.com: HTTPConnectionPool(host='testphp.vulnweb.com', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPConnection(host='testphp.vulnweb.com', port=80) at 0x1ef05b9dd00>, 'Connection to testphp.vulnweb.com timed out. (connect timeout=10)'))
+[2026-03-15 16:14:47] [INFO    ] [crawler]  [>] Pages Processed: 1 | Active Threads: 0
+[2026-03-15 16:14:47] [INFO    ] [crawler] 
+ [+] Crawl Complete.
+[2026-03-15 16:14:47] [INFO    ] [crawler]      - Pages: 1
+[2026-03-15 16:14:47] [INFO    ] [crawler]      - Params Found: 0
+[2026-03-15 16:14:47] [INFO    ] [crawler]      - Hidden APIs: 0
+[2026-03-15 16:14:47] [INFO    ] [crawler]      - Forms: 0
+[2026-03-15 16:14:47] [INFO    ] [killchain_service] [INFO] [+] Crawler found 0 URLs, 0 forms, and 0 API endpoints.
+[2026-03-15 16:14:47] [INFO    ] [killchain_service] [STAGE] [STAGE] Performing directory fuzzing (Max Depth: 4)...
+[2026-03-15 16:14:47] [INFO    ] [dir_fuzzer] [*] Starting Smart Fuzzing on testphp.vulnweb.com (Depth: 4)...
+[2026-03-15 16:15:02] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-15 16:15:04] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-15 16:15:07] [INFO    ] [run] [>] GET /account/settings from 127.0.0.1
+[2026-03-15 16:15:10] [INFO    ] [dir_fuzzer]    [>] Generated 90 paths based on tech detected.
+[2026-03-15 16:15:40] [INFO    ] [run] [>] POST /account/settings from 127.0.0.1
+[2026-03-15 16:15:40] [INFO    ] [run] [>] GET /account/settings from 127.0.0.1
+[2026-03-15 16:15:47] [INFO    ] [run] [>] GET /account/settings from 127.0.0.1
+[2026-03-15 16:15:58] [INFO    ] [run] [>] POST /account/settings from 127.0.0.1
+[2026-03-15 16:15:58] [INFO    ] [run] [>] GET /account/settings from 127.0.0.1
+[2026-03-15 16:16:15] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 16:16:15] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 16:16:15] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-15 16:16:15] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-15 16:16:15] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-15 16:16:15] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-15 16:16:15] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1

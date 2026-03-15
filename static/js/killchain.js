@@ -56,6 +56,24 @@ document.addEventListener("DOMContentLoaded", () => {
   function appendLog(msg) {
     if (!msg) return;
 
+    // Filter out verbose scanner/dependency noise
+    const isImportant = msg.includes("ERROR") || msg.includes("CRITICAL") || msg.includes("FAIL") || 
+                        msg.includes("[STAGE]") || msg.includes("[PHASE]") || msg.includes("[INFO] [+]") || 
+                        msg.includes("[*]") || msg.includes("[SYSTEM]");
+                        
+    if (!isImportant) {
+      if (
+        /org\.(zaproxy|parosproxy|flywaydb|openqa)/i.test(msg) ||
+        /^[A-Za-z]:\\[^>]*>/.test(msg.trim()) || 
+        /java\s+-Xmx/i.test(msg) || 
+        /sun\.misc\.unsafe/i.test(msg) ||
+        /platformdependent/i.test(msg) ||
+        /\b(?:Creating directory|Copying default configuration|Setting config|Installed add-ons|Loading extensions|Extensions loaded)\b/i.test(msg)
+      ) {
+        return; 
+      }
+    }
+
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-US', {
       hour12: false,
