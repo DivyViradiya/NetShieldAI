@@ -101,6 +101,22 @@
         <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
           {{ form.hidden_tag() }}
 
+          <!-- Single Sign-On Option -->
+          <div class="mb-5">
+            <div class="grid grid-cols-2 gap-4">
+              <button onclick="window.location.href='{{ url_for('auth.login_google') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition text-center">Google</button>
+              <button onclick="window.location.href='{{ url_for('auth.login_github') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition text-center">GitHub</button>
+            </div>
+            <div class="relative py-4">
+              <div class="absolute inset-0 flex items-center">
+                <span class="w-full border-t border-[var(--neo-border)]"></span>
+              </div>
+              <div class="relative flex justify-center text-xs uppercase">
+                <span class="bg-[var(--neo-card)] px-4 text-[var(--neo-text-label)] font-medium z-10">Or fill details manually</span>
+              </div>
+            </div>
+          </div>
+
           <div class="form-step transition-opacity duration-300" id="step1">
             <div class="space-y-4">
               <div>

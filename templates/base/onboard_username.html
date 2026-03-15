@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}NetShieldAI - Forgot Password{% endblock %}
+{% block title %}NetShieldAI - Setup Username{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -22,18 +22,18 @@
     --neo-blue: #4f46e5;
     --bg-color: #f1f5f9;
   }
-  #forgot-card, #forgot-card * { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  #onboard-card, #onboard-card * { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
   
-  <div id="forgot-card" class="relative z-10 flex w-full max-w-[500px] h-auto bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden p-8 md:p-12 flex-col justify-center">
+  <div id="onboard-card" class="relative z-10 flex w-full max-w-[500px] h-auto bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden p-8 md:p-12 flex-col justify-center">
     
     <div class="text-center mb-6">
-      <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2">Recover Password</h3>
-      <p class="text-[var(--neo-text-secondary)] text-sm">Enter your email and we'll send you a link to reset your password.</p>
+      <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2">Welcome to NetShield!</h3>
+      <p class="text-[var(--neo-text-secondary)] text-sm">Please choose a unique username to complete your profile setup.</p>
     </div>
 
     {% with messages=get_flashed_messages(with_categories=true) %}
@@ -53,15 +53,16 @@
       {% endif %}
     {% endwith %}
 
-    <form method="POST" action="{{ url_for('auth.forgot_password') }}" class="space-y-5" id="forgotForm">
+    <form method="POST" action="{{ url_for('auth.onboard_username') }}" class="space-y-5" id="onboardForm">
       {{ form.hidden_tag() }}
 
       <div>
-        {{ form.email.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-        {{ form.email(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='Enter your email address') }}
-        {% if form.email.errors %}
+        {{ form.username.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
+        {{ form.username(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='Choose a username') }}
+        
+        {% if form.username.errors %}
           <div class="text-red-500 text-xs mt-1 ml-1">
-            {% for error in form.email.errors %}
+            {% for error in form.username.errors %}
               <span>{{ error }}</span>
             {% endfor %}
           </div>
@@ -69,32 +70,22 @@
       </div>
 
       <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-        <span>Request Reset</span>
+        <span>Save & Continue</span>
       </button>
       
     </form>
     
-    <p class="text-sm text-[var(--neo-text-secondary)] mt-8 text-center">
-      Remembered your password? <a href="{{ url_for('auth.login') }}" class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] font-medium transition opacity-80 hover:opacity-100">Back to Sign In</a>
-    </p>
-
-    <p class="text-sm text-[var(--neo-text-secondary)] mt-2 text-center">
-      Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] font-medium transition opacity-80 hover:opacity-100">Create Account</a>
-    </p>
-
   </div>
 </div>
 
 <script>
-  document.getElementById('forgotForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+  document.getElementById('onboardForm').addEventListener('submit', function(e) {
     const btn = document.getElementById('submitBtn');
+    if (btn.classList.contains('opacity-75')) return; // Prevent double submit
+
     const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
     btn.innerHTML = spinner + "Processing...";
     btn.classList.add('opacity-75', 'cursor-not-allowed');
-    setTimeout(() => {
-      e.target.submit();
-    }, 400);
   });
 </script>
 {% endblock %}

@@ -63,6 +63,24 @@ login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 csrf = CSRFProtect(app)
 
+from extensions import oauth
+oauth.init_app(app)
+oauth.register(
+    name='google',
+    client_id=os.environ.get('OAUTH_CLIENT_ID'),
+    client_secret=os.environ.get('OAUTH_CLIENT_SECRET'),
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={'scope': 'openid email profile'}
+)
+oauth.register(
+    name='github',
+    client_id=os.environ.get('GITHUB_CLIENT_ID'),
+    client_secret=os.environ.get('GITHUB_CLIENT_SECRET'),
+    authorize_url='https://github.com/login/oauth/authorize',
+    access_token_url='https://github.com/login/oauth/access_token',
+    api_base_url='https://api.github.com/',
+    client_kwargs={'scope': 'user:email'}
+)
 # --- Mail Configuration ---
 app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
 app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))

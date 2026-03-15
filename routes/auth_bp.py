@@ -5,13 +5,25 @@ from flask_login import login_user, logout_user, login_required, current_user
 from urllib.parse import urlparse  
 from sqlalchemy import func 
 from models import User, ScanLog, PasswordResetOTP
-from extensions import db, mail
-from forms import RegistrationForm, LoginForm, UpdateProfileForm, ChangePasswordForm, ForgotPasswordForm, ResetPasswordForm, VerifyOTPForm
+from extensions import db, mail, oauth
+from forms import RegistrationForm, LoginForm, UpdateProfileForm, ChangePasswordForm, ForgotPasswordForm, ResetPasswordForm, VerifyOTPForm, OnboardUsernameForm
 from flask_mail import Message
 from flask import session
 from logger_setup import logger
 
 auth_bp = Blueprint('auth', __name__)
+
+@auth_bp.before_app_request
+def check_onboarding():
+    """
+    [SECURITY] Intercept users that logged in with Google but haven't chosen a username yet.
+    Redirect them to the setup screen.
+    """
+    from flask import request
+    if current_user.is_authenticated:
+        if hasattr(current_user, 'is_onboarded') and not current_user.is_onboarded:
+            if request.endpoint and request.endpoint not in ['auth.onboard_username', 'auth.logout', 'static']:
+                return redirect(url_for('auth.onboard_username'))
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -31,7 +43,8 @@ def login():
         logger.info(f"[*] Login attempt for: {raw_username}")
         
         # In SQLite, LIKE is case-insensitive by default for ASCII
-        user = User.query.filter(User.username.like(raw_username)).first()
+        # [UX UPDATE] Allow logging in with either username OR email address
+        user = User.query.filter((User.username.like(raw_username)) | (User.email.like(raw_username))).first()
 
         # 3. Check credentials
         if user:
@@ -85,6 +98,166 @@ def login():
             logger.warning(f"[!] Login failed (User Not Found) for username: {form.username.data}")
             
     return render_template('base/login.html', form=form)
+
+
+@auth_bp.route('/login/google')
+def login_google():
+    """Redirect to Google for authentication."""
+    redirect_uri = url_for('auth.google_callback', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@auth_bp.route('/login/google/callback')
+def google_callback():
+    """Handle the response from Google authentication."""
+    import secrets
+    try:
+        token = oauth.google.authorize_access_token()
+        user_info = token.get('userinfo')
+        if not user_info:
+             # Fallback to GET userinfo
+             user_info = oauth.google.get('https://www.googleapis.com/oauth2/v3/userinfo').json()
+
+        email = user_info.get('email')
+        if not email:
+            flash('Failed to retrieve email from Google.', 'danger')
+            return redirect(url_for('auth.login'))
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            # 1. Generate Username
+            username_base = email.split('@')[0].lower()
+            username = username_base
+            count = 1
+            # Check for conflict
+            while User.query.filter(User.username.like(username)).first():
+                username = f"{username_base}{count}"
+                count += 1
+
+            full_name = user_info.get('name') or user_info.get('given_name', '')
+
+            # 2. Create User
+            user = User(
+                username=username,
+                email=email,
+                full_name=full_name,
+                is_onboarded=False # [SECURITY] Trigger Onboarding setup on first login
+            )
+            # Generate a secure random password hash
+            user.set_password(secrets.token_urlsafe(16))
+            
+            db.session.add(user)
+            db.session.commit()
+            logger.info(f"[+] New User created via Google OAuth: {username}")
+        else:
+            logger.info(f"[+] User logged in via Google OAuth: {user.username}")
+
+        # Log support audit data
+        user.update_login_stats(request.remote_addr)
+        login_user(user)
+
+        # Flash success message
+        flash('Logged in with Google successfully!', 'success')
+        
+        # Redirect Logic identical to standard login
+        next_page = request.args.get('next')
+        if not next_page or urlparse(next_page).netloc != '':
+            if user.is_admin:
+                next_page = url_for('auth.admin_dashboard')
+            else:
+                next_page = url_for('index')
+        return redirect(next_page)
+
+    except Exception as e:
+        logger.error(f"[!] Google OAuth Error: {str(e)}")
+        flash('Google authentication failed. Please try again.', 'danger')
+        return redirect(url_for('auth.login'))
+
+
+@auth_bp.route('/login/github')
+def login_github():
+    """Redirect to GitHub for authentication."""
+    redirect_uri = url_for('auth.github_callback', _external=True)
+    return oauth.github.authorize_redirect(redirect_uri)
+
+
+@auth_bp.route('/login/github/callback')
+def github_callback():
+    """Handle the response from GitHub authentication."""
+    import secrets
+    try:
+        token = oauth.github.authorize_access_token()
+        resp = oauth.github.get('user')
+        user_info = resp.json()
+
+        # GitHub might return email=None if it's private.
+        email = user_info.get('email')
+        if not email:
+            # Fetch from user/emails endpoint if scope was user:email
+            emails_resp = oauth.github.get('user/emails')
+            emails = emails_resp.json()
+            # Find primary verified email
+            for e in emails:
+                if e.get('primary') and e.get('verified'):
+                    email = e['email']
+                    break
+            
+            if not email and emails:
+                for e in emails:
+                    if e.get('verified'):
+                        email = e['email']
+                        break
+
+        if not email:
+            flash('Failed to retrieve email from GitHub.', 'danger')
+            return redirect(url_for('auth.login'))
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            # 1. Generate Username
+            username_base = user_info.get('login') or email.split('@')[0].lower()
+            username = username_base
+            count = 1
+            # Check for conflict
+            while User.query.filter(User.username.like(username)).first():
+                username = f"{username_base}{count}"
+                count += 1
+
+            full_name = user_info.get('name') or user_info.get('login')
+
+            # 2. Create User
+            user = User(
+                username=username,
+                email=email,
+                full_name=full_name
+            )
+            user.set_password(secrets.token_urlsafe(16))
+            
+            db.session.add(user)
+            db.session.commit()
+            logger.info(f"[+] New User created via GitHub OAuth: {username}")
+        else:
+            logger.info(f"[+] User logged in via GitHub OAuth: {user.username}")
+
+        user.update_login_stats(request.remote_addr)
+        login_user(user)
+
+        flash('Logged in with GitHub successfully!', 'success')
+        
+        next_page = request.args.get('next')
+        if not next_page or urlparse(next_page).netloc != '':
+            if user.is_admin:
+                next_page = url_for('auth.admin_dashboard')
+            else:
+                next_page = url_for('index')
+        return redirect(next_page)
+
+    except Exception as e:
+        logger.error(f"[!] GitHub OAuth Error: {str(e)}")
+        flash('GitHub authentication failed. Please try again.', 'danger')
+        return redirect(url_for('auth.login'))
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -433,8 +606,14 @@ def forgot_password():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             send_reset_email(user)
+        else:
+            # [SECURITY] Set dummy session state for non-existent users to prevent enumeration
+            session['reset_user_id'] = -1
+            session['fake_attempts'] = 0
+            
         # Act like it always works to avoid email enumeration leaks
-        flash('A 6-digit verification code has been sent to your email.', 'info')
+        # [UX UPDATE] Better wording that creates slight doubt about typos without leaking
+        flash('If that email is registered in our system, a 6-digit verification code has been sent.', 'info')
         return redirect(url_for('auth.verify_otp'))
     return render_template('base/forgot_password.html', form=form)
 
@@ -451,6 +630,17 @@ def verify_otp():
         
     form = VerifyOTPForm()
     if form.validate_on_submit():
+        # [SECURITY] Handle dummy user flow to prevent enumeration leaks
+        if reset_user_id == -1:
+            session['fake_attempts'] = session.get('fake_attempts', 0) + 1
+            if session['fake_attempts'] >= 3:
+                session.pop('reset_user_id', None)
+                session.pop('fake_attempts', None)
+                flash('Too many failed attempts. Code invalidated for security. Please request a new one.', 'danger')
+                return redirect(url_for('auth.forgot_password'))
+            flash(f'Invalid code. You have {3 - session["fake_attempts"]} attempts remaining.', 'danger')
+            return render_template('base/verify_otp.html', form=form)
+            
         otp_entry = PasswordResetOTP.query.filter_by(user_id=reset_user_id).order_by(PasswordResetOTP.created_at.desc()).first()
         
         if not otp_entry:
@@ -519,3 +709,31 @@ def reset_password():
         return redirect(url_for('auth.login'))
         
     return render_template('base/reset_password.html', form=form)
+
+@auth_bp.route('/onboard_username', methods=['GET', 'POST'])
+@login_required
+def onboard_username():
+    """
+    [SECURITY] Render setup view mapping users onboarding custom username strings properly.
+    """
+    # If already set, get out
+    if current_user.is_onboarded:
+        return redirect(url_for('index'))
+        
+    form = OnboardUsernameForm()
+    if form.validate_on_submit():
+        new_username = form.username.data.strip()
+        
+        from sqlalchemy import func
+        # Check for conflict (case-insensitive)
+        if User.query.filter(func.lower(User.username) == func.lower(new_username)).first():
+            flash('Username is already taken. Please try another.', 'danger')
+            return render_template('base/onboard_username.html', form=form)
+            
+        current_user.username = new_username
+        current_user.is_onboarded = True
+        db.session.commit()
+        flash('Username saved successfully! Welcome aboard.', 'success')
+        return redirect(url_for('index'))
+        
+    return render_template('base/onboard_username.html', form=form)

@@ -6090,3 +6090,276 @@
 [2026-03-15 11:02:59] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
 [2026-03-15 11:15:03] [INFO    ] [run] [*] Registering Core Modules...
 [2026-03-15 11:15:03] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 11:25:57] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 11:25:57] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 11:26:10] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 11:26:10] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 11:56:32] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 11:56:36] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 11:56:36] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 11:56:36] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-15 11:56:36] [INFO    ] [run] [+] Database schema verified.
+[2026-03-15 11:56:36] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-15 11:56:39] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 11:56:39] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 11:56:40] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 11:56:41] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 11:56:41] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 11:56:50] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 11:57:03] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 11:58:08] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 11:58:08] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 11:58:10] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 12:05:02] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 12:05:06] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 12:05:06] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 12:05:06] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-15 12:05:06] [INFO    ] [run] [+] Database schema verified.
+[2026-03-15 12:05:06] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-15 12:05:10] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 12:05:10] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 12:05:10] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 12:05:13] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 12:05:13] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 12:05:16] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 12:05:16] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 12:05:18] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 12:05:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 12:05:34] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 12:05:34] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 12:05:58] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 12:07:27] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 12:07:27] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 12:07:29] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 12:07:29] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 12:07:31] [INFO    ] [run] [>] GET /login/github from 127.0.0.1
+[2026-03-15 12:07:41] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-15 12:07:41] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-15 12:08:56] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 12:09:03] [INFO    ] [run] [>] GET /login/github from 127.0.0.1
+[2026-03-15 12:09:08] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-15 12:09:08] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-15 12:09:17] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 12:09:17] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 12:09:20] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 12:09:20] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 12:09:21] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 12:09:34] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-15 12:09:34] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: Admin
+[2026-03-15 12:09:34] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-15 12:09:34] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: Admin)
+[2026-03-15 12:11:01] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-15 12:11:01] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: Admin)
+[2026-03-15 12:11:04] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 12:11:04] [INFO    ] [auth_bp] [*] User Logout: Admin
+[2026-03-15 12:11:04] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 12:11:04] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 12:11:11] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 12:11:11] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 12:11:11] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: DivyaViradiya
+[2026-03-15 12:11:16] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 12:11:16] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 12:11:16] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: DivyaViradiya
+[2026-03-15 12:11:18] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-15 12:11:18] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-15 12:11:20] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 12:11:33] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 12:11:33] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 12:11:36] [INFO    ] [run] [>] GET /login/github from 127.0.0.1
+[2026-03-15 15:47:17] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 15:47:53] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 15:47:53] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 15:47:53] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-15 15:47:53] [INFO    ] [run] [+] Database schema verified.
+[2026-03-15 15:47:53] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-15 15:47:58] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 15:47:58] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 15:47:58] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 15:47:59] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 15:47:59] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 15:48:02] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 15:48:02] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 15:48:04] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 15:48:15] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 15:48:15] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-15 15:49:44] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 15:52:07] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 15:52:07] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 15:52:07] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 15:52:08] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 15:52:08] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 15:52:19] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 15:52:20] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-15 15:52:33] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 15:52:53] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-15 15:52:53] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-15 15:52:54] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 15:52:55] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-15 15:52:55] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: Admin
+[2026-03-15 15:52:55] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-15 15:52:55] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: Admin)
+[2026-03-15 15:53:00] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 15:53:00] [INFO    ] [auth_bp] [*] User Logout: Admin
+[2026-03-15 15:53:00] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 15:53:00] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 15:53:06] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 15:53:06] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 15:53:08] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-15 15:53:08] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-15 15:53:10] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 15:53:15] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-15 15:53:16] [INFO    ] [auth_bp] [+] New User created via Google OAuth: divya.viradiya.7
+[2026-03-15 15:53:16] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 15:53:16] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 15:53:16] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-15 15:53:16] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-15 15:53:16] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-15 15:53:16] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-15 15:53:16] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-15 15:53:19] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 15:53:19] [INFO    ] [auth_bp] [*] User Logout: divya.viradiya.7
+[2026-03-15 15:53:19] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 15:53:19] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 15:53:21] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 15:53:33] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 15:53:38] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-15 15:53:54] [INFO    ] [run] [>] POST /verify_otp from 127.0.0.1
+[2026-03-15 15:53:55] [INFO    ] [run] [>] GET /reset_password from 127.0.0.1
+[2026-03-15 15:54:06] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 15:54:20] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 15:54:25] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-15 15:54:51] [INFO    ] [run] [>] POST /verify_otp from 127.0.0.1
+[2026-03-15 15:54:51] [INFO    ] [run] [>] GET /reset_password from 127.0.0.1
+[2026-03-15 15:55:29] [INFO    ] [run] [>] POST /reset_password from 127.0.0.1
+[2026-03-15 15:55:38] [INFO    ] [run] [>] POST /reset_password from 127.0.0.1
+[2026-03-15 15:55:39] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 15:55:39] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 15:55:45] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 15:55:45] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 15:55:45] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: DivyaViradiya
+[2026-03-15 15:55:55] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 15:55:55] [INFO    ] [auth_bp] [*] Login attempt for: Divy Viradiya
+[2026-03-15 15:55:55] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: Divy Viradiya
+[2026-03-15 15:55:58] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 15:56:02] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-15 15:56:02] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: divya.viradiya.7
+[2026-03-15 15:56:02] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 15:56:02] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 15:56:02] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-15 15:56:02] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-15 15:56:02] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-15 15:56:02] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-15 15:56:02] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-15 15:56:14] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 15:56:14] [INFO    ] [auth_bp] [*] User Logout: divya.viradiya.7
+[2026-03-15 15:56:14] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 15:56:14] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 15:56:24] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 15:56:24] [INFO    ] [auth_bp] [*] Login attempt for: Divy Viradiya
+[2026-03-15 15:56:24] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: Divy Viradiya
+[2026-03-15 15:56:32] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 15:56:32] [INFO    ] [auth_bp] [*] Login attempt for: Divy Viradiya
+[2026-03-15 15:56:32] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: Divy Viradiya
+[2026-03-15 15:56:40] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 15:56:43] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-15 15:56:48] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-15 15:57:07] [INFO    ] [run] [>] POST /verify_otp from 127.0.0.1
+[2026-03-15 15:57:07] [INFO    ] [run] [>] GET /reset_password from 127.0.0.1
+[2026-03-15 15:57:20] [INFO    ] [run] [>] POST /reset_password from 127.0.0.1
+[2026-03-15 15:57:33] [INFO    ] [run] [>] POST /reset_password from 127.0.0.1
+[2026-03-15 15:57:34] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 15:57:34] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 15:57:56] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 15:57:56] [INFO    ] [auth_bp] [*] Login attempt for: Divy Viradiya
+[2026-03-15 15:57:56] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: Divy Viradiya
+[2026-03-15 15:59:20] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 15:59:20] [INFO    ] [auth_bp] [*] Login attempt for: divya.viradiya.7
+[2026-03-15 15:59:20] [DEBUG   ] [auth_bp] [+] User 'divya.viradiya.7' found in database.
+[2026-03-15 15:59:27] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 15:59:27] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 15:59:27] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 15:59:42] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 15:59:43] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 15:59:43] [INFO    ] [auth_bp] [*] Login attempt for: divya.viradiya.7
+[2026-03-15 15:59:43] [DEBUG   ] [auth_bp] [+] User 'divya.viradiya.7' found in database.
+[2026-03-15 15:59:43] [DEBUG   ] [auth_bp] [?] Password match for 'divya.viradiya.7': False
+[2026-03-15 15:59:43] [WARNING ] [auth_bp] [!] Login failed (Incorrect Password) for username: divya.viradiya.7 (Attempt 1)
+[2026-03-15 16:00:03] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 16:00:03] [INFO    ] [auth_bp] [*] Login attempt for: divya.viradiya.7
+[2026-03-15 16:00:03] [DEBUG   ] [auth_bp] [+] User 'divya.viradiya.7' found in database.
+[2026-03-15 16:00:03] [DEBUG   ] [auth_bp] [?] Password match for 'divya.viradiya.7': False
+[2026-03-15 16:00:03] [WARNING ] [auth_bp] [!] Login failed (Incorrect Password) for username: divya.viradiya.7 (Attempt 2)
+[2026-03-15 16:00:09] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 16:00:09] [INFO    ] [auth_bp] [*] Login attempt for: Divy Viradiya
+[2026-03-15 16:00:09] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: Divy Viradiya
+[2026-03-15 16:01:41] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 16:01:42] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 16:07:12] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 16:07:12] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 16:07:21] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-15 16:07:25] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 16:07:25] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 16:07:25] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-15 16:07:25] [INFO    ] [run] [+] Database schema verified.
+[2026-03-15 16:07:25] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-15 16:07:33] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-15 16:07:33] [INFO    ] [run] [+] 11 Modules Loaded Successfully.
+[2026-03-15 16:07:33] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-15 16:07:34] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-15 16:07:38] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 16:07:38] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 16:07:45] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 16:07:45] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 16:07:45] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: DivyaViradiya
+[2026-03-15 16:07:48] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 16:07:49] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-15 16:07:49] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: Admin
+[2026-03-15 16:07:49] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-15 16:07:49] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: Admin)
+[2026-03-15 16:07:58] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 16:07:58] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 16:08:01] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-15 16:08:02] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 16:08:02] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 16:08:06] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 16:08:11] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-15 16:08:12] [INFO    ] [auth_bp] [+] New User created via Google OAuth: divya.viradiya.7
+[2026-03-15 16:08:12] [INFO    ] [run] [>] GET /onboard_username from 127.0.0.1
+[2026-03-15 16:08:21] [INFO    ] [run] [>] POST /onboard_username from 127.0.0.1
+[2026-03-15 16:08:21] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 16:08:21] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 16:08:21] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-15 16:08:21] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-15 16:08:21] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-15 16:08:21] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-15 16:08:21] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-15 16:08:24] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 16:08:24] [INFO    ] [auth_bp] [*] User Logout: DivyaViradiya
+[2026-03-15 16:08:24] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 16:08:24] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 16:08:33] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 16:08:33] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-15 16:08:33] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-15 16:08:33] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': False
+[2026-03-15 16:08:33] [WARNING ] [auth_bp] [!] Login failed (Incorrect Password) for username: DivyaViradiya (Attempt 1)
+[2026-03-15 16:08:40] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-15 16:08:44] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-15 16:08:44] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: DivyaViradiya
+[2026-03-15 16:08:44] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-15 16:08:44] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-15 16:08:44] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-15 16:08:44] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-15 16:08:44] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-15 16:08:44] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-15 16:08:44] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-15 16:08:48] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-15 16:08:48] [INFO    ] [auth_bp] [*] User Logout: DivyaViradiya
+[2026-03-15 16:08:48] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-15 16:08:48] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-15 16:08:52] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-15 16:08:52] [INFO    ] [auth_bp] [*] Login attempt for: Divy Viradiya
+[2026-03-15 16:08:52] [WARNING ] [auth_bp] [!] Login failed (User Not Found) for username: Divy Viradiya

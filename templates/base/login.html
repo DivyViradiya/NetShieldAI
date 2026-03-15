@@ -147,8 +147,8 @@
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <button type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition">Google</button>
-            <button type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition">GitHub</button>
+            <button onclick="window.location.href='{{ url_for('auth.login_google') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition">Google</button>
+            <button onclick="window.location.href='{{ url_for('auth.login_github') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition">GitHub</button>
           </div>
         </form>
 

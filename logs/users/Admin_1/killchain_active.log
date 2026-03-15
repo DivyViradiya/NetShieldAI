@@ -1,0 +1,27 @@
+[2026-03-15 16:13:10] Log cleared for new killchain scan.
+[2026-03-15 16:13:12] [START] [START] Kill Chain Audit: testphp.vulnweb.com (Profile: Full Scan, Aggression: Attack)
+[2026-03-15 16:13:12] [EVENT] EVENT: scan_status | PAYLOAD: {"message": "Starting scan...", "phase": "Initialization"}
+[2026-03-15 16:13:12] [INFO] [+] Resolved testphp.vulnweb.com to IP: 44.228.249.3
+[2026-03-15 16:13:12] [INFO] [SETUP] Starting background traffic capture...
+[2026-03-15 16:13:14] [EVENT] EVENT: scan_status | PAYLOAD: {"message": "Running Recon Phase...", "phase": "recon_phase"}
+[2026-03-15 16:13:14] [PHASE] [PHASE] RECONNAISSANCE - Surface Area Discovery
+[2026-03-15 16:13:14] [STAGE] [STAGE] Scanning for subdomains and active hosts...
+[2026-03-15 16:13:16] [INFO] [+] Found 1 potential subdomains.
+[2026-03-15 16:13:16] [STAGE] [STAGE] Resolving subdomain IPs...
+[2026-03-15 16:14:19] [INFO] [+] Resolved 1 host IPs.
+[2026-03-15 16:14:19] [STAGE] [STAGE] Detecting target technology stack...
+[2026-03-15 16:14:24] [INFO] [+] Detected technologies: 
+[2026-03-15 16:14:24] [EVENT] EVENT: scan_status | PAYLOAD: {"message": "Running Network Audit Phase...", "phase": "network_audit_phase"}
+[2026-03-15 16:14:24] [PHASE] [PHASE] NETWORK AUDIT - Infrastructure Assessment
+[2026-03-15 16:14:24] [INFO] [+] Resolved testphp.vulnweb.com to IP: 44.228.249.3
+[2026-03-15 16:14:24] [STAGE] [STAGE] Running Nmap full scan on 44.228.249.3...
+[2026-03-15 16:14:32] [INFO] [+] Nmap scan completed. Found 0 open ports.
+[2026-03-15 16:14:32] [EVENT] EVENT: scan_status | PAYLOAD: {"message": "Running Waf Detect Phase...", "phase": "waf_detect_phase"}
+[2026-03-15 16:14:32] [PHASE] [PHASE] WAF DETECTION
+[2026-03-15 16:14:32] [STAGE] [STAGE] Checking for Web Application Firewall (WAF)...
+[2026-03-15 16:14:37] [INFO] [+] No WAF detected.
+[2026-03-15 16:14:37] [EVENT] EVENT: scan_status | PAYLOAD: {"message": "Running Web Audit Phase...", "phase": "web_audit_phase"}
+[2026-03-15 16:14:37] [PHASE] [PHASE] WEB AUDIT - Application Assessment
+[2026-03-15 16:14:37] [STAGE] [STAGE] Crawling web application (Max Pages: 1000)...
+[2026-03-15 16:14:47] [INFO] [+] Crawler found 0 URLs, 0 forms, and 0 API endpoints.
+[2026-03-15 16:14:47] [STAGE] [STAGE] Performing directory fuzzing (Max Depth: 4)...

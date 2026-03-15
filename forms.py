@@ -166,3 +166,14 @@ class VerifyOTPForm(FlaskForm):
         Length(min=6, max=6, message="Code must be exactly 6 digits.")
     ])
     submit = SubmitField('Verify Code')
+
+class OnboardUsernameForm(FlaskForm):
+    """
+    Form to prompt Google OAuth users for a custom username on first login.
+    """
+    username = StringField('Choose Username', validators=[
+        DataRequired(message="Please enter a username."),
+        Length(min=4, max=25, message="Username must be between 4 and 25 characters."),
+        Regexp(r'^[a-zA-Z0-9_]+$', message="Username can only contain letters, numbers, and underscores.")
+    ])
+    submit = SubmitField('Save & Continue')
