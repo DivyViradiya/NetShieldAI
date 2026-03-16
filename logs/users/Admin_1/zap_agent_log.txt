@@ -1,0 +1,70 @@
+[2026-03-15 16:47:46] [*] Starting ZAP Quick Scan for http://testphp.vulnweb.com (User: Admin_1)...
+[2026-03-15 16:47:46] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-15 16:47:46] Instance Config -> Port: 28683 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_28683
+[2026-03-15 16:47:46] Target: http://testphp.vulnweb.com
+[2026-03-15 16:47:46] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_testphp_vulnweb_com.xml
+[2026-03-15 16:47:46] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 28683 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_28683 -quickurl http://testphp.vulnweb.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_testphp_vulnweb_com.xml -quickprogress
+[2026-03-15 16:47:46] --- ZAP Output Stream Started ---
+[2026-03-15 16:47:46] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-15 16:47:46] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 28683 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_28683 -quickurl http://testphp.vulnweb.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_testphp_vulnweb_com.xml -quickprogress
+[2026-03-15 16:48:09] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-03-15 16:48:09] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-03-15 16:48:09] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-03-15 16:48:09] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-03-15 16:48:11] Accessing URL
+[2026-03-15 16:48:31] Failed to attack the URL: Connect to http://testphp.vulnweb.com:80 [testphp.vulnweb.com/44.228.249.3] failed: Connect timed out
+[2026-03-15 16:48:32] Writing results to D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_testphp_vulnweb_com.xml
+[2026-03-15 16:48:40] --- End of ZAP Output ---
+[2026-03-15 16:48:40] Scan completed successfully!
+[2026-03-15 16:48:40] Cleaning up temporary ZAP directory: D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_28683
+[2026-03-15 16:48:40] [+] ZAP scan command finished. Parsing...
+[2026-03-15 16:48:40] Parsing ZAP report: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_testphp_vulnweb_com.xml
+[2026-03-15 16:48:40] Report parsed and enriched successfully.
+[2026-03-15 16:48:40] JSON report saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_testphp_vulnweb_com.json
+[2026-03-15 16:48:40] [+] JSON report saved.
+[2026-03-15 16:48:40] [*] Generating PDF report...
+[2026-03-15 16:48:42] [+] PDF generated successfully.
+[2026-03-15 16:48:42] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-03-15 16:48:42] [*] Scan, analysis, and prediction complete.
+[2026-03-15 16:49:14] [*] Starting ZAP Quick Scan for http://example.com (User: Admin_1)...
+[2026-03-15 16:49:14] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-15 16:49:14] Instance Config -> Port: 61534 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_61534
+[2026-03-15 16:49:14] Target: http://example.com
+[2026-03-15 16:49:14] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_example_com.xml
+[2026-03-15 16:49:14] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 61534 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_61534 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_example_com.xml -quickprogress
+[2026-03-15 16:49:14] --- ZAP Output Stream Started ---
+[2026-03-15 16:49:14] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-15 16:49:14] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 61534 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_61534 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_example_com.xml -quickprogress
+[2026-03-15 16:49:40] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-03-15 16:49:40] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-03-15 16:49:40] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-03-15 16:49:40] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-03-15 16:49:44] Accessing URL
+[2026-03-15 16:49:44] Using traditional spider
+[2026-03-15 16:49:47] Active scanning
+[2026-03-15 16:49:49] [PROGRESS] [==                  ] 12% |
+[2026-03-15 16:49:49] [PROGRESS] [=======             ] 37% /
+[2026-03-15 16:49:50] [PROGRESS] [=======             ] 37% -
+[2026-03-15 16:49:50] [PROGRESS] [=======             ] 37% \
+[2026-03-15 16:49:51] [PROGRESS] [============        ] 63% |
+[2026-03-15 16:49:51] [PROGRESS] [================    ] 84% /
+[2026-03-15 16:49:52] [PROGRESS] [================    ] 84% -
+[2026-03-15 16:49:52] [PROGRESS] [================    ] 84% \
+[2026-03-15 16:49:53] [PROGRESS] [==================  ] 93% |
+[2026-03-15 16:49:53] [PROGRESS] [====================] 100%
+[2026-03-15 16:49:53] Attack complete
+[2026-03-15 16:49:53] Writing results to D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_example_com.xml
+[2026-03-15 16:50:00] --- End of ZAP Output ---
+[2026-03-15 16:50:00] Scan completed successfully!
+[2026-03-15 16:50:00] Cleaning up temporary ZAP directory: D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_61534
+[2026-03-15 16:50:01] [+] ZAP scan command finished. Parsing...
+[2026-03-15 16:50:01] Parsing ZAP report: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_example_com.xml
+[2026-03-15 16:50:03] Report parsed and enriched successfully.
+[2026-03-15 16:50:03] JSON report saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_scanner_example_com.json
+[2026-03-15 16:50:03] [+] JSON report saved.
+[2026-03-15 16:50:03] [*] Generating PDF report...
+[2026-03-15 16:50:08] [+] PDF generated successfully.
+[2026-03-15 16:50:08] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-03-15 16:50:08] [*] Scan, analysis, and prediction complete.

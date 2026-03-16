@@ -1,0 +1,55 @@
+{
+    "scan_date": "2026-03-15 17:17:31",
+    "scan_args": "nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\\\\NetShield\\\\NetShieldAI\\\\Services\\\\temp\\\\nmap\\\\scan_Admin_1_5b98f887.txt 192.168.29.48",
+    "target_ip": "192.168.29.48",
+    "host_status": "Up",
+    "os_guess": "Unknown / Not Detected",
+    "ports": [
+        {
+            "port": "445",
+            "state": "open",
+            "protocol": "TCP",
+            "service": "microsoft-ds?",
+            "version": "",
+            "process_name": "System",
+            "vulnerability_notes": "",
+            "cpe": "N/A",
+            "predicted_risk_score": 0.2495,
+            "tctr_priority": 2.495,
+            "base_score": 4.3,
+            "priority_level": "P3 (Low)",
+            "risk_justification": "OWASP Top 10 Threat"
+        },
+        {
+            "port": "135",
+            "state": "open",
+            "protocol": "TCP",
+            "service": "msrpc",
+            "version": "Microsoft Windows RPC",
+            "process_name": "svchost.exe",
+            "vulnerability_notes": "",
+            "cpe": "N/A",
+            "predicted_risk_score": 0.116,
+            "tctr_priority": 1.16,
+            "base_score": 5.0,
+            "priority_level": "P3 (Low)",
+            "risk_justification": "General security concern"
+        },
+        {
+            "port": "139",
+            "state": "open",
+            "protocol": "TCP",
+            "service": "netbios-ssn",
+            "version": "Microsoft Windows netbios-ssn",
+            "process_name": "System",
+            "vulnerability_notes": "",
+            "cpe": "N/A",
+            "predicted_risk_score": 0.1105,
+            "tctr_priority": 1.105,
+            "base_score": 5.0,
+            "priority_level": "P3 (Low)",
+            "risk_justification": "General security concern"
+        }
+    ],
+    "raw_output_summary": "# Nmap 7.97 scan initiated Sun Mar 15 17:17:18 2026 as: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG D:\\\\NetShield\\\\NetShieldAI\\\\Services\\\\temp\\\\nmap\\\\scan_Admin_1_5b98f887.txt 192.168.29.48\nHost: 192.168.29.48 ()\tStatus: Up\nHost: 192.168.29.48 ()\tPorts: 135/open/tcp//msrpc//Microsoft Windows RPC/, 139/open/tcp//netbios-ssn//Microsoft Windows netbios-ssn/, 445/open/tcp//microsoft-ds?///, 5100/open/tcp//http//Werkzeug httpd 3.1.3 (Python 3.13.4)/\tIgnored State: closed (996)\n# Nmap done at Sun Mar 15 17:17:26 2026 -- 1 IP address (1 host up) scanned in 7.89 seconds"
+}

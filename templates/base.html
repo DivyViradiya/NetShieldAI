@@ -68,6 +68,10 @@
         /* Standardized Heights */
         --navbar-height: 64px;
 
+        /* Typography */
+        --font-ui: 'IBM Plex Sans', 'Inter', system-ui, sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+
         /* Scrollbar */
         --scrollbar-thumb: rgba(255, 255, 255, 0.15);
         --scrollbar-hover: var(--accent-primary);
@@ -139,7 +143,7 @@
       }
 
       body {
-        font-family: 'IBM Plex Sans', 'Inter', sans-serif;
+        font-family: var(--font-ui);
         background-color: var(--bg-color);
         display: flex;
         flex-direction: column;
@@ -148,6 +152,10 @@
         color: var(--text-secondary);
         position: relative;
         overflow-x: hidden;
+      }
+
+      .text-mono {
+        font-family: var(--font-mono);
       }
 
       body.light-mode {
@@ -1218,6 +1226,9 @@
             <li>
               <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">Security Posture</a>
             </li>
+            <li>
+              <a href="{{ url_for('scheduler_bp.scheduler_page') }}" class="{% if request.blueprint == 'scheduler_bp' %}active{% endif %}">Scheduler</a>
+            </li>
           {% endif %}
 
           <li>
@@ -1361,6 +1372,11 @@
         <li>
           <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">
             <span class="material-symbols-outlined" style="font-size:1.1rem;">bar_chart</span>Security Posture
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('scheduler_bp.scheduler_page') }}" class="{% if request.blueprint == 'scheduler_bp' %}active{% endif %}">
+            <span class="material-symbols-outlined" style="font-size:1.1rem;">schedule</span>Scheduler
           </a>
         </li>
       {% endif %}

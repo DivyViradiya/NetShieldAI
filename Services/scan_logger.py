@@ -248,16 +248,26 @@ def clean_log_message(message):
         
     return message
 
+# Standard tags for user active logs
+MSG_TAGS = {
+    'INFO': '[*]',
+    'STAGE': '[~]',
+    'DATA': '[#]',
+    'SUCCESS': '[+]',
+    'WARNING': '[!]',
+    'ERROR': '[!]'
+}
+
 def write_log(user_id, tool_name, message, level='INFO'):
     """
     Centralized logging function.
     - Writes EVERYTHING to {tool_name}_debug.log
-    - Writes ONLY CLEAN 'INFO' level messages to {tool_name}_active.log (User Stream)
+    - Writes ONLY CLEAN formatted messages to {tool_name}_active.log (User Stream) if in MSG_TAGS
     """
     timestamp = datetime.now().strftime("%H:%M:%S")
     full_line = f"[{timestamp}] [{level}] {message}"
     
-    # 1. Write to Debug Log
+    # 1. Write to Debug Log (All levels)
     debug_file = get_debug_log_file(user_id, tool_name)
     try:
         with open(debug_file, 'a', encoding='utf-8') as f:
@@ -265,15 +275,51 @@ def write_log(user_id, tool_name, message, level='INFO'):
     except Exception as e:
         logger.error(f"Error writing to debug log: {e}")
 
-    # 2. Write to User Log (Active Stream) if level is INFO
-    if level == 'INFO':
+    # 2. Write to User Log (Active Stream) if level is supported
+    if level in MSG_TAGS:
+        tag = MSG_TAGS[level]
         clean_message = clean_log_message(message)
+        
         # Verify message isn't empty or just a placeholder after cleaning
         if clean_message and clean_message.strip():
              user_file = get_active_log_file(user_id, tool_name)
-             user_line = f"[{timestamp}] {clean_message}"
+             # Use the tag (e.g., [*], [~], [+], [!])
+             user_line = f"[{timestamp}] {tag} {clean_message}"
+             
              try:
                 with open(user_file, 'a', encoding='utf-8') as f:
                     f.write(user_line + "\n")
              except Exception as e:
                 logger.error(f"Error writing to user log: {e}")
+
+class ScannerLogger:
+    """
+    Helper class for scanners to log structured messsages with correct methods
+    instead of relying on manual string pre-pending on client-side.
+    """
+    def __init__(self, user_id, tool_name):
+        self.user_id = user_id
+        self.tool_name = tool_name
+
+    def info(self, msg):
+        write_log(self.user_id, self.tool_name, msg, level='INFO')
+
+    def stage(self, msg):
+        write_log(self.user_id, self.tool_name, msg, level='STAGE')
+
+    def data(self, msg):
+        write_log(self.user_id, self.tool_name, msg, level='DATA')
+
+    def success(self, msg):
+        write_log(self.user_id, self.tool_name, msg, level='SUCCESS')
+
+    def warning(self, msg):
+        write_log(self.user_id, self.tool_name, msg, level='WARNING')
+
+    def error(self, msg):
+        write_log(self.user_id, self.tool_name, msg, level='ERROR')
+
+def get_scanner_logger(user_id, tool_name):
+    """Factory function to provide ScannerLogger instance."""
+    return ScannerLogger(user_id, tool_name)
+

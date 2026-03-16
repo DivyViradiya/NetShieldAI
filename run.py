@@ -45,6 +45,7 @@ from routes.killchain_bp import killchain_bp
 from routes.sql_scanner_bp import sql_scanner_bp
 from routes.semgrep_scanner_bp import semgrep_bp
 from routes.api_scanner_bp import api_scanner_bp
+from routes.scheduler_bp import scheduler_bp
 
 
 
@@ -54,14 +55,46 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
 # --- [FIX] Use Absolute Path for Database ---
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'instance', 'users_db.sqlite3')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+# Increase timeout to 20s for better concurrency
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}?timeout=20'
+
+# --- Scheduler DB (separate SQLite file) ---
+scheduler_db_path = os.path.join(basedir, 'instance', 'scheduler_db.sqlite3')
+app.config['SQLALCHEMY_BINDS'] = {
+    'scheduler': f'sqlite:///{scheduler_db_path}?timeout=20'
+}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  # 1GB limit for uploads
 
 db.init_app(app)
+
+# --- SQLite Concurrency Fix: Enable WAL Mode ---
+from sqlalchemy import event
+
+with app.app_context():
+    # Primary DB
+    @event.listens_for(db.engine, "connect")
+    def set_sqlite_pragma(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.close()
+
+    # Scheduler DB Bind
+    scheduler_engine = db.get_engine(app, bind='scheduler')
+    @event.listens_for(scheduler_engine, "connect")
+    def set_scheduler_sqlite_pragma(dbapi_connection, connection_record):
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.close()
+
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 csrf = CSRFProtect(app)
+
+# --- Initialize Scheduler Models (Registers with shared db) ---
+from scheduler_models import ScanProfile, ProfileScanConfig, ProfileTarget, ProfileRecipient, ScheduledScanJob
 
 from extensions import oauth
 oauth.init_app(app)
@@ -104,7 +137,8 @@ app.register_blueprint(killchain_bp, url_prefix='/killchain')
 app.register_blueprint(sql_scanner_bp, url_prefix='/sql_scanner')
 app.register_blueprint(semgrep_bp, url_prefix='/semgrep_scanner')
 app.register_blueprint(api_scanner_bp, url_prefix='/api_scanner')
-logger.info("[+] 11 Modules Loaded Successfully.")
+app.register_blueprint(scheduler_bp, url_prefix='/scheduler')
+logger.info("[+] 12 Modules Loaded Successfully.")
 
 def print_banner():
     banner = fr"""
@@ -153,7 +187,7 @@ if __name__ == '__main__':
             logger.info("[*] Initializing Secure Database...")
             with app.app_context():
                 db.create_all()
-            logger.info("[+] Database schema verified.")
+            logger.info("[+] Database schemas verified (primary + scheduler).")
             logger.info("[+] System checks complete. Launching interface...\n")
 
         # --- Pre-warm ML models only in the HTTP-serving process.
@@ -173,6 +207,11 @@ if __name__ == '__main__':
 
             _ml_thread = threading.Thread(target=_prewarm_ml, name="ML-Prewarm", daemon=True)
             _ml_thread.start()
+
+            # --- Start APScheduler ---
+            from Services import scheduler_service
+            scheduler_db_uri = f'sqlite:///{scheduler_db_path}'
+            scheduler_service.init_scheduler(app, scheduler_db_uri)
 
         # Run Flask.
         debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'

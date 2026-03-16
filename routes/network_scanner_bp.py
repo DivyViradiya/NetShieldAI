@@ -565,6 +565,7 @@ def get_scan_results():
     # Map scan types to file names expected in the user dir
     # [NEW] Updated map to include all new scan types
     filename_map = {
+        'default': "scan_result_tcp.txt",
         'tcp': "scan_result_tcp.txt",
         'udp': "scan_result_udp.txt",
         'tcp_syn': "scan_result_tcp_syn.txt",
@@ -589,7 +590,14 @@ def get_scan_results():
     file_path = os.path.join(user_dir, filename)
     
     if not os.path.exists(file_path):
-        return jsonify({"status": "error", "message": f"No results for {scan_type}."}), 404
+        import glob
+        all_files = [os.path.basename(f) for f in glob.glob(os.path.join(user_dir, "*"))]
+        return jsonify({
+            "status": "error", 
+            "message": f"No results for {scan_type}.",
+            "debug_path": file_path,
+            "debug_files": all_files
+        }), 404
     
     try:
         with open(file_path, 'r', encoding='utf-8') as f:

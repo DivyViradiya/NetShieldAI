@@ -1,0 +1,1111 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  NetShieldAI - Mission Orchestrator
+{% endblock %}
+
+{% block extra_css %}
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+    <style>
+      /* --- NEO-TECH THEME VARIABLES --- */
+      :root {
+        --neo-bg: #000000;
+        --neo-card: rgba(10, 10, 12, 0.5);
+        --neo-card-hover: rgba(15, 15, 18, 0.6);
+        --neo-input: rgba(15, 15, 18, 0.6);
+        --neo-border: rgba(255, 255, 255, 0.1); 
+        
+        --neo-text-main: #ffffff;
+        --neo-text-muted: #888888;
+        --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+        
+        --neo-blue: #60a5fa; 
+        --neo-red: #f87171;
+        --neo-green: #34d399;
+        --neo-amber: #fbbf24;
+        --neo-purple: #a78bfa;
+        --neo-cyan: #22d3ee;
+        
+        --radius-card: 16px;
+        --radius-sm: 10px;
+
+        --shadow-blue: 0 0 20px rgba(96, 165, 250, 0.15);
+        --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        --glass-bg: rgba(10, 10, 12, 0.45);
+        --glass-border: rgba(255, 255, 255, 0.08);
+      }
+  
+      body.light-mode {
+        --neo-bg: #f1f5f9;
+        --neo-card: #ffffff;
+        --neo-border: #cbd5e1;
+        --neo-text-main: #0f172a;
+        --neo-text-muted: #64748b;
+      }
+  
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      .dashboard-wrapper {
+        background-color: var(--neo-bg);
+        color: var(--neo-text-main);
+        font-family: var(--font-ui);
+        min-height: calc(100vh - 64px);
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      /* --- MISSING UTILITY CLASSES (Replaces Tailwind) --- */
+      .flex { display: flex; }
+      .flex-col { flex-direction: column; }
+      .justify-between { justify-content: space-between; }
+      .items-center { align-items: center; }
+      .gap-2 { gap: 0.5rem; }
+      .gap-3 { gap: 0.75rem; }
+      .mb-4 { margin-bottom: 1rem; }
+      .p-2 { padding: 0.5rem; }
+      .rounded { border-radius: 0.25rem; }
+      .border { border-width: 1px; border-style: solid; border-color: var(--neo-border); }
+      .bg-black\/20 { background-color: rgba(0, 0, 0, 0.2); }
+      .border-white\/5 { border-color: rgba(255, 255, 255, 0.05); }
+
+      /* --- COMPONENTS --- */
+      .control-card, .dash-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-card);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-glass);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .control-card:hover {
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+
+      /* Custom Scrollbar */
+      .arsenal-sidebar::-webkit-scrollbar { width: 4px; }
+      .arsenal-sidebar::-webkit-scrollbar-track { background: transparent; }
+      .arsenal-sidebar::-webkit-scrollbar-thumb { background: var(--neo-border); border-radius: 10px; }
+      .arsenal-sidebar::-webkit-scrollbar-thumb:hover { background: var(--neo-text-muted); }
+      
+      .req-star { color: var(--neo-red); margin-left: 2px; }
+      .field-error { 
+        color: var(--neo-red); 
+        font-family: var(--font-mono); 
+        font-size: 0.65rem; 
+        margin-top: 0.4rem; 
+        display: none; 
+        animation: fadeIn 0.2s ease;
+      }
+      .input-error { 
+        border-color: rgba(248, 113, 113, 0.5) !important; 
+        background: rgba(248, 113, 113, 0.05) !important;
+      }
+
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+      }
+      .shake { animation: shake 0.3s ease; }
+
+      /* Drag Ghost Styling */
+      .drag-ghost {
+        position: fixed;
+        top: -1000px;
+        left: -1000px;
+        width: 48px;
+        height: 48px;
+        background: var(--neo-blue);
+        color: #000;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 10000;
+        box-shadow: 0 8px 32px rgba(96, 165, 250, 0.4);
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+      .drag-ghost .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .text-gradient {
+        background: linear-gradient(180deg, #fff 0%, #ccc 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      }
+
+      /* --- LAYOUT --- */
+      .orchestrator-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+        flex: 1;
+        align-items: start;
+        margin-top: 0.5rem;
+      }
+
+      /* ================================================
+         ARSENAL SIDEBAR
+      ================================================ */
+      .arsenal-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        max-height: calc(100vh - 180px);
+        overflow-y: auto;
+        padding-right: 0.5rem;
+      }
+
+      .arsenal-title {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--neo-text-muted);
+        margin-bottom: 0.25rem;
+        margin-top: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .arsenal-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--neo-border);
+      }
+
+      /* Search input in sidebar */
+      .arsenal-search {
+        position: relative;
+        margin-bottom: 0.5rem;
+      }
+
+      .arsenal-search-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        color: var(--neo-text-muted);
+        pointer-events: none;
+      }
+
+      .arsenal-search-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-sm);
+        padding: 0.55rem 0.75rem 0.55rem 2.25rem;
+        color: var(--neo-text-main);
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        outline: none;
+        transition: border-color 0.2s ease;
+        box-sizing: border-box;
+      }
+
+      .arsenal-search-input::placeholder { color: var(--neo-text-muted); }
+      .arsenal-search-input:focus { border-color: rgba(96, 165, 250, 0.4); }
+
+      .template-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-sm);
+        padding: 0.85rem 1rem;
+        cursor: grab;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .template-card:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateX(6px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .template-card.hidden { display: none; }
+
+      .template-icon {
+        width: 36px;
+        height: 36px;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--neo-blue);
+        flex-shrink: 0;
+      }
+
+      .template-info h4 {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        margin: 0;
+        text-transform: uppercase;
+      }
+
+      .template-info p {
+        font-size: 0.68rem;
+        color: var(--neo-text-muted);
+        margin: 0;
+      }
+
+      /* ================================================
+         CANVAS + MISSION GRID
+      ================================================ */
+      .mission-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1rem;
+        align-content: start;
+        width: 100%;
+      }
+
+      .mission-card {
+        background: var(--neo-card);
+        border: 1px solid var(--neo-border);
+        border-radius: var(--radius-card);
+        padding: 1.25rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .mission-card:hover {
+        border-color: var(--neo-blue);
+        box-shadow: var(--shadow-blue);
+      }
+
+      .mission-status-strip {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--neo-blue);
+        border-radius: var(--radius-card) 0 0 var(--radius-card);
+      }
+
+      .mission-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.6rem;
+      }
+
+      .mission-title {
+        font-family: var(--font-mono);
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .mission-target {
+        font-size: 0.72rem;
+        color: var(--neo-text-muted);
+        font-family: var(--font-mono);
+        margin-bottom: 0.75rem;
+      }
+
+      .mission-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+      }
+
+      /* Status pill */
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 3px 8px;
+        border-radius: 20px;
+        font-weight: 700;
+      }
+
+      .status-pill.active {
+        color: var(--neo-green);
+        background: rgba(52, 211, 153, 0.1);
+        border: 1px solid rgba(52, 211, 153, 0.25);
+      }
+
+      .status-pill.paused {
+        color: var(--neo-text-muted);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--neo-border);
+      }
+
+      .status-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        animation: none;
+      }
+
+      .status-pill.active .status-dot {
+        animation: blink 1.6s infinite;
+      }
+
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+      }
+
+      /* Job row inside mission card */
+      .job-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        margin-bottom: 0.35rem;
+      }
+
+      .job-row:last-child { margin-bottom: 0; }
+
+      /* Canvas Drop Zone */
+      .canvas-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        min-height: calc(100vh - 220px);
+        flex: 1;
+      }
+
+      /* Onboarding Tutorial Animation */
+      .tutorial-viz {
+        width: 200px;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        position: relative;
+        margin-bottom: 2rem;
+        overflow: hidden;
+        display: flex;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      }
+      .tutorial-sidebar {
+        width: 60px;
+        height: 100%;
+        border-right: 1px solid var(--glass-border);
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.01);
+      }
+      .dummy-card {
+        width: 100%;
+        height: 20px;
+        background: rgba(96, 165, 250, 0.1);
+        border: 1px solid rgba(96, 165, 250, 0.2);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .dummy-card .status-dot { width: 3px; height: 3px; background: var(--neo-blue); margin-right: 3px; border-radius: 50%; }
+      .dummy-line { width: 20px; height: 2px; background: rgba(255,255,255,0.1); border-radius: 1px; }
+
+      .tutorial-canvas {
+        flex: 1;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .drop-target {
+        width: 60px;
+        height: 40px;
+        border: 1px dashed rgba(255,255,255,0.1);
+        border-radius: 8px;
+        background: rgba(255,255,255,0.02);
+      }
+
+      .tutorial-hand {
+        position: absolute;
+        font-size: 1.25rem;
+        color: white;
+        z-index: 5;
+        animation: tutorial-drag 4s infinite cubic-bezier(0.45, 0, 0.55, 1);
+        pointer-events: none;
+        text-shadow: 0 0 10px rgba(0,0,0,0.5);
+      }
+
+      .dragged-card {
+        position: absolute;
+        width: 44px;
+        height: 16px;
+        background: var(--neo-blue);
+        border-radius: 4px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.2);
+        animation: tutorial-card-move 4s infinite cubic-bezier(0.45, 0, 0.55, 1);
+        z-index: 4;
+        pointer-events: none;
+      }
+
+      @keyframes tutorial-drag {
+        0% { left: 15px; top: 15px; opacity: 0; }
+        10% { left: 15px; top: 15px; opacity: 1; }
+        40% { left: 100px; top: 50px; opacity: 1; }
+        60% { left: 100px; top: 50px; opacity: 1; transform: scale(0.9); }
+        70% { left: 100px; top: 50px; opacity: 0; transform: scale(1); }
+        100% { left: 15px; top: 15px; opacity: 0; }
+      }
+
+      @keyframes tutorial-card-move {
+        0%, 15% { left: 10px; top: 10px; opacity: 0; transform: scale(1); }
+        20% { opacity: 1; }
+        40%, 60% { left: 95px; top: 45px; opacity: 1; transform: scale(1.05); }
+        70% { opacity: 0; transform: scale(1.1); }
+        100% { left: 10px; top: 10px; opacity: 0; }
+      }
+      .drop-zone-empty {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-card);
+        padding: 4rem 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--neo-text-muted);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        width: 100%;
+        flex: 1;
+        text-align: center;
+        box-shadow: inset 0 0 40px rgba(0,0,0,0.2);
+      }
+
+      .empty-icon-wrap {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2rem;
+        color: var(--neo-blue);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        animation: ghost-float 3s ease-in-out infinite;
+      }
+
+      .drop-zone-empty .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        text-transform: none;
+        font-feature-settings: 'liga';
+        font-variant-ligatures: common-ligatures;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      @keyframes ghost-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+
+      .canvas-wrapper.active .drop-zone-empty {
+        border-color: var(--neo-blue);
+        background: rgba(59, 130, 246, 0.08);
+        color: var(--neo-blue);
+        transform: scale(1.005);
+        box-shadow: 0 0 30px rgba(96, 165, 250, 0.15), inset 0 0 20px rgba(96, 165, 250, 0.05);
+      }
+
+      /* Persistent bottom drop strip (always visible when missions exist) */
+      .drop-zone-bar {
+        border: 1.5px dashed var(--neo-border);
+        border-radius: var(--radius-sm);
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: var(--neo-text-muted);
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        transition: all 0.3s ease;
+        grid-column: 1 / -1;
+        cursor: default;
+      }
+
+      .canvas-wrapper.active .drop-zone-bar {
+        border-color: var(--neo-blue);
+        background: rgba(59, 130, 246, 0.07);
+        color: var(--neo-blue);
+      }
+
+      /* Buttons */
+      .btn-dash {
+        height: 36px; padding: 0 0.9rem; border-radius: 4px;
+        font-family: var(--font-mono); font-size: 0.72rem; font-weight: 800;
+        display: flex; align-items: center; gap: 0.4rem; cursor: pointer;
+        transition: all 0.2s ease; border: 1px solid var(--neo-border);
+        background: transparent; color: var(--neo-text-muted);
+        text-transform: uppercase;
+      }
+
+      .btn-icon {
+        height: 30px; width: 30px; padding: 0;
+        border-radius: 6px; justify-content: center;
+      }
+
+      .btn-primary { background: var(--neo-text-main); color: var(--neo-bg); border: none; }
+      .btn-primary:hover { opacity: 0.9; }
+
+      .btn-danger { color: var(--neo-red); border-color: rgba(239, 68, 68, 0.3); }
+      .btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
+
+      .btn-dash:hover { border-color: rgba(255,255,255,0.2); color: var(--neo-text-main); }
+
+      /* Form Elements */
+      .form-group { margin-bottom: 1.1rem; }
+
+      .form-label {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        color: var(--neo-text-muted);
+        margin-bottom: 0.45rem;
+        letter-spacing: 0.06em;
+      }
+
+      .form-input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--neo-border);
+        border-radius: 4px;
+        padding: 0.65rem 0.9rem;
+        color: var(--neo-text-main);
+        font-family: var(--font-mono);
+        font-size: 0.83rem;
+        box-sizing: border-box;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--neo-blue);
+      }
+
+      .form-input option {
+        background-color: var(--neo-bg);
+        color: var(--neo-text-main);
+      }
+
+      /* Day-of-week chips for weekly scheduling */
+      .day-chip-group {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        margin-top: 0.25rem;
+      }
+
+      .day-chip {
+        height: 30px;
+        padding: 0 0.7rem;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: 1px solid var(--neo-border);
+        background: transparent;
+        color: var(--neo-text-muted);
+        transition: all 0.15s ease;
+      }
+
+      .day-chip.selected {
+        background: rgba(96, 165, 250, 0.15);
+        border-color: var(--neo-blue);
+        color: var(--neo-blue);
+        font-weight: 700;
+      }
+
+      /* ================================================
+         SLIDE-IN CONFIG DRAWER
+      ================================================ */
+      .config-drawer-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 100;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .config-drawer-overlay.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .config-drawer {
+        position: fixed;
+        top: 0;
+        right: -520px;
+        width: 480px;
+        max-width: 95vw;
+        height: 100vh;
+        background: #0a0a0c;
+        border-left: 1px solid var(--glass-border);
+        box-shadow: -16px 0 64px rgba(0, 0, 0, 0.7);
+        z-index: 101;
+        display: flex;
+        flex-direction: column;
+        transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+      }
+
+      .config-drawer.open {
+        right: 0;
+      }
+
+      .drawer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 1.75rem 1rem;
+        border-bottom: 1px solid var(--glass-border);
+        flex-shrink: 0;
+      }
+
+      .drawer-module-label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--neo-text-muted);
+        margin-bottom: 0.25rem;
+      }
+
+      .drawer-title {
+        font-family: var(--font-mono);
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--neo-amber);
+      }
+
+      /* Labeled step progress bar */
+      .step-bar {
+        display: flex;
+        align-items: flex-start;
+        padding: 1rem 1.75rem;
+        border-bottom: 1px solid var(--glass-border);
+        gap: 0;
+        flex-shrink: 0;
+      }
+
+      .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        position: relative;
+      }
+
+      .step-item:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 12px;
+        left: calc(50% + 14px);
+        right: calc(-50% + 14px);
+        height: 1px;
+        background: var(--neo-border);
+        transition: background 0.3s ease;
+      }
+
+      .step-item.completed:not(:last-child)::after,
+      .step-item.active:not(:last-child)::after {
+        background: var(--neo-blue);
+      }
+
+      .step-circle {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 1.5px solid var(--neo-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--neo-text-muted);
+        background: var(--neo-bg);
+        transition: all 0.3s ease;
+        z-index: 1;
+      }
+
+      .step-item.completed .step-circle {
+        background: var(--neo-blue);
+        border-color: var(--neo-blue);
+        color: #000;
+      }
+
+      .step-item.active .step-circle {
+        border-color: var(--neo-blue);
+        color: var(--neo-blue);
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+      }
+
+      .step-label {
+        font-family: var(--font-mono);
+        font-size: 0.58rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--neo-text-muted);
+        margin-top: 0.35rem;
+        text-align: center;
+      }
+
+      .step-item.active .step-label { color: var(--neo-blue); }
+      .step-item.completed .step-label { color: var(--neo-text-muted); }
+
+      /* Drawer body — scrollable */
+      .drawer-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem 1.75rem;
+      }
+
+      .drawer-body::-webkit-scrollbar { width: 4px; }
+      .drawer-body::-webkit-scrollbar-track { background: transparent; }
+      .drawer-body::-webkit-scrollbar-thumb { background: var(--neo-border); border-radius: 10px; }
+
+      .drawer-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.75rem;
+        border-top: 1px solid var(--glass-border);
+        flex-shrink: 0;
+      }
+
+      /* Phase heading inside drawer */
+      .phase-heading {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--neo-blue);
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .phase-heading::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(96, 165, 250, 0.2);
+      }
+
+      /* Review table in step 5 */
+      .review-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .review-table tr td {
+        padding: 0.65rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        vertical-align: top;
+      }
+
+      .review-table tr:last-child td { border-bottom: none; }
+
+      .review-table td:first-child {
+        color: var(--neo-text-muted);
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        width: 110px;
+        padding-right: 1rem;
+      }
+
+      .review-table td:last-child { color: var(--neo-text-main); }
+
+      /* Executing state overlay on mission card */
+      .mission-card.executing {
+        opacity: 0.65;
+        pointer-events: none;
+      }
+
+      .mission-card.executing .mission-status-strip {
+        animation: pulse-strip 1s infinite alternate;
+      }
+
+      @keyframes pulse-strip {
+        from { opacity: 0.4; }
+        to   { opacity: 1; }
+      }
+
+      /* Fade-in utility */
+      .fade-in {
+        animation: fadeIn 0.25s ease forwards;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .orchestrator-layout { grid-template-columns: 1fr; }
+        .arsenal-sidebar {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          max-height: none;
+        }
+        .arsenal-search, h3.arsenal-title { grid-column: 1 / -1; }
+        .config-drawer { width: 100vw; max-width: 100vw; }
+      }
+    </style>
+{% endblock %}
+
+{% block content %}
+  <!-- Config Drawer Overlay -->
+  <div class="config-drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+  <!-- Slide-in Config Drawer -->
+  <div class="config-drawer" id="configDrawer">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-module-label" id="drawerModuleLabel">New Mission</div>
+        <div class="drawer-title" id="drawerTitle">Configure Module</div>
+      </div>
+      <button class="btn-dash btn-icon" onclick="closeDrawer()" title="Close">
+        <span class="material-symbols-outlined" style="font-size: 1.1rem;">close</span>
+      </button>
+    </div>
+
+    <!-- Labeled Step Progress Bar -->
+    <div class="step-bar" id="stepBar">
+      <!-- Rendered by JS -->
+    </div>
+
+    <!-- Scrollable content area -->
+    <div class="drawer-body" id="drawerBody">
+      <!-- Rendered by JS -->
+    </div>
+
+    <div class="drawer-footer" id="drawerFooter">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+
+  <div class="dashboard-wrapper">
+    <!-- Header card -->
+    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 20px;">
+      <div class="scanner-title-area">
+        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Mission <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Orchestrator</span></h1>
+        <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
+          <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
+          Automated Offensive Security &amp; Infrastructure Monitoring
+        </p>
+      </div>
+      
+      <div class="flex gap-3">
+        <button id="refreshJobsBtn" class="btn-dash" style="background: rgba(255,255,255,0.05); height: 42px;">
+          <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--neo-blue);">sync</span>
+          <span>Sync Systems</span>
+        </button>
+        <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.05); height: 42px;">
+          <span class="material-symbols-outlined" style="font-size: 1.2rem;">home</span>
+          <span>Security Hub</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="orchestrator-layout">
+      <!-- ============ ARSENAL SIDEBAR ============ -->
+      <aside class="arsenal-sidebar">
+        
+        <!-- Module search -->
+        <div class="arsenal-search">
+          <span class="material-symbols-outlined arsenal-search-icon">search</span>
+          <input 
+            id="moduleSearch" 
+            class="arsenal-search-input" 
+            type="text" 
+            placeholder="Filter modules..."
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Category: Network -->
+        <h3 class="arsenal-title" data-category="network">Network</h3>
+
+        <div class="template-card" draggable="true" data-module="nmap" data-category="network" data-search="nmap scanner port discovery os fingerprint">
+          <div class="template-icon">
+            <span class="material-symbols-outlined">target</span>
+          </div>
+          <div class="template-info">
+            <h4>Nmap Scanner</h4>
+            <p>Port discovery &amp; OS fingerprint</p>
+          </div>
+        </div>
+
+        <div class="template-card" draggable="true" data-module="sniffer" data-category="network" data-search="sniffer traffic analysis anomaly packet">
+          <div class="template-icon" style="color: var(--neo-green); background: rgba(16, 185, 129, 0.1);">
+            <span class="material-symbols-outlined">wifi_tethering</span>
+          </div>
+          <div class="template-info">
+            <h4>Sniffer</h4>
+            <p>Traffic analysis &amp; anomaly</p>
+          </div>
+        </div>
+
+        <!-- Category: Web -->
+        <h3 class="arsenal-title" data-category="web">Web</h3>
+
+        <div class="template-card" draggable="true" data-module="zap" data-category="web" data-search="owasp zap web vulnerability scan">
+          <div class="template-icon" style="color: var(--neo-red); background: rgba(239, 68, 68, 0.1);">
+            <span class="material-symbols-outlined">security</span>
+          </div>
+          <div class="template-info">
+            <h4>OWASP ZAP</h4>
+            <p>Web vulnerability scan</p>
+          </div>
+        </div>
+
+        <div class="template-card" draggable="true" data-module="sql" data-category="web" data-search="sqli probe sql injection automated database">
+          <div class="template-icon" style="color: var(--neo-amber); background: rgba(245, 158, 11, 0.1);">
+            <span class="material-symbols-outlined">database</span>
+          </div>
+          <div class="template-info">
+            <h4>SQLi Probe</h4>
+            <p>Automated SQL injection</p>
+          </div>
+        </div>
+
+        <div class="template-card" draggable="true" data-module="api" data-category="web" data-search="api scanner endpoint fuzzing rest">
+          <div class="template-icon" style="color: #06b6d4; background: rgba(6, 182, 212, 0.1);">
+            <span class="material-symbols-outlined">api</span>
+          </div>
+          <div class="template-info">
+            <h4>API Scanner</h4>
+            <p>Endpoint fuzzing</p>
+          </div>
+        </div>
+
+        <!-- Category: Code -->
+        <h3 class="arsenal-title" data-category="code">Code</h3>
+
+        <div class="template-card" draggable="true" data-module="semgrep" data-category="code" data-search="semgrep sast static code analysis">
+          <div class="template-icon" style="color: #a855f7; background: rgba(168, 85, 247, 0.1);">
+            <span class="material-symbols-outlined">code_blocks</span>
+          </div>
+          <div class="template-info">
+            <h4>Semgrep</h4>
+            <p>SAST Code Analysis</p>
+          </div>
+        </div>
+
+        <!-- Category: Cert & Audit -->
+        <h3 class="arsenal-title" data-category="audit">Cert &amp; Audit</h3>
+
+        <div class="template-card" draggable="true" data-module="ssl" data-category="audit" data-search="ssl audit cert certificate config verify tls">
+          <div class="template-icon" style="color: var(--neo-blue); background: rgba(59, 130, 246, 0.1);">
+            <span class="material-symbols-outlined">shield_lock</span>
+          </div>
+          <div class="template-info">
+            <h4>SSL Audit</h4>
+            <p>Cert &amp; config verify</p>
+          </div>
+        </div>
+
+        <div class="template-card" draggable="true" data-module="killchain" data-category="audit" data-search="kill chain full spectrum audit recon network web">
+          <div class="template-icon" style="color: var(--neo-red); background: rgba(239, 68, 68, 0.1);">
+            <span class="material-symbols-outlined">account_tree</span>
+          </div>
+          <div class="template-info">
+            <h4>Kill Chain</h4>
+            <p>Full spectrum audit</p>
+          </div>
+        </div>
+
+        <!-- No-results message -->
+        <p id="noModulesMsg" style="display:none; font-family: var(--font-mono); font-size: 0.72rem; color: var(--neo-text-muted); text-align: center; padding: 1rem 0;">
+          No modules match
+        </p>
+      </aside>
+      
+      <!-- ============ MAIN CANVAS ============ -->
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 0;">
+        <h3 class="arsenal-title">Active Missions &amp; Deployment</h3>
+        
+        <div class="canvas-wrapper" id="canvasWrapper">
+          <!-- Empty drop-zone (full area, shown when no missions) -->
+          <div class="drop-zone-empty" id="emptyState">
+            <div class="tutorial-viz">
+              <div class="tutorial-sidebar">
+                <div class="dummy-card"><div class="status-dot"></div><div class="dummy-line"></div></div>
+                <div class="dummy-card" style="opacity:0.4;"><div class="status-dot"></div><div class="dummy-line"></div></div>
+                <div class="dummy-card" style="opacity:0.4;"><div class="status-dot"></div><div class="dummy-line"></div></div>
+              </div>
+              <div class="tutorial-canvas">
+                <div class="drop-target"></div>
+                <div class="dragged-card"></div>
+                <span class="material-symbols-outlined tutorial-hand">pan_tool_alt</span>
+              </div>
+            </div>
+            
+            <h3 style="font-family: var(--font-mono); color: var(--neo-text-main); font-size: 1.1rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">No Active Missions</h3>
+            <p style="font-size: 0.75rem; opacity: 0.5; max-width: 300px; line-height: 1.6;">Drag a security module from the Arsenal sidebar to begin your orchestration.</p>
+          </div>
+
+          <!-- Mission grid (shown when missions exist) -->
+          <main class="mission-grid" id="missionCanvas"></main>
+        </div>
+      </div>
+    </div>
+    <div id="drag-ghost-el" class="drag-ghost"></div>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{{ url_for('static', filename='js/scheduler.js') }}"></script>
+{% endblock %}

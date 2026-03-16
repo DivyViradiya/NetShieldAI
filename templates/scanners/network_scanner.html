@@ -1082,19 +1082,21 @@
 {% block content %}
   <div class="dashboard-wrapper">
     <!-- Top Bento Banner Block -->
-    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 1rem; min-height: auto;">
+    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 20px;">
       <div class="scanner-title-area" style="margin: 0;">
-        <h1 class="text-gradient" style="margin-bottom: 0.25rem;">Network <span style="color: var(--neo-blue); -webkit-text-fill-color: initial;">Scanner</span></h1>
-        <p style="color: var(--neo-text-muted); font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 12px;">
-          <span style="height: 1px; width: 24px; background: var(--neo-blue); opacity: 0.5;"></span>
+        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Network <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Scanner</span></h1>
+        <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
+          <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
           Infrastructure Discovery & Advanced Port Analysis
         </p>
       </div>
       
-      <a href="{{ url_for('tools_hub') }}" class="btn-dash btn-secondary" style="height: 48px; width: auto; font-size: 0.75rem;">
-        <span class="material-symbols-outlined" style="font-size: 1.1rem;">arrow_back</span>
-        <span>Security Hub</span>
-      </a>
+      <div class="flex gap-3">
+        <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.05); height: 42px; border-radius: 8px;">
+          <span class="material-symbols-outlined" style="font-size: 1.2rem;">home</span>
+          <span>Security Hub</span>
+        </a>
+      </div>
     </div>
 
     <div class="scan-overview-grid">

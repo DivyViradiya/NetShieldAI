@@ -2,7 +2,7 @@
     "target": "testphp.vulnweb.com",
     "profile": "Full Scan",
     "aggression": "Attack",
-    "scan_date": "2026-03-15 16:13:12",
+    "scan_date": "2026-03-15 16:25:29",
     "recon": {
         "subdomains": [
             "testphp.vulnweb.com"
@@ -47,7 +47,7 @@
     "vulns": [],
     "urls": [],
     "tech": {
-        "error": "Fingerprinting failed: HTTPConnectionPool(host='testphp.vulnweb.com', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPConnection(host='testphp.vulnweb.com', port=80) at 0x1ef05b9d370>, 'Connection to testphp.vulnweb.com timed out. (connect timeout=5)'))"
+        "error": "Fingerprinting failed: HTTPConnectionPool(host='testphp.vulnweb.com', port=80): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<HTTPConnection(host='testphp.vulnweb.com', port=80) at 0x189ea9860d0>, 'Connection to testphp.vulnweb.com timed out. (connect timeout=5)'))"
     },
     "target_ip": "44.228.249.3",
     "traffic_analysis": {

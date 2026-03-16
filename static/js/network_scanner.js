@@ -395,7 +395,17 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${API_BASE_URL}/get_scan_results?type=${scanType}`);
             const data = await response.json();
-            elements.resultsContent.textContent = response.ok ? data.content : '// No raw data available for this scan type.';
+            if (response.ok) {
+                elements.resultsContent.textContent = data.content;
+            } else {
+                let msg = `// Error: ${data.message || 'No raw data available for this scan type.'}\n`;
+                if (data.debug_path) {
+                    msg += `\n// --- DEBUG DIAGNOSTICS ---`;
+                    msg += `\n// Checking path: ${data.debug_path}`;
+                    msg += `\n// Files in directory:\n// - ` + (data.debug_files && data.debug_files.length ? data.debug_files.join('\n// - ') : 'None');
+                }
+                elements.resultsContent.textContent = msg;
+            }
         } catch (error) {
             elements.resultsContent.textContent = '// Failed to load results.';
         }

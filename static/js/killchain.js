@@ -68,7 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
         /java\s+-Xmx/i.test(msg) || 
         /sun\.misc\.unsafe/i.test(msg) ||
         /platformdependent/i.test(msg) ||
-        /\b(?:Creating directory|Copying default configuration|Setting config|Installed add-ons|Loading extensions|Extensions loaded)\b/i.test(msg)
+        /\b(?:Creating directory|Copying default configuration|Setting config|Installed add-ons|Loading extensions|Extensions loaded)\b/i.test(msg) ||
+        /^\s*at\s+[\w\.\/\$]+\.[\w\.\/\$]+\s*\(/i.test(msg.trim())
       ) {
         return; 
       }
@@ -100,6 +101,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
 
     const isProgress = cleanedMessage.startsWith('[') && (cleanedMessage.includes('%') || cleanedMessage.includes('==='));
+    
+    // [NEW] Update Dashboard Top Bar on percentage in log stream
+    const pctMatch = cleanedMessage.match(/(\d+)\s*%/);
+    if (pctMatch) {
+        const percent = parseInt(pctMatch[1], 10);
+        let phaseText = els.phaseText ? els.phaseText.textContent.replace('PHASE:', '').trim() : "";
+        updateProgress(percent, phaseText);
+    }
+
+    if (cleanedMessage.includes('[STAGE]') || cleanedMessage.includes('[PHASE]')) {
+        let infoText = cleanedMessage.replace(/^\[(?:STAGE|PHASE)\]\s*/, '').trim();
+        if (els.phaseText) els.phaseText.textContent = infoText.toUpperCase();
+    }
+
     if (isProgress) {
         const lastLine = els.logOutput.lastElementChild;
         if (lastLine && lastLine.querySelector('.log-content').getAttribute('data-is-progress') === 'true') {
@@ -290,12 +305,17 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
 
-    eventSource.addEventListener("progress_update", (e) => {
+    eventSource.addEventListener("scan_status", (e) => {
       try {
         const data = JSON.parse(e.data);
-        updateProgress(data.percent, data.phase);
+        if (data.phase && els.phaseText) {
+             els.phaseText.textContent = data.phase.replace('_', ' ').toUpperCase();
+        }
+        if (data.message && els.statusText) {
+             els.statusText.textContent = data.message.toUpperCase();
+        }
       } catch (err) {
-        console.error("Progress parsing error", err);
+        console.error("Status parsing error", err);
       }
     });
 

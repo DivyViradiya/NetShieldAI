@@ -5,33 +5,52 @@ from colorama import Fore, Style, init
 # Initialize colorama
 init(autoreset=True)
 
+# Define Custom Level
+SUCCESS_LEVEL = 25
+logging.addLevelName(SUCCESS_LEVEL, 'SUCCESS')
+
+# Add helper method to Logger class
+def success(self, message, *args, **kwargs):
+    if self.isEnabledFor(SUCCESS_LEVEL):
+        self._log(SUCCESS_LEVEL, message, args, **kwargs)
+logging.Logger.success = success
+
 class ColoredFormatter(logging.Formatter):
-    """Custom formatting with colors for different log levels."""
+    """Custom formatting with colors and tags for different log levels."""
     COLORS = {
         'DEBUG': Fore.CYAN,
         'INFO': Fore.BLUE + Style.BRIGHT,
+        'SUCCESS': Fore.GREEN + Style.BRIGHT,
         'WARNING': Fore.YELLOW + Style.BRIGHT,
         'ERROR': Fore.RED + Style.BRIGHT,
         'CRITICAL': Fore.MAGENTA + Style.BRIGHT,
     }
 
+    TAGS = {
+        'DEBUG': '[D]',
+        'INFO': '[*]',
+        'SUCCESS': '[+]',
+        'WARNING': '[!]',
+        'ERROR': '[!]',
+        'CRITICAL': '[!]',
+    }
+
     def format(self, record):
         log_color = self.COLORS.get(record.levelname, Fore.WHITE)
+        tag = self.TAGS.get(record.levelname, f"[{record.levelname}]")
         
-        # Calculate padding string to keep log levels aligned after adding color codes
-        # Assuming maximum level length is 8 (CRITICAL)
-        pad_len = max(8 - len(record.levelname), 0)
-        padding = " " * pad_len
-        
-        colored_levelname = f"{log_color}{record.levelname}{padding}{Style.RESET_ALL}"
+        colored_tag = f"{log_color}{tag}{Style.RESET_ALL}"
         
         # Adding color to the timestamp
         timestamp = f"{Fore.WHITE}{Style.DIM}%(asctime)s{Style.RESET_ALL}"
         module_name = f"{Fore.GREEN}[%(module)s]{Style.RESET_ALL}"
-        format_str = f"[{timestamp}] [{colored_levelname}] {module_name} %(message)s"
+        
+        # Format string (no extra brackets around colored_tag)
+        format_str = f"[{timestamp}] {colored_tag} {module_name} %(message)s"
         
         formatter = logging.Formatter(format_str, datefmt='%Y-%m-%d %H:%M:%S')
         return formatter.format(record)
+
 
 def setup_logger():
     """Sets up and returns the main NetShieldAI logger."""

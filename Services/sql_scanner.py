@@ -51,7 +51,26 @@ from logger_setup import logger
 def log(message, user_id=None, to_console=False, level='INFO'):
     """
     Logs messages using the centralized scan_logger.
+    Strips legacy tag prefixes for backward compatibility while refactoring.
     """
+    if message.startswith("[!]"):
+        level = 'ERROR'
+        message = message[3:].lstrip()
+    elif message.startswith("[+]"):
+        level = 'SUCCESS'
+        message = message[3:].lstrip()
+    elif message.startswith("[*]"):
+        # Keep as INFO, just strip tag
+        message = message[3:].lstrip()
+    elif message.startswith("[INFO]"):
+        message = message[6:].lstrip()
+    elif message.startswith("[DATA]"):
+        level = 'DATA'
+        message = message[6:].lstrip()
+    elif message.startswith("[STAGE]"):
+        level = 'STAGE'
+        message = message[7:].lstrip()
+
     if to_console:
         if level == 'INFO':
             logger.info(message)
@@ -59,6 +78,11 @@ def log(message, user_id=None, to_console=False, level='INFO'):
             logger.warning(message)
         elif level == 'ERROR':
             logger.error(message)
+        elif level == 'SUCCESS':
+            if hasattr(logger, 'success'):
+                logger.success(message)
+            else:
+                logger.info(f"SUCCESS: {message}")
         else:
             logger.debug(message)
     
@@ -137,10 +161,10 @@ def save_sql_json(data, output_dir=None, user_id=None, target=None):
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
-        log(f"[+] SQL JSON report saved to {json_file}", user_id)
+        log(f"SQL JSON report saved to {json_file}", user_id, level='SUCCESS')
         return str(json_file)
     except Exception as e:
-        log(f"[!] Failed to save SQL JSON report: {e}", user_id)
+        log(f"Failed to save SQL JSON report: {e}", user_id, level='ERROR')
         return None
 
 # --- PARSING LOGIC (Targeting your specific log format) ---
@@ -175,9 +199,9 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
         if subdirs:
             # Pick the most recently modified directory
             target_subdir = max(subdirs, key=os.path.getmtime)
-            log(f"[INFO] Found SQLMap results directory: {target_subdir.name}", user_id)
+            log(f"Found SQLMap results directory: {target_subdir.name}", user_id, level='INFO')
     except Exception as e:
-        log(f"[!] Error finding SQLMap output subdirectory: {e}", user_id)
+        log(f"Error finding SQLMap output subdirectory: {e}", user_id, level='ERROR')
 
     if not target_subdir:
         log("[!] No SQLMap results directory found. The scan may not have found any vulnerabilities.", user_id)
@@ -311,18 +335,18 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None):
     if scan_mode == 'full':
         cmd.extend(['--level=3', '--risk=2', '--crawl=2', '--forms']) 
         timeout_seconds = 1800  # 30 mins
-        log(f"[*] Starting FULL scan (Detection + Enumeration) on {target_url}", user_id, to_console=True)
+        log(f"Starting FULL scan (Detection + Enumeration) on {target_url}", user_id, to_console=True)
     else:
         cmd.extend(['--level=1', '--risk=1', '--forms']) # Quick scan avoids crawl
         timeout_seconds = 900   # 15 mins
-        log(f"[*] Starting QUICK scan (Detection) on {target_url}", user_id, to_console=True)
+        log(f"Starting QUICK scan (Detection) on {target_url}", user_id, to_console=True)
 
     cmd.extend(['--banner', '--current-user', '--current-db', '--is-dba'])
 
     if scan_mode == 'full':
         cmd.extend(['--dbs', '--tables', '--passwords'])
 
-    log(f"[*] Executing SQLMap...", user_id, to_console=True)
+    log(f"Executing SQLMap...", user_id, to_console=True)
 
     live_metadata = {}
 
@@ -358,11 +382,11 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None):
                 if line and not line.startswith("[*] ending"):
                     # Categorize output for better UI visibility
                     if "fetching" in line.lower() or "retrieved" in line.lower():
-                        log(f"[DATA] {line}", user_id)
+                        log(line, user_id, level='DATA')
                     elif "testing" in line.lower() or "checking" in line.lower():
-                        log(f"[STAGE] {line}", user_id)
+                        log(line, user_id, level='STAGE')
                     elif "vulnerable" in line.lower() or "back-end DBMS" in line:
-                        log(f"[+] {line}", user_id)
+                        log(line, user_id, level='SUCCESS')
                     else:
                         log(line, user_id)
                     

@@ -582,9 +582,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!packets.length) {
             elements.packetsTableBody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="p-12 text-center">
-                        <div class="mb-2 text-slate-600"><i class="fas fa-network-wired text-4xl opacity-20"></i></div>
-                        <p class="${textSecondary}">Start a capture to view dissected packets.</p>
+                    <td colspan="7" style="padding: 6rem 2rem;">
+                        <div class="w-full flex flex-col items-center justify-center animate-card" style="gap: 1rem;">
+                            <div class="ai-pulse-container" style="opacity: 0.3;">
+                                <div class="ai-pulse-ring"></div>
+                                <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-text-muted);">wifi</span>
+                            </div>
+                            <div style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.2em; text-align: center;">
+                                INITIATE A SCAN TO VIEW RESULTS...
+                            </div>
+                        </div>
                     </td>
                 </tr>`;
             return;

@@ -1,0 +1,12 @@
+{
+  "scan_date": "2026-03-15 16:48:40",
+  "summary": {
+    "High": 0,
+    "Medium": 0,
+    "Low": 0,
+    "Info": 0,
+    "Total": 0
+  },
+  "findings": [],
+  "target_url": "http://testphp.vulnweb.com"
+}

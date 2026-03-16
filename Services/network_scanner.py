@@ -133,34 +133,20 @@ def get_scan_summary(user_id=None, output_dir=None):
     """Returns both open ports and scan metadata for the user."""
     user_data = get_user_open_ports(user_id)
     
+    # Check if memory has data first
     with _ports_lock:
-        # If memory is empty but we have an output_dir, try loading from disk
-        if not user_data["TCP"] and not user_data["UDP"] and output_dir:
-            # Drop lock to call loader (it has its own lock)
-            pass
-            # Ensure list types for joining
-            tcp_ports = user_data.get("TCP", []) if isinstance(user_data, dict) else []
-            udp_ports = user_data.get("UDP", []) if isinstance(user_data, dict) else []
-            all_ports = (tcp_ports if isinstance(tcp_ports, list) else []) + (udp_ports if isinstance(udp_ports, list) else [])
-            
-            return {
-                "open_ports": sorted(all_ports, key=lambda x: int(x.get('port', 0)) if isinstance(x, dict) and str(x.get('port', '')).isdigit() else 0),
-                "metadata": user_data.get("metadata", {}) if isinstance(user_data, dict) else {}
-            }
-            
-    # Load from disk if memory was empty
-    if output_dir:
+        has_data = bool(user_data["TCP"] or user_data["UDP"])
+        
+    # Load from disk if memory is empty and we have a path
+    if not has_data and output_dir:
         load_results_from_json(output_dir, user_id)
-        with _ports_lock:
-            return {
-                "open_ports": sorted(user_data["TCP"] + user_data["UDP"], key=lambda x: int(x['port']) if str(x['port']).isdigit() else 0),
-                "metadata": user_data["metadata"]
-            }
-            
-    return {
-        "open_ports": [],
-        "metadata": user_data["metadata"]
-    }
+        
+    with _ports_lock:
+        all_ports = user_data["TCP"] + user_data["UDP"]
+        return {
+            "open_ports": sorted(all_ports, key=lambda x: int(x['port']) if isinstance(x, dict) and str(x.get('port', '')).isdigit() else 0),
+            "metadata": user_data.get("metadata", {})
+        }
 
 from Services import scan_logger
 from logger_setup import logger
@@ -574,6 +560,7 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
 
         for line in lines:
             line = line.strip()
+            note = None
             
             if line.startswith("# Nmap") or line.startswith("Host:") or line.startswith("Stats:"):
                 general_notes.append(line)
@@ -611,10 +598,8 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
                 'CVE' in line or 'VULNERABLE' in line or 'risk' in line.lower() or 'exploit' in line.lower()
             ):
                 note = line.split("Host:")[0].strip()
-            if current_port_key and note and note not in port_vuln_notes.get(current_port_key, []):
-                if current_port_key not in port_vuln_notes:
-                    port_vuln_notes[current_port_key] = []
-                port_vuln_notes[current_port_key].append(note)
+                if note and note not in port_vuln_notes.get(current_port_key, []):
+                    port_vuln_notes[current_port_key].append(note)
             
             if line.endswith(")") and not line.startswith("Host:") and not line.startswith("# Nmap"):
                  current_port_key = None
@@ -1000,6 +985,7 @@ def extract_open_ports(filename, protocol_type, user_id=None, queue_id=None):
         # Step 1: Pre-parse for vulnerability notes
         for line in lines:
             line = line.strip()
+            note = None
             if "Ports:" in line:
                 current_port_key = None
                 ports_section = line.split("Ports:")[1].strip()

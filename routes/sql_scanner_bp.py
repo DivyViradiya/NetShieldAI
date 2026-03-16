@@ -58,7 +58,7 @@ PDF_FILENAME = "sql_report.pdf"
 @login_required
 def sql_scanner_page():
     """Renders the SQL scanner page."""
-    logger.info(f"\033[33m[*] Accessing SQL Scanner Page (User: {current_user.username})\033[0m")
+    logger.info(f"Accessing SQL Scanner Page (User: {current_user.username})")
     user_agent = request.headers.get('User-Agent')
     if user_agent and any(word in user_agent for word in ['Mobile', 'Android', 'iPhone', 'iPad']):
         return render_template('mobile_scanners/sql_scanner.html')
@@ -73,7 +73,7 @@ def scan_sql():
     """
     data = request.get_json()
     target_url = data.get('target_url')
-    logger.info(f"\033[33m[*] SQL Injection Scan requested for {target_url} by {current_user.username}\033[0m")
+    logger.info(f"SQL Injection Scan requested for {target_url} by {current_user.username}")
     scan_mode = data.get('scan_mode', 'quick') # Default to 'quick'
 
     if not target_url:

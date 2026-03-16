@@ -125,7 +125,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if(elements.certificateChainContainer) elements.certificateChainContainer.innerHTML = '<div style="text-align:center; color: var(--neo-text-muted); padding: 2rem; font-family: var(--font-mono); font-size: 0.8rem;">NO DATA.</div>';
         if(elements.protocolsTableBody) elements.protocolsTableBody.innerHTML = '<tr><td colspan="2" style="text-align:center; color: var(--neo-text-muted); padding: 2rem; font-family: var(--font-mono);">---</td></tr>';
         if(elements.ciphersTableBody) elements.ciphersTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: var(--neo-text-muted); padding: 2rem; font-family: var(--font-mono);">---</td></tr>';
-        if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = '<div style="text-align:center; padding: 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.85rem;">WAITING...</div>';
+        if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = `
+            <div class="w-full flex flex-col items-center justify-center" style="grid-column: 1 / -1; padding: 6rem 2rem;">
+                <div class="ai-pulse-container" style="opacity: 0.3;">
+                  <div class="ai-pulse-ring"></div>
+                  <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-text-muted);">radar</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.2em; text-align: center;">
+                  INITIATE A SCAN TO VIEW RESULTS...
+                </div>
+            </div>
+        `;
         if(elements.resultsContent) elements.resultsContent.textContent = '// JSON OUTPUT';
         
         [elements.downloadReportBtn, elements.analyzeReportDropdown].forEach(function(btn) {
@@ -559,7 +569,22 @@ document.addEventListener('DOMContentLoaded', function() {
             appendLog('> Initiating SSL scan for ' + targetHost + '...');
             
             if(elements.serverConfigDetails) elements.serverConfigDetails.innerHTML = '<div class="flex items-center gap-2" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);"><div class="spinner-sm"></div><span>SCANNING TARGET...</span></div>';
-            if(elements.vulnerabilitiesList) elements.vulnerabilitiesList.innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center" style="grid-column: 1 / -1; padding: 6rem 2rem;"><div class="ai-pulse-container" style="opacity: 0.3;"><div class="ai-pulse-ring"></div><span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-text-muted);">radar</span></div><div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.2em; text-align: center; margin-top: 1rem;">INITIATE A SCAN TO VIEW RESULTS...</div></div>';
+            if(elements.vulnerabilitiesList) {
+                elements.vulnerabilitiesList.innerHTML = `
+                    <div class="w-full flex flex-col items-center justify-center animate-card" style="grid-column: 1 / -1; padding: 6rem 2rem;">
+                        <div class="ai-pulse-container" style="opacity: 0.8;">
+                          <div class="ai-pulse-ring"></div>
+                          <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-blue);">radar</span>
+                        </div>
+                        <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-blue); text-transform: uppercase; letter-spacing: 0.2em; text-align: center; margin-top: 1rem;">
+                          SCANNING TARGET...
+                        </div>
+                    </div>
+                `;
+            }
+
+            toggleSpinner(elements.initiateScanBtn, true);
+            updateStatus('Scanning...', 'busy');
 
             try {
                 var response = await fetch('/ssl_scanner/scan', {

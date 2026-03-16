@@ -31,3 +31,4 @@ networkx
 scipy
 shap
 flask-mail
+APScheduler
