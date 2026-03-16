@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 from wtforms.validators import Optional
 
@@ -49,6 +49,10 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[
         DataRequired(),
         EqualTo('password', message='Passwords must match.')
+    ])
+    
+    tos_agreement = BooleanField('I agree to the Terms of Service and Privacy Policy', validators=[
+        DataRequired(message="You must agree to the Terms of Service and Privacy Policy to register.")
     ])
     
     submit = SubmitField('Register')

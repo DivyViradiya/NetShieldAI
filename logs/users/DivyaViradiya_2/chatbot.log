@@ -4,3 +4,8 @@
 2026-03-16 09:16:18 - INFO - New local chat session started: 817080b0-868d-48e7-8c05-ec6c6472c5af
 2026-03-16 09:16:20 - WARNING - Server-side session pre-fetch failed: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /get_user_sessions?user_id=DivyaViradiya_2 (Caused by ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5000) at 0x1c0c5a427a0>, 'Connection to 127.0.0.1 timed out. (connect timeout=2)'))
 2026-03-16 17:09:58 - INFO - New local chat session started: 0ff1862a-4f73-4a85-a748-c3667cf015cb
+2026-03-16 17:21:24 - INFO - New local chat session started: cb2ff60f-2f08-483a-a0b2-308abc97afd2
+2026-03-16 17:21:37 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session cb2ff60f-2f08-483a-a0b2-308abc97afd2
+2026-03-16 17:21:39 - INFO - Stream updated local session ID to: 16f655a1-c740-477e-a297-078369a4518d
+2026-03-16 17:24:50 - INFO - AI Action Execution requested: zap_scan with params {'target_url': 'http://example.com', 'scan_type': 'Quick Scan'}
+2026-03-16 17:24:50 - INFO - Triggering scanner: http://127.0.0.1:5100/zap_scanner/scan for user DivyaViradiya

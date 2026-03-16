@@ -10,3 +10,5 @@ zap_instances
 Services/scan_results
 Services/temp/
 Data
+credentials.json
+token.json

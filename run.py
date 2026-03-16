@@ -19,7 +19,7 @@ if __name__ == '__main__':
 from dotenv import load_dotenv
 # --- [FIX] Load .env using absolute path for elevated process context ---
 basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, '.env'))
+load_dotenv(os.path.join(basedir, '.env'), override=True)
 
 from flask import Flask, render_template, jsonify, request
 from flask_login import current_user
@@ -81,7 +81,7 @@ with app.app_context():
         cursor.close()
 
     # Scheduler DB Bind
-    scheduler_engine = db.get_engine(app, bind='scheduler')
+    scheduler_engine = db.engines['scheduler']
     @event.listens_for(scheduler_engine, "connect")
     def set_scheduler_sqlite_pragma(dbapi_connection, connection_record):
         cursor = dbapi_connection.cursor()
@@ -121,6 +121,7 @@ app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True').lower() == '
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER')
+app.config['MAIL_DEBUG'] = True  # Prevent SMTP base64 logging to terminal
 
 mail.init_app(app)  # --- [FIX] Initialize after configuration set ---
 

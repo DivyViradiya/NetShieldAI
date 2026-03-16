@@ -35535,3 +35535,262 @@ WHERE scheduled_scan_job.is_enabled = 1]
 [2026-03-16 17:13:34] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
 [2026-03-16 17:13:34] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
 [2026-03-16 17:13:34] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-16 17:19:36] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 17:19:36] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 17:19:36] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 17:19:36] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 17:19:36] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 17:19:50] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-16 17:19:50] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-16 17:19:52] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-16 17:19:52] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-16 17:19:53] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-16 17:19:53] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-16 17:19:54] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-16 17:19:58] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-16 17:19:58] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-16 17:20:00] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-16 17:20:00] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-16 17:20:00] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-16 17:20:00] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-16 17:20:02] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-16 17:20:02] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-16 17:20:04] [INFO    ] [run] [>] GET /ssl_scanner/ from 127.0.0.1
+[2026-03-16 17:20:04] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-03-16 17:20:04] [INFO    ] [run] [>] GET /ssl_scanner/log_stream from 127.0.0.1
+[2026-03-16 17:20:05] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-16 17:20:05] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-16 17:20:07] [INFO    ] [run] [>] GET /sql_scanner/ from 127.0.0.1
+[2026-03-16 17:20:07] [INFO    ] [run] [>] GET /sql_scanner/report from 127.0.0.1
+[2026-03-16 17:20:07] [INFO    ] [run] [>] GET /sql_scanner/log_stream from 127.0.0.1
+[2026-03-16 17:20:07] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-16 17:20:09] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-16 17:20:09] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-16 17:20:12] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-16 17:20:12] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-16 17:20:12] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-16 17:20:12] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-16 17:20:20] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-16 17:20:20] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-16 17:20:22] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-16 17:20:22] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-16 17:20:22] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-16 17:20:22] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-16 17:21:11] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-16 17:21:24] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-16 17:21:25] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-16 17:21:37] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-03-16 17:24:50] [INFO    ] [run] [>] POST /chatbot/execute_action from 127.0.0.1
+[2026-03-16 17:24:50] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-16 17:24:50] [INFO    ] [run] [>] POST /zap_scanner/scan from 127.0.0.1
+[2026-03-16 17:24:50] [INFO    ] [zap_scanner] [*] Starting ZAP Quick Scan for http://example.com (User: DivyaViradiya_2)...
+[2026-03-16 17:24:50] [INFO    ] [zap_scanner] 
+--- Starting ZAP Scan (QUICK SCAN) (Isolated Instance) ---
+[2026-03-16 17:24:50] [INFO    ] [zap_scanner] Instance Config -> Port: 65303 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_2_65303
+[2026-03-16 17:24:50] [INFO    ] [zap_scanner] Target: http://example.com
+[2026-03-16 17:24:50] [INFO    ] [zap_scanner] Report will be saved to: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_scanner_example_com.xml
+[2026-03-16 17:24:50] [INFO    ] [zap_scanner] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 65303 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_DivyaViradiya_2_65303 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_scanner_example_com.xml -quickprogress
+[2026-03-16 17:24:50] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-16 17:25:41] [INFO    ] [zap_scanner] Scan completed successfully!
+[2026-03-16 17:25:44] [INFO    ] [zap_scanner] [+] JSON report saved.
+[2026-03-16 17:25:44] [INFO    ] [zap_scanner] [*] Generating PDF report...
+[2026-03-16 17:25:44] [INFO    ] [network_scanner] [*] Starting WeasyPrint PDF generation for ZAP: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_scanner_example_com.pdf
+[2026-03-16 17:25:47] [INFO    ] [network_scanner] [+] ZAP PDF report saved successfully
+[2026-03-16 17:25:48] [INFO    ] [zap_scanner] [+] PDF generated successfully.
+[2026-03-16 17:25:48] [INFO    ] [zap_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-03-16 17:25:48] [INFO    ] [zap_scanner] [*] Scan, analysis, and prediction complete.
+[2026-03-16 17:25:58] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-16 17:26:17] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-16 17:26:17] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-16 17:26:17] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-16 17:26:17] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-16 19:26:10] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-16 19:26:41] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 19:26:42] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 19:26:42] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-16 19:26:42] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-16 19:26:42] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-16 19:26:55] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 19:26:55] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 19:26:55] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 19:26:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 19:26:55] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 19:28:09] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-16 19:41:29] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 19:41:29] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 19:41:29] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 19:41:29] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 19:41:29] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 19:42:17] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-16 19:45:06] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 19:45:07] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 19:45:07] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 19:45:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 19:45:07] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 19:45:49] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-16 20:16:33] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-16 20:16:33] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-16 20:16:39] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-16 20:16:39] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-16 20:16:41] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-16 20:16:42] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-16 20:16:42] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: Admin
+[2026-03-16 20:16:42] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-16 20:16:42] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: Admin)
+[2026-03-16 20:16:47] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-16 20:16:47] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-16 20:16:48] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-16 20:16:48] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-16 20:16:50] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-16 20:16:51] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-16 20:16:55] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-16 20:16:55] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-16 20:16:57] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-16 20:16:57] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: Admin)
+[2026-03-16 20:16:57] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-16 20:16:57] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-16 20:16:57] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-16 20:17:00] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-16 20:17:00] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-16 20:17:01] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-16 20:17:01] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-16 20:17:02] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-16 20:17:02] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-16 20:17:07] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-16 20:17:07] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-16 20:17:08] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-16 20:17:08] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: Admin)
+[2026-03-16 20:17:09] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-16 20:17:09] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-16 20:17:09] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-16 20:17:10] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-16 20:17:10] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-16 20:17:10] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-16 20:17:10] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-16 20:17:30] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-16 20:17:30] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: Admin)
+[2026-03-16 20:17:32] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-16 20:17:33] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-16 20:18:51] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-16 20:18:51] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-16 20:18:55] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-16 20:18:55] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-16 20:18:56] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-16 20:19:00] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-16 20:19:06] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-16 20:21:42] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-16 20:21:52] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 20:21:52] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 20:21:53] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-16 20:21:53] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-16 20:21:53] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-16 20:22:00] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 20:22:00] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 20:22:00] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 20:22:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 20:22:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 20:22:20] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-16 20:22:40] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 20:22:40] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 20:22:40] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 20:22:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 20:22:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 20:22:53] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-16 20:22:55] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-16 20:23:00] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-16 20:23:09] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-16 20:23:42] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-16 20:23:44] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-16 20:23:53] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-16 20:24:55] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 20:24:56] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 20:24:56] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 20:24:56] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 20:24:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 20:25:16] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-16 20:25:23] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 20:25:24] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 20:25:24] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-16 20:25:24] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-16 20:25:24] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-16 20:25:30] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 20:25:30] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 20:25:30] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 20:25:30] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 20:25:30] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 20:25:36] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-16 20:25:39] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-16 20:25:44] [INFO    ] [auth_bp] [+] Password reset email sent to divya.viradiya.7@gmail.com
+[2026-03-16 20:25:44] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-16 20:25:53] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-16 20:27:29] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 20:27:29] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 20:27:29] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 20:27:29] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 20:27:29] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 20:28:04] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-16 20:28:55] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-16 20:29:01] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 20:29:01] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 20:29:01] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-16 20:29:01] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-16 20:29:01] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-16 20:29:07] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 20:29:07] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 20:29:07] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 20:29:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 20:29:07] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 20:29:14] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-16 20:29:14] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-16 20:29:18] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-16 20:29:22] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-16 20:29:25] [INFO    ] [auth_bp] [+] Password reset email sent to divya.viradiya.7@gmail.com
+[2026-03-16 20:29:25] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-16 20:29:28] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-16 20:45:39] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-16 20:45:39] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-16 20:45:39] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-16 20:45:40] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-16 20:45:40] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-16 21:01:09] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-16 21:03:16] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-16 21:03:22] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 21:03:22] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 21:03:22] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-16 21:03:22] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-16 21:03:22] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-16 21:03:33] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-16 21:03:33] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-16 21:03:33] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-16 21:03:33] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-16 21:03:33] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-16 21:04:14] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.

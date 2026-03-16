@@ -10,6 +10,8 @@ from forms import RegistrationForm, LoginForm, UpdateProfileForm, ChangePassword
 from flask_mail import Message
 from flask import session
 from logger_setup import logger
+from email_service import send_otp_email
+
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -577,7 +579,8 @@ def send_reset_email(user):
 
     msg = Message('Password Reset Verification Code',
                   sender=current_app.config['MAIL_DEFAULT_SENDER'],
-                  recipients=[user.email])
+                  recipients=[user.email],
+                  extra_headers={'Auto-Submitted': 'auto-generated', 'Precedence': 'bulk'})
                   
     # --- [DESIGN] Render HTML Email with Design ---
     html_content = render_template('email/reset_password.html', 
@@ -585,16 +588,28 @@ def send_reset_email(user):
                                    otp_code=otp_code, 
                                    current_year=datetime.now().year)
                                    
-    logo_path = os.path.join(current_app.root_path, 'static', 'images', 'NS_Logo.png')
-    if os.path.exists(logo_path):
-        try:
-            with open(logo_path, 'rb') as fp:
-                msg.attach("NS_Logo.png", "image/png", fp.read(), headers={'Content-ID': '<logo_img>'})
-        except Exception as e:
-             logger.warning(f"[!] Failed to attach logo to email: {e}")
+    # Temporarily disabled attachment to troubleshoot delivery
+    # logo_path = os.path.join(current_app.root_path, 'static', 'images', 'NS_Logo.png')
+    # if os.path.exists(logo_path):
+    #     try:
+    #         with open(logo_path, 'rb') as fp:
+    #             msg.attach("NS_Logo.png", "image/png", fp.read(), headers={'Content-ID': '<logo_img>'})
+    #     except Exception as e:
+    #          logger.warning(f"[!] Failed to attach logo to email: {e}")
             
     msg.html = html_content
-    mail.send(msg)
+    try:
+        # Use Gmail API instead of flask_mail
+        success = send_otp_email(user.email, otp_code)
+        if success:
+            logger.info(f"[+] Password reset email sent to {user.email} via Gmail API")
+        else:
+            raise Exception("Gmail API failed to send email")
+    except Exception as e:
+        logger.error(f"[!] Failed to send email via Gmail API: {str(e)}")
+        # If it fails, let's print the full error to help debug
+        import traceback
+        traceback.print_exc()
 
 
 @auth_bp.route('/forgot_password', methods=['GET', 'POST'])

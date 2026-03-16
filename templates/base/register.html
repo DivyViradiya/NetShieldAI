@@ -107,6 +107,9 @@
               <button onclick="window.location.href='{{ url_for('auth.login_google') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition text-center">Google</button>
               <button onclick="window.location.href='{{ url_for('auth.login_github') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition text-center">GitHub</button>
             </div>
+            <p class="text-[0.65rem] text-[var(--neo-text-secondary)] mt-3 leading-tight text-center">
+              By proceeding with Google or GitHub, you acknowledge that you have read and agree to our <a href="#" class="text-[var(--neo-blue)] hover:underline">Terms of Service</a> and <a href="#" class="text-[var(--neo-blue)] hover:underline">Privacy Policy</a>.
+            </p>
             <div class="relative py-4">
               <div class="absolute inset-0 flex items-center">
                 <span class="w-full border-t border-[var(--neo-border)]"></span>
@@ -184,8 +187,15 @@
                   {{ form.confirm_password(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
                   focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
                   placeholder-[var(--neo-text-label)] req-input') }}
-                  {% for error in form.confirm_password.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{%
-                  endfor %}
+                  {% for error in form.confirm_password.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
+                </div>
+                
+                <div class="flex items-start gap-2 mt-4 text-xs">
+                  {{ form.tos_agreement(class='rounded border-[var(--neo-border)] bg-[var(--bg-color)] text-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] focus:ring-offset-0 transition-colors duration-300 req-input mt-0.5') }}
+                  <div>
+                    {{ form.tos_agreement.label(class='text-[var(--neo-text-secondary)]') }} <a href="#" class="text-[var(--neo-blue)] hover:underline">Terms of Service</a> and <a href="#" class="text-[var(--neo-blue)] hover:underline">Privacy Policy</a>.
+                    {% for error in form.tos_agreement.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
+                  </div>
                 </div>
                 </div>
           </div>
