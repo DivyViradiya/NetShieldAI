@@ -241,7 +241,17 @@ def add_target(profile_id):
     if existing:
         return jsonify({"status": "error", "message": "Target already exists in this profile."}), 409
 
-    target = ProfileTarget(profile_id=profile.id, target_url=target_url)
+    requires_consent = data.get('requires_consent', False)
+    consent_email = (data.get('consent_email') or '').strip()
+    if requires_consent and not consent_email:
+        return jsonify({"status": "error", "message": "Consent email is required if consent check is enabled."}), 400
+
+    target = ProfileTarget(
+        profile_id=profile.id, 
+        target_url=target_url,
+        requires_consent=requires_consent,
+        consent_email=consent_email if requires_consent else None
+    )
     db.session.add(target)
     profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
@@ -286,6 +296,8 @@ def update_target(profile_id, target_id):
         return jsonify({"status": "error", "message": "Target URL is required."}), 400
 
     target.target_url = target_url
+    target.requires_consent = data.get('requires_consent', False)
+    target.consent_email = (data.get('consent_email') or '').strip() if target.requires_consent else None
     profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
 
@@ -601,11 +613,20 @@ def job_history(job_id):
     target_q = request.args.get('target_q')
     status_filter = request.args.get('status')
 
+    # Get target URLs and tools for this profile to restrict results to this specific scan config
+    target_urls = [t.target_url for t in profile.targets]
+    tools = [c.module for c in profile.configs]
+
     # Query ScanLog from primary DB for this user's scans
     from models.models import ScanLog
     query = ScanLog.query.filter_by(user_id=current_user.id, origin='scheduled')
 
-    if scanner_type:
+    if target_urls:
+        query = query.filter(ScanLog.target.in_(target_urls))
+    if tools:
+        query = query.filter(db.func.lower(ScanLog.tool_name).in_([t.lower() for t in tools]))
+
+    if scanner_type and scanner_type != 'all':
         query = query.filter(ScanLog.tool_name.ilike(f"%{scanner_type}%"))
     if target_q:
         query = query.filter(ScanLog.target.ilike(f"%{target_q}%"))
@@ -730,3 +751,35 @@ def download_report(log_id):
         download_name=report_name,
         mimetype='application/pdf'
     )
+
+
+@scheduler_bp.route('/confirm-scan/<token>')
+def confirm_scan(token):
+    """
+    Public route for target owners to confirm a scheduled scan.
+    """
+    from models.scheduler_models import ScanConsentToken, IST
+    from Services import scheduler_service
+    from datetime import datetime
+    
+    consent = ScanConsentToken.query.filter_by(token=token).first()
+    
+    if not consent:
+        return render_template('scheduler/consent_result.html', status='error', message='Invalid authorization token.')
+        
+    if consent.status == 'approved':
+        return render_template('scheduler/consent_result.html', status='success', message='This scan has already been authorized.')
+        
+    if consent.is_expired():
+        consent.status = 'expired'
+        db.session.commit()
+        return render_template('scheduler/consent_result.html', status='error', message='This authorization link has expired (1 hour limit).')
+
+    # Simply approve the token — the scheduled job will run at its configured time
+    # and will find this approved token, then proceed with the scan.
+    consent.status = 'approved'
+    consent.approved_at = datetime.now(IST).replace(tzinfo=None)
+    db.session.commit()
+    logger.info(f"[+] [scheduler_bp] Consent approved for job {consent.job_id} — scan will run at its scheduled time.")
+
+    return render_template('scheduler/consent_result.html', status='success', message='Scan authorized! The security audit will begin at its next scheduled time.')

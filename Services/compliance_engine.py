@@ -281,7 +281,8 @@ class ComplianceEngine:
                         evidence.append({
                             "issue": title,
                             "source": finding['source'],
-                            "severity": finding['severity']
+                            "severity": finding['severity'],
+                            "description": description
                         })
 
                 if status == "FAIL":

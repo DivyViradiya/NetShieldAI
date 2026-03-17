@@ -898,6 +898,10 @@
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
       }
+      @keyframes blink {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.8); }
+      }
       .spin { animation: spin 2s linear infinite; }
 
       .log-entry {
@@ -960,6 +964,9 @@
         <span class="material-symbols-outlined" style="font-size: 1.1rem;">close</span>
       </button>
     </div>
+    
+    <!-- Banner for selected scanner -->
+    <div id="drawerBanner"></div>
 
     <!-- Labeled Step Progress Bar -->
     <div class="step-bar" id="stepBar">
@@ -1155,5 +1162,8 @@
 {% endblock %}
 
 {% block extra_scripts %}
+    <script>
+        window.USER_EMAIL = {{ current_user.email | tojson }};
+    </script>
     <script src="{{ url_for('static', filename='js/scheduler.js') }}"></script>
 {% endblock %}

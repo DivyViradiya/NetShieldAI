@@ -1,4 +1,0 @@
-# Nmap 7.97 scan initiated Tue Mar 17 15:08:46 2026 as: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\\Users\\Divy\\AppData\\Local\\Temp\\NetShieldAI\\nmap\\scan_Admin_1_1eebaccb.txt 104.18.26.120
-Host: 104.18.26.120 ()	Status: Up
-Host: 104.18.26.120 ()	Ports: 80/open/tcp//http//Cloudflare http proxy/, 443/open/tcp//ssl|https//cloudflare/, 8080/open/tcp//http//Cloudflare http proxy/, 8443/open/tcp//ssl|https-alt//cloudflare/	Ignored State: filtered (996)
-# Nmap done at Tue Mar 17 15:09:05 2026 -- 1 IP address (1 host up) scanned in 19.53 seconds

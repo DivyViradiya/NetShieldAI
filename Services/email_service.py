@@ -5,6 +5,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from core.logger_setup import logger
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.send']
@@ -55,21 +56,6 @@ def send_otp_email(recipient_email, otp_code, html_content=None, logo_path=None)
         # HTML Content
         if html_content:
             message.add_alternative(html_content, subtype='html')
-            
-            # If we have a logo and it's referenced in HTML as cid:logo_img
-            if logo_path and os.path.exists(logo_path):
-                # We need to add the related image to the HTML part
-                # EmailMessage makes this a bit tricky with add_alternative.
-                # A better way for CID with EmailMessage:
-                import mimetypes
-                maintype, subtype = mimetypes.guess_type(logo_path)[0].split('/')
-                with open(logo_path, 'rb') as img:
-                    message.get_payload()[1].add_related(
-                        img.read(), 
-                        maintype=maintype, 
-                        subtype=subtype, 
-                        cid='logo_img'
-                    )
 
         # The API requires the email to be base64 encoded
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
@@ -77,11 +63,43 @@ def send_otp_email(recipient_email, otp_code, html_content=None, logo_path=None)
 
         # Send the email
         send_message = service.users().messages().send(userId="me", body=create_message).execute()
-        print(f"Success! Message Id: {send_message['id']}")
+        logger.info(f"[+] [EMAIL] OTP email sent successfully. Message Id: {send_message['id']}")
         return True
         
     except Exception as error:
-        print(f"An error occurred: {error}")
+        logger.error(f"[!] [EMAIL] Error sending OTP email: {error}")
+        return False
+
+def send_consent_email(recipient_email, target_url, profile_name, confirm_url, html_content=None, logo_path=None):
+    """Sends a scan authorization request email."""
+    try:
+        service = authenticate_gmail()
+        
+        message = EmailMessage()
+        message['To'] = recipient_email
+        message['From'] = 'admin.netshieldai@gmail.com'
+        message['Subject'] = f'CONSENT REQUIRED: Security Scan for {target_url}'
+
+        # Plain text fallback
+        plain_text = (
+            f"Authorization Required for Security Scan\n\n"
+            f"A security scan has been scheduled for your asset: {target_url}\n"
+            f"Profile: {profile_name}\n\n"
+            f"To authorize this scan, please visit: {confirm_url}\n\n"
+            f"This link is valid for 1 hour."
+        )
+        message.set_content(plain_text)
+
+        if html_content:
+            message.add_alternative(html_content, subtype='html')
+
+        encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+        create_message = {'raw': encoded_message}
+        send_message = service.users().messages().send(userId="me", body=create_message).execute()
+        logger.info(f"[+] [EMAIL] Consent email sent successfully. Message Id: {send_message['id']}")
+        return True
+    except Exception as error:
+        logger.error(f"[!] [EMAIL] Error sending consent email: {error}")
         return False
 
 # --- Test the function ---

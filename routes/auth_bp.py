@@ -647,6 +647,31 @@ def forgot_password():
     return render_template('base/forgot_password.html', form=form)
 
 
+@auth_bp.route('/resend_otp', methods=['POST'])
+def resend_otp():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+        
+    reset_user_id = session.get('reset_user_id')
+    if not reset_user_id:
+        flash('Session expired. Please request a new code.', 'warning')
+        return redirect(url_for('auth.forgot_password'))
+        
+    # [SECURITY] Handle dummy user flow to prevent enumeration leaks
+    if reset_user_id == -1:
+        flash('A new 6-digit verification code has been sent.', 'info')
+        return redirect(url_for('auth.verify_otp'))
+        
+    user = db.session.get(User, reset_user_id)
+    if not user:
+        flash('User not found.', 'danger')
+        return redirect(url_for('auth.forgot_password'))
+        
+    send_reset_email(user)
+    flash('A new 6-digit verification code has been sent.', 'info')
+    return redirect(url_for('auth.verify_otp'))
+
+
 @auth_bp.route('/verify_otp', methods=['GET', 'POST'])
 def verify_otp():
     if current_user.is_authenticated:

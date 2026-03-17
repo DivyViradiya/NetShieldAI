@@ -1,107 +1,122 @@
 {% extends 'base.html' %}
 
-{% block title %}NetShieldAI - Verify Email{% endblock %}
+{% block title %}NetShieldAI — Verify Email{% endblock %}
 
 {% block extra_css %}
 <style>
+  footer, .navbar { display: none !important; } body { padding-top: 0 !important; }
   :root {
-    --neo-card: rgba(10, 10, 12, 0.85);
-    --neo-border: rgba(255, 255, 255, 0.1);
-    --neo-text-primary: #ffffff;
-    --neo-text-secondary: #888888;
-    --neo-text-label: #555555;
-    --neo-green: #10b981;
-    --bg-color: #000000;
+    --ac-bg:#000000; --ac-card:rgba(10,10,12,0.85); --ac-border:rgba(255,255,255,0.08);
+    --ac-border-h:rgba(16,185,129,0.5); --ac-primary:#10b981; --ac-text:#ffffff;
+    --ac-sub:#94a3b8; --ac-label:#64748b; --ac-input:rgba(0,0,0,0.4);
   }
   body.light-mode {
-    --neo-card: #ffffff;
-    --neo-border: #cbd5e1;
-    --neo-text-primary: #0f172a;
-    --neo-text-secondary: #1e293b;
-    --neo-text-label: #64748b;
-    --neo-green: #059669;
-    --bg-color: #f1f5f9;
+    --ac-bg:#f0fdf4; --ac-card:#ffffff; --ac-border:#e2e8f0;
+    --ac-border-h:rgba(5,150,105,0.4); --ac-primary:#059669; --ac-text:#0f172a;
+    --ac-sub:#475569; --ac-label:#64748b; --ac-input:#f8fafc;
   }
-  #verify-card, #verify-card * { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  .auth-page { font-family:'IBM Plex Sans',system-ui,sans-serif; }
+  .auth-bg { position:fixed;inset:0;z-index:0;background:var(--ac-bg);overflow:hidden; }
+  .auth-bg::before { content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(16,185,129,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.04) 1px,transparent 1px);background-size:48px 48px; }
+  .auth-bg-glow { position:absolute;width:500px;height:500px;border-radius:50%;filter:blur(100px);opacity:0.07;background:radial-gradient(circle,#10b981 0%,transparent 70%);top:-50px;right:-50px; }
+  .auth-wrap { min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem;position:absolute;inset:0;z-index:10; }
+  .auth-card { width:100%;max-width:440px;background:var(--ac-card);border:1px solid var(--ac-border);border-radius:20px;padding:2.5rem;box-shadow:0 25px 60px -10px rgba(0,0,0,0.6);backdrop-filter:blur(24px);transition:border-color 0.3s; }
+  .auth-card:hover { border-color:var(--ac-border-h); }
+  .auth-logo-row { display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem; }
+  .auth-logo-box { width:40px;height:40px;background:var(--ac-primary);border-radius:10px;display:flex;align-items:center;justify-content:center; }
+  .auth-logo-box img { width:24px;height:24px;object-fit:contain;filter:invert(1); }
+  .auth-brand { font-size:0.8rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--ac-text); }
+  .auth-brand span { color:var(--ac-primary); }
+
+  /* Email icon animation */
+  .email-icon-wrap { width:64px;height:64px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;color:#10b981; }
+  body.light-mode .email-icon-wrap { background:#f0fdf4;border-color:#d1fae5; }
+  .email-icon-wrap .material-symbols-outlined { font-size:2rem; }
+
+  .auth-title { font-size:1.6rem;font-weight:800;color:var(--ac-text);letter-spacing:-0.03em;margin-bottom:0.5rem;text-align:center; }
+  .auth-sub { font-size:0.875rem;color:var(--ac-sub);line-height:1.5;text-align:center;margin-bottom:0; }
+  .auth-divider { height:1px;background:var(--ac-border);margin:1.5rem 0; }
+  .flash-msg { padding:0.75rem 1rem;border-radius:8px;font-size:0.8rem;border:1px solid;margin-bottom:1.25rem; }
+  .flash-error { background:rgba(239,68,68,0.08);color:#f87171;border-color:rgba(239,68,68,0.2); }
+  .flash-success { background:rgba(16,185,129,0.08);color:#34d399;border-color:rgba(16,185,129,0.2); }
+  body.light-mode .flash-error { background:#fef2f2;color:#dc2626;border-color:#fecaca; }
+  body.light-mode .flash-success { background:#f0fdf4;color:#059669;border-color:#d1fae5; }
+  .auth-label { display:block;font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ac-label);margin-bottom:0.4rem; }
+  .otp-input { width:100%;background:var(--ac-input);border:2px solid var(--ac-border);color:var(--ac-text);border-radius:10px;padding:1rem;font-size:2rem;font-weight:800;letter-spacing:0.6em;text-align:center;font-family:'JetBrains Mono',monospace;transition:border-color 0.2s,box-shadow 0.2s;box-sizing:border-box; }
+  .otp-input:focus { outline:none;border-color:var(--ac-primary);box-shadow:0 0 0 4px rgba(16,185,129,0.15); }
+  .otp-input::placeholder { letter-spacing:0.3em;font-size:1.25rem;color:var(--ac-label); }
+  .auth-field-error { color:#f87171;font-size:0.75rem;margin-top:0.3rem; }
+  .auth-btn { width:100%;background:var(--ac-primary);color:#fff;border:none;border-radius:8px;padding:0.8rem 1.5rem;font-size:0.8rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:opacity 0.2s,transform 0.2s;margin-top:1.25rem; }
+  .auth-btn:hover { opacity:0.9;transform:translateY(-1px); }
+  .auth-btn:disabled { opacity:0.5;cursor:not-allowed; }
+  .auth-sub-action { margin-top:1rem;text-align:center;font-size:0.8rem;color:var(--ac-sub); }
+  .auth-sub-action button { color:var(--ac-primary);font-weight:600;background:none;border:none;cursor:pointer; }
+  .auth-sub-action button:hover { text-decoration:underline; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
-  
-  <div id="verify-card" class="relative z-10 flex w-full max-w-[450px] h-auto bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl p-8 md:p-10 flex-col justify-center">
-    
-    <div class="text-center mb-6">
-      <div class="w-16 h-16 bg-[var(--neo-green)]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--neo-green)]/20">
-        <svg class="w-8 h-8 text-[var(--neo-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-        </svg>
-      </div>
-      <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2">Verify Your Email</h3>
-      <p class="text-[var(--neo-text-secondary)] text-sm">We've sent a 6-digit verification code to your email. Please enter it below to activate your account.</p>
+<div class="auth-bg"><div class="auth-bg-glow"></div></div>
+
+<div class="auth-wrap auth-page">
+  <div class="auth-card">
+
+    <div class="auth-logo-row">
+      <div class="auth-logo-box"><img src="{{ url_for('static', filename='images/NS_Logo_pdf.png') }}" alt="NS"></div>
+      <span class="auth-brand">NetShield<span>AI</span></span>
     </div>
+
+    <div class="email-icon-wrap">
+      <span class="material-symbols-outlined">mark_email_unread</span>
+    </div>
+    <h1 class="auth-title">Check Your Inbox</h1>
+    <p class="auth-sub">We sent a 6-digit code to your email. Enter it below to activate your account.</p>
+
+    <div class="auth-divider"></div>
 
     {% with messages=get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="mb-5 space-y-2">
-          {% for category, message in messages %}
-            <div class="p-3 rounded text-sm border 
-              {% if category == 'danger' %}
-                bg-red-900/20 text-red-400 border-red-900
-              {% else %}
-                bg-green-900/20 text-green-400 border-green-900
-              {% endif %}">
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
+        {% for category, message in messages %}
+          <div class="flash-msg {{ 'flash-error' if category == 'danger' else 'flash-success' }}">{{ message }}</div>
+        {% endfor %}
       {% endif %}
     {% endwith %}
 
-    <form method="POST" action="{{ url_for('auth.verify_registration') }}" class="space-y-6" id="verifyForm">
+    <form method="POST" action="{{ url_for('auth.verify_registration') }}" id="verifyForm">
       {{ form.hidden_tag() }}
-
       <div>
-        <label class="text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider">Verification Code</label>
-        {{ form.code(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 text-center font-bold text-xl tracking-widest focus:outline-none focus:border-[var(--neo-green)] focus:ring-1 focus:ring-[var(--neo-green)] transition-colors duration-300', placeholder='000000', maxlength='6', autocomplete='off') }}
+        <label class="auth-label">Verification Code</label>
+        {{ form.code(class='otp-input', placeholder='000000', maxlength='6', autocomplete='one-time-code', inputmode='numeric') }}
         {% if form.code.errors %}
-          <div class="text-red-500 text-xs mt-1">
-            {% for error in form.code.errors %}
-              <div>{{ error }}</div>
-            {% endfor %}
-          </div>
+          <div class="auth-field-error">{% for e in form.code.errors %}{{ e }}{% endfor %}</div>
         {% endif %}
       </div>
-
-      <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-500 hover:to-green-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-green-900/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+      <button type="submit" id="submitBtn" class="auth-btn">
         <span>Activate Account</span>
+        <span class="material-symbols-outlined" style="font-size:1rem;">how_to_reg</span>
       </button>
-      
     </form>
 
-    <div class="text-center mt-6">
-      <form action="{{ url_for('auth.resend_verification') }}" method="POST">
-        <p class="text-xs text-[var(--neo-text-secondary)]">
-          Didn't receive a code? <button type="submit" class="text-[var(--neo-green)] hover:underline focus:outline-none">Resend code</button>
-        </p>
+    <div class="auth-sub-action">
+      Didn't get the email?
+      <form action="{{ url_for('auth.resend_verification') }}" method="POST" style="display:inline;">
+        <button type="submit">Resend code</button>
       </form>
     </div>
-
   </div>
 </div>
 
 <script>
-  document.getElementById('verifyForm').addEventListener('submit', function(e) {
-    const btn = document.getElementById('submitBtn');
-    if(btn.disabled) return;
-    
-    const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
-    const originalText = btn.innerHTML;
-    btn.innerHTML = spinner + "Activating...";
-    btn.disabled = true;
-    btn.classList.add('opacity-75', 'cursor-not-allowed');
-    
-    // We let the form submit naturally
-  });
+const input = document.querySelector('.otp-input');
+if (input) input.addEventListener('input', function(){
+  this.value = this.value.replace(/\D/g,'');
+  if (this.value.length === 6) document.getElementById('verifyForm').submit();
+});
+document.getElementById('verifyForm').addEventListener('submit', function(){
+  const btn = document.getElementById('submitBtn');
+  if(btn.disabled) return;
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="animate-spin" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/><path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg> Activating...';
+});
 </script>
 {% endblock %}

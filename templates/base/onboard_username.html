@@ -1,91 +1,133 @@
 {% extends 'base.html' %}
 
-{% block title %}NetShieldAI - Setup Username{% endblock %}
+{% block title %}NetShieldAI — Setup Username{% endblock %}
 
 {% block extra_css %}
 <style>
+  footer, .navbar { display: none !important; } body { padding-top: 0 !important; }
   :root {
-    --neo-card: rgba(10, 10, 12, 0.85);
-    --neo-border: rgba(255, 255, 255, 0.1);
-    --neo-text-primary: #ffffff;
-    --neo-text-secondary: #888888;
-    --neo-text-label: #555555;
-    --neo-blue: #3b82f6;
-    --bg-color: #000000;
+    --ac-bg:#000000; --ac-card:rgba(10,10,12,0.85); --ac-border:rgba(255,255,255,0.08);
+    --ac-border-h:rgba(59,130,246,0.5); --ac-primary:#3b82f6; --ac-text:#ffffff;
+    --ac-sub:#94a3b8; --ac-label:#64748b; --ac-input:rgba(0,0,0,0.4);
   }
   body.light-mode {
-    --neo-card: #ffffff;
-    --neo-border: #cbd5e1;
-    --neo-text-primary: #0f172a;
-    --neo-text-secondary: #1e293b;
-    --neo-text-label: #64748b;
-    --neo-blue: #4f46e5;
-    --bg-color: #f1f5f9;
+    --ac-bg:#f0f4ff; --ac-card:#ffffff; --ac-border:#e2e8f0;
+    --ac-border-h:rgba(79,70,229,0.4); --ac-primary:#4f46e5; --ac-text:#0f172a;
+    --ac-sub:#475569; --ac-label:#64748b; --ac-input:#f8fafc;
   }
-  #onboard-card, #onboard-card * { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  .auth-page { font-family:'IBM Plex Sans',system-ui,sans-serif; }
+  .auth-bg { position:fixed;inset:0;z-index:0;background:var(--ac-bg);overflow:hidden; }
+  .auth-bg::before { content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);background-size:48px 48px; }
+  .auth-bg-glow { position:absolute;width:500px;height:500px;border-radius:50%;filter:blur(100px);opacity:0.08;background:radial-gradient(circle,var(--ac-primary) 0%,transparent 70%);bottom:-150px;left:-100px; }
+  .auth-wrap { min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem;position:absolute;inset:0;z-index:10; }
+  .auth-card { width:100%;max-width:480px;background:var(--ac-card);border:1px solid var(--ac-border);border-radius:20px;padding:2.5rem;box-shadow:0 25px 60px -10px rgba(0,0,0,0.6);backdrop-filter:blur(24px);transition:border-color 0.3s; }
+  .auth-card:hover { border-color:var(--ac-border-h); }
+  .auth-logo-row { display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem; }
+  .auth-logo-box { width:40px;height:40px;background:var(--ac-primary);border-radius:10px;display:flex;align-items:center;justify-content:center; }
+  .auth-logo-box img { width:24px;height:24px;object-fit:contain;filter:invert(1); }
+  .auth-brand { font-size:0.8rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--ac-text); }
+  .auth-brand span { color:var(--ac-primary); }
+  .auth-eyebrow { font-size:0.65rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--ac-primary);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.4rem; }
+  .auth-eyebrow::before { content:'//';color:var(--ac-label); }
+  .auth-title { font-size:1.6rem;font-weight:800;color:var(--ac-text);letter-spacing:-0.03em;margin-bottom:0.5rem; }
+  .auth-sub { font-size:0.875rem;color:var(--ac-sub);line-height:1.5; }
+  .auth-divider { height:1px;background:var(--ac-border);margin:1.5rem 0; }
+  .flash-msg { padding:0.75rem 1rem;border-radius:8px;font-size:0.8rem;border:1px solid;margin-bottom:1.25rem; }
+  .flash-error { background:rgba(239,68,68,0.08);color:#f87171;border-color:rgba(239,68,68,0.2); }
+  .flash-info  { background:rgba(59,130,246,0.08);color:#93c5fd;border-color:rgba(59,130,246,0.2); }
+  body.light-mode .flash-error { background:#fef2f2;color:#dc2626;border-color:#fecaca; }
+  body.light-mode .flash-info  { background:#eff6ff;color:#2563eb;border-color:#bfdbfe; }
+  .auth-label { display:block;font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ac-label);margin-bottom:0.4rem; }
+  .auth-input-wrap { position:relative; }
+  .auth-input-prefix { position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:var(--ac-label);font-size:0.9rem;pointer-events:none; }
+  .auth-input { width:100%;background:var(--ac-input);border:1px solid var(--ac-border);color:var(--ac-text);border-radius:8px;padding:0.7rem 1rem 0.7rem 2rem;font-size:0.9rem;font-family:inherit;transition:border-color 0.2s,box-shadow 0.2s;box-sizing:border-box; }
+  .auth-input:focus { outline:none;border-color:var(--ac-primary);box-shadow:0 0 0 3px rgba(59,130,246,0.12); }
+  .auth-input::placeholder { color:var(--ac-label); }
+  .auth-field-error { color:#f87171;font-size:0.75rem;margin-top:0.3rem; }
+  body.light-mode .auth-field-error { color:#dc2626; }
+  .username-hint { display:flex;align-items:center;gap:0.4rem;margin-top:0.5rem;font-size:0.75rem;color:var(--ac-label); }
+  .username-hint .material-symbols-outlined { font-size:0.875rem; }
+
+  /* Progress steps */
+  .setup-steps { display:flex;align-items:center;gap:0;margin-bottom:1.5rem; }
+  .step-pip { flex:1;height:2px;background:var(--ac-border);position:relative; }
+  .step-pip.done { background:var(--ac-primary); }
+  .step-pip:first-child { border-radius:2px 0 0 2px; }
+  .step-pip:last-child { border-radius:0 2px 2px 0; }
+
+  .auth-btn { width:100%;background:var(--ac-primary);color:#fff;border:none;border-radius:8px;padding:0.8rem 1.5rem;font-size:0.8rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:opacity 0.2s,transform 0.2s;margin-top:1.5rem; }
+  .auth-btn:hover { opacity:0.9;transform:translateY(-1px); }
+  .auth-btn:disabled { opacity:0.5;cursor:not-allowed; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
-  
-  <div id="onboard-card" class="relative z-10 flex w-full max-w-[500px] h-auto bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden p-8 md:p-12 flex-col justify-center">
-    
-    <div class="text-center mb-6">
-      <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2">Welcome to NetShield!</h3>
-      <p class="text-[var(--neo-text-secondary)] text-sm">Please choose a unique username to complete your profile setup.</p>
+<div class="auth-bg"><div class="auth-bg-glow"></div></div>
+
+<div class="auth-wrap auth-page">
+  <div class="auth-card">
+
+    <div class="auth-logo-row">
+      <div class="auth-logo-box"><img src="{{ url_for('static', filename='images/NS_Logo_pdf.png') }}" alt="NS"></div>
+      <span class="auth-brand">NetShield<span>AI</span></span>
     </div>
+
+    <!-- Progress -->
+    <div class="setup-steps">
+      <div class="step-pip done"></div>
+      <div class="step-pip done"></div>
+      <div class="step-pip done"></div>
+      <div class="step-pip"></div>
+    </div>
+
+    <p class="auth-eyebrow">Setup — Final Step</p>
+    <h1 class="auth-title">Choose Your Handle</h1>
+    <p class="auth-sub">Pick a unique username that will identify you on NetShieldAI.</p>
+
+    <div class="auth-divider"></div>
 
     {% with messages=get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="mb-6 space-y-2">
-          {% for category, message in messages %}
-            <div class="p-3 rounded text-sm border 
-              {% if category == 'danger' %}
-                bg-red-900/20 text-red-400 border-red-900
-              {% else %}
-                bg-blue-900/20 text-blue-400 border-blue-900
-              {% endif %}">
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
+        {% for category, message in messages %}
+          <div class="flash-msg {{ 'flash-error' if category == 'danger' else 'flash-info' }}">{{ message }}</div>
+        {% endfor %}
       {% endif %}
     {% endwith %}
 
-    <form method="POST" action="{{ url_for('auth.onboard_username') }}" class="space-y-5" id="onboardForm">
+    <form method="POST" action="{{ url_for('auth.onboard_username') }}" id="onboardForm">
       {{ form.hidden_tag() }}
-
       <div>
-        {{ form.username.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-        {{ form.username(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='Choose a username') }}
-        
+        <label class="auth-label">Username</label>
+        <div class="auth-input-wrap">
+          <span class="auth-input-prefix">@</span>
+          {{ form.username(class='auth-input', placeholder='your_handle', autocomplete='username', id='usernameInput') }}
+        </div>
+        <div class="username-hint">
+          <span class="material-symbols-outlined">info</span>
+          3–30 characters. Letters, numbers and underscores only.
+        </div>
         {% if form.username.errors %}
-          <div class="text-red-500 text-xs mt-1 ml-1">
-            {% for error in form.username.errors %}
-              <span>{{ error }}</span>
-            {% endfor %}
-          </div>
+          <div class="auth-field-error">{% for e in form.username.errors %}{{ e }}{% endfor %}</div>
         {% endif %}
       </div>
-
-      <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-        <span>Save & Continue</span>
+      <button type="submit" id="submitBtn" class="auth-btn">
+        <span>Complete Setup</span>
+        <span class="material-symbols-outlined" style="font-size:1rem;">rocket_launch</span>
       </button>
-      
     </form>
-    
   </div>
 </div>
 
 <script>
-  document.getElementById('onboardForm').addEventListener('submit', function(e) {
-    const btn = document.getElementById('submitBtn');
-    if (btn.classList.contains('opacity-75')) return; // Prevent double submit
-
-    const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
-    btn.innerHTML = spinner + "Processing...";
-    btn.classList.add('opacity-75', 'cursor-not-allowed');
-  });
+// Sanitize input to allowed characters
+document.getElementById('usernameInput').addEventListener('input', function(){
+  this.value = this.value.replace(/[^a-zA-Z0-9_]/g, '').toLowerCase();
+});
+document.getElementById('onboardForm').addEventListener('submit', function(){
+  const btn = document.getElementById('submitBtn');
+  if(btn.disabled) return;
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="animate-spin" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"/><path fill="currentColor" class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg> Setting up...';
+});
 </script>
 {% endblock %}

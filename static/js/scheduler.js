@@ -10,6 +10,16 @@ let currentHistoryFilters = {
     isGlobal: false
 };
 let allProfiles = [];
+window.fillRegistrationEmail = function(draftIndex) {
+    if (window.USER_EMAIL) {
+        window.updateDraftState(draftIndex, 'consentEmail', window.USER_EMAIL);
+        const input = document.getElementById('field-consent-email');
+        if (input) {
+            input.value = window.USER_EMAIL;
+            clearFieldError(input);
+        }
+    }
+};
 
 // ===== Security Utility =====
 const escapeHTML = (str) => {
@@ -46,6 +56,17 @@ const COLOR_MAP = {
     api:       'var(--neo-cyan)',
     ssl:       'var(--neo-blue)',
     killchain: 'var(--neo-red)'
+};
+
+const MODULE_NAMES = {
+    nmap: 'Nmap Scanner',
+    sniffer: 'Sniffer',
+    zap: 'OWASP ZAP',
+    sql: 'SQLi Probe',
+    api: 'API Scanner',
+    semgrep: 'Semgrep SAST',
+    ssl: 'SSL Audit',
+    killchain: 'Kill Chain'
 };
 
 // ===== Schedule labels =====
@@ -174,6 +195,7 @@ function renderMissionCard(p) {
     const anyEnabled = p.jobs.some(j => j.is_enabled);
     const pillClass = anyEnabled ? 'active' : 'paused';
     const pillLabel = anyEnabled ? 'Active' : 'Paused';
+    const hasPendingConsent = p.targets?.some(t => t.consent_pending);
 
     return `
         <div class="mission-card fade-in" id="profile-${p.id}">
@@ -182,6 +204,7 @@ function renderMissionCard(p) {
                     <div style="display:flex; align-items:center; gap: 0.4rem; margin-bottom: 0.1rem;">
                         <div class="mission-title" style="color: ${accentColor}; font-size: 0.8rem;">${escapeHTML(p.name).toUpperCase()}</div>
                         ${p.jobs.length > 0 ? `<span class="status-pill ${pillClass}" style="padding: 1px 5px; font-size: 0.5rem;"><span class="status-dot" style="width:3px; height:3px;"></span>${escapeHTML(pillLabel)}</span>` : ''}
+                        ${hasPendingConsent ? `<span class="status-pill" style="padding: 1px 5px; font-size: 0.5rem; color: var(--neo-amber); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25);"><span class="status-dot" style="background:var(--neo-amber); width:4px; height:4px; animation:blink 1s infinite;"></span>Awaiting Consent</span>` : ''}
                     </div>
                     <div class="mission-target" style="font-size: 0.65rem; margin-bottom: 0.3rem;">${escapeHTML(primaryTarget)}</div>
                 </div>
@@ -240,6 +263,10 @@ async function fetchAndRenderHistory() {
     const drawer = document.getElementById('configDrawer');
     const overlay = document.getElementById('drawerOverlay');
     
+    // Clear Banner for non-mission views
+    const bannerEl = document.getElementById('drawerBanner');
+    if (bannerEl) bannerEl.innerHTML = '';
+
     // Set loading state if not already open
     if (!drawer.classList.contains('open')) {
         document.getElementById('drawerModuleLabel').textContent = 'Mission Intelligence';
@@ -381,6 +408,23 @@ function renderDrawer() {
     document.getElementById('drawerModuleLabel').textContent = d.isEdit ? 'Edit Mission' : (d.module.toUpperCase() + ' Module');
     document.getElementById('drawerTitle').textContent = d.profileName || (d.isEdit ? 'Update Mission' : `Draft Mission`);
 
+    // Render Banner above Step Bar
+    const bannerEl = document.getElementById('drawerBanner');
+    if (bannerEl) {
+        const icon = ICON_MAP[d.module] || 'settings';
+        const color = COLOR_MAP[d.module] || 'var(--neo-text-muted)';
+        const niceName = MODULE_NAMES[d.module] || d.module.toUpperCase();
+        
+        bannerEl.innerHTML = `
+            <div style="background: rgba(255, 255, 255, 0.015); border-bottom: 1px solid var(--glass-border); padding: 0.65rem 1.75rem; display: flex; align-items: center; gap: 0.75rem;">
+                <div class="template-icon" style="width: 24px; height: 24px; color: ${color}; background: ${color}15; border: 1px solid ${color}33; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <span class="material-symbols-outlined" style="font-size: 0.95rem;">${icon}</span>
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; color: ${color}; text-transform: uppercase; letter-spacing: 0.02em;">${escapeHTML(niceName)}</div>
+            </div>
+        `;
+    }
+
     // Step bar (5 steps total)
     const stepLabels = ['Target', 'Params', 'Schedule', 'Identify', 'Review'];
     const stepBar = document.getElementById('stepBar');
@@ -426,14 +470,34 @@ function renderDrawer() {
 }
 
 // Build step content for the drawer body
-function buildStepContent(d, i) {
+function getStepHtml(d, i) {
     if (d.step === 1) {
         // Phase 01: Target
+        const placeholders = {
+            nmap: "192.168.1.1 or 192.168.1.0/24",
+            sniffer: "192.168.1.1 (Target IP)",
+            zap: "https://example.com/ (Target URL)",
+            sql: "https://example.com/vulnerable_page.php (Target URL)",
+            api: "https://api.example.com/v1/ (API Endpoint Root)",
+            semgrep: "https://github.com/user/repo (Git URL) or /path/to/code.zip",
+            ssl: "example.com (Domain Name)",
+            killchain: "domain.com"
+        };
+        const placeholder = placeholders[d.module] || "192.168.1.1 or domain.com";
+        const helpText = {
+            semgrep: "Provide a Git repository HTTP(S) URL or paths to a local ZIP file.",
+            api: "Verify you include the full protocol (e.g., https://) and API version root.",
+            zap: "Enter the base URL of the web app.",
+            sql: "Enter the base URL or specific endpoint suspect of vulnerability.",
+            ssl: "Enter the absolute domain name without protocols or paths."
+        }[d.module] || "";
+
         return `
             <div class="phase-heading">Phase 01 — Targeting</div>
             <div class="form-group">
                 <label class="form-label">Target Address <span class="req-star">*</span></label>
-                <input type="text" id="field-target" class="form-input" placeholder="192.168.1.1 or domain.com" value="${escapeHTML(d.target)}" oninput="window.updateDraftState(${i}, 'target', this.value); clearFieldError(this)">
+                <input type="text" id="field-target" class="form-input" placeholder="${escapeHTML(placeholder)}" value="${escapeHTML(d.target)}" oninput="window.updateDraftState(${i}, 'target', this.value); clearFieldError(this)">
+                ${helpText ? `<p style="font-size: 0.65rem; color: var(--neo-text-muted); margin-top: 0.4rem; font-family: var(--font-ui);">${helpText}</p>` : ''}
                 <div class="field-error" id="err-target"></div>
             </div>
             <div class="form-group">
@@ -661,7 +725,40 @@ function buildStepContent(d, i) {
                     ${d.profileDesc ? `<tr><td>Briefing</td><td>${escapeHTML(d.profileDesc)}</td></tr>` : ''}
                 </table>
             </div>
-            ${!d.target ? `<div style="padding: 0.75rem 1rem; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--neo-red);">
+
+            <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--neo-border);">
+                <div style="font-family:var(--font-mono); font-size:0.65rem; color:var(--neo-text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.75rem; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined" style="font-size:0.9rem; color:var(--neo-amber);">gavel</span>
+                    Governance & Consent
+                </div>
+                
+                ${d.scheduleType === 'once' ? `
+                <div style="padding: 0.75rem; background: rgba(255,193,7,0.05); border: 1px dashed rgba(255,193,7,0.2); border-radius: 8px; font-size: 0.65rem; color: var(--neo-amber); font-family: var(--font-ui);">
+                    <span class="material-symbols-outlined" style="font-size: 0.85rem; vertical-align: middle; margin-right: 0.3rem;">info</span>
+                    Consent not required for one-shot missions.
+                </div>
+                ` : `
+                <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-bottom:0.75rem;">
+                    <input type="checkbox" id="field-consent-req" style="width:16px; height:16px; accent-color:var(--neo-amber);" ${d.requiresConsent ? 'checked' : ''} onchange="window.updateDraftState(${i}, 'requiresConsent', this.checked); renderDrawer()">
+                    <label for="field-consent-req" style="font-size:0.75rem; color:var(--neo-text-main); cursor:pointer;">Require authorization before scanning</label>
+                </div>
+                ${d.requiresConsent ? `
+                <div class="form-group fade-in" style="margin-bottom: 0;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem;">
+                        <label class="form-label" style="margin-bottom:0;">Consent Email <span class="req-star">*</span></label>
+                        <button type="button" class="btn-dash" onclick="window.fillRegistrationEmail(${i})" style="height:20px; font-size:0.55rem; padding:0 0.4rem; border-color:rgba(59,130,246,0.3); color:var(--neo-blue);">
+                            <span class="material-symbols-outlined" style="font-size:0.75rem;">person</span> Use mine
+                        </button>
+                    </div>
+                    <input type="email" id="field-consent-email" class="form-input" placeholder="owner@target.com" value="${escapeHTML(d.consentEmail || '')}" oninput="window.updateDraftState(${i}, 'consentEmail', this.value); clearFieldError(this)">
+                    <p style="font-size:0.6rem; color:var(--neo-text-muted); margin-top:0.4rem; font-family:var(--font-ui);">An authorization link will be sent 30 minutes before each run.</p>
+                    <div class="field-error" id="err-consentEmail"></div>
+                </div>
+                ` : ''}
+                `}
+            </div>
+
+            ${!d.target ? `<div style="padding: 0.75rem 1rem; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--neo-red); margin-top: 1rem;">
                 <span class="material-symbols-outlined" style="font-size: 0.95rem; vertical-align: middle; margin-right: 0.35rem;">warning</span>
                 Target address is required — go back to Phase 01.
             </div>` : ''}
@@ -669,6 +766,10 @@ function buildStepContent(d, i) {
     }
 
     return '';
+}
+
+function buildStepContent(d, i) {
+    return getStepHtml(d, i);
 }
 
 function buildScheduleSummary(d) {
@@ -704,8 +805,12 @@ function validateCurrentStep(d) {
             break;
         case 3:
             if (d.scheduleType === 'periodic') {
+                const totalMins = d.intervalUnit === 'day' ? d.intervalVal * 1440 : (d.intervalUnit === 'hour' ? d.intervalVal * 60 : d.intervalVal);
                 if (!d.intervalVal || d.intervalVal < 1) {
                     return { field: 'intervalVal', message: 'Interval must be at least 1 unit.' };
+                }
+                if (totalMins < 30) {
+                    return { field: 'intervalVal', message: 'Continuous interval must be at least 30 minutes.' };
                 }
             } else if (d.scheduleType === 'once' && d.onceType === 'specific') {
                 if (!d.specificTime) {
@@ -727,6 +832,17 @@ function validateCurrentStep(d) {
         case 4:
             if (!d.profileName || !d.profileName.trim()) {
                 return { field: 'profileName', message: 'Mission name is required.' };
+            }
+            break;
+        case 5:
+            if (d.requiresConsent && d.scheduleType !== 'once') {
+                if (!d.consentEmail || !d.consentEmail.trim()) {
+                    return { field: 'consentEmail', message: 'Consent recipient email is required.' };
+                }
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(d.consentEmail)) {
+                    return { field: 'consentEmail', message: 'Enter a valid email address.' };
+                }
             }
             break;
     }
@@ -792,6 +908,7 @@ function tryAdvanceStep(i, nextStep) {
     // Show inline field error if element exists, otherwise show banner
     const fieldMap = {
         target: ['field-target', 'err-target'],
+        consentEmail: ['field-consent-email', 'err-consentEmail'],
         profileName: ['field-profileName', 'err-profileName'],
     };
     if (fieldMap[err.field]) {
@@ -907,7 +1024,9 @@ function deployDraft(mod) {
         cronDayOfMonthArr: [1],
         cronExpr: '0 0 * * *',
         profileName: '',
-        profileDesc: ''
+        profileDesc: '',
+        requiresConsent: false,
+        consentEmail: ''
     });
     openDrawer(newIndex);
     toast(`DRAFT: ${mod.toUpperCase()} — configure in drawer`, 'success');
@@ -957,7 +1076,9 @@ function editMission(profileId) {
         cronDayOfMonthArr: job.cron_day_of_month ? job.cron_day_of_month.split(',').map(Number) : [1],
         cronExpr: job.cron_expression || '0 0 * * *',
         profileName: p.name,
-        profileDesc: p.description
+        profileDesc: p.description,
+        requiresConsent: target.requires_consent || false,
+        consentEmail: target.consent_email || ''
     };
 
     const newIndex = draftMissions.length;
@@ -1077,11 +1198,19 @@ async function saveDraft(index) {
 
         if (d.isEdit && d.targetId) {
              await apiFetch(`${API}/profiles/${pId}/targets/${d.targetId}`, {
-                method: 'PUT', body: JSON.stringify({ target_url: d.target })
+                method: 'PUT', body: JSON.stringify({ 
+                    target_url: d.target,
+                    requires_consent: d.requiresConsent,
+                    consent_email: d.consentEmail
+                })
             });
         } else {
             await apiFetch(`${API}/profiles/${pId}/targets`, {
-                method: 'POST', body: JSON.stringify({ target_url: d.target })
+                method: 'POST', body: JSON.stringify({ 
+                    target_url: d.target,
+                    requires_consent: d.requiresConsent,
+                    consent_email: d.consentEmail
+                })
             });
         }
 

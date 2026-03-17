@@ -377,20 +377,65 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           
           const barColor = status === 'Pass' ? 'var(--neo-green)' : 'var(--neo-red)';
+          const uid = `comp-details-${stdKey.replace(/[^a-zA-Z0-9]/g, '')}-${index}`;
 
           paneHtml += `
-          <div class="comp-item">
-              <div class="comp-header">
-                  <span class="comp-name">${stdKey}</span> <span class="comp-status ${statusClass}">${status}</span>
+          <div class="comp-item" style="cursor: pointer; position: relative;" onclick="const dl = document.getElementById('${uid}'); const chevron = document.getElementById('chev-${uid}'); if (dl.style.display === 'none') { dl.style.display = 'block'; chevron.style.transform = 'rotate(180deg)'; } else { dl.style.display = 'none'; chevron.style.transform = 'rotate(0deg)'; }">
+              <div class="comp-header" style="margin-bottom: 0.25rem;">
+                  <span class="comp-name">${stdKey}</span> 
+                  <div style="display:flex; align-items:center; gap:0.5rem;">
+                      <span class="comp-status ${statusClass}">${status}</span>
+                      <span id="chev-${uid}" class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-text-label); transition: transform 0.2s;">keyboard_arrow_down</span>
+                  </div>
               </div>
-              <div class="comp-desc">
-                  ${stdData.name} </div>
+              <div class="comp-desc" style="margin-bottom: 0.75rem;">
+                  ${stdData.name} 
+              </div>
               <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:#555; margin-bottom:4px;">
                   <span>ADHERENCE</span>
                   <span>${score}%</span>
               </div>
-              <div class="comp-progress-bg">
+              <div class="comp-progress-bg" style="margin-bottom: 0.25rem;">
                   <div class="comp-progress-fill" style="width: ${score}%; background-color: ${barColor};"></div>
+              </div>
+              
+              <!-- Hidden Checklist -->
+              <div id="${uid}" class="comp-details-list" style="display:none; border-top: 1px dashed var(--neo-border); padding-top: 0.75rem; margin-top: 0.5rem;" onclick="event.stopPropagation();">
+                  <div style="font-size: 0.65rem; font-weight: 700; color: var(--neo-text-label); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">Requirements Checklist</div>
+                  <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.25rem;">
+                      ${stdData.details ? stdData.details.map(req => {
+                          const iconColor = req.status === 'PASS' ? 'var(--neo-green)' : 'var(--neo-red)';
+                          const icon = req.status === 'PASS' ? 'check_circle' : 'cancel';
+                          
+                          let evidenceStr = '';
+                          if (req.status === 'FAIL' && req.evidence && req.evidence.length > 0) {
+                               evidenceStr = `
+                               <ul style="list-style: none; padding-left: 1.5rem; margin-top: 0.25rem; display: flex; flex-direction: column; gap: 4px; opacity: 0.9;">
+                                   ${req.evidence.map(e => `
+                                       <li style="font-size: 0.6rem; font-family: var(--font-mono); color: var(--neo-text-muted); display: flex; flex-direction: column; gap: 2px;">
+                                           <div style="display: flex; align-items: center; gap: 4px;">
+                                               <span style="width: 4px; height: 4px; background: var(--neo-red); border-radius: 50%;"></span>
+                                               <span>${e.issue} <span style="color: var(--neo-blue); font-size: 0.55rem;">(${e.source})</span></span>
+                                           </div>
+                                           ${e.description ? `<div style="font-size: 0.55rem; color: var(--neo-text-label); font-style: italic; padding-left: 8px; line-height: 1.2;">${e.description}</div>` : ''}
+                                       </li>
+                                   `).join('')}
+                               </ul>`;
+                          }
+
+                          return `
+                          <li style="display: flex; flex-direction: column; gap: 2px; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.02);">
+                              <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                                  <span class="material-symbols-outlined" style="font-size: 0.9rem; color: ${iconColor}; margin-top: 2px;">${icon}</span>
+                                  <div style="display: flex; flex-direction: column; min-width: 0;">
+                                      <span style="font-size: 0.75rem; font-weight: 600; color: var(--neo-text-main);">${req.requirement}</span>
+                                      <span style="font-size: 0.6rem; color: var(--neo-text-label); font-family: var(--font-mono);">${req.id}</span>
+                                  </div>
+                              </div>
+                              ${evidenceStr}
+                          </li>`;
+                      }).join('') : `<li style="font-size: 0.75rem; color: var(--neo-text-muted);">No items found</li>`}
+                  </ul>
               </div>
           </div>`;
         }

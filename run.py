@@ -57,6 +57,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'instance', 'users_db.sqlite3')
 # Increase timeout to 20s for better concurrency
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}?timeout=20'
+app.config['BASE_URL'] = os.environ.get('BASE_URL', 'http://localhost:5100')
 
 # --- Scheduler DB (separate SQLite file) ---
 scheduler_db_path = os.path.join(basedir, 'instance', 'scheduler_db.sqlite3')

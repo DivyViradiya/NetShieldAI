@@ -38220,3 +38220,1527 @@ WHERE scheduled_scan_job.is_enabled = 1]
 [2026-03-17 15:24:28] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
 [2026-03-17 15:24:28] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
 [2026-03-17 15:24:28] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 15:24:57] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 15:27:55] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-17 15:27:55] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-17 15:28:41] [INFO    ] [run] [>] POST /register from 127.0.0.1
+[2026-03-17 15:28:41] [INFO    ] [auth_bp] [+] New User Registration Attempt: DivyaViradiya
+[2026-03-17 15:28:44] [INFO    ] [auth_bp] [+] User DivyaViradiya registered. OTP sent to divya.viradiya.7@gmail.com.
+[2026-03-17 15:28:44] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 15:29:04] [INFO    ] [run] [>] POST /verify_registration from 127.0.0.1
+[2026-03-17 15:29:09] [INFO    ] [run] [>] POST /verify_registration from 127.0.0.1
+[2026-03-17 15:29:09] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 15:29:09] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 15:29:09] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 15:29:09] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 15:29:09] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 15:29:09] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 15:29:09] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 15:33:52] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:33:52] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:33:52] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 15:33:52] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 15:33:52] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 15:34:24] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:34:24] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:34:24] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 15:34:24] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 15:34:25] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 15:34:40] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:34:41] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:34:41] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 15:34:41] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 15:34:41] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 15:34:51] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:34:51] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:34:51] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 15:34:51] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 15:34:51] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 15:35:11] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:35:11] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:35:11] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 15:35:11] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 15:35:11] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 15:35:36] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 15:38:54] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 15:39:00] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:39:01] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:39:01] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 15:39:01] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 15:39:01] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 15:39:04] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:39:04] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:39:04] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 15:39:04] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 15:39:04] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 15:39:24] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 15:39:33] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 15:39:58] [INFO    ] [run] [>] GET /favicon.ico from 127.0.0.1
+[2026-03-17 15:40:03] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-17 15:40:03] [INFO    ] [auth_bp] [*] User Logout: Admin
+[2026-03-17 15:40:03] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 15:40:03] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 15:40:05] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-17 15:40:07] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-17 15:40:08] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-17 15:40:08] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: Admin
+[2026-03-17 15:40:08] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 15:43:31] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 15:43:31] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 15:43:31] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 15:43:31] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 15:43:31] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 15:43:31] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 15:43:31] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 15:43:31] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 15:44:11] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 15:44:11] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-17 15:44:12] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 15:44:12] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:44:31] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 15:44:31] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 15:44:31] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 15:44:31] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:49:06] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 15:49:06] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-17 15:49:06] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 15:49:06] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:49:54] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:49:54] [INFO    ] [scheduler_bp] [+] Profile 'Test' created by Admin
+[2026-03-17 15:50:00] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:50:00] [INFO    ] [scheduler_bp] [+] Profile 'Test' created by Admin
+[2026-03-17 15:53:22] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:53:22] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:53:22] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 15:53:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 15:53:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 15:53:47] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 15:54:48] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:54:48] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:54:48] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 15:54:48] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 15:54:48] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 15:55:12] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 15:55:12] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-17 15:55:13] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 15:55:13] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:55:13] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 15:55:15] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/2 from 127.0.0.1
+[2026-03-17 15:55:15] [INFO    ] [scheduler_bp] [-] Profile 'Test' deleted by Admin
+[2026-03-17 15:55:16] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:55:18] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 15:55:18] [INFO    ] [scheduler_bp] [-] Profile 'Test' deleted by Admin
+[2026-03-17 15:55:18] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:55:51] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 15:55:51] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 15:55:51] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 15:55:51] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:56:15] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:56:15] [INFO    ] [scheduler_bp] [+] Profile 'test' created by DivyaViradiya
+[2026-03-17 15:56:15] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 15:56:16] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 15:56:16] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 15:56:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_459fb235 (type=once)
+[2026-03-17 15:56:16] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'test'
+[2026-03-17 15:56:16] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 15:56:16] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'test' (1 configs × 1 targets)
+[2026-03-17 15:56:16] [ERROR   ] [scheduler_service] [!] [SCHEDULER] Error executing job 1: Unable to build URLs outside an active request without 'SERVER_NAME' configured. Also configure 'APPLICATION_ROOT' and 'PREFERRED_URL_SCHEME' as needed.
+[2026-03-17 15:58:58] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 15:59:02] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:59:02] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:59:02] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 15:59:02] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 15:59:02] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 15:59:07] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 15:59:08] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 15:59:08] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 15:59:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 15:59:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_4f51a479 (type=once)
+[2026-03-17 15:59:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 15:59:08] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'test' (1 configs × 1 targets)
+[2026-03-17 15:59:08] [INFO    ] [scheduler_service] [*] [SCHEDULER] Scan deferred for example.com — awaiting consent from divya.viradiya.7@gmail.com
+[2026-03-17 15:59:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 15:59:20] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 15:59:26] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 15:59:29] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 15:59:32] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 15:59:53] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 16:00:00] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 16:00:00] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1_4f51a479: 'No job by the id of scheduled_scan_1_4f51a479 was found'
+[2026-03-17 16:00:00] [INFO    ] [scheduler_bp] [-] Profile 'test' deleted by DivyaViradiya
+[2026-03-17 16:00:00] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:00:00] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1_4f51a479: 'No job by the id of scheduled_scan_1_4f51a479 was found'
+[2026-03-17 16:00:00] [INFO    ] [scheduler_bp] [-] Profile 'test' deleted by DivyaViradiya
+[2026-03-17 16:00:00] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 16:00:00] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:00:24] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:00:24] [INFO    ] [scheduler_bp] [+] Profile 'Test' created by DivyaViradiya
+[2026-03-17 16:00:24] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 16:00:25] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 16:00:25] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 16:00:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_8964ba20 (type=once)
+[2026-03-17 16:00:25] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test' (1 configs × 1 targets)
+[2026-03-17 16:00:25] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'Test'
+[2026-03-17 16:00:25] [INFO    ] [scheduler_service] [*] [SCHEDULER] Scan deferred for example.com — awaiting consent from divya.viradiya.7@gmail.com
+[2026-03-17 16:00:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 16:00:25] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:03:49] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 16:03:49] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1_8964ba20: 'No job by the id of scheduled_scan_1_8964ba20 was found'
+[2026-03-17 16:03:49] [INFO    ] [scheduler_bp] [-] Profile 'Test' deleted by DivyaViradiya
+[2026-03-17 16:03:49] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:04:08] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:04:08] [INFO    ] [scheduler_bp] [+] Profile 'Test 1' created by DivyaViradiya
+[2026-03-17 16:04:08] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 16:04:08] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 16:04:08] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 16:04:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_fc10262f (type=once)
+[2026-03-17 16:04:08] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'Test 1'
+[2026-03-17 16:04:08] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 16:04:08] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:04:11] [INFO    ] [scheduler_service] [*] [SCHEDULER] Scan deferred for example.com — awaiting consent from divya.viradiya.7@gmail.com
+[2026-03-17 16:04:11] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 16:04:31] [INFO    ] [run] [>] GET /scheduler/confirm-scan/tbxwgH5SVIHmCq0Mkmhj2oVbgTN0qUrGW2--7MMDfDs from 127.0.0.1
+[2026-03-17 16:04:31] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 16:04:31] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 16:04:33] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
+[2026-03-17 16:04:33] [INFO    ] [run] [>] GET /favicon.ico from 127.0.0.1
+[2026-03-17 16:04:34] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_9f9501b9.txt 104.18.26.120
+[2026-03-17 16:18:08] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 16:18:12] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:18:12] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:18:12] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 16:18:12] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 16:18:12] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 16:18:29] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:18:29] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:18:29] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:18:29] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:18:29] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:18:29] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 16:18:37] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-17 16:18:37] [INFO    ] [auth_bp] [*] User Logout: DivyaViradiya
+[2026-03-17 16:18:37] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 16:18:37] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 16:18:39] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-17 16:18:43] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-17 16:18:46] [INFO    ] [auth_bp] [+] Password reset email sent to divya.viradiya.7@gmail.com via Gmail API
+[2026-03-17 16:18:46] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-17 16:18:48] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:19:21] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 16:19:21] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 16:19:21] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 16:19:27] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-17 16:19:27] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-17 16:19:27] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-17 16:19:27] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-17 16:19:27] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 16:19:27] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 16:19:27] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 16:19:27] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 16:19:27] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 16:19:27] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 16:19:27] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 16:19:29] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-17 16:19:30] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 16:19:30] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 16:19:30] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 16:19:30] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:19:34] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 16:19:34] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1_fc10262f: 'No job by the id of scheduled_scan_1_fc10262f was found'
+[2026-03-17 16:19:34] [INFO    ] [scheduler_bp] [-] Profile 'Test 1' deleted by DivyaViradiya
+[2026-03-17 16:19:34] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:20:16] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:20:16] [INFO    ] [scheduler_bp] [+] Profile 'Test 1' created by DivyaViradiya
+[2026-03-17 16:20:16] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 16:20:16] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 16:20:16] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 16:20:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_8cd74bfd (type=once)
+[2026-03-17 16:20:16] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'Test 1'
+[2026-03-17 16:20:16] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:22:01] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 16:22:01] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1_8cd74bfd
+[2026-03-17 16:22:01] [INFO    ] [scheduler_bp] [-] Profile 'Test 1' deleted by DivyaViradiya
+[2026-03-17 16:22:01] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:22:13] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 16:22:17] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:22:17] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:22:17] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 16:22:17] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 16:22:17] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 16:22:22] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:22:22] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:22:22] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:22:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:22:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:22:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 16:22:40] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:22:59] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:22:59] [INFO    ] [scheduler_bp] [+] Profile 'Test' created by DivyaViradiya
+[2026-03-17 16:23:00] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 16:23:00] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 16:23:00] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 16:23:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_9134eae9 (type=periodic)
+[2026-03-17 16:23:00] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test'
+[2026-03-17 16:23:00] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:23:31] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 16:23:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:23:34] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:23:35] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 16:23:35] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 16:23:35] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 16:23:39] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:23:39] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:23:39] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:23:39] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:23:39] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:23:39] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_a98e5c13 (type=periodic)
+[2026-03-17 16:23:39] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:23:45] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 16:23:45] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1_a98e5c13
+[2026-03-17 16:23:45] [INFO    ] [scheduler_bp] [-] Profile 'Test' deleted by DivyaViradiya
+[2026-03-17 16:23:45] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:24:06] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:24:15] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:24:15] [INFO    ] [scheduler_bp] [+] Profile 'Test' created by DivyaViradiya
+[2026-03-17 16:24:15] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 16:24:15] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 16:24:15] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 16:24:15] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_5bf6c361 (type=periodic)
+[2026-03-17 16:24:15] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test'
+[2026-03-17 16:24:15] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:25:45] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:25:45] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:25:45] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:25:45] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:25:45] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:25:45] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_e9737c48 (type=periodic)
+[2026-03-17 16:25:45] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:26:15] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:26:15] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:26:15] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:26:15] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:26:15] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:26:15] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_5ae57dcf (type=periodic)
+[2026-03-17 16:26:15] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:26:27] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:26:27] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:26:27] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:26:27] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:26:27] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:26:27] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_56af4857 (type=periodic)
+[2026-03-17 16:26:27] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:26:40] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:29:12] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 16:29:17] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:29:17] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:29:17] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 16:29:17] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 16:29:17] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 16:29:22] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:29:22] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:29:22] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:29:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:29:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:29:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:29:22.786197 (Window: 2026-03-17 16:29:22.786197 to 2026-03-17 17:00:22.786197)
+[2026-03-17 16:29:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:29:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:29:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 16:29:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_882c8752 (type=periodic)
+[2026-03-17 16:29:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:29:35] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 16:29:35] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 16:29:35] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 16:29:35] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:29:37] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:30:09] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 16:30:09] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1_882c8752
+[2026-03-17 16:30:09] [INFO    ] [scheduler_bp] [-] Profile 'Test' deleted by DivyaViradiya
+[2026-03-17 16:30:09] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:30:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:30:22.710913 (Window: 2026-03-17 16:30:22.710913 to 2026-03-17 17:01:22.710913)
+[2026-03-17 16:30:54] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:30:54] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:30:54] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:30:54] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:30:54] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:30:54] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 16:31:24] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 16:31:28] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:31:28] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:31:28] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 16:31:29] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 16:31:29] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 16:31:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:31:34] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:31:34] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:31:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:31:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:31:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 16:32:07] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:32:19] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:32:19] [INFO    ] [scheduler_bp] [+] Profile 'Test case' created by DivyaViradiya
+[2026-03-17 16:32:19] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 16:32:19] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 16:32:19] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 16:32:19] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_ab53007a (type=periodic)
+[2026-03-17 16:32:19] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test case'
+[2026-03-17 16:32:19] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:32:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:32:34.225490 (Window: 2026-03-17 16:32:34.225490 to 2026-03-17 17:03:34.225490)
+[2026-03-17 16:33:40] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:33:40] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:33:40] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:04:19.645726
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:33:40.143402 (Window: 2026-03-17 16:33:40.143402 to 2026-03-17 17:04:40.143402)
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:04:19.645726 | window=[2026-03-17 16:33:40.143402 to 2026-03-17 17:04:40.143402] | match=True
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_a1fee150 (type=periodic)
+[2026-03-17 16:33:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:33:51] [ERROR   ] [scheduler_service] [!] [SCHEDULER] Failed to send consent email to divya.viradiya.7@gmail.com
+[2026-03-17 16:33:53] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:38:40] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 16:38:44] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:38:44] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:38:44] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 16:38:44] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 16:38:44] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 16:38:48] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:38:49] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:38:49] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:05:40.154853
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:38:49.104283 (Window: 2026-03-17 16:38:49.104283 to 2026-03-17 17:09:49.104283)
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:05:40.154853 | window=[2026-03-17 16:38:49.104283 to 2026-03-17 17:09:49.104283] | match=True
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_49e7cc29 (type=periodic)
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:38:49] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:38:55] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 16:38:55] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 16:38:55] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 16:38:55] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:39:05] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:39:14] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 16:39:14] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1_49e7cc29
+[2026-03-17 16:39:14] [INFO    ] [scheduler_bp] [-] Profile 'Test case' deleted by DivyaViradiya
+[2026-03-17 16:39:14] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:39:43] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:39:43] [INFO    ] [scheduler_bp] [+] Profile 'Test 1' created by DivyaViradiya
+[2026-03-17 16:39:43] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 16:39:43] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 16:39:43] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 16:39:43] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_4fa0d797 (type=periodic)
+[2026-03-17 16:39:43] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test 1'
+[2026-03-17 16:39:43] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:39:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:09:43.600949
+[2026-03-17 16:39:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:39:49.082375 (Window: 2026-03-17 16:39:49.082375 to 2026-03-17 17:10:49.082375)
+[2026-03-17 16:39:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:09:43.600949 | window=[2026-03-17 16:39:49.082375 to 2026-03-17 17:10:49.082375] | match=True
+[2026-03-17 16:39:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:39:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:39:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:40:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:09:43.600949
+[2026-03-17 16:40:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:40:49.061068 (Window: 2026-03-17 16:40:49.061068 to 2026-03-17 17:11:49.061068)
+[2026-03-17 16:40:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:09:43.600949 | window=[2026-03-17 16:40:49.061068 to 2026-03-17 17:11:49.061068] | match=True
+[2026-03-17 16:40:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:40:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:40:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:41:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:09:43.600949
+[2026-03-17 16:41:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:41:49.063260 (Window: 2026-03-17 16:41:49.063260 to 2026-03-17 17:12:49.063260)
+[2026-03-17 16:41:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:09:43.600949 | window=[2026-03-17 16:41:49.063260 to 2026-03-17 17:12:49.063260] | match=True
+[2026-03-17 16:41:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:41:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:41:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:42:05] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:42:05] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:42:05] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:42:06] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:42:06] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:42:06] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_c9b51de1 (type=periodic)
+[2026-03-17 16:42:06] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:42:33] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:43:06] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:12:06.100472
+[2026-03-17 16:43:06] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:43:06.040087 (Window: 2026-03-17 16:43:06.040087 to 2026-03-17 17:14:06.040087)
+[2026-03-17 16:43:06] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:12:06.100472 | window=[2026-03-17 16:43:06.040087 to 2026-03-17 17:14:06.040087] | match=True
+[2026-03-17 16:43:06] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:43:06] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:43:06] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:43:06] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 16:43:13] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfb7ff035af6f6
+[2026-03-17 16:43:13] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 16:43:59] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:43:59] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:43:59] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:43:59] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:43:59] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:43:59] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_93466b4f (type=periodic)
+[2026-03-17 16:43:59] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:44:24] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:44:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:13:59.351784
+[2026-03-17 16:44:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:44:59.301318 (Window: 2026-03-17 16:44:59.301318 to 2026-03-17 17:15:59.301318)
+[2026-03-17 16:44:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:13:59.351784 | window=[2026-03-17 16:44:59.301318 to 2026-03-17 17:15:59.301318] | match=True
+[2026-03-17 16:44:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:44:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:44:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:44:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request already sent within last 25m.
+[2026-03-17 16:45:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:13:59.351784
+[2026-03-17 16:45:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:45:59.284805 (Window: 2026-03-17 16:45:59.284805 to 2026-03-17 17:16:59.284805)
+[2026-03-17 16:45:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:13:59.351784 | window=[2026-03-17 16:45:59.284805 to 2026-03-17 17:16:59.284805] | match=True
+[2026-03-17 16:45:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:45:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:45:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:45:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request already sent within last 25m.
+[2026-03-17 16:46:16] [INFO    ] [run] [>] GET /scheduler/confirm-scan/Crhk101UOZwfvYQxI2VGvDJgX6m3K9L86X4-Onnz09Y from 127.0.0.1
+[2026-03-17 16:46:16] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 16:46:16] [INFO    ] [scheduler_service] [*] [SCHEDULER] Checking consent for Job 1, Target 1
+[2026-03-17 16:46:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent already approved for Job 1
+[2026-03-17 16:46:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent token for example.com marked as used/expired.
+[2026-03-17 16:46:16] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 16:46:16] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
+[2026-03-17 16:46:16] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_3cc0d5ac.txt 104.18.26.120
+[2026-03-17 16:46:35] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 16:46:38] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 16:46:38] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 16:47:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:13:59.351784
+[2026-03-17 16:47:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:47:00.963115 (Window: 2026-03-17 16:47:00.963115 to 2026-03-17 17:18:00.963115)
+[2026-03-17 16:47:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:13:59.351784 | window=[2026-03-17 16:47:00.963115 to 2026-03-17 17:18:00.963115] | match=True
+[2026-03-17 16:47:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:47:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:47:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:47:01] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 16:47:02] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfb836fc610f5c
+[2026-03-17 16:47:02] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 16:47:18] [INFO    ] [run] [>] GET /scheduler/confirm-scan/LAb8xuLkRHacCFPAaln_gMse8Jy9GWP9Cv_etAG0tLE from 127.0.0.1
+[2026-03-17 16:47:18] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 16:47:18] [INFO    ] [scheduler_service] [*] [SCHEDULER] Checking consent for Job 1, Target 1
+[2026-03-17 16:47:18] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent already approved for Job 1
+[2026-03-17 16:47:18] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent token for example.com marked as used/expired.
+[2026-03-17 16:47:18] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 16:47:19] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
+[2026-03-17 16:47:19] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_cda85585.txt 104.18.26.120
+[2026-03-17 16:47:41] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 16:47:42] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 16:47:42] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 16:47:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:13:59.351784
+[2026-03-17 16:47:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:47:59.293731 (Window: 2026-03-17 16:47:59.293731 to 2026-03-17 17:18:59.293731)
+[2026-03-17 16:47:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:13:59.351784 | window=[2026-03-17 16:47:59.293731 to 2026-03-17 17:18:59.293731] | match=True
+[2026-03-17 16:47:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:47:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:47:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:47:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 16:48:07] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfb8471cf19428
+[2026-03-17 16:48:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 16:48:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:13:59.351784
+[2026-03-17 16:48:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:48:59.291739 (Window: 2026-03-17 16:48:59.291739 to 2026-03-17 17:19:59.291739)
+[2026-03-17 16:48:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:13:59.351784 | window=[2026-03-17 16:48:59.291739 to 2026-03-17 17:19:59.291739] | match=True
+[2026-03-17 16:48:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:48:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:48:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:48:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request already sent within last 25m.
+[2026-03-17 16:49:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:13:59.351784
+[2026-03-17 16:49:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:49:59.285195 (Window: 2026-03-17 16:49:59.285195 to 2026-03-17 17:20:59.285195)
+[2026-03-17 16:49:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:13:59.351784 | window=[2026-03-17 16:49:59.285195 to 2026-03-17 17:20:59.285195] | match=True
+[2026-03-17 16:49:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:49:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:49:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:49:59] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request already sent within last 25m.
+[2026-03-17 16:50:07] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:50:07] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:50:07] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:50:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:50:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:50:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_24c96d48 (type=periodic)
+[2026-03-17 16:50:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:50:23] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:50:23] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:50:23] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:50:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:50:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:50:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_d573a9db (type=periodic)
+[2026-03-17 16:50:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:50:43] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:50:43] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:50:43] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:50:43] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:50:43] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:50:44] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_1361f1d5 (type=periodic)
+[2026-03-17 16:50:44] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:51:19] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:51:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:20:44.014190
+[2026-03-17 16:51:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:51:43.953800 (Window: 2026-03-17 16:51:43.953800 to 2026-03-17 17:22:43.953800)
+[2026-03-17 16:51:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:20:44.014190 | window=[2026-03-17 16:51:43.953800 to 2026-03-17 17:22:43.953800] | match=True
+[2026-03-17 16:51:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:51:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:51:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:51:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request sent 3.7m ago.
+[2026-03-17 16:52:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:20:44.014190
+[2026-03-17 16:52:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:52:43.965419 (Window: 2026-03-17 16:52:43.965419 to 2026-03-17 17:23:43.965419)
+[2026-03-17 16:52:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:20:44.014190 | window=[2026-03-17 16:52:43.965419 to 2026-03-17 17:23:43.965419] | match=True
+[2026-03-17 16:52:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:52:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:52:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:52:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request sent 4.7m ago.
+[2026-03-17 16:53:14] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 16:53:19] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:53:19] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:53:19] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 16:53:19] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 16:53:19] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 16:53:23] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 16:53:23] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 16:53:23] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 16:53:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 16:53:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 16:53:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_b4895b8e (type=periodic)
+[2026-03-17 16:53:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 16:53:33] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 16:53:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1_b4895b8e
+[2026-03-17 16:53:34] [INFO    ] [scheduler_bp] [-] Profile 'Test 1' deleted by DivyaViradiya
+[2026-03-17 16:53:34] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:53:55] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 16:53:57] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:53:57] [INFO    ] [scheduler_bp] [+] Profile 'Test 1' created by DivyaViradiya
+[2026-03-17 16:53:57] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 16:53:57] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 16:53:57] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 16:53:57] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1_1a029806 (type=periodic)
+[2026-03-17 16:53:57] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test 1'
+[2026-03-17 16:53:57] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 16:54:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 16:54:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Checking consent for Job 1, Target 1
+[2026-03-17 16:54:00] [WARNING ] [scheduler_service] [!] [SCHEDULER] No consent found at execution time for Job 1 — triggering emergency request.
+[2026-03-17 16:54:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 16:54:04] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfb89e0c3e7ed6
+[2026-03-17 16:54:04] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 16:54:04] [INFO    ] [scheduler_service] [*] [SCHEDULER] Scan deferred for example.com — awaiting consent from divya.viradiya.7@gmail.com
+[2026-03-17 16:54:04] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 16:54:22] [INFO    ] [run] [>] GET /scheduler/confirm-scan/OCNNouv5xw8Xw70rGiRGEJLTPlw5uSVfq8trqReHsG4 from 127.0.0.1
+[2026-03-17 16:54:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 16:54:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Checking consent for Job 1, Target 1
+[2026-03-17 16:54:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent already approved for Job 1
+[2026-03-17 16:54:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent token for example.com marked as used/expired.
+[2026-03-17 16:54:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 16:54:22] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
+[2026-03-17 16:54:22] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_0a764fd7.txt 104.18.26.120
+[2026-03-17 16:54:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:24:57.644702
+[2026-03-17 16:54:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:54:23.878556 (Window: 2026-03-17 16:54:23.878556 to 2026-03-17 17:25:23.878556)
+[2026-03-17 16:54:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:24:57.644702 | window=[2026-03-17 16:54:23.878556 to 2026-03-17 17:25:23.878556] | match=True
+[2026-03-17 16:54:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:54:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:54:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:54:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 16:54:25] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfb8a32e3db78f
+[2026-03-17 16:54:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 16:54:39] [INFO    ] [run] [>] GET /scheduler/confirm-scan/d4JSE31-NNPRdKEF5p_ds_8V4zFMrmcrhtrBBxGTZgQ from 127.0.0.1
+[2026-03-17 16:54:39] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 16:54:39] [INFO    ] [scheduler_service] [*] [SCHEDULER] Checking consent for Job 1, Target 1
+[2026-03-17 16:54:39] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent already approved for Job 1
+[2026-03-17 16:54:39] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent token for example.com marked as used/expired.
+[2026-03-17 16:54:39] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 16:54:39] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
+[2026-03-17 16:54:39] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_bfa7d572.txt 104.18.26.120
+[2026-03-17 16:54:40] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 16:54:43] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 16:54:43] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 16:54:57] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 16:54:57] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 16:54:57] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 16:55:15] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 16:55:15] [INFO    ] [scheduler_service] [*] [SCHEDULER] Checking consent for Job 1, Target 1
+[2026-03-17 16:55:15] [WARNING ] [scheduler_service] [!] [SCHEDULER] No consent found at execution time for Job 1 — triggering emergency request.
+[2026-03-17 16:55:15] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 16:55:16] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfb8afcf0408cd
+[2026-03-17 16:55:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 16:55:16] [INFO    ] [scheduler_service] [*] [SCHEDULER] Scan deferred for example.com — awaiting consent from divya.viradiya.7@gmail.com
+[2026-03-17 16:55:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 16:55:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:24:57.644702
+[2026-03-17 16:55:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 16:55:23.886947 (Window: 2026-03-17 16:55:23.886947 to 2026-03-17 17:26:23.886947)
+[2026-03-17 16:55:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:24:57.644702 | window=[2026-03-17 16:55:23.886947 to 2026-03-17 17:26:23.886947] | match=True
+[2026-03-17 16:55:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 16:55:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 16:55:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 16:55:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request sent 0.1m ago.
+[2026-03-17 17:11:21] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 17:11:27] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 17:11:27] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 17:11:27] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 17:11:27] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 17:11:27] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 17:11:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 17:11:34] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 17:11:34] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:11:34.670485 (Window: 2026-03-17 17:11:34.670485 to 2026-03-17 17:42:34.670485)
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:24:57.644702 | window=[2026-03-17 17:11:34.670485 to 2026-03-17 17:42:34.670485] | match=True
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request sent 16.3m ago.
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 17:11:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 17:11:45] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 17:11:45] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 17:11:46] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 17:11:46] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:11:51] [INFO    ] [run] [>] DELETE /scheduler/api/jobs/1 from 127.0.0.1
+[2026-03-17 17:11:51] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1
+[2026-03-17 17:11:51] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:11:54] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 17:11:54] [INFO    ] [scheduler_bp] [-] Profile 'Test 1' deleted by DivyaViradiya
+[2026-03-17 17:11:54] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:12:10] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 17:12:23] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:12:23] [INFO    ] [scheduler_bp] [+] Profile 'Test 1' created by DivyaViradiya
+[2026-03-17 17:12:23] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 17:12:23] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 17:12:24] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 17:12:24] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 17:12:24] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test 1'
+[2026-03-17 17:12:24] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:12:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:42:24.050738
+[2026-03-17 17:12:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:12:34.644051 (Window: 2026-03-17 17:12:34.644051 to 2026-03-17 17:43:34.644051)
+[2026-03-17 17:12:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:42:24.050738 | window=[2026-03-17 17:12:34.644051 to 2026-03-17 17:43:34.644051] | match=True
+[2026-03-17 17:12:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:12:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:12:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:12:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 17:12:35] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfb9ad6127704a
+[2026-03-17 17:12:35] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 17:13:01] [INFO    ] [run] [>] GET /scheduler/confirm-scan/Iwh-wsK6JYJzAyrP-zdotZmdr0RC7jSiKVbQcMVw7bc from 127.0.0.1
+[2026-03-17 17:13:01] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 17:13:01] [INFO    ] [scheduler_service] [*] [SCHEDULER] Checking consent for Job 1, Target 1
+[2026-03-17 17:13:01] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent already approved for Job 1
+[2026-03-17 17:13:01] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent token for example.com marked as used/expired.
+[2026-03-17 17:13:01] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 17:13:01] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.27.120 with timing -T4...
+[2026-03-17 17:13:01] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_2a4a5dd5.txt 104.18.27.120
+[2026-03-17 17:13:28] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 17:13:32] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 17:13:32] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 17:13:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:42:24.050738
+[2026-03-17 17:13:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:13:34.644242 (Window: 2026-03-17 17:13:34.644242 to 2026-03-17 17:44:34.644242)
+[2026-03-17 17:13:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:42:24.050738 | window=[2026-03-17 17:13:34.644242 to 2026-03-17 17:44:34.644242] | match=True
+[2026-03-17 17:13:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:13:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:13:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:13:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 17:13:36] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfb9bc36ceff3d
+[2026-03-17 17:13:36] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 17:14:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:42:24.050738
+[2026-03-17 17:14:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:14:34.644254 (Window: 2026-03-17 17:14:34.644254 to 2026-03-17 17:45:34.644254)
+[2026-03-17 17:14:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:42:24.050738 | window=[2026-03-17 17:14:34.644254 to 2026-03-17 17:45:34.644254] | match=True
+[2026-03-17 17:14:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:14:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:14:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:14:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request sent 1.0m ago.
+[2026-03-17 17:15:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:42:24.050738
+[2026-03-17 17:15:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:15:34.635975 (Window: 2026-03-17 17:15:34.635975 to 2026-03-17 17:46:34.635975)
+[2026-03-17 17:15:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:42:24.050738 | window=[2026-03-17 17:15:34.635975 to 2026-03-17 17:46:34.635975] | match=True
+[2026-03-17 17:15:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:15:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:15:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:15:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — pending request sent 2.0m ago.
+[2026-03-17 17:15:53] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 17:15:53] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 17:15:53] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 17:15:54] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 17:15:54] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 17:15:54] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 17:15:54] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 17:16:31] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 17:16:38] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 17:16:38] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 17:16:38] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 17:16:39] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 17:16:39] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 17:16:47] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 17:16:47] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 17:16:47] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 17:16:47] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 17:16:47] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 17:16:47] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 17:16:47] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 17:17:26] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 17:17:36] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 17:17:36] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1
+[2026-03-17 17:17:36] [INFO    ] [scheduler_bp] [-] Profile 'Test 1' deleted by DivyaViradiya
+[2026-03-17 17:17:36] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:17:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:17:47.313961 (Window: 2026-03-17 17:17:47.313961 to 2026-03-17 17:48:47.313961)
+[2026-03-17 17:17:50] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 17:18:12] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:18:12] [INFO    ] [scheduler_bp] [+] Profile 'Test 2' created by DivyaViradiya
+[2026-03-17 17:18:12] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 17:18:12] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 17:18:12] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 17:18:12] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 17:18:12] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test 2'
+[2026-03-17 17:18:12] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:18:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:48:12.570828
+[2026-03-17 17:18:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:18:47.313264 (Window: 2026-03-17 17:18:47.313264 to 2026-03-17 17:49:47.313264)
+[2026-03-17 17:18:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:48:12.570828 | window=[2026-03-17 17:18:47.313264 to 2026-03-17 17:49:47.313264] | match=True
+[2026-03-17 17:18:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:18:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:18:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:18:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 17:18:49] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfba088359bd0b
+[2026-03-17 17:18:49] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 17:19:02] [INFO    ] [run] [>] GET /scheduler/confirm-scan/nKzpaALKhC2VcfP6NJ-U6KXPtaJPujxmTfyj9T7nUbk from 127.0.0.1
+[2026-03-17 17:19:02] [INFO    ] [scheduler_bp] [+] [scheduler_bp] Consent approved for job 1 — scan will run at its scheduled time.
+[2026-03-17 17:19:42] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 17:19:46] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 17:19:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 17:48:12.570828
+[2026-03-17 17:19:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:19:49.460779 (Window: 2026-03-17 17:19:49.460779 to 2026-03-17 17:50:49.460779)
+[2026-03-17 17:19:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 17:48:12.570828 | window=[2026-03-17 17:19:49.460779 to 2026-03-17 17:50:49.460779] | match=True
+[2026-03-17 17:19:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:19:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:19:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 17:19:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1
+[2026-03-17 17:19:49] [INFO    ] [scheduler_bp] [-] Profile 'Test 2' deleted by DivyaViradiya
+[2026-03-17 17:19:49] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1: 'No job by the id of scheduled_scan_1 was found'
+[2026-03-17 17:19:49] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:19:49] [INFO    ] [scheduler_bp] [-] Profile 'Test 2' deleted by DivyaViradiya
+[2026-03-17 17:19:49] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:20:03] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 17:20:03] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 17:20:05] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 17:20:05] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:20:08] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:20:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:20:47.308624 (Window: 2026-03-17 17:20:47.308624 to 2026-03-17 17:51:47.308624)
+[2026-03-17 17:21:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:21:47.331297 (Window: 2026-03-17 17:21:47.331297 to 2026-03-17 17:52:47.331297)
+[2026-03-17 17:22:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:22:47.315838 (Window: 2026-03-17 17:22:47.315838 to 2026-03-17 17:53:47.315838)
+[2026-03-17 17:23:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:23:47.316857 (Window: 2026-03-17 17:23:47.316857 to 2026-03-17 17:54:47.316857)
+[2026-03-17 17:24:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:24:47.314356 (Window: 2026-03-17 17:24:47.314356 to 2026-03-17 17:55:47.314356)
+[2026-03-17 17:25:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:25:47.316179 (Window: 2026-03-17 17:25:47.316179 to 2026-03-17 17:56:47.316179)
+[2026-03-17 17:26:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:26:47.310629 (Window: 2026-03-17 17:26:47.310629 to 2026-03-17 17:57:47.310629)
+[2026-03-17 17:27:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:27:47.309949 (Window: 2026-03-17 17:27:47.309949 to 2026-03-17 17:58:47.309949)
+[2026-03-17 17:28:47] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 17:28:47] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 17:28:47] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 17:28:47] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 17:28:47] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 17:28:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:28:47.595593 (Window: 2026-03-17 17:28:47.595593 to 2026-03-17 17:59:47.595593)
+[2026-03-17 17:28:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 17:29:26] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 17:29:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:29:47.466539 (Window: 2026-03-17 17:29:47.466539 to 2026-03-17 18:00:47.466539)
+[2026-03-17 17:30:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:30:47.460196 (Window: 2026-03-17 17:30:47.460196 to 2026-03-17 18:01:47.460196)
+[2026-03-17 17:31:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:31:47.438587 (Window: 2026-03-17 17:31:47.438587 to 2026-03-17 18:02:47.438587)
+[2026-03-17 17:32:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:32:47.451606 (Window: 2026-03-17 17:32:47.451606 to 2026-03-17 18:03:47.451606)
+[2026-03-17 17:34:17] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 17:34:26] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 17:34:26] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 17:34:26] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 17:34:26] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 17:34:26] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 17:34:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 17:34:34] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 17:34:34] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 17:34:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 17:34:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 17:34:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:34:34.922472 (Window: 2026-03-17 17:34:34.922472 to 2026-03-17 18:05:34.922472)
+[2026-03-17 17:34:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 17:34:47] [INFO    ] [run] [>] GET /scheduler/confirm-scan/nKzpaALKhC2VcfP6NJ-U6KXPtaJPujxmTfyj9T7nUbk from 127.0.0.1
+[2026-03-17 17:34:48] [INFO    ] [run] [>] GET /scheduler/confirm-scan/nKzpaALKhC2VcfP6NJ-U6KXPtaJPujxmTfyj9T7nUbk from 127.0.0.1
+[2026-03-17 17:35:11] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 17:35:18] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:35:18] [INFO    ] [scheduler_bp] [+] Profile 'Test 3' created by DivyaViradiya
+[2026-03-17 17:35:18] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 17:35:18] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 17:35:18] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 17:35:18] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 17:35:18] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test 3'
+[2026-03-17 17:35:19] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:35:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:05:18.931130
+[2026-03-17 17:35:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:35:34.885839 (Window: 2026-03-17 17:35:34.885839 to 2026-03-17 18:06:34.885839)
+[2026-03-17 17:35:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:05:18.931130 | window=[2026-03-17 17:35:34.885839 to 2026-03-17 18:06:34.885839] | match=True
+[2026-03-17 17:35:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:35:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:35:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:35:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 17:35:38] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfbafeea308505
+[2026-03-17 17:35:38] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 17:36:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:05:18.931130
+[2026-03-17 17:36:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:36:34.873893 (Window: 2026-03-17 17:36:34.873893 to 2026-03-17 18:07:34.873893)
+[2026-03-17 17:36:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:05:18.931130 | window=[2026-03-17 17:36:34.873893 to 2026-03-17 18:07:34.873893] | match=True
+[2026-03-17 17:36:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:36:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:36:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:36:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 1.0m ago.
+[2026-03-17 17:37:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:05:18.931130
+[2026-03-17 17:37:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:37:34.875998 (Window: 2026-03-17 17:37:34.875998 to 2026-03-17 18:08:34.875998)
+[2026-03-17 17:37:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:05:18.931130 | window=[2026-03-17 17:37:34.875998 to 2026-03-17 18:08:34.875998] | match=True
+[2026-03-17 17:37:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:37:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:37:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:37:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 2.0m ago.
+[2026-03-17 17:37:45] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-17 17:37:45] [INFO    ] [auth_bp] [*] User Logout: DivyaViradiya
+[2026-03-17 17:37:45] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 17:37:45] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 17:37:48] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-17 17:37:52] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-17 17:37:56] [INFO    ] [email_service] [+] [EMAIL] OTP email sent successfully. Message Id: 19cfbb20a8d0f3f5
+[2026-03-17 17:37:56] [INFO    ] [auth_bp] [+] Password reset email sent to divya.viradiya.7@gmail.com via Gmail API
+[2026-03-17 17:37:56] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-17 17:38:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:05:18.931130
+[2026-03-17 17:38:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:38:34.875572 (Window: 2026-03-17 17:38:34.875572 to 2026-03-17 18:09:34.875572)
+[2026-03-17 17:38:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:05:18.931130 | window=[2026-03-17 17:38:34.875572 to 2026-03-17 18:09:34.875572] | match=True
+[2026-03-17 17:38:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:38:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:38:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:38:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 3.0m ago.
+[2026-03-17 17:39:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:05:18.931130
+[2026-03-17 17:39:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:39:34.880288 (Window: 2026-03-17 17:39:34.880288 to 2026-03-17 18:10:34.880288)
+[2026-03-17 17:39:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:05:18.931130 | window=[2026-03-17 17:39:34.880288 to 2026-03-17 18:10:34.880288] | match=True
+[2026-03-17 17:39:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:39:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:39:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:39:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 4.0m ago.
+[2026-03-17 17:40:15] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-17 17:40:17] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-17 17:40:20] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-17 17:40:23] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-17 17:40:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:05:18.931130
+[2026-03-17 17:40:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:40:34.880205 (Window: 2026-03-17 17:40:34.880205 to 2026-03-17 18:11:34.880205)
+[2026-03-17 17:40:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:05:18.931130 | window=[2026-03-17 17:40:34.880205 to 2026-03-17 18:11:34.880205] | match=True
+[2026-03-17 17:40:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:40:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:40:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:40:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 5.0m ago.
+[2026-03-17 17:40:36] [ERROR   ] [email_service] [!] [EMAIL] Error sending OTP email: Unable to find the server at gmail.googleapis.com
+[2026-03-17 17:40:36] [ERROR   ] [auth_bp] [!] Failed to send email via Gmail API: Gmail API failed to send email
+[2026-03-17 17:40:36] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-17 17:41:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:05:18.931130
+[2026-03-17 17:41:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:41:34.875574 (Window: 2026-03-17 17:41:34.875574 to 2026-03-17 18:12:34.875574)
+[2026-03-17 17:41:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:05:18.931130 | window=[2026-03-17 17:41:34.875574 to 2026-03-17 18:12:34.875574] | match=True
+[2026-03-17 17:41:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:41:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:41:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:41:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 6.0m ago.
+[2026-03-17 17:42:10] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 17:42:10] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 17:42:10] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 17:42:10] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 17:42:10] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 17:42:11] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 17:42:11] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 17:42:54] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 17:43:03] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 17:43:03] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 17:43:03] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 17:43:06] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-17 17:43:09] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-17 17:43:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:12:11.002723
+[2026-03-17 17:43:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:43:10.896618 (Window: 2026-03-17 17:43:10.896618 to 2026-03-17 18:14:10.896618)
+[2026-03-17 17:43:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:12:11.002723 | window=[2026-03-17 17:43:10.896618 to 2026-03-17 18:14:10.896618] | match=True
+[2026-03-17 17:43:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:43:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:43:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:43:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 7.6m ago.
+[2026-03-17 17:43:13] [INFO    ] [email_service] [+] [EMAIL] OTP email sent successfully. Message Id: 19cfbb6e16055f62
+[2026-03-17 17:43:13] [INFO    ] [auth_bp] [+] Password reset email sent to divya.viradiya.7@gmail.com via Gmail API
+[2026-03-17 17:43:13] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-17 17:43:33] [INFO    ] [run] [>] POST /verify_otp from 127.0.0.1
+[2026-03-17 17:43:33] [INFO    ] [run] [>] GET /reset_password from 127.0.0.1
+[2026-03-17 17:43:43] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 17:43:43] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 17:43:57] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-17 17:43:57] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-17 17:43:57] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-17 17:43:57] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-17 17:43:57] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 17:43:57] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 17:43:57] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 17:43:57] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 17:43:57] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 17:43:57] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 17:43:57] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 17:44:02] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 17:44:02] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 17:44:06] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 17:44:06] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 17:44:06] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 17:44:06] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:44:08] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 17:44:08] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1
+[2026-03-17 17:44:08] [INFO    ] [scheduler_bp] [-] Profile 'Test 3' deleted by DivyaViradiya
+[2026-03-17 17:44:08] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:44:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:44:10.885973 (Window: 2026-03-17 17:44:10.885973 to 2026-03-17 18:15:10.885973)
+[2026-03-17 17:44:32] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:44:32] [INFO    ] [scheduler_bp] [+] Profile 'Test 1' created by DivyaViradiya
+[2026-03-17 17:44:32] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 17:44:32] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 17:44:32] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 17:44:33] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 17:44:33] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test 1'
+[2026-03-17 17:44:33] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 17:45:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:14:32.980865
+[2026-03-17 17:45:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:45:10.892055 (Window: 2026-03-17 17:45:10.892055 to 2026-03-17 18:16:10.892055)
+[2026-03-17 17:45:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:14:32.980865 | window=[2026-03-17 17:45:10.892055 to 2026-03-17 18:16:10.892055] | match=True
+[2026-03-17 17:45:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:45:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:45:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 17:45:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 17:45:13] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfbb8b73df072c
+[2026-03-17 17:45:13] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 17:45:29] [INFO    ] [run] [>] GET /scheduler/confirm-scan/3y6K6TCeeKkbMa8q14QpXew2FkwGJzn3D8nEI8p7CbY from 127.0.0.1
+[2026-03-17 17:45:29] [INFO    ] [scheduler_bp] [+] [scheduler_bp] Consent approved for job 1 — scan will run at its scheduled time.
+[2026-03-17 17:46:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:14:32.980865
+[2026-03-17 17:46:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:46:10.888066 (Window: 2026-03-17 17:46:10.888066 to 2026-03-17 18:17:10.888066)
+[2026-03-17 17:46:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:14:32.980865 | window=[2026-03-17 17:46:10.888066 to 2026-03-17 18:17:10.888066] | match=True
+[2026-03-17 17:46:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:46:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:46:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 17:47:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:14:32.980865
+[2026-03-17 17:47:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:47:10.884401 (Window: 2026-03-17 17:47:10.884401 to 2026-03-17 18:18:10.884401)
+[2026-03-17 17:47:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:14:32.980865 | window=[2026-03-17 17:47:10.884401 to 2026-03-17 18:18:10.884401] | match=True
+[2026-03-17 17:47:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:47:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:47:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 17:48:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:14:32.980865
+[2026-03-17 17:48:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:48:10.898649 (Window: 2026-03-17 17:48:10.898649 to 2026-03-17 18:19:10.898649)
+[2026-03-17 17:48:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:14:32.980865 | window=[2026-03-17 17:48:10.898649 to 2026-03-17 18:19:10.898649] | match=True
+[2026-03-17 17:48:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:48:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:48:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 17:48:47] [INFO    ] [run] [>] GET /scheduler/confirm-scan/3y6K6TCeeKkbMa8q14QpXew2FkwGJzn3D8nEI8p7CbY from 127.0.0.1
+[2026-03-17 17:49:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:14:32.980865
+[2026-03-17 17:49:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:49:10.907645 (Window: 2026-03-17 17:49:10.907645 to 2026-03-17 18:20:10.907645)
+[2026-03-17 17:49:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:14:32.980865 | window=[2026-03-17 17:49:10.907645 to 2026-03-17 18:20:10.907645] | match=True
+[2026-03-17 17:49:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:49:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:49:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 17:50:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:14:32.980865
+[2026-03-17 17:50:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:50:10.889532 (Window: 2026-03-17 17:50:10.889532 to 2026-03-17 18:21:10.889532)
+[2026-03-17 17:50:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:14:32.980865 | window=[2026-03-17 17:50:10.889532 to 2026-03-17 18:21:10.889532] | match=True
+[2026-03-17 17:50:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:50:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:50:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 17:51:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:14:32.980865
+[2026-03-17 17:51:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:51:10.897957 (Window: 2026-03-17 17:51:10.897957 to 2026-03-17 18:22:10.897957)
+[2026-03-17 17:51:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:14:32.980865 | window=[2026-03-17 17:51:10.897957 to 2026-03-17 18:22:10.897957] | match=True
+[2026-03-17 17:51:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:51:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:51:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 17:51:41] [INFO    ] [run] [>] GET /scheduler/confirm-scan/3y6K6TCeeKkbMa8q14QpXew2FkwGJzn3D8nEI8p7CbY from 127.0.0.1
+[2026-03-17 17:52:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 18:14:32.980865
+[2026-03-17 17:52:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 17:52:10.898076 (Window: 2026-03-17 17:52:10.898076 to 2026-03-17 18:23:10.898076)
+[2026-03-17 17:52:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 18:14:32.980865 | window=[2026-03-17 17:52:10.898076 to 2026-03-17 18:23:10.898076] | match=True
+[2026-03-17 17:52:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 17:52:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 17:52:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:10:40] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 19:10:48] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:10:48] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:10:48] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 19:10:48] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 19:10:48] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 19:10:55] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:10:55] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:10:55] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:10:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 19:14:32.980865
+[2026-03-17 19:10:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:10:55.850163 (Window: 2026-03-17 19:10:55.850163 to 2026-03-17 19:41:55.850163)
+[2026-03-17 19:10:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 19:14:32.980865 | window=[2026-03-17 19:10:55.850163 to 2026-03-17 19:41:55.850163] | match=True
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test 1' (1 configs × 1 targets)
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [*] [SCHEDULER] Checking consent for Job 1, Target 1
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent already approved for Job 1
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent token for example.com marked as used/expired.
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 19:10:55] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 19:10:55] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
+[2026-03-17 19:10:56] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_12e29837.txt 104.18.26.120
+[2026-03-17 19:11:14] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 19:11:19] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 19:11:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 19:11:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 19:11:24] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 19:11:24] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 19:11:28] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 19:11:28] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 19:11:29] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-17 19:11:33] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-17 19:11:34] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: DivyaViradiya
+[2026-03-17 19:11:34] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 19:11:34] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 19:11:34] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 19:11:34] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 19:11:34] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 19:11:34] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 19:11:35] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 19:11:41] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 19:11:41] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 19:11:42] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 19:11:42] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:11:46] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 19:11:46] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1
+[2026-03-17 19:11:46] [INFO    ] [scheduler_bp] [-] Profile 'Test 1' deleted by DivyaViradiya
+[2026-03-17 19:11:46] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:11:50] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 19:11:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:11:55.805150 (Window: 2026-03-17 19:11:55.805150 to 2026-03-17 19:42:55.805150)
+[2026-03-17 19:12:03] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-17 19:12:06] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 19:12:08] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 19:12:08] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 19:12:08] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 19:12:08] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-17 19:12:11] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 19:12:13] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 19:12:13] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 19:12:13] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 19:12:13] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:12:14] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-17 19:12:14] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-17 19:12:14] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-17 19:12:14] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-17 19:12:14] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 19:12:14] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 19:12:15] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 19:12:15] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 19:12:15] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-17 19:12:15] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-17 19:12:15] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-17 19:12:15] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-17 19:12:15] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-17 19:12:15] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 19:12:17] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 19:12:17] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 19:12:17] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 19:12:17] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:12:20] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-17 19:12:20] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-17 19:12:20] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-17 19:12:20] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-17 19:12:20] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 19:12:20] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 19:12:20] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 19:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 19:12:21] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-17 19:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-17 19:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-17 19:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-17 19:12:21] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-17 19:12:21] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 19:12:28] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 19:12:28] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 19:12:28] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 19:12:28] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:12:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:12:55.799472 (Window: 2026-03-17 19:12:55.799472 to 2026-03-17 19:43:55.799472)
+[2026-03-17 19:13:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:13:55.805500 (Window: 2026-03-17 19:13:55.805500 to 2026-03-17 19:44:55.805500)
+[2026-03-17 19:14:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:14:55.804119 (Window: 2026-03-17 19:14:55.804119 to 2026-03-17 19:45:55.804119)
+[2026-03-17 19:15:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:15:55.795873 (Window: 2026-03-17 19:15:55.795873 to 2026-03-17 19:46:55.795873)
+[2026-03-17 19:16:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:16:55.800110 (Window: 2026-03-17 19:16:55.800110 to 2026-03-17 19:47:55.800110)
+[2026-03-17 19:17:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:17:55.802215 (Window: 2026-03-17 19:17:55.802215 to 2026-03-17 19:48:55.802215)
+[2026-03-17 19:18:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:18:55.804293 (Window: 2026-03-17 19:18:55.804293 to 2026-03-17 19:49:55.804293)
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-17 19:19:05] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 19:19:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:19:55.798662 (Window: 2026-03-17 19:19:55.798662 to 2026-03-17 19:50:55.798662)
+[2026-03-17 19:20:16] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:20:16] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:20:16] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:20:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:20:17] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:20:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 19:20:48] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-17 19:20:49] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 19:20:59] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 19:21:14] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 19:21:14] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 19:21:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:21:17.019279 (Window: 2026-03-17 19:21:17.019279 to 2026-03-17 19:52:17.019279)
+[2026-03-17 19:21:41] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 19:21:41] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 19:21:41] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 19:21:41] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:22:15] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:22:15] [INFO    ] [scheduler_bp] [+] Profile 'test' created by DivyaViradiya
+[2026-03-17 19:22:15] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 19:22:15] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 19:22:15] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 19:22:15] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:22:15] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'test'
+[2026-03-17 19:22:15] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:22:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 19:52:15.769872
+[2026-03-17 19:22:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:22:17.050964 (Window: 2026-03-17 19:22:17.050964 to 2026-03-17 19:53:17.050964)
+[2026-03-17 19:22:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 19:52:15.769872 | window=[2026-03-17 19:22:17.050964 to 2026-03-17 19:53:17.050964] | match=True
+[2026-03-17 19:22:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:22:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:22:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:22:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 19:22:21] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfc11a66c39d80
+[2026-03-17 19:22:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 19:23:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 19:52:15.769872
+[2026-03-17 19:23:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:23:17.013187 (Window: 2026-03-17 19:23:17.013187 to 2026-03-17 19:54:17.013187)
+[2026-03-17 19:23:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 19:52:15.769872 | window=[2026-03-17 19:23:17.013187 to 2026-03-17 19:54:17.013187] | match=True
+[2026-03-17 19:23:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:23:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:23:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:23:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 1.0m ago.
+[2026-03-17 19:24:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 19:52:15.769872
+[2026-03-17 19:24:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:24:17.017382 (Window: 2026-03-17 19:24:17.017382 to 2026-03-17 19:55:17.017382)
+[2026-03-17 19:24:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 19:52:15.769872 | window=[2026-03-17 19:24:17.017382 to 2026-03-17 19:55:17.017382] | match=True
+[2026-03-17 19:24:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:24:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:24:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:24:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 2.0m ago.
+[2026-03-17 19:25:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 19:52:15.769872
+[2026-03-17 19:25:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:25:17.038190 (Window: 2026-03-17 19:25:17.038190 to 2026-03-17 19:56:17.038190)
+[2026-03-17 19:25:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 19:52:15.769872 | window=[2026-03-17 19:25:17.038190 to 2026-03-17 19:56:17.038190] | match=True
+[2026-03-17 19:25:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:25:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:25:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:25:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 3.0m ago.
+[2026-03-17 19:25:30] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 19:25:30] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1
+[2026-03-17 19:25:30] [INFO    ] [scheduler_bp] [-] Profile 'test' deleted by DivyaViradiya
+[2026-03-17 19:25:30] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:25:42] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 19:25:43] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:26:12] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:26:12] [INFO    ] [scheduler_bp] [+] Profile 'Test 4' created by DivyaViradiya
+[2026-03-17 19:26:12] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 19:26:12] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 19:26:12] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 19:26:12] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:26:13] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test 4'
+[2026-03-17 19:26:13] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:26:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 19:56:12.958563
+[2026-03-17 19:26:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:26:17.023148 (Window: 2026-03-17 19:26:17.023148 to 2026-03-17 19:57:17.023148)
+[2026-03-17 19:26:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 19:56:12.958563 | window=[2026-03-17 19:26:17.023148 to 2026-03-17 19:57:17.023148] | match=True
+[2026-03-17 19:26:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:26:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:26:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:26:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 19:26:20] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfc154d644683a
+[2026-03-17 19:26:20] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 19:27:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 19:56:12.958563
+[2026-03-17 19:27:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:27:17.023023 (Window: 2026-03-17 19:27:17.023023 to 2026-03-17 19:58:17.023023)
+[2026-03-17 19:27:17] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 19:56:12.958563 | window=[2026-03-17 19:27:17.023023 to 2026-03-17 19:58:17.023023] | match=True
+[2026-03-17 19:27:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:27:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:27:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:27:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 1.0m ago.
+[2026-03-17 19:28:18] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:28:18] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:28:18] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:28:18] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:28:18] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:28:18] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 19:56:12.958563
+[2026-03-17 19:28:18] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:28:18.749216 (Window: 2026-03-17 19:28:18.749216 to 2026-03-17 19:59:18.749216)
+[2026-03-17 19:28:18] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 19:56:12.958563 | window=[2026-03-17 19:28:18.749216 to 2026-03-17 19:59:18.749216] | match=True
+[2026-03-17 19:28:18] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:28:18] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:28:18] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:28:18] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:28:18] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 19:28:18] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 2.0m ago.
+[2026-03-17 19:28:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:28:50] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:28:50] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:28:50] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:28:50] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:28:51] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:28:51] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 19:29:30] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 19:29:51] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 19:58:51.100709
+[2026-03-17 19:29:51] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:29:51.029306 (Window: 2026-03-17 19:29:51.029306 to 2026-03-17 20:00:51.029306)
+[2026-03-17 19:29:51] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 19:58:51.100709 | window=[2026-03-17 19:29:51.029306 to 2026-03-17 20:00:51.029306] | match=True
+[2026-03-17 19:29:51] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:29:51] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:29:51] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:29:51] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 3.6m ago.
+[2026-03-17 19:30:28] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:30:28] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:30:28] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:30:28] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:30:28] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:30:28] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:30:28] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 19:31:08] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 19:31:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:00:28.926695
+[2026-03-17 19:31:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:31:28.823613 (Window: 2026-03-17 19:31:28.823613 to 2026-03-17 20:02:28.823613)
+[2026-03-17 19:31:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:00:28.926695 | window=[2026-03-17 19:31:28.823613 to 2026-03-17 20:02:28.823613] | match=True
+[2026-03-17 19:31:28] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:31:28] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:31:28] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:31:28] [INFO    ] [scheduler_service] [*] [SCHEDULER] Skipping email for Job 1 — last request [pending] sent 5.2m ago.
+[2026-03-17 19:32:20] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:32:21] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:32:21] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:32:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:32:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:32:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:32:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 19:32:56] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:32:56] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:32:56] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:32:56] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:32:56] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:32:56] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:32:56] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 19:33:22] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 19:33:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1
+[2026-03-17 19:33:23] [INFO    ] [scheduler_bp] [-] Profile 'Test 4' deleted by DivyaViradiya
+[2026-03-17 19:33:23] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:33:39] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:33:44] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 19:33:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:33:56.414509 (Window: 2026-03-17 19:33:56.414509 to 2026-03-17 20:04:56.414509)
+[2026-03-17 19:34:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:34:56.406168 (Window: 2026-03-17 19:34:56.406168 to 2026-03-17 20:05:56.406168)
+[2026-03-17 19:35:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:35:56.418220 (Window: 2026-03-17 19:35:56.418220 to 2026-03-17 20:06:56.418220)
+[2026-03-17 19:36:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:36:56.399871 (Window: 2026-03-17 19:36:56.399871 to 2026-03-17 20:07:56.399871)
+[2026-03-17 19:37:03] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 19:37:03] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 19:37:05] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 19:37:05] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:37:34] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:37:34] [INFO    ] [scheduler_bp] [+] Profile 'Test 5' created by DivyaViradiya
+[2026-03-17 19:37:35] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 19:37:35] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 19:37:35] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 19:37:35] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:37:35] [INFO    ] [scheduler_bp] [+] Scheduled job created: periodic for profile 'Test 5'
+[2026-03-17 19:37:35] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:37:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:07:35.457977
+[2026-03-17 19:37:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:37:56.411648 (Window: 2026-03-17 19:37:56.411648 to 2026-03-17 20:08:56.411648)
+[2026-03-17 19:37:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:07:35.457977 | window=[2026-03-17 19:37:56.411648 to 2026-03-17 20:08:56.411648] | match=True
+[2026-03-17 19:37:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:37:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:37:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Triggering 30m consent request for example.com
+[2026-03-17 19:37:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Sending consent email to divya.viradiya.7@gmail.com for example.com
+[2026-03-17 19:38:00] [INFO    ] [email_service] [+] [EMAIL] Consent email sent successfully. Message Id: 19cfc1ff8ebaea39
+[2026-03-17 19:38:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent email sent successfully to divya.viradiya.7@gmail.com
+[2026-03-17 19:38:34] [INFO    ] [run] [>] GET /scheduler/confirm-scan/MkonNLSXMErTLb_T4TSd8k77ULFsxPgIowGWr-Xy1A8 from 127.0.0.1
+[2026-03-17 19:38:34] [INFO    ] [scheduler_bp] [+] [scheduler_bp] Consent approved for job 1 — scan will run at its scheduled time.
+[2026-03-17 19:38:34] [INFO    ] [run] [>] GET /favicon.ico from 127.0.0.1
+[2026-03-17 19:38:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:07:35.457977
+[2026-03-17 19:38:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:38:56.405944 (Window: 2026-03-17 19:38:56.405944 to 2026-03-17 20:09:56.405944)
+[2026-03-17 19:38:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:07:35.457977 | window=[2026-03-17 19:38:56.405944 to 2026-03-17 20:09:56.405944] | match=True
+[2026-03-17 19:38:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:38:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:38:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:39:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:07:35.457977
+[2026-03-17 19:39:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:39:56.410876 (Window: 2026-03-17 19:39:56.410876 to 2026-03-17 20:10:56.410876)
+[2026-03-17 19:39:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:07:35.457977 | window=[2026-03-17 19:39:56.410876 to 2026-03-17 20:10:56.410876] | match=True
+[2026-03-17 19:39:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:39:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:39:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:40:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:07:35.457977
+[2026-03-17 19:40:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:40:56.406004 (Window: 2026-03-17 19:40:56.406004 to 2026-03-17 20:11:56.406004)
+[2026-03-17 19:40:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:07:35.457977 | window=[2026-03-17 19:40:56.406004 to 2026-03-17 20:11:56.406004] | match=True
+[2026-03-17 19:40:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:40:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:40:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:41:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:07:35.457977
+[2026-03-17 19:41:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:41:56.403951 (Window: 2026-03-17 19:41:56.403951 to 2026-03-17 20:12:56.403951)
+[2026-03-17 19:41:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:07:35.457977 | window=[2026-03-17 19:41:56.403951 to 2026-03-17 20:12:56.403951] | match=True
+[2026-03-17 19:41:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:41:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:41:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:42:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:07:35.457977
+[2026-03-17 19:42:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:42:56.417889 (Window: 2026-03-17 19:42:56.417889 to 2026-03-17 20:13:56.417889)
+[2026-03-17 19:42:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:07:35.457977 | window=[2026-03-17 19:42:56.417889 to 2026-03-17 20:13:56.417889] | match=True
+[2026-03-17 19:42:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:42:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:42:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:43:22] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:43:22] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:43:22] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:43:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:43:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:43:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=periodic)
+[2026-03-17 19:43:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Reloaded 1 scheduled jobs.
+[2026-03-17 19:44:02] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 19:44:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:13:22.768069
+[2026-03-17 19:44:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:44:22.647468 (Window: 2026-03-17 19:44:22.647468 to 2026-03-17 20:15:22.647468)
+[2026-03-17 19:44:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:13:22.768069 | window=[2026-03-17 19:44:22.647468 to 2026-03-17 20:15:22.647468] | match=True
+[2026-03-17 19:44:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:44:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:44:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:45:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:13:22.768069
+[2026-03-17 19:45:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:45:22.629637 (Window: 2026-03-17 19:45:22.629637 to 2026-03-17 20:16:22.629637)
+[2026-03-17 19:45:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:13:22.768069 | window=[2026-03-17 19:45:22.629637 to 2026-03-17 20:16:22.629637] | match=True
+[2026-03-17 19:45:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:45:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:45:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:46:17] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 19:46:17] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 19:46:18] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 19:46:19] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:46:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Sync: Job 1 next run at 2026-03-17 20:13:22.768069
+[2026-03-17 19:46:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:46:22.634390 (Window: 2026-03-17 19:46:22.634390 to 2026-03-17 20:17:22.634390)
+[2026-03-17 19:46:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Job 1 next_run=2026-03-17 20:13:22.768069 | window=[2026-03-17 19:46:22.634390 to 2026-03-17 20:17:22.634390] | match=True
+[2026-03-17 19:46:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Found 1 upcoming jobs in window.
+[2026-03-17 19:46:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Job 1 has 1 targets requiring consent.
+[2026-03-17 19:46:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] Watchdog: Consent already approved for example.com
+[2026-03-17 19:46:49] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 19:46:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Unregistered job scheduled_scan_1
+[2026-03-17 19:46:49] [INFO    ] [scheduler_bp] [-] Profile 'Test 5' deleted by DivyaViradiya
+[2026-03-17 19:46:49] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:47:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:47:22.624447 (Window: 2026-03-17 19:47:22.624447 to 2026-03-17 20:18:22.624447)
+[2026-03-17 19:48:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:48:22.632168 (Window: 2026-03-17 19:48:22.632168 to 2026-03-17 20:19:22.632168)
+[2026-03-17 19:48:41] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:48:42] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:48:42] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:48:42] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:48:42] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:48:42] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 19:49:02] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:49:02] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:49:02] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:49:02] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:49:02] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:49:02] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 19:49:44] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:49:44] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:49:44] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:49:44] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:49:44] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:49:45] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 19:50:24] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 19:50:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:50:50] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:50:50] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:50:50] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:50:50] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:50:50] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:50:50.760116 (Window: 2026-03-17 19:50:50.760116 to 2026-03-17 20:21:50.760116)
+[2026-03-17 19:50:50] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 19:51:30] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 19:51:50] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:51:50.648954 (Window: 2026-03-17 19:51:50.648954 to 2026-03-17 20:22:50.648954)
+[2026-03-17 19:52:50] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:52:50.652913 (Window: 2026-03-17 19:52:50.652913 to 2026-03-17 20:23:50.652913)
+[2026-03-17 19:53:50] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:53:50.648075 (Window: 2026-03-17 19:53:50.648075 to 2026-03-17 20:24:50.648075)
+[2026-03-17 19:54:29] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:54:50] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:54:50.645478 (Window: 2026-03-17 19:54:50.645478 to 2026-03-17 20:25:50.645478)
+[2026-03-17 19:55:50] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:55:50.642606 (Window: 2026-03-17 19:55:50.642606 to 2026-03-17 20:26:50.642606)
+[2026-03-17 19:56:50] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:56:50.665806 (Window: 2026-03-17 19:56:50.665806 to 2026-03-17 20:27:50.665806)
+[2026-03-17 19:57:50] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:57:50.651647 (Window: 2026-03-17 19:57:50.651647 to 2026-03-17 20:28:50.651647)
+[2026-03-17 19:58:31] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 19:58:31] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 19:58:31] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 19:58:31] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 19:58:31] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 19:58:31] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 19:59:11] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 19:59:11] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 19:59:12] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 19:59:13] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 19:59:13] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:59:19] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 19:59:31] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 19:59:31.481985 (Window: 2026-03-17 19:59:31.481985 to 2026-03-17 20:30:31.481985)
+[2026-03-17 20:00:31] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:00:31.482083 (Window: 2026-03-17 20:00:31.482083 to 2026-03-17 20:31:31.482083)
+[2026-03-17 20:01:16] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 20:01:16] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 20:01:17] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 20:01:17] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 20:01:21] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 20:01:31] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:01:31.472070 (Window: 2026-03-17 20:01:31.472070 to 2026-03-17 20:32:31.472070)
+[2026-03-17 20:02:31] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:02:31.483244 (Window: 2026-03-17 20:02:31.483244 to 2026-03-17 20:33:31.483244)
+[2026-03-17 20:03:24] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 20:03:24] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 20:03:25] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 20:03:25] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 20:03:31] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:03:31.480597 (Window: 2026-03-17 20:03:31.480597 to 2026-03-17 20:34:31.480597)
+[2026-03-17 20:03:33] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 20:04:14] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 20:04:14] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 20:04:15] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 20:04:15] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 20:04:30] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 20:04:31] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:04:31.475696 (Window: 2026-03-17 20:04:31.475696 to 2026-03-17 20:35:31.475696)
+[2026-03-17 20:05:00] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 20:05:00] [INFO    ] [scheduler_bp] [+] Profile 'test' created by DivyaViradiya
+[2026-03-17 20:05:00] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 20:05:00] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 20:05:00] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 20:05:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=once)
+[2026-03-17 20:05:00] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'test'
+[2026-03-17 20:05:00] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 20:05:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'test' (1 configs × 1 targets)
+[2026-03-17 20:05:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 20:05:01] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.27.120 with timing -T4...
+[2026-03-17 20:05:01] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_afdd28a9.txt 104.18.27.120
+[2026-03-17 20:05:19] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 20:05:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 20:05:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 20:05:31] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:05:31.474799 (Window: 2026-03-17 20:05:31.474799 to 2026-03-17 20:36:31.474799)
+[2026-03-17 20:06:16] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 20:06:31] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:06:31.484652 (Window: 2026-03-17 20:06:31.484652 to 2026-03-17 20:37:31.484652)
+[2026-03-17 20:06:36] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 20:06:36] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 20:06:36] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 20:06:36] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 20:06:38] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 20:07:25] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 20:07:25] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 20:07:25] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 20:07:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 20:07:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 20:07:25] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 20:07:51] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 20:07:51] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 20:07:52] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 20:07:52] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 20:07:53] [INFO    ] [run] [>] GET /scheduler/api/jobs/1/history from 127.0.0.1
+[2026-03-17 20:08:12] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 20:08:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:08:25.660655 (Window: 2026-03-17 20:08:25.660655 to 2026-03-17 20:39:25.660655)
+[2026-03-17 20:09:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:09:25.659497 (Window: 2026-03-17 20:09:25.659497 to 2026-03-17 20:40:25.659497)
+[2026-03-17 20:10:57] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 20:10:57] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 20:11:06] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...

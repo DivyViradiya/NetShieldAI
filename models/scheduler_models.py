@@ -180,13 +180,24 @@ class ProfileTarget(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     profile_id = db.Column(db.Integer, db.ForeignKey('scan_profile.id'), nullable=False)
     target_url = db.Column(db.String(500), nullable=False)
+    consent_email = db.Column(db.String(255), nullable=True)
+    requires_consent = db.Column(db.Boolean, default=False)
     added_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
 
+    # Relationships
+    consent_tokens = db.relationship('ScanConsentToken', backref='target', lazy=True, cascade='all, delete-orphan')
+
     def to_dict(self):
+        # Calculate if any tokens are currently pending and not expired
+        any_pending = any(t.status == 'pending' and not t.is_expired() for t in self.consent_tokens)
+        
         return {
             'id': self.id,
             'profile_id': self.profile_id,
             'target_url': self.target_url,
+            'consent_email': self.consent_email,
+            'requires_consent': self.requires_consent,
+            'consent_pending': any_pending,
             'added_at': self.added_at.isoformat() if self.added_at else None,
         }
 
@@ -239,6 +250,9 @@ class ScheduledScanJob(db.Model):
     apscheduler_job_id = db.Column(db.String(100), nullable=True, unique=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
 
+    # Relationships
+    consent_tokens = db.relationship('ScanConsentToken', backref='job', lazy=True, cascade='all, delete-orphan')
+
     VALID_SCHEDULE_TYPES = ['daily', 'weekly', 'monthly', 'once', 'periodic', 'cron']
 
     def to_dict(self):
@@ -262,3 +276,35 @@ class ScheduledScanJob(db.Model):
 
     def __repr__(self):
         return f"<ScheduledScanJob {self.schedule_type} for Profile {self.profile_id}>"
+
+
+class ScanConsentToken(db.Model):
+    __bind_key__ = 'scheduler'
+    """
+    Tokens for external target scan authorization.
+    """
+    __tablename__ = 'scan_consent_token'
+
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('scheduled_scan_job.id'), nullable=False)
+    target_id = db.Column(db.Integer, db.ForeignKey('profile_target.id'), nullable=False)
+    token = db.Column(db.String(100), unique=True, nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, approved, expired, rejected
+    expires_at = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
+    approved_at = db.Column(db.DateTime, nullable=True)
+
+    def is_expired(self):
+        return datetime.now(IST).replace(tzinfo=None) > self.expires_at
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'job_id': self.job_id,
+            'target_id': self.target_id,
+            'token': self.token,
+            'status': self.status,
+            'expires_at': self.expires_at.isoformat() if self.expires_at else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'approved_at': self.approved_at.isoformat() if self.approved_at else None,
+        }

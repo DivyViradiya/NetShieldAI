@@ -22,6 +22,9 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 from core.extensions import db
 from core.logger_setup import logger
+from flask import render_template, url_for
+import secrets
+from Services.email_service import send_consent_email
 
 # Global scheduler instance
 _scheduler = None
@@ -41,6 +44,10 @@ def init_scheduler(app, scheduler_db_uri):
     global _scheduler, _app
     _app = app
 
+    # Silence verbose APScheduler heartbeat/execution logs in console
+    import logging
+    logging.getLogger('apscheduler').setLevel(logging.WARNING)
+
     jobstores = {
         'default': SQLAlchemyJobStore(url=scheduler_db_uri + ('?timeout=20' if '?' not in scheduler_db_uri else '&timeout=20'))
     }
@@ -57,6 +64,17 @@ def init_scheduler(app, scheduler_db_uri):
 
     _scheduler.start()
     logger.info("[+] [SCHEDULER] APScheduler started successfully.")
+
+    # Start consent watchdog (runs every minute)
+    _scheduler.add_job(
+        func=_consent_watchdog,
+        trigger='interval',
+        minutes=1,
+        id='consent_watchdog',
+        name='Consent Notification Watchdog',
+        replace_existing=True
+    )
+    logger.info("[+] [SCHEDULER] Consent watchdog started.")
 
     # Reload persisted jobs
     reload_all_jobs(app)
@@ -133,7 +151,9 @@ def register_job(job_row):
 
     try:
         trigger = _build_trigger(job_row)
-        apscheduler_job_id = f"scheduled_scan_{job_row.id}_{uuid.uuid4().hex[:8]}"
+        # Use a DETERMINISTIC ID so replace_existing=True actually replaces the old job.
+        # Previously, a UUID suffix was appended, causing orphaned jobs to accumulate.
+        apscheduler_job_id = f"scheduled_scan_{job_row.id}"
 
         _scheduler.add_job(
             func=_execute_scheduled_scan_wrapper,
@@ -143,6 +163,15 @@ def register_job(job_row):
             name=f"Scan Job #{job_row.id}",
             replace_existing=True
         )
+
+        # Update next_run_at in DB
+        try:
+            aps_job = _scheduler.get_job(apscheduler_job_id)
+            if aps_job and aps_job.next_run_time:
+                job_row.next_run_at = aps_job.next_run_time.replace(tzinfo=None)
+                db.session.commit()
+        except Exception:
+            pass
 
         logger.info(f"[+] [SCHEDULER] Registered job {apscheduler_job_id} (type={job_row.schedule_type})")
         return apscheduler_job_id
@@ -175,12 +204,136 @@ def _execute_scheduled_scan_wrapper(job_id, force_run=False):
         logger.error("[!] [SCHEDULER] No Flask app reference — cannot execute scan.")
         return
 
-    with _app.app_context():
+    base_url = _app.config.get('BASE_URL', 'http://localhost:5100')
+    with _app.test_request_context(base_url=base_url):
         try:
             _execute_scheduled_scan(job_id, force_run=force_run)
         except Exception as e:
             logger.error(f"[!] [SCHEDULER] Error executing job {job_id}: {e}")
             traceback.print_exc()
+
+
+def _check_scan_consent(job, target_row, profile, user):
+    """
+    Checks if consent exists for a scan.
+    Returns: True if consent granted, False if deferred.
+    """
+    from models.scheduler_models import ScanConsentToken
+    
+    # Run Once does not require consent
+    if job.schedule_type == 'once':
+        return True
+
+    logger.info(f"[*] [SCHEDULER] Checking consent for Job {job.id}, Target {target_row.id}")
+    # 1. Check for valid existing approved consent
+    existing = ScanConsentToken.query.filter_by(
+        job_id=job.id, 
+        target_id=target_row.id, 
+        status='approved'
+    ).first()
+
+    if existing:
+        logger.info(f"[+] [SCHEDULER] Consent already approved for Job {job.id}")
+        return True
+
+    # 2. Check for pending request (within expiry)
+    pending = ScanConsentToken.query.filter_by(
+        job_id=job.id, 
+        target_id=target_row.id, 
+        status='pending'
+    ).order_by(ScanConsentToken.created_at.desc()).first()
+
+    if pending and not pending.is_expired():
+        logger.info(f"[*] [SCHEDULER] Pending consent already exists for Job {job.id}")
+        return False
+
+    # 3. If no approved/pending exists, and it's execution time, 
+    # the watchdog should have sent it. If it didn't (e.g. worker down),
+    # we trigger it now and defer.
+    logger.warning(f"[!] [SCHEDULER] No consent found at execution time for Job {job.id} — triggering emergency request.")
+    _trigger_consent_request(job, target_row, profile)
+    return False
+
+
+def _trigger_consent_request(job, target_row, profile):
+    """Creates a token and sends the consent email."""
+    from models.scheduler_models import ScanConsentToken
+    from core.extensions import db
+    import datetime as dt
+
+    # Check if *any* token for this job/target was created recently to avoid spam.
+    # This covers: pending (not yet clicked), approved (just used), expired (scan just ran).
+    all_recent = ScanConsentToken.query.filter_by(
+        job_id=job.id,
+        target_id=target_row.id,
+    ).all()
+    
+    now_naive = datetime.now(IST).replace(tzinfo=None)
+    for p in all_recent:
+        diff = now_naive - p.created_at
+        # Don't send another email if one was sent in the last 45 minutes
+        if diff.total_seconds() < 45 * 60:
+            logger.info(f"[*] [SCHEDULER] Skipping email for Job {job.id} — last request [{p.status}] sent {diff.total_seconds()/60:.1f}m ago.")
+            return
+
+    token = secrets.token_urlsafe(32)
+    expires_at = datetime.now(IST).replace(tzinfo=None) + dt.timedelta(hours=1)
+    
+    new_token = ScanConsentToken(
+        job_id=job.id,
+        target_id=target_row.id,
+        token=token,
+        expires_at=expires_at,
+        status='pending'
+    )
+    db.session.add(new_token)
+    db.session.commit()
+
+    logger.info(f"[*] [SCHEDULER] Sending consent email to {target_row.consent_email} for {target_row.target_url}")
+    base_url = _app.config.get('BASE_URL', 'http://localhost:5100')
+    with _app.test_request_context(base_url=base_url):
+        confirm_url = url_for('scheduler_bp.confirm_scan', token=token, _external=True)
+
+        # Build richer scan context for the email
+        from models.scheduler_models import ProfileScanConfig
+        configs = ProfileScanConfig.query.filter_by(profile_id=job.profile_id).all()
+        tools_list = [c.display_label or c.module.upper() for c in configs]
+        schedule_type_label = {
+            'periodic': 'Recurring (Periodic)',
+            'daily': 'Daily',
+            'weekly': 'Weekly',
+            'monthly': 'Monthly',
+            'cron': 'Advanced (Cron)',
+        }.get(job.schedule_type, job.schedule_type.capitalize())
+        scheduled_time = job.next_run_at.strftime('%d %b %Y at %H:%M IST') if job.next_run_at else 'As Scheduled'
+
+        html_content = render_template(
+            'email/scan_consent.html',
+            target_url=target_row.target_url,
+            profile_name=profile.name,
+            confirm_url=confirm_url,
+            tools_list=tools_list,
+            schedule_type=schedule_type_label,
+            scheduled_time=scheduled_time,
+            current_year=datetime.now(IST).year
+        )
+        # Use the actual NS logo for inline embedding
+        logo_path = Path(_app.root_path) / 'static' / 'images' / 'NS_Logo.png'
+        
+        success = send_consent_email(
+            recipient_email=target_row.consent_email,
+            target_url=target_row.target_url,
+            profile_name=profile.name,
+            confirm_url=confirm_url,
+            html_content=html_content,
+            logo_path=str(logo_path) if logo_path.exists() else None
+        )
+        if success:
+            logger.info(f"[+] [SCHEDULER] Consent email sent successfully to {target_row.consent_email}")
+        else:
+            logger.error(f"[!] [SCHEDULER] Failed to send consent email to {target_row.consent_email}")
+
+    return success
 
 
 def _execute_scheduled_scan(job_id, force_run=False):
@@ -244,6 +397,28 @@ def _execute_scheduled_scan(job_id, force_run=False):
     # 5. Dispatch each target × config combination
     for target_row in targets:
         target = target_row.target_url
+        
+        # --- [GOVERNANCE & CONSENT CHECK] ---
+        if target_row.requires_consent:
+            consent_granted = _check_scan_consent(job, target_row, profile, user)
+            if not consent_granted:
+                logger.info(f"[*] [SCHEDULER] Scan deferred for {target} — awaiting consent from {target_row.consent_email}")
+                continue
+            else:
+                # IMPORTANT: Invalidate the token after it has been used once.
+                # This ensures the user is asked for consent again for the next recurring cycle.
+                from models.scheduler_models import ScanConsentToken
+                used_token = ScanConsentToken.query.filter_by(
+                    job_id=job.id, 
+                    target_id=target_row.id, 
+                    status='approved'
+                ).first()
+                if used_token:
+                    used_token.status = 'expired'
+                    db.session.commit()
+                    logger.info(f"[+] [SCHEDULER] Consent token for {target} marked as used/expired.")
+        # ------------------------------------
+
         for config_row in configs:
             module = config_row.module
             config = json.loads(config_row.config_json) if config_row.config_json else {}
@@ -741,17 +916,27 @@ def reload_all_jobs(app):
             from models.scheduler_models import ScheduledScanJob
             enabled_jobs = ScheduledScanJob.query.filter_by(is_enabled=True).all()
 
+            # Build the set of deterministic IDs we EXPECT to exist
+            expected_ids = {f"scheduled_scan_{j.id}" for j in enabled_jobs}
+            expected_ids.add('consent_watchdog')
+
+            # Purge any orphaned APScheduler jobs (stale UUID-suffixed ones from old restarts)
+            for aps_job in _scheduler.get_jobs():
+                if aps_job.id.startswith('scheduled_scan_') and aps_job.id not in expected_ids:
+                    logger.warning(f"[!] [SCHEDULER] Removing orphaned APScheduler job: {aps_job.id}")
+                    try:
+                        _scheduler.remove_job(aps_job.id)
+                    except Exception:
+                        pass
+
             if not enabled_jobs:
                 logger.info("[*] [SCHEDULER] No enabled jobs found to reload.")
                 return
 
             for job_row in enabled_jobs:
                 aps_id = register_job(job_row)
-                if aps_id and aps_id != job_row.apscheduler_job_id:
-                    # Update stored reference
+                if aps_id:
                     job_row.apscheduler_job_id = aps_id
-
-                    # Update next_run_at
                     try:
                         aps_job = _scheduler.get_job(aps_id)
                         if aps_job and aps_job.next_run_time:
@@ -764,4 +949,81 @@ def reload_all_jobs(app):
 
         except Exception as e:
             logger.error(f"[!] [SCHEDULER] Failed to reload jobs: {e}")
+            traceback.print_exc()
+
+
+def _consent_watchdog():
+    """
+    Background task that monitors upcoming jobs and sends consent emails 
+    30 minutes before their scheduled execution.
+    """
+    global _app, _scheduler
+    if not _app or not _scheduler:
+        return
+
+    with _app.app_context():
+        try:
+            from models.scheduler_models import ScheduledScanJob, ProfileTarget, ScanProfile
+            import datetime as dt
+
+            # 1. Update next_run_at for all active jobs from APScheduler state
+            # This ensures our DB query is accurate
+            active_jobs = ScheduledScanJob.query.filter_by(is_enabled=True).all()
+            for job in active_jobs:
+                if job.apscheduler_job_id:
+                    aps_job = _scheduler.get_job(job.apscheduler_job_id)
+                    if aps_job and aps_job.next_run_time:
+                        job.next_run_at = aps_job.next_run_time.replace(tzinfo=None)
+                        logger.debug(f"[*] [SCHEDULER] Sync: Job {job.id} next run at {job.next_run_at}")
+            db.session.commit()
+
+            # 2. Find jobs starting in the next 30-31 minutes
+            now = datetime.now(IST).replace(tzinfo=None)
+            window_start = now + dt.timedelta(minutes=0)
+            window_end = now + dt.timedelta(minutes=31)
+            
+            logger.debug(f"[*] [SCHEDULER] Watchdog run at {now} (Window: {window_start} to {window_end})")
+
+            upcoming_jobs = ScheduledScanJob.query.filter(
+                ScheduledScanJob.is_enabled == True,
+                ScheduledScanJob.schedule_type != 'once'
+            ).all()
+
+            matched_jobs = []
+            for job in upcoming_jobs:
+                if job.next_run_at:
+                    is_in_window = window_start <= job.next_run_at <= window_end
+                    logger.debug(f"[*] [SCHEDULER] Job {job.id} next_run={job.next_run_at} | window=[{window_start} to {window_end}] | match={is_in_window}")
+                    if is_in_window:
+                        matched_jobs.append(job)
+
+            if matched_jobs:
+                logger.info(f"[*] [SCHEDULER] Found {len(matched_jobs)} upcoming jobs in window.")
+            
+            for job in matched_jobs:
+                # Get targets requiring consent
+                targets = ProfileTarget.query.filter_by(profile_id=job.profile_id, requires_consent=True).all()
+                logger.info(f"[*] [SCHEDULER] Job {job.id} has {len(targets)} targets requiring consent.")
+                
+                if not targets:
+                    continue
+
+                profile = ScanProfile.query.get(job.profile_id)
+                for target_row in targets:
+                    # Trigger consent request if not already approved/pending
+                    from models.scheduler_models import ScanConsentToken
+                    approved = ScanConsentToken.query.filter_by(
+                        job_id=job.id, 
+                        target_id=target_row.id, 
+                        status='approved'
+                    ).first()
+                    
+                    if not approved:
+                        logger.info(f"[*] [SCHEDULER] Watchdog: Triggering 30m consent request for {target_row.target_url}")
+                        _trigger_consent_request(job, target_row, profile)
+                    else:
+                        logger.info(f"[*] [SCHEDULER] Watchdog: Consent already approved for {target_row.target_url}")
+
+        except Exception as e:
+            logger.error(f"[!] [SCHEDULER] Watchdog error: {e}")
             traceback.print_exc()
