@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      /* --- [BASE RESET & STYLES] --- */
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #0d1117;
+        font-family: 'IBM Plex Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        color: #c9d1d9;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* --- [LAYOUT COMPONENTS] --- */
+      .wrapper {
+        width: 100%;
+        table-layout: fixed;
+        background-color: #0d1117;
+        padding: 40px 20px;
+        box-sizing: border-box;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #161b22;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #30363d;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      }
+      
+      /* --- [HEADER] --- */
+      .header {
+        padding: 40px 30px 30px;
+        text-align: center;
+        background: #0b0f17;
+        background: linear-gradient(180deg, #111827 0%, #161b22 100%);
+      }
+      .header img {
+        width: 64px;
+        height: auto;
+        margin-bottom: 16px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .header h1 {
+        color: #ffffff;
+        font-size: 24px;
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+      }
+      .header-accent {
+        height: 3px;
+        width: 100%;
+        background: #10b981;
+        background: linear-gradient(90deg, #161b22 0%, #10b981 50%, #161b22 100%);
+      }
+      
+      /* --- [BODY CONTENT] --- */
+      .content {
+        padding: 40px 40px 30px;
+      }
+      .content h2 {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+      }
+      .content h2::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 18px;
+        background-color: #10b981;
+        margin-right: 12px;
+        border-radius: 2px;
+      }
+      .content p {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #8b949e;
+        margin-top: 0;
+        margin-bottom: 24px;
+      }
+      .content p strong {
+        color: #c9d1d9;
+        font-weight: 600;
+      }
+      
+      /* --- [CALLOUT NOTE] --- */
+      .note {
+        font-size: 14px;
+        line-height: 1.5;
+        color: #c9d1d9;
+        background-color: rgba(16, 185, 129, 0.08);
+        padding: 16px 20px;
+        border-radius: 0 8px 8px 0;
+        border-left: 4px solid #10b981;
+        margin-bottom: 32px;
+      }
+      .note strong {
+        color: #10b981;
+      }
+      
+      /* --- [FOOTER] --- */
+      .footer {
+        padding: 30px 40px;
+        text-align: center;
+        background-color: #0d1117;
+        border-top: 1px solid #30363d;
+      }
+      .footer p {
+        margin: 0 0 12px 0;
+        font-size: 12px;
+        color: #6e7681;
+        line-height: 1.5;
+      }
+      
+      /* --- [MOBILE RESPONSIVENESS] --- */
+      @media only screen and (max-width: 600px) {
+        .wrapper {
+          padding: 10px;
+        }
+        .content {
+          padding: 30px 20px;
+        }
+        .header {
+          padding: 30px 20px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        <div class="header">
+          <img src="cid:logo_img" alt="NetShieldAI Logo" />
+          <h1>NetShieldAI</h1>
+        </div>
+
+        <div class="header-accent"></div>
+
+        <div class="content">
+          <h2>Welcome to NetShieldAI</h2>
+
+          <p>
+            Hello <strong>{{ user.username }}</strong>,
+          </p>
+
+          <p>Thank you for registering! To complete your account setup and verify your email address, please use the following 6-digit verification code:</p>
+
+          <div style="text-align: center; margin: 35px 0;">
+            <div style="display: inline-block; background-color: #0b0f17; border: 1px solid #10b981; border-radius: 8px; padding: 18px 32px; letter-spacing: 6px; font-size: 34px; font-weight: 800; color: #ffffff; text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);">
+              {{ otp_code }}
+            </div>
+          </div>
+
+          <div class="note">
+            🛡️ <strong>Security Tip:</strong> This code is valid for 15 minutes. Never share this code with anyone.
+          </div>
+
+          <p>If you did not create an account with NetShieldAI, you can safely ignore this email.</p>
+        </div>
+
+        <div class="footer">
+          <p>
+            &copy; {{ current_year }} NetShieldAI. All rights reserved.<br />
+            Secure Infrastructure Monitoring & Defense.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

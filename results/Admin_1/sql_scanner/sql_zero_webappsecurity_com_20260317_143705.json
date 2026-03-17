@@ -1,0 +1,13 @@
+{
+    "target": "http://zero.webappsecurity.com",
+    "scan_time": "2026-03-17 14:37:05",
+    "status": "Completed",
+    "vulnerabilities": [],
+    "database_info": {
+        "dbms": "Unknown",
+        "version": "Unknown",
+        "user": "Unknown",
+        "current_db": "Unknown"
+    },
+    "dumped_data": []
+}

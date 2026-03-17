@@ -22,13 +22,16 @@ ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
+import tempfile
+
 DEFAULT_RESULTS_DIR = os.path.join(PROJECT_ROOT, "results", "zap_scanner")
 
 LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR, exist_ok=True)
 
-TEMP_DIR = os.path.join(BASE_DIR, "temp", "zap")
+# [FIX] Move temp dir outside project root to prevent Flask reloader triggering on heavy writes
+TEMP_DIR = os.path.join(tempfile.gettempdir(), "NetShieldAI", "zap")
 if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR, exist_ok=True)
 
@@ -192,7 +195,7 @@ def predict_risk(vulnerability_name: str, description: str = "", cwe_id: str = N
         return 0.5
 
 # --- Path Helper ---
-def get_output_paths(output_dir=None, target=None):
+def get_output_paths(output_dir=None, target=None, timestamp=None):
     if output_dir:
         base = Path(output_dir)
     else:
@@ -205,9 +208,16 @@ def get_output_paths(output_dir=None, target=None):
             logger.error(f"[!] Error creating directory {base}: {e}")
 
     if target:
-        json_filename = report_manager.generate_report_filename("zap_scanner", target, "json")
-        pdf_filename = report_manager.generate_report_filename("zap_scanner", target, "pdf")
-        xml_filename = report_manager.generate_report_filename("zap_scanner", target, "xml")
+        # Consistency Logic: If a timestamp is provided, use it for all formats.
+        if timestamp:
+            sanitized = report_manager.sanitize_filename(target)
+            json_filename = f"zap_{sanitized}_{timestamp}.json"
+            pdf_filename = f"zap_{sanitized}_{timestamp}.pdf"
+            xml_filename = f"zap_{sanitized}_{timestamp}.xml"
+        else:
+            json_filename = report_manager.generate_report_filename("zap_scanner", target, "json")
+            pdf_filename = report_manager.generate_report_filename("zap_scanner", target, "pdf")
+            xml_filename = report_manager.generate_report_filename("zap_scanner", target, "xml")
     else:
         json_filename = "zap_report.json"
         pdf_filename = "zap_report.pdf"

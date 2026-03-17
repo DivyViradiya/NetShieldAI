@@ -1,4 +1,5 @@
 import subprocess
+import tempfile
 import os
 import sys
 import ctypes
@@ -27,7 +28,7 @@ DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "network_scanner"
 LOG_DIR = BASE_DIR / "logs"
 LOG_FILE = LOG_DIR / "network_agent_log.txt"
 
-TEMP_DIR = BASE_DIR / "Services" / "temp" / "nmap"
+TEMP_DIR = Path(tempfile.gettempdir()) / "NetShieldAI" / "nmap"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- Global State for Process Management (Isolated by user_id) ---
@@ -195,7 +196,7 @@ def is_valid_hostname(hostname):
     return re.match(hostname_regex, clean_host) is not None
 
 # --- PHASE 2: Dynamic Path Helper ---
-def get_output_paths(output_dir=None, target=None):
+def get_output_paths(output_dir=None, target=None, timestamp=None):
     """
     Returns a dictionary of file paths.
     If output_dir is provided (User ID folder), it returns paths in that folder.
@@ -217,8 +218,17 @@ def get_output_paths(output_dir=None, target=None):
     raw_base = base if output_dir else TEMP_DIR
 
     if target:
-        json_filename = report_manager.generate_report_filename("network_scanner", target, "json")
-        pdf_filename = report_manager.generate_report_filename("network_scanner", target, "pdf")
+        # If timestamp is None, generate_report_filename will create a new one.
+        # If we pass a SPECIFIC timestamp (e.g. from the start of the scan), we use that.
+        json_filename = report_manager.generate_report_filename("network_scanner", target, "json", include_timestamp=True if timestamp is None else False)
+        pdf_filename = report_manager.generate_report_filename("network_scanner", target, "pdf", include_timestamp=True if timestamp is None else False)
+        
+        # If timestamp was provided, we need to manually inject it or update generate_report_filename
+        # Let's adjust generate_report_filename to be more flexible
+        if timestamp:
+             stem = f"network_{report_manager.sanitize_filename(target)}_{timestamp}"
+             json_filename = f"{stem}.json"
+             pdf_filename = f"{stem}.pdf"
     else:
         json_filename = "nmap_report.json"
         pdf_filename = "nmap_report.pdf"
@@ -732,7 +742,7 @@ def run_decoy_scan(target_ip, output_dir=None, user_id=None):
     return run_nmap_scan(target_ip, scan_type="decoy", output_dir=output_dir, user_id=user_id)
 
 
-def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_dir=None, user_id=None, timing=4, queue_id=None):
+def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_dir=None, user_id=None, timing=4, queue_id=None, timestamp=None):
     """
     Runs an Nmap scan with the specified parameters using local Nmap installation.
     Supports extended mechanics (Timing, Evasion, Scan Techniques).
@@ -754,7 +764,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     target_ip = resolved_ip
 
     # Get Dynamic Paths
-    paths = get_output_paths(output_dir)
+    paths = get_output_paths(output_dir, target=target_ip, timestamp=timestamp)
 
     # Handle scan types and flags
     flags = []

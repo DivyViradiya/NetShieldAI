@@ -1,4 +1,5 @@
 import subprocess
+import tempfile
 import os
 import sys
 import ctypes
@@ -24,7 +25,7 @@ DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "ssl_scanner"
 # Logs (Shared)
 LOG_FILE = BASE_DIR / "logs" / "ssl_agent_log.txt"
 
-TEMP_DIR = BASE_DIR / "Services" / "temp" / "sslscan"
+TEMP_DIR = Path(tempfile.gettempdir()) / "NetShieldAI" / "sslscan"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- Global State for Process Management (Isolated by user_id) ---
@@ -82,9 +83,8 @@ def is_sslscan_available(user_id=None):
         return False
     return True
 
-# --- PHASE 2: Dynamic Path Helper ---
-
-def get_output_paths(output_dir=None, user_id=None, target=None):
+# --- PATH HELPERS ---
+def get_output_paths(output_dir=None, user_id=None, target=None, timestamp=None):
     """
     Returns a dictionary of file paths based on the output directory.
     Now supports user-specific unique temp files and timestamped reports.
@@ -105,8 +105,14 @@ def get_output_paths(output_dir=None, user_id=None, target=None):
     temp_xml = TEMP_DIR / f"ssl_temp_{user_id if user_id else 'sys'}_{scan_uuid}.xml"
 
     if target:
-        json_filename = report_manager.generate_report_filename("ssl_report", target, "json")
-        pdf_filename = report_manager.generate_report_filename("ssl_report", target, "pdf")
+        if timestamp:
+            sanitized = report_manager.sanitize_filename(target)
+            stem = f"ssl_{sanitized}_{timestamp}"
+            json_filename = f"{stem}.json"
+            pdf_filename = f"{stem}.pdf"
+        else:
+            json_filename = report_manager.generate_report_filename("ssl_report", target, "json")
+            pdf_filename = report_manager.generate_report_filename("ssl_report", target, "pdf")
     else:
         json_filename = "ssl_report.json"
         pdf_filename = "ssl_report.pdf"
@@ -117,12 +123,12 @@ def get_output_paths(output_dir=None, user_id=None, target=None):
         "pdf_report": base / pdf_filename
     }
 
-def save_ssl_json(data, output_dir=None, user_id=None, target=None):
+def save_ssl_json(data, output_dir=None, user_id=None, target=None, timestamp=None):
     """Saves the parsed SSL scan data to a JSON file."""
     if output_dir and isinstance(output_dir, str):
         output_dir = Path(output_dir)
         
-    paths = get_output_paths(output_dir, user_id=user_id, target=target)
+    paths = get_output_paths(output_dir, user_id=user_id, target=target, timestamp=timestamp)
     json_file = paths["json_report"]
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
@@ -219,7 +225,7 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None):
         log(f"[!] An unexpected error occurred during SSL scan: {e}", user_id)
         return None
 
-def parse_ssl_report(report_file, output_dir=None, user_id=None, target=None):
+def parse_ssl_report(report_file, output_dir=None, user_id=None, target=None, timestamp=None):
     """
     Parses an SSLScan XML report file to extract maximum details.
     """
@@ -354,7 +360,7 @@ def parse_ssl_report(report_file, output_dir=None, user_id=None, target=None):
             log(f"[!] ML Re-ranking failed for SSL: {e}", user_id)
 
         log(f"[+] SSLScan report parsed successfully.", user_id, to_console=True)
-        save_ssl_json(scan_summary, output_dir=output_dir, user_id=user_id, target=target)
+        save_ssl_json(scan_summary, output_dir=output_dir, user_id=user_id, target=target, timestamp=timestamp)
         send_sse_event("ssl_report_parsed", scan_summary, user_id=user_id)
         return scan_summary
 

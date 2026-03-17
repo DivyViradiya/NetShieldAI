@@ -1,0 +1,12 @@
+{
+    "target": "http://demo.testfire.net/api/login",
+    "scan_time": "2026-03-17 14:09:42",
+    "vulnerabilities": [],
+    "database_info": {
+        "dbms": "Unknown",
+        "version": "Unknown",
+        "user": "Unknown",
+        "current_db": "Unknown"
+    },
+    "dumped_data": []
+}

@@ -88,7 +88,7 @@ def sanitize_filename(target):
     # Remove trailing/leading underscores
     return clean_target.strip('_')
 
-def log_scan_start(user_id, tool_name, target, scan_type="Standard"):
+def log_scan_start(user_id, tool_name, target, scan_type="Standard", origin="manual"):
     """
     Creates a new ScanLog entry with status 'Running'.
     Returns the ID of the log entry to update later.
@@ -101,7 +101,8 @@ def log_scan_start(user_id, tool_name, target, scan_type="Standard"):
             target=target,
             scan_type=scan_type,
             status="Running",
-            start_time=datetime.utcnow()
+            start_time=datetime.utcnow(),
+            origin=origin
         )
         db.session.add(new_log)
         db.session.commit()
@@ -138,7 +139,7 @@ def log_scan_end(log_id, status="Completed", finding_count=0, critical_count=0, 
     except Exception as e:
         logger.error(f"[!] Error logging scan end: {e}")
 
-def create_full_scan_log(user_id, tool_name, target, duration, finding_count, status="Completed", scan_type="Standard", report_path=None):
+def create_full_scan_log(user_id, tool_name, target, duration, finding_count, status="Completed", scan_type="Standard", report_path=None, origin="manual"):
     """
     For tools that don't support async start/end logging easily, 
     this logs the entire event at once (e.g., for Nmap after it returns).
@@ -159,7 +160,8 @@ def create_full_scan_log(user_id, tool_name, target, duration, finding_count, st
             end_time=end_time,
             duration_seconds=duration,
             finding_count=finding_count,
-            report_path=report_path
+            report_path=report_path,
+            origin=origin
         )
         db.session.add(new_log)
         db.session.commit()

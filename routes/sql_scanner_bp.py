@@ -254,27 +254,14 @@ def trigger_ai_analysis_route():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    # 1. Resolve PDF Path with Fallbacks
-    pdf_path = None
+    # Resolve the latest PDF report for this scanner
+    pdf_path_str = report_manager.find_latest_report(user_dir, "sql_scanner", target=target, extension="pdf")
     
-    if target:
-        paths = sql_scanner.get_output_paths(user_dir, target=target)
-        pdf_path = Path(paths["pdf_report"])
-    
-    # Fallback 1: History search (Recent for this scanner)
-    if not pdf_path or not pdf_path.exists():
-        # Correct scanner name for SQL is 'sql_scanner'
-        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
-    
-    # Fallback 2: Any PDF in the results directory
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
+    if not pdf_path_str:
+        # Fallback to any PDF in the scanner's folder
+        pdf_path_str = report_manager.find_latest_report(user_dir, scanner_name=None, extension="pdf")
 
-    if not pdf_path or not pdf_path.exists():
+    if not pdf_path_str or not os.path.exists(pdf_path_str):
         sql_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
@@ -294,40 +281,22 @@ def get_report_files():
     target = request.args.get('target')
     user_dir = get_user_results_dir()
     
-    # We use the helper from the service to get standard paths
-    paths = sql_scanner.get_output_paths(user_dir, target=target)
-    json_path = paths["json_report"]
-    pdf_path = paths["pdf_report"]
+    latest_json = report_manager.find_latest_report(user_dir, "sql_scanner", target=target, extension="json")
+    latest_pdf = report_manager.find_latest_report(user_dir, "sql_scanner", target=target, extension="pdf")
 
-    json_exists = json_path.exists()
-    pdf_exists = pdf_path.exists()
-
-    # Fallback: Find the most recent reports if the specific ones don't exist
-    if not json_exists:
-        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="json")
-        if history:
-            json_path = Path(history[0]['path'])
-            json_exists = True
-    
-    if not pdf_exists:
-        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
-            pdf_exists = True
-
-    if not json_exists and not pdf_exists:
+    if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     return jsonify({
         "status": "success",
-        "json_report": f"/sql_scanner/get_json_report?target={target}" if target and json_path.exists() else f"/sql_scanner/get_json_report?filename={json_path.name}",
-        "pdf_report": f"/sql_scanner/download_pdf?target={target}" if target and pdf_path.exists() else f"/sql_scanner/download_pdf?filename={pdf_path.name}"
+        "json_report": f"/sql_scanner/get_json_report?target={target}" if target else "/sql_scanner/get_json_report",
+        "pdf_report": f"/sql_scanner/download_pdf?target={target}" if target else "/sql_scanner/download_pdf"
     })
 
 @sql_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
-    """Serves the PDF report dynamically."""
+    """Serves the latest SQL PDF report dynamically."""
     user_dir = get_user_results_dir()
     requested_filename = request.args.get('filename')
     target = request.args.get('target')
@@ -335,14 +304,10 @@ def download_pdf_report():
     if requested_filename:
         filename = secure_filename(requested_filename)
         pdf_path = os.path.join(user_dir, filename)
-    elif target:
-        filename = report_manager.generate_report_filename("sql_scanner", target, "pdf")
-        pdf_path = os.path.join(user_dir, filename)
     else:
-        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner")
-        if not history:
-            return jsonify({"status": "error", "message": "No reports found."}), 404
-        pdf_path = history[0]['path']
+        pdf_path = report_manager.find_latest_report(user_dir, "sql_scanner", target=target, extension="pdf")
+        if not pdf_path:
+             return jsonify({"status": "error", "message": "No SQL PDF report found."}), 404
         filename = os.path.basename(pdf_path)
 
     if not os.path.exists(pdf_path):
@@ -357,29 +322,24 @@ def download_pdf_report():
 @sql_scanner_bp.route('/get_json_report', methods=['GET'])
 @login_required
 def get_json_report_file():
+    """Serves the latest JSON report file for SQL scans."""
     filename = request.args.get('filename')
     target = request.args.get('target')
     user_dir = get_user_results_dir()
     
     if filename:
         filename = secure_filename(filename)
-        json_path = Path(user_dir) / filename
-    elif target:
-        paths = sql_scanner.get_output_paths(user_dir, target=target)
-        json_path = paths["json_report"]
-        filename = json_path.name
+        json_path_str = os.path.join(user_dir, filename)
     else:
-        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="json")
-        if not history:
-            return jsonify({"status": "error", "message": "No JSON reports found."}), 404
-        json_path = Path(history[0]['path'])
-        filename = json_path.name
+        json_path_str = report_manager.find_latest_report(user_dir, "sql_scanner", target=target, extension="json")
+        if json_path_str:
+            filename = os.path.basename(json_path_str)
 
-    if not json_path.exists():
+    if not json_path_str or not os.path.exists(json_path_str):
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
     
     return send_from_directory(
-        directory=str(json_path.parent),
+        directory=os.path.dirname(json_path_str),
         path=filename,
         as_attachment=True
     )
@@ -393,29 +353,23 @@ def get_sql_report_content():
     """
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = sql_scanner.get_output_paths(user_dir, target=target)
-    json_path = paths["json_report"]
+    
+    json_path_str = report_manager.find_latest_report(user_dir, "sql_scanner", target=target, extension="json")
 
-    if not json_path.exists():
-        # Fallback: Find the most recent JSON report for this scanner
-        history = report_manager.get_report_history(user_dir, scanner_name="sql_scanner", extension="json")
-        if history:
-            json_path = Path(history[0]['path'])
-        
-    if not json_path.exists():
+    if not json_path_str or not os.path.exists(json_path_str):
         return jsonify({
             "status": "error",
             "message": "No SQL scan report available. Please run a scan first."
         }), 404
     
     try:
-        with open(json_path, 'r', encoding='utf-8') as f:
+        with open(json_path_str, 'r', encoding='utf-8') as f:
             parsed_summary = json.load(f)
 
         return jsonify({
             "status": "success",
             "content": parsed_summary, 
-            "report_file": json_path.name
+            "report_file": os.path.basename(json_path_str)
         })
     except Exception as e:
         sql_scanner.log(f"[!] Error reading SQL scan report: {e}")

@@ -1,0 +1,13 @@
+{
+    "target": "https://vampi-demo.herokuapp.com/users/v1/login",
+    "scan_time": "2026-03-17 14:32:26",
+    "status": "Failed: page not found (404)",
+    "vulnerabilities": [],
+    "database_info": {
+        "dbms": "Unknown",
+        "version": "Unknown",
+        "user": "Unknown",
+        "current_db": "Unknown"
+    },
+    "dumped_data": []
+}

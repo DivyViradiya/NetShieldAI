@@ -854,7 +854,7 @@ document.addEventListener("DOMContentLoaded", () => {
         data.history.forEach(item => {
           const row = document.createElement('tr');
           // Extract target from filename (scanner_target.pdf)
-          let target = item.filename.split('_').slice(1).join('_').replace('.pdf', '');
+          let target = item.filename.split('_').slice(1).join('_').replace('.pdf', '');          target = target.replace(/_\d{8}_\d{6}$/, '');
           if (!target) target = 'Previous Scan';
           
           row.innerHTML = `

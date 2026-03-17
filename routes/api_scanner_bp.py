@@ -263,27 +263,18 @@ def trigger_ai_analysis_route():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    # 1. Resolve PDF Path with Fallbacks
-    from pathlib import Path
-    pdf_path = None
+    # Resolve the latest PDF report for this scanner
+    pdf_path_str = report_manager.find_latest_report(user_dir, "api_scanner", target=target, extension="pdf")
     
-    if target:
-        paths = api_scanner.get_output_paths(user_dir, target=target)
-        pdf_path = Path(paths["pdf_report"])
+    if not pdf_path_str:
+        # Fallback 1: Broad search for this scanner
+        pdf_path_str = report_manager.find_latest_report(user_dir, scanner_name="api_scanner", extension="pdf")
     
-    # Fallback 1: History search (Recent for this scanner)
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name="api_scanner", extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
-    
-    # Fallback 2: Any PDF in the results directory
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
+    if not pdf_path_str:
+        # Fallback 2: Any PDF in the results folder
+        pdf_path_str = report_manager.find_latest_report(user_dir, scanner_name=None, extension="pdf")
 
-    if not pdf_path or not pdf_path.exists():
+    if not pdf_path_str or not os.path.exists(pdf_path_str):
         api_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
@@ -304,23 +295,17 @@ def trigger_ai_analysis_route():
 @api_scanner_bp.route('/scan_results', methods=['GET'])
 @login_required 
 def get_api_scan_results():
-    from pathlib import Path as _Path
+    """Retrieves the latest JSON scan results for API scans."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = api_scanner.get_output_paths(user_dir, target=target)
-    json_path = paths["json_report"]
+    
+    json_path_str = report_manager.find_latest_report(user_dir, "api_scanner", target=target, extension="json")
 
-    # If the exact path doesn't exist, fall back to the most recent JSON in the directory
-    if not json_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="json")
-        if history:
-            json_path = _Path(history[0]['path'])
-
-    if not json_path.exists():
-        return jsonify({"status": "pending", "message": "No API report available."}), 404
+    if not json_path_str or not os.path.exists(json_path_str):
+        return jsonify({"status": "pending", "message": "No API JSON report available."}), 404
     
     try:
-        with open(json_path, 'r', encoding='utf-8') as f:
+        with open(json_path_str, 'r', encoding='utf-8') as f:
             report_data = json.load(f)
         return jsonify({"status": "success", "data": report_data})
     except Exception as e:
@@ -330,40 +315,27 @@ def get_api_scan_results():
 @api_scanner_bp.route('/report_files', methods=['GET'])
 @login_required
 def get_report_files():
+    """Checks availability of reports."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
+    
+    latest_json = report_manager.find_latest_report(user_dir, "api_scanner", target=target, extension="json")
+    latest_pdf = report_manager.find_latest_report(user_dir, "api_scanner", target=target, extension="pdf")
 
-    # Always search history to handle any filename convention (api_report_*, api_scanner_*, etc.)
-    history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
-
-    if not history:
+    if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
-
-    # Prefer the PDF matching the requested target; fall back to the most recent
-    best_pdf = history[0]
-    if target:
-        for item in history:
-            # Match by filename containing the sanitized target
-            from Services.scan_logger import sanitize_filename
-            if sanitize_filename(target) in item['filename']:
-                best_pdf = item
-                break
-
-    from pathlib import Path as _Path
-    pdf_url = f"/api_scanner/download_pdf?filename={best_pdf['filename']}"
-    json_candidate = _Path(best_pdf['path']).with_suffix('.json')
-    json_url = f"/api_scanner/scan_results" if json_candidate.exists() else None
 
     return jsonify({
         "status": "success",
-        "json_report": json_url,
-        "pdf_report": pdf_url
+        "json_report": f"/api_scanner/scan_results?target={target}" if target else "/api_scanner/scan_results",
+        "pdf_report": f"/api_scanner/download_pdf?target={target}" if target else "/api_scanner/download_pdf"
     })
 
 
 @api_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
+    """Serves the latest API PDF report dynamically."""
     user_dir = get_user_results_dir()
     requested_filename = request.args.get('filename')
     target = request.args.get('target')
@@ -371,14 +343,10 @@ def download_pdf_report():
     if requested_filename:
         filename = secure_filename(requested_filename)
         pdf_path = os.path.join(user_dir, filename)
-    elif target:
-        filename = report_manager.generate_report_filename("api_scanner", target, "pdf")
-        pdf_path = os.path.join(user_dir, filename)
     else:
-        history = report_manager.get_report_history(user_dir, scanner_name="api_scanner")
-        if not history:
-            return jsonify({"status": "error", "message": "No reports found."}), 404
-        pdf_path = history[0]['path']
+        pdf_path = report_manager.find_latest_report(user_dir, "api_scanner", target=target, extension="pdf")
+        if not pdf_path:
+             return jsonify({"status": "error", "message": "No API PDF report found."}), 404
         filename = os.path.basename(pdf_path)
 
     if not os.path.exists(pdf_path):

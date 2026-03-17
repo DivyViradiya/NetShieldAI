@@ -180,39 +180,28 @@ def get_user_pdf_path(scanner_type, target=None):
     
     # NEW LOGIC: Composite Identifier (Matches other blueprints)
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    results_root = os.path.join(base_dir, 'Services', 'results', user_identifier)
+    results_root = os.path.join(base_dir, 'results', user_identifier)
     
-    # Target-specific naming logic
-    sanitized = scan_logger.sanitize_filename(target) if target else None
-    
-    def get_filename(base_name, target_suffix):
-        if target_suffix:
-            return f"{base_name}_{target_suffix}.pdf"
-        return f"{base_name}.pdf"
+    from Services import report_manager
 
-    # 1. Try Specific File First
-    # 1. Configuration Map
+    # Map scanner_type to TWO things:
+    # 1. Subfolder inside results/Username_ID/
+    # 2. Scanner Name parameter for find_latest_report (Matching blueprint calls)
     tool_folder_map = {
-        'nmap': ('network_scanner', 'nmap_report'),
-        'zap': ('zap_scanner', 'zap_report'),
+        'nmap': ('network_scanner', 'network_scanner'),
+        'zap': ('zap_scanner', 'zap_scanner'),
         'ssl': ('ssl_scanner', 'ssl_report'),
         'packet_sniffer': ('packet_sniffer', 'pcap_analysis_report'),
-        'sql': ('sql_scanner', 'sql_report'),
-        'killchain': ('killchain', 'killchain_report'),
+        'sql': ('sql_scanner', 'sql_scanner'),
+        'killchain': ('killchain', 'killchain'),
         'api': ('api_scanner', 'api_report'),
-        'semgrep': ('semgrep_scanner', 'semgrep_report')
-    }
-    
-    # 2. Alternative Fallbacks for non-standardized legacy reports
-    alternative_bases = {
-        'api': ['api_scan_report', 'api_security_report'],
-        'packet_sniffer': ['pcap_analysis_report']
+        'semgrep': ('semgrep_scanner', 'semgrep_scanner')
     }
     
     if scanner_type not in tool_folder_map:
         return None
         
-    folder, base_name = tool_folder_map[scanner_type]
+    folder, scanner_name = tool_folder_map[scanner_type]
     
     # Check "Killchain" having a sub-folder 'reports'
     if scanner_type == 'killchain':
@@ -223,35 +212,11 @@ def get_user_pdf_path(scanner_type, target=None):
     if not os.path.exists(scan_dir):
         return None
         
-    # Attempt 1: Exact Match with Target (High Priority)
-    if sanitized:
-        specific_path = os.path.join(scan_dir, get_filename(base_name, sanitized))
-        if os.path.exists(specific_path):
-            return specific_path
-            
-    # Attempt 2: Generic Fallback (Legacy or non-targeted)
-    generic_path = os.path.join(scan_dir, f"{base_name}.pdf")
-    if os.path.exists(generic_path):
-        return generic_path
-        
-    # Attempt 3: Alternative Generic Bases
-    if scanner_type in alternative_bases:
-        for alt in alternative_bases[scanner_type]:
-            alt_path = os.path.join(scan_dir, f"{alt}.pdf")
-            if os.path.exists(alt_path):
-                return alt_path
-
-    # Attempt 4: Fallback to LATEST PDF in the directory
-    # This is critical if target string mismatch occurs or user just wants "result of last scan"
     try:
-        files = [os.path.join(scan_dir, f) for f in os.listdir(scan_dir) if f.endswith('.pdf')]
-        if files:
-            latest_file = max(files, key=os.path.getmtime)
-            return latest_file
+        return report_manager.find_latest_report(scan_dir, scanner_name=scanner_name, target=target, extension="pdf")
     except Exception as e:
         logger.error(f"Error finding latest PDF in {scan_dir}: {e}")
-
-    return None
+        return None
 
 
 @chatbot_bp.route('/')

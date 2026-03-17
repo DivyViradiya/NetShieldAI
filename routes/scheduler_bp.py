@@ -6,7 +6,9 @@ recipients, and scheduled jobs.
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+IST = ZoneInfo("Asia/Kolkata")
 
 from flask import Blueprint, render_template, jsonify, request
 from flask_login import login_required, current_user
@@ -105,7 +107,7 @@ def update_profile(profile_id):
     if 'is_active' in data:
         profile.is_active = bool(data['is_active'])
 
-    profile.updated_at = datetime.utcnow()
+    profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
 
     return jsonify({"status": "success", "profile": profile.to_dict()})
@@ -163,7 +165,7 @@ def add_config(profile_id):
         display_label=(data.get('display_label') or '').strip() or f"{module.upper()} Config"
     )
     db.session.add(config)
-    profile.updated_at = datetime.utcnow()
+    profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
 
     return jsonify({"status": "success", "config": config.to_dict()}), 201
@@ -192,7 +194,7 @@ def update_config(profile_id, config_id):
     if 'display_label' in data:
         config.display_label = (data['display_label'] or '').strip()
 
-    profile.updated_at = datetime.utcnow()
+    profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
 
     return jsonify({"status": "success", "config": config.to_dict()})
@@ -211,7 +213,7 @@ def delete_config(profile_id, config_id):
         return jsonify({"status": "error", "message": "Config not found."}), 404
 
     db.session.delete(config)
-    profile.updated_at = datetime.utcnow()
+    profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
 
     return jsonify({"status": "success", "message": "Config removed."})
@@ -241,7 +243,7 @@ def add_target(profile_id):
 
     target = ProfileTarget(profile_id=profile.id, target_url=target_url)
     db.session.add(target)
-    profile.updated_at = datetime.utcnow()
+    profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
 
     return jsonify({"status": "success", "target": target.to_dict()}), 201
@@ -260,10 +262,34 @@ def remove_target(profile_id, target_id):
         return jsonify({"status": "error", "message": "Target not found."}), 404
 
     db.session.delete(target)
-    profile.updated_at = datetime.utcnow()
+    profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
 
     return jsonify({"status": "success", "message": "Target removed."})
+
+
+@scheduler_bp.route('/api/profiles/<int:profile_id>/targets/<int:target_id>', methods=['PUT'])
+@login_required
+def update_target(profile_id, target_id):
+    """Update an existing target's URL."""
+    profile, err = _get_profile_or_404(profile_id)
+    if err:
+        return err
+
+    target = ProfileTarget.query.filter_by(id=target_id, profile_id=profile.id).first()
+    if not target:
+        return jsonify({"status": "error", "message": "Target not found."}), 404
+
+    data = request.get_json()
+    target_url = (data.get('target_url') or '').strip()
+    if not target_url:
+        return jsonify({"status": "error", "message": "Target URL is required."}), 400
+
+    target.target_url = target_url
+    profile.updated_at = datetime.now(IST).replace(tzinfo=None)
+    db.session.commit()
+
+    return jsonify({"status": "success", "target": target.to_dict()})
 
 
 # ==========================================
@@ -294,7 +320,7 @@ def add_recipient(profile_id):
 
     recipient = ProfileRecipient(profile_id=profile.id, email=email, role=role)
     db.session.add(recipient)
-    profile.updated_at = datetime.utcnow()
+    profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
 
     return jsonify({"status": "success", "recipient": recipient.to_dict()}), 201
@@ -313,7 +339,7 @@ def remove_recipient(profile_id, recipient_id):
         return jsonify({"status": "error", "message": "Recipient not found."}), 404
 
     db.session.delete(recipient)
-    profile.updated_at = datetime.utcnow()
+    profile.updated_at = datetime.now(IST).replace(tzinfo=None)
     db.session.commit()
 
     return jsonify({"status": "success", "message": "Recipient removed."})
@@ -376,6 +402,8 @@ def create_job():
             return jsonify({"status": "error", "message": "one_shot_at datetime is required for one-shot scheduling."}), 400
         try:
             one_shot_at = datetime.fromisoformat(one_shot_str)
+            if one_shot_at.tzinfo is not None:
+                one_shot_at = one_shot_at.astimezone(IST).replace(tzinfo=None)
         except (ValueError, TypeError):
             return jsonify({"status": "error", "message": "Invalid one_shot_at format. Use ISO format."}), 400
 
@@ -385,7 +413,8 @@ def create_job():
     if schedule_type == 'monthly':
         if cron_day_of_month is None:
             return jsonify({"status": "error", "message": "cron_day_of_month is required for monthly scheduling."}), 400
-        cron_day_of_month = int(cron_day_of_month)
+        # Now stored as string (e.g., "1,15,30")
+        cron_day_of_month = str(cron_day_of_month)
 
     job = ScheduledScanJob(
         profile_id=profile.id,
@@ -471,6 +500,67 @@ def toggle_job(job_id):
     })
 
 
+@scheduler_bp.route('/api/jobs/<int:job_id>', methods=['PUT'])
+@login_required
+def update_job(job_id):
+    """Update an existing scheduled job's parameters."""
+    job = db.session.get(ScheduledScanJob, job_id)
+    if not job:
+        return jsonify({"status": "error", "message": "Job not found."}), 404
+
+    profile, err = _get_profile_or_404(job.profile_id)
+    if err:
+        return err
+
+    data = request.get_json()
+    
+    # Update schedule parameters
+    if 'schedule_type' in data:
+        st = data['schedule_type'].strip().lower()
+        if st in ScheduledScanJob.VALID_SCHEDULE_TYPES:
+            job.schedule_type = st
+            
+    if 'cron_hour' in data: job.cron_hour = int(data['cron_hour'])
+    if 'cron_minute' in data: job.cron_minute = int(data['cron_minute'])
+    if 'cron_day_of_week' in data: job.cron_day_of_week = data['cron_day_of_week']
+    if 'cron_day_of_month' in data: job.cron_day_of_month = str(data['cron_day_of_month'])
+    if 'interval_minutes' in data: job.interval_minutes = data['interval_minutes']
+    if 'cron_expression' in data: job.cron_expression = data['cron_expression']
+    
+    if 'one_shot_at' in data:
+        one_shot_str = data['one_shot_at']
+        if one_shot_str:
+            try:
+                dt = datetime.fromisoformat(one_shot_str)
+                if dt.tzinfo is not None:
+                    dt = dt.astimezone(IST).replace(tzinfo=None)
+                job.one_shot_at = dt
+            except (ValueError, TypeError):
+                pass
+
+    db.session.commit()
+
+    # Re-register with APScheduler if enabled
+    if job.is_enabled:
+        if job.apscheduler_job_id:
+            scheduler_service.unregister_job(job.apscheduler_job_id)
+        
+        aps_id = scheduler_service.register_job(job)
+        if aps_id:
+            job.apscheduler_job_id = aps_id
+            sched = scheduler_service.get_scheduler()
+            if sched:
+                try:
+                    aps_job = sched.get_job(aps_id)
+                    if aps_job and aps_job.next_run_time:
+                        job.next_run_at = aps_job.next_run_time.replace(tzinfo=None)
+                except Exception:
+                    pass
+            db.session.commit()
+
+    return jsonify({"status": "success", "job": job.to_dict()})
+
+
 @scheduler_bp.route('/api/jobs/<int:job_id>', methods=['DELETE'])
 @login_required
 def delete_job(job_id):
@@ -497,7 +587,7 @@ def delete_job(job_id):
 @scheduler_bp.route('/api/jobs/<int:job_id>/history', methods=['GET'])
 @login_required
 def job_history(job_id):
-    """Get past runs for a job — queries ScanLog from the primary DB."""
+    """Get past runs for a job — queries ScanLog from the primary DB with filtering."""
     job = db.session.get(ScheduledScanJob, job_id)
     if not job:
         return jsonify({"status": "error", "message": "Job not found."}), 404
@@ -506,11 +596,61 @@ def job_history(job_id):
     if err:
         return err
 
+    # Filters from query params
+    scanner_type = request.args.get('scanner_type')
+    target_q = request.args.get('target_q')
+    status_filter = request.args.get('status')
+
     # Query ScanLog from primary DB for this user's scans
     from models.models import ScanLog
-    logs = ScanLog.query.filter_by(user_id=current_user.id)\
-        .order_by(ScanLog.start_time.desc())\
-        .limit(20).all()
+    query = ScanLog.query.filter_by(user_id=current_user.id, origin='scheduled')
+
+    if scanner_type:
+        query = query.filter(ScanLog.tool_name.ilike(f"%{scanner_type}%"))
+    if target_q:
+        query = query.filter(ScanLog.target.ilike(f"%{target_q}%"))
+    if status_filter:
+        query = query.filter_by(status=status_filter)
+
+    logs = query.order_by(ScanLog.start_time.desc()).limit(50).all()
+
+    history = [{
+        'id': log.id,
+        'tool_name': log.tool_name,
+        'target': log.target,
+        'status': log.status,
+        'scan_type': log.scan_type,
+        'start_time': log.start_time.isoformat() if log.start_time else None,
+        'end_time': log.end_time.isoformat() if log.end_time else None,
+        'duration': round(log.duration_seconds, 1) if log.duration_seconds else 0,
+        'finding_count': log.finding_count or 0,
+        'has_report': bool(log.report_path),
+    } for log in logs]
+
+    return jsonify({"status": "success", "history": history})
+
+
+@scheduler_bp.route('/api/reports', methods=['GET'])
+@login_required
+def list_all_reports():
+    """Get all past runs across all missions — queries ScanLog from the primary DB with filtering."""
+    # Filters from query params
+    scanner_type = request.args.get('scanner_type')
+    target_q = request.args.get('target_q')
+    status = request.args.get('status')
+
+    # Query ScanLog from primary DB
+    from models.models import ScanLog
+    query = ScanLog.query.filter_by(user_id=current_user.id, origin='scheduled')
+
+    if scanner_type and scanner_type != 'all':
+        query = query.filter(ScanLog.tool_name.ilike(f"%{scanner_type}%"))
+    if target_q:
+        query = query.filter(ScanLog.target.ilike(f"%{target_q}%"))
+    if status and status != 'all':
+        query = query.filter(ScanLog.status == status)
+
+    logs = query.order_by(ScanLog.start_time.desc()).limit(100).all()
 
     history = [{
         'id': log.id,

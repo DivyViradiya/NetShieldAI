@@ -6,7 +6,9 @@ Uses its own SQLite DB (instance/scheduler_db.sqlite3) with user_id referencing
 the primary User table at the application layer (no cross-DB FK constraint).
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+IST = ZoneInfo("Asia/Kolkata")
 from core.extensions import db
 
 
@@ -23,8 +25,8 @@ class ScanProfile(db.Model):
     name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=True)
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None), onupdate=lambda: datetime.now(IST).replace(tzinfo=None))
 
     # Relationships (cascade delete)
     configs = db.relationship('ProfileScanConfig', backref='profile', lazy=True, cascade='all, delete-orphan')
@@ -68,7 +70,7 @@ class ProfileScanConfig(db.Model):
     module = db.Column(db.String(30), nullable=False)  # nmap, zap, ssl, sniffer, sql, semgrep, api, killchain
     config_json = db.Column(db.Text, nullable=True, default='{}')  # JSON string of module-specific params
     display_label = db.Column(db.String(100), nullable=True)  # User-friendly label
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
 
     # Valid modules
     VALID_MODULES = ['nmap', 'zap', 'ssl', 'sniffer', 'sql', 'semgrep', 'api', 'killchain']
@@ -178,7 +180,7 @@ class ProfileTarget(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     profile_id = db.Column(db.Integer, db.ForeignKey('scan_profile.id'), nullable=False)
     target_url = db.Column(db.String(500), nullable=False)
-    added_at = db.Column(db.DateTime, default=datetime.utcnow)
+    added_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
 
     def to_dict(self):
         return {
@@ -201,7 +203,7 @@ class ProfileRecipient(db.Model):
     profile_id = db.Column(db.Integer, db.ForeignKey('scan_profile.id'), nullable=False)
     email = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='technical')  # 'technical' or 'executive'
-    added_at = db.Column(db.DateTime, default=datetime.utcnow)
+    added_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
 
     def to_dict(self):
         return {
@@ -227,7 +229,7 @@ class ScheduledScanJob(db.Model):
     cron_hour = db.Column(db.Integer, default=0)
     cron_minute = db.Column(db.Integer, default=0)
     cron_day_of_week = db.Column(db.String(20), nullable=True)  # mon, tue,fri etc.
-    cron_day_of_month = db.Column(db.Integer, nullable=True)
+    cron_day_of_month = db.Column(db.String(50), nullable=True)
     interval_minutes = db.Column(db.Integer, nullable=True)  # For periodic scans
     cron_expression = db.Column(db.String(100), nullable=True)  # For advanced cron
     one_shot_at = db.Column(db.DateTime, nullable=True)
@@ -235,7 +237,7 @@ class ScheduledScanJob(db.Model):
     last_run_at = db.Column(db.DateTime, nullable=True)
     next_run_at = db.Column(db.DateTime, nullable=True)
     apscheduler_job_id = db.Column(db.String(100), nullable=True, unique=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
 
     VALID_SCHEDULE_TYPES = ['daily', 'weekly', 'monthly', 'once', 'periodic', 'cron']
 

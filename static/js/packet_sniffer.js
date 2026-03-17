@@ -90,21 +90,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function toggleSpinner(button, isLoading) {
         if (!button) return;
-        const textSpan = button.querySelector('.button-text') || button.querySelector('.trigger-text');
-        const spinnerSpan = button.querySelector('.spinner');
-        const caretIcon = button.querySelector('.fa-caret-down') || button.querySelector('.material-symbols-outlined:last-child');
-
+        var spinner = button.querySelector('.spinner');
+        var icon = button.querySelector('.material-symbols-outlined'); 
+        
         if (button.id !== 'snifferAnalyzeReportDropdown') {
             button.disabled = isLoading;
         }
         if (isLoading) {
             button.classList.add('cursor-not-allowed', 'opacity-70');
+            if (spinner) spinner.classList.remove('hidden');
+            if (icon && !icon.textContent.includes('expand_more')) icon.classList.add('hidden'); 
         } else {
             button.classList.remove('opacity-70', 'cursor-not-allowed');
+            if (spinner) spinner.classList.add('hidden');
+            if (icon) icon.classList.remove('hidden');
         }
-        if (textSpan) textSpan.classList.toggle('hidden', isLoading); 
-        if (spinnerSpan) spinnerSpan.classList.toggle('hidden', !isLoading);
-        if (caretIcon) caretIcon.classList.toggle('hidden', isLoading); 
     }
 
     // --- LOG APPEND FUNCTION ---
@@ -877,7 +877,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.history.forEach(item => {
                     const row = document.createElement('tr');
                     // Extract target from filename (scanner_target.pdf)
-                    let target = item.filename.split('_').slice(1).join('_').replace('.pdf', '');
+                    let target = item.filename.split('_').slice(3).join('_').replace('.pdf', '');                    target = target.replace(/_\d{8}_\d{6}$/, '');
                     if (!target) target = 'Previous Scan';
                     
                     row.innerHTML = `

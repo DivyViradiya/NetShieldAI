@@ -10,7 +10,9 @@ import time
 import uuid
 import threading
 import traceback
-from datetime import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
+IST = ZoneInfo("Asia/Kolkata")
 from pathlib import Path
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -50,7 +52,7 @@ def init_scheduler(app, scheduler_db_uri):
             'max_instances': 1,       # Prevent overlapping runs of same job
             'misfire_grace_time': 3600  # Allow up to 1hr late execution
         },
-        timezone='UTC'
+        timezone=IST
     )
 
     _scheduler.start()
@@ -75,12 +77,16 @@ def _build_trigger(job_row):
     if job_row.schedule_type == 'once':
         if not job_row.one_shot_at:
             raise ValueError("one_shot_at is required for 'once' schedule type")
-        return DateTrigger(run_date=job_row.one_shot_at)
+        run_date = job_row.one_shot_at
+        if run_date.tzinfo is None:
+            run_date = run_date.replace(tzinfo=IST)
+        return DateTrigger(run_date=run_date, timezone=IST)
 
     elif job_row.schedule_type == 'daily':
         return CronTrigger(
             hour=job_row.cron_hour or 0,
-            minute=job_row.cron_minute or 0
+            minute=job_row.cron_minute or 0,
+            timezone=IST
         )
 
     elif job_row.schedule_type == 'weekly':
@@ -88,26 +94,28 @@ def _build_trigger(job_row):
         return CronTrigger(
             day_of_week=day_of_week,
             hour=job_row.cron_hour or 0,
-            minute=job_row.cron_minute or 0
+            minute=job_row.cron_minute or 0,
+            timezone=IST
         )
 
     elif job_row.schedule_type == 'monthly':
-        day = job_row.cron_day_of_month or 1
+        day = job_row.cron_day_of_month or '1'
         return CronTrigger(
             day=day,
             hour=job_row.cron_hour or 0,
-            minute=job_row.cron_minute or 0
+            minute=job_row.cron_minute or 0,
+            timezone=IST
         )
 
     elif job_row.schedule_type == 'periodic':
         from apscheduler.triggers.interval import IntervalTrigger
         interval = job_row.interval_minutes or 60
-        return IntervalTrigger(minutes=interval)
+        return IntervalTrigger(minutes=interval, timezone=IST)
 
     elif job_row.schedule_type == 'cron':
         if not job_row.cron_expression:
             raise ValueError("cron_expression is required for 'cron' schedule type")
-        return CronTrigger.from_crontab(job_row.cron_expression)
+        return CronTrigger.from_crontab(job_row.cron_expression, timezone=IST)
 
     else:
         raise ValueError(f"Unknown schedule type: {job_row.schedule_type}")
@@ -228,6 +236,10 @@ def _execute_scheduled_scan(job_id, force_run=False):
 
     import os
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    # NEW: Generate a single timestamp for the entire job run to group findings
+    from Services import report_manager
+    shared_timestamp = report_manager.get_timestamp()
 
     # 5. Dispatch each target × config combination
     for target_row in targets:
@@ -246,14 +258,15 @@ def _execute_scheduled_scan(job_id, force_run=False):
                     config=config,
                     user=user,
                     user_identifier=user_identifier,
-                    base_dir=base_dir
+                    base_dir=base_dir,
+                    timestamp=shared_timestamp
                 )
             except Exception as e:
                 logger.error(f"[!] [SCHEDULER] Error dispatching {module} scan on {target}: {e}")
                 traceback.print_exc()
 
     # 6. Update job metadata
-    job.last_run_at = datetime.utcnow()
+    job.last_run_at = datetime.now(IST).replace(tzinfo=None)
 
     # Compute next run for non-one-shot jobs
     if job.schedule_type != 'once' and _scheduler:
@@ -272,7 +285,7 @@ def _execute_scheduled_scan(job_id, force_run=False):
     logger.info(f"[+] [SCHEDULER] Job {job_id} execution complete.")
 
 
-def _dispatch_module_scan(module, target, config, user, user_identifier, base_dir):
+def _dispatch_module_scan(module, target, config, user, user_identifier, base_dir, timestamp=None):
     """
     Dispatches a scan to the appropriate scanner module.
     Each dispatch runs in a new thread to match the existing concurrency model.
@@ -284,28 +297,28 @@ def _dispatch_module_scan(module, target, config, user, user_identifier, base_di
     from models.models import User as UserModel
 
     if module == 'nmap':
-        _dispatch_nmap(target, config, user, user_identifier, base_dir)
+        _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'zap':
-        _dispatch_zap(target, config, user, user_identifier, base_dir)
+        _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'ssl':
-        _dispatch_ssl(target, config, user, user_identifier, base_dir)
+        _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'sniffer':
-        _dispatch_sniffer(target, config, user, user_identifier, base_dir)
+        _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'sql':
-        _dispatch_sql(target, config, user, user_identifier, base_dir)
+        _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'semgrep':
-        _dispatch_semgrep(target, config, user, user_identifier, base_dir)
+        _dispatch_semgrep(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'api':
-        _dispatch_api(target, config, user, user_identifier, base_dir)
+        _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'killchain':
-        _dispatch_killchain(target, config, user, user_identifier, base_dir)
+        _dispatch_killchain(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     else:
         logger.warning(f"[!] [SCHEDULER] Unknown module: {module}")
@@ -315,7 +328,7 @@ def _dispatch_module_scan(module, target, config, user, user_identifier, base_di
 # Module-specific dispatchers
 # ============================================================
 
-def _dispatch_nmap(target, config, user, user_identifier, base_dir):
+def _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=None):
     """Dispatch an Nmap scan."""
     import os
     from Services import network_scanner, scan_logger, pdf_generator
@@ -338,21 +351,26 @@ def _dispatch_nmap(target, config, user, user_identifier, base_dir):
     primary_db.session.commit()
 
     scan_logger.reset_log_file(user_identifier, "network_scanner")
-    log_id = scan_logger.log_scan_start(user.id, "Nmap", target, scan_type=scan_type)
+    log_id = scan_logger.log_scan_start(user.id, "Nmap", target, scan_type=scan_type, origin="scheduled")
 
     start_time = time.time()
     queue_id = str(uuid.uuid4())
 
+    # IMPORTANT: network_scanner.run_nmap_scan needs to use the same timestamp for its output files.
+    # We pass it to get_output_paths inside run_nmap_scan if we could, 
+    # but here we use it to calculate the paths for the logger and PDF generation.
+    user_paths = network_scanner.get_output_paths(user_dir, target=target, timestamp=timestamp)
+
     result_file = network_scanner.run_nmap_scan(
         target, protocol_type=protocol_type, scan_type=scan_type,
-        output_dir=user_dir, user_id=user_identifier, timing=timing, queue_id=queue_id
+        output_dir=user_dir, user_id=user_identifier, timing=timing, queue_id=queue_id,
+        timestamp=timestamp # Pass timestamp down
     )
 
     duration = time.time() - start_time
     status = "Completed" if result_file else "Failed"
     finding_count = len(network_scanner.get_current_open_ports(user_identifier)) if result_file else 0
 
-    user_paths = network_scanner.get_output_paths(user_dir, target=target)
     scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if result_file else None)
 
     if result_file:
@@ -365,7 +383,7 @@ def _dispatch_nmap(target, config, user, user_identifier, base_dir):
     logger.info(f"[+] [SCHEDULER] Nmap scan on {target} finished: {status}")
 
 
-def _dispatch_zap(target, config, user, user_identifier, base_dir):
+def _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=None):
     """Dispatch a ZAP scan."""
     import os
     from Services import zap_scanner, scan_logger, pdf_generator, report_manager
@@ -388,7 +406,7 @@ def _dispatch_zap(target, config, user, user_identifier, base_dir):
     )
     primary_db.session.commit()
 
-    paths = zap_scanner.get_output_paths(user_dir, target=target)
+    paths = zap_scanner.get_output_paths(user_dir, target=target, timestamp=timestamp)
     xml_path = paths["xml_report"]
     pdf_path = paths["pdf_report"]
     os.makedirs(os.path.dirname(str(xml_path)), exist_ok=True)
@@ -406,18 +424,18 @@ def _dispatch_zap(target, config, user, user_identifier, base_dir):
         if scan_results:
             scan_results["target_url"] = target
             finding_count = len(scan_results.get("findings", []))
-            json_path = zap_scanner.save_json_report(scan_results, user_dir, user_identifier, target=target)
+            json_path = zap_scanner.save_json_report(scan_results, user_dir, user_identifier, target=target, timestamp=timestamp)
             if json_path:
                 try:
                     pdf_generator.create_zap_report_pdf(json_path, str(pdf_path))
                 except Exception as e:
                     logger.error(f"[!] [SCHEDULER] ZAP PDF generation failed: {e}")
 
-    scan_logger.create_full_scan_log(user.id, "ZAP", target, duration, finding_count, status=status, report_path=str(pdf_path) if scan_successful else None)
+    scan_logger.create_full_scan_log(user.id, "ZAP", target, duration, finding_count, status=status, report_path=str(pdf_path) if scan_successful else None, origin="scheduled")
     logger.info(f"[+] [SCHEDULER] ZAP scan on {target} finished: {status}")
 
 
-def _dispatch_ssl(target, config, user, user_identifier, base_dir):
+def _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=None):
     """Dispatch an SSL scan."""
     import os
     from Services import ssl_scanner, scan_logger, pdf_generator
@@ -435,7 +453,7 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir):
     primary_db.session.commit()
 
     scan_logger.reset_log_file(user_identifier, "ssl_scanner")
-    log_id = scan_logger.log_scan_start(user.id, "SSLScan", target, scan_type="Standard")
+    log_id = scan_logger.log_scan_start(user.id, "SSLScan", target, scan_type="Standard", origin="scheduled")
 
     start_time = time.time()
     report_file = ssl_scanner.run_ssl_scan(target, output_dir=user_dir, user_id=user_identifier)
@@ -449,7 +467,8 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir):
         summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_dir, user_id=user_identifier, target=target)
         if summary:
             finding_count = len(summary.get('protocols', [])) + len(summary.get('vulnerabilities', []))
-    user_paths = ssl_scanner.get_output_paths(user_dir, target=target)
+    
+    user_paths = ssl_scanner.get_output_paths(user_dir, target=target, timestamp=timestamp)
     scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if report_file else None)
 
     if report_file:
@@ -461,7 +480,7 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir):
     logger.info(f"[+] [SCHEDULER] SSL scan on {target} finished: {status}")
 
 
-def _dispatch_sniffer(target, config, user, user_identifier, base_dir):
+def _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp=None):
     """Dispatch a packet sniffer capture."""
     import os
     from core.extensions import db as primary_db
@@ -482,40 +501,40 @@ def _dispatch_sniffer(target, config, user, user_identifier, base_dir):
     primary_db.session.commit()
 
     scan_logger.reset_log_file(user_identifier, "packet_sniffer")
-    log_id = scan_logger.log_scan_start(user.id, "Sniffer", target, scan_type="Scheduled")
+    log_id = scan_logger.log_scan_start(user.id, "Sniffer", target, scan_type="Scheduled", origin="scheduled")
 
     start_time = time.time()
     # run_packet_capture handles its own pcap saving
     sniffer_results = packet_sniffer.run_packet_capture(
         target_ip=target,
-        duration=duration_sec,
-        interface=interface,
+        duration_seconds=duration_sec,
+        interface_id=interface,
         user_id=user_identifier
     )
     duration = time.time() - start_time
 
     status = "Completed" if sniffer_results else "Failed"
-    finding_count = len(sniffer_results.get("security_anomaly_report", {}).get("port_scans", [])) if sniffer_results else 0
-
-    json_report = os.path.join(base_dir, 'results', user_identifier, 'packet_sniffer', f"sniffer_report_{target.replace('.','_')}.json")
-    pdf_report = json_report.replace('.json', '.pdf')
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(pdf_report) if sniffer_results else None)
-
+    
+    # Use the same output path helper as the sniffer logic
+    user_paths = packet_sniffer.get_output_paths(user_dir, user_id=user_identifier, target=target, timestamp=timestamp)
+    
+    finding_count = 0
     if sniffer_results:
-        try:
-            # packet_sniffer saves to a fixed place in results/
-            # We need to find where it saved and generate PDF
-            json_report = os.path.join(base_dir, 'results', user_identifier, 'packet_sniffer', f"sniffer_report_{target.replace('.','_')}.json")
-            pdf_report = json_report.replace('.json', '.pdf')
-            if os.path.exists(json_report):
-                pdf_generator.create_packet_sniffer_report_pdf(json_report, pdf_report)
-        except Exception as e:
-            logger.error(f"[!] [SCHEDULER] Sniffer PDF generation failed: {e}")
+        summary_data = packet_sniffer.analyze_pcap_to_json(sniffer_results, target, user_id=user_identifier)
+        if summary_data:
+             finding_count = len(summary_data.get("security_anomaly_report", {}).get("port_scans", []))
+             packet_sniffer.save_json_report(summary_data, output_dir=user_dir, user_id=user_identifier, target=target)
+             try:
+                 pdf_generator.create_sniffer_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
+             except Exception as e:
+                 logger.error(f"[!] [SCHEDULER] Sniffer PDF generation failed: {e}")
+
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if sniffer_results else None)
 
     logger.info(f"[+] [SCHEDULER] Sniffer scheduled capture for {target} finished: {status}")
 
 
-def _dispatch_sql(target, config, user, user_identifier, base_dir):
+def _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=None):
     """Dispatch a SQL injection scan."""
     import os
     from core.extensions import db as primary_db
@@ -534,31 +553,36 @@ def _dispatch_sql(target, config, user, user_identifier, base_dir):
     primary_db.session.commit()
 
     scan_logger.reset_log_file(user_identifier, "sql_scanner")
-    log_id = scan_logger.log_scan_start(user.id, "SQLMap", target, scan_type=scan_type)
+    log_id = scan_logger.log_scan_start(user.id, "SQLMap", target, scan_type=scan_type, origin="scheduled")
 
     start_time = time.time()
     # Ensure target has protocol
     if not target.startswith(('http://', 'https://')):
         target = 'http://' + target
 
-    sql_results = sql_scanner.run_sql_scan(target, scan_type=scan_type, user_id=user_identifier)
+    sql_results_file = sql_scanner.run_sql_scan(target, output_dir=user_dir, scan_mode=scan_type, user_id=user_identifier)
     duration = time.time() - start_time
 
-    status = "Completed" if sql_results else "Failed"
-    finding_count = len(sql_results.get("vulnerabilities", [])) if sql_results else 0
+    status = "Completed" if sql_results_file else "Failed"
+    
+    # Use the same output path helper as the scanner logic
+    user_paths = sql_scanner.get_output_paths(user_dir, target=target, timestamp=timestamp)
+    
+    finding_count = 0
+    if sql_results_file:
+         # Logically finding vulnerabilities involves parsing the result file
+         # For scheduler's purpose, we'll assume we have a way to count or just log completion
+         # In sql_scanner, run_sql_scan returns the parsed JSON path
+         if os.path.exists(sql_results_file):
+             with open(sql_results_file, 'r') as f:
+                 data = json.load(f)
+                 finding_count = len(data.get("vulnerabilities", []))
+             try:
+                 pdf_generator.create_sql_report_pdf(sql_results_file, str(user_paths["pdf_report"]))
+             except Exception as e:
+                 logger.error(f"[!] [SCHEDULER] SQL PDF generation failed: {e}")
 
-    json_path = os.path.join(user_dir, f"sql_report_{target.replace('://','_').replace('/','_').replace('.','_')}.json")
-    pdf_path = json_path.replace('.json', '.pdf')
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(pdf_path) if sql_results else None)
-
-    if sql_results:
-        try:
-            json_path = os.path.join(user_dir, f"sql_report_{target.replace('://','_').replace('/','_').replace('.','_')}.json")
-            pdf_path = json_path.replace('.json', '.pdf')
-            if os.path.exists(json_path):
-                pdf_generator.create_sql_report_pdf(json_path, pdf_path)
-        except Exception as e:
-            logger.error(f"[!] [SCHEDULER] SQL PDF generation failed: {e}")
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if sql_results_file else None)
 
     logger.info(f"[+] [SCHEDULER] SQL scan on {target} finished: {status}")
 
@@ -582,42 +606,55 @@ def _dispatch_semgrep(target, config, user, user_identifier, base_dir):
     primary_db.session.commit()
 
     scan_logger.reset_log_file(user_identifier, "semgrep_scanner")
-    log_id = scan_logger.log_scan_start(user.id, "Semgrep", target, scan_type=ruleset)
+    log_id = scan_logger.log_scan_start(user.id, "Semgrep", target, scan_type=ruleset, origin="scheduled")
 
     start_time = time.time()
     # Semgrep scans local paths or repositories
     semgrep_results = semgrep_scanner.run_semgrep_scan(target, ruleset=ruleset, user_id=user_identifier)
+    log_id = scan_logger.log_scan_start(user.id, "Semgrep", "Source Code", scan_type=ruleset, origin="scheduled")
+
+    start_time = time.time()
+    
+    # Standardize target name for file grouping
+    target_label = "ProjectSource"
+    user_paths = semgrep_scanner.get_output_paths(user_dir, user_id=user_identifier, target=target_label, timestamp=timestamp)
+
+    report_file = semgrep_scanner.run_semgrep_scan(
+        target_input=target, 
+        input_type="zip" if target.endswith('.zip') else "git",
+        output_dir=user_dir,
+        user_id=user_identifier,
+        target=target_label,
+        timestamp=timestamp
+    )
     duration = time.time() - start_time
 
-    status = "Completed" if semgrep_results else "Failed"
-    finding_count = len(semgrep_results.get("findings", [])) if semgrep_results else 0
-
-    json_report = os.path.join(user_dir, f"semgrep_report_{os.path.basename(target).replace('.','_')}.json")
-    pdf_report = json_report.replace('.json', '.pdf')
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(pdf_report) if semgrep_results else None)
-
-    if semgrep_results:
+    status = "Completed" if report_file else "Failed"
+    finding_count = 0
+    if report_file and os.path.exists(report_file):
         try:
-            # We need to find where it saved and generate PDF
-            json_report = os.path.join(user_dir, f"semgrep_report_{os.path.basename(target).replace('.','_')}.json")
-            pdf_report = json_report.replace('.json', '.pdf')
-            if os.path.exists(json_report):
-                pdf_generator.create_semgrep_report_pdf(json_report, pdf_report)
+            with open(report_file, 'r') as f:
+                data = json.load(f)
+                finding_count = data.get('total_findings', 0)
+            pdf_generator.create_semgrep_report_pdf(report_file, str(user_paths["pdf_report"]))
         except Exception as e:
             logger.error(f"[!] [SCHEDULER] Semgrep PDF generation failed: {e}")
 
-    logger.info(f"[+] [SCHEDULER] Semgrep scan on {target} finished: {status}")
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if report_file else None)
+    logger.info(f"[+] [SCHEDULER] Semgrep scan finished: {status}")
 
 
-def _dispatch_api(target, config, user, user_identifier, base_dir):
-    """Dispatch an API scan."""
+def _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=None):
+    """Dispatch an API scanner scan."""
     import os
     from core.extensions import db as primary_db
     from sqlalchemy import update as sa_update
     from models.models import User as UserModel
     from Services import api_scanner, scan_logger, pdf_generator
 
-    scan_mode = config.get('scan_mode', 'quick')
+    definition_url = config.get('definition_url', target)
+    auth_token = config.get('auth_token', None)
+
     user_dir = os.path.join(base_dir, 'results', user_identifier, 'api_scanner')
     os.makedirs(user_dir, exist_ok=True)
 
@@ -628,41 +665,36 @@ def _dispatch_api(target, config, user, user_identifier, base_dir):
     primary_db.session.commit()
 
     scan_logger.reset_log_file(user_identifier, "api_scanner")
-    log_id = scan_logger.log_scan_start(user.id, "API Scanner", target, scan_type=scan_mode)
+    log_id = scan_logger.log_scan_start(user.id, "API Scanner", target, scan_type="Scheduled", origin="scheduled")
 
     start_time = time.time()
-    # API scan requires ZAP daemon usually handled inside run_api_scan
-    api_results = api_scanner.run_api_scan(target, scan_mode=scan_mode, user_id=user_identifier)
+    
+    user_paths = api_scanner.get_output_paths(user_dir, user_id=user_identifier, target=target, timestamp=timestamp)
+    xml_report = str(user_paths["xml_report"])
+    
+    success = api_scanner.run_api_scan(target, definition_url, xml_report, user_identifier, auth_token=auth_token)
     duration = time.time() - start_time
 
-    status = "Completed" if api_results else "Failed"
-    finding_count = len(api_results.get("findings", [])) if api_results else 0
+    status = "Completed" if success else "Failed"
+    finding_count = 0
 
-    json_report = os.path.join(user_dir, f"api_report_{target.replace('://','_').replace('/','_').replace('.','_')}.json")
-    pdf_report = json_report.replace('.json', '.pdf')
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(pdf_report) if api_results else None)
+    if success:
+        report_data = api_scanner.parse_xml_report(xml_report, user_identifier)
+        if report_data:
+            json_path = api_scanner.save_json_report(report_data, user_dir, user_identifier, target=target, timestamp=timestamp)
+            finding_count = len(report_data.get('findings', []))
+            if json_path:
+                try:
+                    pdf_generator.create_api_report_pdf(json_path, str(user_paths["pdf_report"]))
+                except Exception as e:
+                    logger.error(f"[!] [SCHEDULER] API PDF generation failed: {e}")
 
-    if api_results:
-        try:
-            # We need to find where it saved and generate PDF
-            # api_scanner might save as zap_api_report...
-            json_report = os.path.join(user_dir, f"api_report_{target.replace('://','_').replace('/','_').replace('.','_')}.json")
-            pdf_report = json_report.replace('.json', '.pdf')
-            # Wait, api_scanner returns the data. We should save it first or call pdf_generator directly if it takes dict
-            # Most create_..._pdf take source_data which can be a dict. Let's check api_scanner saves JSON too?
-            # Looking at api_scanner.py, it seems it doesn't automatically save JSON.
-            # Let's save it here for consistency.
-            with open(json_report, 'w') as f:
-                json.dump(api_results, f)
-            pdf_generator.create_zap_report_pdf(api_results, pdf_report) # reusing ZAP template as API scan is ZAP based
-        except Exception as e:
-            logger.error(f"[!] [SCHEDULER] API PDF generation failed: {e}")
-
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if success else None)
     logger.info(f"[+] [SCHEDULER] API scan on {target} finished: {status}")
 
 
-def _dispatch_killchain(target, config, user, user_identifier, base_dir):
-    """Dispatch a Kill Chain audit — fully integrated."""
+def _dispatch_killchain(target, config, user, user_identifier, base_dir, timestamp=None):
+    """Dispatch a Kill Chain audit."""
     import os
     from Services.killchain_service import killchain_service
     from Services import scan_logger
@@ -679,12 +711,12 @@ def _dispatch_killchain(target, config, user, user_identifier, base_dir):
     primary_db.session.commit()
 
     scan_logger.reset_log_file(user_identifier, "killchain")
-    log_id = scan_logger.log_scan_start(user.id, "Kill Chain", target, scan_type=f"{profile_name} ({aggression})")
+    log_id = scan_logger.log_scan_start(user.id, "Kill Chain", target, scan_type=f"{profile_name} ({aggression})", origin="scheduled")
 
     scan_id = str(uuid.uuid4())[:8]
     queue_id = f"{user_identifier}::{scan_id}"
 
-    # Run synchronously within the scheduler thread (already in a background thread)
+    # Run synchronously within the scheduler thread
     killchain_service.run_job(
         target=target,
         profile_name=profile_name,
@@ -692,7 +724,8 @@ def _dispatch_killchain(target, config, user, user_identifier, base_dir):
         queue_id=queue_id,
         user_output_dir=user_dir,
         log_id=log_id,
-        app=_app
+        app=_app,
+        timestamp=timestamp # Pass timestamp if service supports it
     )
 
     logger.info(f"[+] [SCHEDULER] Kill Chain audit on {target} completed.")

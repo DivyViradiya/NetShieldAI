@@ -286,27 +286,14 @@ def trigger_ai_analysis_route():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    # 1. Resolve PDF Path with Fallbacks
-    from pathlib import Path
-    pdf_path = None
+    # Resolve the latest PDF report for this scanner
+    pdf_path_str = report_manager.find_latest_report(user_dir, "semgrep_scanner", target=target, extension="pdf")
     
-    if target:
-        paths = semgrep_scanner.get_output_paths(user_dir, target=target)
-        pdf_path = Path(paths["pdf_report"])
-    
-    # Fallback 1: History search (Recent for this scanner)
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name="semgrep_scanner", extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
-    
-    # Fallback 2: Any PDF in the results directory
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
+    if not pdf_path_str:
+        # Fallback to any PDF in the scanner's folder
+        pdf_path_str = report_manager.find_latest_report(user_dir, scanner_name=None, extension="pdf")
 
-    if not pdf_path or not pdf_path.exists():
+    if not pdf_path_str or not os.path.exists(pdf_path_str):
         semgrep_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
@@ -322,42 +309,26 @@ def trigger_ai_analysis_route():
 @semgrep_bp.route('/report_files', methods=['GET'])
 @login_required
 def get_report_files():
-    """Checks availability of reports to enable download buttons."""
+    """Checks availability of reports."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = semgrep_scanner.get_output_paths(user_dir, target=target)
     
-    json_path = paths["parsed_json"]
-    pdf_path = paths["pdf_report"]
+    latest_json = report_manager.find_latest_report(user_dir, "semgrep_scanner", target=target, extension="json")
+    latest_pdf = report_manager.find_latest_report(user_dir, "semgrep_scanner", target=target, extension="pdf")
 
-    # Fallback to latest if specific target not found
-    if not json_path.exists() or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name="semgrep_scanner", extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
-            # Derive JSON path from PDF path
-            json_path = pdf_path.with_suffix('.json')
-            # Extract target from filename to build URLs
-            # semgrep_scanner_target.pdf
-            filename = pdf_path.name
-            target = filename.split('semgrep_scanner_')[1].replace('.pdf', '') if 'semgrep_scanner_' in filename else None
-
-    json_exists = json_path.exists()
-    pdf_exists = pdf_path.exists()
-
-    if not json_exists and not pdf_exists:
+    if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     return jsonify({
         "status": "success",
-        "json_report": f"/semgrep_scanner/get_json_report?target={target}" if json_exists else None,
-        "pdf_report": f"/semgrep_scanner/download_pdf?target={target}" if pdf_exists else None
+        "json_report": f"/semgrep_scanner/get_json_report?target={target}" if target else "/semgrep_scanner/get_json_report",
+        "pdf_report": f"/semgrep_scanner/download_pdf?target={target}" if target else "/semgrep_scanner/download_pdf"
     })
 
 @semgrep_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
-    """Serves the PDF report."""
+    """Serves the latest Semgrep PDF report dynamically."""
     user_dir = get_user_results_dir()
     requested_filename = request.args.get('filename')
     target = request.args.get('target')
@@ -365,14 +336,10 @@ def download_pdf_report():
     if requested_filename:
         filename = secure_filename(requested_filename)
         pdf_path = os.path.join(user_dir, filename)
-    elif target:
-        filename = report_manager.generate_report_filename("semgrep_scanner", target, "pdf")
-        pdf_path = os.path.join(user_dir, filename)
     else:
-        history = report_manager.get_report_history(user_dir, scanner_name="semgrep_scanner")
-        if not history:
-            return jsonify({"status": "error", "message": "No reports found."}), 404
-        pdf_path = history[0]['path']
+        pdf_path = report_manager.find_latest_report(user_dir, "semgrep_scanner", target=target, extension="pdf")
+        if not pdf_path:
+             return jsonify({"status": "error", "message": "No Semgrep PDF report found."}), 404
         filename = os.path.basename(pdf_path)
 
     if not os.path.exists(pdf_path):
@@ -387,18 +354,21 @@ def download_pdf_report():
 @semgrep_bp.route('/get_json_report', methods=['GET'])
 @login_required
 def get_json_report_file():
-    """Serves the JSON report."""
+    """Serves the latest JSON report file for Semgrep scans."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = semgrep_scanner.get_output_paths(user_dir, target=target)
-    json_path = paths["parsed_json"]
+    
+    json_path_str = report_manager.find_latest_report(user_dir, "semgrep_scanner", target=target, extension="json")
 
-    if not json_path.exists():
+    if not json_path_str or not os.path.exists(json_path_str):
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
     
+    filename = os.path.basename(json_path_str)
+    directory = os.path.dirname(json_path_str)
+
     return send_from_directory(
-        directory=str(json_path.parent),
-        path=json_path.name,
+        directory=directory,
+        path=filename,
         as_attachment=True
     )
 
@@ -411,29 +381,23 @@ def get_semgrep_report():
     """
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = semgrep_scanner.get_output_paths(user_dir, target=target)
-    json_path = paths["parsed_json"]
+    
+    json_path_str = report_manager.find_latest_report(user_dir, "semgrep_scanner", target=target, extension="json")
 
-    # Fallback to latest if target not specified or file doesn't exist
-    if not json_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name="semgrep_scanner", extension="json")
-        if history:
-            json_path = Path(history[0]['path'])
-
-    if not json_path.exists():
+    if not json_path_str or not os.path.exists(json_path_str):
         return jsonify({
             "status": "error",
             "message": "No scan report available."
         }), 404
     
     try:
-        with open(json_path, 'r', encoding='utf-8') as f:
+        with open(json_path_str, 'r', encoding='utf-8') as f:
             parsed_summary = json.load(f)
 
         return jsonify({
             "status": "success",
             "content": parsed_summary, 
-            "report_file": json_path.name
+            "report_file": os.path.basename(json_path_str)
         })
     except Exception as e:
         current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"

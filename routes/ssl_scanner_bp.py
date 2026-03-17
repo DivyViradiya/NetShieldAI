@@ -128,6 +128,7 @@ def scan_ssl():
             )
 
         start_time = time.time()
+        timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
         
         # 1. Run the Scan (Generates XML) - Pass user directory
         report_file = ssl_scanner.run_ssl_scan(target_host, output_dir=user_output_dir, user_id=current_user_identifier)
@@ -140,7 +141,7 @@ def scan_ssl():
             status = "Completed"
             # 2. Parse XML and Save JSON
             # Pass user directory so JSON is saved there
-            summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_output_dir, user_id=current_user_identifier, target=target_host)
+            summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_output_dir, user_id=current_user_identifier, target=target_host, timestamp=timestamp)
             if summary:
                 # Count "findings" as combined weak protocols + vulnerabilities
                 finding_count = len(summary.get('protocols', [])) + len(summary.get('vulnerabilities', []))
@@ -150,7 +151,7 @@ def scan_ssl():
                 # 3. Generate PDF Report
                 try:
                     # Get user-specific paths
-                    user_paths = ssl_scanner.get_output_paths(user_output_dir, target=target_host)
+                    user_paths = ssl_scanner.get_output_paths(user_output_dir, target=target_host, timestamp=timestamp)
                     json_path = user_paths["json_report"]
                     pdf_path = user_paths["pdf_report"]
 
@@ -230,27 +231,14 @@ def trigger_ai_analysis_route():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    # 1. Resolve PDF Path with Fallbacks
-    from pathlib import Path
-    pdf_path = None
+    # Resolve the latest PDF report for this scanner
+    pdf_path_str = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="pdf")
     
-    if target:
-        paths = ssl_scanner.get_output_paths(user_dir, target=target)
-        pdf_path = Path(paths["pdf_report"])
-    
-    # Fallback 1: History search (Recent for this scanner)
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name="ssl_report", extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
-    
-    # Fallback 2: Any PDF in the results directory
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
+    if not pdf_path_str:
+        # Fallback to any PDF in the scanner's folder
+        pdf_path_str = report_manager.find_latest_report(user_dir, scanner_name=None, extension="pdf")
 
-    if not pdf_path or not pdf_path.exists():
+    if not pdf_path_str or not os.path.exists(pdf_path_str):
         ssl_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
@@ -269,45 +257,44 @@ def get_report_files():
     """Checks availability of reports to enable the download button."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = ssl_scanner.get_output_paths(user_dir, target=target)
     
-    json_exists = paths["json_report"].exists()
-    pdf_exists = paths["pdf_report"].exists()
+    latest_json = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="json")
+    latest_pdf = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="pdf")
 
-    if not json_exists and not pdf_exists:
+    if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     return jsonify({
         "status": "success",
-        "json_report": f"/ssl_scanner/get_json_report?target={target}" if json_exists else None,
-        "pdf_report": f"/ssl_scanner/download_pdf?target={target}" if pdf_exists else None
+        "json_report": f"/ssl_scanner/get_json_report?target={target}" if target else "/ssl_scanner/get_json_report",
+        "pdf_report": f"/ssl_scanner/download_pdf?target={target}" if target else "/ssl_scanner/download_pdf"
     })
 
 @ssl_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
-    """Serves the PDF report dynamically."""
+    """Serves the latest PDF report for SSL scans."""
     user_dir = get_user_results_dir()
-    
-    # Check if a specific filename is requested
     requested_filename = request.args.get('filename')
-    target = request.args.get('target') # For backward compatibility
+    target = request.args.get('target')
 
     if requested_filename:
         filename = secure_filename(requested_filename)
         pdf_path = os.path.join(user_dir, filename)
-        if not os.path.exists(pdf_path):
-             return jsonify({"status": "error", "message": f"Report {filename} not found."}), 404
-    elif target:
-        filename = report_manager.generate_report_filename("ssl_report", target, "pdf")
-        pdf_path = os.path.join(user_dir, filename)
     else:
-        # Fallback to latest
-        history = report_manager.get_report_history(user_dir, scanner_name="ssl_report")
-        if not history:
-             return jsonify({"status": "error", "message": "No reports found."}), 404
-        pdf_path = history[0]['path']
+        pdf_path = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="pdf")
+        if not pdf_path:
+             return jsonify({"status": "error", "message": "No SSL PDF report found."}), 404
         filename = os.path.basename(pdf_path)
+
+    if not os.path.exists(pdf_path):
+        return jsonify({"status": "error", "message": "PDF report file not found."}), 404
+    
+    return send_from_directory(
+        directory=os.path.dirname(pdf_path),
+        path=filename,
+        as_attachment=True
+    )
 
     if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
@@ -323,18 +310,21 @@ def download_pdf_report():
 @ssl_scanner_bp.route('/get_json_report', methods=['GET'])
 @login_required
 def get_json_report_file():
-    """Serves the JSON report file."""
+    """Serves the latest JSON report file for SSL scans."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    paths = ssl_scanner.get_output_paths(user_dir, target=target)
-    json_path = paths["json_report"]
+    
+    json_path_str = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="json")
 
-    if not json_path.exists():
+    if not json_path_str or not os.path.exists(json_path_str):
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
     
+    filename = os.path.basename(json_path_str)
+    directory = os.path.dirname(json_path_str)
+
     return send_from_directory(
-        directory=str(json_path.parent),
-        path=json_path.name,
+        directory=directory,
+        path=filename,
         as_attachment=True
     )
 
@@ -347,29 +337,23 @@ def get_ssl_report():
     """
     user_dir = get_user_results_dir()
     target = request.args.get('target')
-    paths = ssl_scanner.get_output_paths(user_dir, target=target)
-    json_path = paths["json_report"]
+    
+    json_path_str = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="json")
 
-    if not json_path.exists() and not target:
-        # Fallback to latest JSON
-        history = report_manager.get_report_history(user_dir, scanner_name="ssl_report", extension="json")
-        if history:
-            json_path = Path(history[0]['path'])
-
-    if not json_path.exists():
+    if not json_path_str or not os.path.exists(json_path_str):
         return jsonify({
             "status": "error",
             "message": "No SSL scan report available. Please run a scan first."
         }), 404
     
     try:
-        with open(json_path, 'r', encoding='utf-8') as f:
+        with open(json_path_str, 'r', encoding='utf-8') as f:
             parsed_summary = json.load(f)
 
         return jsonify({
             "status": "success",
             "content": parsed_summary, 
-            "report_file": json_path.name
+            "report_file": os.path.basename(json_path_str)
         })
     except Exception as e:
         user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"

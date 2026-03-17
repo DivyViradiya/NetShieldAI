@@ -1,4 +1,5 @@
 import os
+import tempfile
 import sys
 import json
 import time
@@ -438,7 +439,7 @@ class KillChainService:
         reports_dir.mkdir(parents=True, exist_ok=True)
 
         service_dir = Path(__file__).parent.resolve()
-        temp_dir = service_dir.parent / "Services" / "temp" / "killchain"
+        temp_dir = Path(tempfile.gettempdir()) / "NetShieldAI" / "killchain"
         temp_dir.mkdir(parents=True, exist_ok=True)
 
         # Multi-user unique pcap

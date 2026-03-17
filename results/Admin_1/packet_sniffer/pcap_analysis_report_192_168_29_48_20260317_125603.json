@@ -1,0 +1,73 @@
+{
+    "status": "success",
+    "timestamp": "2026-03-17T07:26:03.043202+00:00",
+    "target_ip": "192.168.29.48",
+    "pcap_file": "D:\\NetShield\\NetShieldAI\\Services\\temp\\sniffer\\capture_Admin_1_feb64af5.pcap",
+    "traffic_summary": {
+        "protocol_distribution": [
+            "===================================================================",
+            "Protocol Hierarchy Statistics",
+            "Filter: ",
+            "",
+            "==================================================================="
+        ],
+        "tcp_conversations": [
+            "================================================================================",
+            "TCP Conversations",
+            "Filter:<No Filter>",
+            "                                                           |       <-      | |       ->      | |     Total     |    Relative    |   Duration   |",
+            "                                                           | Frames  Bytes | | Frames  Bytes | | Frames  Bytes |      Start     |              |",
+            "================================================================================"
+        ],
+        "summary_io": {
+            "total_packets": 0,
+            "total_bytes": 0
+        },
+        "effective_capture_duration_seconds": 0,
+        "average_rate_bps": 0
+    },
+    "application_flow_analysis": {
+        "flows": [],
+        "summary": "Extracted 0 HTTP flows."
+    },
+    "security_anomaly_report": {
+        "port_scans": [],
+        "fragmentation_alerts": [],
+        "web_attacks": [],
+        "summary": "No anomalies."
+    },
+    "packets_analyzed_detail": 0,
+    "dissected_packets": [],
+    "structured_context": {
+        "metadata": {
+            "protocol_distribution": [
+                "===================================================================",
+                "Protocol Hierarchy Statistics",
+                "Filter: ",
+                "",
+                "==================================================================="
+            ],
+            "tcp_conversations": [
+                "================================================================================",
+                "TCP Conversations",
+                "Filter:<No Filter>",
+                "                                                           |       <-      | |       ->      | |     Total     |    Relative    |   Duration   |",
+                "                                                           | Frames  Bytes | | Frames  Bytes | | Frames  Bytes |      Start     |              |",
+                "================================================================================"
+            ],
+            "summary_io": {
+                "total_packets": 0,
+                "total_bytes": 0
+            },
+            "effective_capture_duration_seconds": 0,
+            "average_rate_bps": 0
+        },
+        "anomalies": {
+            "port_scans": [],
+            "fragmentation_alerts": [],
+            "web_attacks": [],
+            "summary": "No anomalies."
+        }
+    },
+    "extracted_features": []
+}

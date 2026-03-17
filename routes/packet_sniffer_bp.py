@@ -313,33 +313,20 @@ def trigger_ai_analysis_route():
     data = request.get_json() or {}
     target = data.get('target')
     # Normalize target
-    if not target or target.lower() == 'none' or target == 'null':
+    if not target or target.lower() in ['none', 'null', 'undefined']:
         target = None
         
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    # 1. Resolve PDF Path with Fallbacks
-    from pathlib import Path
-    pdf_path = None
+    # Resolve the latest PDF report for this scanner
+    pdf_path_str = report_manager.find_latest_report(user_dir, "pcap_analysis_report", target=target, extension="pdf")
     
-    if target:
-        paths = packet_sniffer.get_output_paths(user_dir, target=target)
-        pdf_path = Path(paths["pdf_report"])
-    
-    # Fallback 1: History search (Recent for this scanner)
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name="pcap_analysis_report", extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
-    
-    # Fallback 2: Any PDF in the results directory
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
+    if not pdf_path_str:
+        # Fallback to any PDF in the scanner's folder
+        pdf_path_str = report_manager.find_latest_report(user_dir, scanner_name=None, extension="pdf")
 
-    if not pdf_path or not pdf_path.exists():
+    if not pdf_path_str or not os.path.exists(pdf_path_str):
         packet_sniffer.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
@@ -359,46 +346,24 @@ def get_report_files():
     """Checks availability of reports in user directory."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    if target:
-        paths = packet_sniffer.get_output_paths(user_dir, target=target)
-        json_exists = paths["json_report"].exists()
-        pdf_exists = paths["pdf_report"].exists()
-        pdf_url = f"/packet_sniffer/download_pdf?target={target}" if pdf_exists else None
-        json_url = f"/packet_sniffer/get_json_report?target={target}" if json_exists else None
-    else:
-        pdf_history = report_manager.get_report_history(user_dir, scanner_name="pcap_analysis_report", extension="pdf")
-        json_history = report_manager.get_report_history(user_dir, scanner_name="pcap_analysis_report", extension="json")
+    
+    latest_json = report_manager.find_latest_report(user_dir, "pcap_analysis_report", target=target, extension="json")
+    latest_pdf = report_manager.find_latest_report(user_dir, "pcap_analysis_report", target=target, extension="pdf")
 
-        if pdf_history:
-            pdf_exists = True
-            pdf_filename = pdf_history[0]['filename']
-            pdf_url = f"/packet_sniffer/download_pdf?filename={pdf_filename}"
-        else:
-            pdf_exists = False
-            pdf_url = None
-
-        if json_history:
-            json_exists = True
-            json_filename = json_history[0]['filename']
-            json_url = f"/packet_sniffer/get_json_report?filename={json_filename}"
-        else:
-            json_exists = False
-            json_url = None
-
-    if not json_exists and not pdf_exists:
+    if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     return jsonify({
         "status": "success",
-        "json_report": json_url,
-        "pdf_report": pdf_url
+        "json_report": f"/packet_sniffer/get_json_report?target={target}" if target else "/packet_sniffer/get_json_report",
+        "pdf_report": f"/packet_sniffer/download_pdf?target={target}" if target else "/packet_sniffer/download_pdf"
     })
 
 
 @packet_sniffer_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
-    """Serves the PDF report dynamically from user directory."""
+    """Serves the latest packet sniffer PDF report dynamically."""
     user_dir = get_user_results_dir()
     requested_filename = request.args.get('filename')
     target = request.args.get('target')
@@ -406,14 +371,10 @@ def download_pdf_report():
     if requested_filename:
         filename = secure_filename(requested_filename)
         pdf_path = os.path.join(user_dir, filename)
-    elif target:
-        filename = report_manager.generate_report_filename("pcap_analysis_report", target, "pdf")
-        pdf_path = os.path.join(user_dir, filename)
     else:
-        history = report_manager.get_report_history(user_dir, scanner_name="pcap_analysis_report")
-        if not history:
-             return jsonify({"status": "error", "message": "No reports found."}), 404
-        pdf_path = history[0]['path']
+        pdf_path = report_manager.find_latest_report(user_dir, "pcap_analysis_report", target=target, extension="pdf")
+        if not pdf_path:
+             return jsonify({"status": "error", "message": "No Sniffer PDF report found."}), 404
         filename = os.path.basename(pdf_path)
 
     if not os.path.exists(pdf_path):
@@ -422,38 +383,32 @@ def download_pdf_report():
     try:
         return send_from_directory(os.path.dirname(pdf_path), filename, as_attachment=True, mimetype='application/pdf')
     except Exception as e:
-        packet_sniffer.log(f"[!] Error serving PDF file: {e}", user_identifier)
+        user_id_for_log = f"{secure_filename(current_user.username)}_{current_user.id}"
+        packet_sniffer.log(f"[!] Error serving PDF file: {e}", user_id_for_log)
         return jsonify({"status": "error", "message": "Could not serve PDF file."}), 500
 
 
 @packet_sniffer_bp.route('/get_json_report', methods=['GET'])
 @login_required
 def get_json_report_file():
-    """Serves the JSON analysis report file from user directory."""
+    """Serves the latest JSON analysis report file for packet sniffer."""
     requested_filename = request.args.get('filename')
     target = request.args.get('target')
     user_dir = get_user_results_dir()
 
     if requested_filename:
         filename = secure_filename(requested_filename)
-        json_path = os.path.join(user_dir, filename)
-    elif target:
-        filename = report_manager.generate_report_filename("pcap_analysis_report", target, "json")
-        json_path = os.path.join(user_dir, filename)
+        json_path_str = os.path.join(user_dir, filename)
     else:
-        # Check history endpoint to resolve
-        history = report_manager.get_report_history(user_dir, scanner_name="pcap_analysis_report", extension="json")
-        if not history:
-            return jsonify({"status": "error", "message": "No reports found."}), 404
-        # Extract the correct string from the dict
-        filename = history[0]['filename']
-        json_path = os.path.join(user_dir, filename)
+        json_path_str = report_manager.find_latest_report(user_dir, "pcap_analysis_report", target=target, extension="json")
+        if json_path_str:
+            filename = os.path.basename(json_path_str)
 
-    if not os.path.exists(json_path):
+    if not json_path_str or not os.path.exists(json_path_str):
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
 
     try:
-        with open(json_path, 'r', encoding='utf-8') as f:
+        with open(json_path_str, 'r', encoding='utf-8') as f:
             report_data = json.load(f)
         return jsonify({"status": "success", "report": report_data})
     except Exception as e:

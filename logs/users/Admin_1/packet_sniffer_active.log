@@ -1,1 +1,15 @@
-[2026-03-15 17:29:17] Log stream opened.
+[2026-03-17 12:55:29] Log cleared for new packet_sniffer scan.
+[12:55:29] [*] [*] Starting capture for 192.168.29.48 (30s) User: Admin_1...
+[12:55:30] [*] [*] Auto-detected interface: Wi-Fi
+[12:55:31] [*] [+] Starting capture for host 192.168.29.48 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[12:56:01] [*] [~] Capture time limit reached.
+[12:56:01] [*] [+] Capture finished.
+[12:56:01] [*] EVENT: capture_complete | PAYLOAD: D:\NetShield\NetShieldAI\Services\temp\sniffer\capture_Admin_1_feb64af5.pcap
+[12:56:01] [*] [*] Capture complete. Starting JSON analysis...
+[12:56:02] [*] [+] Statistics extracted. Packets: 0, Duration: 0s
+[12:56:03] [*] [*] Running Security Anomaly Detection...
+[12:56:03] [*] [+] JSON report saved: [FILE_PATH]
+[12:56:05] [*] [+] PDF report generated successfully
+[12:56:05] [*] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[12:56:05] [*] EVENT: analysis_complete | PAYLOAD: {"target_ip": "192.168.29.48", "status": "success"}
+[13:04:26] [*] [!] No target IP provided for capture filter.

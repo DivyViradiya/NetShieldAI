@@ -68,3 +68,115 @@
 [2026-03-15 16:50:08] [+] PDF generated successfully.
 [2026-03-15 16:50:08] SYSTEM_EVENT: READY_FOR_ANALYSIS
 [2026-03-15 16:50:08] [*] Scan, analysis, and prediction complete.
+[2026-03-17 13:04:46] [*] Starting ZAP Quick Scan for http://example.com (User: Admin_1)...
+[2026-03-17 13:04:46] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-17 13:04:46] Instance Config -> Port: 47122 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_47122
+[2026-03-17 13:04:46] Target: http://example.com
+[2026-03-17 13:04:46] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_130446.xml
+[2026-03-17 13:04:46] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 47122 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_47122 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_130446.xml -quickprogress
+[2026-03-17 13:04:47] --- ZAP Output Stream Started ---
+[2026-03-17 13:04:47] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-17 13:04:47] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 47122 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_47122 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_130446.xml -quickprogress
+[2026-03-17 13:09:42] [*] Starting ZAP Quick Scan for http://EXAMPLE.com (User: Admin_1)...
+[2026-03-17 13:09:42] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-17 13:09:42] Instance Config -> Port: 36677 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_36677
+[2026-03-17 13:09:42] Target: http://EXAMPLE.com
+[2026-03-17 13:09:42] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_EXAMPLE_com_20260317_130942.xml
+[2026-03-17 13:09:42] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 36677 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_36677 -quickurl http://EXAMPLE.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_EXAMPLE_com_20260317_130942.xml -quickprogress
+[2026-03-17 13:09:42] --- ZAP Output Stream Started ---
+[2026-03-17 13:09:42] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-17 13:09:42] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 36677 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_36677 -quickurl http://EXAMPLE.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_EXAMPLE_com_20260317_130942.xml -quickprogress
+[2026-03-17 13:14:03] [*] Starting ZAP Quick Scan for http://Example.com (User: Admin_1)...
+[2026-03-17 13:14:03] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-17 13:14:03] Instance Config -> Port: 23892 | Dir: D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_23892
+[2026-03-17 13:14:03] Target: http://Example.com
+[2026-03-17 13:14:03] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_Example_com_20260317_131403.xml
+[2026-03-17 13:14:03] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 23892 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_23892 -quickurl http://Example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_Example_com_20260317_131403.xml -quickprogress
+[2026-03-17 13:14:03] --- ZAP Output Stream Started ---
+[2026-03-17 13:14:03] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-17 13:14:03] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 23892 -dir D:\NetShield\NetShieldAI\Services\temp\zap\user_Admin_1_23892 -quickurl http://Example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_Example_com_20260317_131403.xml -quickprogress
+[2026-03-17 13:20:45] [*] Starting ZAP Quick Scan for http://example.com (User: Admin_1)...
+[2026-03-17 13:20:45] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-17 13:20:45] Instance Config -> Port: 47154 | Dir: D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_47154
+[2026-03-17 13:20:45] Target: http://example.com
+[2026-03-17 13:20:45] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_132045.xml
+[2026-03-17 13:20:45] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 47154 -dir D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_47154 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_132045.xml -quickprogress
+[2026-03-17 13:20:45] --- ZAP Output Stream Started ---
+[2026-03-17 13:20:45] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-17 13:20:45] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 47154 -dir D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_47154 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_132045.xml -quickprogress
+[2026-03-17 13:28:34] [*] Starting ZAP Quick Scan for http://example.com (User: Admin_1)...
+[2026-03-17 13:28:34] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-17 13:28:34] Instance Config -> Port: 19523 | Dir: D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_19523
+[2026-03-17 13:28:34] Target: http://example.com
+[2026-03-17 13:28:34] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_132834.xml
+[2026-03-17 13:28:34] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 19523 -dir D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_19523 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_132834.xml -quickprogress
+[2026-03-17 13:28:34] --- ZAP Output Stream Started ---
+[2026-03-17 13:28:34] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-17 13:28:34] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 19523 -dir D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_19523 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_132834.xml -quickprogress
+[2026-03-17 13:36:52] [*] Starting ZAP Quick Scan for http://Example.com (User: Admin_1)...
+[2026-03-17 13:36:52] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-17 13:36:52] Instance Config -> Port: 13440 | Dir: D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_13440
+[2026-03-17 13:36:52] Target: http://Example.com
+[2026-03-17 13:36:52] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_Example_com_20260317_133652.xml
+[2026-03-17 13:36:52] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 13440 -dir D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_13440 -quickurl http://Example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_Example_com_20260317_133652.xml -quickprogress
+[2026-03-17 13:36:52] --- ZAP Output Stream Started ---
+[2026-03-17 13:36:52] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-17 13:36:52] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 13440 -dir D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_13440 -quickurl http://Example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_Example_com_20260317_133652.xml -quickprogress
+[2026-03-17 13:37:00] ^C
+[2026-03-17 13:37:00] --- End of ZAP Output ---
+[2026-03-17 13:37:00] Error: ZAP process failed. Return code: 3221225786.
+[2026-03-17 13:37:00] Cleaning up temporary ZAP directory: D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_13440
+[2026-03-17 13:37:00] [!] ZAP scan failed for target: http://Example.com.
+[2026-03-17 13:37:59] [*] Starting ZAP Quick Scan for http://example.com (User: Admin_1)...
+[2026-03-17 13:37:59] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-17 13:37:59] Instance Config -> Port: 1533 | Dir: D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_1533
+[2026-03-17 13:37:59] Target: http://example.com
+[2026-03-17 13:37:59] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_133759.xml
+[2026-03-17 13:37:59] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 1533 -dir D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_1533 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_133759.xml -quickprogress
+[2026-03-17 13:37:59] --- ZAP Output Stream Started ---
+[2026-03-17 13:37:59] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-17 13:37:59] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 1533 -dir D:\NetShield\NetShieldAI\temp\zap\user_Admin_1_1533 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_133759.xml -quickprogress
+[2026-03-17 13:41:03] [*] Starting ZAP Quick Scan for http://example.com (User: Admin_1)...
+[2026-03-17 13:41:03] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-17 13:41:03] Instance Config -> Port: 61922 | Dir: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_Admin_1_61922
+[2026-03-17 13:41:03] Target: http://example.com
+[2026-03-17 13:41:03] Report will be saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_134103.xml
+[2026-03-17 13:41:03] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 61922 -dir C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_Admin_1_61922 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_134103.xml -quickprogress
+[2026-03-17 13:41:03] --- ZAP Output Stream Started ---
+[2026-03-17 13:41:03] C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\Divy\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\Divy\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m )
+[2026-03-17 13:41:03] C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -port 61922 -dir C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_Admin_1_61922 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_134103.xml -quickprogress
+[2026-03-17 13:41:14] WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+[2026-03-17 13:41:14] WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+[2026-03-17 13:41:14] WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+[2026-03-17 13:41:14] WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[2026-03-17 13:41:17] Accessing URL
+[2026-03-17 13:41:17] Using traditional spider
+[2026-03-17 13:41:21] Active scanning
+[2026-03-17 13:41:22] [PROGRESS] [=======             ] 37% |
+[2026-03-17 13:41:22] [PROGRESS] [=======             ] 37% /
+[2026-03-17 13:41:23] [PROGRESS] [================    ] 84% -
+[2026-03-17 13:41:23] [PROGRESS] [================    ] 84% \
+[2026-03-17 13:41:24] [PROGRESS] [==================  ] 92% |
+[2026-03-17 13:41:24] [PROGRESS] [====================] 100%
+[2026-03-17 13:41:24] Attack complete
+[2026-03-17 13:41:24] Writing results to D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_134103.xml
+[2026-03-17 13:41:31] --- End of ZAP Output ---
+[2026-03-17 13:41:31] Scan completed successfully!
+[2026-03-17 13:41:31] Cleaning up temporary ZAP directory: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_Admin_1_61922
+[2026-03-17 13:41:31] [+] ZAP scan command finished. Parsing...
+[2026-03-17 13:41:31] Parsing ZAP report: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_134103.xml
+[2026-03-17 13:41:34] Report parsed and enriched successfully.
+[2026-03-17 13:41:34] JSON report saved to: D:\NetShield\NetShieldAI\results\Admin_1\zap_scanner\zap_example_com_20260317_134134.json
+[2026-03-17 13:41:34] [+] JSON report saved.
+[2026-03-17 13:41:34] [*] Generating PDF report...
+[2026-03-17 13:41:38] [+] PDF generated successfully.
+[2026-03-17 13:41:38] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-03-17 13:41:38] [*] Scan, analysis, and prediction complete.

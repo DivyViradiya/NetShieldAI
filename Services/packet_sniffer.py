@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import subprocess
+import tempfile
 import os
 import sys
 import ctypes
@@ -29,7 +30,7 @@ LOG_DIR = BASE_DIR / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # Centralized Temp
-TEMP_DIR = BASE_DIR / "Services" / "temp" / "sniffer"
+TEMP_DIR = Path(tempfile.gettempdir()) / "NetShieldAI" / "sniffer"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- Global State for Process Management (Isolated by user_id) ---
@@ -212,7 +213,7 @@ def get_selected_interface(interface_id=None, user_id=None):
 
 # --- PHASE 2: Dynamic Path Helper ---
 
-def get_output_paths(output_dir=None, user_id=None, target=None):
+def get_output_paths(output_dir=None, user_id=None, target=None, timestamp=None):
     if output_dir:
         base = Path(output_dir)
     else:
@@ -229,8 +230,14 @@ def get_output_paths(output_dir=None, user_id=None, target=None):
     pcap_filename = f"capture_{user_id if user_id else 'sys'}_{scan_uuid}.pcap"
 
     if target:
-        json_filename = report_manager.generate_report_filename("pcap_analysis_report", target, "json")
-        pdf_filename = report_manager.generate_report_filename("pcap_analysis_report", target, "pdf")
+        if timestamp:
+            sanitized = report_manager.sanitize_filename(target)
+            stem = f"sniffer_{sanitized}_{timestamp}"
+            json_filename = f"{stem}.json"
+            pdf_filename = f"{stem}.pdf"
+        else:
+            json_filename = report_manager.generate_report_filename("pcap_analysis_report", target, "json")
+            pdf_filename = report_manager.generate_report_filename("pcap_analysis_report", target, "pdf")
     else:
         json_filename = "pcap_analysis_report.json"
         pdf_filename = "pcap_analysis_report.pdf"

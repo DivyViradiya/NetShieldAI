@@ -3,6 +3,13 @@ let moduleSchemas = {};
 let moduleList = [];
 let draftMissions = []; // [{ module, step, config, target, targetDesc, scheduleType, ... }]
 let activeDraftIndex = -1; // Which draft is currently open in the drawer
+let currentHistoryFilters = {
+    jobId: null,
+    scanner: 'all',
+    target: '',
+    isGlobal: false
+};
+let allProfiles = [];
 
 // ===== Security Utility =====
 const escapeHTML = (str) => {
@@ -106,7 +113,8 @@ async function loadProfiles() {
 
 // ===== Render Mission Canvas =====
 async function renderAll() {
-    const profiles = await loadProfiles();
+    allProfiles = await loadProfiles();
+    const profiles = allProfiles;
     const container = document.getElementById('missionCanvas');
     const emptyState = document.getElementById('emptyState');
 
@@ -169,7 +177,6 @@ function renderMissionCard(p) {
 
     return `
         <div class="mission-card fade-in" id="profile-${p.id}">
-            <div class="mission-status-strip" style="background: ${accentColor}; width: 3px;"></div>
             <div class="mission-header" style="margin-bottom: 0.3rem;">
                 <div style="flex:1; padding-left: 0.4rem;">
                     <div style="display:flex; align-items:center; gap: 0.4rem; margin-bottom: 0.1rem;">
@@ -189,6 +196,9 @@ function renderMissionCard(p) {
             <div class="mission-actions" style="gap: 0.3rem;">
                 <button class="btn-dash btn-danger" onclick="deleteProfile(${p.id})" style="padding: 0 0.5rem;" title="Delete Profile">
                     <span class="material-symbols-outlined" style="font-size:0.8rem;">delete</span>
+                </button>
+                <button class="btn-dash" onclick="editMission(${p.id})" style="padding: 0 0.5rem;" title="Edit Mission">
+                    <span class="material-symbols-outlined" style="font-size:0.8rem;">edit</span>
                 </button>
                 <button class="btn-dash" onclick="openHistoryDrawer(${p.jobs[0]?.id || 0})" ${p.jobs.length === 0 ? 'disabled' : ''} style="flex:1; justify-content:center;">
                     <span class="material-symbols-outlined" style="font-size:0.8rem;">history</span>Logs
@@ -216,33 +226,48 @@ function closeDrawer() {
 }
 
 window.openHistoryDrawer = async function(jobId) {
-    if (!jobId) {
-        toast('No active schedule found for this mission.', 'error');
-        return;
-    }
+    currentHistoryFilters = { jobId, scanner: 'all', target: '', isGlobal: false };
+    await fetchAndRenderHistory();
+};
 
+window.openGlobalReportsDrawer = async function() {
+    currentHistoryFilters = { jobId: null, scanner: 'all', target: '', isGlobal: true };
+    await fetchAndRenderHistory();
+};
+
+async function fetchAndRenderHistory() {
+    const { jobId, scanner, target, isGlobal } = currentHistoryFilters;
     const drawer = document.getElementById('configDrawer');
     const overlay = document.getElementById('drawerOverlay');
     
-    // Set loading state
-    document.getElementById('drawerModuleLabel').textContent = 'Mission Intelligence';
-    document.getElementById('drawerTitle').textContent = 'Mission Logs';
-    document.getElementById('stepBar').innerHTML = ''; // Clear steps
-    document.getElementById('drawerBody').innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:200px; color:var(--neo-text-muted);">
-            <span class="material-symbols-outlined spin" style="font-size:2rem; margin-bottom:1rem;">sync</span>
-            <div style="font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase;">Retrieving Logs...</div>
-        </div>
-    `;
-    document.getElementById('drawerFooter').innerHTML = `
-        <button class="btn-dash" onclick="closeDrawer()" style="width:100%; justify-content:center;">Close</button>
-    `;
-
-    drawer.classList.add('open');
-    overlay.classList.add('open');
+    // Set loading state if not already open
+    if (!drawer.classList.contains('open')) {
+        document.getElementById('drawerModuleLabel').textContent = 'Mission Intelligence';
+        document.getElementById('drawerTitle').textContent = isGlobal ? 'Intelligence Archive' : 'Mission Logs';
+        document.getElementById('stepBar').innerHTML = ''; 
+        document.getElementById('drawerBody').innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:200px; color:var(--neo-text-muted);">
+                <span class="material-symbols-outlined spin" style="font-size:2rem; margin-bottom:1rem;">sync</span>
+                <div style="font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase;">Retrieving Logs...</div>
+            </div>
+        `;
+        document.getElementById('drawerFooter').innerHTML = `
+            <button class="btn-dash" onclick="closeDrawer()" style="width:100%; justify-content:center;">Close</button>
+        `;
+        drawer.classList.add('open');
+        overlay.classList.add('open');
+    }
 
     try {
-        const data = await apiFetch(`${API}/jobs/${jobId}/history`);
+        let url = isGlobal ? `${API}/reports` : `${API}/jobs/${jobId}/history`;
+        const params = new URLSearchParams();
+        if (scanner !== 'all') params.append('scanner_type', scanner);
+        if (target) params.append('target_q', target);
+        
+        const queryString = params.toString();
+        if (queryString) url += `?${queryString}`;
+
+        const data = await apiFetch(url);
         if (data.status === 'success') {
             renderHistory(data.history);
         } else {
@@ -251,29 +276,52 @@ window.openHistoryDrawer = async function(jobId) {
     } catch (e) {
         toast('History retrieval failed', 'error');
     }
-};
+}
 
 function renderHistory(history) {
     const body = document.getElementById('drawerBody');
+    const { scanner, target, isGlobal } = currentHistoryFilters;
+
+    const filterHtml = `
+        <div style="margin-bottom: 1.5rem; background: rgba(255,255,255,0.03); border: 1px solid var(--neo-border); border-radius: 12px; padding: 1rem;">
+            <div style="font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 0.75rem; letter-spacing: 0.05em;">Tactical Filters</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group" style="margin:0;">
+                    <select class="form-input" style="height: 32px; font-size: 0.7rem; padding: 0 0.75rem;" onchange="applyHistoryFilter('scanner', this.value)">
+                        <option value="all" ${scanner === 'all' ? 'selected' : ''}>All Scanners</option>
+                        ${moduleList.map(m => `<option value="${escapeHTML(m)}" ${scanner === m ? 'selected' : ''}>${escapeHTML(m.toUpperCase())}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <input type="text" class="form-input" style="height: 32px; font-size: 0.7rem; padding: 0 0.75rem;" placeholder="Search Target..." value="${escapeHTML(target)}" oninput="applyHistoryFilter('target', this.value)">
+                </div>
+            </div>
+        </div>
+    `;
+
     if (!history || history.length === 0) {
         body.innerHTML = `
+            ${filterHtml}
             <div style="text-align:center; padding: 4rem 2rem; color:var(--neo-text-muted);">
                 <span class="material-symbols-outlined" style="font-size:3rem; margin-bottom:1rem; opacity:0.2;">history</span>
-                <p style="font-size:0.8rem; font-family:var(--font-mono);">No execution logs found for this mission.</p>
+                <p style="font-size:0.8rem; font-family:var(--font-mono);">No execution logs match your filters.</p>
             </div>
         `;
         return;
     }
 
     const logsHtml = history.map(log => {
-        const statusColor = log.status === 'Completed' ? 'var(--neo-green)' : 'var(--neo-red)';
         const dateStr = new Date(log.start_time).toLocaleString();
+        const accentCol = COLOR_MAP[log.tool_name.toLowerCase()] || 'var(--neo-blue)';
         
         return `
-            <div class="log-entry" style="background: rgba(255,255,255,0.02); border: 1px solid var(--neo-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem;">
+            <div class="log-entry" style="background: rgba(255,255,255,0.02); border: 1px solid var(--neo-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; position: relative; overflow: hidden;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
                     <div>
-                        <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:${COLOR_MAP[log.tool_name.toLowerCase()] || 'var(--neo-blue)'}; text-transform:uppercase;">${log.tool_name} Scan</div>
+                        <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:${accentCol}; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
+                            <span class="material-symbols-outlined" style="font-size:0.9rem;">${ICON_MAP[log.tool_name.toLowerCase()] || 'terminal'}</span>
+                            ${log.tool_name}
+                        </div>
                         <div style="font-size:0.65rem; color:var(--neo-text-muted); font-family:var(--font-mono); margin-top:2px;">${dateStr}</div>
                     </div>
                     <span class="status-pill ${log.status === 'Completed' ? 'active' : 'paused'}" style="font-size:0.55rem; padding: 2px 6px;">
@@ -281,9 +329,9 @@ function renderHistory(history) {
                     </span>
                 </div>
                 
-                <div style="font-size:0.72rem; color:var(--neo-text-muted); margin-bottom:0.75rem; border-left:2px solid var(--neo-border); padding-left:0.75rem; font-family:var(--font-mono);">
-                    Target: ${log.target}<br>
-                    Type: ${log.scan_type || 'Discovery'}
+                <div style="font-size:0.72rem; color:var(--neo-text-muted); margin-bottom:0.75rem; border-left:2px solid var(--neo-border); padding-left:0.75rem; font-family:var(--font-mono); word-break: break-all;">
+                    Target: <span style="color:var(--neo-text-main)">${escapeHTML(log.target)}</span><br>
+                    Type: <span style="color:var(--neo-text-main)">${escapeHTML(log.scan_type || 'Discovery')}</span>
                 </div>
 
                 <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem; font-family:var(--font-mono); font-size:0.65rem;">
@@ -292,14 +340,14 @@ function renderHistory(history) {
                 </div>
 
                 ${log.has_report ? `
-                    <button class="btn-dash" onclick="downloadReport(${log.id})" style="width:100%; justify-content:center; background:var(--neo-blue); color:#000; border:none; height:32px;">
-                        <span class="material-symbols-outlined" style="font-size:1rem;">download</span>
-                        Download Intelligence Report
+                    <button class="btn-dash btn-solid" onclick="downloadReport(${log.id})" style="width:100%; justify-content:center; background:var(--neo-blue); color:#000; border:none; height:36px; font-weight:700; border-radius:8px; margin-top:8px; box-shadow: 0 4px 12px rgba(59,130,246,0.3);">
+                        <span class="material-symbols-outlined" style="font-size:1.1rem; margin-right:8px;">cloud_download</span>
+                        Download Report
                     </button>
                 ` : `
-                    <button class="btn-dash" disabled style="width:100%; justify-content:center; height:32px; opacity:0.5; cursor:not-allowed;">
-                        <span class="material-symbols-outlined" style="font-size:1rem;">description</span>
-                        Report Not Available
+                    <button class="btn-dash" disabled style="width:100%; justify-content:center; height:36px; opacity:0.3; cursor:not-allowed; border-radius:8px; margin-top:8px;">
+                        <span class="material-symbols-outlined" style="font-size:1.1rem; margin-right:8px;">block</span>
+                        Report Missing
                     </button>
                 `}
             </div>
@@ -307,10 +355,22 @@ function renderHistory(history) {
     }).join('');
 
     body.innerHTML = `
-        <div class="phase-heading">Execution History</div>
-        ${logsHtml}
+        <div class="phase-heading">${isGlobal ? 'Intelligence Archive' : 'Mission History'}</div>
+        ${filterHtml}
+        <div style="display: flex; flex-direction: column;">
+            ${logsHtml}
+        </div>
     `;
 }
+
+let historyFilterTimeout;
+window.applyHistoryFilter = function(key, val) {
+    currentHistoryFilters[key] = val;
+    clearTimeout(historyFilterTimeout);
+    historyFilterTimeout = setTimeout(() => {
+        fetchAndRenderHistory();
+    }, key === 'target' ? 400 : 0);
+};
 
 function renderDrawer() {
     const i = activeDraftIndex;
@@ -318,8 +378,8 @@ function renderDrawer() {
     const d = draftMissions[i];
 
     // Header labels
-    document.getElementById('drawerModuleLabel').textContent = d.module.toUpperCase() + ' Module';
-    document.getElementById('drawerTitle').textContent = d.profileName || `Draft Mission`;
+    document.getElementById('drawerModuleLabel').textContent = d.isEdit ? 'Edit Mission' : (d.module.toUpperCase() + ' Module');
+    document.getElementById('drawerTitle').textContent = d.profileName || (d.isEdit ? 'Update Mission' : `Draft Mission`);
 
     // Step bar (5 steps total)
     const stepLabels = ['Target', 'Params', 'Schedule', 'Identify', 'Review'];
@@ -358,7 +418,7 @@ function renderDrawer() {
                 </button>` : ''}
             <button class="btn-dash btn-primary" style="background: ${isLast ? 'var(--neo-green)' : 'var(--neo-blue)'}; color: #000;" id="drawerNextBtn" onclick="${isLast ? `saveDraft(${i})` : `tryAdvanceStep(${i}, ${d.step + 1})`}">
                 ${isLast
-                    ? '<span class="material-symbols-outlined" style="font-size:0.9rem;">rocket_launch</span>Deploy Mission'
+                    ? `<span class="material-symbols-outlined" style="font-size:0.9rem;">rocket_launch</span>${d.isEdit ? 'Update Mission' : 'Deploy Mission'}`
                     : 'Next<span class="material-symbols-outlined" style="font-size:0.9rem;">arrow_forward</span>'}
             </button>
         </div>
@@ -411,11 +471,44 @@ function buildStepContent(d, i) {
         // Phase 3: Scheduling — full 6-option support
         let extraFields = '';
 
-        if (d.scheduleType === 'periodic') {
+        // Run Once variants
+        if (d.scheduleType === 'once') {
             extraFields = `
                 <div class="form-group fade-in">
-                    <label class="form-label">Interval (minutes)</label>
-                    <input type="number" class="form-input" value="${d.intervalMins}" min="1" oninput="window.updateDraftState(${i}, 'intervalMins', parseInt(this.value)||60)">
+                    <label class="form-label">Execution Timing</label>
+                    <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:0.5rem;">
+                        <select class="form-input" onchange="window.updateDraftState(${i}, 'onceType', this.value); renderDrawer();">
+                            <option value="immediate" ${d.onceType === 'immediate' ? 'selected' : ''}>Immediate</option>
+                            <option value="delayed"   ${d.onceType === 'delayed'   ? 'selected' : ''}>After Delay</option>
+                            <option value="specific"  ${d.onceType === 'specific'  ? 'selected' : ''}>Specific Date/Time</option>
+                        </select>
+                        ${d.onceType === 'delayed' ? `
+                            <div class="flex gap-2">
+                                <input type="number" class="form-input" value="${d.delayVal || 1}" min="1" oninput="window.updateDraftState(${i}, 'delayVal', parseInt(this.value)||1)">
+                                <select class="form-input" onchange="window.updateDraftState(${i}, 'delayUnit', this.value)">
+                                    <option value="min" ${d.delayUnit==='min'?'selected':''}>Min</option>
+                                    <option value="hour" ${d.delayUnit==='hour'?'selected':''}>Hrs</option>
+                                </select>
+                            </div>
+                        ` : ''}
+                        ${d.onceType === 'specific' ? `
+                            <input type="datetime-local" class="form-input" value="${d.specificTime || ''}" oninput="window.updateDraftState(${i}, 'specificTime', this.value)">
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        } else if (d.scheduleType === 'periodic') {
+            extraFields = `
+                <div class="form-group fade-in">
+                    <label class="form-label">Repeat Every</label>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="number" class="form-input" value="${d.intervalVal || 60}" min="1" oninput="window.updateDraftState(${i}, 'intervalVal', parseInt(this.value)||60)">
+                        <select class="form-input" onchange="window.updateDraftState(${i}, 'intervalUnit', this.value)">
+                            <option value="min" ${d.intervalUnit==='min'?'selected':''}>Minutes</option>
+                            <option value="hour" ${d.intervalUnit==='hour'?'selected':''}>Hours</option>
+                            <option value="day" ${d.intervalUnit==='day'?'selected':''}>Days</option>
+                        </select>
+                    </div>
                 </div>
             `;
         } else if (d.scheduleType === 'daily') {
@@ -454,12 +547,27 @@ function buildStepContent(d, i) {
                 </div>
             `;
         } else if (d.scheduleType === 'monthly') {
+            // Multi-day selector for monthly
+            const monthDays = [];
+            for (let j=1; j<=31; j++) monthDays.push(j);
+            const isSelected = (day) => (d.cronDayOfMonthArr || [1]).includes(day);
+            
+            const dayGrid = monthDays.map(day => `
+                <div onclick="window.toggleMonthDay(${i}, ${day}, this)" 
+                     class="day-chip ${isSelected(day) ? 'selected' : ''}" 
+                     style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 0.65rem;">
+                    ${day}
+                </div>
+            `).join('');
+
             extraFields = `
                 <div class="form-group fade-in">
-                    <label class="form-label">Day of Month (1–31)</label>
-                    <input type="number" class="form-input" value="${d.cronDayOfMonth}" min="1" max="31" oninput="window.updateDraftState(${i}, 'cronDayOfMonth', parseInt(this.value)||1)">
+                    <label class="form-label">Days of Month</label>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 5px;">
+                        ${dayGrid}
+                    </div>
                 </div>
-                <div class="flex gap-2 fade-in">
+                <div class="flex gap-2 fade-in" style="margin-top: 1rem;">
                     <div class="form-group" style="flex:1;">
                         <label class="form-label">Hour (0–23)</label>
                         <input type="number" class="form-input" value="${d.cronHour}" min="0" max="23" oninput="window.updateDraftState(${i}, 'cronHour', parseInt(this.value)||0)">
@@ -483,14 +591,14 @@ function buildStepContent(d, i) {
         return `
             <div class="phase-heading">Phase 03 — Scheduling</div>
             <div class="form-group">
-                <label class="form-label">Pattern</label>
+                <label class="form-label">Frequency / Pattern</label>
                 <select class="form-input" onchange="window.updateDraftSchedule(${i}, this.value)">
-                    <option value="once"     ${d.scheduleType==='once'     ? 'selected':''}>Run Once (Now)</option>
-                    <option value="periodic" ${d.scheduleType==='periodic' ? 'selected':''}>Periodic Interval</option>
-                    <option value="daily"    ${d.scheduleType==='daily'    ? 'selected':''}>Daily</option>
-                    <option value="weekly"   ${d.scheduleType==='weekly'   ? 'selected':''}>Weekly</option>
-                    <option value="monthly"  ${d.scheduleType==='monthly'  ? 'selected':''}>Monthly</option>
-                    <option value="cron"     ${d.scheduleType==='cron'     ? 'selected':''}>Advanced Cron</option>
+                    <option value="once"     ${d.scheduleType==='once'     ? 'selected':''}>Run Once (Snapshot)</option>
+                    <option value="periodic" ${d.scheduleType==='periodic' ? 'selected':''}>Continuous Interval</option>
+                    <option value="daily"    ${d.scheduleType==='daily'    ? 'selected':''}>Daily Cycle</option>
+                    <option value="weekly"   ${d.scheduleType==='weekly'   ? 'selected':''}>Weekly Cycle</option>
+                    <option value="monthly"  ${d.scheduleType==='monthly'  ? 'selected':''}>Monthly Cycle</option>
+                    <option value="cron"     ${d.scheduleType==='cron'     ? 'selected':''}>Advanced Orchestration (Cron)</option>
                 </select>
             </div>
             ${extraFields}
@@ -565,14 +673,22 @@ function buildStepContent(d, i) {
 
 function buildScheduleSummary(d) {
     switch (d.scheduleType) {
-        case 'once':     return 'Run Once (immediately)';
-        case 'periodic': return `Every ${d.intervalMins || 60} minutes`;
+        case 'once':     
+            if (d.onceType === 'immediate') return 'Immediate Execution';
+            if (d.onceType === 'delayed') return `Run after ${d.delayVal} ${d.delayUnit}`;
+            if (d.onceType === 'specific') return `Scheduled at ${d.specificTime ? new Date(d.specificTime).toLocaleString() : '??'}`;
+            return 'Run Once';
+        case 'periodic': 
+            return `Every ${d.intervalVal} ${d.intervalUnit}${d.intervalVal > 1 ? 's' : ''}`;
         case 'daily':    return `Daily at ${String(d.cronHour||0).padStart(2,'0')}:${String(d.cronMinute||0).padStart(2,'0')}`;
         case 'weekly': {
             const days = (d.cronDayOfWeek || []).map(v => DAYS[DAY_VALUES.indexOf(v)]).join(', ') || 'Mon';
             return `Weekly on ${days} at ${String(d.cronHour||0).padStart(2,'0')}:${String(d.cronMinute||0).padStart(2,'0')}`;
         }
-        case 'monthly':  return `Monthly on day ${d.cronDayOfMonth||1} at ${String(d.cronHour||0).padStart(2,'0')}:${String(d.cronMinute||0).padStart(2,'0')}`;
+        case 'monthly':  {
+            const days = (d.cronDayOfMonthArr || [1]).join(', ');
+            return `Monthly on days ${days} at ${String(d.cronHour||0).padStart(2,'0')}:${String(d.cronMinute||0).padStart(2,'0')}`;
+        }
         case 'cron':     return `Cron: ${d.cronExpr || '0 0 * * *'}`;
         default:         return d.scheduleType;
     }
@@ -588,8 +704,15 @@ function validateCurrentStep(d) {
             break;
         case 3:
             if (d.scheduleType === 'periodic') {
-                if (!d.intervalMins || d.intervalMins < 1) {
-                    return { field: 'intervalMins', message: 'Interval must be at least 1 minute.' };
+                if (!d.intervalVal || d.intervalVal < 1) {
+                    return { field: 'intervalVal', message: 'Interval must be at least 1 unit.' };
+                }
+            } else if (d.scheduleType === 'once' && d.onceType === 'specific') {
+                if (!d.specificTime) {
+                    return { field: 'specificTime', message: 'Please select a specific execution time.' };
+                }
+                if (new Date(d.specificTime) <= new Date()) {
+                    return { field: 'specificTime', message: 'Execution time must be in the future.' };
                 }
             } else if (d.scheduleType === 'cron') {
                 if (!d.cronExpr || !d.cronExpr.trim()) {
@@ -772,17 +895,75 @@ function deployDraft(mod) {
         target: '',
         targetDesc: '',
         scheduleType: 'once',
-        intervalMins: 60,
+        onceType: 'immediate', // immediate, delayed, specific
+        delayVal: 5,
+        delayUnit: 'min',      // min, hour
+        specificTime: '',
+        intervalVal: 60,
+        intervalUnit: 'min',   // min, hour, day
         cronHour: 0,
         cronMinute: 0,
         cronDayOfWeek: ['mon'],
-        cronDayOfMonth: 1,
+        cronDayOfMonthArr: [1],
         cronExpr: '0 0 * * *',
         profileName: '',
         profileDesc: ''
     });
     openDrawer(newIndex);
     toast(`DRAFT: ${mod.toUpperCase()} — configure in drawer`, 'success');
+}
+
+// ===== Edit Existing Mission =====
+function editMission(profileId) {
+    const p = allProfiles.find(x => x.id === profileId);
+    if (!p) return;
+
+    const config = p.configs[0] || {};
+    const target = p.targets[0] || {};
+    const job = p.jobs[0] || {};
+    
+    // Convert DB job state to Draft state
+    let onceType = 'immediate';
+    let delayVal = 5;
+    let delayUnit = 'min';
+    let specificTime = '';
+
+    if (job.schedule_type === 'once' && job.one_shot_at) {
+        onceType = 'specific';
+        specificTime = job.one_shot_at;
+    }
+
+    const draft = {
+        isEdit: true,
+        profileId: p.id,
+        configId: config.id,
+        targetId: target.id,
+        jobId: job.id,
+        module: config.module || 'nmap',
+        step: 1,
+        config: config.config || {},
+        target: target.target_url || '',
+        targetDesc: '',
+        scheduleType: job.schedule_type || 'once',
+        onceType: onceType,
+        delayVal: delayVal,
+        delayUnit: delayUnit,
+        specificTime: specificTime,
+        intervalVal: job.interval_minutes || 60,
+        intervalUnit: 'min',
+        cronHour: job.cron_hour || 0,
+        cronMinute: job.cron_minute || 0,
+        cronDayOfWeek: job.cron_day_of_week ? job.cron_day_of_week.split(',') : ['mon'],
+        cronDayOfMonthArr: job.cron_day_of_month ? job.cron_day_of_month.split(',').map(Number) : [1],
+        cronExpr: job.cron_expression || '0 0 * * *',
+        profileName: p.name,
+        profileDesc: p.description
+    };
+
+    const newIndex = draftMissions.length;
+    draftMissions.push(draft);
+    openDrawer(newIndex);
+    toast(`EDITING: ${p.name}`, 'info');
 }
 
 // ===== State Management Helpers =====
@@ -821,6 +1002,23 @@ window.toggleDay = function(index, dayVal, btn) {
     window.updateDraftState(index, 'cronDayOfWeek', d.cronDayOfWeek);
 };
 
+window.toggleMonthDay = function(index, day, btn) {
+    const d = draftMissions[index];
+    if (!d.cronDayOfMonthArr) d.cronDayOfMonthArr = [1];
+    const idx = d.cronDayOfMonthArr.indexOf(day);
+    if (idx >= 0) {
+        if (d.cronDayOfMonthArr.length > 1) {
+            d.cronDayOfMonthArr.splice(idx, 1);
+            btn.classList.remove('selected');
+        }
+    } else {
+        d.cronDayOfMonthArr.push(day);
+        btn.classList.add('selected');
+    }
+    d.cronDayOfMonthArr.sort((a,b) => a-b);
+    window.updateDraftState(index, 'cronDayOfMonthArr', d.cronDayOfMonthArr);
+};
+
 function discardDraft(index) {
     draftMissions.splice(index, 1);
     closeDrawer();
@@ -840,67 +1038,100 @@ async function saveDraft(index) {
     }
 
     const btn = document.querySelector('.drawer-footer .btn-primary');
-    const originalBtnHtml = btn ? btn.innerHTML : 'Deploy Mission';
+    const originalBtnHtml = btn ? btn.innerHTML : (d.isEdit ? 'Update Mission' : 'Deploy Mission');
 
     try {
         if (btn) {
             btn.disabled = true;
-            btn.innerHTML = '<span class="material-symbols-outlined spin" style="font-size:1rem;">sync</span> Deploying…';
+            btn.innerHTML = `<span class="material-symbols-outlined spin" style="font-size:1rem;">sync</span> ${d.isEdit ? 'Updating' : 'Deploying'}…`;
         }
 
         const pName = d.profileName || `${d.module.toUpperCase()} Mission — ${new Date().toLocaleDateString()}`;
-        const pRes = await apiFetch(`${API}/profiles`, {
-            method: 'POST', body: JSON.stringify({ name: pName, description: d.profileDesc })
-        });
-        const pId = pRes.profile.id;
-
-        // Small delay between calls for SQLite stability
-        await new Promise(r => setTimeout(r, 100));
-
-        await apiFetch(`${API}/profiles/${pId}/targets`, {
-            method: 'POST', body: JSON.stringify({ target_url: d.target, description: d.targetDesc })
-        });
-
-        await new Promise(r => setTimeout(r, 100));
-
-        await apiFetch(`${API}/profiles/${pId}/configs`, {
-            method: 'POST', body: JSON.stringify({ module: d.module, config: d.config, display_label: `${d.module.toUpperCase()} Config` })
-        });
-
-        await new Promise(r => setTimeout(r, 100));
-
-        // Build job body based on schedule type
-        const jobBody = { profile_id: pId, schedule_type: d.scheduleType };
-        if (d.scheduleType === 'periodic') {
-            jobBody.interval_minutes = d.intervalMins;
-        } else if (d.scheduleType === 'once') {
-            jobBody.one_shot_at = new Date(Date.now() + 5000).toISOString();
-        } else if (d.scheduleType === 'cron') {
-            jobBody.cron_expression = d.cronExpr;
-        } else if (d.scheduleType === 'daily') {
-            jobBody.cron_hour = d.cronHour;
-            jobBody.cron_minute = d.cronMinute;
-        } else if (d.scheduleType === 'weekly') {
-            jobBody.cron_hour = d.cronHour;
-            jobBody.cron_minute = d.cronMinute;
-            jobBody.cron_day_of_week = (d.cronDayOfWeek || ['mon']).join(',');
-        } else if (d.scheduleType === 'monthly') {
-            jobBody.cron_hour = d.cronHour;
-            jobBody.cron_minute = d.cronMinute;
-            jobBody.cron_day_of_month = d.cronDayOfMonth;
+        
+        let pId = d.profileId;
+        if (d.isEdit) {
+            await apiFetch(`${API}/profiles/${pId}`, {
+                method: 'PUT', body: JSON.stringify({ name: pName, description: d.profileDesc })
+            });
+        } else {
+            const pRes = await apiFetch(`${API}/profiles`, {
+                method: 'POST', body: JSON.stringify({ name: pName, description: d.profileDesc })
+            });
+            pId = pRes.profile.id;
         }
 
-        await apiFetch(`${API}/jobs`, { method: 'POST', body: JSON.stringify(jobBody) });
+        // Small delay
+        await new Promise(r => setTimeout(r, 100));
 
-        toast('Mission deployed successfully!');
+        if (d.isEdit && d.configId) {
+            await apiFetch(`${API}/profiles/${pId}/configs/${d.configId}`, {
+                method: 'PUT', body: JSON.stringify({ config: d.config })
+            });
+        } else {
+            await apiFetch(`${API}/profiles/${pId}/configs`, {
+                method: 'POST', body: JSON.stringify({ module: d.module, config: d.config })
+            });
+        }
+
+        await new Promise(r => setTimeout(r, 100));
+
+        if (d.isEdit && d.targetId) {
+             await apiFetch(`${API}/profiles/${pId}/targets/${d.targetId}`, {
+                method: 'PUT', body: JSON.stringify({ target_url: d.target })
+            });
+        } else {
+            await apiFetch(`${API}/profiles/${pId}/targets`, {
+                method: 'POST', body: JSON.stringify({ target_url: d.target })
+            });
+        }
+
+        await new Promise(r => setTimeout(r, 100));
+
+        // Schedule Logic
+        let jobPayload = {
+            profile_id: pId,
+            schedule_type: d.scheduleType
+        };
         
-        // UI Clean up
+        if (d.scheduleType === 'once') {
+            let startAt = new Date();
+            if (d.onceType === 'delayed') {
+                const ms = d.delayVal * (d.delayUnit === 'hour' ? 3600000 : 60000);
+                startAt = new Date(Date.now() + ms);
+            } else if (d.onceType === 'specific') {
+                startAt = new Date(d.specificTime);
+            }
+            jobPayload.one_shot_at = startAt.toISOString();
+        } else if (d.scheduleType === 'periodic') {
+            jobPayload.interval_minutes = d.intervalUnit === 'hour' ? d.intervalVal*60 : (d.intervalUnit === 'day' ? d.intervalVal*1440 : d.intervalVal);
+        } else {
+            jobPayload.cron_hour = d.cronHour;
+            jobPayload.cron_minute = d.cronMinute;
+            if (d.scheduleType === 'weekly') jobPayload.cron_day_of_week = d.cronDayOfWeek.join(',');
+            if (d.scheduleType === 'monthly') jobPayload.cron_day_of_month = d.cronDayOfMonthArr.join(',');
+            if (d.scheduleType === 'cron') jobPayload.cron_expression = d.cronExpr;
+        }
+
+        if (d.isEdit && d.jobId) {
+            await apiFetch(`${API}/jobs/${d.jobId}`, {
+                method: 'PUT', body: JSON.stringify(jobPayload)
+            });
+        } else {
+            await apiFetch(`${API}/jobs`, {
+                method: 'POST', body: JSON.stringify(jobPayload)
+            });
+        }
+
+        toast(d.isEdit ? 'Mission updated successfully' : 'Mission deployed successfully!', 'success');
+        
         draftMissions.splice(index, 1);
         closeDrawer();
         renderAll();
-    } catch (e) {
-        console.error(e);
-        toast(`Deployment failed: ${e.message}`, 'error');
+
+    } catch (err) {
+        console.error('FAILED TO SAVE MISSION:', err);
+        toast(err.message || 'Operation failed', 'error');
+    } finally {
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = originalBtnHtml;

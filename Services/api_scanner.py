@@ -1,4 +1,5 @@
 import os
+import tempfile
 import subprocess
 import sys
 import time
@@ -29,7 +30,7 @@ PROJECT_ROOT = os.path.dirname(BASE_DIR)
 DEFAULT_RESULTS_DIR = os.path.join(PROJECT_ROOT, "results", "api_scanner")
 
 LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
-TEMP_DIR = os.path.join(BASE_DIR, "temp", "api_scanner")
+TEMP_DIR = os.path.join(tempfile.gettempdir(), "NetShieldAI", "api_scanner")
 
 # --- Global State for Process Management ---
 active_scans = {} 
@@ -89,14 +90,20 @@ def predict_risk(vulnerability_name: str, description: str = "", cwe_id: str = N
         }
 
 # --- Path Helper ---
-def get_output_paths(user_output_dir, user_id=None, target=None):
+def get_output_paths(user_output_dir, user_id=None, target=None, timestamp=None):
     base = Path(user_output_dir)
     scan_uuid = str(uuid.uuid4())[:8]
     temp_xml = Path(TEMP_DIR) / f"api_temp_{user_id if user_id else 'sys'}_{scan_uuid}.xml"
     
     if target:
-        json_filename = report_manager.generate_report_filename("api_scanner", target, "json")
-        pdf_filename = report_manager.generate_report_filename("api_scanner", target, "pdf")
+        if timestamp:
+            sanitized = report_manager.sanitize_filename(target)
+            stem = f"api_{sanitized}_{timestamp}"
+            json_filename = f"{stem}.json"
+            pdf_filename = f"{stem}.pdf"
+        else:
+            json_filename = report_manager.generate_report_filename("api_scanner", target, "json")
+            pdf_filename = report_manager.generate_report_filename("api_scanner", target, "pdf")
     else:
         json_filename = "api_scan_report.json"
         pdf_filename = "api_scan_report.pdf"
@@ -258,8 +265,13 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
 
         log(f"[STAGE] Starting Web Spider...", user_id)
         zap.spider.scan(target_url)
-        while int(zap.spider.status()) < 100:
-            status = int(zap.spider.status())
+        while True:
+            try:
+                status = int(zap.spider.status())
+            except (ValueError, TypeError):
+                status = 100
+            if status >= 100:
+                break
             filled = status // 5
             bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"
             log(f"[PROGRESS] {bracket} {status}%", user_id)
@@ -270,7 +282,11 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
 
         last_progress = -1
         while True:
-            current_progress = int(zap.ascan.status(scan_id))
+            try:
+                current_progress = int(zap.ascan.status(scan_id))
+            except (ValueError, TypeError):
+                log(f"[!] Warning: Active scan status unavailable. breaking loop.", user_id)
+                current_progress = 100 # Force exit
             if current_progress > last_progress:
                 filled = current_progress // 5
                 bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"

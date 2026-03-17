@@ -1,13 +1,4 @@
-[2026-03-17 10:11:54] Log cleared for new network_scanner scan.
-[10:11:54] [*] [*] Attempting to resolve hostname: example.com
-[10:11:54] [*] [+] Resolved example.com to 104.18.26.120
-[10:11:54] [*] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
-[10:11:54] [*] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
-[10:11:54] [*] Executing Network Scan...
-[10:12:16] [*] [+] TCP (Top 1000) scan complete. Results synchronized.
-[10:12:16] [*] [*] Raw results persisted to: scan_result_tcp.txt
-[10:12:19] [*] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "Cloudflare http proxy", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.3157, "tctr_priority": 3.157, "base_score": 7.5, "priority_level": "P3 (Low)", "risk_justification": "OWASP Top 10 Threat"}, {"port": "443", "protocol": "TCP", "service": "ssl|https", "version": "cloudflare", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1105, "tctr_priority": 1.105, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "8080", "protocol": "TCP", "service": "http", "version": "Cloudflare http proxy", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.263, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}], "vulnerabilities_count": 0}
-[10:12:19] [*] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
-[10:12:19] [*] EVENT: scan_complete | PAYLOAD: {"target": "example.com", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "80", "protocol": "TCP", "service": "http", "version": "Cloudflare http proxy", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.3157, "tctr_priority": 3.157, "base_score": 7.5, "priority_level": "P3 (Low)", "risk_justification": "OWASP Top 10 Threat"}, {"port": "443", "protocol": "TCP", "service": "ssl|https", "version": "cloudflare", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1105, "tctr_priority": 1.105, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "8080", "protocol": "TCP", "service": "http", "version": "Cloudflare http proxy", "process_name": "No listening PID found", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.263, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}]}
-[10:12:19] [*] [+] Processing results for PDF report...
-[10:12:19] [*] [+] JSON Scan report saved
+[2026-03-17 15:12:25] Log cleared for new network_scanner scan.
+[15:12:25] [*] [*] Attempting to resolve hostname: example
+[15:12:28] [*] [!] DNS Resolution failed for: example
+[15:12:28] [*] [!] Invalid target or resolution failed: example

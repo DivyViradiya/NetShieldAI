@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}NetShieldAI - Verify Email{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --neo-card: rgba(10, 10, 12, 0.85);
+    --neo-border: rgba(255, 255, 255, 0.1);
+    --neo-text-primary: #ffffff;
+    --neo-text-secondary: #888888;
+    --neo-text-label: #555555;
+    --neo-green: #10b981;
+    --bg-color: #000000;
+  }
+  body.light-mode {
+    --neo-card: #ffffff;
+    --neo-border: #cbd5e1;
+    --neo-text-primary: #0f172a;
+    --neo-text-secondary: #1e293b;
+    --neo-text-label: #64748b;
+    --neo-green: #059669;
+    --bg-color: #f1f5f9;
+  }
+  #verify-card, #verify-card * { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
+  
+  <div id="verify-card" class="relative z-10 flex w-full max-w-[450px] h-auto bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl p-8 md:p-10 flex-col justify-center">
+    
+    <div class="text-center mb-6">
+      <div class="w-16 h-16 bg-[var(--neo-green)]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--neo-green)]/20">
+        <svg class="w-8 h-8 text-[var(--neo-green)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2">Verify Your Email</h3>
+      <p class="text-[var(--neo-text-secondary)] text-sm">We've sent a 6-digit verification code to your email. Please enter it below to activate your account.</p>
+    </div>
+
+    {% with messages=get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-5 space-y-2">
+          {% for category, message in messages %}
+            <div class="p-3 rounded text-sm border 
+              {% if category == 'danger' %}
+                bg-red-900/20 text-red-400 border-red-900
+              {% else %}
+                bg-green-900/20 text-green-400 border-green-900
+              {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.verify_registration') }}" class="space-y-6" id="verifyForm">
+      {{ form.hidden_tag() }}
+
+      <div>
+        <label class="text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider">Verification Code</label>
+        {{ form.code(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 text-center font-bold text-xl tracking-widest focus:outline-none focus:border-[var(--neo-green)] focus:ring-1 focus:ring-[var(--neo-green)] transition-colors duration-300', placeholder='000000', maxlength='6', autocomplete='off') }}
+        {% if form.code.errors %}
+          <div class="text-red-500 text-xs mt-1">
+            {% for error in form.code.errors %}
+              <div>{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-emerald-600 to-green-700 hover:from-emerald-500 hover:to-green-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-green-900/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+        <span>Activate Account</span>
+      </button>
+      
+    </form>
+
+    <div class="text-center mt-6">
+      <form action="{{ url_for('auth.resend_verification') }}" method="POST">
+        <p class="text-xs text-[var(--neo-text-secondary)]">
+          Didn't receive a code? <button type="submit" class="text-[var(--neo-green)] hover:underline focus:outline-none">Resend code</button>
+        </p>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.getElementById('verifyForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('submitBtn');
+    if(btn.disabled) return;
+    
+    const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = spinner + "Activating...";
+    btn.disabled = true;
+    btn.classList.add('opacity-75', 'cursor-not-allowed');
+    
+    // We let the form submit naturally
+  });
+</script>
+{% endblock %}

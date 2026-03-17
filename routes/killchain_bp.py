@@ -194,14 +194,11 @@ def get_report_files():
 
     reports_dir = os.path.join(scan_dir, "reports")
     
-    json_filename = report_manager.generate_report_filename("killchain", target, "json")
-    pdf_filename = report_manager.generate_report_filename("killchain", target, "pdf")
+    json_path = report_manager.find_latest_report(reports_dir, "killchain", target=target, extension="json")
+    pdf_path = report_manager.find_latest_report(reports_dir, "killchain", target=target, extension="pdf")
 
-    json_path = os.path.join(reports_dir, json_filename)
-    pdf_path = os.path.join(reports_dir, pdf_filename)
-
-    json_exists = os.path.exists(json_path)
-    pdf_exists = os.path.exists(pdf_path)
+    json_exists = bool(json_path) and os.path.exists(json_path)
+    pdf_exists = bool(pdf_path) and os.path.exists(pdf_path)
 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
@@ -227,8 +224,9 @@ def download_pdf_report():
         filename = secure_filename(requested_filename)
         pdf_path = os.path.join(reports_dir, filename)
     elif target:
-        filename = report_manager.generate_report_filename("killchain", target, "pdf")
-        pdf_path = os.path.join(reports_dir, filename)
+        pdf_path = report_manager.find_latest_report(reports_dir, "killchain", target=target, extension="pdf")
+        if pdf_path:
+             filename = os.path.basename(pdf_path)
     else:
         # Fallback to latest
         history = report_manager.get_report_history(reports_dir, scanner_name="killchain")
@@ -237,7 +235,7 @@ def download_pdf_report():
         pdf_path = history[0]['path']
         filename = os.path.basename(pdf_path)
 
-    if not os.path.exists(pdf_path):
+    if not pdf_path or not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report not found."}), 404
 
     return send_from_directory(
@@ -261,8 +259,7 @@ def get_json_report():
         filename = secure_filename(requested_filename)
         json_path = os.path.join(reports_dir, filename)
     elif target:
-        filename = report_manager.generate_report_filename("killchain", target, "json")
-        json_path = os.path.join(reports_dir, filename)
+        json_path = report_manager.find_latest_report(reports_dir, "killchain", target=target, extension="json")
     else:
         # Fallback to latest
         history = report_manager.get_report_history(reports_dir, scanner_name="killchain", extension="json")
@@ -270,7 +267,7 @@ def get_json_report():
              return jsonify({"status": "error", "message": "No reports found."}), 404
         json_path = history[0]['path']
 
-    if not os.path.exists(json_path):
+    if not json_path or not os.path.exists(json_path):
         return jsonify({"status": "error", "message": "JSON report not found."}), 404
 
     # Return inline JSON (not as attachment) so frontend fetch().json() works reliably
@@ -296,10 +293,10 @@ def trigger_ai_analysis():
     if not scan_dir:
         return jsonify({"status": "error", "message": "Invalid scan directory."}), 400
 
-    json_filename = report_manager.generate_report_filename("killchain", target, "json")
-    json_report_path = os.path.join(scan_dir, "reports", json_filename)
+    reports_dir = os.path.join(scan_dir, "reports")
+    json_report_path = report_manager.find_latest_report(reports_dir, "killchain", target=target, extension="json")
 
-    if not os.path.exists(json_report_path):
+    if not json_report_path or not os.path.exists(json_report_path):
         return jsonify({
             "status": "error", 
             "message": "Report not found. Please wait for the scan to complete."

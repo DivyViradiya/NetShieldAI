@@ -100,31 +100,16 @@ def init_data():
     # ... rest of function ...
 
     # 4. Report Files
-    # Get user-specific paths using report_manager
-    user_json_path = os.path.join(user_dir, report_manager.generate_report_filename("nmap_report", None, "json"))
-    
-    target = request.args.get('target')
-    if target:
-        filename = report_manager.generate_report_filename("network_scanner", target, "pdf")
-        user_pdf_path = os.path.join(user_dir, filename)
-    else:
-        # Fallback to latest (Prefix-agnostic)
-        history = report_manager.get_report_history(user_dir, scanner_name=None)
-        if history:
-            user_pdf_path = history[0]['path']
-            filename = os.path.basename(user_pdf_path)
-            target = history[0].get('target', target)
-        else:
-            user_pdf_path = os.path.join(user_dir, PDF_FILENAME)
-            filename = PDF_FILENAME
+    # Robustly find the latest reports using find_latest_report
+    latest_json = report_manager.find_latest_report(user_dir, "network_scanner", extension="json")
+    latest_pdf = report_manager.find_latest_report(user_dir, "network_scanner", extension="pdf")
 
-    json_exists = os.path.exists(user_json_path)
-    pdf_exists = os.path.exists(user_pdf_path)
+    filename = os.path.basename(latest_pdf) if latest_pdf else PDF_FILENAME
     
     report_files = {
-        "status": "success" if (json_exists or pdf_exists) else "pending",
-        "json_report": "/network_scanner/get_json_report" if json_exists else None,
-        "pdf_report": f"/network_scanner/download_pdf?filename={filename}" if pdf_exists else None
+        "status": "success" if (latest_json or latest_pdf) else "pending",
+        "json_report": "/network_scanner/get_json_report" if latest_json else None,
+        "pdf_report": f"/network_scanner/download_pdf?filename={filename}" if latest_pdf else None
     }
 
     return jsonify({
@@ -361,27 +346,14 @@ def trigger_ai_analysis_route():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_dir = get_user_results_dir()
     
-    # 1. Resolve PDF Path with Fallbacks
-    from pathlib import Path
-    pdf_path = None
+    # Resolve the latest PDF report for this scanner
+    pdf_path_str = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="pdf")
     
-    if target:
-        paths = network_scanner.get_output_paths(user_dir, target=target)
-        pdf_path = Path(paths["pdf_report"])
-    
-    # Fallback 1: History search (Recent for this scanner)
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name="network_scanner", extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
-    
-    # Fallback 2: Any PDF in the results directory
-    if not pdf_path or not pdf_path.exists():
-        history = report_manager.get_report_history(user_dir, scanner_name=None, extension="pdf")
-        if history:
-            pdf_path = Path(history[0]['path'])
+    if not pdf_path_str:
+        # Fallback to any PDF if no specific target match
+        pdf_path_str = report_manager.find_latest_report(user_dir, scanner_name=None, extension="pdf")
 
-    if not pdf_path or not pdf_path.exists():
+    if not pdf_path_str or not os.path.exists(pdf_path_str):
         network_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
         return jsonify({
             "status": "error", 
@@ -400,19 +372,11 @@ def get_report_files():
     """Checks availability of reports."""
     target = request.args.get('target')
     user_dir = get_user_results_dir()
-    user_json_path = os.path.join(user_dir, report_manager.generate_report_filename("network_scanner", target, "json"))
     
-    if target:
-        pdf_filename = report_manager.generate_report_filename("network_scanner", target, "pdf")
-    else:
-        pdf_filename = report_manager.generate_report_filename("network_scanner", None, "pdf")
+    latest_json = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="json")
+    latest_pdf = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="pdf")
 
-    user_pdf_path = os.path.join(user_dir, pdf_filename)
-
-    json_exists = os.path.exists(user_json_path)
-    pdf_exists = os.path.exists(user_pdf_path)
-
-    if not json_exists and not pdf_exists:
+    if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
     return jsonify({
@@ -421,10 +385,11 @@ def get_report_files():
         "pdf_report": f"/network_scanner/download_pdf?target={target}" if target else "/network_scanner/download_pdf"
     })
 
+
 @network_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
-    """Serves the PDF report dynamically based on the configured path."""
+    """Serves the PDF report dynamically based on finding the latest suitable file."""
     user_dir = get_user_results_dir()
     requested_filename = request.args.get('filename')
     target = request.args.get('target')
@@ -432,15 +397,21 @@ def download_pdf_report():
     if requested_filename:
         filename = secure_filename(requested_filename)
         pdf_path = os.path.join(user_dir, filename)
-    elif target:
-        filename = report_manager.generate_report_filename("network_scanner", target, "pdf")
-        pdf_path = os.path.join(user_dir, filename)
     else:
-        history = report_manager.get_report_history(user_dir, scanner_name=None)
-        if not history:
-             return jsonify({"status": "error", "message": "No reports found."}), 404
-        pdf_path = history[0]['path']
+        # Robustly resolve the latest PDF
+        pdf_path = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="pdf")
+        if not pdf_path:
+             return jsonify({"status": "error", "message": "No suitable PDF report found."}), 404
         filename = os.path.basename(pdf_path)
+
+    if not os.path.exists(pdf_path):
+        return jsonify({"status": "error", "message": "PDF report file not found."}), 404
+    
+    return send_from_directory(
+        directory=os.path.dirname(pdf_path),
+        path=filename,
+        as_attachment=True
+    )
 
     if not os.path.exists(pdf_path):
         return jsonify({"status": "error", "message": "PDF report file not found."}), 404
@@ -454,14 +425,15 @@ def download_pdf_report():
 @network_scanner_bp.route('/get_json_report', methods=['GET'])
 @login_required
 def get_json_report_file():
+    """Serves the JSON report file by finding the latest match."""
     user_dir = get_user_results_dir()
     target = request.args.get('target')
-    user_json_path = os.path.join(user_dir, report_manager.generate_report_filename("network_scanner", target, "json"))
+    
+    user_json_path = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="json")
 
-    if not os.path.exists(user_json_path):
+    if not user_json_path or not os.path.exists(user_json_path):
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
     
-    # Use dynamic pathing for JSON as well for consistency
     directory = os.path.dirname(user_json_path)
     filename = os.path.basename(user_json_path)
 

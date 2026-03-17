@@ -1,4 +1,5 @@
 import subprocess
+import tempfile
 import os
 import sys
 import threading
@@ -23,7 +24,7 @@ DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "sql_scanner"
 # Logs (Shared)
 LOG_FILE = BASE_DIR / "logs" / "sql_agent_log.txt"
 
-TEMP_DIR = BASE_DIR / "Services" / "temp" / "sqlmap"
+TEMP_DIR = Path(tempfile.gettempdir()) / "NetShieldAI" / "sqlmap"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- Global State for Process Management (Isolated by user_id) ---
@@ -121,7 +122,7 @@ def clear_log_file(user_id=None):
         log(f"[!] Error clearing SQL log file: {e}", user_id)
 
 # --- PATH HELPERS ---
-def get_output_paths(output_dir=None, target=None):
+def get_output_paths(output_dir=None, target=None, timestamp=None):
     if output_dir:
         base = Path(output_dir)
     else:
@@ -143,8 +144,14 @@ def get_output_paths(output_dir=None, target=None):
     sqlmap_temp.mkdir(parents=True, exist_ok=True)
 
     if target:
-        json_filename = report_manager.generate_report_filename("sql_scanner", target, "json")
-        pdf_filename = report_manager.generate_report_filename("sql_scanner", target, "pdf")
+        if timestamp:
+            sanitized = report_manager.sanitize_filename(target)
+            stem = f"sql_{sanitized}_{timestamp}"
+            json_filename = f"{stem}.json"
+            pdf_filename = f"{stem}.pdf"
+        else:
+            json_filename = report_manager.generate_report_filename("sql_scanner", target, "json")
+            pdf_filename = report_manager.generate_report_filename("sql_scanner", target, "pdf")
     else:
         json_filename = "sql_report.json"
         pdf_filename = "sql_report.pdf"
@@ -176,6 +183,7 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
     report_data = {
         "target": target_url_hint if target_url_hint else "Unknown",
         "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "status": "Completed", # Default
         "vulnerabilities": [],
         "database_info": {
             "dbms": "Unknown",
@@ -188,10 +196,16 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
 
     # Merge Captured Metadata (from Console Stream)
     if captured_metadata:
-        report_data["database_info"].update(captured_metadata)
+        if "critical_error" in captured_metadata:
+            report_data["status"] = f"Failed: {captured_metadata['critical_error']}"
+        db_metadata = {k: v for k, v in captured_metadata.items() if k != "critical_error"}
+        report_data["database_info"].update(db_metadata)
 
     base_path = Path(output_dir)
-    
+    if not base_path.exists():
+        log("[!] No SQLMap results directory found. The scan may not have found any vulnerabilities.", user_id)
+        return report_data
+        
     # 1. Locate the correct subdirectory (SQLMap uses the hostname)
     target_subdir = None
     try:
@@ -393,6 +407,8 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None):
                     # Capture live metadata as backup
                     if "back-end DBMS:" in line:
                         live_metadata["dbms"] = line.split(":", 1)[1].strip()
+                    if "[CRITICAL]" in line:
+                        live_metadata["critical_error"] = line.split("[CRITICAL]", 1)[1].strip()
 
         # Always attempt to parse results even if it timed out or returned error
         log("[+] Scan finished. Processing results...", user_id, to_console=True)

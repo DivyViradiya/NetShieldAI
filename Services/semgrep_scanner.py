@@ -1,4 +1,5 @@
 import subprocess
+import tempfile
 import os
 import shutil
 import json
@@ -18,7 +19,7 @@ from .tctr_engine import tctr_engine
 BASE_DIR = Path(__file__).parent.parent
 DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "semgrep_scanner"
 LOG_DIR = BASE_DIR / "logs"
-TEMP_DIR = BASE_DIR / "Services" / "temp" / "semgrep"
+TEMP_DIR = Path(tempfile.gettempdir()) / "NetShieldAI" / "semgrep"
 
 # --- Global State for Process Management (Isolated by user_id) ---
 active_scans = {} # { "user_id": {"target": str, "start_time": float} }
@@ -85,7 +86,7 @@ def get_semgrep_path():
         if os.path.exists(p): return p
     return None
 
-def get_output_paths(output_dir=None, user_id=None, target=None):
+def get_output_paths(output_dir=None, user_id=None, target=None, timestamp=None):
     base = Path(output_dir) if output_dir else DEFAULT_RESULTS_DIR
     user_temp = TEMP_DIR / (user_id if user_id else "default")
     user_temp.mkdir(parents=True, exist_ok=True)
@@ -94,8 +95,14 @@ def get_output_paths(output_dir=None, user_id=None, target=None):
     scan_uuid = str(uuid.uuid4())[:8]
     
     if target:
-        json_filename = report_manager.generate_report_filename("semgrep_scanner", target, "json")
-        pdf_filename = report_manager.generate_report_filename("semgrep_scanner", target, "pdf")
+        if timestamp:
+            sanitized = report_manager.sanitize_filename(target)
+            stem = f"semgrep_{sanitized}_{timestamp}"
+            json_filename = f"{stem}.json"
+            pdf_filename = f"{stem}.pdf"
+        else:
+            json_filename = report_manager.generate_report_filename("semgrep_scanner", target, "json")
+            pdf_filename = report_manager.generate_report_filename("semgrep_scanner", target, "pdf")
     else:
         json_filename = "semgrep_report.json"
         pdf_filename = "semgrep_report.pdf"

@@ -319,15 +319,6 @@
         box-shadow: var(--shadow-blue);
       }
 
-      .mission-status-strip {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: var(--neo-blue);
-        border-radius: var(--radius-card) 0 0 var(--radius-card);
-      }
 
       .mission-header {
         display: flex;
@@ -897,9 +888,6 @@
         pointer-events: none;
       }
 
-      .mission-card.executing .mission-status-strip {
-        animation: pulse-strip 1s infinite alternate;
-      }
 
       @keyframes pulse-strip {
         from { opacity: 0.4; }
@@ -1001,6 +989,10 @@
       </div>
       
       <div class="flex gap-3">
+        <button class="btn-dash" onclick="openGlobalReportsDrawer()" style="background: rgba(59,130,246,0.05); height: 32px; border-radius: 6px; padding: 0 0.75rem; border-color: rgba(59, 130, 246, 0.3);">
+          <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">auto_stories</span>
+          <span style="font-size: 0.65rem;">Archive</span>
+        </button>
         <button id="refreshJobsBtn" class="btn-dash" style="background: rgba(255,255,255,0.03); height: 32px; border-radius: 6px; padding: 0 0.75rem;">
           <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">sync</span>
           <span style="font-size: 0.65rem;">Sync</span>

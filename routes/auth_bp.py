@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from urllib.parse import urlparse  
 from sqlalchemy import func 
-from models.models import User, ScanLog, PasswordResetOTP
+from models.models import User, ScanLog, PasswordResetOTP, RegistrationOTP
 from core.extensions import db, mail, oauth
 from core.forms import RegistrationForm, LoginForm, UpdateProfileForm, ChangePasswordForm, ForgotPasswordForm, ResetPasswordForm, VerifyOTPForm, OnboardUsernameForm
 from flask_mail import Message
@@ -23,6 +23,9 @@ def check_onboarding():
     """
     from flask import request
     if current_user.is_authenticated:
+        if hasattr(current_user, 'is_email_verified') and not current_user.is_email_verified:
+            if request.endpoint and request.endpoint not in ['auth.verify_registration', 'auth.logout', 'static']:
+                return redirect(url_for('auth.verify_registration'))
         if hasattr(current_user, 'is_onboarded') and not current_user.is_onboarded:
             if request.endpoint and request.endpoint not in ['auth.onboard_username', 'auth.logout', 'static']:
                 return redirect(url_for('auth.onboard_username'))
@@ -303,10 +306,31 @@ def register():
         try:
             db.session.add(new_user)
             db.session.commit()
-            logger.info(f"[+] User {form.username.data} registered successfully.")
+            # [OTP VERIFICATION] Generate and send OTP
+            import random
+            from datetime import datetime, timedelta
+            otp_code = str(random.randint(100000, 999999))
+            expires_at = datetime.utcnow() + timedelta(minutes=15)
             
-            flash('Account created successfully! Please log in.', 'success')
-            return redirect(url_for('auth.login'))
+            otp_entry = RegistrationOTP(user_id=new_user.id, code=otp_code, expires_at=expires_at)
+            db.session.add(otp_entry)
+            db.session.commit()
+            
+            # Send Email
+            from flask import current_app
+            html_content = render_template('email/register_otp.html', 
+                                         user=new_user, 
+                                         otp_code=otp_code, 
+                                         current_year=datetime.now().year)
+            
+            logo_path = os.path.join(current_app.root_path, 'static', 'images', 'NS_Logo.png')
+            send_otp_email(new_user.email, otp_code, html_content=html_content, logo_path=logo_path)
+            
+            session['pending_verification_user_id'] = new_user.id
+            logger.info(f"[+] User {form.username.data} registered. OTP sent to {new_user.email}.")
+            
+            flash('Account created! Please verify your email with the 6-digit code sent to your inbox.', 'info')
+            return redirect(url_for('auth.verify_registration'))
             
         except Exception as e:
             db.session.rollback()
@@ -742,3 +766,99 @@ def onboard_username():
         return redirect(url_for('index'))
         
     return render_template('base/onboard_username.html', form=form)
+
+@auth_bp.route('/verify_registration', methods=['GET', 'POST'])
+def verify_registration():
+    """
+    Handle OTP verification for new registrations.
+    """
+    # 1. Check for logged in user who isn't verified
+    if current_user.is_authenticated:
+        if current_user.is_email_verified:
+            return redirect(url_for('index'))
+        user = current_user
+    else:
+        # 2. Check session for pending user
+        user_id = session.get('pending_verification_user_id')
+        if not user_id:
+            flash('Session expired. Please log in to resend verification code.', 'warning')
+            return redirect(url_for('auth.login'))
+        user = db.session.get(User, user_id)
+        if not user:
+            return redirect(url_for('auth.login'))
+
+    form = VerifyOTPForm()
+    if form.validate_on_submit():
+        otp_entry = RegistrationOTP.query.filter_by(user_id=user.id).order_by(RegistrationOTP.created_at.desc()).first()
+        
+        if not otp_entry:
+            flash('No verification request found. Try resending the code.', 'danger')
+            return render_template('base/verify_registration.html', form=form)
+            
+        from datetime import datetime
+        if otp_entry.expires_at < datetime.utcnow():
+            flash('This code has expired. Please request a new one.', 'danger')
+            return render_template('base/verify_registration.html', form=form)
+            
+        if otp_entry.code != form.code.data:
+            otp_entry.attempts += 1
+            db.session.commit()
+            if otp_entry.attempts >= 3:
+                db.session.delete(otp_entry)
+                db.session.commit()
+                flash('Too many failed attempts. Please request a new code.', 'danger')
+                return render_template('base/verify_registration.html', form=form)
+            flash(f'Invalid code. {3 - otp_entry.attempts} attempts remaining.', 'danger')
+            return render_template('base/verify_registration.html', form=form)
+            
+        # Success
+        user.is_email_verified = True
+        db.session.delete(otp_entry)
+        db.session.commit()
+        
+        session.pop('pending_verification_user_id', None)
+        
+        if not current_user.is_authenticated:
+            login_user(user)
+            
+        flash('Email verified successfully! Welcome to NetShieldAI.', 'success')
+        return redirect(url_for('index'))
+        
+    return render_template('base/verify_registration.html', form=form)
+
+@auth_bp.route('/resend_verification', methods=['POST'])
+def resend_verification():
+    """Route to resend the registration OTP."""
+    if current_user.is_authenticated:
+        user = current_user
+    else:
+        user_id = session.get('pending_verification_user_id')
+        if not user_id:
+            flash('Session expired. Please log in.', 'warning')
+            return redirect(url_for('auth.login'))
+        user = db.session.get(User, user_id)
+
+    if user.is_email_verified:
+        return redirect(url_for('index'))
+
+    # Generate and send new OTP
+    import random
+    from datetime import datetime, timedelta
+    otp_code = str(random.randint(100000, 999999))
+    expires_at = datetime.utcnow() + timedelta(minutes=15)
+
+    otp_entry = RegistrationOTP(user_id=user.id, code=otp_code, expires_at=expires_at)
+    db.session.add(otp_entry)
+    db.session.commit()
+
+    from flask import current_app
+    html_content = render_template('email/register_otp.html', 
+                                 user=user, 
+                                 otp_code=otp_code, 
+                                 current_year=datetime.now().year)
+    
+    logo_path = os.path.join(current_app.root_path, 'static', 'images', 'NS_Logo.png')
+    send_otp_email(user.email, otp_code, html_content=html_content, logo_path=logo_path)
+
+    flash('A new verification code has been sent to your email.', 'info')
+    return redirect(url_for('auth.verify_registration'))
