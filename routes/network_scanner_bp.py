@@ -228,6 +228,8 @@ def scan_ports():
         # Use the captured identifier variable
         network_scanner.log(f"[*] Preparing {scan_type.upper()} scan for target: {target_ip} with T{timing}...", user_identifier, queue_id, to_console=True)        
         
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         start_time = time.time()
         
         # 1. Run the Scan (Pass user directory to service)
@@ -238,7 +240,8 @@ def scan_ports():
             output_dir=user_output_dir,  # <--- DYNAMIC PATH PASSED HERE
             user_id=user_identifier,     # <--- PASS USER ID HERE
             timing=timing, # <--- PASS TIMING HERE
-            queue_id=queue_id # <--- NEW: Pass queue_id
+            queue_id=queue_id, # <--- NEW: Pass queue_id
+            timestamp=timestamp
         )
         
         duration = time.time() - start_time
@@ -258,7 +261,7 @@ def scan_ports():
         
         if result_file:
             # Define specific paths for this user's PDF generation
-            user_paths = network_scanner.get_output_paths(user_output_dir, target=target_ip)
+            user_paths = network_scanner.get_output_paths(user_output_dir, target=target_ip, timestamp=timestamp)
             user_json_path = user_paths["json_report"]
             user_pdf_path = user_paths["pdf_report"]
 

@@ -1732,12 +1732,61 @@
       overflow-x: auto; 
       border: 1px solid #27272a; 
       margin: 1.5rem 0;
+      white-space: pre-wrap;       /* Wrap text */
+      overflow-wrap: break-word;  /* Break words if they overflow */
+    }
+
+    /* Code Container & Copy Button */
+    .code-container {
+      position: relative;
+      margin: 1.5rem 0;
+    }
+    .code-container pre {
+      margin: 0 !important; /* Override margin since container handles it */
+    }
+    .copy-code-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #a1a1aa;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+      backdrop-filter: blur(4px);
+      z-index: 10;
+      font-family: var(--font-primary);
+    }
+    .copy-code-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    .copy-code-btn.copied {
+      background: #10b981;
+      color: white;
+      border-color: #10b981;
     }
     
     body.light-mode .markdown-content pre,
     body.light-mode .msg-bubble pre {
         background: var(--bg-secondary);
         border-color: var(--border-default);
+    }
+
+    body.light-mode .copy-code-btn {
+        background: rgba(0, 0, 0, 0.04);
+        border-color: rgba(0, 0, 0, 0.05);
+        color: #64748b;
+    }
+    body.light-mode .copy-code-btn:hover {
+        background: rgba(0, 0, 0, 0.08);
+        color: #0f172a;
     }
 
     .markdown-content code, .msg-bubble code {

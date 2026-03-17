@@ -131,7 +131,7 @@ def scan_ssl():
         timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
         
         # 1. Run the Scan (Generates XML) - Pass user directory
-        report_file = ssl_scanner.run_ssl_scan(target_host, output_dir=user_output_dir, user_id=current_user_identifier)
+        report_file = ssl_scanner.run_ssl_scan(target_host, output_dir=user_output_dir, user_id=current_user_identifier, timestamp=timestamp)
         
         duration = time.time() - start_time
         status = "Failed"

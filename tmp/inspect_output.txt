@@ -1,0 +1,70 @@
+Tables: [('user',), ('scan_log',), ('password_reset_otp',), ('registration_otp',)]
+
+--- user ---
+Columns:
+  id (INTEGER)
+  username (VARCHAR(150))
+  email (VARCHAR(150))
+  full_name (VARCHAR(150))
+  phone_number (VARCHAR(20))
+  organization (VARCHAR(150))
+  job_title (VARCHAR(100))
+  password_hash (VARCHAR(200))
+  is_admin (BOOLEAN)
+  is_active_account (BOOLEAN)
+  is_email_verified (BOOLEAN)
+  is_onboarded (BOOLEAN)
+  created_at (DATETIME)
+  last_login_at (DATETIME)
+  last_login_ip (VARCHAR(45))
+  failed_login_attempts (INTEGER)
+  login_count (INTEGER)
+  scan_count_nmap (INTEGER)
+  scan_count_zap (INTEGER)
+  scan_count_ssl (INTEGER)
+  scan_count_sniffer (INTEGER)
+  scan_count_sql (INTEGER)
+  scan_count_ai (INTEGER)
+  scan_count_killchain (INTEGER)
+  scan_count_semgrep (INTEGER)
+  scan_count_api (INTEGER)
+Sample Rows:
+  (1, 'Admin', 'admin.netshieldai@gmail.com', None, None, None, None, 'scrypt:32768:8:1$lvZcJotOwwFEmQxS$e106fc447ab4c7681c8685e88a2a3d4b2661331cf41b5e6547756f851d437b8f8182c3e46e04ff3985a5345af9f313feb476f55fd3e56a726155ba8d8d977f5f', 1, 1, 0, 1, '2026-03-17 16:52:55.807788', None, None, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+--- scan_log ---
+Columns:
+  id (INTEGER)
+  user_id (INTEGER)
+  tool_name (VARCHAR(50))
+  scan_type (VARCHAR(50))
+  target (VARCHAR(255))
+  status (VARCHAR(20))
+  start_time (DATETIME)
+  end_time (DATETIME)
+  duration_seconds (FLOAT)
+  finding_count (INTEGER)
+  severity_critical (INTEGER)
+  error_message (TEXT)
+  report_path (VARCHAR(500))
+  origin (VARCHAR(20))
+Sample Rows:
+
+--- password_reset_otp ---
+Columns:
+  id (INTEGER)
+  user_id (INTEGER)
+  code (VARCHAR(6))
+  created_at (DATETIME)
+  expires_at (DATETIME)
+  attempts (INTEGER)
+Sample Rows:
+
+--- registration_otp ---
+Columns:
+  id (INTEGER)
+  user_id (INTEGER)
+  code (VARCHAR(6))
+  created_at (DATETIME)
+  expires_at (DATETIME)
+  attempts (INTEGER)
+Sample Rows:

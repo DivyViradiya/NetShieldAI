@@ -141,13 +141,17 @@ def scan_sql():
             
             start_time = time.time()
             
+            # Generate a consistent timestamp for this single scan session
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
             # 1. Run the Scan (Returns path to JSON report if successful)
             # We now run it directly in user_base_dir instead of a timestamped subfolder
             json_report_path = sql_scanner.run_sql_scan(
                 target_url, 
                 output_dir=user_base_dir, 
                 scan_mode=scan_mode,
-                user_id=current_user_identifier
+                user_id=current_user_identifier,
+                timestamp=timestamp
             )
             
             duration = time.time() - start_time
@@ -169,7 +173,7 @@ def scan_sql():
                 # 2. Generate PDF Report
                 try:
                     # Get user-specific paths
-                    user_paths = sql_scanner.get_output_paths(user_base_dir, target=target_url)
+                    user_paths = sql_scanner.get_output_paths(user_base_dir, target=target_url, timestamp=timestamp)
                     pdf_path = user_paths["pdf_report"]
                     
                     # Check if the PDF generator has the SQL function implemented

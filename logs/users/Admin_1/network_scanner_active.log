@@ -1,4 +1,16 @@
-[2026-03-17 15:12:25] Log cleared for new network_scanner scan.
-[15:12:25] [*] [*] Attempting to resolve hostname: example
-[15:12:28] [*] [!] DNS Resolution failed for: example
-[15:12:28] [*] [!] Invalid target or resolution failed: example
+[2026-03-17 22:25:53] Log cleared for new network_scanner scan.
+[22:25:53] [*] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[22:25:53] [*] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[22:25:53] [*] EVENT: ports_updated | PAYLOAD: {"ports": [], "vulnerabilities_count": 0}
+[22:25:53] [*] Executing Network Scan...
+[22:26:02] [*] [+] TCP (Top 1000) scan complete. Results synchronized.
+[22:26:02] [*] [*] Raw results persisted to: scan_result_tcp.txt
+[22:26:04] [*] EVENT: ports_updated | PAYLOAD: {"ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.263, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1538, "tctr_priority": 1.538, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.2388, "tctr_priority": 2.388, "base_score": 4.3, "priority_level": "P3 (Low)", "risk_justification": "OWASP Top 10 Threat"}], "vulnerabilities_count": 0}
+[22:26:04] [*] EVENT: metadata_updated | PAYLOAD: {"os_guess": "Unknown", "host_status": "Online", "latency": "0ms", "insights": "Actively running TCP (Top 1000) scan..."}
+[22:26:04] [*] EVENT: scan_complete | PAYLOAD: {"target": "192.168.29.48", "protocol": "TCP", "scan_type": "default", "open_ports": [{"port": "135", "protocol": "TCP", "service": "msrpc", "version": "Microsoft Windows RPC", "process_name": "svchost.exe", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1263, "tctr_priority": 1.263, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "139", "protocol": "TCP", "service": "netbios-ssn", "version": "Microsoft Windows netbios-ssn", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.1538, "tctr_priority": 1.538, "base_score": 5.0, "priority_level": "P3 (Low)", "risk_justification": "General security concern"}, {"port": "445", "protocol": "TCP", "service": "microsoft-ds?", "version": "", "process_name": "System", "vulnerability": "Run VULN Scan for details.", "predicted_risk_score": 0.2388, "tctr_priority": 2.388, "base_score": 4.3, "priority_level": "P3 (Low)", "risk_justification": "OWASP Top 10 Threat"}]}
+[22:26:04] [*] [+] Processing results for PDF report...
+[22:26:05] [*] [+] JSON Scan report saved
+[22:26:05] [*] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[22:26:07] [*] [+] PDF report generated successfully
+[22:26:07] [*] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[22:36:03] [*] [*] Whitelist file '[FILE_PATH] not found. Starting with empty whitelist.

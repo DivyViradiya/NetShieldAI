@@ -1,0 +1,201 @@
+{
+    "target": "example.com",
+    "profile": "Full Scan",
+    "aggression": "Normal",
+    "scan_date": "2026-03-17 22:39:21",
+    "recon": {
+        "subdomains": [
+            "as207960 test intermediate - example.com",
+            "dev.example.com",
+            "example.com",
+            "m.example.com",
+            "m.testexample.com",
+            "mailto",
+            "products.example.com",
+            "subjectname@example.com",
+            "support.example.com",
+            "user@example.com",
+            "username",
+            "www.example.com"
+        ],
+        "resolved_hosts": [
+            {
+                "domain": "as207960 test intermediate - example.com",
+                "error": "Could not resolve IP"
+            },
+            {
+                "domain": "dev.example.com",
+                "error": "Could not resolve IP"
+            },
+            {
+                "domain": "example.com",
+                "ip": "104.18.26.120"
+            },
+            {
+                "domain": "m.example.com",
+                "error": "Could not resolve IP"
+            },
+            {
+                "domain": "m.testexample.com",
+                "ip": "76.223.54.146"
+            },
+            {
+                "domain": "mailto",
+                "error": "Could not resolve IP"
+            },
+            {
+                "domain": "products.example.com",
+                "error": "Could not resolve IP"
+            },
+            {
+                "domain": "subjectname@example.com",
+                "error": "Could not resolve IP"
+            },
+            {
+                "domain": "support.example.com",
+                "error": "Could not resolve IP"
+            },
+            {
+                "domain": "user@example.com",
+                "error": "Could not resolve IP"
+            },
+            {
+                "domain": "username",
+                "error": "Could not resolve IP"
+            },
+            {
+                "domain": "www.example.com",
+                "ip": "104.18.26.120"
+            }
+        ]
+    },
+    "network": {
+        "nmap_scan": {
+            "target": "104.18.27.120",
+            "status": "up",
+            "ports": [
+                {
+                    "port": "80",
+                    "protocol": "TCP",
+                    "service": "http",
+                    "version": "Cloudflare http proxy"
+                },
+                {
+                    "port": "443",
+                    "protocol": "TCP",
+                    "service": "ssl|https?",
+                    "version": "Banner: HTTP/1.1 400 Bad Request\r\nServer: cloudflare\r\nDate..."
+                },
+                {
+                    "port": "8080",
+                    "protocol": "TCP",
+                    "service": "http",
+                    "version": "Cloudflare http proxy"
+                },
+                {
+                    "port": "8443",
+                    "protocol": "TCP",
+                    "service": "ssl|https-alt?",
+                    "version": "Banner: HTTP/1.1 400 Bad Request\r\nServer: cloudflare\r\nDate..."
+                }
+            ],
+            "vulnerabilities": []
+        }
+    },
+    "web_audit": {
+        "waf_detection": {
+            "has_waf": true,
+            "waf_name": "Cloudflare",
+            "detection_method": "Passive (Headers/Cookies)",
+            "rate_limit_detected": false,
+            "scan_config": {
+                "threads": 5,
+                "delay": 1,
+                "status": "WAF Detected - Slowing Down"
+            }
+        },
+        "crawled_urls": [],
+        "forms_found": [],
+        "api_endpoints": [],
+        "directory_fuzzing": {
+            "target": "http://example.com/",
+            "tool": "Smart Directory Fuzzer",
+            "found_count": 0,
+            "findings": []
+        },
+        "vuln_scanner_findings": [
+            {
+                "type": "Missing CSP",
+                "severity": "Low",
+                "evidence": "Content-Security-Policy header is missing",
+                "parameter": "HTTP Headers",
+                "timestamp": "2026-03-17T22:40:14.289684",
+                "predicted_risk_score": 0.116,
+                "tctr_priority": 1.16,
+                "base_score": 5.0,
+                "priority_level": "P3 (Low)",
+                "risk_justification": "General security concern"
+            },
+            {
+                "type": "Clickjacking Risk",
+                "severity": "Medium",
+                "evidence": "Missing X-Frame-Options or CSP frame-ancestors",
+                "parameter": "HTTP Headers",
+                "timestamp": "2026-03-17T22:40:14.289713",
+                "predicted_risk_score": 0.116,
+                "tctr_priority": 1.16,
+                "base_score": 5.0,
+                "priority_level": "P3 (Low)",
+                "risk_justification": "General security concern"
+            }
+        ],
+        "custom_scanner_findings": [],
+        "logic_scanner_findings": []
+    },
+    "vulns": [],
+    "urls": [],
+    "tech": {
+        "target": "http://example.com",
+        "technologies": {
+            "Server": [
+                "cloudflare"
+            ]
+        },
+        "versions": {}
+    },
+    "target_ip": "104.18.27.120",
+    "traffic_analysis": {
+        "stats": {
+            "packet_count": "0"
+        },
+        "anomalies": [],
+        "credentials": [],
+        "note": "No traffic captured."
+    },
+    "all_findings": [
+        {
+            "type": "Missing CSP",
+            "severity": "Low",
+            "evidence": "Content-Security-Policy header is missing",
+            "parameter": "HTTP Headers",
+            "timestamp": "2026-03-17T22:40:14.289684",
+            "predicted_risk_score": 0.116,
+            "tctr_priority": 1.16,
+            "base_score": 5.0,
+            "priority_level": "P3 (Low)",
+            "risk_justification": "General security concern"
+        },
+        {
+            "type": "Clickjacking Risk",
+            "severity": "Medium",
+            "evidence": "Missing X-Frame-Options or CSP frame-ancestors",
+            "parameter": "HTTP Headers",
+            "timestamp": "2026-03-17T22:40:14.289713",
+            "predicted_risk_score": 0.116,
+            "tctr_priority": 1.16,
+            "base_score": 5.0,
+            "priority_level": "P3 (Low)",
+            "risk_justification": "General security concern"
+        }
+    ]
+}

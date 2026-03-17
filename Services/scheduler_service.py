@@ -552,6 +552,10 @@ def _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=No
         try:
             if os.path.exists(user_paths["json_report"]):
                 pdf_generator.create_nmap_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
+                if config.get('executive_summary', False):
+                     _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "Nmap", target, user_identifier)
+            else:
+                logger.warning(f"[!] [SCHEDULER] JSON report not found for PDF generation: {user_paths['json_report']}")
         except Exception as e:
             logger.error(f"[!] [SCHEDULER] Nmap PDF generation failed: {e}")
 
@@ -606,7 +610,14 @@ def _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=Non
                 except Exception as e:
                     logger.error(f"[!] [SCHEDULER] ZAP PDF generation failed: {e}")
 
-    scan_logger.create_full_scan_log(user.id, "ZAP", target, duration, finding_count, status=status, report_path=str(pdf_path) if scan_successful else None, origin="scheduled")
+    log_id = scan_logger.create_full_scan_log(user.id, "ZAP", target, duration, finding_count, status=status, report_path=str(pdf_path) if scan_successful else None, origin="scheduled")
+    
+    if scan_successful and config.get('executive_summary', False):
+         try:
+             _trigger_executive_summary_generation(log_id, str(pdf_path), "ZAP", target, user_identifier)
+         except Exception as e:
+             logger.error(f"[!] [SCHEDULER] ZAP Executive Summary generation failed: {e}")
+
     logger.info(f"[+] [SCHEDULER] ZAP scan on {target} finished: {status}")
 
 
@@ -639,7 +650,7 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=Non
 
     if report_file:
         status = "Completed"
-        summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_dir, user_id=user_identifier, target=target)
+        summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_dir, user_id=user_identifier, target=target, timestamp=timestamp)
         if summary:
             finding_count = len(summary.get('protocols', [])) + len(summary.get('vulnerabilities', []))
     
@@ -649,6 +660,8 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=Non
     if report_file:
         try:
             pdf_generator.create_ssl_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
+            if config.get('executive_summary', False):
+                 _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "SSLScan", target, user_identifier)
         except Exception as e:
             logger.error(f"[!] [SCHEDULER] SSL PDF generation failed: {e}")
 
@@ -698,9 +711,11 @@ def _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp
         summary_data = packet_sniffer.analyze_pcap_to_json(sniffer_results, target, user_id=user_identifier)
         if summary_data:
              finding_count = len(summary_data.get("security_anomaly_report", {}).get("port_scans", []))
-             packet_sniffer.save_json_report(summary_data, output_dir=user_dir, user_id=user_identifier, target=target)
+             packet_sniffer.save_json_report(summary_data, output_dir=user_dir, user_id=user_identifier, target=target, timestamp=timestamp)
              try:
                  pdf_generator.create_sniffer_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
+                 if config.get('executive_summary', False):
+                      _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "Sniffer", target, user_identifier)
              except Exception as e:
                  logger.error(f"[!] [SCHEDULER] Sniffer PDF generation failed: {e}")
 
@@ -735,7 +750,7 @@ def _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=Non
     if not target.startswith(('http://', 'https://')):
         target = 'http://' + target
 
-    sql_results_file = sql_scanner.run_sql_scan(target, output_dir=user_dir, scan_mode=scan_type, user_id=user_identifier)
+    sql_results_file = sql_scanner.run_sql_scan(target, output_dir=user_dir, scan_mode=scan_type, user_id=user_identifier, timestamp=timestamp)
     duration = time.time() - start_time
 
     status = "Completed" if sql_results_file else "Failed"
@@ -754,6 +769,8 @@ def _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=Non
                  finding_count = len(data.get("vulnerabilities", []))
              try:
                  pdf_generator.create_sql_report_pdf(sql_results_file, str(user_paths["pdf_report"]))
+                 if config.get('executive_summary', False):
+                      _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "SQLMap", target, user_identifier)
              except Exception as e:
                  logger.error(f"[!] [SCHEDULER] SQL PDF generation failed: {e}")
 
@@ -812,6 +829,8 @@ def _dispatch_semgrep(target, config, user, user_identifier, base_dir):
                 data = json.load(f)
                 finding_count = data.get('total_findings', 0)
             pdf_generator.create_semgrep_report_pdf(report_file, str(user_paths["pdf_report"]))
+            if config.get('executive_summary', False):
+                 _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "Semgrep", target, user_identifier)
         except Exception as e:
             logger.error(f"[!] [SCHEDULER] Semgrep PDF generation failed: {e}")
 
@@ -861,6 +880,8 @@ def _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=Non
             if json_path:
                 try:
                     pdf_generator.create_api_report_pdf(json_path, str(user_paths["pdf_report"]))
+                    if config.get('executive_summary', False):
+                         _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "API Scanner", target, user_identifier)
                 except Exception as e:
                     logger.error(f"[!] [SCHEDULER] API PDF generation failed: {e}")
 
@@ -904,6 +925,18 @@ def _dispatch_killchain(target, config, user, user_identifier, base_dir, timesta
     )
 
     logger.info(f"[+] [SCHEDULER] Kill Chain audit on {target} completed.")
+
+    if config.get('executive_summary', False):
+         try:
+             from models.models import ScanLog
+             # Fetch log to get report_path updated by run_job
+             log_row = primary_db.session.get(ScanLog, log_id)
+             if log_row and log_row.report_path:
+                  _trigger_executive_summary_generation(log_id, log_row.report_path, "Kill Chain", target, user_identifier)
+             else:
+                  logger.warning(f"[!] [SCHEDULER] Missing report_path for Kill Chain Log {log_id}")
+         except Exception as e:
+              logger.error(f"[!] [SCHEDULER] Kill Chain Executive Summary generation failed: {e}")
 
 
 def reload_all_jobs(app):
@@ -1027,3 +1060,58 @@ def _consent_watchdog():
         except Exception as e:
             logger.error(f"[!] [SCHEDULER] Watchdog error: {e}")
             traceback.print_exc()
+
+
+def _trigger_executive_summary_generation(log_id, report_path, tool_name, target, user_identifier):
+    """
+    Calls the AI chatbot backend to generate an Executive Summary for a scan report.
+    Creates and saves the PDF.
+    """
+    import requests
+    import os
+    from Services.pdf_generator import create_executive_summary_report_pdf
+
+    SERVER_PROXY_URL = "http://127.0.0.1:5000"
+
+    if not report_path or not os.path.exists(report_path):
+        logger.warning(f"[!] [SCHEDULER] Cannot generate Executive Summary: Report path invalid ({report_path})")
+        return
+
+    exec_path = report_path.replace(".pdf", "_executive.pdf")
+    
+    try:
+        # Optimize Parameters: Use file_path (skips upload) and background=False (sync summary)
+        params = {
+            'llm_mode': 'gemini-2.5-flash',
+            'user_id': user_identifier,
+            'file_path': os.path.abspath(report_path),
+            'background': False
+        }
+        
+        proxy_url = f"{SERVER_PROXY_URL}/upload_report"
+        
+        logger.info(f"[*] [SCHEDULER] Auto-generating Executive Summary for Log {log_id} (Path: {report_path})")
+        resp = requests.post(proxy_url, params=params, timeout=45)
+        resp.raise_for_status()
+        
+        data = resp.json()
+        summary_text = data.get('summary')
+        if not summary_text or "Analysis and summary are being generated" in summary_text:
+             logger.warning(f"[!] [SCHEDULER] Chatbot backend returned placeholder or no summary for Log {log_id}")
+             return
+
+        # Create PDF
+        metadata = {
+            "target": target,
+            "tool_name": tool_name,
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
+        success = create_executive_summary_report_pdf(summary_text, metadata, exec_path)
+        if success:
+             logger.info(f"[+] [SCHEDULER] Automated Executive Summary PDF created: {exec_path}")
+        else:
+             logger.warning(f"[!] [SCHEDULER] Failed to create Executive Summary PDF for Log {log_id}")
+
+    except Exception as e:
+         logger.error(f"[!] [SCHEDULER] Error auto-generating executive summary for Log {log_id}: {e}", exc_info=True)

@@ -753,6 +753,83 @@ def download_report(log_id):
     )
 
 
+@scheduler_bp.route('/api/reports/<int:log_id>/executive_summary', methods=['GET'])
+@login_required
+def download_executive_summary_report(log_id):
+    """Generate and serve the Executive Summary PDF for a scan log."""
+    from models.models import ScanLog
+    from flask import send_file
+    import os
+    import requests
+    from Services.pdf_generator import create_executive_summary_report_pdf
+    from werkzeug.utils import secure_filename
+
+    # Fix: Hardcode or load locally
+    SERVER_PROXY_URL = "http://127.0.0.1:5000"
+
+    log = db.session.get(ScanLog, log_id)
+    if not log or log.user_id != current_user.id:
+        return jsonify({"status": "error", "message": "Report not found."}), 404
+
+    if not log.report_path or not os.path.exists(log.report_path):
+        return jsonify({"status": "error", "message": "Original report file does not exist on server."}), 404
+
+    # Optimize Pathing
+    exec_path = log.report_path.replace(".pdf", "_executive.pdf")
+    exec_filename = os.path.basename(exec_path)
+
+    if os.path.exists(exec_path):
+        logger.info(f"[*] Serving cached Executive Summary: {exec_path}")
+        return send_file(exec_path, as_attachment=True, download_name=exec_filename, mimetype='application/pdf')
+
+    # Generate it
+    logger.info(f"[*] Generating Executive Summary PDF for Log ID {log_id}")
+    
+    try:
+        user_id_safe = f"{secure_filename(current_user.username)}_{current_user.id}"
+        
+        # Optimize Parameters: Use file_path (skips upload) and background=False (sync summary)
+        params = {
+            'llm_mode': 'gemini-2.5-flash',
+            'user_id': user_id_safe,
+            'file_path': os.path.abspath(log.report_path), # Absolute path needed
+            'background': False
+        }
+        
+        proxy_url = f"{SERVER_PROXY_URL}/upload_report"
+        
+        logger.info(f"[*] Calling AI chatbot backend for sync summarization (Path: {log.report_path})")
+        # No 'files' argument needed with file_path
+        resp = requests.post(proxy_url, params=params, timeout=45) 
+        resp.raise_for_status()
+        
+        data = resp.json()
+        summary_text = data.get('summary')
+        if not summary_text or "Analysis and summary are being generated" in summary_text:
+             logger.warning(f"[!] Chatbot backend returned placeholder or no summary. Response: {data}")
+             return jsonify({"status": "error", "message": "Failed to generate synchronous summary from AI."}), 500
+
+        # 3. Create PDF
+        metadata = {
+            "target": log.target,
+            "tool_name": log.tool_name,
+            "date": log.start_time.strftime("%Y-%m-%d %H:%M:%S") if log.start_time else "N/A"
+        }
+        
+        success = create_executive_summary_report_pdf(summary_text, metadata, exec_path)
+        if not success:
+             return jsonify({"status": "error", "message": "Failed to create Executive Summary PDF."}), 500
+
+        return send_file(exec_path, as_attachment=True, download_name=exec_filename, mimetype='application/pdf')
+
+    except requests.exceptions.HTTPError as e:
+         logger.error(f"HTTP error creating executive summary: {e.response.text if hasattr(e, 'response') else e}", exc_info=True)
+         return jsonify({"status": "error", "message": f"AI Backend Error: {str(e)}"}), 502
+    except Exception as e:
+         logger.error(f"Error creating executive summary: {e}", exc_info=True)
+         return jsonify({"status": "error", "message": f"Error: {str(e)}"}), 500
+
+
 @scheduler_bp.route('/confirm-scan/<token>')
 def confirm_scan(token):
     """

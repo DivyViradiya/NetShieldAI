@@ -680,9 +680,9 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
 
     return parsed_data
 
-def save_nmap_json(data, output_dir=None, user_id=None, queue_id=None, target=None):
+def save_nmap_json(data, output_dir=None, user_id=None, queue_id=None, target=None, timestamp=None):
     """Saves the parsed scan data to the JSON report file for PDF generation."""
-    paths = get_output_paths(output_dir, target=target)
+    paths = get_output_paths(output_dir, target=target, timestamp=timestamp)
     json_file = paths["json_report"]
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
@@ -916,7 +916,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         # 2. Generate JSON Report (PDF)
         log(f"[+] Processing results for PDF report...", user_id, queue_id)
         scan_data = parse_nmap_grepable_output(output_file, user_id=user_id, queue_id=queue_id)
-        save_nmap_json(scan_data, output_dir=output_dir, user_id=user_id, queue_id=queue_id, target=original_input)
+        save_nmap_json(scan_data, output_dir=output_dir, user_id=user_id, queue_id=queue_id, target=original_input, timestamp=timestamp)
         
         return str(output_file)
 

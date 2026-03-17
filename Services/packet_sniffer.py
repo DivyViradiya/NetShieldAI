@@ -514,8 +514,8 @@ def build_pdf_report_context(analysis_data):
     # (Existing context logic remains compatible)
     return {"metadata": analysis_data.get('traffic_summary', {}), "anomalies": analysis_data.get('security_anomaly_report', {}), "raw": analysis_data}
 
-def save_json_report(analysis_data, output_dir=None, user_id=None, target=None):
-    paths = get_output_paths(output_dir, user_id=user_id, target=target)
+def save_json_report(analysis_data, output_dir=None, user_id=None, target=None, timestamp=None):
+    paths = get_output_paths(output_dir, user_id=user_id, target=target, timestamp=timestamp)
     json_path = paths["json_report"]
     try:
         with open(json_path, 'w', encoding='utf-8') as f:

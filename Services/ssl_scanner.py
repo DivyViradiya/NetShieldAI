@@ -139,7 +139,7 @@ def save_ssl_json(data, output_dir=None, user_id=None, target=None, timestamp=No
         log(f"[!] Failed to save SSL JSON report: {e}", user_id)
         return None
 
-def run_ssl_scan(target_host, output_dir=None, user_id=None):
+def run_ssl_scan(target_host, output_dir=None, user_id=None, timestamp=None):
     """Runs an SSL/TLS scan using the local sslscan.exe."""
     if output_dir and isinstance(output_dir, str):
         output_dir = Path(output_dir)
@@ -152,7 +152,7 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None):
     if not is_sslscan_available(user_id=user_id):
         return None
     
-    paths = get_output_paths(output_dir, user_id=user_id, target=target_host)
+    paths = get_output_paths(output_dir, user_id=user_id, target=target_host, timestamp=timestamp)
     xml_report_path = paths["xml_report"]
     
     # Ensure directory exists

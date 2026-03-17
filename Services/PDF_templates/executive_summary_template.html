@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NetShieldAI | Executive Summary</title>
+    <style>
+        /* --- SUBTLE SLATE & STEEL THEME --- */
+        :root {
+            --neo-blue: #475569;
+            --neo-blue-accent: #3b82f6;
+            --neo-blue-soft: #f8fafc;
+            --neo-border: #e2e8f0;
+            --neo-text-main: #1e293b;
+            --neo-text-sub: #64748b;
+            --risk-high: #be123c;
+            --risk-low: #059669;
+            --radius: 8px;
+        }
+
+        @page {
+            margin: 1.5cm;
+            @bottom-right {
+                content: "Page " counter(page) " of " counter(pages);
+                font-size: 8pt;
+                color: #64748b;
+            }
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--neo-text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px 30px;
+            background-color: #fff;
+        }
+
+        /* --- HEADER --- */
+        header {
+            border-bottom: 2px solid var(--neo-blue-accent);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .logo-container img {
+            height: 36px;
+            display: block;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 0;
+            color: var(--neo-text-main);
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+        }
+
+        .scan-subtitle {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--neo-text-sub);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        /* --- INFO BAR --- */
+        .report-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid var(--neo-border);
+            background: var(--neo-blue-soft);
+            margin-bottom: 35px;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .info-box {
+            padding: 15px 20px;
+            border-right: 1px solid var(--neo-border);
+        }
+
+        .info-box:last-child { border-right: none; }
+
+        .info-box strong {
+            display: block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: var(--neo-text-sub);
+            letter-spacing: 0.06em;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .info-box span {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--neo-text-main);
+        }
+
+        /* --- SECTION HEADERS --- */
+        h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--neo-blue-accent);
+            margin: 30px 0 15px 0;
+            letter-spacing: 0.1em;
+            border-left: 4px solid var(--neo-blue-accent);
+            padding-left: 12px;
+            font-weight: 800;
+        }
+
+        /* --- SUMMARY CONTAINER --- */
+        .summary-content {
+            background: #fff;
+            border: 1px solid var(--neo-border);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            font-size: 0.95rem;
+            color: #334155;
+        }
+
+        /* Markdown styling inside summary */
+        .summary-content h1, .summary-content h2, .summary-content h3 {
+            color: var(--neo-text-main);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .summary-content h1 { font-size: 1.3rem; }
+        .summary-content h2 { font-size: 1.15rem; }
+        .summary-content h3 { font-size: 1rem; border: none; padding-left: 0; text-transform: none; }
+
+        .summary-content ul, .summary-content ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .summary-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-content p {
+            margin-bottom: 1rem;
+        }
+
+        /* Tables */
+        .summary-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.85rem;
+        }
+        
+        .summary-content th, .summary-content td {
+            border: 1px solid var(--neo-border);
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        .summary-content th {
+            background-color: var(--neo-blue-soft);
+            color: var(--neo-text-main);
+            font-weight: 700;
+        }
+
+        .summary-content tr:nth-child(even) {
+            background-color: #fdfdfd;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            margin-top: 60px;
+            padding: 15px 0;
+            border-top: 1px solid var(--neo-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 0.7rem;
+            color: var(--neo-text-sub);
+        }
+
+        .footer-logo { height: 20px; opacity: 0.6; }
+
+        .footer-text {
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="{{ logo_url }}" alt="NetShieldAI">
+        </div>
+        <div class="header-right">
+            <h1>Executive Summary</h1>
+            <div class="scan-subtitle">// Risk & Intelligence Overview</div>
+        </div>
+    </header>
+
+    <div class="report-info">
+        <div class="info-box">
+            <strong>Target Asset</strong>
+            <span>{{ metadata.target | default('N/A') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Audit Tool</strong>
+            <span>{{ metadata.tool_name | default('Security Analyzer') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Timestamp</strong>
+            <span>{{ metadata.date | default('N/A') }}</span>
+        </div>
+    </div>
+
+    <section>
+        <h3>Strategic Overview</h3>
+        <div class="summary-content">
+            {{ summary_content | safe }}
+        </div>
+    </section>
+
+    <footer>
+        <img src="{{ logo_url_small }}" alt="NS Logo" class="footer-logo">
+        <div class="footer-text">
+            NetShieldAI Reporting Engine // Executive Brief // {{ metadata.date }}
+        </div>
+    </footer>
+
+</body>
+</html>

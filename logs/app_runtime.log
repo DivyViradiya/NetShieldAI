@@ -39744,3 +39744,711 @@ WHERE scheduled_scan_job.is_enabled = 1]
 [2026-03-17 20:10:57] [INFO    ] [run] [*] Registering Core Modules...
 [2026-03-17 20:10:57] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
 [2026-03-17 20:11:06] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 20:11:16] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 20:11:16] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 20:11:16] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 20:11:16] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 20:11:16] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 20:11:27] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 20:11:28] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 20:11:28] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 20:11:28] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 20:11:28] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 20:11:28] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 20:11:29] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 20:11:32] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 20:11:32] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 20:11:34] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 20:11:34] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 20:11:36] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-17 20:11:36] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-17 20:11:37] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: Admin
+[2026-03-17 20:11:37] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 20:12:07] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 20:12:08] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 20:12:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:12:28.288353 (Window: 2026-03-17 20:12:28.288353 to 2026-03-17 20:43:28.288353)
+[2026-03-17 20:13:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:13:28.267515 (Window: 2026-03-17 20:13:28.267515 to 2026-03-17 20:44:28.267515)
+[2026-03-17 20:13:58] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 20:13:58] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 20:13:58] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 20:13:59] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 20:13:59] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 20:13:59] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 20:13:59] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 20:13:59] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 20:14:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:14:28.267675 (Window: 2026-03-17 20:14:28.267675 to 2026-03-17 20:45:28.267675)
+[2026-03-17 20:15:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:15:28.270557 (Window: 2026-03-17 20:15:28.270557 to 2026-03-17 20:46:28.270557)
+[2026-03-17 20:16:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:16:28.268827 (Window: 2026-03-17 20:16:28.268827 to 2026-03-17 20:47:28.268827)
+[2026-03-17 20:18:26] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:18:26.010496 (Window: 2026-03-17 20:18:26.010496 to 2026-03-17 20:49:26.010496)
+[2026-03-17 20:18:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:18:28.274660 (Window: 2026-03-17 20:18:28.274660 to 2026-03-17 20:49:28.274660)
+[2026-03-17 20:19:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:19:28.279836 (Window: 2026-03-17 20:19:28.279836 to 2026-03-17 20:50:28.279836)
+[2026-03-17 20:20:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:20:28.282411 (Window: 2026-03-17 20:20:28.282411 to 2026-03-17 20:51:28.282411)
+[2026-03-17 20:21:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:21:28.297042 (Window: 2026-03-17 20:21:28.297042 to 2026-03-17 20:52:28.297042)
+[2026-03-17 20:22:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:22:28.277734 (Window: 2026-03-17 20:22:28.277734 to 2026-03-17 20:53:28.277734)
+[2026-03-17 20:23:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:23:28.264560 (Window: 2026-03-17 20:23:28.264560 to 2026-03-17 20:54:28.264560)
+[2026-03-17 20:24:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:24:28.275452 (Window: 2026-03-17 20:24:28.275452 to 2026-03-17 20:55:28.275452)
+[2026-03-17 20:25:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:25:28.268720 (Window: 2026-03-17 20:25:28.268720 to 2026-03-17 20:56:28.268720)
+[2026-03-17 20:26:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:26:28.268538 (Window: 2026-03-17 20:26:28.268538 to 2026-03-17 20:57:28.268538)
+[2026-03-17 20:27:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:27:28.277629 (Window: 2026-03-17 20:27:28.277629 to 2026-03-17 20:58:28.277629)
+[2026-03-17 20:28:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:28:28.265247 (Window: 2026-03-17 20:28:28.265247 to 2026-03-17 20:59:28.265247)
+[2026-03-17 20:29:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:29:28.276128 (Window: 2026-03-17 20:29:28.276128 to 2026-03-17 21:00:28.276128)
+[2026-03-17 20:30:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:30:28.275608 (Window: 2026-03-17 20:30:28.275608 to 2026-03-17 21:01:28.275608)
+[2026-03-17 20:31:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:31:28.269262 (Window: 2026-03-17 20:31:28.269262 to 2026-03-17 21:02:28.269262)
+[2026-03-17 20:32:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:32:28.270513 (Window: 2026-03-17 20:32:28.270513 to 2026-03-17 21:03:28.270513)
+[2026-03-17 20:33:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:33:28.277551 (Window: 2026-03-17 20:33:28.277551 to 2026-03-17 21:04:28.277551)
+[2026-03-17 20:34:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:34:28.267197 (Window: 2026-03-17 20:34:28.267197 to 2026-03-17 21:05:28.267197)
+[2026-03-17 20:35:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:35:28.266800 (Window: 2026-03-17 20:35:28.266800 to 2026-03-17 21:06:28.266800)
+[2026-03-17 20:36:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:36:28.272421 (Window: 2026-03-17 20:36:28.272421 to 2026-03-17 21:07:28.272421)
+[2026-03-17 20:37:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:37:28.267517 (Window: 2026-03-17 20:37:28.267517 to 2026-03-17 21:08:28.267517)
+[2026-03-17 20:38:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:38:28.269177 (Window: 2026-03-17 20:38:28.269177 to 2026-03-17 21:09:28.269177)
+[2026-03-17 20:39:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:39:28.275001 (Window: 2026-03-17 20:39:28.275001 to 2026-03-17 21:10:28.275001)
+[2026-03-17 20:40:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:40:28.269897 (Window: 2026-03-17 20:40:28.269897 to 2026-03-17 21:11:28.269897)
+[2026-03-17 20:41:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:41:28.273704 (Window: 2026-03-17 20:41:28.273704 to 2026-03-17 21:12:28.273704)
+[2026-03-17 20:42:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:42:28.277545 (Window: 2026-03-17 20:42:28.277545 to 2026-03-17 21:13:28.277545)
+[2026-03-17 20:43:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:43:28.270412 (Window: 2026-03-17 20:43:28.270412 to 2026-03-17 21:14:28.270412)
+[2026-03-17 20:44:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:44:28.270319 (Window: 2026-03-17 20:44:28.270319 to 2026-03-17 21:15:28.270319)
+[2026-03-17 20:45:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:45:28.273625 (Window: 2026-03-17 20:45:28.273625 to 2026-03-17 21:16:28.273625)
+[2026-03-17 20:46:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:46:28.276086 (Window: 2026-03-17 20:46:28.276086 to 2026-03-17 21:17:28.276086)
+[2026-03-17 20:47:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:47:28.278665 (Window: 2026-03-17 20:47:28.278665 to 2026-03-17 21:18:28.278665)
+[2026-03-17 20:48:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:48:28.263975 (Window: 2026-03-17 20:48:28.263975 to 2026-03-17 21:19:28.263975)
+[2026-03-17 20:49:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:49:28.266864 (Window: 2026-03-17 20:49:28.266864 to 2026-03-17 21:20:28.266864)
+[2026-03-17 20:50:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:50:28.277676 (Window: 2026-03-17 20:50:28.277676 to 2026-03-17 21:21:28.277676)
+[2026-03-17 20:51:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:51:40.297107 (Window: 2026-03-17 20:51:40.297107 to 2026-03-17 21:22:40.297107)
+[2026-03-17 20:52:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:52:28.277030 (Window: 2026-03-17 20:52:28.277030 to 2026-03-17 21:23:28.277030)
+[2026-03-17 20:52:29] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 20:52:29] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 20:52:32] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 20:52:32] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 20:52:33] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-17 20:52:37] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-17 20:52:37] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-17 20:53:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:53:28.271170 (Window: 2026-03-17 20:53:28.271170 to 2026-03-17 21:24:28.271170)
+[2026-03-17 20:54:11] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 20:54:11] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 20:54:16] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 20:54:16] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 20:54:17] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 20:54:17] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 20:54:20] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 20:54:20] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 20:54:26] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 20:54:26] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 20:54:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:54:28.274242 (Window: 2026-03-17 20:54:28.274242 to 2026-03-17 21:25:28.274242)
+[2026-03-17 20:54:31] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 20:54:31] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 20:54:38] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-17 20:54:38] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-17 20:54:57] [INFO    ] [run] [>] POST /register from 127.0.0.1
+[2026-03-17 20:54:57] [INFO    ] [auth_bp] [+] New User Registration Attempt: DivyaViradiya
+[2026-03-17 20:55:03] [INFO    ] [email_service] [+] [EMAIL] OTP email sent successfully. Message Id: 19cfc6682adc6ee1
+[2026-03-17 20:55:03] [INFO    ] [auth_bp] [+] User DivyaViradiya registered. OTP sent to divya.viradiya.7@gmail.com.
+[2026-03-17 20:55:03] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 20:55:24] [INFO    ] [run] [>] POST /verify_registration from 127.0.0.1
+[2026-03-17 20:55:24] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 20:55:25] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 20:55:25] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 20:55:25] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 20:55:25] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 20:55:25] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 20:55:25] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 20:55:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:55:28.266751 (Window: 2026-03-17 20:55:28.266751 to 2026-03-17 21:26:28.266751)
+[2026-03-17 20:56:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:56:28.269117 (Window: 2026-03-17 20:56:28.269117 to 2026-03-17 21:27:28.269117)
+[2026-03-17 20:56:43] [INFO    ] [run] [>] POST /logout from 127.0.0.1
+[2026-03-17 20:56:43] [INFO    ] [auth_bp] [*] User Logout: DivyaViradiya
+[2026-03-17 20:56:43] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 20:56:43] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 20:56:45] [INFO    ] [run] [>] GET /forgot_password from 127.0.0.1
+[2026-03-17 20:56:48] [INFO    ] [run] [>] POST /forgot_password from 127.0.0.1
+[2026-03-17 20:56:51] [INFO    ] [email_service] [+] [EMAIL] OTP email sent successfully. Message Id: 19cfc682c31a2c50
+[2026-03-17 20:56:51] [INFO    ] [auth_bp] [+] Password reset email sent to divya.viradiya.7@gmail.com via Gmail API
+[2026-03-17 20:56:51] [INFO    ] [run] [>] GET /verify_otp from 127.0.0.1
+[2026-03-17 20:57:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:57:28.279364 (Window: 2026-03-17 20:57:28.279364 to 2026-03-17 21:28:28.279364)
+[2026-03-17 20:58:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:58:28.270930 (Window: 2026-03-17 20:58:28.270930 to 2026-03-17 21:29:28.270930)
+[2026-03-17 20:58:35] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 20:58:35] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 20:58:37] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 20:58:37] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 20:58:42] [INFO    ] [run] [>] POST /login from 127.0.0.1
+[2026-03-17 20:58:42] [INFO    ] [auth_bp] [*] Login attempt for: DivyaViradiya
+[2026-03-17 20:58:42] [DEBUG   ] [auth_bp] [+] User 'DivyaViradiya' found in database.
+[2026-03-17 20:58:42] [DEBUG   ] [auth_bp] [?] Password match for 'DivyaViradiya': True
+[2026-03-17 20:58:42] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 20:58:42] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 20:58:42] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 20:58:42] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 20:58:42] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 20:58:42] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 20:58:42] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 20:59:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 20:59:28.279517 (Window: 2026-03-17 20:59:28.279517 to 2026-03-17 21:30:28.279517)
+[2026-03-17 21:00:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:00:28.272475 (Window: 2026-03-17 21:00:28.272475 to 2026-03-17 21:31:28.272475)
+[2026-03-17 21:01:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:01:28.355919 (Window: 2026-03-17 21:01:28.355919 to 2026-03-17 21:32:28.355919)
+[2026-03-17 21:02:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:02:28.279896 (Window: 2026-03-17 21:02:28.279896 to 2026-03-17 21:33:28.279896)
+[2026-03-17 21:03:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:03:28.279339 (Window: 2026-03-17 21:03:28.279339 to 2026-03-17 21:34:28.279339)
+[2026-03-17 21:04:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:04:28.275255 (Window: 2026-03-17 21:04:28.275255 to 2026-03-17 21:35:28.275255)
+[2026-03-17 21:05:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:05:28.273742 (Window: 2026-03-17 21:05:28.273742 to 2026-03-17 21:36:28.273742)
+[2026-03-17 21:06:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:06:28.267061 (Window: 2026-03-17 21:06:28.267061 to 2026-03-17 21:37:28.267061)
+[2026-03-17 21:07:28] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:07:28.278444 (Window: 2026-03-17 21:07:28.278444 to 2026-03-17 21:38:28.278444)
+[2026-03-17 21:23:27] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 21:23:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:23:50] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:23:50] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 21:23:50] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 21:23:50] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 21:23:56] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:23:56] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:23:56] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:23:56] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:23:56] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:23:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:23:56.694890 (Window: 2026-03-17 21:23:56.694890 to 2026-03-17 21:54:56.694890)
+[2026-03-17 21:23:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:24:07] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 21:24:07] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-17 21:24:09] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 21:24:09] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:24:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:24:56.662480 (Window: 2026-03-17 21:24:56.662480 to 2026-03-17 21:55:56.662480)
+[2026-03-17 21:25:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:25:56.661182 (Window: 2026-03-17 21:25:56.661182 to 2026-03-17 21:56:56.661182)
+[2026-03-17 21:25:59] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 21:26:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:26:56.657502 (Window: 2026-03-17 21:26:56.657502 to 2026-03-17 21:57:56.657502)
+[2026-03-17 21:27:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:27:56.665544 (Window: 2026-03-17 21:27:56.665544 to 2026-03-17 21:58:56.665544)
+[2026-03-17 21:28:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:28:56.654662 (Window: 2026-03-17 21:28:56.654662 to 2026-03-17 21:59:56.654662)
+[2026-03-17 21:29:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:29:56.657522 (Window: 2026-03-17 21:29:56.657522 to 2026-03-17 22:00:56.657522)
+[2026-03-17 21:30:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:30:56.665925 (Window: 2026-03-17 21:30:56.665925 to 2026-03-17 22:01:56.665925)
+[2026-03-17 21:31:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:31:56.665289 (Window: 2026-03-17 21:31:56.665289 to 2026-03-17 22:02:56.665289)
+[2026-03-17 21:32:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:32:56.657435 (Window: 2026-03-17 21:32:56.657435 to 2026-03-17 22:03:56.657435)
+[2026-03-17 21:34:02] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:34:02] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:34:02] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:34:02] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:34:02] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:34:02] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:34:02.638402 (Window: 2026-03-17 21:34:02.638402 to 2026-03-17 22:05:02.638402)
+[2026-03-17 21:34:02] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:34:22] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:34:22] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:34:22] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:34:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:34:22] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:34:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:35:06] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 21:35:22] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:35:22.733597 (Window: 2026-03-17 21:35:22.733597 to 2026-03-17 22:06:22.733597)
+[2026-03-17 21:36:04] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 21:36:15] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:36:15] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:36:15] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 21:36:15] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 21:36:15] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 21:36:21] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:36:21] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:36:21] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:36:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:36:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:36:22] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:36:52] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 21:36:52] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 21:36:53] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 21:36:53] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 21:36:53] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 21:36:53] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 21:36:53] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 21:36:54] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 21:36:54] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 21:36:54] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 21:36:55] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 21:36:55] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:37:15] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:37:15] [INFO    ] [scheduler_bp] [+] Profile 'test' created by DivyaViradiya
+[2026-03-17 21:37:15] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 21:37:15] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 21:37:16] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 21:37:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=once)
+[2026-03-17 21:37:16] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'test'
+[2026-03-17 21:37:16] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:37:16] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'test' (1 configs × 1 targets)
+[2026-03-17 21:37:16] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 21:37:16] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.27.120 with timing -T4...
+[2026-03-17 21:37:16] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_9206fe15.txt 104.18.27.120
+[2026-03-17 21:37:21] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:37:21.982745 (Window: 2026-03-17 21:37:21.982745 to 2026-03-17 22:08:21.982745)
+[2026-03-17 21:37:39] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 21:37:43] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 21:37:43] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 21:38:03] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 21:38:11] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 21:38:13] [INFO    ] [run] [>] GET /scheduler/api/reports/1/executive_summary from 127.0.0.1
+[2026-03-17 21:38:21] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:38:21.959872 (Window: 2026-03-17 21:38:21.959872 to 2026-03-17 22:09:21.959872)
+[2026-03-17 21:39:21] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:39:21.963126 (Window: 2026-03-17 21:39:21.963126 to 2026-03-17 22:10:21.963126)
+[2026-03-17 21:40:21] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:40:21.952647 (Window: 2026-03-17 21:40:21.952647 to 2026-03-17 22:11:21.952647)
+[2026-03-17 21:41:21] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:41:21.984082 (Window: 2026-03-17 21:41:21.984082 to 2026-03-17 22:12:21.984082)
+[2026-03-17 21:42:21] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:42:21.952215 (Window: 2026-03-17 21:42:21.952215 to 2026-03-17 22:13:21.952215)
+[2026-03-17 21:43:21] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:43:21.957740 (Window: 2026-03-17 21:43:21.957740 to 2026-03-17 22:14:21.957740)
+[2026-03-17 21:44:02] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:44:02] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:44:02] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:44:02] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:44:02] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:44:02] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:44:16] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:44:16] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:44:16] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:44:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:44:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:44:16] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:44:36] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:44:36] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:44:36] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:44:36] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:44:36] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:44:36] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:48:44] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 21:48:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:48:50] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:48:50] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 21:48:50] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 21:48:50] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 21:48:56] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:48:56] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:48:56] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:48:56] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:48:56] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:48:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:48:56.378458 (Window: 2026-03-17 21:48:56.378458 to 2026-03-17 22:19:56.378458)
+[2026-03-17 21:48:56] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:49:07] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 21:49:07] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-17 21:49:09] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 21:49:09] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:49:12] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 21:49:12] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 21:49:12] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 21:49:12] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:49:15] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 21:49:15] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1: 'No job by the id of scheduled_scan_1 was found'
+[2026-03-17 21:49:15] [INFO    ] [scheduler_bp] [-] Profile 'test' deleted by DivyaViradiya
+[2026-03-17 21:49:15] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:49:23] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 21:49:39] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:49:39] [INFO    ] [scheduler_bp] [+] Profile 'test' created by DivyaViradiya
+[2026-03-17 21:49:39] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 21:49:39] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 21:49:40] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 21:49:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=once)
+[2026-03-17 21:49:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'test' (1 configs × 1 targets)
+[2026-03-17 21:49:40] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'test'
+[2026-03-17 21:49:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 21:49:40] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:49:40] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.27.120 with timing -T4...
+[2026-03-17 21:49:40] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_9e0406a7.txt 104.18.27.120
+[2026-03-17 21:49:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:49:56.378464 (Window: 2026-03-17 21:49:56.378464 to 2026-03-17 22:20:56.378464)
+[2026-03-17 21:49:58] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 21:50:01] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 21:50:01] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 21:50:22] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 21:50:25] [INFO    ] [run] [>] GET /scheduler/api/reports/2/executive_summary from 127.0.0.1
+[2026-03-17 21:50:42] [INFO    ] [run] [>] GET /scheduler/api/reports/2/download from 127.0.0.1
+[2026-03-17 21:50:42] [INFO    ] [run] [>] GET /favicon.ico from 127.0.0.1
+[2026-03-17 21:50:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:50:56.373300 (Window: 2026-03-17 21:50:56.373300 to 2026-03-17 22:21:56.373300)
+[2026-03-17 21:51:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:51:56.376684 (Window: 2026-03-17 21:51:56.376684 to 2026-03-17 22:22:56.376684)
+[2026-03-17 21:52:56] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:52:56.373482 (Window: 2026-03-17 21:52:56.373482 to 2026-03-17 22:23:56.373482)
+[2026-03-17 21:53:08] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 21:53:08] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 21:53:08] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 21:53:09] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 21:53:09] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 21:53:10] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-17 21:53:10] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-17 21:53:10] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 21:53:10] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 21:53:12] [INFO    ] [run] [>] POST /network_scanner/scan from 127.0.0.1
+[2026-03-17 21:53:12] [INFO    ] [network_scanner] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[2026-03-17 21:53:12] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[2026-03-17 21:53:12] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 21:53:12] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_f0ae506c.txt 192.168.29.48
+[2026-03-17 21:53:20] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 21:53:20] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 21:53:20] [INFO    ] [run] [>] GET /nmaplowercheck1773764600 from 192.168.29.48
+[2026-03-17 21:53:20] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 21:53:20] [INFO    ] [run] [>] POST /sdk from 192.168.29.48
+[2026-03-17 21:53:20] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 21:53:20] [INFO    ] [run] [>] GET /evox/about from 192.168.29.48
+[2026-03-17 21:53:20] [INFO    ] [run] [>] GET /HNAP1 from 192.168.29.48
+[2026-03-17 21:53:20] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 21:53:20] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 21:53:20] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 21:53:20] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 21:53:20] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 21:53:22] [INFO    ] [network_scanner] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[2026-03-17 21:53:22] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_192_168_29_48_20260317_215322.pdf
+[2026-03-17 21:53:23] [INFO    ] [run] [>] GET /network_scanner/report_history from 127.0.0.1
+[2026-03-17 21:53:27] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-03-17 21:53:29] [INFO    ] [network_scanner] [+] PDF report generated successfully
+[2026-03-17 21:53:29] [INFO    ] [network_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[2026-03-17 21:53:29] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-17 21:53:29] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 21:53:29] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-17 21:53:31] [INFO    ] [run] [>] GET /network_scanner/report_history from 127.0.0.1
+[2026-03-17 21:53:33] [INFO    ] [run] [>] GET /network_scanner/download_pdf from 127.0.0.1
+[2026-03-17 21:54:00] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:54:01] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:54:01] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:54:01] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:54:01] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:54:01] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:54:01.285910 (Window: 2026-03-17 21:54:01.285910 to 2026-03-17 22:25:01.285910)
+[2026-03-17 21:54:01] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:54:35] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:54:35] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:54:35] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:54:35] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:54:35] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:54:35] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:54:50] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: d:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_215001.pdf
+[2026-03-17 21:54:51] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-03-17 21:55:12] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:55:12] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:55:12] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:55:12] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:55:12] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:55:12] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:55:21] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: d:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_213743.pdf
+[2026-03-17 21:55:22] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-03-17 21:55:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 21:55:51] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 21:55:51] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 21:55:51] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 21:55:51] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 21:55:51] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 21:56:07] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-17 21:56:08] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-17 21:56:08] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 21:56:08] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-17 21:56:08] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-17 21:56:08] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 21:56:08] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 21:56:09] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 21:56:09] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 21:56:09] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 21:56:09] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 21:56:11] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/trigger from 127.0.0.1
+[2026-03-17 21:56:11] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'test' (1 configs × 1 targets)
+[2026-03-17 21:56:11] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 21:56:12] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.27.120 with timing -T4...
+[2026-03-17 21:56:12] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_c320e1c8.txt 104.18.27.120
+[2026-03-17 21:56:25] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 21:56:30] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 21:56:32] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 21:56:32] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 21:56:51] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:56:51.188073 (Window: 2026-03-17 21:56:51.188073 to 2026-03-17 22:27:51.188073)
+[2026-03-17 21:57:51] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:57:51.177834 (Window: 2026-03-17 21:57:51.177834 to 2026-03-17 22:28:51.177834)
+[2026-03-17 21:58:51] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:58:51.171254 (Window: 2026-03-17 21:58:51.171254 to 2026-03-17 22:29:51.171254)
+[2026-03-17 21:59:51] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 21:59:51.180183 (Window: 2026-03-17 21:59:51.180183 to 2026-03-17 22:30:51.180183)
+[2026-03-17 22:00:54] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:00:55] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:00:55] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:00:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:00:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:00:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:00:55.255627 (Window: 2026-03-17 22:00:55.255627 to 2026-03-17 22:31:55.255627)
+[2026-03-17 22:00:55] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:01:33] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 22:01:40] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 22:01:46] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:01:46] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:01:46] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 22:01:46] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 22:01:46] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 22:01:51] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:01:51] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:01:51] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:01:51] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:01:51] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:01:51] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:02:04] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 22:02:04] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1: 'No job by the id of scheduled_scan_1 was found'
+[2026-03-17 22:02:04] [INFO    ] [scheduler_bp] [-] Profile 'test' deleted by DivyaViradiya
+[2026-03-17 22:02:04] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:02:06] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 22:02:06] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 22:02:07] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 22:02:07] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:02:23] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 22:02:32] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:02:32] [INFO    ] [scheduler_bp] [+] Profile 'Test' created by DivyaViradiya
+[2026-03-17 22:02:32] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 22:02:32] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 22:02:32] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 22:02:32] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=once)
+[2026-03-17 22:02:32] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'Test'
+[2026-03-17 22:02:32] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:02:32] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test' (1 configs × 1 targets)
+[2026-03-17 22:02:32] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 22:02:32] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.27.120 with timing -T4...
+[2026-03-17 22:02:33] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_af9aff3f.txt 104.18.27.120
+[2026-03-17 22:02:51] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:02:51.865195 (Window: 2026-03-17 22:02:51.865195 to 2026-03-17 22:33:51.865195)
+[2026-03-17 22:02:52] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 22:02:54] [WARNING ] [scheduler_service] [!] [SCHEDULER] JSON report not found for PDF generation: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_104_18_27_120_20260317_220232.json
+[2026-03-17 22:02:54] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 22:02:54] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 22:03:51] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:03:51.860834 (Window: 2026-03-17 22:03:51.860834 to 2026-03-17 22:34:51.860834)
+[2026-03-17 22:04:20] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:04:20] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:04:20] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:04:20] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:04:20] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:04:20] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:04:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:04:34] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:04:34] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:04:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:04:34] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:04:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:04:45] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 22:04:45] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 22:04:45] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 22:04:45] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:04:47] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/trigger from 127.0.0.1
+[2026-03-17 22:04:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test' (1 configs × 1 targets)
+[2026-03-17 22:04:47] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 22:04:47] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.27.120 with timing -T4...
+[2026-03-17 22:04:47] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_ee7cb01d.txt 104.18.27.120
+[2026-03-17 22:04:55] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 22:05:05] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 22:05:07] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220447.pdf
+[2026-03-17 22:05:08] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-03-17 22:05:08] [INFO    ] [scheduler_service] [*] [SCHEDULER] Auto-generating Executive Summary for Log 6 (Path: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220447.pdf)
+[2026-03-17 22:05:08] [INFO    ] [network_scanner] [*] Starting Executive Summary PDF generation: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220447_executive.pdf
+[2026-03-17 22:05:08] [INFO    ] [network_scanner] [+] Executive Summary PDF saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220447_executive.pdf
+[2026-03-17 22:05:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] Automated Executive Summary PDF created: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220447_executive.pdf
+[2026-03-17 22:05:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 22:05:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 22:05:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:05:34.779308 (Window: 2026-03-17 22:05:34.779308 to 2026-03-17 22:36:34.779308)
+[2026-03-17 22:06:34] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:06:34.773754 (Window: 2026-03-17 22:06:34.773754 to 2026-03-17 22:37:34.773754)
+[2026-03-17 22:07:40] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:07:40] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:07:40] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:07:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:07:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:07:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:07:40.902501 (Window: 2026-03-17 22:07:40.902501 to 2026-03-17 22:38:40.902501)
+[2026-03-17 22:07:40] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:08:03] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 22:08:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:08:40.839426 (Window: 2026-03-17 22:08:40.839426 to 2026-03-17 22:39:40.839426)
+[2026-03-17 22:08:44] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 22:08:44] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 22:08:44] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 22:08:44] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:08:48] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/trigger from 127.0.0.1
+[2026-03-17 22:08:48] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test' (1 configs × 1 targets)
+[2026-03-17 22:08:48] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 22:08:48] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
+[2026-03-17 22:08:48] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_fbd0e626.txt 104.18.26.120
+[2026-03-17 22:09:06] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 22:09:08] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220848.pdf
+[2026-03-17 22:09:09] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-03-17 22:09:09] [INFO    ] [scheduler_service] [*] [SCHEDULER] Auto-generating Executive Summary for Log 7 (Path: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220848.pdf)
+[2026-03-17 22:09:21] [INFO    ] [network_scanner] [*] Starting Executive Summary PDF generation: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220848_executive.pdf
+[2026-03-17 22:09:21] [INFO    ] [network_scanner] [+] Executive Summary PDF saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220848_executive.pdf
+[2026-03-17 22:09:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] Automated Executive Summary PDF created: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220848_executive.pdf
+[2026-03-17 22:09:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 22:09:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 22:09:36] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 22:09:36] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 22:09:36] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 22:09:36] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:09:39] [INFO    ] [run] [>] GET /scheduler/api/jobs/1/history from 127.0.0.1
+[2026-03-17 22:09:40] [INFO    ] [run] [>] GET /scheduler/api/reports/7/executive_summary from 127.0.0.1
+[2026-03-17 22:09:40] [INFO    ] [scheduler_bp] [*] Serving cached Executive Summary: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_220848_executive.pdf
+[2026-03-17 22:09:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:09:40.843269 (Window: 2026-03-17 22:09:40.843269 to 2026-03-17 22:40:40.843269)
+[2026-03-17 22:10:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:10:40.838772 (Window: 2026-03-17 22:10:40.838772 to 2026-03-17 22:41:40.838772)
+[2026-03-17 22:11:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:11:40.840705 (Window: 2026-03-17 22:11:40.840705 to 2026-03-17 22:42:40.840705)
+[2026-03-17 22:12:45] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:12:45] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:12:45] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:12:45] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:12:45] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:12:45] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:12:45.802296 (Window: 2026-03-17 22:12:45.802296 to 2026-03-17 22:43:45.802296)
+[2026-03-17 22:12:45] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:12:53] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/trigger from 127.0.0.1
+[2026-03-17 22:12:53] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test' (1 configs × 1 targets)
+[2026-03-17 22:12:53] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 22:12:53] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
+[2026-03-17 22:12:54] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_b37dc869.txt 104.18.26.120
+[2026-03-17 22:13:00] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/trigger from 127.0.0.1
+[2026-03-17 22:13:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test' (1 configs × 1 targets)
+[2026-03-17 22:13:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 22:13:00] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.26.120 with timing -T4...
+[2026-03-17 22:13:01] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_6a636d32.txt 104.18.26.120
+[2026-03-17 22:13:15] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 22:13:18] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 22:13:51] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 22:13:55] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:13:55] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:13:55] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 22:13:55] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 22:13:55] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 22:14:00] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:14:00] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:14:00] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:14:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:14:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:14:00] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:14:00.167324 (Window: 2026-03-17 22:14:00.167324 to 2026-03-17 22:45:00.167324)
+[2026-03-17 22:14:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:14:06] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 22:14:06] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-17 22:14:07] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 22:14:07] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:14:09] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 22:14:09] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1: 'No job by the id of scheduled_scan_1 was found'
+[2026-03-17 22:14:09] [INFO    ] [scheduler_bp] [-] Profile 'Test' deleted by DivyaViradiya
+[2026-03-17 22:14:09] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:14:26] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:14:26] [INFO    ] [scheduler_bp] [+] Profile 'Test' created by DivyaViradiya
+[2026-03-17 22:14:26] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-17 22:14:26] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-17 22:14:26] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-17 22:14:26] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=once)
+[2026-03-17 22:14:26] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'Test' (1 configs × 1 targets)
+[2026-03-17 22:14:26] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching nmap scan on example.com (config: NMAP Config)
+[2026-03-17 22:14:26] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'Test'
+[2026-03-17 22:14:26] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:14:26] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 104.18.27.120 with timing -T4...
+[2026-03-17 22:14:26] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_ed454b9e.txt 104.18.27.120
+[2026-03-17 22:14:35] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 22:14:44] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 22:14:48] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_221426.pdf
+[2026-03-17 22:14:49] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-03-17 22:14:49] [INFO    ] [scheduler_service] [*] [SCHEDULER] Auto-generating Executive Summary for Log 10 (Path: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_221426.pdf)
+[2026-03-17 22:14:59] [INFO    ] [network_scanner] [*] Starting Executive Summary PDF generation: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_221426_executive.pdf
+[2026-03-17 22:15:00] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:15:00.175992 (Window: 2026-03-17 22:15:00.175992 to 2026-03-17 22:46:00.175992)
+[2026-03-17 22:15:00] [INFO    ] [network_scanner] [+] Executive Summary PDF saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_221426_executive.pdf
+[2026-03-17 22:15:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] Automated Executive Summary PDF created: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_221426_executive.pdf
+[2026-03-17 22:15:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] Nmap scan on example.com finished: Completed
+[2026-03-17 22:15:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-17 22:15:11] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 22:15:12] [INFO    ] [run] [>] GET /scheduler/api/reports/10/executive_summary from 127.0.0.1
+[2026-03-17 22:15:12] [INFO    ] [scheduler_bp] [*] Serving cached Executive Summary: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_example_com_20260317_221426_executive.pdf
+[2026-03-17 22:15:29] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-17 22:15:29] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1: 'No job by the id of scheduled_scan_1 was found'
+[2026-03-17 22:15:29] [INFO    ] [scheduler_bp] [-] Profile 'Test' deleted by DivyaViradiya
+[2026-03-17 22:15:29] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:15:59] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-17 22:16:00] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:16:00.153085 (Window: 2026-03-17 22:16:00.153085 to 2026-03-17 22:47:00.153085)
+[2026-03-17 22:17:00] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:17:00.138426 (Window: 2026-03-17 22:17:00.138426 to 2026-03-17 22:48:00.138426)
+[2026-03-17 22:18:00] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:18:00.145378 (Window: 2026-03-17 22:18:00.145378 to 2026-03-17 22:49:00.145378)
+[2026-03-17 22:19:00] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:19:00.139411 (Window: 2026-03-17 22:19:00.139411 to 2026-03-17 22:50:00.139411)
+[2026-03-17 22:19:36] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:19:36] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:19:36] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:19:36] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:19:36] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:19:36] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:19:50] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:19:50] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:19:50] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:19:50] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:19:50] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:19:50] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:20:03] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:20:03] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:20:03] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:20:03] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:20:04] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:20:04] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:20:27] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 22:20:40] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:20:41] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:20:41] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:20:41] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:20:41] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:20:41] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:21:10] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:21:10] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:21:10] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:21:10] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:21:10] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:21:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:21:18] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 22:21:18] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 22:21:20] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-17 22:21:21] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-17 22:21:21] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:21:21] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:21:25] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-17 22:21:26] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-17 22:21:26] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:21:26] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:21:29] [INFO    ] [run] [>] GET /network_scanner/report_history from 127.0.0.1
+[2026-03-17 22:21:42] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 22:22:07] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:22:07] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:22:07] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:22:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:22:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:22:07] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:22:55] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:22:55] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:25:26] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 22:25:31] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:25:31] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:25:31] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 22:25:31] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 22:25:31] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 22:25:39] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:25:39] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:25:39] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:25:39] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:25:39] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:25:39] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:25:43] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 22:25:43] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-17 22:25:44] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 22:25:44] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:25:47] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-17 22:25:47] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-17 22:25:47] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-17 22:25:47] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-17 22:25:49] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 22:25:49] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 22:25:51] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-17 22:25:51] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-17 22:25:51] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:25:51] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:25:53] [INFO    ] [run] [>] POST /network_scanner/scan from 127.0.0.1
+[2026-03-17 22:25:53] [INFO    ] [network_scanner] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[2026-03-17 22:25:53] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[2026-03-17 22:25:53] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:25:53] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_Admin_1_693cfce0.txt 192.168.29.48
+[2026-03-17 22:26:01] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 22:26:01] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 22:26:01] [INFO    ] [run] [>] GET /nmaplowercheck1773766561 from 192.168.29.48
+[2026-03-17 22:26:01] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 22:26:01] [INFO    ] [run] [>] POST /sdk from 192.168.29.48
+[2026-03-17 22:26:01] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 22:26:01] [INFO    ] [run] [>] GET /evox/about from 192.168.29.48
+[2026-03-17 22:26:01] [INFO    ] [run] [>] GET /HNAP1 from 192.168.29.48
+[2026-03-17 22:26:01] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 22:26:01] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 22:26:01] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 22:26:01] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 22:26:02] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 22:26:02] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 22:26:05] [INFO    ] [network_scanner] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[2026-03-17 22:26:05] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\results\Admin_1\network_scanner\network_192_168_29_48_20260317_222553.pdf
+[2026-03-17 22:26:06] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-03-17 22:26:07] [INFO    ] [network_scanner] [+] PDF report generated successfully
+[2026-03-17 22:26:07] [INFO    ] [network_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[2026-03-17 22:26:08] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:26:08] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-17 22:26:08] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-17 22:26:24] [INFO    ] [run] [>] GET /network_scanner/report_history from 127.0.0.1
+[2026-03-17 22:26:39] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:26:39.147717 (Window: 2026-03-17 22:26:39.147717 to 2026-03-17 22:57:39.147717)
+[2026-03-17 22:27:39] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:27:39.142287 (Window: 2026-03-17 22:27:39.142287 to 2026-03-17 22:58:39.142287)
+[2026-03-17 22:28:03] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-17 22:28:03] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 22:28:03] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 22:28:07] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-17 22:28:11] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-17 22:28:12] [INFO    ] [auth_bp] [+] New User created via Google OAuth: divya.viradiya.7
+[2026-03-17 22:31:28] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:31:29] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:35:30] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...

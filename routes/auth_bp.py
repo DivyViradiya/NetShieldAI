@@ -131,32 +131,10 @@ def google_callback():
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            # 1. Generate Username
-            username_base = email.split('@')[0].lower()
-            username = username_base
-            count = 1
-            # Check for conflict
-            while User.query.filter(User.username.like(username)).first():
-                username = f"{username_base}{count}"
-                count += 1
+            flash('No account found with this email. Please create an account first.', 'warning')
+            return redirect(url_for('auth.register'))
 
-            full_name = user_info.get('name') or user_info.get('given_name', '')
-
-            # 2. Create User
-            user = User(
-                username=username,
-                email=email,
-                full_name=full_name,
-                is_onboarded=False # [SECURITY] Trigger Onboarding setup on first login
-            )
-            # Generate a secure random password hash
-            user.set_password(secrets.token_urlsafe(16))
-            
-            db.session.add(user)
-            db.session.commit()
-            logger.info(f"[+] New User created via Google OAuth: {username}")
-        else:
-            logger.info(f"[+] User logged in via Google OAuth: {user.username}")
+        logger.info(f"[+] User logged in via Google OAuth: {user.username}")
 
         # Log support audit data
         user.update_login_stats(request.remote_addr)
@@ -221,30 +199,10 @@ def github_callback():
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            # 1. Generate Username
-            username_base = user_info.get('login') or email.split('@')[0].lower()
-            username = username_base
-            count = 1
-            # Check for conflict
-            while User.query.filter(User.username.like(username)).first():
-                username = f"{username_base}{count}"
-                count += 1
+            flash('No account found with this email. Please create an account first.', 'warning')
+            return redirect(url_for('auth.register'))
 
-            full_name = user_info.get('name') or user_info.get('login')
-
-            # 2. Create User
-            user = User(
-                username=username,
-                email=email,
-                full_name=full_name
-            )
-            user.set_password(secrets.token_urlsafe(16))
-            
-            db.session.add(user)
-            db.session.commit()
-            logger.info(f"[+] New User created via GitHub OAuth: {username}")
-        else:
-            logger.info(f"[+] User logged in via GitHub OAuth: {user.username}")
+        logger.info(f"[+] User logged in via GitHub OAuth: {user.username}")
 
         user.update_login_stats(request.remote_addr)
         login_user(user)

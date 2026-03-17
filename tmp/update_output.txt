@@ -1,0 +1,4 @@
+Unverified users BEFORE: 1
+Affected rows: 1
+Unverified users AFTER: 0
+Verification successful!

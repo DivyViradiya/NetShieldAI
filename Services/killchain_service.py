@@ -433,7 +433,7 @@ class KillChainService:
         pass
 
 
-    def _get_paths(self, user_output_dir, queue_id, target=None):
+    def _get_paths(self, user_output_dir, queue_id, target=None, timestamp=None):
         base = Path(user_output_dir)
         reports_dir = base / "reports"
         reports_dir.mkdir(parents=True, exist_ok=True)
@@ -445,8 +445,13 @@ class KillChainService:
         # Multi-user unique pcap
         scan_uuid = str(uuid.uuid4())[:8]
 
-        json_name = report_manager.generate_report_filename("killchain", target, "json") if target else "killchain_report.json"
-        pdf_name = report_manager.generate_report_filename("killchain", target, "pdf") if target else "killchain_report.pdf"
+        if timestamp:
+            sanitized = report_manager.sanitize_filename(target)
+            json_name = f"killchain_{sanitized}_{timestamp}.json"
+            pdf_name = f"killchain_{sanitized}_{timestamp}.pdf"
+        else:
+            json_name = report_manager.generate_report_filename("killchain", target, "json") if target else "killchain_report.json"
+            pdf_name = report_manager.generate_report_filename("killchain", target, "pdf") if target else "killchain_report.pdf"
 
         return {
             "root": base,
@@ -456,7 +461,7 @@ class KillChainService:
             "pcap_file": temp_dir / f"capture_{queue_id}_{scan_uuid}.pcap" 
         }
 
-    def run_job(self, target, profile_name, aggression_level, queue_id, user_output_dir, log_id=None, app=None):
+    def run_job(self, target, profile_name, aggression_level, queue_id, user_output_dir, log_id=None, app=None, timestamp=None):
         scan_context.queue_id = queue_id
         
         # Track active audit
@@ -489,7 +494,7 @@ class KillChainService:
                 "zap": ZAPScanner(), "exploiter": NetworkExploiter(), "traffic": TrafficAnalyzer()
             }
 
-            paths = self._get_paths(user_output_dir, queue_id, target=target)
+            paths = self._get_paths(user_output_dir, queue_id, target=target, timestamp=timestamp)
             results = {
                 "target": target, "profile": profile_name, "aggression": aggression_level,
                 "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

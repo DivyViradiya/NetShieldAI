@@ -74,6 +74,7 @@ SNIFFER_TEMPLATE_FILE = "sniffer_report_template.html"
 KILLCHAIN_TEMPLATE_FILE = "killchain_report_template.html"
 SQL_TEMPLATE_FILE = "sql_report_template.html"
 SEMGREP_TEMPLATE_FILE = "semgrep_report_template.html"
+EXECUTIVE_SUMMARY_TEMPLATE_FILE = "executive_summary_template.html"
 
 
 def create_nmap_report_pdf(source_data, pdf_path):
@@ -824,4 +825,66 @@ def create_semgrep_report_pdf(source_data, pdf_path):
         return True
     except Exception as e:
         log(f"[!] PDF Write Error: {e}")
+        return False
+
+
+def create_executive_summary_report_pdf(summary_text, metadata, pdf_path):
+    """
+    Renders an AI-generated summary into an Executive Summary HTML template and saves it as a PDF.
+    """
+    from Services.network_scanner import log 
+
+    log(f"[*] Starting Executive Summary PDF generation: {pdf_path}", to_console=True)
+
+    # 1. Prepare Paths
+    logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NetShieldAI_logo_PDF.png')
+    footer_logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo_pdf.png')
+
+    # 2. Build template context
+    template_data = {
+        "summary_content": summary_text,
+        "metadata": {
+            "target": metadata.get("target", "N/A"),
+            "tool_name": metadata.get("tool_name", "Security Analyzer"),
+            "date": metadata.get("date", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        },
+        "logo_url": pathlib.Path(logo_path).as_uri(),
+        "logo_url_small": pathlib.Path(footer_logo_path).as_uri(),
+        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    # 3. Render HTML
+    try:
+        import markdown
+        # Convert Markdown to HTML with extensions for tables, code blocks, and newlines
+        html_summary = markdown.markdown(summary_text, extensions=['tables', 'fenced_code', 'nl2br'])
+        
+        template = jinja_env.get_template(EXECUTIVE_SUMMARY_TEMPLATE_FILE)
+        rendered_html = template.render(
+            summary_content=html_summary,
+            metadata=template_data["metadata"],
+            logo_url=template_data["logo_url"],
+            logo_url_small=template_data["logo_url_small"]
+        )
+    except Exception as e:
+        log(f"[!] Executive Summary Template Rendering Error: {e}")
+        return False
+
+    # 4. Write PDF
+    try:
+        base_url = pathlib.Path(PROJECT_ROOT).as_uri()
+        stylesheets = []
+        # We might not even need the external CSS for this template if we keep styles inline,
+        # but let's include it for consistency if available.
+        if os.path.exists(CSS_FILE_PATH):
+             stylesheets.append(CSS(filename=CSS_FILE_PATH))
+
+        HTML(string=rendered_html, base_url=base_url).write_pdf(
+            pdf_path,
+            stylesheets=stylesheets
+        )
+        log(f"[+] Executive Summary PDF saved: {pdf_path}", to_console=True)
+        return True
+    except Exception as e:
+        log(f"[!] PDF Write Error (Executive): {e}")
         return False

@@ -367,10 +367,16 @@ function renderHistory(history) {
                 </div>
 
                 ${log.has_report ? `
-                    <button class="btn-dash btn-solid" onclick="downloadReport(${log.id})" style="width:100%; justify-content:center; background:var(--neo-blue); color:#000; border:none; height:36px; font-weight:700; border-radius:8px; margin-top:8px; box-shadow: 0 4px 12px rgba(59,130,246,0.3);">
-                        <span class="material-symbols-outlined" style="font-size:1.1rem; margin-right:8px;">cloud_download</span>
-                        Download Report
-                    </button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 8px;">
+                        <button class="btn-dash btn-solid" onclick="downloadReport(${log.id})" style="justify-content:center; background:var(--neo-blue); color:#000; border:none; height:36px; font-weight:700; border-radius:8px; box-shadow: 0 4px 12px rgba(59,130,246,0.15);">
+                            <span class="material-symbols-outlined" style="font-size:0.95rem; margin-right:4px;">cloud_download</span>
+                            Technical
+                        </button>
+                        <button class="btn-dash btn-solid" onclick="downloadExecutiveSummary(${log.id}, this)" style="justify-content:center; background:linear-gradient(135deg, var(--neo-blue-accent, #3b82f6), #2563eb); color:white; border:none; height:36px; font-weight:700; border-radius:8px; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
+                            <span class="material-symbols-outlined" style="font-size:0.95rem; margin-right:4px;">insights</span>
+                            Executive
+                        </button>
+                    </div>
                 ` : `
                     <button class="btn-dash" disabled style="width:100%; justify-content:center; height:36px; opacity:0.3; cursor:not-allowed; border-radius:8px; margin-top:8px;">
                         <span class="material-symbols-outlined" style="font-size:1.1rem; margin-right:8px;">block</span>
@@ -724,6 +730,17 @@ function getStepHtml(d, i) {
                     </tr>
                     ${d.profileDesc ? `<tr><td>Briefing</td><td>${escapeHTML(d.profileDesc)}</td></tr>` : ''}
                 </table>
+            </div>
+
+            <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--neo-border);">
+                <div style="font-family:var(--font-mono); font-size:0.65rem; color:var(--neo-text-muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.75rem; display:flex; align-items:center; gap:8px;">
+                    <span class="material-symbols-outlined" style="font-size:0.9rem; color:var(--neo-blue);">description</span>
+                    Reporting Options
+                </div>
+                <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-bottom:0.25rem;">
+                    <input type="checkbox" id="field-exec-summary" style="width:16px; height:16px; accent-color:var(--neo-blue);" ${(d.config && d.config.executive_summary) ? 'checked' : ''} onchange="window.updateDraftConfig(${i}, 'executive_summary', this.checked); renderDrawer()">
+                    <label for="field-exec-summary" style="font-size:0.75rem; color:var(--neo-text-main); cursor:pointer;">Generate Executive Summary PDF (AI Enhanced)</label>
+                </div>
             </div>
 
             <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--neo-border);">
@@ -1355,6 +1372,58 @@ window.downloadReport = function(logId) {
     const downloadUrl = `${API}/reports/${logId}/download`;
     // Using window.location.href for silent download (triggers browser download behavior)
     window.location.href = downloadUrl;
+};
+
+// ===== Download Executive Summary (With Loader) =====
+window.downloadExecutiveSummary = async function(logId, btn) {
+    if (btn.classList.contains('loading')) return;
+    
+    const originalHtml = btn.innerHTML;
+    btn.classList.add('loading');
+    btn.disabled = true;
+    btn.innerHTML = `<span class="material-symbols-outlined spin" style="font-size:1rem; margin-right:4px;">sync</span> Loading...`;
+
+    try {
+        const downloadUrl = `${API}/reports/${logId}/executive_summary`;
+        const response = await fetch(downloadUrl, {
+             headers: {
+                 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content
+             }
+        });
+        
+        if (!response.ok) {
+             const errData = await response.json();
+             throw new Error(errData.message || 'Generation failed');
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        
+        const disposition = response.headers.get('content-disposition');
+        let filename = `Executive_Summary_${logId}.pdf`;
+        if (disposition && disposition.indexOf('attachment') !== -1) {
+            const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            const matches = filenameRegex.exec(disposition);
+            if (matches != null && matches[1]) { 
+                filename = matches[1].replace(/["]/g, '');
+            }
+        }
+        
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        toast('Executive Summary downloaded');
+    } catch (e) {
+        toast(`Error: ${e.message}`, 'error');
+    } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+    }
 };
 
 // ===== Init =====

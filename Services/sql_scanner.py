@@ -162,8 +162,8 @@ def get_output_paths(output_dir=None, target=None, timestamp=None):
         "sqlmap_base": sqlmap_temp 
     }
 
-def save_sql_json(data, output_dir=None, user_id=None, target=None):
-    paths = get_output_paths(output_dir, target=target)
+def save_sql_json(data, output_dir=None, user_id=None, target=None, timestamp=None):
+    paths = get_output_paths(output_dir, target=target, timestamp=timestamp)
     json_file = paths["json_report"]
     try:
         with open(json_file, 'w', encoding='utf-8') as f:
@@ -321,7 +321,7 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
 
 # --- MAIN SCAN FUNCTION ---
 
-def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None):
+def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timestamp=None):
     """
     Runs SQLmap with optimized flags and ensures results are parsed even on partial completion.
     """
@@ -414,7 +414,7 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None):
         log("[+] Scan finished. Processing results...", user_id, to_console=True)
         scan_data = parse_sqlmap_output(sqlmap_output_dir, target_url_hint=target_url, captured_metadata=live_metadata, user_id=user_id)
         
-        json_path = save_sql_json(scan_data, output_dir, user_id=user_id, target=target_url)
+        json_path = save_sql_json(scan_data, output_dir, user_id=user_id, target=target_url, timestamp=timestamp)
         
         send_sse_event("scan_complete", {
             "status": "success",
