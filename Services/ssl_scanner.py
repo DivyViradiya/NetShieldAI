@@ -46,7 +46,7 @@ def is_scan_running(user_id):
         return user_id in active_scans
 
 from Services import scan_logger
-from logger_setup import logger
+from core.logger_setup import logger
 
 def log(message, user_id=None, to_console=False, level='INFO'):
     """

@@ -56,7 +56,7 @@ def get_user_queue(user_id):
 # --- Logging and SSE Helpers ---
 
 from Services import scan_logger
-from logger_setup import logger
+from core.logger_setup import logger
 
 # --- Logging and SSE Helpers ---
 

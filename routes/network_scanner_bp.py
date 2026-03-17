@@ -12,7 +12,7 @@ import re
 import logging
 
 # [NEW] Import db to update user stats
-from extensions import db
+from core.extensions import db
 
 # --- Logging Setup ---
 logger = logging.getLogger(__name__)
@@ -215,7 +215,7 @@ def scan_ports():
     # [RC-8 FIX] Atomic DB counter increment — prevents double-count on concurrent tabs
     try:
         from sqlalchemy import update as _sa_update
-        from models import User as _User
+        from models.models import User as _User
         db.session.execute(
             _sa_update(_User).where(_User.id == current_user.id)
             .values(scan_count_nmap=_User.scan_count_nmap + 1)

@@ -32,3 +32,6 @@ scipy
 shap
 flask-mail
 APScheduler
+google-auth
+google-auth-oauthlib
+google-api-python-client

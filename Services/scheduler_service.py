@@ -18,8 +18,8 @@ from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
-from extensions import db
-from logger_setup import logger
+from core.extensions import db
+from core.logger_setup import logger
 
 # Global scheduler instance
 _scheduler = None
@@ -157,7 +157,7 @@ def unregister_job(apscheduler_job_id):
         logger.warning(f"[!] [SCHEDULER] Could not remove job {apscheduler_job_id}: {e}")
 
 
-def _execute_scheduled_scan_wrapper(job_id):
+def _execute_scheduled_scan_wrapper(job_id, force_run=False):
     """
     Wrapper that runs the scan inside the Flask app context.
     This is the function APScheduler calls.
@@ -169,20 +169,20 @@ def _execute_scheduled_scan_wrapper(job_id):
 
     with _app.app_context():
         try:
-            _execute_scheduled_scan(job_id)
+            _execute_scheduled_scan(job_id, force_run=force_run)
         except Exception as e:
             logger.error(f"[!] [SCHEDULER] Error executing job {job_id}: {e}")
             traceback.print_exc()
 
 
-def _execute_scheduled_scan(job_id):
+def _execute_scheduled_scan(job_id, force_run=False):
     """
     Core execution logic for a scheduled scan.
     Loads the job → profile → configs → targets, then dispatches each scan.
     """
-    from scheduler_models import ScheduledScanJob, ScanProfile, ProfileScanConfig, ProfileTarget
-    from models import User
-    from extensions import db
+    from models.scheduler_models import ScheduledScanJob, ScanProfile, ProfileScanConfig, ProfileTarget
+    from models.models import User
+    from core.extensions import db
     from Services import scan_logger
 
     # 1. Load the job
@@ -191,8 +191,8 @@ def _execute_scheduled_scan(job_id):
         logger.error(f"[!] [SCHEDULER] Job {job_id} not found in DB.")
         return
 
-    if not job.is_enabled:
-        logger.info(f"[*] [SCHEDULER] Job {job_id} is disabled — skipping.")
+    if not job.is_enabled and not force_run:
+        logger.info(f"[*] [SCHEDULER] Job {job_id} is disabled and not forced — skipping.")
         return
 
     # 2. Load the profile
@@ -278,10 +278,10 @@ def _dispatch_module_scan(module, target, config, user, user_identifier, base_di
     Each dispatch runs in a new thread to match the existing concurrency model.
     """
     import os
-    from extensions import db as primary_db
+    from core.extensions import db as primary_db
     from Services import scan_logger
     from sqlalchemy import update as sa_update
-    from models import User as UserModel
+    from models.models import User as UserModel
 
     if module == 'nmap':
         _dispatch_nmap(target, config, user, user_identifier, base_dir)
@@ -319,9 +319,9 @@ def _dispatch_nmap(target, config, user, user_identifier, base_dir):
     """Dispatch an Nmap scan."""
     import os
     from Services import network_scanner, scan_logger, pdf_generator
-    from extensions import db as primary_db
+    from core.extensions import db as primary_db
     from sqlalchemy import update as sa_update
-    from models import User as UserModel
+    from models.models import User as UserModel
 
     scan_type = config.get('scan_type', 'default')
     protocol_type = config.get('protocol_type', 'TCP')
@@ -352,11 +352,11 @@ def _dispatch_nmap(target, config, user, user_identifier, base_dir):
     status = "Completed" if result_file else "Failed"
     finding_count = len(network_scanner.get_current_open_ports(user_identifier)) if result_file else 0
 
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration)
+    user_paths = network_scanner.get_output_paths(user_dir, target=target)
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if result_file else None)
 
     if result_file:
         try:
-            user_paths = network_scanner.get_output_paths(user_dir, target=target)
             if os.path.exists(user_paths["json_report"]):
                 pdf_generator.create_nmap_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
         except Exception as e:
@@ -369,9 +369,9 @@ def _dispatch_zap(target, config, user, user_identifier, base_dir):
     """Dispatch a ZAP scan."""
     import os
     from Services import zap_scanner, scan_logger, pdf_generator, report_manager
-    from extensions import db as primary_db
+    from core.extensions import db as primary_db
     from sqlalchemy import update as sa_update
-    from models import User as UserModel
+    from models.models import User as UserModel
 
     scan_mode = config.get('scan_mode', 'default')
 
@@ -413,7 +413,7 @@ def _dispatch_zap(target, config, user, user_identifier, base_dir):
                 except Exception as e:
                     logger.error(f"[!] [SCHEDULER] ZAP PDF generation failed: {e}")
 
-    scan_logger.create_full_scan_log(user.id, "ZAP", target, duration, finding_count, status=status)
+    scan_logger.create_full_scan_log(user.id, "ZAP", target, duration, finding_count, status=status, report_path=str(pdf_path) if scan_successful else None)
     logger.info(f"[+] [SCHEDULER] ZAP scan on {target} finished: {status}")
 
 
@@ -421,9 +421,9 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir):
     """Dispatch an SSL scan."""
     import os
     from Services import ssl_scanner, scan_logger, pdf_generator
-    from extensions import db as primary_db
+    from core.extensions import db as primary_db
     from sqlalchemy import update as sa_update
-    from models import User as UserModel
+    from models.models import User as UserModel
 
     user_dir = os.path.join(base_dir, 'results', user_identifier, 'ssl_scanner')
     os.makedirs(user_dir, exist_ok=True)
@@ -449,22 +449,24 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir):
         summary = ssl_scanner.parse_ssl_report(report_file, output_dir=user_dir, user_id=user_identifier, target=target)
         if summary:
             finding_count = len(summary.get('protocols', [])) + len(summary.get('vulnerabilities', []))
-            try:
-                user_paths = ssl_scanner.get_output_paths(user_dir, target=target)
-                pdf_generator.create_ssl_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
-            except Exception as e:
-                logger.error(f"[!] [SCHEDULER] SSL PDF generation failed: {e}")
+    user_paths = ssl_scanner.get_output_paths(user_dir, target=target)
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if report_file else None)
 
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration)
+    if report_file:
+        try:
+            pdf_generator.create_ssl_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
+        except Exception as e:
+            logger.error(f"[!] [SCHEDULER] SSL PDF generation failed: {e}")
+
     logger.info(f"[+] [SCHEDULER] SSL scan on {target} finished: {status}")
 
 
 def _dispatch_sniffer(target, config, user, user_identifier, base_dir):
     """Dispatch a packet sniffer capture."""
     import os
-    from extensions import db as primary_db
+    from core.extensions import db as primary_db
     from sqlalchemy import update as sa_update
-    from models import User as UserModel
+    from models.models import User as UserModel
     from Services import packet_sniffer, scan_logger, pdf_generator
 
     duration_sec = config.get('duration', 60)
@@ -495,7 +497,9 @@ def _dispatch_sniffer(target, config, user, user_identifier, base_dir):
     status = "Completed" if sniffer_results else "Failed"
     finding_count = len(sniffer_results.get("security_anomaly_report", {}).get("port_scans", [])) if sniffer_results else 0
 
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration)
+    json_report = os.path.join(base_dir, 'results', user_identifier, 'packet_sniffer', f"sniffer_report_{target.replace('.','_')}.json")
+    pdf_report = json_report.replace('.json', '.pdf')
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(pdf_report) if sniffer_results else None)
 
     if sniffer_results:
         try:
@@ -514,9 +518,9 @@ def _dispatch_sniffer(target, config, user, user_identifier, base_dir):
 def _dispatch_sql(target, config, user, user_identifier, base_dir):
     """Dispatch a SQL injection scan."""
     import os
-    from extensions import db as primary_db
+    from core.extensions import db as primary_db
     from sqlalchemy import update as sa_update
-    from models import User as UserModel
+    from models.models import User as UserModel
     from Services import sql_scanner, scan_logger, pdf_generator
 
     scan_type = config.get('scan_type', 'standard')
@@ -543,7 +547,9 @@ def _dispatch_sql(target, config, user, user_identifier, base_dir):
     status = "Completed" if sql_results else "Failed"
     finding_count = len(sql_results.get("vulnerabilities", [])) if sql_results else 0
 
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration)
+    json_path = os.path.join(user_dir, f"sql_report_{target.replace('://','_').replace('/','_').replace('.','_')}.json")
+    pdf_path = json_path.replace('.json', '.pdf')
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(pdf_path) if sql_results else None)
 
     if sql_results:
         try:
@@ -560,9 +566,9 @@ def _dispatch_sql(target, config, user, user_identifier, base_dir):
 def _dispatch_semgrep(target, config, user, user_identifier, base_dir):
     """Dispatch a Semgrep SAST scan."""
     import os
-    from extensions import db as primary_db
+    from core.extensions import db as primary_db
     from sqlalchemy import update as sa_update
-    from models import User as UserModel
+    from models.models import User as UserModel
     from Services import semgrep_scanner, scan_logger, pdf_generator
 
     ruleset = config.get('ruleset', 'auto')
@@ -586,7 +592,9 @@ def _dispatch_semgrep(target, config, user, user_identifier, base_dir):
     status = "Completed" if semgrep_results else "Failed"
     finding_count = len(semgrep_results.get("findings", [])) if semgrep_results else 0
 
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration)
+    json_report = os.path.join(user_dir, f"semgrep_report_{os.path.basename(target).replace('.','_')}.json")
+    pdf_report = json_report.replace('.json', '.pdf')
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(pdf_report) if semgrep_results else None)
 
     if semgrep_results:
         try:
@@ -604,9 +612,9 @@ def _dispatch_semgrep(target, config, user, user_identifier, base_dir):
 def _dispatch_api(target, config, user, user_identifier, base_dir):
     """Dispatch an API scan."""
     import os
-    from extensions import db as primary_db
+    from core.extensions import db as primary_db
     from sqlalchemy import update as sa_update
-    from models import User as UserModel
+    from models.models import User as UserModel
     from Services import api_scanner, scan_logger, pdf_generator
 
     scan_mode = config.get('scan_mode', 'quick')
@@ -630,7 +638,9 @@ def _dispatch_api(target, config, user, user_identifier, base_dir):
     status = "Completed" if api_results else "Failed"
     finding_count = len(api_results.get("findings", [])) if api_results else 0
 
-    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration)
+    json_report = os.path.join(user_dir, f"api_report_{target.replace('://','_').replace('/','_').replace('.','_')}.json")
+    pdf_report = json_report.replace('.json', '.pdf')
+    scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(pdf_report) if api_results else None)
 
     if api_results:
         try:
@@ -656,7 +666,7 @@ def _dispatch_killchain(target, config, user, user_identifier, base_dir):
     import os
     from Services.killchain_service import killchain_service
     from Services import scan_logger
-    from extensions import db as primary_db
+    from core.extensions import db as primary_db
 
     profile_name = config.get('profile', 'Full Scan')
     aggression = config.get('aggression', 'Normal')
@@ -695,7 +705,7 @@ def reload_all_jobs(app):
     """
     with app.app_context():
         try:
-            from scheduler_models import ScheduledScanJob
+            from models.scheduler_models import ScheduledScanJob
             enabled_jobs = ScheduledScanJob.query.filter_by(is_enabled=True).all()
 
             if not enabled_jobs:

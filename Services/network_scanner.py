@@ -149,7 +149,7 @@ def get_scan_summary(user_id=None, output_dir=None):
         }
 
 from Services import scan_logger
-from logger_setup import logger
+from core.logger_setup import logger
 
 def log(message, user_id=None, queue_id=None, to_console=False, level='INFO'):
     """

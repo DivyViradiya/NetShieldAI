@@ -7,13 +7,13 @@ import threading
 import time
 
 # Import db to update user stats
-from extensions import db
+from core.extensions import db
 from Services import api_scanner 
 from Services import pdf_generator 
 # --- Import Scan Logger ---
 from Services import scan_logger
 from Services import report_manager
-from logger_setup import logger
+from core.logger_setup import logger
 
 api_scanner_bp = Blueprint('api_scanner_bp', __name__)
 
@@ -93,7 +93,7 @@ def initiate_api_scan():
     # [RC-8 FIX] Atomic DB counter increment
     try:
         from sqlalchemy import update as _sa_update
-        from models import User as _User
+        from models.models import User as _User
         db.session.execute(
             _sa_update(_User).where(_User.id == current_user.id)
             .values(scan_count_zap=_User.scan_count_zap + 1)  # reuses zap column until scan_count_api is added

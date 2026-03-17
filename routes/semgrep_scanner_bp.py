@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 from pathlib import Path
 
 # Import db to update user stats
-from extensions import db
+from core.extensions import db
 
 # Import the semgrep_scanner module
 from Services import semgrep_scanner
@@ -19,7 +19,7 @@ from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
 from Services import report_manager
-from logger_setup import logger
+from core.logger_setup import logger
 
 semgrep_bp = Blueprint('semgrep_bp', __name__)
 
@@ -116,7 +116,7 @@ def scan_code():
     try:
         if hasattr(current_user, 'scan_count_semgrep'):
             from sqlalchemy import update as _sa_update
-            from models import User as _User
+            from models.models import User as _User
             db.session.execute(
                 _sa_update(_User).where(_User.id == current_user.id)
                 .values(scan_count_semgrep=_User.scan_count_semgrep + 1)

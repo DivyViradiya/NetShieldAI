@@ -11,9 +11,9 @@ from datetime import datetime
 from flask import Blueprint, render_template, jsonify, request
 from flask_login import login_required, current_user
 
-from logger_setup import logger
-from extensions import db
-from scheduler_models import (
+from core.logger_setup import logger
+from core.extensions import db
+from models.scheduler_models import (
     ScanProfile, ProfileScanConfig,
     ProfileTarget, ProfileRecipient, ScheduledScanJob
 )
@@ -119,13 +119,15 @@ def delete_profile(profile_id):
     if err:
         return err
 
-    # Unregister associated APScheduler jobs before deleting
-    for job in profile.jobs:
-        if job.apscheduler_job_id:
-            scheduler_service.unregister_job(job.apscheduler_job_id)
+    # Collect IDs before committing deletion
+    aps_ids = [job.apscheduler_job_id for job in profile.jobs if job.apscheduler_job_id]
 
     db.session.delete(profile)
     db.session.commit()
+
+    # Unregister after DB lock is released
+    for aps_id in aps_ids:
+        scheduler_service.unregister_job(aps_id)
 
     logger.info(f"[-] Profile '{profile.name}' deleted by {current_user.username}")
     return jsonify({"status": "success", "message": "Profile deleted."})
@@ -398,9 +400,9 @@ def create_job():
         is_enabled=True
     )
     db.session.add(job)
-    db.session.flush()  # Get the ID before registering
+    db.session.commit()  # [FIX] Commit immediately to release the SQLite write lock before calling APScheduler
 
-    # Register with APScheduler
+    # Register with APScheduler (this will attempt its own write to the same DB)
     aps_id = scheduler_service.register_job(job)
     if aps_id:
         job.apscheduler_job_id = aps_id
@@ -415,7 +417,7 @@ def create_job():
             except Exception:
                 pass
 
-    db.session.commit()
+        db.session.commit() # Save the APS job ID
 
     job_dict = job.to_dict()
     job_dict['profile_name'] = profile.name
@@ -438,6 +440,7 @@ def toggle_job(job_id):
         return err
 
     job.is_enabled = not job.is_enabled
+    db.session.commit() # Commit state change first
 
     if job.is_enabled:
         # Re-register
@@ -452,13 +455,14 @@ def toggle_job(job_id):
                         job.next_run_at = aps_job.next_run_time.replace(tzinfo=None)
                 except Exception:
                     pass
+            db.session.commit() # Save the new APS ID
     else:
         # Unregister
         if job.apscheduler_job_id:
             scheduler_service.unregister_job(job.apscheduler_job_id)
-        job.next_run_at = None
-
-    db.session.commit()
+            job.apscheduler_job_id = None # Clear it
+            job.next_run_at = None
+            db.session.commit()
 
     return jsonify({
         "status": "success",
@@ -479,11 +483,13 @@ def delete_job(job_id):
     if err:
         return err
 
-    if job.apscheduler_job_id:
-        scheduler_service.unregister_job(job.apscheduler_job_id)
+    aps_id = job.apscheduler_job_id
 
     db.session.delete(job)
     db.session.commit()
+
+    if aps_id:
+        scheduler_service.unregister_job(aps_id)
 
     return jsonify({"status": "success", "message": "Job deleted."})
 
@@ -501,7 +507,7 @@ def job_history(job_id):
         return err
 
     # Query ScanLog from primary DB for this user's scans
-    from models import ScanLog
+    from models.models import ScanLog
     logs = ScanLog.query.filter_by(user_id=current_user.id)\
         .order_by(ScanLog.start_time.desc())\
         .limit(20).all()
@@ -516,6 +522,7 @@ def job_history(job_id):
         'end_time': log.end_time.isoformat() if log.end_time else None,
         'duration': round(log.duration_seconds, 1) if log.duration_seconds else 0,
         'finding_count': log.finding_count or 0,
+        'has_report': bool(log.report_path),
     } for log in logs]
 
     return jsonify({"status": "success", "history": history})
@@ -538,22 +545,48 @@ def get_modules():
 @login_required
 def trigger_profile_scan(profile_id):
     """Manually trigger all jobs/configs associated with a profile."""
-    from scheduler_models import ScanProfile, ScheduledScanJob
+    from models.scheduler_models import ScanProfile, ScheduledScanJob
     from Services.scheduler_service import _execute_scheduled_scan_wrapper
     import threading
 
-    profile = db.session.get(ScanProfile, profile_id)
-    if not profile or profile.user_id != current_user.id:
-        return jsonify({"status": "error", "message": "Profile not found"}), 404
-
-    jobs = ScheduledScanJob.query.filter_by(profile_id=profile.id).all()
-    if not jobs:
-        return jsonify({"status": "error", "message": "No jobs found for this profile"}), 400
-
-    for job in jobs:
-        # Run each job in a separate thread to avoid blocking the request
-        thread = threading.Thread(target=_execute_scheduled_scan_wrapper, args=[job.id])
-        thread.daemon = True
+    profile, err = _get_profile_or_404(profile_id)
+    if err:
+        return err
+    
+    # We trigger the jobs in the background to avoid blocking the UI
+    for job in profile.jobs:
+        thread = threading.Thread(
+            target=_execute_scheduled_scan_wrapper,
+            args=(job.id, True),
+            daemon=True
+        )
         thread.start()
+            
+    return jsonify({"status": "success", "message": f"Scan triggered for profile '{profile.name}'"})
 
-    return jsonify({"status": "success", "message": "Mission execution initiated"})
+
+@scheduler_bp.route('/api/reports/<int:log_id>/download', methods=['GET'])
+@login_required
+def download_report(log_id):
+    """Serve the generated PDF report for a scan log."""
+    from models.models import ScanLog
+    from flask import send_file
+    import os
+
+    log = db.session.get(ScanLog, log_id)
+    if not log or log.user_id != current_user.id:
+        return jsonify({"status": "error", "message": "Report not found."}), 404
+
+    if not log.report_path or not os.path.exists(log.report_path):
+        return jsonify({"status": "error", "message": "Report file does not exist on server."}), 404
+
+    # Sanitize tool name for filename
+    safe_tool = log.tool_name.replace(" ", "_").lower()
+    report_name = f"NetShield_{safe_tool}_report_{log.id}.pdf"
+
+    return send_file(
+        log.report_path,
+        as_attachment=True,
+        download_name=report_name,
+        mimetype='application/pdf'
+    )

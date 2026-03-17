@@ -30,10 +30,10 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 # --- Logging Setup ---
-from logger_setup import logger
+from core.logger_setup import logger
 
-from extensions import db, login_manager, mail
-from models import User
+from core.extensions import db, login_manager, mail
+from models.models import User
 from routes.network_scanner_bp import network_scanner_bp
 from routes.zap_scanner_bp import zap_scanner_bp
 from routes.ssl_scanner_bp import ssl_scanner_bp
@@ -94,9 +94,9 @@ login_manager.login_view = 'auth.login'
 csrf = CSRFProtect(app)
 
 # --- Initialize Scheduler Models (Registers with shared db) ---
-from scheduler_models import ScanProfile, ProfileScanConfig, ProfileTarget, ProfileRecipient, ScheduledScanJob
+from models.scheduler_models import ScanProfile, ProfileScanConfig, ProfileTarget, ProfileRecipient, ScheduledScanJob
 
-from extensions import oauth
+from core.extensions import oauth
 oauth.init_app(app)
 oauth.register(
     name='google',

@@ -18,7 +18,7 @@ from werkzeug.utils import secure_filename
 logger = logging.getLogger(__name__)
 
 # [NEW] Import db to update user stats
-from extensions import db
+from core.extensions import db
 
 # Import the packet_sniffer module
 from Services import packet_sniffer
@@ -133,7 +133,7 @@ def start_capture_route():
 
     # [NEW] Increment Database Counter for Stats
     try:
-        from models import User as _User
+        from models.models import User as _User
         db.session.execute(
             db.update(_User).where(_User.id == current_user.id)
             .values(scan_count_sniffer=_User.scan_count_sniffer + 1)

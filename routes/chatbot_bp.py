@@ -12,8 +12,8 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 
 # [NEW] Import db for stats tracking
-from extensions import db
-from models import ScanLog
+from core.extensions import db
+from models.models import ScanLog
 from Services import network_scanner, zap_scanner, ssl_scanner, sql_scanner, packet_sniffer, api_scanner, killchain_service, semgrep_scanner, scan_logger
 
 # Initialize the Flask Blueprint for chatbot-related routes

@@ -17,7 +17,7 @@ import threading
 from zapv2 import ZAPv2
 from Services import report_manager
 from Services import scan_logger
-from logger_setup import logger
+from core.logger_setup import logger
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"

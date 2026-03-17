@@ -9,13 +9,13 @@ import logging
 from pathlib import Path
 
 # --- Logging Setup ---
-from logger_setup import logger
+from core.logger_setup import logger
 
 from flask import Blueprint, render_template, jsonify, request, Response, send_from_directory, current_app
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from urllib.parse import urlparse
-from extensions import db
+from core.extensions import db
 
 # [SERVICE] Import the Singleton instance and module-level helpers
 from Services.killchain_service import (

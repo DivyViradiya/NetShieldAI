@@ -159,7 +159,8 @@ class ResetPasswordForm(FlaskForm):
         EqualTo('password', message='Passwords must match.')
     ])
     
-    submit = SubmitField('Update Password')
+    submit = SubmitField('Update Password')
+
 
 class VerifyOTPForm(FlaskForm):
     """

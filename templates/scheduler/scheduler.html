@@ -12,30 +12,34 @@
       /* --- NEO-TECH THEME VARIABLES --- */
       :root {
         --neo-bg: #000000;
-        --neo-card: rgba(10, 10, 12, 0.5);
-        --neo-card-hover: rgba(15, 15, 18, 0.6);
+        --neo-card: rgba(10, 10, 12, 0.45);
+        --neo-card-hover: rgba(15, 15, 18, 0.55);
         --neo-input: rgba(15, 15, 18, 0.6);
-        --neo-border: rgba(255, 255, 255, 0.1); 
+        --neo-border: rgba(255, 255, 255, 0.05); 
         
         --neo-text-main: #ffffff;
         --neo-text-muted: #888888;
+        --neo-text-label: #555555;
         --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
         --font-mono: 'JetBrains Mono', monospace;
         
-        --neo-blue: #60a5fa; 
-        --neo-red: #f87171;
-        --neo-green: #34d399;
-        --neo-amber: #fbbf24;
-        --neo-purple: #a78bfa;
-        --neo-cyan: #22d3ee;
+        --neo-blue: #3b82f6; 
+        --neo-cyan: #06b6d4;
+        --neo-red: #ef4444;
+        --neo-green: #10b981;
+        --neo-amber: #f59e0b;
+        --neo-purple: #8b5cf6;
         
-        --radius-card: 16px;
-        --radius-sm: 10px;
+        --radius-lg: 20px;
+        --radius-md: 12px;
+        --radius-sm: 8px;
+        --radius-card: var(--radius-lg);
 
-        --shadow-blue: 0 0 20px rgba(96, 165, 250, 0.15);
+        --shadow-blue: 0 0 20px rgba(59, 130, 246, 0.15);
         --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        --glass-bg: rgba(10, 10, 12, 0.45);
-        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-blur: blur(24px);
+        --glass-bg: var(--neo-card);
+        --glass-border: var(--neo-border);
       }
   
       body.light-mode {
@@ -50,19 +54,29 @@
         box-sizing: border-box;
       }
 
+      /* --- FULL-SCREEN OVERRIDES --- */
+      body {
+        overflow: hidden !important; /* Lock viewport */
+        height: 100vh;
+      }
+
+      footer {
+        display: none !important; /* Remove footer */
+      }
+
       .dashboard-wrapper {
         background-color: var(--neo-bg);
         color: var(--neo-text-main);
         font-family: var(--font-ui);
-        min-height: calc(100vh - 64px);
-        padding: 2rem;
+        height: calc(100vh - 64px); /* Exact fit minus navbar */
+        padding: 0.75rem 2rem 1.5rem; /* Balanced top and bottom padding */
         display: flex;
         flex-direction: column;
-        gap: 2rem;
-        max-width: 1400px;
+        gap: 1rem; /* Tightened gap */
+        max-width: 1600px;
         margin: 0 auto;
         width: 100%;
-        overflow-x: hidden;
+        overflow: hidden; /* Prevent wrapper scroll */
       }
 
       /* --- MISSING UTILITY CLASSES (Replaces Tailwind) --- */
@@ -154,21 +168,28 @@
       /* --- LAYOUT --- */
       .orchestrator-layout {
         display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 2rem;
+        grid-template-columns: 320px 1fr;
+        gap: 1.5rem;
         flex: 1;
-        align-items: start;
-        margin-top: 0.5rem;
+        min-height: 0;
+        margin-top: 0.25rem; /* Reduced gap from header */
       }
 
       /* ================================================
          ARSENAL SIDEBAR
       ================================================ */
+      .arsenal-panel, .canvas-panel {
+        display: flex;
+        flex-direction: column;
+        padding: 1.25rem !important;
+        min-height: 0;
+      }
+
       .arsenal-sidebar {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-        max-height: calc(100vh - 180px);
+        flex: 1;
         overflow-y: auto;
         padding-right: 0.5rem;
       }
@@ -287,7 +308,7 @@
         background: var(--neo-card);
         border: 1px solid var(--neo-border);
         border-radius: var(--radius-card);
-        padding: 1.25rem;
+        padding: 0.65rem;
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
@@ -317,7 +338,7 @@
 
       .mission-title {
         font-family: var(--font-mono);
-        font-size: 1rem;
+        font-size: 0.8rem;
         font-weight: 600;
         text-transform: uppercase;
       }
@@ -326,7 +347,7 @@
         font-size: 0.72rem;
         color: var(--neo-text-muted);
         font-family: var(--font-mono);
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
       }
 
       .mission-actions {
@@ -384,7 +405,7 @@
         justify-content: space-between;
         align-items: center;
         background: rgba(0, 0, 0, 0.2);
-        padding: 0.4rem 0.6rem;
+        padding: 0.25rem 0.4rem;
         border-radius: 6px;
         border: 1px solid rgba(255, 255, 255, 0.05);
         margin-bottom: 0.35rem;
@@ -397,8 +418,10 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        min-height: calc(100vh - 220px);
         flex: 1;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+        min-height: 0;
       }
 
       /* Onboarding Tutorial Animation */
@@ -537,12 +560,14 @@
         50% { transform: translateY(-10px); }
       }
 
-      .canvas-wrapper.active .drop-zone-empty {
-        border-color: var(--neo-blue);
-        background: rgba(59, 130, 246, 0.08);
+      .canvas-panel.active {
+        border-color: rgba(59, 130, 246, 0.3) !important;
+        box-shadow: 0 0 40px rgba(59, 130, 246, 0.1), var(--shadow-glass);
+      }
+
+      .canvas-panel.active .drop-zone-empty {
+        background: rgba(59, 130, 246, 0.04);
         color: var(--neo-blue);
-        transform: scale(1.005);
-        box-shadow: 0 0 30px rgba(96, 165, 250, 0.15), inset 0 0 20px rgba(96, 165, 250, 0.05);
       }
 
       /* Persistent bottom drop strip (always visible when missions exist) */
@@ -564,16 +589,16 @@
         cursor: default;
       }
 
-      .canvas-wrapper.active .drop-zone-bar {
-        border-color: var(--neo-blue);
-        background: rgba(59, 130, 246, 0.07);
+      .canvas-panel.active .drop-zone-bar {
+        border-color: rgba(59, 130, 246, 0.3);
+        background: rgba(59, 130, 246, 0.04);
         color: var(--neo-blue);
       }
 
       /* Buttons */
       .btn-dash {
-        height: 36px; padding: 0 0.9rem; border-radius: 4px;
-        font-family: var(--font-mono); font-size: 0.72rem; font-weight: 800;
+        height: 28px; padding: 0 0.65rem; border-radius: 4px;
+        font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800;
         display: flex; align-items: center; gap: 0.4rem; cursor: pointer;
         transition: all 0.2s ease; border: 1px solid var(--neo-border);
         background: transparent; color: var(--neo-text-muted);
@@ -881,6 +906,21 @@
         to   { opacity: 1; }
       }
 
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .spin { animation: spin 2s linear infinite; }
+
+      .log-entry {
+        transition: all 0.2s ease;
+      }
+      .log-entry:hover {
+        border-color: rgba(255,255,255,0.1) !important;
+        background: rgba(255,255,255,0.04) !important;
+        transform: translateY(-2px);
+      }
+      
       /* Fade-in utility */
       .fade-in {
         animation: fadeIn 0.25s ease forwards;
@@ -893,11 +933,23 @@
 
       /* Responsive */
       @media (max-width: 1024px) {
-        .orchestrator-layout { grid-template-columns: 1fr; }
+        .dashboard-wrapper {
+          height: auto;
+          overflow-y: auto;
+          padding: 1rem 1rem 2rem 1rem;
+        }
+        .orchestrator-layout { 
+          grid-template-columns: 1fr; 
+          height: auto;
+          overflow: visible;
+        }
         .arsenal-sidebar {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-          max-height: none;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          max-height: 400px;
+        }
+        .canvas-wrapper {
+          max-height: 800px;
         }
         .arsenal-search, h3.arsenal-title { grid-column: 1 / -1; }
         .config-drawer { width: 100vw; max-width: 100vw; }
@@ -938,30 +990,32 @@
 
   <div class="dashboard-wrapper">
     <!-- Header card -->
-    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 20px;">
+    <!-- Header Area: Ultra-Condensed -->
+    <div class="dash-panel" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 0.75rem 2rem; border-radius: var(--radius-lg); margin-top: 0; border: 1px solid var(--neo-border);">
       <div class="scanner-title-area">
-        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Mission <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Orchestrator</span></h1>
-        <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
-          <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
-          Automated Offensive Security &amp; Infrastructure Monitoring
+        <h1 class="text-gradient" style="margin: 0; font-size: 1.5rem; letter-spacing: -0.04em; font-weight: 900; text-transform: uppercase;">Mission <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Orchestrator</span></h1>
+        <p style="color: var(--neo-text-muted); font-size: 0.65rem; font-weight: 500; font-family: var(--font-mono); margin: 2px 0 0 0; display: flex; align-items: center; gap: 8px; opacity: 0.7;">
+          <span style="height: 1px; width: 16px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
+          Automated Security &amp; Monitoring
         </p>
       </div>
       
       <div class="flex gap-3">
-        <button id="refreshJobsBtn" class="btn-dash" style="background: rgba(255,255,255,0.05); height: 42px;">
-          <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--neo-blue);">sync</span>
-          <span>Sync Systems</span>
+        <button id="refreshJobsBtn" class="btn-dash" style="background: rgba(255,255,255,0.03); height: 32px; border-radius: 6px; padding: 0 0.75rem;">
+          <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">sync</span>
+          <span style="font-size: 0.65rem;">Sync</span>
         </button>
-        <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.05); height: 42px;">
-          <span class="material-symbols-outlined" style="font-size: 1.2rem;">home</span>
-          <span>Security Hub</span>
+        <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.03); height: 32px; border-radius: 6px; padding: 0 0.75rem;">
+          <span class="material-symbols-outlined" style="font-size: 1rem;">home</span>
+          <span style="font-size: 0.65rem;">Hub</span>
         </a>
       </div>
     </div>
 
     <div class="orchestrator-layout">
       <!-- ============ ARSENAL SIDEBAR ============ -->
-      <aside class="arsenal-sidebar">
+      <aside class="dash-panel arsenal-panel">
+        <h3 class="arsenal-title" style="margin-top: 0">Arsenal Components</h3>
         
         <!-- Module search -->
         <div class="arsenal-search">
@@ -975,107 +1029,109 @@
           />
         </div>
 
-        <!-- Category: Network -->
-        <h3 class="arsenal-title" data-category="network">Network</h3>
+        <div class="arsenal-sidebar">
+          <!-- Category: Network -->
+          <h3 class="arsenal-title" data-category="network">Network</h3>
 
-        <div class="template-card" draggable="true" data-module="nmap" data-category="network" data-search="nmap scanner port discovery os fingerprint">
-          <div class="template-icon">
-            <span class="material-symbols-outlined">target</span>
+          <div class="template-card" draggable="true" data-module="nmap" data-category="network" data-search="nmap scanner port discovery os fingerprint">
+            <div class="template-icon">
+              <span class="material-symbols-outlined">target</span>
+            </div>
+            <div class="template-info">
+              <h4>Nmap Scanner</h4>
+              <p>Port discovery &amp; OS fingerprint</p>
+            </div>
           </div>
-          <div class="template-info">
-            <h4>Nmap Scanner</h4>
-            <p>Port discovery &amp; OS fingerprint</p>
+
+          <div class="template-card" draggable="true" data-module="sniffer" data-category="network" data-search="sniffer traffic analysis anomaly packet">
+            <div class="template-icon" style="color: var(--neo-green); background: rgba(16, 185, 129, 0.1);">
+              <span class="material-symbols-outlined">wifi_tethering</span>
+            </div>
+            <div class="template-info">
+              <h4>Sniffer</h4>
+              <p>Traffic analysis &amp; anomaly</p>
+            </div>
           </div>
+
+          <!-- Category: Web -->
+          <h3 class="arsenal-title" data-category="web">Web</h3>
+
+          <div class="template-card" draggable="true" data-module="zap" data-category="web" data-search="owasp zap web vulnerability scan">
+            <div class="template-icon" style="color: var(--neo-red); background: rgba(239, 68, 68, 0.1);">
+              <span class="material-symbols-outlined">security</span>
+            </div>
+            <div class="template-info">
+              <h4>OWASP ZAP</h4>
+              <p>Web vulnerability scan</p>
+            </div>
+          </div>
+
+          <div class="template-card" draggable="true" data-module="sql" data-category="web" data-search="sqli probe sql injection automated database">
+            <div class="template-icon" style="color: var(--neo-amber); background: rgba(245, 158, 11, 0.1);">
+              <span class="material-symbols-outlined">database</span>
+            </div>
+            <div class="template-info">
+              <h4>SQLi Probe</h4>
+              <p>Automated SQL injection</p>
+            </div>
+          </div>
+
+          <div class="template-card" draggable="true" data-module="api" data-category="web" data-search="api scanner endpoint fuzzing rest">
+            <div class="template-icon" style="color: #06b6d4; background: rgba(6, 182, 212, 0.1);">
+              <span class="material-symbols-outlined">api</span>
+            </div>
+            <div class="template-info">
+              <h4>API Scanner</h4>
+              <p>Endpoint fuzzing</p>
+            </div>
+          </div>
+
+          <!-- Category: Code -->
+          <h3 class="arsenal-title" data-category="code">Code</h3>
+
+          <div class="template-card" draggable="true" data-module="semgrep" data-category="code" data-search="semgrep sast static code analysis">
+            <div class="template-icon" style="color: #a855f7; background: rgba(168, 85, 247, 0.1);">
+              <span class="material-symbols-outlined">code_blocks</span>
+            </div>
+            <div class="template-info">
+              <h4>Semgrep</h4>
+              <p>SAST Code Analysis</p>
+            </div>
+          </div>
+
+          <!-- Category: Cert & Audit -->
+          <h3 class="arsenal-title" data-category="audit">Cert &amp; Audit</h3>
+
+          <div class="template-card" draggable="true" data-module="ssl" data-category="audit" data-search="ssl audit cert certificate config verify tls">
+            <div class="template-icon" style="color: var(--neo-blue); background: rgba(59, 130, 246, 0.1);">
+              <span class="material-symbols-outlined">shield_lock</span>
+            </div>
+            <div class="template-info">
+              <h4>SSL Audit</h4>
+              <p>Cert &amp; config verify</p>
+            </div>
+          </div>
+
+          <div class="template-card" draggable="true" data-module="killchain" data-category="audit" data-search="kill chain full spectrum audit recon network web">
+            <div class="template-icon" style="color: var(--neo-red); background: rgba(239, 68, 68, 0.1);">
+              <span class="material-symbols-outlined">account_tree</span>
+            </div>
+            <div class="template-info">
+              <h4>Kill Chain</h4>
+              <p>Full spectrum audit</p>
+            </div>
+          </div>
+
+          <!-- No-results message -->
+          <p id="noModulesMsg" style="display:none; font-family: var(--font-mono); font-size: 0.72rem; color: var(--neo-text-muted); text-align: center; padding: 1rem 0;">
+            No modules match
+          </p>
         </div>
-
-        <div class="template-card" draggable="true" data-module="sniffer" data-category="network" data-search="sniffer traffic analysis anomaly packet">
-          <div class="template-icon" style="color: var(--neo-green); background: rgba(16, 185, 129, 0.1);">
-            <span class="material-symbols-outlined">wifi_tethering</span>
-          </div>
-          <div class="template-info">
-            <h4>Sniffer</h4>
-            <p>Traffic analysis &amp; anomaly</p>
-          </div>
-        </div>
-
-        <!-- Category: Web -->
-        <h3 class="arsenal-title" data-category="web">Web</h3>
-
-        <div class="template-card" draggable="true" data-module="zap" data-category="web" data-search="owasp zap web vulnerability scan">
-          <div class="template-icon" style="color: var(--neo-red); background: rgba(239, 68, 68, 0.1);">
-            <span class="material-symbols-outlined">security</span>
-          </div>
-          <div class="template-info">
-            <h4>OWASP ZAP</h4>
-            <p>Web vulnerability scan</p>
-          </div>
-        </div>
-
-        <div class="template-card" draggable="true" data-module="sql" data-category="web" data-search="sqli probe sql injection automated database">
-          <div class="template-icon" style="color: var(--neo-amber); background: rgba(245, 158, 11, 0.1);">
-            <span class="material-symbols-outlined">database</span>
-          </div>
-          <div class="template-info">
-            <h4>SQLi Probe</h4>
-            <p>Automated SQL injection</p>
-          </div>
-        </div>
-
-        <div class="template-card" draggable="true" data-module="api" data-category="web" data-search="api scanner endpoint fuzzing rest">
-          <div class="template-icon" style="color: #06b6d4; background: rgba(6, 182, 212, 0.1);">
-            <span class="material-symbols-outlined">api</span>
-          </div>
-          <div class="template-info">
-            <h4>API Scanner</h4>
-            <p>Endpoint fuzzing</p>
-          </div>
-        </div>
-
-        <!-- Category: Code -->
-        <h3 class="arsenal-title" data-category="code">Code</h3>
-
-        <div class="template-card" draggable="true" data-module="semgrep" data-category="code" data-search="semgrep sast static code analysis">
-          <div class="template-icon" style="color: #a855f7; background: rgba(168, 85, 247, 0.1);">
-            <span class="material-symbols-outlined">code_blocks</span>
-          </div>
-          <div class="template-info">
-            <h4>Semgrep</h4>
-            <p>SAST Code Analysis</p>
-          </div>
-        </div>
-
-        <!-- Category: Cert & Audit -->
-        <h3 class="arsenal-title" data-category="audit">Cert &amp; Audit</h3>
-
-        <div class="template-card" draggable="true" data-module="ssl" data-category="audit" data-search="ssl audit cert certificate config verify tls">
-          <div class="template-icon" style="color: var(--neo-blue); background: rgba(59, 130, 246, 0.1);">
-            <span class="material-symbols-outlined">shield_lock</span>
-          </div>
-          <div class="template-info">
-            <h4>SSL Audit</h4>
-            <p>Cert &amp; config verify</p>
-          </div>
-        </div>
-
-        <div class="template-card" draggable="true" data-module="killchain" data-category="audit" data-search="kill chain full spectrum audit recon network web">
-          <div class="template-icon" style="color: var(--neo-red); background: rgba(239, 68, 68, 0.1);">
-            <span class="material-symbols-outlined">account_tree</span>
-          </div>
-          <div class="template-info">
-            <h4>Kill Chain</h4>
-            <p>Full spectrum audit</p>
-          </div>
-        </div>
-
-        <!-- No-results message -->
-        <p id="noModulesMsg" style="display:none; font-family: var(--font-mono); font-size: 0.72rem; color: var(--neo-text-muted); text-align: center; padding: 1rem 0;">
-          No modules match
-        </p>
       </aside>
       
       <!-- ============ MAIN CANVAS ============ -->
-      <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 0;">
-        <h3 class="arsenal-title">Active Missions &amp; Deployment</h3>
+      <main class="dash-panel canvas-panel">
+        <h3 class="arsenal-title" style="margin-top: 0">Active Missions &amp; Deployment</h3>
         
         <div class="canvas-wrapper" id="canvasWrapper">
           <!-- Empty drop-zone (full area, shown when no missions) -->
@@ -1098,9 +1154,9 @@
           </div>
 
           <!-- Mission grid (shown when missions exist) -->
-          <main class="mission-grid" id="missionCanvas"></main>
+          <div class="mission-grid" id="missionCanvas"></div>
         </div>
-      </div>
+      </main>
     </div>
     <div id="drag-ghost-el" class="drag-ghost"></div>
   </div>

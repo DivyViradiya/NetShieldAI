@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-from logger_setup import logger
+from core.logger_setup import logger
 from Services import report_manager
 
 # --- CONFIGURATION & MAPPINGS ---

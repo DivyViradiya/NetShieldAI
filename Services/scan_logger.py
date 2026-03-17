@@ -2,9 +2,9 @@ import re
 from datetime import datetime
 import os
 import time
-from extensions import db
-from models import ScanLog, User
-from logger_setup import logger
+from core.extensions import db
+from models.models import ScanLog, User
+from core.logger_setup import logger
 
 BASE_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
 USERS_LOG_DIR = os.path.join(BASE_LOG_DIR, "users")
@@ -110,7 +110,7 @@ def log_scan_start(user_id, tool_name, target, scan_type="Standard"):
         logger.error(f"[!] Error logging scan start: {e}")
         return None
 
-def log_scan_end(log_id, status="Completed", finding_count=0, critical_count=0, error_msg=None, duration=None):
+def log_scan_end(log_id, status="Completed", finding_count=0, critical_count=0, error_msg=None, duration=None, report_path=None):
     """
     Updates an existing ScanLog entry with completion details.
     Caller must be inside an app_context.
@@ -125,6 +125,7 @@ def log_scan_end(log_id, status="Completed", finding_count=0, critical_count=0, 
             log_entry.finding_count = finding_count
             log_entry.severity_critical = critical_count
             log_entry.error_message = error_msg
+            log_entry.report_path = report_path
             
             # Calculate Duration
             if duration is not None:
@@ -137,7 +138,7 @@ def log_scan_end(log_id, status="Completed", finding_count=0, critical_count=0, 
     except Exception as e:
         logger.error(f"[!] Error logging scan end: {e}")
 
-def create_full_scan_log(user_id, tool_name, target, duration, finding_count, status="Completed", scan_type="Standard"):
+def create_full_scan_log(user_id, tool_name, target, duration, finding_count, status="Completed", scan_type="Standard", report_path=None):
     """
     For tools that don't support async start/end logging easily, 
     this logs the entire event at once (e.g., for Nmap after it returns).
@@ -157,7 +158,8 @@ def create_full_scan_log(user_id, tool_name, target, duration, finding_count, st
             start_time=start_time,
             end_time=end_time,
             duration_seconds=duration,
-            finding_count=finding_count
+            finding_count=finding_count,
+            report_path=report_path
         )
         db.session.add(new_log)
         db.session.commit()

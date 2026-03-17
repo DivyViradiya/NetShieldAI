@@ -28,7 +28,7 @@ from Services.pentest_modules.traffic_analyzer import TrafficAnalyzer
 from Services import pdf_generator
 from Services import scan_logger
 from Services import report_manager
-from logger_setup import logger
+from core.logger_setup import logger
 from Services.tctr_engine import tctr_engine
 
 # ==========================================
@@ -628,7 +628,7 @@ class KillChainService:
             # Log Completion to Database
             if log_id and app:
                 with app.app_context():
-                     scan_logger.log_scan_end(log_id, status="Completed", finding_count=len(all_findings), duration=time.time() - start_time)
+                     scan_logger.log_scan_end(log_id, status="Completed", finding_count=len(all_findings), duration=time.time() - start_time, report_path=str(paths["pdf_report"]) if paths["pdf_report"].exists() else None)
 
             send_sse_event(queue_id, "scan_complete", {"message": "Audit completed successfully!"})
             log(queue_id, "AUDIT COMPLETED.", "SUCCESS")

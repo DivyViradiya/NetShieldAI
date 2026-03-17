@@ -169,29 +169,32 @@ function renderMissionCard(p) {
 
     return `
         <div class="mission-card fade-in" id="profile-${p.id}">
-            <div class="mission-status-strip" style="background: ${accentColor};"></div>
-            <div class="mission-header">
-                <div style="flex:1; padding-left: 0.75rem;">
-                    <div style="display:flex; align-items:center; gap: 0.6rem; margin-bottom: 0.25rem;">
-                        <div class="mission-title" style="color: ${accentColor}; font-size: 0.9rem;">${escapeHTML(p.name).toUpperCase()}</div>
-                        ${p.jobs.length > 0 ? `<span class="status-pill ${pillClass}"><span class="status-dot"></span>${escapeHTML(pillLabel)}</span>` : ''}
+            <div class="mission-status-strip" style="background: ${accentColor}; width: 3px;"></div>
+            <div class="mission-header" style="margin-bottom: 0.3rem;">
+                <div style="flex:1; padding-left: 0.4rem;">
+                    <div style="display:flex; align-items:center; gap: 0.4rem; margin-bottom: 0.1rem;">
+                        <div class="mission-title" style="color: ${accentColor}; font-size: 0.8rem;">${escapeHTML(p.name).toUpperCase()}</div>
+                        ${p.jobs.length > 0 ? `<span class="status-pill ${pillClass}" style="padding: 1px 5px; font-size: 0.5rem;"><span class="status-dot" style="width:3px; height:3px;"></span>${escapeHTML(pillLabel)}</span>` : ''}
                     </div>
-                    <div class="mission-target">${escapeHTML(primaryTarget)}</div>
+                    <div class="mission-target" style="font-size: 0.65rem; margin-bottom: 0.3rem;">${escapeHTML(primaryTarget)}</div>
                 </div>
-                <div class="template-icon" style="width: 32px; height: 32px; color: ${accentColor}; background: ${accentColor}15; border: 1px solid ${accentColor}33; flex-shrink:0;">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">${icon}</span>
+                <div class="template-icon" style="width: 24px; height: 24px; color: ${accentColor}; background: ${accentColor}15; border: 1px solid ${accentColor}33; flex-shrink:0;">
+                    <span class="material-symbols-outlined" style="font-size: 0.9rem;">${icon}</span>
                 </div>
             </div>
-            <p style="font-size: 0.73rem; color: var(--neo-text-muted); min-height: 2rem; margin-bottom: 0.75rem; padding-left: 0.75rem;">${escapeHTML(p.description) || 'Continuous monitoring of infrastructure endpoints.'}</p>
-            <div style="background: rgba(0,0,0,0.15); padding: 0.6rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); margin-bottom: 0.85rem;">
+            <p style="font-size: 0.68rem; color: var(--neo-text-muted); min-height: 1rem; margin-bottom: 0.5rem; padding-left: 0.4rem; line-height: 1.3;">${escapeHTML(p.description) || 'Continuous monitoring of infrastructure endpoints.'}</p>
+            <div style="background: rgba(0,0,0,0.1); padding: 0.3rem; border-radius: 5px; border: 1px solid rgba(255,255,255,0.02); margin-bottom: 0.5rem;">
                 ${jobsHtml}
             </div>
-            <div class="mission-actions">
-                <button class="btn-dash btn-danger" onclick="deleteProfile(${p.id})">
-                    <span class="material-symbols-outlined" style="font-size:0.9rem;">delete</span>Delete
+            <div class="mission-actions" style="gap: 0.3rem;">
+                <button class="btn-dash btn-danger" onclick="deleteProfile(${p.id})" style="padding: 0 0.5rem;" title="Delete Profile">
+                    <span class="material-symbols-outlined" style="font-size:0.8rem;">delete</span>
                 </button>
-                <button class="btn-dash btn-primary" id="exec-btn-${p.id}" onclick="triggerJob(${p.id})">
-                    <span class="material-symbols-outlined" style="font-size:0.9rem;">rocket_launch</span>Execute Now
+                <button class="btn-dash" onclick="openHistoryDrawer(${p.jobs[0]?.id || 0})" ${p.jobs.length === 0 ? 'disabled' : ''} style="flex:1; justify-content:center;">
+                    <span class="material-symbols-outlined" style="font-size:0.8rem;">history</span>Logs
+                </button>
+                <button class="btn-dash btn-primary" id="exec-btn-${p.id}" onclick="triggerJob(${p.id})" style="flex:1.2; justify-content:center;">
+                    <span class="material-symbols-outlined" style="font-size:0.8rem;">rocket_launch</span>Execute
                 </button>
             </div>
         </div>
@@ -210,6 +213,103 @@ function closeDrawer() {
     document.getElementById('configDrawer').classList.remove('open');
     document.getElementById('drawerOverlay').classList.remove('open');
     activeDraftIndex = -1;
+}
+
+window.openHistoryDrawer = async function(jobId) {
+    if (!jobId) {
+        toast('No active schedule found for this mission.', 'error');
+        return;
+    }
+
+    const drawer = document.getElementById('configDrawer');
+    const overlay = document.getElementById('drawerOverlay');
+    
+    // Set loading state
+    document.getElementById('drawerModuleLabel').textContent = 'Mission Intelligence';
+    document.getElementById('drawerTitle').textContent = 'Mission Logs';
+    document.getElementById('stepBar').innerHTML = ''; // Clear steps
+    document.getElementById('drawerBody').innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:200px; color:var(--neo-text-muted);">
+            <span class="material-symbols-outlined spin" style="font-size:2rem; margin-bottom:1rem;">sync</span>
+            <div style="font-family:var(--font-mono); font-size:0.7rem; text-transform:uppercase;">Retrieving Logs...</div>
+        </div>
+    `;
+    document.getElementById('drawerFooter').innerHTML = `
+        <button class="btn-dash" onclick="closeDrawer()" style="width:100%; justify-content:center;">Close</button>
+    `;
+
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+
+    try {
+        const data = await apiFetch(`${API}/jobs/${jobId}/history`);
+        if (data.status === 'success') {
+            renderHistory(data.history);
+        } else {
+            toast('Failed to load history', 'error');
+        }
+    } catch (e) {
+        toast('History retrieval failed', 'error');
+    }
+};
+
+function renderHistory(history) {
+    const body = document.getElementById('drawerBody');
+    if (!history || history.length === 0) {
+        body.innerHTML = `
+            <div style="text-align:center; padding: 4rem 2rem; color:var(--neo-text-muted);">
+                <span class="material-symbols-outlined" style="font-size:3rem; margin-bottom:1rem; opacity:0.2;">history</span>
+                <p style="font-size:0.8rem; font-family:var(--font-mono);">No execution logs found for this mission.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const logsHtml = history.map(log => {
+        const statusColor = log.status === 'Completed' ? 'var(--neo-green)' : 'var(--neo-red)';
+        const dateStr = new Date(log.start_time).toLocaleString();
+        
+        return `
+            <div class="log-entry" style="background: rgba(255,255,255,0.02); border: 1px solid var(--neo-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
+                    <div>
+                        <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:${COLOR_MAP[log.tool_name.toLowerCase()] || 'var(--neo-blue)'}; text-transform:uppercase;">${log.tool_name} Scan</div>
+                        <div style="font-size:0.65rem; color:var(--neo-text-muted); font-family:var(--font-mono); margin-top:2px;">${dateStr}</div>
+                    </div>
+                    <span class="status-pill ${log.status === 'Completed' ? 'active' : 'paused'}" style="font-size:0.55rem; padding: 2px 6px;">
+                        <span class="status-dot"></span>${log.status}
+                    </span>
+                </div>
+                
+                <div style="font-size:0.72rem; color:var(--neo-text-muted); margin-bottom:0.75rem; border-left:2px solid var(--neo-border); padding-left:0.75rem; font-family:var(--font-mono);">
+                    Target: ${log.target}<br>
+                    Type: ${log.scan_type || 'Discovery'}
+                </div>
+
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem; font-family:var(--font-mono); font-size:0.65rem;">
+                    <div style="background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px;">Findings: <span style="color:var(--neo-amber)">${log.finding_count || 0}</span></div>
+                    <div style="background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px;">Duration: ${log.duration || 0}s</div>
+                </div>
+
+                ${log.has_report ? `
+                    <button class="btn-dash" onclick="downloadReport(${log.id})" style="width:100%; justify-content:center; background:var(--neo-blue); color:#000; border:none; height:32px;">
+                        <span class="material-symbols-outlined" style="font-size:1rem;">download</span>
+                        Download Intelligence Report
+                    </button>
+                ` : `
+                    <button class="btn-dash" disabled style="width:100%; justify-content:center; height:32px; opacity:0.5; cursor:not-allowed;">
+                        <span class="material-symbols-outlined" style="font-size:1rem;">description</span>
+                        Report Not Available
+                    </button>
+                `}
+            </div>
+        `;
+    }).join('');
+
+    body.innerHTML = `
+        <div class="phase-heading">Execution History</div>
+        ${logsHtml}
+    `;
 }
 
 function renderDrawer() {
@@ -610,21 +710,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (card) card.style.opacity = '1';
     });
 
+    const canvasPanel = document.querySelector('.canvas-panel');
+
     canvasWrapper.addEventListener('dragover', (e) => {
         e.preventDefault();
-        canvasWrapper.classList.add('active');
+        canvasPanel.classList.add('active');
     });
 
     canvasWrapper.addEventListener('dragleave', (e) => {
-        // Only remove if leaving the canvasWrapper entirely
-        if (!canvasWrapper.contains(e.relatedTarget)) {
-            canvasWrapper.classList.remove('active');
+        if (!canvasPanel.contains(e.relatedTarget)) {
+            canvasPanel.classList.remove('active');
         }
     });
 
     canvasWrapper.addEventListener('drop', (e) => {
         e.preventDefault();
-        canvasWrapper.classList.remove('active');
+        canvasPanel.classList.remove('active');
         const mod = e.dataTransfer.getData('text/plain');
         if (mod) deployDraft(mod);
     });
@@ -888,6 +989,13 @@ async function triggerJob(profileId) {
         }, 2500);
     }
 }
+
+// ===== Download Report (Silent) =====
+window.downloadReport = function(logId) {
+    const downloadUrl = `${API}/reports/${logId}/download`;
+    // Using window.location.href for silent download (triggers browser download behavior)
+    window.location.href = downloadUrl;
+};
 
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', async () => {

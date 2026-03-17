@@ -17,7 +17,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 # Import db to update user stats
-from extensions import db
+from core.extensions import db
 
 # Import the sql_scanner module
 from Services import sql_scanner
@@ -112,7 +112,7 @@ def scan_sql():
     try:
         if hasattr(current_user, 'scan_count_sql'):
             from sqlalchemy import update as _sa_update
-            from models import User as _User
+            from models.models import User as _User
             db.session.execute(
                 _sa_update(_User).where(_User.id == current_user.id)
                 .values(scan_count_sql=_User.scan_count_sql + 1)
