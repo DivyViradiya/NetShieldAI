@@ -24,6 +24,7 @@ from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
 from Services import report_manager
+from Services.target_validator import validate_target, TargetBlockedError, AuthorizationRequiredError
 
 network_scanner_bp = Blueprint('network_scanner_bp', __name__)
 
@@ -174,6 +175,23 @@ def scan_ports():
     if not network_scanner.is_valid_ip_or_range(target_ip) and not network_scanner.is_valid_hostname(target_ip):
         network_scanner.log(f"[!] Invalid target input: {target_ip}", user_identifier, queue_id=None)
         return jsonify({"status": "error", "message": "Please enter a valid IP address, Domain (URL), or IP range."}), 400
+    
+    # --- Target Validation Guardrails ---
+    user_confirmed_auth = data.get('user_confirmed_auth', False)
+    try:
+        validate_target(target_ip, user_confirmed_auth=user_confirmed_auth)
+    except TargetBlockedError as e:
+        logger.warning(f"[BLOCKED] Network Scan rejected for {target_ip}: {e}")
+        return jsonify({
+            "status": "blocked",
+            "message": f"Scan Prohibited: {str(e)}"
+        }), 403
+    except AuthorizationRequiredError as e:
+        logger.info(f"[AUTH_REQUIRED] Network Scan requires confirmation for {target_ip}")
+        return jsonify({
+            "status": "auth_required",
+            "message": str(e)
+        }), 403
     
     if not network_scanner.is_nmap_installed():
         network_scanner.log("[!] Nmap is not installed or not in PATH.", user_identifier, queue_id=None)

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}NetShieldAI{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      /* --- [BASE RESET & STYLES] --- */
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f8fafc;
+        font-family: 'IBM Plex Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        color: #334155;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* --- [LAYOUT COMPONENTS] --- */
+      .wrapper {
+        width: 100%;
+        table-layout: fixed;
+        background-color: #0f172a;
+        padding: 60px 20px;
+        box-sizing: border-box;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #1e293b;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      }
+      
+      /* --- [HEADER] --- */
+      .header {
+        padding: 50px 30px 40px;
+        text-align: center;
+        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      }
+      .header img {
+        width: 72px;
+        height: auto;
+        margin-bottom: 20px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+      }
+      .header h1 {
+        color: #ffffff;
+        font-size: 28px;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: -1px;
+      }
+      .header-accent {
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, transparent 0%, #3b82f6 50%, transparent 100%);
+      }
+      
+      /* --- [BODY CONTENT] --- */
+      .content {
+        padding: 40px 50px 40px;
+      }
+      .content h2 {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+      }
+      .content h2::before {
+        content: '';
+        display: inline-block;
+        width: 5px;
+        height: 22px;
+        background-color: #3b82f6;
+        margin-right: 14px;
+        border-radius: 3px;
+      }
+      .content p {
+        font-size: 16px;
+        line-height: 1.7;
+        color: #94a3b8;
+        margin-top: 0;
+        margin-bottom: 24px;
+      }
+      .content p strong {
+        color: #f1f5f9;
+        font-weight: 600;
+      }
+
+      /* --- [DETAILS BOX] --- */
+      .details-box {
+        background-color: #0b0f17;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: 12px;
+        padding: 24px 30px;
+        margin-bottom: 32px;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+      }
+      .detail-row {
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .detail-row:first-child {
+        padding-top: 0;
+      }
+      .detail-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .detail-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: #64748b;
+        margin-bottom: 6px;
+      }
+      .detail-value {
+        font-size: 15px;
+        font-weight: 500;
+        color: #e2e8f0;
+        word-break: break-all;
+      }
+      .detail-value.mono {
+        font-family: 'Courier New', Courier, monospace;
+        color: #60a5fa;
+        font-size: 14px;
+      }
+      
+      /* --- [TOOL TAGS] --- */
+      .tool-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .tool-tag {
+        background-color: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: #93c5fd;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        letter-spacing: 0.05em;
+      }
+      
+      /* --- [CALLOUT NOTE] --- */
+      .note {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #cbd5e1;
+        background-color: rgba(56, 139, 253, 0.1);
+        padding: 20px 24px;
+        border-radius: 12px;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        margin-bottom: 32px;
+      }
+      .note strong {
+        color: #60a5fa;
+      }
+      
+      /* --- [BUTTON & CTA] --- */
+      .btn-container {
+        text-align: center;
+        margin: 32px 0 16px;
+      }
+      .btn {
+        display: inline-block;
+        padding: 16px 45px;
+        background-color: #3b82f6;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 16px;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        transition: background-color 0.2s;
+      }
+      .btn:hover {
+        background-color: #2563eb;
+      }
+      .fallback-link {
+        text-align: center;
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 0;
+      }
+      .fallback-link a {
+        color: #3b82f6;
+        word-break: break-all;
+        text-decoration: none;
+      }
+      
+      /* --- [FOOTER] --- */
+      .footer {
+        padding: 40px 30px;
+        text-align: center;
+        background-color: #0f172a;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .footer p {
+        margin: 0 0 12px 0;
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.6;
+      }
+      .footer-links {
+        margin-top: 16px;
+      }
+      .footer-links a {
+        color: #3b82f6;
+        text-decoration: none;
+        font-size: 13px;
+        margin: 0 12px;
+        font-weight: 500;
+      }
+      
+      /* --- [MOBILE RESPONSIVENESS] --- */
+      @media only screen and (max-width: 600px) {
+        .wrapper { padding: 20px 10px; }
+        .container { border-radius: 12px; }
+        .content { padding: 30px 24px; }
+        .header { padding: 40px 20px 30px; }
+        .details-box { padding: 20px; }
+        .btn {
+          display: block;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 18px 0;
+        }
+      }
+      {% block extra_css %}{% endblock %}
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="container">
+        
+        <div class="header">
+          <img src="cid:logo" alt="NS">
+          <h1>{% block header_title %}Header{% endblock %}</h1>
+          <div class="header-accent"></div>
+        </div>
+        
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+        
+        <div class="footer">
+            {% block footer %}
+            <p><strong>NetShieldAI</strong> — Enterprise Pentesting Engine</p>
+            <p>This is an automated message. Please do not reply.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+            <p style="margin-top: 16px; opacity: 0.5;">&copy; {{ current_year }} NetShieldAI. All rights reserved.</p>
+            {% endblock %}
+        </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

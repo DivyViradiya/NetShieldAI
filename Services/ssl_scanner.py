@@ -13,6 +13,10 @@ import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from Services import report_manager
+from Services.anonymity.manager import AnonymityManager
+from Services.anonymity.capabilities import SCANNER_CAPABILITIES
+
+_anon = AnonymityManager()
 from .tctr_engine import tctr_engine
 
 # MODIFIED: Define path to the local sslscan.exe
@@ -148,7 +152,15 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None, timestamp=None):
         log("[!] Target host cannot be empty for SSL scan.", user_id)
         return None
 
-    log(f"[+] Running local SSL scan on {target_host}...", user_id, to_console=True)
+    # Defense-in-depth Target Validation
+    try:
+        from Services.target_validator import validate_target, TargetBlockedError
+        validate_target(target_host)
+    except TargetBlockedError as e:
+        log(f"[BLOCKED] Scan rejected by target validator: {e}", user_id, level='ERROR')
+        return None
+
+    log(f"[STAGE] Starting SSLScan on {target_host}...", user_id, level='STAGE', to_console=True)
     if not is_sslscan_available(user_id=user_id):
         return None
     
@@ -159,47 +171,64 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None, timestamp=None):
     if not xml_report_path.parent.exists():
         xml_report_path.parent.mkdir(parents=True, exist_ok=True)
 
-    local_cmd = [
-        str(SSLSCAN_EXECUTABLE),
+    # Define default flags for sslscan
+    default_flags = [
         f"--xml={xml_report_path}",
         '--show-client-cas',
         '--show-cipher-ids',
         '--show-signatures',
-        target_host
     ]
 
     try:
-        log(f"[*] Executing command: {' '.join(str(x) for x in local_cmd)}", user_id, to_console=True)
+        creation_flags = _get_subprocess_creation_flags()
         
+        command = []
+        if _anon.enabled:
+            cap = SCANNER_CAPABILITIES["sslscan"]
+            ssl_strict = os.getenv("STRICT_MODE", "true").lower() == "true"
+            if ssl_strict:
+                log("[!] ERROR: Strict anonymity mode active, but sslscan.exe does not support SOCKS natively. Scan aborted to prevent IP leak.", user_id)
+                send_sse_event("scan_failed", {"message": "SSLScan aborted via Strict Mode Anonymity constraint."}, user_id=user_id)
+                return None
+            else:
+                logger.info(f"[🛡️] Anonymity ACTIVE ({_anon.mode.upper()}). SSL scan may expose real IP (no SOCKS support).")
+                command = [str(SSLSCAN_EXECUTABLE)] + default_flags + [target_host]
+        else:
+            logger.info("[🛡️] Anonymity Mode OFFLINE. SSL executing from direct connection.")
+            command = [str(SSLSCAN_EXECUTABLE)] + default_flags + [target_host]
+            
+        log(f"[*] Executing command: {' '.join(str(x) for x in command)}", user_id, to_console=True)
+
         # Track this user's process
-        with scan_lock:
-            process = subprocess.Popen(
-                local_cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                creationflags=_get_subprocess_creation_flags(),
-                cwd=SSLSCAN_EXECUTABLE.parent 
-            )
-            active_scans[user_id] = {"process": process, "target": target_host, "start_time": time.time()}
+        with _anon.apply(): # Apply anonymity settings FIRST, before grabbing the lock
+            with scan_lock:
+                process = subprocess.Popen(
+                    command,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    creationflags=creation_flags,
+                    env=_anon.get_subprocess_env(), # Pass environment variables for proxy
+                    cwd=SSLSCAN_EXECUTABLE.parent 
+                )
+                active_scans[user_id] = {"process": process, "target": target_host, "start_time": time.time()}
 
-        # Stream output in real-time
-        def stream_output(pipe, prefix):
-            for line in iter(pipe.readline, ''):
-                if line:
-                    log(f"[{prefix}] {line.strip()}", user_id)
-            pipe.close()
+            # Stream output in real-time
+            def stream_output(pipe, prefix):
+                for line in iter(pipe.readline, ''):
+                    if line:
+                        log(f"[{prefix}] {line.strip()}", user_id, level='DEBUG')
+                pipe.close()
 
-        stdout_thread = threading.Thread(target=stream_output, args=(process.stdout, "SSLScan"))
-        stderr_thread = threading.Thread(target=stream_output, args=(process.stderr, "SSLScan-Err"))
-        
-        stdout_thread.start()
-        stderr_thread.start()
-        
-        # Wait for process to complete
-        return_code = process.wait()
-        stdout_thread.join()
-        stderr_thread.join()
+            stdout_thread = threading.Thread(target=stream_output, args=(process.stdout, "SSLScan"))
+            stderr_thread = threading.Thread(target=stream_output, args=(process.stderr, "SSLScan-Err"))
+            
+            stdout_thread.start()
+            stderr_thread.start()
+            
+            return_code = process.wait()
+            stdout_thread.join()
+            stderr_thread.join()
 
         # Unregister process
         with scan_lock:
@@ -214,7 +243,7 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None, timestamp=None):
         time.sleep(0.5)
 
         if xml_report_path.exists() and xml_report_path.stat().st_size > 0:
-            log(f"[+] SSL raw scan results synchronized.", user_id, to_console=True)
+            log(f"[SUCCESS] SSLScan raw results synchronized.", user_id, level='SUCCESS', to_console=True)
             send_sse_event("ssl_scan_complete", {"target_host": target_host, "report_file": str(xml_report_path)}, user_id=user_id)
             return str(xml_report_path)
         else:

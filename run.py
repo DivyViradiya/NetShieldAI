@@ -32,7 +32,7 @@ init(autoreset=True)
 # --- Logging Setup ---
 from core.logger_setup import logger
 
-from core.extensions import db, login_manager, mail
+from core.extensions import db, login_manager, mail, limiter
 from models.models import User
 from routes.network_scanner_bp import network_scanner_bp
 from routes.zap_scanner_bp import zap_scanner_bp
@@ -68,6 +68,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024  # 1GB limit for uploads
 
 db.init_app(app)
+limiter.init_app(app)
 
 # --- SQLite Concurrency Fix: Enable WAL Mode ---
 from sqlalchemy import event
@@ -185,6 +186,38 @@ if __name__ == '__main__':
         if not os.environ.get("WERKZEUG_RUN_MAIN"):
             os.system('cls' if os.name == 'nt' else 'clear')
             print_banner()
+
+            # --- Auto-Start Tor Daemon ---
+            if os.getenv("ANONYMITY_MODE", "off").lower() == "tor":
+                import subprocess
+                try:
+                    import psutil
+                    tor_running = any("tor.exe" in p.name().lower() for p in psutil.process_iter(['name']))
+                except ImportError:
+                    output = subprocess.run('tasklist', capture_output=True, text=True).stdout
+                    tor_running = 'tor.exe' in output.lower()
+                    
+                if not tor_running:
+                    logger.info("[*] Starting local Tor proxy daemon (Background)...")
+                    tor_paths = [
+                        r"D:\tor\tor.exe",
+                        r"D:\Tor\tor.exe",
+                        r"D:\Tor\tor\tor.exe",
+                        r"D:\Tor\Tor\tor.exe",
+                        r"D:\Tor\tor-0.4.9.5\tor.exe",
+                        r"D:\Tor\tor-0.4.9.5\Tor\tor.exe",
+                        r"C:\tor\tor.exe",
+                        r"C:\Tor\tor.exe",
+                        r"C:\Tor\tor\tor.exe"
+                    ]
+                    tor_exe = next((p for p in tor_paths if os.path.exists(p)), None)
+                    if tor_exe:
+                        subprocess.Popen([tor_exe], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=subprocess.CREATE_NO_WINDOW)
+                        logger.info(f"[+] Tor proxy spawned from {tor_exe} on 127.0.0.1:9050.")
+                    else:
+                        logger.warning("[!] Tor executable not found. Automatic startup skipped.")
+                else:
+                    logger.info("[+] Tor proxy is already running.")
 
             logger.info("[*] Initializing Secure Database...")
             with app.app_context():

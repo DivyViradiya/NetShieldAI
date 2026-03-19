@@ -553,19 +553,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Event Listeners ---
 
-    if(elements.initiateScanBtn) {
-        elements.initiateScanBtn.addEventListener('click', async function() {
-            var targetHost = elements.targetHostInput.value.trim();
-            if (!targetHost) {
-                alert('Please enter a target host.');
-                return;
-            }
-            if (!csrfToken) {
-                elements.logOutput.innerHTML = '';
-                appendLog('[!] Error: CSRF Token missing. Refresh page.');
-                return;
-            }
+    function showAuthModal(message, onConfirm) {
+        const modal = document.getElementById('authModal');
+        const msgEl = document.getElementById('authModalMessage');
+        const confirmBtn = document.getElementById('confirmAuthBtn');
+        const cancelBtn = document.getElementById('cancelAuthBtn');
 
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        newConfirmBtn.addEventListener('click', () => {
+            if (modal) modal.classList.add('hidden');
+            if (onConfirm) onConfirm();
+        });
+
+        cancelBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleSpinner(elements.initiateScanBtn, false);
+            updateStatus('Ready');
+        };
+    }
+
+    function showBlockedModal(message) {
+        const modal = document.getElementById('blockedModal');
+        const msgEl = document.getElementById('blockedModalMessage');
+        const closeBtn = document.getElementById('closeBlockedModalBtn');
+
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        closeBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleSpinner(elements.initiateScanBtn, false);
+            updateStatus('Ready');
+        };
+    }
+
+    async function handleScanInitiation(userConfirmedAuth = false) {
+        var targetHost = elements.targetHostInput.value.trim();
+        if (!targetHost) {
+            alert('Please enter a target host.');
+            return;
+        }
+        if (!csrfToken) {
+            elements.logOutput.innerHTML = '';
+            appendLog('[!] Error: CSRF Token missing. Refresh page.');
+            return;
+        }
+
+        if (!userConfirmedAuth) {
             appendLog('> Initiating SSL scan for ' + targetHost + '...');
             
             if(elements.serverConfigDetails) elements.serverConfigDetails.innerHTML = '<div class="flex items-center gap-2" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);"><div class="spinner-sm"></div><span>SCANNING TARGET...</span></div>';
@@ -582,32 +621,53 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
             }
+        }
 
-            toggleSpinner(elements.initiateScanBtn, true);
-            updateStatus('Scanning...', 'busy');
+        toggleSpinner(elements.initiateScanBtn, true);
+        updateStatus('Scanning...', 'busy');
 
-            try {
-                var response = await fetch('/ssl_scanner/scan', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken 
-                    },
-                    body: JSON.stringify({ target_host: targetHost })
-                });
-                var data = await response.json();
+        try {
+            var response = await fetch('/ssl_scanner/scan', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    target_host: targetHost,
+                    user_confirmed_auth: userConfirmedAuth
+                })
+            });
+            var data = await response.json();
 
+            if (response.ok) {
                 if (data.status !== 'success') {
                     updateStatus('Start Failed', 'error');
                     toggleSpinner(elements.initiateScanBtn, false);
                     appendLog('[!] Error: ' + data.message);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                updateStatus('Conn Error', 'error');
+            } else {
+                if (data.status === 'auth_required') {
+                    showAuthModal(data.message, () => handleScanInitiation(true));
+                    return;
+                }
+                if (data.status === 'blocked') {
+                    showBlockedModal(data.message);
+                    return;
+                }
+                updateStatus('Start Failed', 'error');
                 toggleSpinner(elements.initiateScanBtn, false);
+                appendLog('[!] Error: ' + (data.message || 'Scan failed to start.'));
             }
-        });
+        } catch (error) {
+            console.error('Error:', error);
+            updateStatus('Conn Error', 'error');
+            toggleSpinner(elements.initiateScanBtn, false);
+        }
+    }
+
+    if(elements.initiateScanBtn) {
+        elements.initiateScanBtn.addEventListener('click', () => handleScanInitiation(false));
     }
 
     if(elements.clearLogBtn) {

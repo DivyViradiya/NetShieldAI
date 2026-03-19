@@ -1,2 +1,0 @@
-[2026-03-18 09:10:41] JSON report saved to: test_output\zap_example_com_20260318090000.json
-[2026-03-18 09:11:16] JSON report saved to: test_output\zap_example_com_20260318090000.json

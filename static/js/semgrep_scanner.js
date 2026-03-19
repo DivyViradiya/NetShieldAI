@@ -583,30 +583,67 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Main Scan Event Listener ---
-    if(elements.initiateScanBtn) {
-        elements.initiateScanBtn.addEventListener('click', async function() {
-            appendLog('[*] Start Scan button clicked.');
-            var targetInput = "";
-            var isFile = false;
+    function showAuthModal(message, onConfirm) {
+        const modal = document.getElementById('authModal');
+        const msgEl = document.getElementById('authModalMessage');
+        const confirmBtn = document.getElementById('confirmAuthBtn');
+        const cancelBtn = document.getElementById('cancelAuthBtn');
 
-            // Determine Input Type
-            if (selectedFile) {
-                isFile = true;
-                targetInput = selectedFile.name;
-            } else {
-                targetInput = elements.gitUrlInput.value.trim();
-            }
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
 
-            if (!targetInput) {
-                alert('Please provide a Git URL or upload a file.');
-                return;
-            }
-            if (!csrfToken) {
-                appendLog('[!] Error: CSRF Token missing.');
-                return;
-            }
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
 
-            // Clean UI before start
+        newConfirmBtn.addEventListener('click', () => {
+            if (modal) modal.classList.add('hidden');
+            if (onConfirm) onConfirm();
+        });
+
+        cancelBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleSpinner(elements.initiateScanBtn, false);
+            updateStatus('Ready');
+        };
+    }
+
+    function showBlockedModal(message) {
+        const modal = document.getElementById('blockedModal');
+        const msgEl = document.getElementById('blockedModalMessage');
+        const closeBtn = document.getElementById('closeBlockedModalBtn');
+
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        closeBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleSpinner(elements.initiateScanBtn, false);
+            updateStatus('Ready');
+        };
+    }
+
+    async function handleScanInitiation(userConfirmedAuth = false) {
+        appendLog('[*] Start Scan triggered.');
+        var targetInput = "";
+        var isFile = false;
+
+        if (selectedFile) {
+            isFile = true;
+            targetInput = selectedFile.name;
+        } else {
+            targetInput = elements.gitUrlInput.value.trim();
+        }
+
+        if (!targetInput) {
+            alert('Please provide a Git URL or upload a file.');
+            return;
+        }
+        if (!csrfToken) {
+            appendLog('[!] Error: CSRF Token missing.');
+            return;
+        }
+
+        if (!userConfirmedAuth) {
             elements.resultsContent.textContent = "// Scanning...";
             elements.findingsTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem;">Scanning...</td></tr>';
             
@@ -614,41 +651,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 elements.findingsListSide.innerHTML = '<div style="text-align:center; padding:2rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">SCANNING IN PROGRESS...</div>';
             }
             resetDetailView();
+        }
 
-            toggleSpinner(elements.initiateScanBtn, true);
-            updateStatus('Scanning...', 'busy');
+        toggleSpinner(elements.initiateScanBtn, true);
+        updateStatus('Scanning...', 'busy');
+        
+        appendLog('> Initiating Semgrep scan on: ' + targetInput);
+        if(elements.metricTarget) elements.metricTarget.textContent = targetInput;
+
+        try {
+            var formData = new FormData();
+            if (isFile) {
+                formData.append('file', selectedFile);
+            } else {
+                formData.append('git_url', targetInput);
+                formData.append('user_confirmed_auth', userConfirmedAuth);
+            }
+
+            var response = await fetch('/semgrep_scanner/scan', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: formData
+            });
             
-            appendLog('> Initiating Semgrep scan on: ' + targetInput);
-            if(elements.metricTarget) elements.metricTarget.textContent = targetInput;
+            var data = await response.json();
 
-            try {
-                // Construct FormData for File Upload
-                var formData = new FormData();
-                if (isFile) {
-                    formData.append('file', selectedFile);
-                } else {
-                    formData.append('git_url', targetInput);
-                }
-
-                var response = await fetch('/semgrep_scanner/scan', {
-                    method: 'POST',
-                    headers: { 'X-CSRFToken': csrfToken }, // Do NOT set Content-Type for FormData
-                    body: formData
-                });
-                
-                var data = await response.json();
-
+            if (response.ok) {
                 if (data.status !== 'success') {
                     updateStatus('Start Failed', 'error');
                     toggleSpinner(elements.initiateScanBtn, false);
                     appendLog('[!] Error: ' + data.message);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                updateStatus('Conn Error', 'error');
+            } else {
+                if (data.status === 'auth_required') {
+                    showAuthModal(data.message, () => handleScanInitiation(true));
+                    return;
+                }
+                if (data.status === 'blocked') {
+                    showBlockedModal(data.message);
+                    return;
+                }
+                updateStatus('Start Failed', 'error');
                 toggleSpinner(elements.initiateScanBtn, false);
+                appendLog('[!] Error: ' + (data.message || 'Scan failed to start.'));
             }
-        });
+        } catch (error) {
+            console.error('Error:', error);
+            updateStatus('Conn Error', 'error');
+            toggleSpinner(elements.initiateScanBtn, false);
+        }
+    }
+
+    if(elements.initiateScanBtn) {
+        elements.initiateScanBtn.addEventListener('click', () => handleScanInitiation(false));
     }
 
     // --- Generic Listeners (Log Clear, Copy, Refresh, Download) ---

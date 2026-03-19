@@ -24,6 +24,7 @@ from Services import pdf_generator
 from Services import report_manager
 # --- Import Scan Logger ---
 from Services import scan_logger
+from Services.target_validator import validate_target, TargetBlockedError, AuthorizationRequiredError
 
 zap_scanner_bp = Blueprint('zap_scanner_bp', __name__)
 
@@ -69,6 +70,8 @@ def initiate_zap_scan():
     data = request.get_json()
     target_url = data.get('target_url')
     scan_mode = data.get('scan_mode', 'default')
+    user_confirmed_auth = data.get('user_confirmed_auth', False)
+    
     logger.info(f"\033[34m[*] ZAP Scan requested for {target_url} (Mode: {scan_mode}) by {current_user.username}\033[0m")
 
     if not target_url:
@@ -78,6 +81,21 @@ def initiate_zap_scan():
     target_url = target_url.strip() 
     if not target_url.startswith(('http://', 'https://')):
         target_url = 'http://' + target_url
+
+    # ── Target validation gate ──────────────────────────────────────
+    try:
+        validate_target(target_url, user_confirmed_auth=user_confirmed_auth)
+    except TargetBlockedError as e:
+        return jsonify({
+            "status": "blocked",
+            "message": str(e)
+        }), 403
+    except AuthorizationRequiredError as e:
+        return jsonify({
+            "status": "auth_required",
+            "message": str(e)
+        }), 403
+    # ── End validation ──────────────────────────────────────────────
     
     # [REMOVED] Legacy model check. TCTREngine handles model availability internally.
 

@@ -14,7 +14,7 @@ from flask import Blueprint, render_template, jsonify, request
 from flask_login import login_required, current_user
 
 from core.logger_setup import logger
-from core.extensions import db
+from core.extensions import db, limiter
 from models.scheduler_models import (
     ScanProfile, ProfileScanConfig,
     ProfileTarget, ProfileRecipient, ScheduledScanJob
@@ -743,45 +743,104 @@ def trigger_profile_scan(profile_id):
 
 
 @scheduler_bp.route('/api/deliver/<token>', methods=['GET'])
+@limiter.limit("5 per minute")
 def deliver_report(token):
     """
     Public, secure route to download a report.
     Logs access for compliance (SOC-2).
     """
-    from models.scheduler_models import ReportDeliveryLink
+    from models.scheduler_models import ReportDeliveryLink, DeliveryAuditLog
     from models.models import ScanLog
-    from flask import send_file, request, jsonify
+    from flask import send_file, request, jsonify, render_template
     from datetime import datetime
     import os
 
+    audit_log = DeliveryAuditLog(
+        token_attempted=token,
+        ip_address=request.remote_addr,
+        user_agent=request.user_agent.string if request.user_agent else "Unknown",
+        status="invalid"
+    )
+    db.session.add(audit_log)
+
     link = ReportDeliveryLink.query.filter_by(token=token).first()
     if not link:
-        return jsonify({"status": "error", "message": "Invalid delivery link."}), 404
+        audit_log.status = "invalid"
+        db.session.commit()
+        return render_template('scheduler/delivery_result.html', status='invalid', message='Invalid delivery link.'), 404
+
+    audit_log.link_id = link.id
+
+    if link.is_used:
+        audit_log.status = "already_used"
+        db.session.commit()
+        return render_template('scheduler/delivery_result.html', status='used', message='This link has already been used to download the report.'), 410
 
     if link.is_expired():
-        return jsonify({"status": "error", "message": "Link has expired (48h valid)."}), 410
-
-    # Log Access (Compliance Acknowledgement)
-    if not link.opened_at:
-        # Save first open timestamp
-        link.opened_at = datetime.now()
-        link.opened_from_ip = request.remote_addr
+        audit_log.status = "expired"
         db.session.commit()
+        return render_template('scheduler/delivery_result.html', status='expired', message='This link has expired (48h valid).'), 410
 
     # Fetch report
     log = db.session.get(ScanLog, link.log_id)
-    if not log or not log.report_path or not os.path.exists(log.report_path):
-        return jsonify({"status": "error", "message": "Report file not found on server."}), 404
+    if not log:
+        audit_log.status = "error_file_missing"
+        db.session.commit()
+        return render_template('scheduler/delivery_result.html', status='invalid', message='Report file not found on server.'), 404
+
+    # Resolve Correct File Path
+    is_exec = getattr(link, 'report_type', 'normal') == 'executive'
+    if is_exec:
+        target_path = getattr(log, 'executive_summary_path', None) or log.report_path.replace(".pdf", "_executive.pdf")
+    else:
+        target_path = log.report_path
+
+    if not target_path or not os.path.exists(target_path):
+        audit_log.status = "error_file_missing"
+        db.session.commit()
+        return render_template('scheduler/delivery_result.html', status='invalid', message='Report file not found on server.'), 404
+
+    # Success
+    if not link.opened_at:
+        link.opened_at = datetime.now()
+        link.opened_from_ip = request.remote_addr
+    
+    link.is_used = True
+    audit_log.status = "success"
+    db.session.commit()
 
     safe_tool = log.tool_name.replace(" ", "_").lower()
-    report_name = f"NetShield_{safe_tool}_report_{log.id}.pdf"
+    suffix = "_executive" if is_exec else ""
+    report_name = f"NetShield_{safe_tool}_report_{log.id}{suffix}.pdf"
 
     return send_file(
-        log.report_path,
+        target_path,
         as_attachment=True,
         download_name=report_name,
         mimetype='application/pdf'
     )
+
+@scheduler_bp.route('/api/reports/<int:log_id>/resend_delivery', methods=['POST'])
+@login_required
+def resend_report_link(log_id):
+    """Admin/Owner endpoint to regenerate and resend a report delivery link."""
+    from models.models import ScanLog
+    log = db.session.get(ScanLog, log_id)
+    if not log or log.user_id != current_user.id:
+        return jsonify({"status": "error", "message": "Report not found or access denied."}), 404
+
+    data = request.get_json() or {}
+    recipient_email = data.get("recipient_email")
+    if not recipient_email:
+        return jsonify({"status": "error", "message": "recipient_email is required."}), 400
+
+    from Services.scheduler_service import resend_report_delivery
+    success, msg = resend_report_delivery(log_id, recipient_email)
+    
+    if success:
+        return jsonify({"status": "success", "message": msg})
+    else:
+        return jsonify({"status": "error", "message": msg}), 500
 
 
 @scheduler_bp.route('/api/reports/<int:log_id>/download', methods=['GET'])

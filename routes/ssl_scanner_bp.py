@@ -22,6 +22,7 @@ from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
 from Services import report_manager
+from Services.target_validator import validate_target, TargetBlockedError, AuthorizationRequiredError
 
 ssl_scanner_bp = Blueprint('ssl_scanner_bp', __name__)
 
@@ -84,6 +85,23 @@ def scan_ssl():
     if not target_host:
         ssl_scanner.log("[!] Target host cannot be empty for SSL scan.", current_user_identifier)
         return jsonify({"status": "error", "message": "Target host is required."}), 400
+
+    # --- Target Validation Guardrails ---
+    user_confirmed_auth = data.get('user_confirmed_auth', False)
+    try:
+        validate_target(target_host, user_confirmed_auth=user_confirmed_auth)
+    except TargetBlockedError as e:
+        logger.warning(f"[BLOCKED] SSL Scan rejected for {target_host}: {e}")
+        return jsonify({
+            "status": "blocked",
+            "message": f"Scan Prohibited: {str(e)}"
+        }), 403
+    except AuthorizationRequiredError as e:
+        logger.info(f"[AUTH_REQUIRED] SSL Scan requires confirmation for {target_host}")
+        return jsonify({
+            "status": "auth_required",
+            "message": str(e)
+        }), 403
 
     if not ssl_scanner.is_sslscan_available(user_id=current_user_identifier):
         ssl_scanner.log("[!] sslscan.exe is not available. Cannot perform scan.", current_user_identifier)

@@ -611,54 +611,116 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function initiateScan(protocolType, scanType, button) {
+    function showAuthModal(message, onConfirm) {
+        const modal = document.getElementById('authModal');
+        const msgEl = document.getElementById('authModalMessage');
+        const confirmBtn = document.getElementById('confirmAuthBtn');
+        const cancelBtn = document.getElementById('cancelAuthBtn');
+
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        newConfirmBtn.addEventListener('click', () => {
+            if (modal) modal.classList.add('hidden');
+            if (onConfirm) onConfirm();
+        });
+
+        cancelBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleSpinner(elements.scanTcpBtn, false);
+            toggleSpinner(elements.scanVulnBtn, false);
+            setStatus('Ready');
+            isActionInProgress = false;
+        };
+    }
+
+    function showBlockedModal(message) {
+        const modal = document.getElementById('blockedModal');
+        const msgEl = document.getElementById('blockedModalMessage');
+        const closeBtn = document.getElementById('closeBlockedModalBtn');
+
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        closeBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleSpinner(elements.scanTcpBtn, false);
+            toggleSpinner(elements.scanVulnBtn, false);
+            setStatus('Ready');
+            isActionInProgress = false;
+        };
+    }
+
+    async function initiateScan(protocolType, scanType, button, userConfirmedAuth = false) {
         const targetIp = elements.targetIpInput.value.trim();
-        const timingVal = elements.scanTiming ? elements.scanTiming.value : 4; // Capture Timing
+        const timingVal = elements.scanTiming ? elements.scanTiming.value : 4; 
 
         if (!targetIp) {
             appendLog('[!] Error: Target IP or URL is required.');
             return;
         }
 
-        // Update state
         lastScanType = scanType;
-
-        // Set action in progress and show spinner immediately
         isActionInProgress = true;
         if (button) toggleSpinner(button, true);
 
         setStatus(`Scanning (${scanType})...`, 'busy');
-        switchTab('ports'); 
+        
+        if (!userConfirmedAuth) {
+            switchTab('ports'); 
 
-        // [NEW] Reset Intelligence UI
-        if (elements.osGuessDisplay) elements.osGuessDisplay.textContent = '---';
-        if (elements.latencyDisplay) elements.latencyDisplay.textContent = '---';
-        if (elements.discoveryInsights) elements.discoveryInsights.textContent = 'Analyzing infrastructure...';
-        if (elements.hostStatusBadge) elements.hostStatusBadge.textContent = '---';
-        if (elements.portCountDisplay) elements.portCountDisplay.textContent = '0';
-        if (elements.vulnCountDisplay) elements.vulnCountDisplay.textContent = '0';
+            if (elements.osGuessDisplay) elements.osGuessDisplay.textContent = '---';
+            if (elements.latencyDisplay) elements.latencyDisplay.textContent = '---';
+            if (elements.discoveryInsights) elements.discoveryInsights.textContent = 'Analyzing infrastructure...';
+            if (elements.portCountDisplay) elements.portCountDisplay.textContent = '0';
+            if (elements.vulnCountDisplay) elements.vulnCountDisplay.textContent = '0';
+        }
 
         const whitelist = elements.whitelistPortsInput ? elements.whitelistPortsInput.value.split(',').map(s => s.trim()).filter(s => s) : [];
 
         try {
-            const data = await apiPost('/scan', { // Note: this apiPost won't toggle spinner itself
-                target_ip: targetIp,
-                protocol_type: protocolType,
-                scan_type: scanType,
-                timing: parseInt(timingVal), // Pass timing to backend
-                whitelist: whitelist
+            const response = await fetch(`${API_BASE_URL}/scan`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({
+                    target_ip: targetIp,
+                    protocol_type: protocolType,
+                    scan_type: scanType,
+                    timing: parseInt(timingVal),
+                    whitelist: whitelist,
+                    user_confirmed_auth: userConfirmedAuth
+                })
             });
+            const data = await response.json();
 
-            if (data && data.queue_id) {
-                initializeLogStream(data.queue_id); // Pass queue_id to log stream
+            if (response.ok) {
+                if (data && data.queue_id) {
+                    initializeLogStream(data.queue_id);
+                } else {
+                    throw new Error("Scan initiation failed or no queue_id received.");
+                }
             } else {
-                throw new Error("Scan initiation failed or no queue_id received.");
+                if (data.status === 'auth_required') {
+                    showAuthModal(data.message, () => initiateScan(protocolType, scanType, button, true));
+                    return;
+                }
+                if (data.status === 'blocked') {
+                    showBlockedModal(data.message);
+                    return;
+                }
+                throw new Error(data.message || 'Scan initiation failed.');
             }
         } catch (error) {
             appendLog(`[x] Scan initiation failed: ${error.message}`);
             setStatus('Error', 'error');
-            isActionInProgress = false; // Reset on failure
-            if (button) toggleSpinner(button, false); // Hide spinner on failure
+            isActionInProgress = false; 
+            if (button) toggleSpinner(button, false); 
         }
     }
     

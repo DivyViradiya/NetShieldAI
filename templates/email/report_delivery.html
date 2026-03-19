@@ -1,0 +1,36 @@
+{% extends 'email/base_email.html' %}
+
+{% block title %}Secure Report Delivery — NetShieldAI{% endblock %}
+{% block header_title %}Reports Available{% endblock %}
+
+{% block content %}
+<h2>Secure Scan Reports</h2>
+<p>The scheduled scan for profile <strong>{{ profile_name }}</strong> has completed.</p>
+<p>You can access your secure reports via the links below. These links are restricted and track access for audit compliance.</p>
+
+<div class="details-box">
+  {% for item in links_info %}
+  <div class="detail-row">
+    <div class="detail-label">{{ item.tool }}</div>
+    <div class="detail-value mono" style="margin-bottom: 12px;">{{ item.target }}</div>
+    
+    <div class="btn-container" style="text-align: left; margin: 16px 0;">
+      <a href="{{ item.url }}" class="btn" style="padding: 12px 24px; font-size: 14px;">Download PDF Report</a>
+    </div>
+    
+    <div class="detail-label" style="opacity: 0.8; margin-top: 12px;">Expires: {{ item.expires_at }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="note">
+  <strong>Security Notice:</strong> Do not forward this email. Links are for one-time use and valid for <strong>48 hours</strong>.
+</div>
+
+<p class="fallback-link" style="text-align: left;">
+  If the buttons do not work, copy and paste the links directly:<br>
+  {% for item in links_info %}
+  <a href="{{ item.url }}" style="display: block; margin-top: 8px;">{{ item.url }}</a>
+  {% endfor %}
+</p>
+{% endblock %}

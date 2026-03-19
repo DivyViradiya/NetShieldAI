@@ -208,8 +208,54 @@ document.addEventListener("DOMContentLoaded", () => {
     select.value = valueToSelect;
   }
 
+  // --- Modal Helpers ---
+  function showAuthModal(message) {
+    const modal = document.getElementById("authModal");
+    const msgEl = document.getElementById("authModalMessage");
+    if (!modal || !msgEl) return;
+
+    msgEl.textContent = message || "Explicit authorization is required to scan this target.";
+    modal.classList.remove("hidden");
+
+    // Event Listeners for Auth Modal
+    const confirmBtn = document.getElementById("confirmAuthBtn");
+    const cancelBtn = document.getElementById("cancelAuthBtn");
+
+    const handleConfirm = () => {
+      modal.classList.add("hidden");
+      confirmBtn.removeEventListener("click", handleConfirm);
+      cancelBtn.removeEventListener("click", handleCancel);
+      startScan(true); // Re-run with confirmation
+    };
+
+    const handleCancel = () => {
+      modal.classList.add("hidden");
+      confirmBtn.removeEventListener("click", handleConfirm);
+      cancelBtn.removeEventListener("click", handleCancel);
+    };
+
+    confirmBtn.addEventListener("click", handleConfirm);
+    cancelBtn.addEventListener("click", handleCancel);
+  }
+
+  function showBlockedModal(message) {
+    const modal = document.getElementById("blockedModal");
+    const msgEl = document.getElementById("blockedModalMessage");
+    if (!modal || !msgEl) return;
+
+    msgEl.textContent = message || "Scan prohibited on this target category.";
+    modal.classList.remove("hidden");
+
+    const closeBtn = document.getElementById("closeBlockedModalBtn");
+    const handleClose = () => {
+      modal.classList.add("hidden");
+      closeBtn.removeEventListener("click", handleClose);
+    };
+    closeBtn.addEventListener("click", handleClose);
+  }
+
   // --- MAIN SCANNING LOGIC ---
-  async function startScan() {
+  async function startScan(userConfirmedAuth = false) {
     if (isScanning) return;
 
     const target = els.targetInput.value.trim();
@@ -246,6 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
           target: target,
           profile: els.profileSelect.value,
           aggression: els.aggressionSelect.value,
+          user_confirmed_auth: userConfirmedAuth
         }),
       });
       const data = await res.json();
@@ -254,6 +301,16 @@ document.addEventListener("DOMContentLoaded", () => {
         currentScanId = data.scan_id;
         currentQueueId = data.queue_id; // Store queue ID
         initLogStream(data.queue_id);
+      } else if (data.status === "auth_required") {
+        isScanning = false;
+        toggleButtons(false);
+        updateStatus("Idle", "idle");
+        showAuthModal(data.message);
+      } else if (data.status === "blocked") {
+        isScanning = false;
+        toggleButtons(false);
+        updateStatus("Idle", "idle");
+        showBlockedModal(data.message);
       } else {
         throw new Error(data.message);
       }

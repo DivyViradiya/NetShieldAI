@@ -14,6 +14,7 @@ from Services import pdf_generator
 from Services import scan_logger
 from Services import report_manager
 from core.logger_setup import logger
+from Services.target_validator import validate_target, TargetBlockedError, AuthorizationRequiredError
 
 api_scanner_bp = Blueprint('api_scanner_bp', __name__)
 
@@ -72,6 +73,23 @@ def initiate_api_scan():
     target_url = target_url.strip() 
     if not target_url.startswith(('http://', 'https://')):
         target_url = 'http://' + target_url
+    
+    # --- Target Validation Guardrails ---
+    user_confirmed_auth = data.get('user_confirmed_auth', False)
+    try:
+        validate_target(target_url, user_confirmed_auth=user_confirmed_auth)
+    except TargetBlockedError as e:
+        logger.warning(f"[BLOCKED] API Scan rejected for {target_url}: {e}")
+        return jsonify({
+            "status": "blocked",
+            "message": f"Scan Prohibited: {str(e)}"
+        }), 403
+    except AuthorizationRequiredError as e:
+        logger.info(f"[AUTH_REQUIRED] API Scan requires confirmation for {target_url}")
+        return jsonify({
+            "status": "auth_required",
+            "message": str(e)
+        }), 403
     
     # [REMOVED] Legacy model check. TCTREngine handles model availability internally.
 

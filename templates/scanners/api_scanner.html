@@ -1562,6 +1562,39 @@
           </div>
       </div>
   </div>
+
+  <!-- --- AUTH CONFIRMATION MODAL --- -->
+  <div id="authModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div class="dash-panel w-full max-w-md flex flex-col overflow-hidden">
+          <div class="panel-header">
+              <span class="panel-title" style="color: var(--neo-amber);">Authorization Required</span>
+          </div>
+          <div class="panel-content p-6 flex flex-col gap-4">
+              <p id="authModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main);"></p>
+              <p style="font-size: 0.8rem; color: var(--neo-text-muted);"><strong>By confirming, you declare that you hold written authorization from this organization.</strong></p>
+              <div class="flex gap-2 justify-end mt-4">
+                  <button id="cancelAuthBtn" class="btn-dash btn-secondary" style="height: 38px;">Cancel</button>
+                  <button id="confirmAuthBtn" class="btn-dash btn-primary" style="height: 38px; background: var(--neo-amber); border-color: var(--neo-amber); color: #000;">Confirm & Scan</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- --- HARD BLOCKED MODAL --- -->
+  <div id="blockedModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div class="dash-panel w-full max-w-md flex flex-col overflow-hidden">
+          <div class="panel-header">
+              <span class="panel-title" style="color: var(--neo-red);">Scan Blocked</span>
+          </div>
+          <div class="panel-content p-6 flex flex-col gap-4">
+              <p id="blockedModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main);"></p>
+              <p style="font-size: 0.8rem; color: var(--neo-text-muted);">If you are an authorized security professional, contact support to enable authorized testing mode.</p>
+              <div class="flex justify-end mt-4">
+                  <button id="closeBlockedModalBtn" class="btn-dash btn-secondary" style="height: 38px;">Understood</button>
+              </div>
+          </div>
+      </div>
+  </div>
 {% endblock %}
 
 {% block extra_scripts %}

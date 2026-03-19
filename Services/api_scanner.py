@@ -17,6 +17,9 @@ import queue
 import threading
 from zapv2 import ZAPv2
 from Services import report_manager
+from Services.anonymity.manager import AnonymityManager
+
+_anon = AnonymityManager()
 from Services import scan_logger
 from core.logger_setup import logger
 
@@ -144,7 +147,7 @@ def _stream_zap_output(process, user_id, ready_event, port):
         stripped = line.strip()
         if not stripped:
             continue
-        log(stripped, user_id)
+        log(stripped, user_id, level='DEBUG')
         # ZAP logs this when it's fully up and listening
         if (f":{port}" in stripped and "listen" in stripped.lower()) or \
            "ZAP is now listening" in stripped or \
@@ -162,7 +165,7 @@ def wait_for_zap(port, timeout=240, user_id=None, ready_event=None):
         if ready_event and ready_event.is_set():
             try:
                 with socket.create_connection(('127.0.0.1', port), timeout=2):
-                    log(f"[+] ZAP is active on port {port}.", user_id)
+                    log(f"[SUCCESS] ZAP is active on port {port}.", user_id, level='SUCCESS')
                     return True
             except:
                 pass  # Not quite ready yet despite the log message — keep polling
@@ -170,7 +173,7 @@ def wait_for_zap(port, timeout=240, user_id=None, ready_event=None):
         # Slow path: TCP polling
         try:
             with socket.create_connection(('127.0.0.1', port), timeout=1):
-                log(f"[+] ZAP is active on port {port}.", user_id)
+                log(f"[SUCCESS] ZAP is active on port {port}.", user_id, level='SUCCESS')
                 return True
         except:
             time.sleep(2)
@@ -182,6 +185,14 @@ def wait_for_zap(port, timeout=240, user_id=None, ready_event=None):
 def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=None):
     if not os.path.exists(ZAP_EXECUTABLE_PATH):
         log(f"Error: ZAP executable not found at {ZAP_EXECUTABLE_PATH}", user_id)
+        return False
+
+    # Defense-in-depth — catches background/scheduled calls that bypass the BP
+    try:
+        from Services.target_validator import validate_target, TargetBlockedError
+        validate_target(target_url)
+    except TargetBlockedError as e:
+        log(f"[BLOCKED] Scan rejected by target validator: {e}", user_id, level='ERROR')
         return False
 
     # Get a free port (same pattern as zap_scanner.py)
@@ -215,91 +226,103 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
     ready_event = threading.Event()
 
     try:
-        log(f"[*] Launching ZAP daemon...", user_id, to_console=True)
-
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            encoding='utf-8',
-            errors='replace',
-            cwd=os.path.dirname(ZAP_EXECUTABLE_PATH),
-            bufsize=1,
-            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == 'win32' else 0
-        )
-
-        with scan_lock:
-            active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
-
-        # Stream ZAP output in background so we can detect readiness from its logs
-        reader_thread = threading.Thread(
-            target=_stream_zap_output,
-            args=(process, user_id, ready_event, assigned_port),
-            daemon=True
-        )
-        reader_thread.start()
-
-        if not wait_for_zap(assigned_port, timeout=240, user_id=user_id, ready_event=ready_event):
-            log(f"[!] ZAP did not start. Check ZAP installation at: {ZAP_EXECUTABLE_PATH}", user_id, level='ERROR')
-            return False
-
-        log(f"[*] Connecting to ZAP API on port {assigned_port}...", user_id)
-        zap = ZAPv2(proxies={
-            'http': f'http://127.0.0.1:{assigned_port}',
-            'https': f'http://127.0.0.1:{assigned_port}'
-        })
-
-        if auth_token:
-            setup_api_auth(zap, auth_token, user_id)
-
-        # Import API definition
-        if "graphql" in definition_url.lower() or "graphql" in target_url.lower():
-            log("[STAGE] Importing GraphQL Schema...", user_id)
-            zap.graphql.import_url(definition_url)
+        log(f"[STAGE] Launching ZAP API daemon on port {assigned_port}...", user_id, level='STAGE')
+        log(f"Executing zap command: {' '.join(command)}", user_id, level='DEBUG', to_console=True)
+        zap_directory = os.path.dirname(ZAP_EXECUTABLE_PATH)
+        
+        command.extend(_anon.get_scan_flags("zap"))
+        
+        if _anon.enabled:
+            logger.info(f"[🛡️] Anonymity Mode ACTIVE ({_anon.mode.upper()}). Proxying API scan.")
         else:
-            log("[STAGE] Importing OpenAPI Definition...", user_id)
-            zap.openapi.import_url(definition_url)
+            logger.info("[🛡️] Anonymity Mode OFFLINE. API Scanner on direct connection.")
 
-        time.sleep(2)
+        with _anon.apply():
+            with scan_lock:
+                process = subprocess.Popen(
+                    command, 
+                    stdout=subprocess.PIPE, 
+                    stderr=subprocess.STDOUT,
+                    text=True, 
+                    encoding='utf-8', 
+                    errors='replace', 
+                    cwd=zap_directory,
+                    bufsize=1,
+                    env=_anon.get_subprocess_env(),
+                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if sys.platform == 'win32' else 0
+                )
+                active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
 
-        log(f"[STAGE] Starting Web Spider...", user_id)
-        zap.spider.scan(target_url)
-        while True:
-            try:
-                status = int(zap.spider.status())
-            except (ValueError, TypeError):
-                status = 100
-            if status >= 100:
-                break
-            filled = status // 5
-            bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"
-            log(f"[PROGRESS] {bracket} {status}%", user_id)
+            # Stream ZAP output in background so we can detect readiness from its logs
+            reader_thread = threading.Thread(
+                target=_stream_zap_output,
+                args=(process, user_id, ready_event, assigned_port),
+                daemon=True
+            )
+            reader_thread.start()
+
+            if not wait_for_zap(assigned_port, timeout=240, user_id=user_id, ready_event=ready_event):
+                log(f"[!] ZAP did not start. Check ZAP installation at: {ZAP_EXECUTABLE_PATH}", user_id, level='ERROR')
+                return False
+
+            log(f"[*] Connecting to ZAP API on port {assigned_port}...", user_id)
+            zap = ZAPv2(proxies={
+                'http': f'http://127.0.0.1:{assigned_port}',
+                'https': f'http://127.0.0.1:{assigned_port}'
+            })
+
+            if auth_token:
+                setup_api_auth(zap, auth_token, user_id)
+
+            # Import API definition
+            if "graphql" in definition_url.lower() or "graphql" in target_url.lower():
+                log("[STAGE] Importing GraphQL Schema...", user_id)
+                zap.graphql.import_url(definition_url)
+            else:
+                log("[STAGE] Importing OpenAPI Definition...", user_id)
+                zap.openapi.import_url(definition_url)
+
             time.sleep(2)
 
-        log(f"[STAGE] Starting Active Scan...", user_id)
-        scan_id = zap.ascan.scan(target_url)
-
-        last_progress = -1
-        while True:
-            try:
-                current_progress = int(zap.ascan.status(scan_id))
-            except (ValueError, TypeError):
-                log(f"[!] Warning: Active scan status unavailable. breaking loop.", user_id)
-                current_progress = 100 # Force exit
-            if current_progress > last_progress:
-                filled = current_progress // 5
+            log(f"[STAGE] Starting Web Spider...", user_id)
+            zap.spider.scan(target_url)
+            while True:
+                try:
+                    status = int(zap.spider.status())
+                except (ValueError, TypeError):
+                    status = 100
+                if status >= 100:
+                    break
+                filled = status // 5
                 bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"
-                log(f"[PROGRESS] {bracket} {current_progress}%", user_id)
-                last_progress = current_progress
-            if current_progress >= 100:
-                break
-            time.sleep(5)
+                log(f"[PROGRESS] {bracket} {status}%", user_id)
+                time.sleep(2)
 
-        log("Generating XML report...", user_id)
-        xml_report = zap.core.xmlreport()
-        with open(report_path, 'w', encoding='utf-8') as f:
-            f.write(xml_report)
+            log(f"[STAGE] Starting Active Scan...", user_id)
+            scan_id = zap.ascan.scan(target_url)
+
+            last_progress = -1
+            while True:
+                try:
+                    current_progress = int(zap.ascan.status(scan_id))
+                except (ValueError, TypeError):
+                    log(f"[!] Warning: Active scan status unavailable. breaking loop.", user_id)
+                    current_progress = 100 # Force exit
+                if current_progress > last_progress:
+                    filled = current_progress // 5
+                    bracket = "[" + ("=" * filled) + (" " * (20 - filled)) + "]"
+                    log(f"[PROGRESS] {bracket} {current_progress}%", user_id)
+                    last_progress = current_progress
+                if current_progress >= 100:
+                    break
+                time.sleep(5)
+
+            log("Generating XML report...", user_id)
+            xml_report = zap.core.xmlreport()
+            with open(report_path, 'w', encoding='utf-8') as f:
+                f.write(xml_report)
+
+            log("[SUCCESS] Scan completed successfully!", user_id, level='SUCCESS')
         return True
 
     except Exception as e:

@@ -327,3 +327,34 @@ def get_scanner_logger(user_id, tool_name):
     """Factory function to provide ScannerLogger instance."""
     return ScannerLogger(user_id, tool_name)
 
+def cleanup_old_logs(days=7):
+    """
+    Deletes log files (*.log, *.txt) in the USERS_LOG_DIR older than the specified number of days.
+    """
+    if not os.path.exists(USERS_LOG_DIR):
+        return
+
+    now = time.time()
+    cutoff = now - (days * 86400)
+    deleted_count = 0
+
+    try:
+        for user_folder in os.listdir(USERS_LOG_DIR):
+            user_path = os.path.join(USERS_LOG_DIR, user_folder)
+            if os.path.isdir(user_path):
+                for filename in os.listdir(user_path):
+                    if filename.endswith('.log') or filename.endswith('.txt'):
+                        file_path = os.path.join(user_path, filename)
+                        try:
+                            if os.path.isfile(file_path):
+                                mtime = os.path.getmtime(file_path)
+                                if mtime < cutoff:
+                                    os.remove(file_path)
+                                    deleted_count += 1
+                        except Exception as e:
+                            logger.error(f"[!] Log cleanup error on {file_path}: {e}")
+        
+        logger.info(f"[*] [LOG CLEANUP] Removed {deleted_count} old log files.")
+    except Exception as e:
+         logger.error(f"[!] Fatal error during log cleanup: {e}")
+

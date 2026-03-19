@@ -144,6 +144,7 @@ SERVER_PROXY_URL = "http://127.0.0.1:5000"
 
 # Persistent Session for HTTP Keep-Alive
 http_session = requests.Session()
+http_session.trust_env = False  # Ignore system proxies for internal traffic
 
 MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024  # 100 MB
 
@@ -153,7 +154,7 @@ def proxy_uploads(filename):
     """Proxies static file requests to the FastAPI backend."""
     target_url = f"{SERVER_PROXY_URL}/chatbot_uploads/{filename}"
     try:
-        resp = requests.get(target_url, stream=True)
+        resp = requests.get(target_url, stream=True, proxies={"http": None, "https": None})
         resp.raise_for_status()
         return Response(resp.content, content_type=resp.headers.get('content-type'))
     except Exception as e:
@@ -611,7 +612,7 @@ def clear_chat():
         }
         
         try:
-            response = requests.post(proxy_clear_url, json=payload, timeout=10)
+            response = requests.post(proxy_clear_url, json=payload, timeout=10, proxies={"http": None, "https": None})
             
             # Clear local flask session data
             session.pop('chatbot_session_id', None)
@@ -747,7 +748,8 @@ def execute_action():
                 json=config['payload'], 
                 cookies=cookies,
                 headers={'X-CSRFToken': request.headers.get('X-CSRFToken')}, # Pass CSRF if needed
-                timeout=5
+                timeout=5,
+                proxies={"http": None, "https": None}
             )
             
             # If the scanner returned an error immediately (e.g. invalid IP)
@@ -795,7 +797,7 @@ def get_chat_history_proxy():
         }
         
         try:
-            response = requests.get(proxy_url, params=params, timeout=5)
+            response = requests.get(proxy_url, params=params, timeout=5, proxies={"http": None, "https": None})
             response.raise_for_status()
             history_data = response.json()
             
@@ -821,7 +823,7 @@ def get_sessions_proxy():
         proxy_url = f"{SERVER_PROXY_URL}/get_user_sessions"
         params = {'user_id': current_user_identifier}
         
-        response = requests.get(proxy_url, params=params, timeout=5)
+        response = requests.get(proxy_url, params=params, timeout=5, proxies={"http": None, "https": None})
         return jsonify(response.json())
     except Exception as e:
         return jsonify({'sessions': []})
@@ -894,7 +896,7 @@ def delete_session_proxy():
              return jsonify({'error': 'Missing session_id'}), 400
 
         proxy_url = f"{SERVER_PROXY_URL}/delete_session"
-        response = requests.post(proxy_url, json={'session_id': target_session_id})
+        response = requests.post(proxy_url, json={'session_id': target_session_id}, proxies={"http": None, "https": None})
         
         # If the deleted session was the currently active one, clear the cookie
         if session.get('chatbot_session_id') == target_session_id:
@@ -916,7 +918,7 @@ def rename_session_proxy():
         data = request.json
         # Expects: { session_id: "...", new_title: "..." }
         proxy_url = f"{SERVER_PROXY_URL}/rename_session"
-        response = requests.post(proxy_url, json=data)
+        response = requests.post(proxy_url, json=data, proxies={"http": None, "https": None})
         return jsonify(response.json()), response.status_code
     except Exception as e:
          return jsonify({'error': str(e)}), 500
@@ -932,7 +934,7 @@ def toggle_pin_proxy():
         data = request.json
         # Expects: { session_id: "...", is_pinned: boolean }
         proxy_url = f"{SERVER_PROXY_URL}/toggle_pin"
-        response = requests.post(proxy_url, json=data)
+        response = requests.post(proxy_url, json=data, proxies={"http": None, "https": None})
         return jsonify(response.json()), response.status_code
     except Exception as e:
          return jsonify({'error': str(e)}), 500

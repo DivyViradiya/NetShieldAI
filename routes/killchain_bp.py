@@ -94,6 +94,24 @@ def dispatch_scan():
     if not re.match(r'^(?:http(s)?://)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\(\)\*\+,;=.]*$', target):
         return jsonify({"status": "error", "message": "Invalid target format. Please provide a valid URL or Domain."}), 400
 
+    # --- Target Validation Guardrails ---
+    user_confirmed_auth = data.get('user_confirmed_auth', False)
+    from Services.target_validator import validate_target, TargetBlockedError, AuthorizationRequiredError
+    try:
+        validate_target(target, user_confirmed_auth=user_confirmed_auth)
+    except TargetBlockedError as e:
+        logger.warning(f"[BLOCKED] Kill Chain Audit rejected for {target}: {e}")
+        return jsonify({
+            "status": "blocked", 
+            "message": f"Scan Prohibited: {str(e)}"
+        }), 403
+    except AuthorizationRequiredError as e:
+        logger.info(f"[AUTH_REQUIRED] Kill Chain Audit requires auth for {target}")
+        return jsonify({
+            "status": "auth_required", 
+            "message": str(e) or "Explicit authorization is required to scan this target."
+        }), 403
+
     # [NEW] Prevent Multiple Concurrent Scans for the same user
     # We use user_identifier for locking to match queue_id format
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"

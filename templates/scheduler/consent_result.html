@@ -1,71 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetShieldAI — Authorization Result</title>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <style>
-      :root {
-        --ac-bg:#000000; --ac-card:rgba(10,10,12,0.85); --ac-border:rgba(255,255,255,0.08);
-        --ac-border-h:rgba(16,185,129,0.4); --ac-primary:#10b981; --ac-text:#ffffff;
-        --ac-sub:#94a3b8; --ac-label:#64748b;
-      }
-      body { margin:0; padding:0; background:var(--ac-bg); font-family:'IBM Plex Sans',sans-serif; overflow:hidden; }
-      
-      .auth-bg { position:fixed;inset:0;z-index:0;background:var(--ac-bg); }
-      .auth-bg::before { content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(16,185,129,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,0.04) 1px,transparent 1px);background-size:48px 48px; }
-      .auth-bg-glow { position:absolute;width:500px;height:500px;border-radius:50%;filter:blur(100px);opacity:0.08;background:radial-gradient(circle,var(--ac-primary) 0%,transparent 70%);top:-100px;right:-100px; }
-      
-      .auth-wrap { min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem;position:relative;z-index:10; }
-      .auth-card { width:100%;max-width:480px;background:var(--ac-card);border:1px solid var(--ac-border);border-dash:none;border-radius:20px;padding:2.5rem;box-shadow:0 25px 60px -10px rgba(0,0,0,0.6);backdrop-filter:blur(24px);transition:border-color 0.3s;text-align:center; }
-      .auth-card:hover { border-color:var(--ac-border-h); }
-      
-      .auth-logo-row { display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-bottom:2rem; }
-      .auth-logo-box { width:40px;height:40px;background:var(--ac-primary);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
-      .auth-logo-box img { width:24px;height:24px;object-fit:contain;filter:invert(1); }
-      .auth-brand { font-size:0.8rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;color:var(--ac-text); }
-      .auth-brand span { color:var(--ac-primary); }
-      
-      .status-icon { font-size:3rem;margin-bottom:1rem;color:var(--ac-primary); }
-      .status-title { font-size:1.6rem;font-weight:800;color:var(--ac-text);letter-spacing:-0.03em;margin-bottom:0.5rem; }
-      .status-sub { font-size:0.875rem;color:var(--ac-sub);line-height:1.5;margin-bottom:2rem; }
-      .auth-divider { height:1px;background:var(--ac-border);margin:1.5rem 0; }
-    </style>
-</head>
-<body>
-    <div class="auth-bg"><div class="auth-bg-glow"></div></div>
+{% extends 'scheduler/base_auth.html' %}
 
-    <div class="auth-wrap">
-      <div class="auth-card">
+{% block title %}NetShieldAI — Authorization Result{% endblock %}
 
-        <div class="auth-logo-row">
-          <div class="auth-logo-box">
-            <img src="{{ url_for('static', filename='images/NS_Logo_pdf.png') }}" alt="NS">
-          </div>
-          <span class="auth-brand">NetShield<span>AI</span></span>
-        </div>
-
-        <div class="auth-divider"></div>
-
-        {% if status == 'success' %}
-          <div class="status-icon" style="color:#10b981;">
-             <span class="material-symbols-outlined" style="font-size:4rem;">check_circle</span>
-          </div>
-          <h1 class="status-title">Authorization Success</h1>
-        {% else %}
-          <div class="status-icon" style="color:#ef4444;">
-             <span class="material-symbols-outlined" style="font-size:4rem;">error</span>
-          </div>
-          <h1 class="status-title">Authorization Failed</h1>
-        {% endif %}
-
-        <p class="status-sub" style="margin-bottom: 2rem;">{{ message }}</p>
-
-        <p style="font-size:0.75rem;color:var(--ac-label);margin:0;">You can now safely close this browser window.</p>
-
-      </div>
+{% block content %}
+  {% if status == 'success' %}
+    <div class="status-icon" style="color:#10b981;">
+       <span class="material-symbols-outlined" style="font-size:4rem;">check_circle</span>
     </div>
-</body>
-</html>
+    <h1 class="status-title">Authorization Success</h1>
+  {% else %}
+    <div class="status-icon" style="color:#ef4444;">
+       <span class="material-symbols-outlined" style="font-size:4rem;">error</span>
+    </div>
+    <h1 class="status-title">Authorization Failed</h1>
+  {% endif %}
+
+  <p class="status-sub" style="margin-bottom: 2rem;">{{ message }}</p>
+  <p style="font-size:0.75rem;color:var(--ac-label);margin:0;">You can now safely close this browser window.</p>
+{% endblock %}

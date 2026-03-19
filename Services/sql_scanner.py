@@ -11,6 +11,10 @@ from datetime import datetime
 from pathlib import Path
 from Services import report_manager
 from .tctr_engine import tctr_engine
+from Services.anonymity.manager import AnonymityManager
+from Services.target_validator import validate_target, TargetBlockedError
+
+_anon = AnonymityManager()
 
 # --- CONFIGURATION ---
 # BASE_DIR should be at the root of the project (one level up from Services folder)
@@ -325,6 +329,13 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
     """
     Runs SQLmap with optimized flags and ensures results are parsed even on partial completion.
     """
+    # Defense-in-depth — catches background/scheduled calls that bypass the BP
+    try:
+        validate_target(target_url)
+    except TargetBlockedError as e:
+        log(f"[BLOCKED] Scan rejected by target validator: {e}", user_id, level='ERROR')
+        return None
+        
     if not os.path.exists(SQLMAP_PATH):
         log(f"[!] Critical: SQLmap not found at {SQLMAP_PATH}", user_id)
         return None
@@ -360,61 +371,69 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
     if scan_mode == 'full':
         cmd.extend(['--dbs', '--tables', '--passwords'])
 
-    log(f"Executing SQLMap...", user_id, to_console=True)
+    log(f"[STAGE] Executing SQLMap ({scan_mode.upper()}) on {target_url}...", user_id, level='STAGE', to_console=True)
 
     live_metadata = {}
 
     try:
         creation_flags = 0x08000000 if sys.platform == 'win32' else 0
         
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            creationflags=creation_flags
-        )
-
-        # Track this user's process
-        with scan_lock:
-            active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
-
-        start_time = time.time()
+        cmd.extend(_anon.get_scan_flags("sqlmap"))
         
-        while True:
-            if time.time() - start_time > timeout_seconds:
-                process.kill()
-                log(f"[!] TIME LIMIT EXCEEDED ({timeout_seconds}s). Parsing partial results...", user_id)
-                break
+        if _anon.enabled:
+            logger.info(f"[🛡️] Anonymity Mode ACTIVE ({_anon.mode.upper()}). Proxying SQLMap traffic.")
+        else:
+            logger.info("[🛡️] Anonymity Mode OFFLINE. Executing SQLMap from direct connection.")
+        
+        with _anon.apply():
+            with scan_lock:
+                process = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    creationflags=creation_flags,
+                    env=_anon.get_subprocess_env()
+                )
+                # Track this user's process
+                active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
 
-            output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
-                break
+            start_time = time.time()
             
-            if output:
-                line = output.strip()
-                if line and not line.startswith("[*] ending"):
-                    # Categorize output for better UI visibility
-                    if "fetching" in line.lower() or "retrieved" in line.lower():
-                        log(line, user_id, level='DATA')
-                    elif "testing" in line.lower() or "checking" in line.lower():
-                        log(line, user_id, level='STAGE')
-                    elif "vulnerable" in line.lower() or "back-end DBMS" in line:
-                        log(line, user_id, level='SUCCESS')
-                    else:
-                        log(line, user_id)
-                    
-                    # Capture live metadata as backup
-                    if "back-end DBMS:" in line:
-                        live_metadata["dbms"] = line.split(":", 1)[1].strip()
-                    if "[CRITICAL]" in line:
-                        live_metadata["critical_error"] = line.split("[CRITICAL]", 1)[1].strip()
+            while True:
+                if time.time() - start_time > timeout_seconds:
+                    process.kill()
+                    log(f"[!] TIME LIMIT EXCEEDED ({timeout_seconds}s). Parsing partial results...", user_id)
+                    break
 
-        # Always attempt to parse results even if it timed out or returned error
-        log("[+] Scan finished. Processing results...", user_id, to_console=True)
-        scan_data = parse_sqlmap_output(sqlmap_output_dir, target_url_hint=target_url, captured_metadata=live_metadata, user_id=user_id)
-        
-        json_path = save_sql_json(scan_data, output_dir, user_id=user_id, target=target_url, timestamp=timestamp)
+                output = process.stdout.readline()
+                if output == '' and process.poll() is not None:
+                    break
+                
+                if output:
+                    line = output.strip()
+                    if line and not line.startswith("[*] ending"):
+                        # Categorize output for better UI visibility
+                        if "fetching" in line.lower() or "retrieved" in line.lower():
+                            log(line, user_id, level='DATA')
+                        elif "testing" in line.lower() or "checking" in line.lower():
+                            log(line, user_id, level='STAGE')
+                        elif "vulnerable" in line.lower() or "back-end DBMS" in line:
+                            log(line, user_id, level='SUCCESS')
+                        else:
+                            log(line, user_id, level='DEBUG')
+                        
+                        # Capture live metadata as backup
+                        if "back-end DBMS:" in line:
+                            live_metadata["dbms"] = line.split(":", 1)[1].strip()
+                        if "[CRITICAL]" in line:
+                            live_metadata["critical_error"] = line.split("[CRITICAL]", 1)[1].strip()
+
+            # Always attempt to parse results even if it timed out or returned error
+            log("[+] Scan finished. Processing results...", user_id, to_console=True)
+            scan_data = parse_sqlmap_output(sqlmap_output_dir, target_url_hint=target_url, captured_metadata=live_metadata, user_id=user_id)
+            
+            json_path = save_sql_json(scan_data, output_dir, user_id=user_id, target=target_url, timestamp=timestamp)
         
         send_sse_event("scan_complete", {
             "status": "success",

@@ -664,7 +664,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Core Action: Start Scan ---
 
-    async function handleScanButtonClick() {
+    function showAuthModal(message, onConfirm) {
+        const modal = document.getElementById('authModal');
+        const msgEl = document.getElementById('authModalMessage');
+        const confirmBtn = document.getElementById('confirmAuthBtn');
+        const cancelBtn = document.getElementById('cancelAuthBtn');
+
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        // Clean up any old listener
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        newConfirmBtn.addEventListener('click', () => {
+            if (modal) modal.classList.add('hidden');
+            if (onConfirm) onConfirm();
+        });
+
+        cancelBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleButtonLoading(startScanBtn, false);
+            updateScanStatus('Ready');
+        };
+    }
+
+    function showBlockedModal(message) {
+        const modal = document.getElementById('blockedModal');
+        const msgEl = document.getElementById('blockedModalMessage');
+        const closeBtn = document.getElementById('closeBlockedModalBtn');
+
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        closeBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleButtonLoading(startScanBtn, false);
+            updateScanStatus('Ready');
+        };
+    }
+
+    async function handleScanButtonClick(userConfirmedAuth = false) {
         const targetUrl = targetUrlInput.value.trim();
         const definitionUrl = definitionUrlInput.value.trim();
         const authToken = authTokenInput ? authTokenInput.value.trim() : null;
@@ -683,13 +723,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Start/Restart SSE stream for this new session
-        setupLogStream();
+        if (!userConfirmedAuth) setupLogStream();
 
         toggleButtonLoading(startScanBtn, true);
         const authMsg = authToken ? 'Authenticated' : 'Anonymous';
         updateScanStatus(`Scanning (${authMsg})...`, 'busy');
-        logOutput.innerHTML = ''; 
+        
+        if (!userConfirmedAuth) logOutput.innerHTML = ''; 
         appendLog(`Initiating API Scan on ${targetUrl} (${authMsg})...`);
         appendLog(`Loading Definition: ${definitionUrl}`);
         scanStartTime = Date.now();
@@ -704,12 +744,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ 
                     target_url: targetUrl,
                     definition_url: definitionUrl,
-                    auth_token: authToken
+                    auth_token: authToken,
+                    user_confirmed_auth: userConfirmedAuth
                 })
             });
             const data = await response.json();
 
-            if (!response.ok || data.status !== 'success') {
+            if (response.ok) {
+                appendLog(`[✓] ${data.message || 'Scan initiated'}`);
+            } else {
+                if (data.status === 'auth_required') {
+                    showAuthModal(data.message, () => handleScanButtonClick(true));
+                    return;
+                }
+                if (data.status === 'blocked') {
+                    showBlockedModal(data.message);
+                    return;
+                }
                 appendLog(`[!] Error: ${data.message}`);
                 updateScanStatus('Failed', 'error');
                 toggleButtonLoading(startScanBtn, false);

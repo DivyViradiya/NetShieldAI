@@ -126,6 +126,15 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
     with scan_lock:
         active_scans[user_id] = {"target": str(target_input), "start_time": time.time()}
 
+    # Defense-in-depth Target Validation for Git URLs
+    if input_type == "git":
+        try:
+            from Services.target_validator import validate_target, TargetBlockedError
+            validate_target(target_input)
+        except TargetBlockedError as e:
+            log(f"[BLOCKED] Scan rejected by target validator for {target_input}: {e}", user_id, level='ERROR')
+            return None
+
     source_dir.mkdir(parents=True, exist_ok=True)
     try:
         if input_type == "zip":
@@ -143,7 +152,7 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
                "--no-git-ignore", 
                "."] # Scan extracted source root
         
-        log(f"[*] Executing Semgrep scan engine...", user_id)
+        log("Starting Semgrep static analysis...", user_id, level='STAGE')
         # Force UTF-8 for subprocess to prevent UnicodeEncodeError on Windows
         env = os.environ.copy()
         env["PYTHONUTF8"] = "1"
@@ -152,6 +161,7 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
         # Use cwd to ensure relative paths in output
         result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', cwd=str(source_dir), env=env)
         scan_duration = time.time() - start_time
+        log(f"Semgrep engine finished in {scan_duration:.1f}s.", user_id, level='INFO')
 
         # Log Semgrep's summary from stderr (contains file count and finding summary)
         if result.stderr:

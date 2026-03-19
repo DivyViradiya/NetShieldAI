@@ -16,6 +16,9 @@ import uuid
 from pathlib import Path
 from Services import report_manager
 from .tctr_engine import tctr_engine
+from Services.anonymity.manager import AnonymityManager
+
+_anon = AnonymityManager()
 
 # --- PHASE 2: Dynamic Path Setup ---
 # BASE_DIR should be at the root of the project (one level up from Services/network_scanner.py)
@@ -402,6 +405,10 @@ def resolve_to_ip(target_input, user_id=None, queue_id=None):
     Checks if input is an IP/Range or a URL. 
     If it's a URL, it extracts the hostname and resolves it to an IP.
     """
+    if _anon.enabled:
+        log(f"[*] Anonymity mode enabled. Skipping DNS resolution for: {target_input}", user_id, queue_id)
+        return target_input
+
     # If it's already a valid IP or CIDR range, return it as is
     if is_valid_ip_or_range(target_input):
         return target_input
@@ -452,7 +459,8 @@ def is_nmap_installed(user_id=None, queue_id=None):
         subprocess.run(
             ['nmap', '--version'],
             capture_output=True, text=True, check=True,
-            creationflags=_get_subprocess_creation_flags()
+            creationflags=_get_subprocess_creation_flags(),
+            env=_anon.get_subprocess_env()
         )
         return True
     except FileNotFoundError:
@@ -763,6 +771,14 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     
     target_ip = resolved_ip
 
+    # Defense-in-depth Target Validation
+    try:
+        from Services.target_validator import validate_target, TargetBlockedError
+        validate_target(target_ip)
+    except TargetBlockedError as e:
+        log(f"[BLOCKED] Scan rejected by target validator: {e}", user_id, queue_id, level='ERROR')
+        return None
+
     # Get Dynamic Paths
     paths = get_output_paths(output_dir, target=target_ip, timestamp=timestamp)
 
@@ -815,7 +831,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         flags = base_flags + ['-sS', '--top-ports', '1000', '-sV']
 
     scan_type_display = scan_type.upper() if scan_type != "default" else f"{protocol_type} (Top 1000)"
-    log(f"[+] Running {scan_type_display} scan on {target_ip} with timing {timing_flag}...", user_id, queue_id, to_console=True)
+    log(f"[STAGE] Running Nmap {scan_type_display} scan on {target_ip}...", user_id, queue_id, level='STAGE', to_console=True)
 
     # [NEW] Clear current in-memory results when a new scan starts
     user_data = get_user_open_ports(user_id)
@@ -834,8 +850,14 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
     if not is_nmap_installed(user_id=user_id):
         return None
 
+    # Filter out incompatible scan types if using proxy
+    if _anon.enabled:
+        conflicting_flags = ['-sS', '-sU', '-sN', '-sF', '-sX', '-sA', '-sW', '-sM']
+        flags = [f for f in flags if f not in conflicting_flags]
+
     # Construct Command
-    cmd = ['nmap'] + flags + ['-oG', str(output_file), target_ip]
+    anon_flags = _anon.get_scan_flags("nmap")
+    cmd = ['nmap'] + anon_flags + flags + ['-oG', str(output_file), target_ip]
 
     # Add exclusion for Flask app port (5000) if scanning local IP
     local_ips = [get_local_ip(), "127.0.0.1"]
@@ -850,6 +872,11 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
 
     log(f"[*] Executing: {' '.join(cmd)}", user_id, queue_id, to_console=True)
     
+    if _anon.enabled:
+        logger.info(f"[🛡️] Anonymity Mode ACTIVE ({_anon.mode.upper()}). Routing Nmap through proxy.")
+    else:
+        logger.info("[🛡️] Anonymity Mode OFFLINE. Nmap on direct connection.")
+    
     try:
         # Use Popen to allow tracking if needed, or stick with run but register
         with scan_lock:
@@ -858,11 +885,13 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
             active_scans[user_id] = {"target": original_input, "start_time": time.time()}
 
         try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True,
-                creationflags=_get_subprocess_creation_flags(),
-                timeout=600  # RC-5 FIX: 10-minute hard cap to prevent zombie threads
-            )
+            with _anon.apply():
+                result = subprocess.run(
+                    cmd, capture_output=True, text=True,
+                    creationflags=_get_subprocess_creation_flags(),
+                    env=_anon.get_subprocess_env(),
+                    timeout=600  # RC-5 FIX: 10-minute hard cap to prevent zombie threads
+                )
         except subprocess.TimeoutExpired:
             log(f"[!] Nmap scan timed out after 600s for {target_ip}. Aborting.", user_id, queue_id, to_console=True)
             with scan_lock:
@@ -881,7 +910,7 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
         if not output_file.exists() or output_file.stat().st_size == 0:
             log(f"[!] Nmap scan completed but no results were saved. This may be normal if no ports are open.", user_id, queue_id, to_console=True)
             
-        log(f"[+] {scan_type_display} scan complete. Results synchronized.", user_id, queue_id, to_console=True)
+        log(f"[SUCCESS] {scan_type_display} scan complete.", user_id, queue_id, level='SUCCESS', to_console=True)
         
         # [NEW] Persist raw results for the 'RAW DATA' tab in UI
         if output_dir:
@@ -922,10 +951,15 @@ def run_nmap_scan(target_ip, protocol_type="TCP", scan_type="default", output_di
 
     except Exception as e:
         log(f"[!] Error during {scan_type_display} scan: {str(e)}", user_id, queue_id)
-        send_sse_event("scan_failed", {"message": str(e)}, user_id, queue_id)
+        send_sse_event("scan_failed", {"message": f"Scan aborted: {str(e)}"}, user_id, queue_id)
+        
         return None
     finally:
         # CLEANUP: Remove the temporary .txt file
+        with scan_lock:
+            if user_id in active_scans:
+                del active_scans[user_id]
+
         if output_file.exists():
             for i in range(5): 
                 try:

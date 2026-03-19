@@ -26,6 +26,7 @@ from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
 from Services import report_manager
+from Services.target_validator import validate_target, TargetBlockedError, AuthorizationRequiredError
 
 sql_scanner_bp = Blueprint('sql_scanner_bp', __name__)
 
@@ -72,13 +73,30 @@ def scan_sql():
     Runs the scan in a separate thread to avoid blocking the Flask app.
     """
     data = request.get_json()
-    target_url = data.get('target_url')
+    target_url = data.get('target_url', '').strip()
+    user_confirmed_auth = data.get('user_confirmed_auth', False)
+    
     logger.info(f"SQL Injection Scan requested for {target_url} by {current_user.username}")
     scan_mode = data.get('scan_mode', 'quick') # Default to 'quick'
 
     if not target_url:
         sql_scanner.log("[!] Target URL cannot be empty for SQL scan.")
         return jsonify({"status": "error", "message": "Target URL is required."}), 400
+
+    # ── Target validation gate ──────────────────────────────────────
+    try:
+        validate_target(target_url, user_confirmed_auth=user_confirmed_auth)
+    except TargetBlockedError as e:
+        return jsonify({
+            "status": "blocked",
+            "message": str(e)
+        }), 403
+    except AuthorizationRequiredError as e:
+        return jsonify({
+            "status": "auth_required",
+            "message": str(e)
+        }), 403
+    # ── End validation ──────────────────────────────────────────────
     
     # Basic URL validation
     if not target_url.startswith(('http://', 'https://')):

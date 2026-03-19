@@ -324,12 +324,16 @@ class ReportDeliveryLink(db.Model):
     log_id = db.Column(db.Integer, nullable=False, index=True) # References ScanLog.id (cross-DB)
     recipient_email = db.Column(db.String(255), nullable=False)
     token = db.Column(db.String(100), unique=True, nullable=False)
+    report_type = db.Column(db.String(20), default='normal') # 'normal', 'executive'
     expires_at = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
     
     # Access Tracking (Compliance Logging)
     opened_at = db.Column(db.DateTime, nullable=True)
     opened_from_ip = db.Column(db.String(45), nullable=True)
+    is_used = db.Column(db.Boolean, default=False)
+    
+    audit_logs = db.relationship('DeliveryAuditLog', backref='link', lazy=True, cascade='all, delete-orphan')
 
     def is_expired(self):
         return datetime.now(IST).replace(tzinfo=None) > self.expires_at
@@ -343,5 +347,34 @@ class ReportDeliveryLink(db.Model):
             'expires_at': self.expires_at.isoformat() if self.expires_at else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'opened_at': self.opened_at.isoformat() if self.opened_at else None,
-            'opened_from_ip': self.opened_from_ip
+            'opened_from_ip': self.opened_from_ip,
+            'is_used': self.is_used,
+            'report_type': self.report_type
+        }
+
+
+class DeliveryAuditLog(db.Model):
+    __bind_key__ = 'scheduler'
+    """
+    Audit log for securely tracking all attempts to access report delivery links.
+    """
+    __tablename__ = 'delivery_audit_log'
+
+    id = db.Column(db.Integer, primary_key=True)
+    link_id = db.Column(db.Integer, db.ForeignKey('report_delivery_link.id'), nullable=True)
+    token_attempted = db.Column(db.String(100), nullable=False)
+    accessed_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
+    ip_address = db.Column(db.String(45), nullable=True)
+    user_agent = db.Column(db.String(500), nullable=True)
+    status = db.Column(db.String(50), nullable=False, default='invalid')  # 'success', 'expired', 'already_used', 'invalid'
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'link_id': self.link_id,
+            'token_attempted': self.token_attempted,
+            'accessed_at': self.accessed_at.isoformat() if self.accessed_at else None,
+            'ip_address': self.ip_address,
+            'user_agent': self.user_agent,
+            'status': self.status
         }

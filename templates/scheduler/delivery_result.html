@@ -1,0 +1,30 @@
+{% extends 'scheduler/base_auth.html' %}
+
+{% block title %}NetShieldAI — Secure Report Delivery{% endblock %}
+
+{% block content %}
+  {% if status == 'success' %}
+    <div class="status-icon" style="color:#10b981;">
+       <span class="material-symbols-outlined" style="font-size:4rem;">download</span>
+    </div>
+    <h1 class="status-title">Download Initiated</h1>
+  {% elif status == 'expired' %}
+    <div class="status-icon" style="color:#f59e0b;">
+       <span class="material-symbols-outlined" style="font-size:4rem;">history</span>
+    </div>
+    <h1 class="status-title">Link Expired</h1>
+  {% elif status == 'used' %}
+    <div class="status-icon" style="color:#f59e0b;">
+       <span class="material-symbols-outlined" style="font-size:4rem;">lock</span>
+    </div>
+    <h1 class="status-title">Link Already Used</h1>
+  {% else %}
+    <div class="status-icon" style="color:#ef4444;">
+       <span class="material-symbols-outlined" style="font-size:4rem;">error</span>
+    </div>
+    <h1 class="status-title">Invalid Link</h1>
+  {% endif %}
+
+  <p class="status-sub" style="margin-bottom: 2rem;">{{ message }}</p>
+  <p style="font-size:0.75rem;color:var(--ac-label);margin:0;">You can now safely close this browser window.</p>
+{% endblock %}

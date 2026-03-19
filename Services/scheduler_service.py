@@ -76,6 +76,18 @@ def init_scheduler(app, scheduler_db_uri):
     )
     logger.info("[+] [SCHEDULER] Consent watchdog started.")
 
+    # Start log cleanup job (runs daily at 3 AM)
+    _scheduler.add_job(
+        func=_log_cleanup_job,
+        trigger='cron',
+        hour=3,
+        minute=0,
+        id='log_cleanup_job',
+        name='Daily User Log Cleanup',
+        replace_existing=True
+    )
+    logger.info("[+] [SCHEDULER] Log cleanup job started.")
+
     # Reload persisted jobs
     reload_all_jobs(app)
 
@@ -87,6 +99,14 @@ def shutdown_scheduler():
         _scheduler.shutdown(wait=False)
         logger.info("[*] [SCHEDULER] APScheduler shut down.")
 
+
+def _log_cleanup_job():
+    """Scheduled task to clean up old scanner logs."""
+    try:
+        from Services import scan_logger
+        scan_logger.cleanup_old_logs(days=7)
+    except Exception as e:
+        logger.error(f"[!] [SCHEDULER] Log cleanup job failed: {e}")
 
 def _build_trigger(job_row):
     """
@@ -1106,7 +1126,7 @@ def _trigger_executive_summary_generation(log_id, report_path, tool_name, target
         proxy_url = f"{SERVER_PROXY_URL}/upload_report"
         
         logger.info(f"[*] [SCHEDULER] Auto-generating Executive Summary for Log {log_id} (Path: {report_path})")
-        resp = requests.post(proxy_url, params=params, timeout=45)
+        resp = requests.post(proxy_url, params=params, proxies={"http": None, "https": None})
         resp.raise_for_status()
         
         data = resp.json()
@@ -1125,6 +1145,14 @@ def _trigger_executive_summary_generation(log_id, report_path, tool_name, target
         success = create_executive_summary_report_pdf(summary_text, metadata, exec_path)
         if success:
              logger.info(f"[+] [SCHEDULER] Automated Executive Summary PDF created: {exec_path}")
+             # Save to DB
+             from models.models import ScanLog
+             from core.extensions import db as primary_db
+             log_row = primary_db.session.get(ScanLog, log_id)
+             if log_row:
+                 log_row.executive_summary_path = exec_path
+                 primary_db.session.commit()
+                 logger.info(f"[+] [SCHEDULER] Executive summary path saved to ScanLog.")
         else:
              logger.warning(f"[!] [SCHEDULER] Failed to create Executive Summary PDF for Log {log_id}")
 
@@ -1141,10 +1169,9 @@ def _deliver_reports(job, log_ids):
     import secrets
     import datetime as dt
     from Services.email_service import send_report_link_email
+    from flask import render_template
 
-    if job.schedule_type == 'once':
-        logger.info(f"[*] [SCHEDULER] Skipping email delivery for One-Shot scan.")
-        return
+    # Enable email delivery for One-Shot scans if send_report_email is True
 
     if hasattr(job, 'send_report_email') and not job.send_report_email:
         logger.info(f"[*] [SCHEDULER] Email delivery disabled for Job {job.id}.")
@@ -1162,6 +1189,7 @@ def _deliver_reports(job, log_ids):
         recipient_links = []
         
         for log_id in log_ids:
+            # 1. Normal link
             token = secrets.token_urlsafe(32)
             # Use shared_timestamp or now() for expiry calculation
             expires_at = datetime.now(IST).replace(tzinfo=None) + dt.timedelta(hours=48)
@@ -1170,10 +1198,28 @@ def _deliver_reports(job, log_ids):
                 log_id=log_id,
                 recipient_email=recipient.email,
                 token=token,
-                expires_at=expires_at
+                expires_at=expires_at,
+                report_type='normal'
             )
             db.session.add(link)
             recipient_links.append(link)
+
+            # 2. Executive summary link (If path saved in DB)
+            from models.models import ScanLog
+            log_row = db.session.get(ScanLog, log_id)
+            if log_row and getattr(log_row, 'executive_summary_path', None):
+                 import os
+                 if os.path.exists(log_row.executive_summary_path):
+                      token_exec = secrets.token_urlsafe(32)
+                      link_exec = ReportDeliveryLink(
+                          log_id=log_id,
+                          recipient_email=recipient.email,
+                          token=token_exec,
+                          expires_at=expires_at,
+                          report_type='executive'
+                      )
+                      db.session.add(link_exec)
+                      recipient_links.append(link_exec)
         
         db.session.commit()
         
@@ -1184,21 +1230,86 @@ def _deliver_reports(job, log_ids):
         for l in recipient_links:
              log_row = db.session.get(ScanLog, l.log_id)
              tool_name = log_row.tool_name if log_row else "Scan Report"
+             # Append summary label if executive type
+             if getattr(l, 'report_type', 'normal') == 'executive':
+                  tool_name += " (Executive Summary)"
              target = log_row.target if log_row else "Asset"
-             delivery_url = f"{base_url.rstrip('/')}/api/deliver/{l.token}"
+             delivery_url = f"{base_url.rstrip('/')}/scheduler/api/deliver/{l.token}"
              links_info.append({
                  "tool": tool_name,
                  "target": target,
                  "url": delivery_url,
-                 "expires_at": l.expires_at.strftime('%Y-%m-%d %H:%M IST')
+                 "expires_at": l.expires_at.strftime('%Y-%m-%d %H:%M') + ' IST'
              })
+
+        with _app.app_context():
+             html_content = render_template('email/report_delivery.html', 
+                                            profile_name=profile.name,
+                                            links_info=links_info,
+                                            current_year=dt.datetime.now().year)
 
         success = send_report_link_email(
             recipient_email=recipient.email,
             links_info=links_info,
-            profile_name=profile.name
+            profile_name=profile.name,
+            html_content=html_content
         )
         if success:
              logger.info(f"[+] [SCHEDULER] Delivery email sent to {recipient.email}")
         else:
              logger.error(f"[!] [SCHEDULER] Failed to send delivery email to {recipient.email}")
+
+
+def resend_report_delivery(log_id, recipient_email):
+    """
+    Regenerates a new delivery link for a specific report log and recipient, and sends it.
+    """
+    from models.scheduler_models import ReportDeliveryLink
+    from core.extensions import db
+    import secrets
+    import datetime as dt
+    from Services.email_service import send_report_link_email
+    from flask import render_template
+    from models.models import ScanLog
+
+    log_row = db.session.get(ScanLog, log_id)
+    if not log_row:
+        return False, "Scan log not found."
+
+    token = secrets.token_urlsafe(32)
+    expires_at = datetime.now(IST).replace(tzinfo=None) + dt.timedelta(hours=48)
+    
+    link = ReportDeliveryLink(
+        log_id=log_id,
+        recipient_email=recipient_email,
+        token=token,
+        expires_at=expires_at
+    )
+    db.session.add(link)
+    db.session.commit()
+
+    profile_name = "Regenerated Scan Report"
+    base_url = _app.config.get('BASE_URL', 'http://localhost:5100').rstrip('/')
+    delivery_url = f"{base_url}/scheduler/api/deliver/{link.token}"
+    
+    links_info = [{
+        "tool": log_row.tool_name,
+        "target": log_row.target,
+        "url": delivery_url,
+        "expires_at": link.expires_at.strftime('%Y-%m-%d %H:%M') + " IST"
+    }]
+
+    with _app.app_context():
+        html_content = render_template('email/report_delivery.html', 
+                                       profile_name=profile_name,
+                                       links_info=links_info,
+                                       current_year=dt.datetime.now().year)
+
+    success = send_report_link_email(
+        recipient_email=recipient_email,
+        links_info=links_info,
+        profile_name=profile_name,
+        html_content=html_content
+    )
+    
+    return success, "Email resent successfully." if success else "Failed to send email."

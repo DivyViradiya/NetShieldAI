@@ -106,6 +106,17 @@ def start_capture_route():
         packet_sniffer.log("[!] No target IP provided for capture filter.", user_identifier)
         return jsonify({"status": "error", "message": "No target IP provided."}), 400
 
+    # --- Target Validation Guardrails ---
+    from Services.target_validator import validate_ip_target, TargetBlockedError
+    try:
+        validate_ip_target(target_ip)
+    except TargetBlockedError as e:
+        logger.warning(f"[BLOCKED] Packet Capture rejected for {target_ip}: {e}")
+        return jsonify({
+            "status": "error", 
+            "message": f"Capture Prohibited: {str(e)}"
+        }), 403
+
     # Check admin privileges (Warning only, as Npcap can be configured for non-admins)
     if not packet_sniffer.is_admin():
         packet_sniffer.log("[!] Warning: Sniffing typically requires administrator/root privileges. Proceeding anyway...", user_identifier)

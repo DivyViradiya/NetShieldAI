@@ -56,6 +56,15 @@ def send_otp_email(recipient_email, otp_code, html_content=None, logo_path=None)
         # HTML Content
         if html_content:
             message.add_alternative(html_content, subtype='html')
+            # [CID Logo Fix]
+            logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo.png')
+            if os.path.exists(logo_path):
+                try:
+                    html_part = message.get_payload()[1]
+                    with open(logo_path, 'rb') as f:
+                        html_part.add_related(f.read(), 'image', 'png', cid='<logo>')
+                except Exception as e:
+                    logger.warning(f"[!] [EMAIL] Failed to attach logo CID: {e}")
 
         # The API requires the email to be base64 encoded
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
@@ -92,6 +101,15 @@ def send_consent_email(recipient_email, target_url, profile_name, confirm_url, h
 
         if html_content:
             message.add_alternative(html_content, subtype='html')
+            # [CID Logo Fix]
+            logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo.png')
+            if os.path.exists(logo_path):
+                try:
+                    html_part = message.get_payload()[1]
+                    with open(logo_path, 'rb') as f:
+                        html_part.add_related(f.read(), 'image', 'png', cid='<logo>')
+                except Exception as e:
+                    logger.warning(f"[!] [EMAIL] Failed to attach logo CID: {e}")
 
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
         create_message = {'raw': encoded_message}
@@ -123,6 +141,15 @@ def send_report_link_email(recipient_email, links_info, profile_name, html_conte
 
         if html_content:
             message.add_alternative(html_content, subtype='html')
+            # [CID Logo Fix]
+            logo_path = os.path.join(PROJECT_ROOT, 'static', 'images', 'NS_Logo.png')
+            if os.path.exists(logo_path):
+                try:
+                    html_part = message.get_payload()[1]
+                    with open(logo_path, 'rb') as f:
+                        html_part.add_related(f.read(), 'image', 'png', cid='<logo>')
+                except Exception as e:
+                    logger.warning(f"[!] [EMAIL] Failed to attach logo CID: {e}")
 
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
         create_message = {'raw': encoded_message}

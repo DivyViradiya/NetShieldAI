@@ -19,6 +19,7 @@ from Services import pdf_generator
 # --- Import Scan Logger ---
 from Services import scan_logger
 from Services import report_manager
+from Services.target_validator import validate_target, TargetBlockedError, AuthorizationRequiredError
 from core.logger_setup import logger
 
 semgrep_bp = Blueprint('semgrep_bp', __name__)
@@ -97,6 +98,23 @@ def scan_code():
              return jsonify({"status": "error", "message": "Git URL cannot be empty."}), 400
         input_type = "git"
         target_display = target_input
+
+        # --- Target Validation Guardrails ---
+        user_confirmed_auth = request.form.get('user_confirmed_auth', 'false').lower() == 'true'
+        try:
+            validate_target(target_input, user_confirmed_auth=user_confirmed_auth)
+        except TargetBlockedError as e:
+            logger.warning(f"[BLOCKED] Semgrep Scan rejected for {target_input}: {e}")
+            return jsonify({
+                "status": "blocked",
+                "message": f"Scan Prohibited: {str(e)}"
+            }), 403
+        except AuthorizationRequiredError as e:
+            logger.info(f"[AUTH_REQUIRED] Semgrep Scan requires confirmation for {target_input}")
+            return jsonify({
+                "status": "auth_required",
+                "message": str(e)
+            }), 403
 
     else:
         return jsonify({"status": "error", "message": "Invalid input. Provide a file or git_url."}), 400

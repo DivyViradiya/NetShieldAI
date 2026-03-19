@@ -261,6 +261,14 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
     if not capture_cmd:
         return None
 
+    # Defense-in-depth Target Validation
+    try:
+        from Services.target_validator import validate_ip_target, TargetBlockedError
+        validate_ip_target(target_ip)
+    except TargetBlockedError as e:
+        log(f"[BLOCKED] Capture rejected by target validator for {target_ip}: {e}", user_id, level='ERROR')
+        return None
+
     interface_name = get_selected_interface(interface_id=interface_id, user_id=user_id)
     if not interface_name:
         log("[!] Failed to find network interface.", user_id)

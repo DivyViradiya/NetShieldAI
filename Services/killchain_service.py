@@ -504,6 +504,18 @@ class KillChainService:
             log(queue_id, f"[START] Kill Chain Audit: {target} (Profile: {profile_name}, Aggression: {aggression_level})", "START")
             send_sse_event(queue_id, "scan_status", {"message": "Starting scan...", "phase": "Initialization"})
 
+            # Defense-in-depth Target Validation (Hard Blocks)
+            try:
+                from Services.target_validator import validate_target, TargetBlockedError
+                validate_target(target, user_confirmed_auth=True)
+            except TargetBlockedError as e:
+                log(queue_id, f"[BLOCKED] Audit aborted by target validator for {target}: {e}", "CRITICAL")
+                send_sse_event(queue_id, "scan_failed", {"message": f"Scan Prohibited: {str(e)}"})
+                if log_id and app:
+                    with app.app_context():
+                         scan_logger.log_scan_end(log_id, status="Blocked", finding_count=0, duration=time.time() - start_time)
+                return
+
             domain = target.replace("http://", "").replace("https://", "").split("/")[0]
             try: 
                 target_ip = socket.gethostbyname(domain)

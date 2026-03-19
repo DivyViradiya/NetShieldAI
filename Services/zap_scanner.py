@@ -13,7 +13,11 @@ from pathlib import Path
 import queue  # Queue for real-time streaming
 import threading
 from core.logger_setup import logger
-from Services import report_manager
+from Services import report_manager, scan_logger
+from Services.anonymity.manager import AnonymityManager
+from Services.target_validator import validate_target, TargetBlockedError
+
+_anon = AnonymityManager()
 
 # --- Configuration ---
 ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
@@ -77,50 +81,26 @@ def get_free_port():
 
 # --- LOGGING FUNCTIONS (USER-AWARE) ---
 
-def log(message, user_id=None, to_console=False):
+def log(message, user_id=None, to_console=False, level='INFO'):
     """
     Logs messages to:
     1. System Console (optional)
-    2. User-specific log file (logs/users/{user_id}/zap_agent_log.txt)
-    3. User-specific Memory Queue (for real-time frontend)
+    2. User-specific log file via scan_logger
+    3. User-specific Memory Queue (for real-time frontend fallback)
     """
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    log_message = f"[{timestamp}] {message}"
-    
-    # 1. System Console
     if to_console:
-        logger.info(message) # use central logger info (colored formatter auto-detects)
+        if level.upper() in ('ERROR', 'CRITICAL'):
+            logger.error(message)
+        elif level.upper() == 'WARNING':
+            logger.warning(message)
+        else:
+            logger.info(message)
     
-    # If a specific user is targeted
     if user_id:
-        user_id = str(user_id)
-        # Organized Path: logs/users/{user_id}/
-        user_dir = os.path.join(LOGS_DIR, "users", user_id)
-        if not os.path.exists(user_dir):
-            os.makedirs(user_dir, exist_ok=True)
-            
-        user_log_file = os.path.join(user_dir, "zap_agent_log.txt")
-        try:
-            with open(user_log_file, 'a', encoding='utf-8') as f:
-                f.write(log_message + "\n")
-        except Exception as e:
-            logger.error(f"FATAL: Failed to write to user log file {user_log_file}: {e}")
-
-        # 3. User-Specific Queue (Streaming)
+        scan_logger.write_log(user_id, "zap_scanner", message, level=level)
+        # Keep queue for backward compatibility if the frontend polls it
         uq = get_user_queue(user_id)
         uq.put(message)
-        
-    else:
-        # Fallback to general system log
-        system_dir = os.path.join(LOGS_DIR, "system")
-        if not os.path.exists(system_dir):
-            os.makedirs(system_dir, exist_ok=True)
-            
-        try:
-            with open(os.path.join(system_dir, "zap_system_log.txt"), 'a', encoding='utf-8') as f:
-                f.write(log_message + "\n")
-        except:
-            pass
 
 def clear_log_file(user_id):
     """Clears the log file and queue for a specific user."""
@@ -235,7 +215,13 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
     Launches ZAP and streams output to user specific log.
     Supports simultaneous execution by assigning unique ports and directories.
     """
-    
+    # Defense-in-depth — catches background/scheduled calls that bypass the BP
+    try:
+        validate_target(target_url)
+    except TargetBlockedError as e:
+        log(f"[BLOCKED] Scan rejected by target validator: {e}", user_id, level='ERROR')
+        return False
+        
     # 1. REMOVED kill_zap_processes to prevent stopping other concurrent scans.
     
     if not os.path.exists(ZAP_EXECUTABLE_PATH):
@@ -254,9 +240,10 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
             os.makedirs(unique_zap_dir, exist_ok=True)
 
         log(f"\n--- Starting ZAP Scan ({scan_mode.upper()}) (Isolated Instance) ---", user_id, to_console=True)
-        log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_id, to_console=True)
-        log(f"Target: {target_url}", user_id, to_console=True)
-        log(f"Report will be saved to: {report_path}", user_id, to_console=True)
+        log(f"[STAGE] Starting ZAP ({scan_mode.upper()}) scan on {target_url}...", user_id, level='STAGE')
+        log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_id, to_console=True, level='DEBUG')
+        log(f"Target: {target_url}", user_id, to_console=True, level='DEBUG')
+        log(f"Report will be saved to: {report_path}", user_id, to_console=True, level='DEBUG')
 
         report_dir = os.path.dirname(report_path)
         if not os.path.exists(report_dir):
@@ -282,51 +269,60 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
                 '-quickprogress'
             ]
 
-        log(f"Executing command: {' '.join(command)}", user_id, to_console=True)
+        log(f"[STAGE] Launching ZAP daemon...", user_id, level='STAGE')
+        log(f"Executing command: {' '.join(command)}", user_id, level='DEBUG', to_console=True)
         zap_directory = os.path.dirname(ZAP_EXECUTABLE_PATH)
         
-        process = subprocess.Popen(
-            command, 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.STDOUT,
-            text=True, 
-            encoding='utf-8', 
-            errors='replace', 
-            cwd=zap_directory,
-            bufsize=1 
-        )
+        command.extend(_anon.get_scan_flags("zap"))
         
-        # Track this user's process
-        with scan_lock:
-            active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
+        if _anon.enabled:
+            logger.info(f"[🛡️] Anonymity Mode ACTIVE ({_anon.mode.upper()}). Forcing ZAP through proxy.")
+        else:
+            logger.info("[🛡️] Anonymity Mode OFFLINE. ZAP executing from direct connection.")
+        
+        with _anon.apply():
+            with scan_lock:
+                process = subprocess.Popen(
+                    command, 
+                    stdout=subprocess.PIPE, 
+                    stderr=subprocess.STDOUT,
+                    text=True, 
+                    encoding='utf-8', 
+                    errors='replace', 
+                    cwd=zap_directory,
+                    bufsize=1,
+                    env=_anon.get_subprocess_env() 
+                )
+                # Track this user's process
+                active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
 
-        log("--- ZAP Output Stream Started ---", user_id)
-        
-        # Stream stdout line by line
-        for line in iter(process.stdout.readline, ''):
-            if line:
-                stripped_line = line.strip()
-                # --- NOISE FILTER: Extract ZAP Progress Cleanly ---
-                # Matches: [                    ] 15% /
-                if "%" in stripped_line and "[" in stripped_line and "]" in stripped_line:
-                    match = re.search(r'(\d+%)', stripped_line)
-                    if match:
-                        # Log the original line with [PROGRESS] prefix so UI can parse percent
-                        # but still show the original bracket format in terminal
-                        log(f"[PROGRESS] {stripped_line}", user_id)
+            log("--- ZAP Output Stream Started ---", user_id)
+            
+            # Stream stdout line by line
+            for line in iter(process.stdout.readline, ''):
+                if line:
+                    stripped_line = line.strip()
+                    # --- NOISE FILTER: Extract ZAP Progress Cleanly ---
+                    # Matches: [                    ] 15% /
+                    if "%" in stripped_line and "[" in stripped_line and "]" in stripped_line:
+                        match = re.search(r'(\d+%)', stripped_line)
+                        if match:
+                            # Log the original line with [PROGRESS] prefix so UI can parse percent
+                            # but still show the original bracket format in terminal
+                            log(f"[PROGRESS] {stripped_line}", user_id)
+                            continue
+                    
+                    if not stripped_line:
                         continue
-                
-                if not stripped_line:
-                    continue
 
-                # Skip other noisy technical messages but keep important ones
-                if any(x in stripped_line.lower() for x in ["copying default", "creating directory", "plugin"]):
-                    if "main" in stripped_line: continue
+                    # Skip other noisy technical messages but keep important ones
+                    if any(x in stripped_line.lower() for x in ["copying default", "creating directory", "plugin"]):
+                        if "main" in stripped_line: continue
 
-                # We log to file/queue but NOT to console to avoid terminal clutter
-                log(stripped_line, user_id, to_console=False)
+                    # We log to file/queue but NOT to console to avoid terminal clutter
+                    log(stripped_line, user_id, to_console=False, level='DEBUG')
 
-        process.wait()
+            process.wait()
         
         # Unregister process
         with scan_lock:
@@ -337,7 +333,7 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
 
         success = False
         if process.returncode == 0 and os.path.exists(report_path):
-            log(f"Scan completed successfully!", user_id, to_console=True)
+            log(f"[SUCCESS] ZAP scan complete.", user_id, level='SUCCESS', to_console=True)
             success = True
         else:
             log(f"Error: ZAP process failed. Return code: {process.returncode}.", user_id, to_console=True)

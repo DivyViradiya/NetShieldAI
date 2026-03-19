@@ -442,8 +442,49 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    function showAuthModal(message, onConfirm) {
+        const modal = document.getElementById('authModal');
+        const msgEl = document.getElementById('authModalMessage');
+        const confirmBtn = document.getElementById('confirmAuthBtn');
+        const cancelBtn = document.getElementById('cancelAuthBtn');
 
-    async function initiateScan() {
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        // Clean up any old listener
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        newConfirmBtn.addEventListener('click', () => {
+            if (modal) modal.classList.add('hidden');
+            if (onConfirm) onConfirm();
+        });
+
+        cancelBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            setButtonsDisabled(false);
+            toggleSpinner(elements.startScanBtn, false);
+            setStatus('Ready');
+        };
+    }
+
+    function showBlockedModal(message) {
+        const modal = document.getElementById('blockedModal');
+        const msgEl = document.getElementById('blockedModalMessage');
+        const closeBtn = document.getElementById('closeBlockedModalBtn');
+
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        closeBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            setButtonsDisabled(false);
+            toggleSpinner(elements.startScanBtn, false);
+            setStatus('Ready');
+        };
+    }
+
+    async function initiateScan(userConfirmedAuth = false) {
         const targetUrl = elements.targetUrlInput.value.trim();
         if (!targetUrl) {
             appendLog('[!] Error: Target URL is required.');
@@ -464,14 +505,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     target_url: targetUrl,
                     scan_mode: elements.scanMode.value,
-                    check_waf: elements.checkWaf.checked
+                    check_waf: elements.checkWaf.checked,
+                    user_confirmed_auth: userConfirmedAuth
                 }),
             });
             const data = await response.json();
             if (response.ok) {
                 appendLog(`[✓] ${data.message}`);
             } else {
-                throw new Error(data.message);
+                if (data.status === 'auth_required') {
+                    showAuthModal(data.message, () => initiateScan(true));
+                    return;
+                }
+                if (data.status === 'blocked') {
+                    showBlockedModal(data.message);
+                    return;
+                }
+                if (response.status === 403) {
+                    showBlockedModal(data.message || 'Access is blocked.');
+                    return;
+                }
+                throw new Error(data.message || 'Scan failed');
             }
         } catch (error) {
             appendLog(`[!] Error: ${error.message}`);

@@ -35,3 +35,6 @@ APScheduler
 google-auth
 google-auth-oauthlib
 google-api-python-client
+stem>=1.8.0
+PySocks>=1.7.1
+requests[socks]>=2.28.0

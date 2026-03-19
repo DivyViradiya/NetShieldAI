@@ -784,17 +784,17 @@ function getStepHtml(d, i) {
                     <label for="field-exec-summary" style="font-size:0.75rem; color:var(--neo-text-main); cursor:pointer;">Generate Executive Summary PDF (AI Enhanced)</label>
                 </div>
 
-                ${d.scheduleType === 'once' ? `
-                <div style="font-size: 0.65rem; color: var(--neo-text-muted); font-style: italic; margin-top: 4px;">
-                    <span class="material-symbols-outlined" style="font-size: 0.8rem; vertical-align: middle;">mail</span>
-                    Links not emailed for one-shot missions.
-                </div>
-                ` : `
                 <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-top: 0.5rem;">
                     <input type="checkbox" id="field-send-report-email" style="width:16px; height:16px; accent-color:var(--neo-blue);" ${d.sendReportEmail !== false ? 'checked' : ''} onchange="window.updateDraftState(${i}, 'sendReportEmail', this.checked); renderDrawer()">
                     <label for="field-send-report-email" style="font-size:0.75rem; color:var(--neo-text-main); cursor:pointer;">Email secure delivery links on completion</label>
                 </div>
-                `}
+                ${d.sendReportEmail !== false ? `
+                <div class="form-group fade-in" style="margin-top: 0.5rem; margin-bottom: 0;">
+                    <label class="form-label" style="font-size: 0.65rem;">Report Recipient Email <span class="req-star">*</span></label>
+                    <input type="email" id="field-report-email" class="form-input" placeholder="reports@company.com" value="${escapeHTML(d.reportEmail !== undefined ? d.reportEmail : (window.USER_EMAIL || ''))}" oninput="window.updateDraftState(${i}, 'reportEmail', this.value); clearFieldError(this)">
+                    <div class="field-error" id="err-reportEmail"></div>
+                </div>
+                ` : ''}
             </div>
 
             <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--neo-border);">
@@ -916,6 +916,16 @@ function validateCurrentStep(d) {
                     return { field: 'consentEmail', message: 'Enter a valid email address.' };
                 }
             }
+            if (d.sendReportEmail !== false) {
+                const email = d.reportEmail !== undefined ? d.reportEmail : (window.USER_EMAIL || '');
+                if (!email || !email.trim()) {
+                     return { field: 'reportEmail', message: 'Report recipient email is required.' };
+                }
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email.trim())) {
+                     return { field: 'reportEmail', message: 'Enter a valid report email address.' };
+                }
+            }
             break;
     }
     return null; // valid
@@ -982,6 +992,7 @@ function tryAdvanceStep(i, nextStep) {
         target: ['field-target', 'err-target'],
         consentEmail: ['field-consent-email', 'err-consentEmail'],
         profileName: ['field-profileName', 'err-profileName'],
+        reportEmail: ['field-report-email', 'err-reportEmail']
     };
     if (fieldMap[err.field]) {
         showFieldError(fieldMap[err.field][0], fieldMap[err.field][1], err.message);
@@ -1150,7 +1161,9 @@ function editMission(profileId) {
         profileName: p.name,
         profileDesc: p.description,
         requiresConsent: target.requires_consent || false,
-        consentEmail: target.consent_email || ''
+        consentEmail: target.consent_email || '',
+        reportEmail: p.recipients && p.recipients.length > 0 ? p.recipients[0].email : '',
+        sendReportEmail: job.send_report_email !== undefined ? job.send_report_email : true
     };
 
     const newIndex = draftMissions.length;
@@ -1287,6 +1300,19 @@ async function saveDraft(index) {
         }
 
         await new Promise(r => setTimeout(r, 100));
+
+        // Recipients Logic
+        const reportEmailToSave = d.reportEmail !== undefined ? d.reportEmail : (window.USER_EMAIL || '');
+        if (d.sendReportEmail !== false && reportEmailToSave && reportEmailToSave.trim()) {
+             const p_found = allProfiles.find(x => x.id === pId);
+             const existingRecipients = (d.isEdit && p_found) ? (p_found.recipients || []) : [];
+             for (const r of existingRecipients) {
+                  try { await apiFetch(`${API}/profiles/${pId}/recipients/${r.id}`, { method: 'DELETE' }); } catch(e){}
+             }
+             await apiFetch(`${API}/profiles/${pId}/recipients`, {
+                  method: 'POST', body: JSON.stringify({ email: reportEmailToSave.trim(), role: 'technical' })
+             });
+        }
 
         // Schedule Logic
         let jobPayload = {
