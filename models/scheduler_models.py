@@ -245,6 +245,7 @@ class ScheduledScanJob(db.Model):
     cron_expression = db.Column(db.String(100), nullable=True)  # For advanced cron
     one_shot_at = db.Column(db.DateTime, nullable=True)
     is_enabled = db.Column(db.Boolean, default=True)
+    send_report_email = db.Column(db.Boolean, default=True)
     last_run_at = db.Column(db.DateTime, nullable=True)
     next_run_at = db.Column(db.DateTime, nullable=True)
     apscheduler_job_id = db.Column(db.String(100), nullable=True, unique=True)
@@ -268,6 +269,7 @@ class ScheduledScanJob(db.Model):
             'cron_expression': self.cron_expression,
             'one_shot_at': self.one_shot_at.isoformat() if self.one_shot_at else None,
             'is_enabled': self.is_enabled,
+            'send_report_email': self.send_report_email,
             'last_run_at': self.last_run_at.isoformat() if self.last_run_at else None,
             'next_run_at': self.next_run_at.isoformat() if self.next_run_at else None,
             'apscheduler_job_id': self.apscheduler_job_id,
@@ -307,4 +309,39 @@ class ScanConsentToken(db.Model):
             'expires_at': self.expires_at.isoformat() if self.expires_at else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'approved_at': self.approved_at.isoformat() if self.approved_at else None,
+        }
+
+
+class ReportDeliveryLink(db.Model):
+    __bind_key__ = 'scheduler'
+    """
+    Tracks secure, expiring download links for reports sent to recipients.
+    Logs accesses for compliance auditing.
+    """
+    __tablename__ = 'report_delivery_link'
+
+    id = db.Column(db.Integer, primary_key=True)
+    log_id = db.Column(db.Integer, nullable=False, index=True) # References ScanLog.id (cross-DB)
+    recipient_email = db.Column(db.String(255), nullable=False)
+    token = db.Column(db.String(100), unique=True, nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(IST).replace(tzinfo=None))
+    
+    # Access Tracking (Compliance Logging)
+    opened_at = db.Column(db.DateTime, nullable=True)
+    opened_from_ip = db.Column(db.String(45), nullable=True)
+
+    def is_expired(self):
+        return datetime.now(IST).replace(tzinfo=None) > self.expires_at
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'log_id': self.log_id,
+            'recipient_email': self.recipient_email,
+            'token': self.token,
+            'expires_at': self.expires_at.isoformat() if self.expires_at else None,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'opened_at': self.opened_at.isoformat() if self.opened_at else None,
+            'opened_from_ip': self.opened_from_ip
         }

@@ -1,0 +1,5 @@
+[09:20:06] [INFO] [!] Admin privileges missing.
+[09:20:08] [INFO] [*] Auto-detected interface: Wi-Fi
+[09:20:08] [INFO] [+] Starting capture for host 127.0.0.1 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[09:20:15] [INFO] [+] Capture finished.
+[09:20:15] [INFO] EVENT: capture_complete | PAYLOAD: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\sniffer\capture_test_user_af487173.pcap

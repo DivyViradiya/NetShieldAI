@@ -424,24 +424,16 @@ def get_inner_html(element):
     if element is None: return ""
     return (element.text or '') + ''.join(ET.tostring(e, encoding='unicode') for e in element)
 
-def save_json_report(data, output_dir, user_id=None, target=None):
+def save_json_report(data, output_dir, user_id=None, target=None, timestamp=None):
     try:
-        if output_dir:
-            if not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-            
-            if target:
-                filename = report_manager.generate_report_filename("zap_scanner", target, "json")
-                json_path = os.path.join(output_dir, filename)
-            else:
-                json_path = os.path.join(output_dir, "zap_report.json")
-        else:
-            json_path = os.path.join(DEFAULT_RESULTS_DIR, "zap_report.json")
+        paths = get_output_paths(output_dir=output_dir, target=target, timestamp=timestamp)
+        json_path = paths["json_report"]
 
         with open(json_path, 'w') as f:
             json.dump(data, f, indent=2)
         log(f"JSON report saved to: {json_path}", user_id)
-        return json_path
+        return str(json_path)
     except Exception as e:
         log(f"Error saving JSON report: {e}", user_id)
         return None
+

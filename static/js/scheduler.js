@@ -35,6 +35,25 @@ const escapeHTML = (str) => {
     );
 };
 
+ 
+ const parseDateSafe = (dateStr) => {
+     if (!dateStr) return 'N/A';
+     if (typeof dateStr === 'string') {
+         const hasT = dateStr.includes('T');
+         const hasSpace = dateStr.includes(' ');
+         const hasZ = dateStr.endsWith('Z');
+         const hasOffset = /([+-]\d{2}:\d{2})$/.test(dateStr); 
+         if ((hasSpace || hasT) && !hasZ && !hasOffset) {
+             let clean = dateStr;
+             if (hasSpace) clean = clean.replace(' ', 'T');
+             return new Date(clean + 'Z').toLocaleString();
+         }
+     }
+     return new Date(dateStr).toLocaleString();
+ };
+
+
+
 // ===== Icon / Color Maps (shared) =====
 const ICON_MAP = {
     nmap: 'target',
@@ -170,7 +189,8 @@ function renderMissionCard(p) {
     const jobsHtml = p.jobs.map(j => {
         const isEnabled = j.is_enabled;
         const schedLabel = SCHEDULE_LABELS[j.schedule_type] || j.schedule_type?.toUpperCase();
-        const nextRun = j.next_run_at ? new Date(j.next_run_at).toLocaleString() : 'N/A';
+        const nextRun = j.next_run_at ? parseDateSafe(j.next_run_at) : 'N/A';
+
 
         return `
             <div class="job-row">
@@ -338,8 +358,28 @@ function renderHistory(history) {
     }
 
     const logsHtml = history.map(log => {
-        const dateStr = new Date(log.start_time).toLocaleString();
+        const dateStr = parseDateSafe(log.start_time);
         const accentCol = COLOR_MAP[log.tool_name.toLowerCase()] || 'var(--neo-blue)';
+        
+        const deliveryHtml = log.delivery_logs && log.delivery_logs.length > 0 ? `
+            <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-size: 0.6rem; color: var(--neo-text-muted); text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 4px;">
+                    <span class="material-symbols-outlined" style="font-size: 0.8rem; color: var(--neo-green);">mail</span>
+                    Recipient Delivery Log
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 4px; font-family: var(--font-mono); font-size: 0.65rem;">
+                    ${log.delivery_logs.map(d => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 4px 6px; border-radius: 4px;">
+                            <span style="color: var(--neo-text-main); font-weight: 600;">${escapeHTML(d.email)}</span>
+                            <span style="font-size: 0.6rem; color: ${d.opened_at ? 'var(--neo-green)' : 'var(--neo-text-muted)'}; display: flex; align-items: center; gap: 4px;" title="${d.ip ? 'IP: ' + d.ip : ''}">
+                                <span class="status-dot" style="background: ${d.opened_at ? 'var(--neo-green)' : 'var(--neo-text-muted)'}; width: 4px; height: 4px;"></span>
+                                ${d.opened_at ? `Opened ${parseDateSafe(d.opened_at)}` : 'Delivered / Unopened'}
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        ` : '';
         
         return `
             <div class="log-entry" style="background: rgba(255,255,255,0.02); border: 1px solid var(--neo-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; position: relative; overflow: hidden;">
@@ -365,6 +405,8 @@ function renderHistory(history) {
                     <div style="background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px;">Findings: <span style="color:var(--neo-amber)">${log.finding_count || 0}</span></div>
                     <div style="background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px;">Duration: ${log.duration || 0}s</div>
                 </div>
+
+                ${deliveryHtml}
 
                 ${log.has_report ? `
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 8px;">
@@ -741,6 +783,18 @@ function getStepHtml(d, i) {
                     <input type="checkbox" id="field-exec-summary" style="width:16px; height:16px; accent-color:var(--neo-blue);" ${(d.config && d.config.executive_summary) ? 'checked' : ''} onchange="window.updateDraftConfig(${i}, 'executive_summary', this.checked); renderDrawer()">
                     <label for="field-exec-summary" style="font-size:0.75rem; color:var(--neo-text-main); cursor:pointer;">Generate Executive Summary PDF (AI Enhanced)</label>
                 </div>
+
+                ${d.scheduleType === 'once' ? `
+                <div style="font-size: 0.65rem; color: var(--neo-text-muted); font-style: italic; margin-top: 4px;">
+                    <span class="material-symbols-outlined" style="font-size: 0.8rem; vertical-align: middle;">mail</span>
+                    Links not emailed for one-shot missions.
+                </div>
+                ` : `
+                <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-top: 0.5rem;">
+                    <input type="checkbox" id="field-send-report-email" style="width:16px; height:16px; accent-color:var(--neo-blue);" ${d.sendReportEmail !== false ? 'checked' : ''} onchange="window.updateDraftState(${i}, 'sendReportEmail', this.checked); renderDrawer()">
+                    <label for="field-send-report-email" style="font-size:0.75rem; color:var(--neo-text-main); cursor:pointer;">Email secure delivery links on completion</label>
+                </div>
+                `}
             </div>
 
             <div style="margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--neo-border);">
@@ -794,7 +848,8 @@ function buildScheduleSummary(d) {
         case 'once':     
             if (d.onceType === 'immediate') return 'Immediate Execution';
             if (d.onceType === 'delayed') return `Run after ${d.delayVal} ${d.delayUnit}`;
-            if (d.onceType === 'specific') return `Scheduled at ${d.specificTime ? new Date(d.specificTime).toLocaleString() : '??'}`;
+            if (d.onceType === 'specific') return `Scheduled at ${d.specificTime ? parseDateSafe(d.specificTime) : '??'}`;
+
             return 'Run Once';
         case 'periodic': 
             return `Every ${d.intervalVal} ${d.intervalUnit}${d.intervalVal > 1 ? 's' : ''}`;
@@ -1236,7 +1291,8 @@ async function saveDraft(index) {
         // Schedule Logic
         let jobPayload = {
             profile_id: pId,
-            schedule_type: d.scheduleType
+            schedule_type: d.scheduleType,
+            send_report_email: d.sendReportEmail !== false
         };
         
         if (d.scheduleType === 'once') {

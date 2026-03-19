@@ -40452,3 +40452,871 @@ WHERE scheduled_scan_job.is_enabled = 1]
 [2026-03-17 22:31:28] [INFO    ] [run] [*] Registering Core Modules...
 [2026-03-17 22:31:29] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
 [2026-03-17 22:35:30] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-17 22:35:34] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:35:34] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:35:34] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-17 22:35:34] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-17 22:35:34] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-17 22:35:40] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-17 22:35:40] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-17 22:35:40] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-17 22:35:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-17 22:35:40] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-17 22:35:41] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-17 22:35:42] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 22:35:42] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-17 22:35:42] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-17 22:35:54] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-17 22:36:03] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-17 22:36:03] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-17 22:36:03] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:36:03] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-17 22:36:03] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:36:03] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-17 22:36:03] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:36:08] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-17 22:36:08] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-17 22:36:27] [INFO    ] [run] [>] POST /register from 127.0.0.1
+[2026-03-17 22:36:27] [INFO    ] [auth_bp] [+] New User Registration Attempt: DivyaViradiya
+[2026-03-17 22:36:27] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-17 22:36:30] [INFO    ] [email_service] [+] [EMAIL] OTP email sent successfully. Message Id: 19cfcc366611b567
+[2026-03-17 22:36:30] [INFO    ] [auth_bp] [+] User DivyaViradiya registered. OTP sent to divya.viradiya.7@gmail.com.
+[2026-03-17 22:36:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:36:40.977124 (Window: 2026-03-17 22:36:40.977124 to 2026-03-17 23:07:40.977124)
+[2026-03-17 22:36:50] [INFO    ] [run] [>] POST /verify_registration from 127.0.0.1
+[2026-03-17 22:36:50] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-17 22:36:50] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 22:36:50] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 22:36:50] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 22:36:50] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 22:36:50] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 22:36:50] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 22:37:31] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 22:37:31] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 22:37:33] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-17 22:37:33] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-17 22:37:33] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:37:33] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:37:35] [INFO    ] [run] [>] POST /network_scanner/scan from 127.0.0.1
+[2026-03-17 22:37:35] [INFO    ] [network_scanner] [*] Preparing DEFAULT scan for target: 192.168.29.48 with T4...
+[2026-03-17 22:37:35] [INFO    ] [network_scanner] [+] Running TCP (Top 1000) scan on 192.168.29.48 with timing -T4...
+[2026-03-17 22:37:35] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:37:35] [INFO    ] [network_scanner] [*] Executing: nmap -T4 -Pn -sS --top-ports 1000 -sV --exclude-ports 5000 -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_DivyaViradiya_2_df0371a4.txt 192.168.29.48
+[2026-03-17 22:37:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:37:40.971999 (Window: 2026-03-17 22:37:40.971999 to 2026-03-17 23:08:40.971999)
+[2026-03-17 22:37:42] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 22:37:42] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 22:37:42] [INFO    ] [run] [>] POST /sdk from 192.168.29.48
+[2026-03-17 22:37:42] [INFO    ] [run] [>] GET /nmaplowercheck1773767262 from 192.168.29.48
+[2026-03-17 22:37:42] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 22:37:42] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 22:37:42] [INFO    ] [run] [>] GET /HNAP1 from 192.168.29.48
+[2026-03-17 22:37:42] [INFO    ] [run] [>] GET /evox/about from 192.168.29.48
+[2026-03-17 22:37:42] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 22:37:42] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 22:37:42] [INFO    ] [run] [>] GET / from 192.168.29.48
+[2026-03-17 22:37:42] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-17 22:37:42] [INFO    ] [network_scanner] [+] TCP (Top 1000) scan complete. Results synchronized.
+[2026-03-17 22:37:46] [INFO    ] [network_scanner] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[2026-03-17 22:37:46] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\network_scanner\network_192_168_29_48_20260317_223735.pdf
+[2026-03-17 22:37:46] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-03-17 22:37:48] [INFO    ] [network_scanner] [+] PDF report generated successfully
+[2026-03-17 22:37:48] [INFO    ] [network_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[2026-03-17 22:37:48] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-17 22:37:48] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-17 22:37:48] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:37:53] [INFO    ] [run] [>] POST /network_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-03-17 22:37:53] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-17 22:38:05] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:38:06] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-03-17 22:38:06] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-17 22:38:06] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:38:06] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:38:29] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 22:38:29] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 22:38:32] [INFO    ] [run] [>] GET /ssl_scanner/ from 127.0.0.1
+[2026-03-17 22:38:32] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-03-17 22:38:32] [INFO    ] [run] [>] GET /ssl_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:38:36] [INFO    ] [run] [>] POST /ssl_scanner/scan from 127.0.0.1
+[2026-03-17 22:38:36] [INFO    ] [ssl_scanner] [22:38:36] [+] Running local SSL scan on google.com...
+[2026-03-17 22:38:36] [INFO    ] [ssl_scanner] [22:38:36] [*] Executing command: C:\Program Files\sslscan\sslscan.exe --xml=C:\Users\Divy\AppData\Local\Temp\NetShieldAI\sslscan\ssl_temp_DivyaViradiya_2_982ecc87.xml --show-client-cas --show-cipher-ids --show-signatures google.com
+[2026-03-17 22:38:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:38:40.981441 (Window: 2026-03-17 22:38:40.981441 to 2026-03-17 23:09:40.981441)
+[2026-03-17 22:38:41] [INFO    ] [ssl_scanner] [22:38:41] [+] SSL raw scan results synchronized.
+[2026-03-17 22:38:42] [INFO    ] [ssl_scanner] [22:38:42] [+] SSLScan report parsed successfully.
+[2026-03-17 22:38:42] [INFO    ] [ssl_scanner] [22:38:42] [+] SSL scan data processed. Generating PDF report for google.com...
+[2026-03-17 22:38:42] [INFO    ] [network_scanner] [*] Starting SSL PDF generation for target: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\ssl_scanner\ssl_google_com_20260317_223836.pdf
+[2026-03-17 22:38:42] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-03-17 22:38:42] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-03-17 22:38:43] [INFO    ] [network_scanner] [+] SSL PDF report saved successfully
+[2026-03-17 22:38:45] [INFO    ] [ssl_scanner] [22:38:45] [+] SSL_SCAN_FINALIZED_SUCCESSFULLY
+[2026-03-17 22:38:45] [INFO    ] [ssl_scanner] [22:38:45] SYSTEM_EVENT: READY_FOR_ANALYSIS:google.com
+[2026-03-17 22:38:45] [INFO    ] [run] [>] GET /ssl_scanner/report from 127.0.0.1
+[2026-03-17 22:38:45] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-03-17 22:38:52] [INFO    ] [run] [>] POST /ssl_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-03-17 22:38:52] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-17 22:39:04] [INFO    ] [run] [>] GET /ssl_scanner/report_files from 127.0.0.1
+[2026-03-17 22:39:05] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-03-17 22:39:05] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-17 22:39:05] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:39:05] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:39:12] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 22:39:12] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 22:39:13] [INFO    ] [run] [>] GET /killchain/ from 127.0.0.1
+[2026-03-17 22:39:13] [INFO    ] [killchain_bp] [*] Accessing Kill Chain Audit Page (User: DivyaViradiya)
+[2026-03-17 22:39:14] [INFO    ] [run] [>] GET /killchain/check_active_scan from 127.0.0.1
+[2026-03-17 22:39:14] [INFO    ] [run] [>] GET /killchain/report_history from 127.0.0.1
+[2026-03-17 22:39:14] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-17 22:39:19] [INFO    ] [run] [>] POST /killchain/dispatch from 127.0.0.1
+[2026-03-17 22:39:19] [INFO    ] [killchain_bp] [35m[*] Kill Chain Audit requested for example.com by DivyaViradiya[0m
+[2026-03-17 22:39:19] [INFO    ] [run] [>] GET /killchain/log_stream from 127.0.0.1
+[2026-03-17 22:39:21] [INFO    ] [killchain_service] [START] [START] Kill Chain Audit: example.com (Profile: Full Scan, Aggression: Normal)
+[2026-03-17 22:39:21] [INFO    ] [killchain_service] [INFO] [+] Resolved example.com to IP: 104.18.27.120
+[2026-03-17 22:39:21] [INFO    ] [killchain_service] [INFO] [SETUP] Starting background traffic capture...
+[2026-03-17 22:39:23] [INFO    ] [traffic_analyzer]    [*] TShark: Flight Recorder started on 104.18.27.120 (iface: 1)...
+[2026-03-17 22:39:23] [INFO    ] [killchain_service] [PHASE] [PHASE] RECONNAISSANCE - Surface Area Discovery
+[2026-03-17 22:39:23] [INFO    ] [killchain_service] [STAGE] [STAGE] Scanning for subdomains and active hosts...
+[2026-03-17 22:39:23] [INFO    ] [recon] [*] Searching for subdomains for: example.com...
+[2026-03-17 22:39:23] [INFO    ] [recon]    [>] Querying crt.sh...
+[2026-03-17 22:39:36] [INFO    ] [recon]    [+] crt.sh found 10 potential subdomains.
+[2026-03-17 22:39:36] [INFO    ] [recon]    [>] Querying Wayback Machine (Archive.org)...
+[2026-03-17 22:39:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:39:40.972219 (Window: 2026-03-17 22:39:40.972219 to 2026-03-17 23:10:40.972219)
+[2026-03-17 22:39:53] [INFO    ] [recon]    [+] Wayback Machine added 2 historical subdomains.
+[2026-03-17 22:39:53] [INFO    ] [killchain_service] [INFO] [+] Found 12 potential subdomains.
+[2026-03-17 22:39:53] [INFO    ] [killchain_service] [STAGE] [STAGE] Resolving subdomain IPs...
+[2026-03-17 22:39:53] [INFO    ] [recon]    [>] Attempting DNS Zone Transfer (AXFR) on as207960 test intermediate - example.com...
+[2026-03-17 22:39:53] [INFO    ] [recon] [*] Resolving IPs for 12 subdomains...
+[2026-03-17 22:39:54] [INFO    ] [killchain_service] [INFO] [+] Resolved 12 host IPs.
+[2026-03-17 22:39:54] [INFO    ] [killchain_service] [STAGE] [STAGE] Detecting target technology stack...
+[2026-03-17 22:39:54] [INFO    ] [tech_detector] [*] Fingerprinting Technology for example.com...
+[2026-03-17 22:39:54] [INFO    ] [killchain_service] [INFO] [+] Detected technologies: Server
+[2026-03-17 22:39:54] [INFO    ] [killchain_service] [PHASE] [PHASE] NETWORK AUDIT - Infrastructure Assessment
+[2026-03-17 22:39:54] [INFO    ] [killchain_service] [INFO] [+] Resolved example.com to IP: 104.18.27.120
+[2026-03-17 22:39:54] [INFO    ] [killchain_service] [STAGE] [STAGE] Running Nmap standard scan on 104.18.27.120...
+[2026-03-17 22:39:54] [INFO    ] [scanner] [*] Starting Nmap standard scan on 104.18.27.120...
+[2026-03-17 22:40:11] [INFO    ] [scanner]    [+] Performing Instant Banner Grab on open TCP ports...
+[2026-03-17 22:40:11] [INFO    ] [killchain_service] [INFO] [+] Nmap scan completed. Found 4 open ports.
+[2026-03-17 22:40:11] [INFO    ] [killchain_service] [STAGE] [STAGE] Attempting brute-force on open services (Level: normal)...
+[2026-03-17 22:40:11] [INFO    ] [network_exploiter] [*] Starting Brute Force Engine on 104.18.27.120...
+[2026-03-17 22:40:13] [INFO    ] [killchain_service] [INFO] [+] No exploitable services found or brute-force failed.
+[2026-03-17 22:40:13] [INFO    ] [killchain_service] [PHASE] [PHASE] WAF DETECTION
+[2026-03-17 22:40:13] [INFO    ] [killchain_service] [STAGE] [STAGE] Checking for Web Application Firewall (WAF)...
+[2026-03-17 22:40:13] [INFO    ] [waf_detector] [*] Checking for WAF/CDN on example.com...
+[2026-03-17 22:40:13] [ERROR   ] [waf_detector]    [!] Detected WAF/CDN (Passive): Cloudflare
+[2026-03-17 22:40:13] [INFO    ] [waf_detector]    [>] Testing for Rate Limiting (10 requests)...
+[2026-03-17 22:40:13] [WARNING ] [killchain_service] [WARNING] [!] WAF Detected: Cloudflare. Scanning will be adjusted.
+[2026-03-17 22:40:13] [INFO    ] [killchain_service] [PHASE] [PHASE] WEB AUDIT - Application Assessment
+[2026-03-17 22:40:13] [INFO    ] [killchain_service] [STAGE] [STAGE] Crawling web application (Max Pages: 200)...
+[2026-03-17 22:40:13] [INFO    ] [crawler] [*] Starting Multi-Threaded Crawler on: example.com
+[2026-03-17 22:40:13] [INFO    ] [crawler]  [>] Pages Processed: 1 | Active Threads: 0
+[2026-03-17 22:40:13] [INFO    ] [crawler] 
+ [+] Crawl Complete.
+[2026-03-17 22:40:13] [INFO    ] [crawler]      - Pages: 1
+[2026-03-17 22:40:13] [INFO    ] [crawler]      - Params Found: 0
+[2026-03-17 22:40:13] [INFO    ] [crawler]      - Hidden APIs: 0
+[2026-03-17 22:40:13] [INFO    ] [crawler]      - Forms: 0
+[2026-03-17 22:40:13] [INFO    ] [killchain_service] [INFO] [+] Crawler found 0 URLs, 0 forms, and 0 API endpoints.
+[2026-03-17 22:40:13] [INFO    ] [killchain_service] [STAGE] [STAGE] Performing directory fuzzing (Max Depth: 2)...
+[2026-03-17 22:40:13] [INFO    ] [dir_fuzzer] [*] Starting Smart Fuzzing on example.com (Depth: 2)...
+[2026-03-17 22:40:13] [INFO    ] [dir_fuzzer]    [>] Generated 90 paths based on tech detected.
+[2026-03-17 22:40:14] [INFO    ] [killchain_service] [INFO] [+] Directory fuzzer found 0 potential paths.
+[2026-03-17 22:40:14] [INFO    ] [killchain_service] [STAGE] [STAGE] Running advanced web vulnerability checks...
+[2026-03-17 22:40:14] [INFO    ] [vuln_scanner] [*] Starting Advanced Vuln Scan on example.com...
+[2026-03-17 22:40:14] [INFO    ] [vuln_scanner] [*] Calibrating Soft 404 detection for http://example.com...
+[2026-03-17 22:40:14] [INFO    ] [killchain_service] [INFO] [+] Web vulnerability scanner found 2 findings.
+[2026-03-17 22:40:14] [INFO    ] [killchain_service] [STAGE] [STAGE] Running custom parameter injection scanner...
+[2026-03-17 22:40:14] [INFO    ] [custom_scanner] [*] Starting Deep Scan on example.com...
+[2026-03-17 22:40:14] [INFO    ] [killchain_service] [INFO] [+] Custom scanner found 0 findings.
+[2026-03-17 22:40:14] [INFO    ] [killchain_service] [STAGE] [STAGE] Running logic-based vulnerability checks...
+[2026-03-17 22:40:14] [INFO    ] [logic_scanner] [*] Starting Logic Scan on example.com...
+[2026-03-17 22:40:14] [INFO    ] [killchain_service] [INFO] [+] Logic scanner found 0 findings.
+[2026-03-17 22:40:14] [INFO    ] [killchain_service] [INFO] [SETUP] Stopping background traffic capture for analysis...
+[2026-03-17 22:40:14] [INFO    ] [traffic_analyzer]    [*] TShark: Stopping capture...
+[2026-03-17 22:40:17] [INFO    ] [killchain_service] [PHASE] [PHASE] TRAFFIC ANALYSIS - Post-Scan Forensics
+[2026-03-17 22:40:18] [INFO    ] [killchain_service] [STAGE] [STAGE] Analyzing captured network traffic...
+[2026-03-17 22:40:18] [WARNING ] [traffic_analyzer]    [!] No PCAP data captured — traffic analysis skipped.
+[2026-03-17 22:40:18] [INFO    ] [killchain_service] [INFO] [+] Traffic analysis completed.
+[2026-03-17 22:40:18] [INFO    ] [killchain_service] [PHASE] [PHASE] REPORT GENERATION - Finalizing Audit
+[2026-03-17 22:40:18] [INFO    ] [killchain_service] [STAGE] [STAGE] Applying ML Threat Re-ranking (TCTR)...
+[2026-03-17 22:40:18] [INFO    ] [killchain_service] [INFO] Generating Comprehensive Reports for example.com...
+[2026-03-17 22:40:18] [INFO    ] [network_scanner] [*] Starting Master Kill Chain PDF generation: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\killchain\reports\killchain_example_com_20260317_223921.pdf
+[2026-03-17 22:40:19] [INFO    ] [network_scanner] [+] Master Kill Chain Report successfully generated
+[2026-03-17 22:40:21] [INFO    ] [killchain_service] [SUCCESS] AUDIT COMPLETED.
+[2026-03-17 22:40:21] [INFO    ] [run] [>] GET /killchain/report_files from 127.0.0.1
+[2026-03-17 22:40:21] [INFO    ] [run] [>] GET /killchain/get_json_report from 127.0.0.1
+[2026-03-17 22:40:22] [INFO    ] [killchain_service] [INFO] Scan context cleaned up.
+[2026-03-17 22:40:30] [INFO    ] [run] [>] POST /killchain/trigger_ai_analysis from 127.0.0.1
+[2026-03-17 22:40:30] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-17 22:40:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:40:40.974283 (Window: 2026-03-17 22:40:40.974283 to 2026-03-17 23:11:40.974283)
+[2026-03-17 22:40:46] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-03-17 22:40:46] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-17 22:40:46] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:40:46] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:40:57] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 22:40:57] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 22:40:59] [INFO    ] [run] [>] GET /packet_sniffer/ from 127.0.0.1
+[2026-03-17 22:41:00] [INFO    ] [run] [>] GET /packet_sniffer/get_interfaces from 127.0.0.1
+[2026-03-17 22:41:00] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-17 22:41:00] [INFO    ] [run] [>] GET /packet_sniffer/report_files from 127.0.0.1
+[2026-03-17 22:41:00] [INFO    ] [run] [>] GET /packet_sniffer/log_stream from 127.0.0.1
+[2026-03-17 22:41:02] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 22:41:02] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 22:41:03] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-17 22:41:03] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-17 22:41:03] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:41:03] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:41:04] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-17 22:41:04] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-17 22:41:04] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-17 22:41:05] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 22:41:05] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 22:41:07] [INFO    ] [run] [>] GET /zap_scanner/ from 127.0.0.1
+[2026-03-17 22:41:07] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-03-17 22:41:07] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-17 22:41:07] [INFO    ] [run] [>] GET /zap_scanner/status from 127.0.0.1
+[2026-03-17 22:41:07] [INFO    ] [run] [>] GET /zap_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:41:07] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-17 22:41:12] [INFO    ] [run] [>] POST /zap_scanner/scan from 127.0.0.1
+[2026-03-17 22:41:12] [INFO    ] [zap_scanner] [*] Starting ZAP Quick Scan for http://example.com (User: DivyaViradiya_2)...
+[2026-03-17 22:41:12] [INFO    ] [zap_scanner] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-17 22:41:12] [INFO    ] [zap_scanner] Instance Config -> Port: 45992 | Dir: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_DivyaViradiya_2_45992
+[2026-03-17 22:41:12] [INFO    ] [zap_scanner] Target: http://example.com
+[2026-03-17 22:41:12] [INFO    ] [zap_scanner] Report will be saved to: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260317_224112.xml
+[2026-03-17 22:41:12] [INFO    ] [zap_scanner] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 45992 -dir C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_DivyaViradiya_2_45992 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260317_224112.xml -quickprogress
+[2026-03-17 22:41:40] [INFO    ] [zap_scanner] Scan completed successfully!
+[2026-03-17 22:41:40] [INFO    ] [zap_scanner] [+] JSON report saved.
+[2026-03-17 22:41:40] [INFO    ] [zap_scanner] [*] Generating PDF report...
+[2026-03-17 22:41:40] [INFO    ] [network_scanner] [*] Starting WeasyPrint PDF generation for ZAP: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260317_224112.pdf
+[2026-03-17 22:41:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:41:40.972198 (Window: 2026-03-17 22:41:40.972198 to 2026-03-17 23:12:40.972198)
+[2026-03-17 22:41:42] [INFO    ] [network_scanner] [+] ZAP PDF report saved successfully
+[2026-03-17 22:41:44] [INFO    ] [zap_scanner] [+] PDF generated successfully.
+[2026-03-17 22:41:44] [INFO    ] [zap_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS
+[2026-03-17 22:41:44] [INFO    ] [zap_scanner] [*] Scan, analysis, and prediction complete.
+[2026-03-17 22:41:44] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-17 22:41:44] [INFO    ] [run] [>] GET /zap_scanner/scan_results from 127.0.0.1
+[2026-03-17 22:41:44] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-17 22:41:48] [INFO    ] [run] [>] POST /zap_scanner/trigger_ai_analysis from 127.0.0.1
+[2026-03-17 22:41:48] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-17 22:42:09] [INFO    ] [run] [>] GET /zap_scanner/report_files from 127.0.0.1
+[2026-03-17 22:42:10] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-03-17 22:42:10] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-17 22:42:11] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:42:11] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:42:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:42:40.970693 (Window: 2026-03-17 22:42:40.970693 to 2026-03-17 23:13:40.970693)
+[2026-03-17 22:43:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:43:40.975889 (Window: 2026-03-17 22:43:40.975889 to 2026-03-17 23:14:40.975889)
+[2026-03-17 22:44:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:44:40.971953 (Window: 2026-03-17 22:44:40.971953 to 2026-03-17 23:15:40.971953)
+[2026-03-17 22:45:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:45:40.981948 (Window: 2026-03-17 22:45:40.981948 to 2026-03-17 23:16:40.981948)
+[2026-03-17 22:46:37] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-17 22:46:37] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:46:38] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-17 22:46:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:46:40.983253 (Window: 2026-03-17 22:46:40.983253 to 2026-03-17 23:17:40.983253)
+[2026-03-17 22:47:06] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-17 22:47:06] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-17 22:47:11] [INFO    ] [run] [>] GET /sql_scanner/ from 127.0.0.1
+[2026-03-17 22:47:12] [INFO    ] [run] [>] GET /sql_scanner/report from 127.0.0.1
+[2026-03-17 22:47:12] [INFO    ] [run] [>] GET /sql_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:47:12] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-17 22:47:15] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-17 22:47:23] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-17 22:47:34] [INFO    ] [run] [>] GET /sql_scanner/log_stream from 127.0.0.1
+[2026-03-17 22:47:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:47:40.968798 (Window: 2026-03-17 22:47:40.968798 to 2026-03-17 23:18:40.968798)
+[2026-03-17 22:48:40] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-17 22:48:40.970297 (Window: 2026-03-17 22:48:40.970297 to 2026-03-17 23:19:40.970297)
+[2026-03-18 08:59:54] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-18 09:00:02] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:00:02] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:00:02] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-18 09:00:02] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-18 09:00:02] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-18 09:00:08] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:00:08] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:00:08] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:00:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:00:08] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:00:08] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:00:08.392338 (Window: 2026-03-18 09:00:08.392338 to 2026-03-18 09:31:08.392338)
+[2026-03-18 09:00:08] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:00:31] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 09:01:08] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:01:08.352719 (Window: 2026-03-18 09:01:08.352719 to 2026-03-18 09:32:08.352719)
+[2026-03-18 09:02:45] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:02:45] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:03:04] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-18 09:03:10] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:03:10] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:03:11] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-18 09:03:11] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-18 09:03:11] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-18 09:03:16] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:03:16] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:03:16] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:03:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:03:16] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:03:16] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:03:48] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 09:04:16] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:04:16.796720 (Window: 2026-03-18 09:04:16.796720 to 2026-03-18 09:35:16.796720)
+[2026-03-18 09:04:22] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-18 09:04:22] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-18 09:04:27] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-18 09:04:27] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-18 09:04:29] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-18 09:04:32] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-18 09:04:33] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: Admin
+[2026-03-18 09:04:33] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-18 09:04:33] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: Admin)
+[2026-03-18 09:04:42] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-18 09:04:42] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-18 09:04:43] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:04:43] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: Admin)
+[2026-03-18 09:04:43] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-18 09:04:43] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:04:57] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-18 09:04:57] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-18 09:05:01] [INFO    ] [run] [>] GET /register from 127.0.0.1
+[2026-03-18 09:05:01] [INFO    ] [auth_bp] [*] Accessing Registration Page
+[2026-03-18 09:05:16] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:05:16.780948 (Window: 2026-03-18 09:05:16.780948 to 2026-03-18 09:36:16.780948)
+[2026-03-18 09:05:22] [INFO    ] [run] [>] POST /register from 127.0.0.1
+[2026-03-18 09:05:22] [INFO    ] [auth_bp] [+] New User Registration Attempt: DivyaViradiya
+[2026-03-18 09:05:25] [INFO    ] [email_service] [+] [EMAIL] OTP email sent successfully. Message Id: 19cff0330ff54539
+[2026-03-18 09:05:25] [INFO    ] [auth_bp] [+] User DivyaViradiya registered. OTP sent to divya.viradiya.7@gmail.com.
+[2026-03-18 09:05:26] [INFO    ] [run] [>] GET /verify_registration from 127.0.0.1
+[2026-03-18 09:05:51] [INFO    ] [run] [>] POST /verify_registration from 127.0.0.1
+[2026-03-18 09:05:51] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-18 09:05:51] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-18 09:05:51] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-18 09:05:51] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-18 09:05:51] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-18 09:05:51] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-18 09:05:51] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-18 09:06:16] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:06:16.777756 (Window: 2026-03-18 09:06:16.777756 to 2026-03-18 09:37:16.777756)
+[2026-03-18 09:06:21] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:06:21] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:06:21] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-18 09:06:21] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:06:51] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:06:51] [INFO    ] [scheduler_bp] [+] Profile 'ZAP Test' created by DivyaViradiya
+[2026-03-18 09:06:51] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-18 09:06:51] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-18 09:06:52] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-18 09:06:52] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=once)
+[2026-03-18 09:06:52] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'ZAP Test'
+[2026-03-18 09:06:52] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:06:52] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'ZAP Test' (1 configs × 1 targets)
+[2026-03-18 09:06:52] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching zap scan on example.com (config: ZAP Config)
+[2026-03-18 09:06:52] [INFO    ] [zap_scanner] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-18 09:06:52] [INFO    ] [zap_scanner] Instance Config -> Port: 48558 | Dir: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_DivyaViradiya_2_48558
+[2026-03-18 09:06:52] [INFO    ] [zap_scanner] Target: http://example.com
+[2026-03-18 09:06:52] [INFO    ] [zap_scanner] Report will be saved to: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_090652.xml
+[2026-03-18 09:06:52] [INFO    ] [zap_scanner] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 48558 -dir C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_DivyaViradiya_2_48558 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_090652.xml -quickprogress
+[2026-03-18 09:07:16] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:07:16.800866 (Window: 2026-03-18 09:07:16.800866 to 2026-03-18 09:38:16.800866)
+[2026-03-18 09:07:49] [INFO    ] [zap_scanner] Scan completed successfully!
+[2026-03-18 09:07:52] [ERROR   ] [scheduler_service] [!] [SCHEDULER] Error dispatching zap scan on example.com: save_json_report() got an unexpected keyword argument 'timestamp'
+[2026-03-18 09:07:52] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-18 09:08:16] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:08:16.780708 (Window: 2026-03-18 09:08:16.780708 to 2026-03-18 09:39:16.780708)
+[2026-03-18 09:09:16] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:09:16.784068 (Window: 2026-03-18 09:09:16.784068 to 2026-03-18 09:40:16.784068)
+[2026-03-18 09:10:13] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:10:13] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:10:13] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:10:13] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:10:13] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:10:13] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:10:30] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:10:30] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:10:30] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:10:30] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:10:30] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:10:30] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:11:06] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:11:07] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:11:07] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:11:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:11:07] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:11:07] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:11:55] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:11:55] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:11:55] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:11:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:11:55] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:11:55] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:12:02] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/trigger from 127.0.0.1
+[2026-03-18 09:12:02] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'ZAP Test' (1 configs × 1 targets)
+[2026-03-18 09:12:02] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching zap scan on example.com (config: ZAP Config)
+[2026-03-18 09:12:02] [INFO    ] [zap_scanner] 
+--- Starting ZAP Scan (DEFAULT) (Isolated Instance) ---
+[2026-03-18 09:12:02] [INFO    ] [zap_scanner] Instance Config -> Port: 11355 | Dir: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_DivyaViradiya_2_11355
+[2026-03-18 09:12:02] [INFO    ] [zap_scanner] Target: http://example.com
+[2026-03-18 09:12:02] [INFO    ] [zap_scanner] Report will be saved to: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_091202.xml
+[2026-03-18 09:12:02] [INFO    ] [zap_scanner] Executing command: C:\Program Files\ZAP\Zed Attack Proxy\zap.bat -cmd -port 11355 -dir C:\Users\Divy\AppData\Local\Temp\NetShieldAI\zap\user_DivyaViradiya_2_11355 -quickurl http://example.com -quickout D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_091202.xml -quickprogress
+[2026-03-18 09:12:49] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 09:12:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:12:55.708582 (Window: 2026-03-18 09:12:55.708582 to 2026-03-18 09:43:55.708582)
+[2026-03-18 09:12:59] [INFO    ] [zap_scanner] Scan completed successfully!
+[2026-03-18 09:13:01] [INFO    ] [network_scanner] [*] Starting WeasyPrint PDF generation for ZAP: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_091202.pdf
+[2026-03-18 09:13:03] [INFO    ] [network_scanner] [+] ZAP PDF report saved successfully
+[2026-03-18 09:13:03] [INFO    ] [scheduler_service] [*] [SCHEDULER] Auto-generating Executive Summary for Log None (Path: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_091202.pdf)
+[2026-03-18 09:13:24] [INFO    ] [network_scanner] [*] Starting Executive Summary PDF generation: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_091202_executive.pdf
+[2026-03-18 09:13:25] [INFO    ] [network_scanner] [+] Executive Summary PDF saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_091202_executive.pdf
+[2026-03-18 09:13:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] Automated Executive Summary PDF created: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_091202_executive.pdf
+[2026-03-18 09:13:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] ZAP scan on http://example.com finished: Completed
+[2026-03-18 09:13:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-18 09:13:28] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-18 09:13:30] [INFO    ] [run] [>] GET /scheduler/api/reports/1/executive_summary from 127.0.0.1
+[2026-03-18 09:13:30] [INFO    ] [scheduler_bp] [*] Serving cached Executive Summary: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\zap_scanner\zap_example_com_20260318_091202_executive.pdf
+[2026-03-18 09:13:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:13:55.711213 (Window: 2026-03-18 09:13:55.711213 to 2026-03-18 09:44:55.711213)
+[2026-03-18 09:14:14] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-18 09:14:14] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1: 'No job by the id of scheduled_scan_1 was found'
+[2026-03-18 09:14:14] [INFO    ] [scheduler_bp] [-] Profile 'ZAP Test' deleted by DivyaViradiya
+[2026-03-18 09:14:14] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:14:52] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:14:52] [INFO    ] [scheduler_bp] [+] Profile 'PCAP TEST' created by DivyaViradiya
+[2026-03-18 09:14:52] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-18 09:14:52] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-18 09:14:52] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-18 09:14:52] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=once)
+[2026-03-18 09:14:52] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'PCAP TEST' (1 configs × 1 targets)
+[2026-03-18 09:14:52] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching sniffer scan on example.com (config: SNIFFER Config)
+[2026-03-18 09:14:52] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'PCAP TEST'
+[2026-03-18 09:14:52] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:14:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:14:55.720200 (Window: 2026-03-18 09:14:55.720200 to 2026-03-18 09:45:55.720200)
+[2026-03-18 09:14:57] [INFO    ] [packet_sniffer] [+] Starting capture for host example.com on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[2026-03-18 09:15:00] [INFO    ] [packet_sniffer] [+] Capture finished.
+[2026-03-18 09:15:00] [ERROR   ] [scheduler_service] [!] [SCHEDULER] Sniffer PDF generation failed: module 'Services.pdf_generator' has no attribute 'create_sniffer_report_pdf'
+[2026-03-18 09:15:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] Sniffer scheduled capture for example.com finished: Completed
+[2026-03-18 09:15:00] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-18 09:15:30] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-18 09:15:30] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-18 09:15:34] [INFO    ] [run] [>] GET /packet_sniffer/ from 127.0.0.1
+[2026-03-18 09:15:37] [INFO    ] [run] [>] GET /packet_sniffer/get_interfaces from 127.0.0.1
+[2026-03-18 09:15:37] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:15:37] [INFO    ] [run] [>] GET /packet_sniffer/report_files from 127.0.0.1
+[2026-03-18 09:15:37] [INFO    ] [run] [>] GET /packet_sniffer/log_stream from 127.0.0.1
+[2026-03-18 09:15:38] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:15:44] [INFO    ] [run] [>] POST /packet_sniffer/start_capture from 127.0.0.1
+[2026-03-18 09:15:44] [INFO    ] [packet_sniffer] [*] Starting capture for 192.168.29.48 (30s) User: DivyaViradiya_2...
+[2026-03-18 09:15:46] [INFO    ] [packet_sniffer] [+] Starting capture for host 192.168.29.48 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[2026-03-18 09:15:48] [INFO    ] [packet_sniffer] [+] Capture finished.
+[2026-03-18 09:15:48] [INFO    ] [packet_sniffer] [*] Capture complete. Starting JSON analysis...
+[2026-03-18 09:15:48] [INFO    ] [packet_sniffer] [!] JSON Analysis failed: Unknown error
+[2026-03-18 09:15:49] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:15:49] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:15:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:15:55.696958 (Window: 2026-03-18 09:15:55.696958 to 2026-03-18 09:46:55.696958)
+[2026-03-18 09:16:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:16:55.700233 (Window: 2026-03-18 09:16:55.700233 to 2026-03-18 09:47:55.700233)
+[2026-03-18 09:17:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:17:55.705171 (Window: 2026-03-18 09:17:55.705171 to 2026-03-18 09:48:55.705171)
+[2026-03-18 09:18:55] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:18:55.692345 (Window: 2026-03-18 09:18:55.692345 to 2026-03-18 09:49:55.692345)
+[2026-03-18 09:19:42] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:19:43] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:19:43] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:19:43] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:19:43] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:19:43] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:19:44] [INFO    ] [run] [>] GET /packet_sniffer/log_stream from 127.0.0.1
+[2026-03-18 09:19:45] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:19:45] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:20:06] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:20:06] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:20:06] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:20:06] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:20:06] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:20:06] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:20:07] [INFO    ] [run] [>] GET /packet_sniffer/log_stream from 127.0.0.1
+[2026-03-18 09:20:08] [INFO    ] [packet_sniffer] [+] Starting capture for host 127.0.0.1 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[2026-03-18 09:20:09] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:20:09] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:20:15] [INFO    ] [packet_sniffer] [+] Capture finished.
+[2026-03-18 09:20:45] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:20:46] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:20:46] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:20:46] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:20:46] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:20:46] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:20:47] [INFO    ] [run] [>] GET /packet_sniffer/log_stream from 127.0.0.1
+[2026-03-18 09:20:48] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:20:48] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:21:18] [INFO    ] [run] [>] GET /packet_sniffer/ from 127.0.0.1
+[2026-03-18 09:21:19] [INFO    ] [run] [>] GET /packet_sniffer/get_interfaces from 127.0.0.1
+[2026-03-18 09:21:19] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:21:19] [INFO    ] [run] [>] GET /packet_sniffer/report_files from 127.0.0.1
+[2026-03-18 09:21:19] [INFO    ] [run] [>] GET /packet_sniffer/log_stream from 127.0.0.1
+[2026-03-18 09:21:20] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:21:20] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:21:23] [INFO    ] [run] [>] POST /packet_sniffer/start_capture from 127.0.0.1
+[2026-03-18 09:21:23] [INFO    ] [packet_sniffer] [*] Starting capture for 192.168.29.48 (30s) User: DivyaViradiya_2...
+[2026-03-18 09:21:25] [INFO    ] [packet_sniffer] [+] Starting capture for host 192.168.29.48 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[2026-03-18 09:21:37] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 09:21:46] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:21:46.266684 (Window: 2026-03-18 09:21:46.266684 to 2026-03-18 09:52:46.266684)
+[2026-03-18 09:21:57] [INFO    ] [packet_sniffer] [+] Capture finished.
+[2026-03-18 09:21:57] [INFO    ] [packet_sniffer] [*] Capture complete. Starting JSON analysis...
+[2026-03-18 09:21:58] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:21:58] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:22:02] [INFO    ] [network_scanner] [*] Starting Condensed PDF generation for Packet Sniffer...
+[2026-03-18 09:22:07] [INFO    ] [network_scanner] [+] Condensed Sniffer Report saved
+[2026-03-18 09:22:08] [INFO    ] [packet_sniffer] [+] PDF report generated successfully
+[2026-03-18 09:22:08] [INFO    ] [packet_sniffer] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[2026-03-18 09:22:08] [INFO    ] [run] [>] GET /packet_sniffer/report_files from 127.0.0.1
+[2026-03-18 09:22:22] [INFO    ] [run] [>] GET /packet_sniffer/ from 127.0.0.1
+[2026-03-18 09:22:23] [INFO    ] [run] [>] GET /packet_sniffer/get_interfaces from 127.0.0.1
+[2026-03-18 09:22:23] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:22:23] [INFO    ] [run] [>] GET /packet_sniffer/report_files from 127.0.0.1
+[2026-03-18 09:22:23] [INFO    ] [run] [>] GET /packet_sniffer/log_stream from 127.0.0.1
+[2026-03-18 09:22:23] [INFO    ] [run] [>] GET /packet_sniffer/report_files from 127.0.0.1
+[2026-03-18 09:22:24] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:22:25] [INFO    ] [run] [>] GET /packet_sniffer/get_json_report from 127.0.0.1
+[2026-03-18 09:22:34] [INFO    ] [run] [>] POST /packet_sniffer/trigger_ai_analysis from 127.0.0.1
+[2026-03-18 09:22:34] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-18 09:22:46] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:22:46.248828 (Window: 2026-03-18 09:22:46.248828 to 2026-03-18 09:53:46.248828)
+[2026-03-18 09:23:09] [INFO    ] [run] [>] GET /packet_sniffer/report_files from 127.0.0.1
+[2026-03-18 09:23:10] [INFO    ] [run] [>] GET /chatbot from 127.0.0.1
+[2026-03-18 09:23:10] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-18 09:23:11] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-18 09:23:11] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-18 09:23:32] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-03-18 09:23:46] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:23:46.244583 (Window: 2026-03-18 09:23:46.244583 to 2026-03-18 09:54:46.244583)
+[2026-03-18 09:23:52] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-18 09:24:09] [INFO    ] [run] [>] POST /chatbot/switch_session from 127.0.0.1
+[2026-03-18 09:24:09] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/ from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/network from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/ssl from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/zap from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/sniffer from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/killchain from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/compliance from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/usage from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /sql_scanner/report_files from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/sql from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/semgrep from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/api from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-18 09:24:14] [INFO    ] [run] [>] GET /dashboard/api/stats/reports from 127.0.0.1
+[2026-03-18 09:24:15] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:24:15] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:24:15] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-18 09:24:15] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:24:17] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/trigger from 127.0.0.1
+[2026-03-18 09:24:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'PCAP TEST' (1 configs × 1 targets)
+[2026-03-18 09:24:17] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching sniffer scan on example.com (config: SNIFFER Config)
+[2026-03-18 09:24:19] [INFO    ] [packet_sniffer] [+] Starting capture for host example.com on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[2026-03-18 09:24:46] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:24:46.236473 (Window: 2026-03-18 09:24:46.236473 to 2026-03-18 09:55:46.236473)
+[2026-03-18 09:24:51] [INFO    ] [packet_sniffer] [+] Capture finished.
+[2026-03-18 09:24:53] [INFO    ] [network_scanner] [*] Starting Condensed PDF generation for Packet Sniffer...
+[2026-03-18 09:24:54] [INFO    ] [network_scanner] [+] Condensed Sniffer Report saved
+[2026-03-18 09:24:54] [INFO    ] [scheduler_service] [*] [SCHEDULER] Auto-generating Executive Summary for Log 5 (Path: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092417.pdf)
+[2026-03-18 09:25:04] [INFO    ] [network_scanner] [*] Starting Executive Summary PDF generation: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092417_executive.pdf
+[2026-03-18 09:25:04] [INFO    ] [network_scanner] [+] Executive Summary PDF saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092417_executive.pdf
+[2026-03-18 09:25:04] [INFO    ] [scheduler_service] [+] [SCHEDULER] Automated Executive Summary PDF created: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092417_executive.pdf
+[2026-03-18 09:25:04] [INFO    ] [scheduler_service] [+] [SCHEDULER] Sniffer scheduled capture for example.com finished: Completed
+[2026-03-18 09:25:04] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-18 09:25:07] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-18 09:25:10] [INFO    ] [run] [>] GET /scheduler/api/reports/5/executive_summary from 127.0.0.1
+[2026-03-18 09:25:10] [INFO    ] [scheduler_bp] [*] Serving cached Executive Summary: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092417_executive.pdf
+[2026-03-18 09:25:34] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-18 09:25:35] [INFO    ] [run] [>] GET /scheduler/api/reports/5/download from 127.0.0.1
+[2026-03-18 09:25:46] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:25:46.251090 (Window: 2026-03-18 09:25:46.251090 to 2026-03-18 09:56:46.251090)
+[2026-03-18 09:26:46] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:26:46.241353 (Window: 2026-03-18 09:26:46.241353 to 2026-03-18 09:57:46.241353)
+[2026-03-18 09:27:01] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:27:01] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:27:02] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-18 09:27:02] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:27:03] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-18 09:27:05] [INFO    ] [run] [>] GET /scheduler/api/reports/5/download from 127.0.0.1
+[2026-03-18 09:27:46] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:27:46.251610 (Window: 2026-03-18 09:27:46.251610 to 2026-03-18 09:58:46.251610)
+[2026-03-18 09:28:46] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:28:46.239617 (Window: 2026-03-18 09:28:46.239617 to 2026-03-18 09:59:46.239617)
+[2026-03-18 09:29:25] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:29:25] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:29:25] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:29:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:29:25] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:29:25] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:29:26] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-18 09:29:26] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-18 09:29:26] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1: 'No job by the id of scheduled_scan_1 was found'
+[2026-03-18 09:29:26] [INFO    ] [scheduler_bp] [-] Profile 'PCAP TEST' deleted by DivyaViradiya
+[2026-03-18 09:29:26] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:29:26] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1: 'No job by the id of scheduled_scan_1 was found'
+[2026-03-18 09:29:26] [INFO    ] [scheduler_bp] [-] Profile 'PCAP TEST' deleted by DivyaViradiya
+[2026-03-18 09:29:26] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:29:51] [INFO    ] [run] [>] POST /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:29:52] [INFO    ] [scheduler_bp] [+] Profile 'pcap test' created by DivyaViradiya
+[2026-03-18 09:29:52] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/configs from 127.0.0.1
+[2026-03-18 09:29:52] [INFO    ] [run] [>] POST /scheduler/api/profiles/1/targets from 127.0.0.1
+[2026-03-18 09:29:53] [INFO    ] [run] [>] POST /scheduler/api/jobs from 127.0.0.1
+[2026-03-18 09:29:53] [INFO    ] [scheduler_service] [+] [SCHEDULER] Registered job scheduled_scan_1 (type=once)
+[2026-03-18 09:29:53] [INFO    ] [scheduler_service] [*] [SCHEDULER] Executing job 1: Profile 'pcap test' (1 configs × 1 targets)
+[2026-03-18 09:29:53] [INFO    ] [scheduler_bp] [+] Scheduled job created: once for profile 'pcap test'
+[2026-03-18 09:29:53] [INFO    ] [scheduler_service] [*] [SCHEDULER] Dispatching sniffer scan on example.com (config: SNIFFER Config)
+[2026-03-18 09:29:53] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:29:57] [INFO    ] [packet_sniffer] [+] Starting capture for host example.com on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[2026-03-18 09:30:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:30:25.697160 (Window: 2026-03-18 09:30:25.697160 to 2026-03-18 10:01:25.697160)
+[2026-03-18 09:30:29] [INFO    ] [packet_sniffer] [+] Capture finished.
+[2026-03-18 09:30:30] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 09:30:33] [INFO    ] [network_scanner] [*] Starting Condensed PDF generation for Packet Sniffer...
+[2026-03-18 09:30:34] [INFO    ] [network_scanner] [+] Condensed Sniffer Report saved
+[2026-03-18 09:30:34] [INFO    ] [scheduler_service] [*] [SCHEDULER] Auto-generating Executive Summary for Log 6 (Path: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092953.pdf)
+[2026-03-18 09:30:44] [INFO    ] [network_scanner] [*] Starting Executive Summary PDF generation: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092953_executive.pdf
+[2026-03-18 09:30:45] [INFO    ] [network_scanner] [+] Executive Summary PDF saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092953_executive.pdf
+[2026-03-18 09:30:45] [INFO    ] [scheduler_service] [+] [SCHEDULER] Automated Executive Summary PDF created: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092953_executive.pdf
+[2026-03-18 09:30:45] [INFO    ] [scheduler_service] [+] [SCHEDULER] Sniffer scheduled capture for example.com finished: Completed
+[2026-03-18 09:30:45] [INFO    ] [scheduler_service] [+] [SCHEDULER] Job 1 execution complete.
+[2026-03-18 09:31:18] [INFO    ] [run] [>] GET /scheduler/api/jobs/1/history from 127.0.0.1
+[2026-03-18 09:31:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:31:25.678663 (Window: 2026-03-18 09:31:25.678663 to 2026-03-18 10:02:25.678663)
+[2026-03-18 09:32:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:32:25.738056 (Window: 2026-03-18 09:32:25.738056 to 2026-03-18 10:03:25.738056)
+[2026-03-18 09:33:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:33:25.677293 (Window: 2026-03-18 09:33:25.677293 to 2026-03-18 10:04:25.677293)
+[2026-03-18 09:34:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:34:25.681689 (Window: 2026-03-18 09:34:25.681689 to 2026-03-18 10:05:25.681689)
+[2026-03-18 09:35:03] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:35:03] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:35:09] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:35:09] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:35:21] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:35:21] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:35:21] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:35:21] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:35:24] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:35:24] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:35:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:35:25.672035 (Window: 2026-03-18 09:35:25.672035 to 2026-03-18 10:06:25.672035)
+[2026-03-18 09:36:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:36:25.671935 (Window: 2026-03-18 09:36:25.671935 to 2026-03-18 10:07:25.671935)
+[2026-03-18 09:36:47] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:36:47] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:36:47] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-18 09:36:47] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:36:49] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-18 09:37:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:37:25.676557 (Window: 2026-03-18 09:37:25.676557 to 2026-03-18 10:08:25.676557)
+[2026-03-18 09:37:44] [INFO    ] [run] [>] GET /scheduler/ from 127.0.0.1
+[2026-03-18 09:37:44] [INFO    ] [scheduler_bp] [*] Accessing Scheduler Page (User: DivyaViradiya)
+[2026-03-18 09:37:45] [INFO    ] [run] [>] GET /scheduler/api/modules from 127.0.0.1
+[2026-03-18 09:37:45] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:37:47] [INFO    ] [run] [>] GET /scheduler/api/reports from 127.0.0.1
+[2026-03-18 09:37:53] [INFO    ] [run] [>] GET /scheduler/api/reports/6/download from 127.0.0.1
+[2026-03-18 09:38:03] [INFO    ] [run] [>] DELETE /scheduler/api/profiles/1 from 127.0.0.1
+[2026-03-18 09:38:03] [WARNING ] [scheduler_service] [!] [SCHEDULER] Could not remove job scheduled_scan_1: 'No job by the id of scheduled_scan_1 was found'
+[2026-03-18 09:38:03] [INFO    ] [scheduler_bp] [-] Profile 'pcap test' deleted by DivyaViradiya
+[2026-03-18 09:38:03] [INFO    ] [run] [>] GET /scheduler/api/profiles from 127.0.0.1
+[2026-03-18 09:38:10] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-18 09:38:10] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-18 09:38:10] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-18 09:38:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:38:25.675914 (Window: 2026-03-18 09:38:25.675914 to 2026-03-18 10:09:25.675914)
+[2026-03-18 09:39:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:39:25.674515 (Window: 2026-03-18 09:39:25.674515 to 2026-03-18 10:10:25.674515)
+[2026-03-18 09:40:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:40:25.672581 (Window: 2026-03-18 09:40:25.672581 to 2026-03-18 10:11:25.672581)
+[2026-03-18 09:41:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:41:25.680035 (Window: 2026-03-18 09:41:25.680035 to 2026-03-18 10:12:25.680035)
+[2026-03-18 09:42:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:42:25.671181 (Window: 2026-03-18 09:42:25.671181 to 2026-03-18 10:13:25.671181)
+[2026-03-18 09:43:25] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:43:25.673234 (Window: 2026-03-18 09:43:25.673234 to 2026-03-18 10:14:25.673234)
+[2026-03-18 09:44:06] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:44:06] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:44:06] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:44:06] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:44:06] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:44:06] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:44:29] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:44:29] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:44:29] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:44:29] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:44:29] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:44:30] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:44:48] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:44:48] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:44:48] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:44:48] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:44:48] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:44:48] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:45:04] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:45:04] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:45:04] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:45:04] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:45:04] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:45:04] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:45:32] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:45:32] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:45:32] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:45:32] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:45:32] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:45:32] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:45:52] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:45:52] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:45:52] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:45:52] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:45:52] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:45:53] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:46:09] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:46:09] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:46:09] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:46:09] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:46:09] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:46:09] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:46:56] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 09:47:09] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:47:09.399605 (Window: 2026-03-18 09:47:09.399605 to 2026-03-18 10:18:09.399605)
+[2026-03-18 09:48:09] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:48:09.401351 (Window: 2026-03-18 09:48:09.401351 to 2026-03-18 10:19:09.401351)
+[2026-03-18 09:49:10] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:49:10] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:49:10] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:49:10] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:49:10] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:49:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:49:10.719432 (Window: 2026-03-18 09:49:10.719432 to 2026-03-18 10:20:10.719432)
+[2026-03-18 09:49:10] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:49:29] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-18 09:49:55] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 09:50:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:50:10.585511 (Window: 2026-03-18 09:50:10.585511 to 2026-03-18 10:21:10.585511)
+[2026-03-18 09:51:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:51:10.592230 (Window: 2026-03-18 09:51:10.592230 to 2026-03-18 10:22:10.592230)
+[2026-03-18 09:52:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:52:10.587456 (Window: 2026-03-18 09:52:10.587456 to 2026-03-18 10:23:10.587456)
+[2026-03-18 09:53:10] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:53:10.590616 (Window: 2026-03-18 09:53:10.590616 to 2026-03-18 10:24:10.590616)
+[2026-03-18 09:54:21] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:54:21] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:54:21] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:54:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:54:21] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:54:21] [ERROR   ] [scheduler_service] [!] [SCHEDULER] Watchdog error: (sqlite3.OperationalError) no such column: scheduled_scan_job.send_report_email
+[SQL: SELECT scheduled_scan_job.id AS scheduled_scan_job_id, scheduled_scan_job.profile_id AS scheduled_scan_job_profile_id, scheduled_scan_job.schedule_type AS scheduled_scan_job_schedule_type, scheduled_scan_job.cron_hour AS scheduled_scan_job_cron_hour, scheduled_scan_job.cron_minute AS scheduled_scan_job_cron_minute, scheduled_scan_job.cron_day_of_week AS scheduled_scan_job_cron_day_of_week, scheduled_scan_job.cron_day_of_month AS scheduled_scan_job_cron_day_of_month, scheduled_scan_job.interval_minutes AS scheduled_scan_job_interval_minutes, scheduled_scan_job.cron_expression AS scheduled_scan_job_cron_expression, scheduled_scan_job.one_shot_at AS scheduled_scan_job_one_shot_at, scheduled_scan_job.is_enabled AS scheduled_scan_job_is_enabled, scheduled_scan_job.send_report_email AS scheduled_scan_job_send_report_email, scheduled_scan_job.last_run_at AS scheduled_scan_job_last_run_at, scheduled_scan_job.next_run_at AS scheduled_scan_job_next_run_at, scheduled_scan_job.apscheduler_job_id AS scheduled_scan_job_apscheduler_job_id, scheduled_scan_job.created_at AS scheduled_scan_job_created_at 
+FROM scheduled_scan_job 
+WHERE scheduled_scan_job.is_enabled = 1]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2026-03-18 09:54:21] [ERROR   ] [scheduler_service] [!] [SCHEDULER] Failed to reload jobs: (sqlite3.OperationalError) no such column: scheduled_scan_job.send_report_email
+[SQL: SELECT scheduled_scan_job.id AS scheduled_scan_job_id, scheduled_scan_job.profile_id AS scheduled_scan_job_profile_id, scheduled_scan_job.schedule_type AS scheduled_scan_job_schedule_type, scheduled_scan_job.cron_hour AS scheduled_scan_job_cron_hour, scheduled_scan_job.cron_minute AS scheduled_scan_job_cron_minute, scheduled_scan_job.cron_day_of_week AS scheduled_scan_job_cron_day_of_week, scheduled_scan_job.cron_day_of_month AS scheduled_scan_job_cron_day_of_month, scheduled_scan_job.interval_minutes AS scheduled_scan_job_interval_minutes, scheduled_scan_job.cron_expression AS scheduled_scan_job_cron_expression, scheduled_scan_job.one_shot_at AS scheduled_scan_job_one_shot_at, scheduled_scan_job.is_enabled AS scheduled_scan_job_is_enabled, scheduled_scan_job.send_report_email AS scheduled_scan_job_send_report_email, scheduled_scan_job.last_run_at AS scheduled_scan_job_last_run_at, scheduled_scan_job.next_run_at AS scheduled_scan_job_next_run_at, scheduled_scan_job.apscheduler_job_id AS scheduled_scan_job_apscheduler_job_id, scheduled_scan_job.created_at AS scheduled_scan_job_created_at 
+FROM scheduled_scan_job 
+WHERE scheduled_scan_job.is_enabled = 1]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+[2026-03-18 09:55:14] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:55:14] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:55:14] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:55:14] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:55:14] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:55:14] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:55:36] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:55:36] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:55:36] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:55:36] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:55:36] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:55:36] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:56:28] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 09:56:36] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:56:36.394534 (Window: 2026-03-18 09:56:36.394534 to 2026-03-18 10:27:36.394534)
+[2026-03-18 09:57:36] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:57:36.378123 (Window: 2026-03-18 09:57:36.378123 to 2026-03-18 10:28:36.378123)
+[2026-03-18 09:58:36] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:58:36.392038 (Window: 2026-03-18 09:58:36.392038 to 2026-03-18 10:29:36.392038)
+[2026-03-18 09:58:59] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 09:58:59] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 09:58:59] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 09:58:59] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 09:58:59] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 09:59:00] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 09:59:50] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 09:59:59] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 09:59:59.873273 (Window: 2026-03-18 09:59:59.873273 to 2026-03-18 10:30:59.873273)
+[2026-03-18 10:00:59] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 10:00:59.880991 (Window: 2026-03-18 10:00:59.880991 to 2026-03-18 10:31:59.880991)
+[2026-03-18 10:01:59] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 10:01:59.869871 (Window: 2026-03-18 10:01:59.869871 to 2026-03-18 10:32:59.869871)
+[2026-03-18 10:02:59] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 10:02:59.871202 (Window: 2026-03-18 10:02:59.871202 to 2026-03-18 10:33:59.871202)
+[2026-03-18 10:37:13] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-18 10:37:18] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 10:37:18] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 10:37:18] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-18 10:37:18] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-18 10:37:18] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-18 10:37:23] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 10:37:23] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 10:37:23] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 10:37:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 10:37:23] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 10:37:23] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 10:37:23.682123 (Window: 2026-03-18 10:37:23.682123 to 2026-03-18 11:08:23.682123)
+[2026-03-18 10:37:23] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 10:37:34] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-18 10:37:34] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-18 10:37:36] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-18 10:37:36] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-18 10:37:38] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-18 10:37:48] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 10:54:50] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-18 10:55:10] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 10:55:11] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 10:55:11] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-18 10:55:11] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-18 10:55:11] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-18 10:55:17] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 10:55:18] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 10:55:18] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 10:55:18] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 10:55:18] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 10:55:18] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 10:55:18.263677 (Window: 2026-03-18 10:55:18.263677 to 2026-03-18 11:26:18.263677)
+[2026-03-18 10:55:18] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 10:55:34] [INFO    ] [run] [>] GET / from 127.0.0.1
+[2026-03-18 10:55:34] [INFO    ] [run] [*] Accessing Home Page
+[2026-03-18 10:55:37] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-18 10:55:37] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-18 10:55:38] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-18 10:55:52] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-18 10:55:54] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-18 10:56:18] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 10:56:18.130358 (Window: 2026-03-18 10:56:18.130358 to 2026-03-18 11:27:18.130358)
+[2026-03-18 10:57:07] [INFO    ] [network_scanner] Administrator privileges not found. Requesting elevation...
+[2026-03-18 10:57:11] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 10:57:11] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 10:57:12] [INFO    ] [run] [*] Initializing Secure Database...
+[2026-03-18 10:57:12] [INFO    ] [run] [+] Database schemas verified (primary + scheduler).
+[2026-03-18 10:57:12] [INFO    ] [run] [+] System checks complete. Launching interface...
+
+[2026-03-18 10:57:15] [INFO    ] [run] [*] Registering Core Modules...
+[2026-03-18 10:57:15] [INFO    ] [run] [+] 12 Modules Loaded Successfully.
+[2026-03-18 10:57:15] [INFO    ] [run] [*] [BG] Pre-loading ML models (TCTR LightGBM + SentenceTransformer)...
+[2026-03-18 10:57:15] [INFO    ] [scheduler_service] [+] [SCHEDULER] APScheduler started successfully.
+[2026-03-18 10:57:15] [INFO    ] [scheduler_service] [+] [SCHEDULER] Consent watchdog started.
+[2026-03-18 10:57:15] [INFO    ] [scheduler_service] [*] [SCHEDULER] No enabled jobs found to reload.
+[2026-03-18 10:57:20] [INFO    ] [run] [>] GET /login from 127.0.0.1
+[2026-03-18 10:57:20] [INFO    ] [auth_bp] [*] Accessing Login Page
+[2026-03-18 10:57:21] [INFO    ] [run] [>] GET /login/google from 127.0.0.1
+[2026-03-18 10:57:22] [INFO    ] [run] [>] GET /login/google/callback from 127.0.0.1
+[2026-03-18 10:57:22] [INFO    ] [auth_bp] [+] User logged in via Google OAuth: Admin
+[2026-03-18 10:57:22] [INFO    ] [run] [>] GET /admin from 127.0.0.1
+[2026-03-18 10:57:22] [INFO    ] [auth_bp] [*] Accessing Admin Control Center (User: Admin)
+[2026-03-18 10:57:24] [INFO    ] [run] [>] GET /chatbot/ from 127.0.0.1
+[2026-03-18 10:57:25] [INFO    ] [run] [>] GET /chatbot/get_history from 127.0.0.1
+[2026-03-18 10:57:41] [INFO    ] [run] [+] [BG] ML models ready — cold-start cost eliminated.
+[2026-03-18 10:58:01] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-03-18 10:58:15] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 10:58:15.670728 (Window: 2026-03-18 10:58:15.670728 to 2026-03-18 11:29:15.670728)
+[2026-03-18 10:58:38] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-18 10:58:56] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-03-18 10:59:05] [INFO    ] [run] [>] GET /chatbot/get_sessions from 127.0.0.1
+[2026-03-18 10:59:15] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 10:59:15.640981 (Window: 2026-03-18 10:59:15.640981 to 2026-03-18 11:30:15.640981)
+[2026-03-18 11:00:15] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 11:00:15.655630 (Window: 2026-03-18 11:00:15.655630 to 2026-03-18 11:31:15.655630)
+[2026-03-18 11:00:19] [INFO    ] [run] [>] POST /chatbot/chat_stream from 127.0.0.1
+[2026-03-18 11:00:25] [INFO    ] [run] [>] POST /chatbot/execute_action from 127.0.0.1
+[2026-03-18 11:00:25] [INFO    ] [run] [>] POST /network_scanner/scan from 127.0.0.1
+[2026-03-18 11:00:25] [INFO    ] [network_scanner] [*] Preparing AGGRESSIVE scan for target: 192.168.29.48 with T4...
+[2026-03-18 11:00:25] [INFO    ] [network_scanner] [+] Running AGGRESSIVE scan on 192.168.29.48 with timing -T4...
+[2026-03-18 11:00:25] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-18 11:00:25] [INFO    ] [network_scanner] [*] Executing: nmap -A -T4 -oG C:\Users\Divy\AppData\Local\Temp\NetShieldAI\nmap\scan_Admin_1_bfef4095.txt 192.168.29.48
+[2026-03-18 11:00:40] [INFO    ] [network_scanner] [+] AGGRESSIVE scan complete. Results synchronized.
+[2026-03-18 11:00:40] [INFO    ] [network_scanner] [*] Scan complete. Generating PDF report for 192.168.29.48...
+[2026-03-18 11:00:40] [INFO    ] [network_scanner] [*] Starting Detailed PDF generation for Nmap Target: D:\NetShield\NetShieldAI\results\Admin_1\network_scanner\network_192_168_29_48_20260318_110025.pdf
+[2026-03-18 11:00:41] [INFO    ] [network_scanner] [+] Nmap PDF Report generated
+[2026-03-18 11:00:43] [INFO    ] [network_scanner] [+] PDF report generated successfully
+[2026-03-18 11:00:43] [INFO    ] [network_scanner] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[2026-03-18 11:00:46] [INFO    ] [run] [>] GET /network_scanner/download_pdf from 127.0.0.1
+[2026-03-18 11:00:57] [INFO    ] [run] [>] POST /chatbot/scanner_analysis from 127.0.0.1
+[2026-03-18 11:01:15] [DEBUG   ] [scheduler_service] [*] [SCHEDULER] Watchdog run at 2026-03-18 11:01:15.647793 (Window: 2026-03-18 11:01:15.647793 to 2026-03-18 11:32:15.647793)
+[2026-03-18 11:01:15] [INFO    ] [run] [>] GET /arsenal from 127.0.0.1
+[2026-03-18 11:01:15] [INFO    ] [run] [*] Accessing Security Arsenal Hub
+[2026-03-18 11:01:18] [INFO    ] [run] [>] GET /network_scanner/ from 127.0.0.1
+[2026-03-18 11:01:18] [INFO    ] [run] [>] GET /network_scanner/init_data from 127.0.0.1
+[2026-03-18 11:01:18] [INFO    ] [run] [>] GET /network_scanner/log_stream from 127.0.0.1
+[2026-03-18 11:01:18] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1
+[2026-03-18 11:01:18] [INFO    ] [run] [>] GET /network_scanner/open_ports from 127.0.0.1
+[2026-03-18 11:01:18] [INFO    ] [run] [>] GET /network_scanner/get_scan_results from 127.0.0.1
+[2026-03-18 11:01:18] [INFO    ] [run] [>] GET /network_scanner/report_files from 127.0.0.1

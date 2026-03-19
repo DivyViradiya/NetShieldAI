@@ -1,0 +1,39 @@
+[09:14:57] [INFO] [*] Auto-detected interface: Wi-Fi
+[09:14:57] [INFO] [+] Starting capture for host example.com on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[09:15:00] [INFO] [+] Capture finished.
+[09:15:00] [INFO] EVENT: capture_complete | PAYLOAD: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\sniffer\capture_DivyaViradiya_2_81f6ae52.pcap
+[09:15:00] [INFO] [+] JSON report saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_091452.json
+[09:15:44] [INFO] [*] Starting capture for 192.168.29.48 (30s) User: DivyaViradiya_2...
+[09:15:46] [INFO] [*] Auto-detected interface: Wi-Fi
+[09:15:46] [INFO] [+] Starting capture for host 192.168.29.48 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[09:15:48] [INFO] [+] Capture finished.
+[09:15:48] [INFO] EVENT: capture_complete | PAYLOAD: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\sniffer\capture_DivyaViradiya_2_7000cf9a.pcap
+[09:15:48] [INFO] [*] Capture complete. Starting JSON analysis...
+[09:15:48] [INFO] [!] JSON Analysis failed: Unknown error
+[09:15:48] [INFO] EVENT: analysis_complete | PAYLOAD: {"target_ip": "192.168.29.48", "status": "analysis_failed"}
+[09:21:23] [INFO] [*] Starting capture for 192.168.29.48 (30s) User: DivyaViradiya_2...
+[09:21:25] [INFO] [*] Auto-detected interface: Wi-Fi
+[09:21:25] [INFO] [+] Starting capture for host 192.168.29.48 on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[09:21:57] [INFO] [+] Capture finished.
+[09:21:57] [INFO] EVENT: capture_complete | PAYLOAD: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\sniffer\capture_DivyaViradiya_2_4b44d201.pcap
+[09:21:57] [INFO] [*] Capture complete. Starting JSON analysis...
+[09:22:01] [INFO] [+] Statistics extracted. Packets: 1, Duration: 30.04s
+[09:22:02] [INFO] [*] Running Security Anomaly Detection...
+[09:22:02] [INFO] [+] JSON report saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\pcap_analysis_report_192_168_29_48_20260318_092202.json
+[09:22:08] [INFO] [+] PDF report generated successfully
+[09:22:08] [INFO] SYSTEM_EVENT: READY_FOR_ANALYSIS:192.168.29.48
+[09:22:08] [INFO] EVENT: analysis_complete | PAYLOAD: {"target_ip": "192.168.29.48", "status": "success"}
+[09:24:19] [INFO] [*] Auto-detected interface: Wi-Fi
+[09:24:19] [INFO] [+] Starting capture for host example.com on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[09:24:51] [INFO] [+] Capture finished.
+[09:24:51] [INFO] EVENT: capture_complete | PAYLOAD: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\sniffer\capture_DivyaViradiya_2_dff202a6.pcap
+[09:24:53] [INFO] [+] Statistics extracted. Packets: 0, Duration: 0s
+[09:24:53] [INFO] [*] Running Security Anomaly Detection...
+[09:24:53] [INFO] [+] JSON report saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092417.json
+[09:29:57] [INFO] [*] Auto-detected interface: Wi-Fi
+[09:29:57] [INFO] [+] Starting capture for host example.com on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[09:30:29] [INFO] [+] Capture finished.
+[09:30:29] [INFO] EVENT: capture_complete | PAYLOAD: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\sniffer\capture_DivyaViradiya_2_721c5cf6.pcap
+[09:30:32] [INFO] [+] Statistics extracted. Packets: 0, Duration: 30.21s
+[09:30:33] [INFO] [*] Running Security Anomaly Detection...
+[09:30:33] [INFO] [+] JSON report saved: D:\NetShield\NetShieldAI\results\DivyaViradiya_2\packet_sniffer\sniffer_example_com_20260318_092953.json

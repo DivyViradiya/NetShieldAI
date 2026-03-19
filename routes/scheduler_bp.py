@@ -438,7 +438,8 @@ def create_job():
         interval_minutes=interval_minutes,
         cron_expression=cron_expression,
         one_shot_at=one_shot_at,
-        is_enabled=True
+        is_enabled=True,
+        send_report_email=bool(data.get('send_report_email', True))
     )
     db.session.add(job)
     db.session.commit()  # [FIX] Commit immediately to release the SQLite write lock before calling APScheduler
@@ -550,6 +551,9 @@ def update_job(job_id):
             except (ValueError, TypeError):
                 pass
 
+    if 'send_report_email' in data:
+        job.send_report_email = bool(data['send_report_email'])
+
     db.session.commit()
 
     # Re-register with APScheduler if enabled
@@ -635,6 +639,7 @@ def job_history(job_id):
 
     logs = query.order_by(ScanLog.start_time.desc()).limit(50).all()
 
+    from models.scheduler_models import ReportDeliveryLink
     history = [{
         'id': log.id,
         'tool_name': log.tool_name,
@@ -646,6 +651,11 @@ def job_history(job_id):
         'duration': round(log.duration_seconds, 1) if log.duration_seconds else 0,
         'finding_count': log.finding_count or 0,
         'has_report': bool(log.report_path),
+        'delivery_logs': [{
+            'email': l.recipient_email,
+            'opened_at': l.opened_at.isoformat() if l.opened_at else None,
+            'ip': l.opened_from_ip
+        } for l in ReportDeliveryLink.query.filter_by(log_id=log.id).all()]
     } for log in logs]
 
     return jsonify({"status": "success", "history": history})
@@ -673,6 +683,7 @@ def list_all_reports():
 
     logs = query.order_by(ScanLog.start_time.desc()).limit(100).all()
 
+    from models.scheduler_models import ReportDeliveryLink
     history = [{
         'id': log.id,
         'tool_name': log.tool_name,
@@ -684,6 +695,11 @@ def list_all_reports():
         'duration': round(log.duration_seconds, 1) if log.duration_seconds else 0,
         'finding_count': log.finding_count or 0,
         'has_report': bool(log.report_path),
+        'delivery_logs': [{
+            'email': l.recipient_email,
+            'opened_at': l.opened_at.isoformat() if l.opened_at else None,
+            'ip': l.opened_from_ip
+        } for l in ReportDeliveryLink.query.filter_by(log_id=log.id).all()]
     } for log in logs]
 
     return jsonify({"status": "success", "history": history})
@@ -724,6 +740,48 @@ def trigger_profile_scan(profile_id):
         thread.start()
             
     return jsonify({"status": "success", "message": f"Scan triggered for profile '{profile.name}'"})
+
+
+@scheduler_bp.route('/api/deliver/<token>', methods=['GET'])
+def deliver_report(token):
+    """
+    Public, secure route to download a report.
+    Logs access for compliance (SOC-2).
+    """
+    from models.scheduler_models import ReportDeliveryLink
+    from models.models import ScanLog
+    from flask import send_file, request, jsonify
+    from datetime import datetime
+    import os
+
+    link = ReportDeliveryLink.query.filter_by(token=token).first()
+    if not link:
+        return jsonify({"status": "error", "message": "Invalid delivery link."}), 404
+
+    if link.is_expired():
+        return jsonify({"status": "error", "message": "Link has expired (48h valid)."}), 410
+
+    # Log Access (Compliance Acknowledgement)
+    if not link.opened_at:
+        # Save first open timestamp
+        link.opened_at = datetime.now()
+        link.opened_from_ip = request.remote_addr
+        db.session.commit()
+
+    # Fetch report
+    log = db.session.get(ScanLog, link.log_id)
+    if not log or not log.report_path or not os.path.exists(log.report_path):
+        return jsonify({"status": "error", "message": "Report file not found on server."}), 404
+
+    safe_tool = log.tool_name.replace(" ", "_").lower()
+    report_name = f"NetShield_{safe_tool}_report_{log.id}.pdf"
+
+    return send_file(
+        log.report_path,
+        as_attachment=True,
+        download_name=report_name,
+        mimetype='application/pdf'
+    )
 
 
 @scheduler_bp.route('/api/reports/<int:log_id>/download', methods=['GET'])

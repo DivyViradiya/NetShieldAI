@@ -395,6 +395,7 @@ def _execute_scheduled_scan(job_id, force_run=False):
     shared_timestamp = report_manager.get_timestamp()
 
     # 5. Dispatch each target × config combination
+    log_ids = []
     for target_row in targets:
         target = target_row.target_url
         
@@ -405,8 +406,6 @@ def _execute_scheduled_scan(job_id, force_run=False):
                 logger.info(f"[*] [SCHEDULER] Scan deferred for {target} — awaiting consent from {target_row.consent_email}")
                 continue
             else:
-                # IMPORTANT: Invalidate the token after it has been used once.
-                # This ensures the user is asked for consent again for the next recurring cycle.
                 from models.scheduler_models import ScanConsentToken
                 used_token = ScanConsentToken.query.filter_by(
                     job_id=job.id, 
@@ -427,7 +426,7 @@ def _execute_scheduled_scan(job_id, force_run=False):
                         f"(config: {config_row.display_label or module})")
 
             try:
-                _dispatch_module_scan(
+                log_id = _dispatch_module_scan(
                     module=module,
                     target=target,
                     config=config,
@@ -436,6 +435,8 @@ def _execute_scheduled_scan(job_id, force_run=False):
                     base_dir=base_dir,
                     timestamp=shared_timestamp
                 )
+                if log_id:
+                    log_ids.append(log_id)
             except Exception as e:
                 logger.error(f"[!] [SCHEDULER] Error dispatching {module} scan on {target}: {e}")
                 traceback.print_exc()
@@ -457,13 +458,17 @@ def _execute_scheduled_scan(job_id, force_run=False):
         job.is_enabled = False
 
     db.session.commit()
-    logger.info(f"[+] [SCHEDULER] Job {job_id} execution complete.")
+    logger.info(f"[+] [SCHEDULER] Job {job_id} execution complete. Triggering report delivery.")
+
+    # 7. Deliver Reports
+    if log_ids:
+        _deliver_reports(job, log_ids)
 
 
 def _dispatch_module_scan(module, target, config, user, user_identifier, base_dir, timestamp=None):
     """
     Dispatches a scan to the appropriate scanner module.
-    Each dispatch runs in a new thread to match the existing concurrency model.
+    Returns the log_id of the created ScanLog entry, or None.
     """
     import os
     from core.extensions import db as primary_db
@@ -472,31 +477,32 @@ def _dispatch_module_scan(module, target, config, user, user_identifier, base_di
     from models.models import User as UserModel
 
     if module == 'nmap':
-        _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        return _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'zap':
-        _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        return _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'ssl':
-        _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        return _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'sniffer':
-        _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        return _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'sql':
-        _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        return _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'semgrep':
-        _dispatch_semgrep(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        return _dispatch_semgrep(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'api':
-        _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        return _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     elif module == 'killchain':
-        _dispatch_killchain(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        return _dispatch_killchain(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
     else:
         logger.warning(f"[!] [SCHEDULER] Unknown module: {module}")
+        return None
 
 
 # ============================================================
@@ -560,6 +566,7 @@ def _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=No
             logger.error(f"[!] [SCHEDULER] Nmap PDF generation failed: {e}")
 
     logger.info(f"[+] [SCHEDULER] Nmap scan on {target} finished: {status}")
+    return log_id
 
 
 def _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=None):
@@ -619,6 +626,7 @@ def _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=Non
              logger.error(f"[!] [SCHEDULER] ZAP Executive Summary generation failed: {e}")
 
     logger.info(f"[+] [SCHEDULER] ZAP scan on {target} finished: {status}")
+    return log_id
 
 
 def _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=None):
@@ -666,6 +674,7 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=Non
             logger.error(f"[!] [SCHEDULER] SSL PDF generation failed: {e}")
 
     logger.info(f"[+] [SCHEDULER] SSL scan on {target} finished: {status}")
+    return log_id
 
 
 def _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp=None):
@@ -713,15 +722,17 @@ def _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp
              finding_count = len(summary_data.get("security_anomaly_report", {}).get("port_scans", []))
              packet_sniffer.save_json_report(summary_data, output_dir=user_dir, user_id=user_identifier, target=target, timestamp=timestamp)
              try:
-                 pdf_generator.create_sniffer_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
+                 pdf_generator.create_packet_sniffer_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
                  if config.get('executive_summary', False):
                       _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "Sniffer", target, user_identifier)
              except Exception as e:
                  logger.error(f"[!] [SCHEDULER] Sniffer PDF generation failed: {e}")
 
+
     scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if sniffer_results else None)
 
     logger.info(f"[+] [SCHEDULER] Sniffer scheduled capture for {target} finished: {status}")
+    return log_id
 
 
 def _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=None):
@@ -777,6 +788,7 @@ def _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=Non
     scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if sql_results_file else None)
 
     logger.info(f"[+] [SCHEDULER] SQL scan on {target} finished: {status}")
+    return log_id
 
 
 def _dispatch_semgrep(target, config, user, user_identifier, base_dir):
@@ -836,6 +848,7 @@ def _dispatch_semgrep(target, config, user, user_identifier, base_dir):
 
     scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if report_file else None)
     logger.info(f"[+] [SCHEDULER] Semgrep scan finished: {status}")
+    return log_id
 
 
 def _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=None):
@@ -887,6 +900,7 @@ def _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=Non
 
     scan_logger.log_scan_end(log_id, status=status, finding_count=finding_count, duration=duration, report_path=str(user_paths["pdf_report"]) if success else None)
     logger.info(f"[+] [SCHEDULER] API scan on {target} finished: {status}")
+    return log_id
 
 
 def _dispatch_killchain(target, config, user, user_identifier, base_dir, timestamp=None):
@@ -925,7 +939,6 @@ def _dispatch_killchain(target, config, user, user_identifier, base_dir, timesta
     )
 
     logger.info(f"[+] [SCHEDULER] Kill Chain audit on {target} completed.")
-
     if config.get('executive_summary', False):
          try:
              from models.models import ScanLog
@@ -937,6 +950,8 @@ def _dispatch_killchain(target, config, user, user_identifier, base_dir, timesta
                   logger.warning(f"[!] [SCHEDULER] Missing report_path for Kill Chain Log {log_id}")
          except Exception as e:
               logger.error(f"[!] [SCHEDULER] Kill Chain Executive Summary generation failed: {e}")
+
+    return log_id
 
 
 def reload_all_jobs(app):
@@ -1115,3 +1130,75 @@ def _trigger_executive_summary_generation(log_id, report_path, tool_name, target
 
     except Exception as e:
          logger.error(f"[!] [SCHEDULER] Error auto-generating executive summary for Log {log_id}: {e}", exc_info=True)
+
+
+def _deliver_reports(job, log_ids):
+    """
+    Generates secure delivery links for each recipient and sends emails.
+    """
+    from models.scheduler_models import ProfileRecipient, ReportDeliveryLink
+    from core.extensions import db
+    import secrets
+    import datetime as dt
+    from Services.email_service import send_report_link_email
+
+    if job.schedule_type == 'once':
+        logger.info(f"[*] [SCHEDULER] Skipping email delivery for One-Shot scan.")
+        return
+
+    if hasattr(job, 'send_report_email') and not job.send_report_email:
+        logger.info(f"[*] [SCHEDULER] Email delivery disabled for Job {job.id}.")
+        return
+
+    profile = job.profile
+    recipients = ProfileRecipient.query.filter_by(profile_id=profile.id).all()
+    if not recipients:
+        logger.info(f"[*] [SCHEDULER] No recipients configured for Profile '{profile.name}' — skipping delivery.")
+        return
+
+    logger.info(f"[*] [SCHEDULER] Delivering {len(log_ids)} reports to {len(recipients)} recipients.")
+
+    for recipient in recipients:
+        recipient_links = []
+        
+        for log_id in log_ids:
+            token = secrets.token_urlsafe(32)
+            # Use shared_timestamp or now() for expiry calculation
+            expires_at = datetime.now(IST).replace(tzinfo=None) + dt.timedelta(hours=48)
+            
+            link = ReportDeliveryLink(
+                log_id=log_id,
+                recipient_email=recipient.email,
+                token=token,
+                expires_at=expires_at
+            )
+            db.session.add(link)
+            recipient_links.append(link)
+        
+        db.session.commit()
+        
+        base_url = _app.config.get('BASE_URL', 'http://localhost:5100')
+        links_info = []
+        from models.models import ScanLog
+        
+        for l in recipient_links:
+             log_row = db.session.get(ScanLog, l.log_id)
+             tool_name = log_row.tool_name if log_row else "Scan Report"
+             target = log_row.target if log_row else "Asset"
+             delivery_url = f"{base_url.rstrip('/')}/api/deliver/{l.token}"
+             links_info.append({
+                 "tool": tool_name,
+                 "target": target,
+                 "url": delivery_url,
+                 "expires_at": l.expires_at.strftime('%Y-%m-%d %H:%M IST')
+             })
+
+        success = send_report_link_email(
+            recipient_email=recipient.email,
+            links_info=links_info,
+            profile_name=profile.name
+        )
+        if success:
+             logger.info(f"[+] [SCHEDULER] Delivery email sent to {recipient.email}")
+        else:
+             logger.error(f"[!] [SCHEDULER] Failed to send delivery email to {recipient.email}")

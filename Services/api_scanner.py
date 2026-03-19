@@ -368,14 +368,12 @@ def parse_xml_report(report_file, user_id=None):
     finally:
         if os.path.exists(report_file): os.remove(report_file)
 
-def save_json_report(data, output_dir, user_id=None, target=None):
+def save_json_report(data, output_dir, user_id=None, target=None, timestamp=None):
     try:
         os.makedirs(output_dir, exist_ok=True)
-        if target:
-            filename = report_manager.generate_report_filename("api_scanner", target, "json")
-            json_path = os.path.join(output_dir, filename)
-        else:
-            json_path = os.path.join(output_dir, "api_scan_report.json")
+        paths = get_output_paths(user_output_dir=output_dir, user_id=user_id, target=target, timestamp=timestamp)
+        json_path = paths["json_report"]
         with open(json_path, 'w') as f: json.dump(data, f, indent=2)
-        return json_path
+        return str(json_path)
     except: return None
+

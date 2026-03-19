@@ -102,6 +102,37 @@ def send_consent_email(recipient_email, target_url, profile_name, confirm_url, h
         logger.error(f"[!] [EMAIL] Error sending consent email: {error}")
         return False
 
+def send_report_link_email(recipient_email, links_info, profile_name, html_content=None):
+    """Sends secure scan report download links to a recipient."""
+    try:
+        service = authenticate_gmail()
+        
+        message = EmailMessage()
+        message['To'] = recipient_email
+        message['From'] = 'admin.netshieldai@gmail.com'
+        message['Subject'] = f'SECURE REPORT: {profile_name} Scan Completed'
+
+        # Build plain text content
+        body = f"Hello,\n\nThe scheduled scan for profile '{profile_name}' has completed.\n\n"
+        body += "You can access your secure reports via the links below (Valid for 48 hours):\n\n"
+        for item in links_info:
+             body += f"- {item['tool']} for {item['target']}:\n  Link: {item['url']}\n  Expires: {item['expires_at']}\n\n"
+        
+        body += "These links are secure and track access for audit compliance.\n\nBest Regards,\nNetShield Team"
+        message.set_content(body)
+
+        if html_content:
+            message.add_alternative(html_content, subtype='html')
+
+        encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
+        create_message = {'raw': encoded_message}
+        send_message = service.users().messages().send(userId="me", body=create_message).execute()
+        logger.info(f"[+] [EMAIL] Report delivery email sent to {recipient_email}. Message Id: {send_message['id']}")
+        return True
+    except Exception as error:
+        logger.error(f"[!] [EMAIL] Error sending report delivery email: {error}")
+        return False
+
 # --- Test the function ---
 if __name__ == '__main__':
     # Make sure this email is added to your 'Test Users' in the GCP Console!

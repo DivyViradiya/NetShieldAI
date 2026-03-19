@@ -273,6 +273,7 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
     cmd = [
         capture_cmd, '-i', interface_name, '-w', str(pcap_file_path),
         '-f', filter_expression,
+        '-a', f"duration:{duration_seconds}"
     ]
 
     log(f"[+] Starting capture for host {target_ip} on '{interface_name}'...", user_id, to_console=True)
@@ -289,13 +290,8 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
         with capture_lock:
             active_captures[user_id] = {"process": process, "stop_event": stop_event}
 
-        start_time = time.time()
-
         while process.poll() is None and not stop_event.is_set():
             time.sleep(1)
-            if time.time() - start_time >= duration_seconds:
-                log(f"[~] Capture time limit reached.", user_id)
-                break
 
         if process.poll() is None:
             process.terminate()
@@ -304,12 +300,22 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
             except:
                 process.kill()
 
+        return_code = process.poll()
+        if return_code is not None and return_code != 0:
+            if stop_event.is_set():
+                log(f"[*] Capture stopped by user request.", user_id, to_console=True)
+            else:
+                stderr = process.stderr.read().decode('utf-8', errors='replace')
+                log(f"[!] TShark process exited with code {return_code}. Stderr: {stderr}", user_id, to_console=True)
+                return None
+
         log(f"[+] Capture finished.", user_id, to_console=True)
         return str(pcap_file_path)
 
     except Exception as e:
         log(f"[!] Capture error: {e}", user_id)
         return None
+
     finally:
         with capture_lock:
             if user_id in active_captures:
@@ -371,7 +377,18 @@ def get_traffic_statistics(pcap_path, user_id=None):
         except:
             pass
 
+        if duration <= 0:
+            try:
+                import os
+                ctime = os.path.getctime(pcap_path)
+                mtime = os.path.getmtime(pcap_path)
+                if mtime > ctime:
+                    duration = round(mtime - ctime, 2)
+            except:
+                pass
+
         avg_rate = (total_bytes * 8) / duration if duration > 0 else 0
+
 
         stats_data['summary_io'] = {
             "total_packets": total_packets, 

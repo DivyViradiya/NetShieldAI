@@ -1,1 +1,8 @@
-[2026-03-17 22:41:00] Log stream opened.
+[2026-03-18 09:29:53] Log cleared for new packet_sniffer scan.
+[09:29:57] [*] [*] Auto-detected interface: Wi-Fi
+[09:29:57] [*] [+] Starting capture for host example.com on '\Device\NPF_{C9121D46-4BBA-423B-BFA8-324F24D436F4}'...
+[09:30:29] [*] [+] Capture finished.
+[09:30:29] [*] EVENT: capture_complete | PAYLOAD: C:\Users\Divy\AppData\Local\Temp\NetShieldAI\sniffer\capture_DivyaViradiya_2_721c5cf6.pcap
+[09:30:32] [*] [+] Statistics extracted. Packets: 0, Duration: 30.21s
+[09:30:33] [*] [*] Running Security Anomaly Detection...
+[09:30:33] [*] [+] JSON report saved: [FILE_PATH]

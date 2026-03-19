@@ -1,239 +1,236 @@
+<div align="center">
+
 # NetShieldAI 🛡️
 
-NetShieldAI is a comprehensive, AI-powered network security and vulnerability assessment platform. It provides a suite of advanced tools for network scanning, packet analysis, SSL/TLS auditing, and web application security testing, all integrated into a modern, user-friendly web interface.
+*A Comprehensive, AI-Orchestrated Cyber Posture Management & Penetration Testing Platform.*
 
-## 🚀 Key Features
+[![Python](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-Web%20Framework-black)](https://flask.palletsprojects.com/)
+[![Scikit-Learn](https://img.shields.io/badge/Machine%20Learning-TCTR%20Engine-orange)](https://scikit-learn.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-- **Network Scanner:** High-performance port scanning and service detection using Nmap. Identifies open ports, running services, and OS versions.
-- **Packet Sniffer & Analyzer:** Captures live network traffic and provides deep packet inspection (DPI) with detailed analysis of protocols, traffic patterns, and potential anomalies.
-- **SSL/TLS Auditor:** Evaluates the security configuration of SSL/TLS certificates and identifies weak ciphers, expired certificates, and misconfigurations.
-- **Web Application Scanner (ZAP):** Integrates OWASP ZAP for automated security testing of web applications, uncovering common vulnerabilities like SQL injection, XSS, and more.
-- **AI-Powered Chatbot:** A specialized security assistant capable of answering queries, interpreting scan results, and providing remediation advice.
-- **Vulnerability Ranking:** Employs Machine Learning models to analyze and rank discovered vulnerabilities based on severity and potential impact.
-- **Professional PDF Reporting:** Generates detailed, well-structured PDF reports for all security scans, suitable for compliance and technical reviews.
-- **Multi-User Dashboard:** Secure user authentication and a personalized dashboard to manage scan history and download reports.
+NetShieldAI is not just a vulnerability scanner; it is a full-fledged Security Orchestration, Automation, and Response (SOAR) platform integrated with a state-of-the-art Natural Language AI Action Model.
 
-## 🧠 AI & Machine Learning Pipeline
+</div>
 
-NetShieldAI utilizes a sophisticated Hybrid Machine Learning pipeline to assess and rank the risk of discovered vulnerabilities, moving beyond simple CVSS scores.
+---
 
-### 1. Data Processing (Phase 1)
-*   **Source:** Aggregates over 150,000 CVE records from the National Vulnerability Database (NVD).
-*   **Profiling:** Groups individual CVEs by their underlying Weakness Type (CWE) to create comprehensive "CWE Profiles."
-*   **Custom Risk Metric:** Calculates an "Actual Risk Score" that weighs the base severity against real-world exploitability factors like Attack Vector (Network vs. Physical) and Privilege Requirements.
+## 📖 Table of Contents
+1. [Core Capabilities & Architecture](#-core-capabilities--architecture)
+2. [🤖 The AI Security Orchestrator (Action Model)](#-the-ai-security-orchestrator-action-model)
+3. [⚔️ Cyber Kill Chain Automation](#️-cyber-kill-chain-automation)
+4. [🧠 TCTR Machine Learning Engine](#-tctr-machine-learning-engine)
+5. [⚖️ Compliance & Governance](#️-compliance--governance)
+6. [🔍 Detailed Scanning Modules](#-detailed-scanning-modules)
+7. [⚙️ Scheduling & Automations](#️-scheduling--automations)
+8. [📡 API Reference](#-api-reference)
+9. [🎨 Frontend UI & Reporting](#-frontend-ui--reporting)
+10. [📂 Project Structure](#-project-structure)
+11. [🔧 Installation & Deployment](#-installation--deployment)
 
-### 2. Hybrid Model Architecture (Phase 2)
-The core prediction engine is an **XGBoost Regressor** that learns from two distinct types of data:
-*   **Structured Features:** Statistical aggregates of CVSS scores (Mean, Max, Std Dev), Impact metrics (Confidentiality, Integrity, Availability), and frequency counts.
-*   **Unstructured Text (NLP):** Utilizes **Sentence Transformers (`all-MiniLM-L6-v2`)** to generate high-dimensional semantic embeddings from vulnerability descriptions.
+---
 
-### 3. Optimization & Performance
-To ensure efficiency and accuracy, the pipeline employs:
-*   **PCA (Principal Component Analysis):** Reduces noise in text embeddings.
-*   **Smart Feature Selection (`SelectKBest`):** Identifies the top 30 most predictive semantic features using Mutual Information Regression.
-*   **Result:** The "Elite" Hybrid model achieves an **R² score of ~0.76**, significantly outperforming standard structured-data models.
+## 🌟 Core Capabilities & Architecture
 
-### 📓 Notebooks
-*   `Phase_1_Data_preparation.ipynb`: Data cleaning, feature engineering, and CWE profiling.
-*   `Phase_2_Model_training.ipynb`: Baseline XGBoost model training on structured data.
-*   `Phase_2_Hybrid_Model.ipynb`: Advanced model training with NLP embeddings, PCA, and Feature Selection.
+NetShieldAI aggregates multiple industry-standard security tools (Nmap, OWASP ZAP, Wireshark/TShark, Semgrep) behind a unified Python/Flask backend and an intuitive "Neo-Futurism" UI. 
 
-## 📡 API Endpoints & Functionality
+### Key Architectural Pillars:
+*   **Asynchronous Execution Pipeline:** All scans run via background threaded workers (`ThreadPoolExecutor`) enabling non-blocking execution while streaming logs back to the browser via **Server-Sent Events (SSE)**.
+*   **Multi-tenant Isolation:** Complete data separation for concurrent users. Results, `.pcap` files, and JSON summaries are segregated in specific `results/<user_id>` directories.
+*   **Modular Blueprint Logic:** All routes (`routes/`) are separated into cleanly defined blueprints, invoking core logic housed dynamically inside `Services/`.
 
-NetShieldAI is built on a modular Flask Blueprint architecture.
+---
 
-### 🔐 Authentication (`auth_bp`)
-*   `/login`, `/register`, `/logout`: Standard user session management.
-*   `/admin`: Administrator dashboard for user management and system stats.
-*   `/account/settings`: Profile updates and password changes.
+## 🤖 The AI Security Orchestrator (Action Model)
 
-### 📊 Dashboard (`dashboard_bp`)
-*   `/dashboard`: Main user interface.
-*   `/api/stats/*`: Asynchronous endpoints fetching aggregated JSON statistics for Network, ZAP, SSL, and Sniffer modules to populate the UI.
+Unlike traditional chatbots, NetShieldAI's agent implements a **ReAct (Reasoning and Acting)** capability to act as an autonomous security analyst.
 
-### 🤖 AI Chatbot (`chatbot_bp`)
-*   `/chat`, `/chat_stream`: Real-time interaction with the security assistant (supports streaming responses).
-*   `/upload_report`: Analyzes uploaded PDF security reports using the LLM.
-*   `/scanner_analysis`: Proxies internally generated scan reports directly to the AI for analysis.
-*   **Session Management:** Supports creating, renaming, deleting, and pinning chat sessions.
+*   **Natural Language Execution:** Users can type commands like *"Run a stealth web audit on example.com and email me the report."*
+*   **Intent Recognition:** The LLM extracts the target URL, dynamically configures scanning parameters (e.g., Aggression level: Stealth, Phases: Recon, Crawler), and executes the backend Flask endpoints via internal API proxying.
+*   **Contextual Vulnerability Remediation:** When a scan finishes, the generator feeds the PDF/JSON logic directly into the AI's context window. You can immediately ask: *"How do I patch the SQL Injection found on line 14?"*
 
-### 🔍 Scanners
-All scanner modules follow a consistent pattern:
-1.  **Initiate:** `POST /scan` (threaded execution).
-2.  **Monitor:** `GET /log_stream` (Server-Sent Events for real-time logs).
-3.  **Report:** `GET /download_pdf`, `GET /get_json_report`.
-4.  **AI Integration:** `POST /trigger_ai_analysis`.
+---
 
-*   **Network Scanner (`network_scanner_bp`):** Supports 'default', 'os', 'aggressive', 'tcp_syn', and 'udp' scan types. Includes port blocking capabilities.
-*   **Packet Sniffer (`packet_sniffer_bp`):** Captures traffic on selected interfaces, generates `.pcap` files, and performs deep packet inspection.
-*   **SSL Scanner (`ssl_scanner_bp`):** Checks for weak protocols (SSLv2/3, TLS 1.0/1.1) and certificate validity.
-*   **ZAP Scanner (`zap_scanner_bp`):** Automated web vulnerability scanning with ML-based risk scoring.
+## ⚔️ Cyber Kill Chain Automation
 
-## ⚙️ Core Services & Logic
+The `killchain_service.py` engine is capable of executing sequential chained attacks mapped to the Lockheed Martin Cyber Kill Chain. It supports multiple profiles (`Recon Only`, `Network Audit`, `Web Audit`, `Full Scan`, `Reconfigure`) and aggression tunings (`Stealth`, `Normal`, `Attack`).
 
-The `Services/` directory contains the heavy-lifting logic, independent of the web framework.
+1.  **Reconnaissance Phase:** Subdomain enumeration, DNS resolving, and Technology Stack finger-printing using dynamic payload lists.
+2.  **Network Audit Phase:** Uses configured Nmap profiles (stealth vs aggressive) combined with a custom `NetworkExploiter` to attempt credential brute-forcing on exposed ports (SSH, FTP, DBs).
+3.  **WAF Detection Phase:** Probes the edge using known malicious payloads to identify Web Application Firewalls preventing false positives.
+4.  **Web Audit Phase:** Multi-threaded web crawler that extracts API endpoints and forms, coupled with recursive directory fuzzing and custom logic parameter injection.
+5.  **Traffic Analysis Phase:** Automatically launches a background `TShark` daemon to capture network telemetry during the attack, allowing post-scan deep inspection to see exactly what triggered the WAF.
 
-### 1. Network Scanner (`network_scanner.py`)
-*   **Engine:** Wraps the `nmap` CLI.
-*   **Features:**
-    *   OS Detection (`-O`), Aggressive Scan (`-A`), Fragmentation (`-f`), TCP SYN (`-sS`).
-    *   **Port Blocking:** Uses system-level commands (`netsh` on Windows, `ufw` on Linux) to block risky ports found during scans.
-    *   **Reporting:** Parses Nmap's Grepable output (`-oG`) into structured JSON for the frontend and PDF generation.
+---
 
-### 2. Packet Sniffer (`packet_sniffer.py`)
-*   **Engine:** Wraps `tshark` (Wireshark command line).
-*   **Features:**
-    *   Captures live traffic to `.pcap` files.
-    *   **Analysis:** Performs deep inspection to detect:
-        *   **ARP Spoofing:** Detects multiple MAC addresses claiming the same IP.
-        *   **DNS Tunneling:** Flags unusually long DNS queries.
-        *   **SQL Injection & Credential Leaks:** Inspects HTTP payloads for patterns.
-    *   **Statistics:** Generates protocol hierarchy and conversation stats.
+## 🧠 TCTR Machine Learning Engine
 
-### 3. SSL/TLS Scanner (`ssl_scanner.py`)
-*   **Engine:** Wraps `sslscan.exe`.
-*   **Features:**
-    *   Evaluates server SSL/TLS configuration.
-    *   **Vulnerability Checks:** Heartbleed, CRIME (TLS Compression), Insecure Renegotiation, Weak Ciphers (RC4, 3DES), and Deprecated Protocols (SSLv2/3).
-    *   **Certificate Analysis:** Checks for weak signatures (SHA1) and expiry.
+The **Threat Context & Triage Ranking (TCTR)** pipeline transcends traditional CVSS base scoring by bringing in real-world exploitability and complex semantic understanding.
 
-### 4. ZAP Web Scanner (`zap_scanner.py`)
-*   **Engine:** Wraps OWASP ZAP (Zed Attack Proxy) in headless mode.
-*   **Features:**
-    *   **ML Integration:** Maps ZAP alerts to CWE IDs and uses the trained XGBoost model to predict a refined "Risk Score" based on the vulnerability context.
-    *   **User Isolation:** Manages separate log queues for concurrent users.
+**How TCTR Works (`tctr_engine.py`):**
+1.  **Feature Extraction:** Translates vulnerabilities into 10 structured vectors including asset context, threat velocity (CVE age scaling factors), semantic centrality, and affected product ratios.
+2.  **Sentence Transformer NLP:** Unmapped vulnerabilities undergo Zero-Shot Classification. The description is encoded via `all-MiniLM-L6-v2` and mapped to known CWE patterns using pure **Cosine Similarity matrix operations**.
+3.  **XGBoost / LightGBM Ranker:** Evaluates the vectors to predict an exact "Exploitability Risk Score" resulting in a standardized Tier output:
+    *   `P0 (Critical)`: >0.85
+    *   `P1 (High)`: 0.65 - 0.84
+    *   `P2 (Medium)`: 0.35 - 0.64
+    *   `P3 (Low)`: <0.35
+4.  **Heuristic Multipliers:** Penalizes bugs found within the OWASP Top 10 or SANS Top 25 frameworks with dynamic weighting.
 
-### 5. PDF Generator (`pdf_generator.py`)
-*   **Engine:** `WeasyPrint` + `Jinja2`.
-    *   **Function:** Converts the raw JSON results from all scanners into professional, styled PDF reports. It uses HTML templates found in `Services/PDF_templates/`.
+---
 
-## 🎨 Frontend & User Interface
+## ⚖️ Compliance & Governance
 
-The user interface is built on a custom "Neo-Futurism" design system, prioritizing clarity, efficiency, and a modern aesthetic.
+The internal `compliance_engine.py` automatically maps any vulnerability across any scanner into Board-Ready compliance assessments.
 
-### Design System (`style.css` & `base.html`)
-*   **Theme:** Dark mode by default, featuring deep black backgrounds (`#050505`), subtle card surfaces (`#0f0f11`), and vibrant blue accents (`#3b82f6`).
-*   **Typography:** Uses the **Inter** font family for clean, highly readable text.
-*   **Components:**
-    *   **Navbar:** Glassmorphism effect with blur filters, sticky positioning, and a dynamic profile dropdown.
-    *   **Cards:** "Neo-Cards" with glowing corner accents and hover lift effects.
-    *   **Alerts:** Contextual flash messages (Success, Danger, Warning, Info) for user feedback.
+*   **PCI-DSS v4.0:** Verifies Strong Cryptography (TLS 1.2+), Injection Preventions (6.2.4), and Security Headers (6.3.2).
+*   **GDPR (EU):** Validates Art-32 (Encryption & Confidentiality) alerting instantly on IDORs and Cleartext transmissions.
+*   **ISO-27001 & SOC-2:** Ensures logical access boundaries, secure coding (A.8.28), and prevention of malicious software.
+*   Outputs aggregated pass/fail ratios for easy Executive summarization via the Dashboard API.
 
-### Key Pages
-*   **Home (`home.html`):** A high-impact landing page featuring a hero section, system status indicators, and quick-launch cards for all security modules.
-*   **Tools Hub:** A centralized dashboard to access Network, ZAP, SSL, and Sniffer tools.
-*   **Scanner Interfaces:** Each scanner (Network, Packet Sniffer, etc.) has a dedicated page with:
-    *   **Control Panel:** For setting target IPs/URLs and scan options.
-    *   **Live Logs:** A real-time terminal-like view streaming server logs via SSE.
-    *   **Results View:** Tabbed interfaces to switch between raw text results, visual tables, and PDF downloads.
-*   **AI Chatbot:** A chat interface featuring code syntax highlighting, typing indicators, and session management.
+---
 
-### JavaScript Interactivity (`script.js`)
-The frontend is powered by vanilla JavaScript for a lightweight footprint:
-*   **Event Listeners:** Handles button clicks, form submissions, and tab switching.
-*   **SSE (Server-Sent Events):** Listens to `/log_stream` endpoints to update the "Live Log" panels in real-time without page reloads.
-*   **Async/Await:** Uses `fetch` for non-blocking API calls to start scans and retrieve results.
-*   **Dynamic DOM Updates:** Automatically populates tables (e.g., Open Ports) and status indicators based on JSON responses.
+## 🔍 Detailed Scanning Modules
 
-## 🔄 System Workflow & Functionality
+NetShieldAI is composed of over 7 independent scanner services located in `/Services/`.
 
-This section illustrates the lifecycle of a standard user interaction with NetShieldAI.
+### 1. API Scanner (`api_scanner.py`)
+Targeted REST, OpenAPI, and GraphQL auditing. It launches a headless OWASP ZAP Daemon on a dynamic port, imports standard OpenAPI JSON configurations, injects Bearer/Token auth parameters automatically, and executes rapid active scans specifically calibrated for RESTful API structures.
 
-### 1. User Onboarding & Session
-*   **Entry:** Users register or login via the secure `auth_bp` routes.
-*   **Isolation:** Upon login, a unique composite identifier (`username_id`) is generated. This ensures that all scan results, logs, and generated PDFs are stored in a private directory (`results/<user_id>/`), preventing data leakage between users.
+### 2. Semgrep SAST (`semgrep_scanner.py`)
+Static Application Security Testing integration. You provide a repository or zip file; the webapp executes predefined lightweight rulesets to catch Hardcoded Secrets, Insecure Configurations, and broken access controls directly at the source code level before execution.
 
-### 2. The Scanning Lifecycle
-When a user initiates a scan (e.g., Nmap or ZAP) from the "Tools Hub":
-1.  **Request:** The frontend sends a `POST` request to the specific scanner's API (e.g., `/network_scanner/scan`) with the target IP/URL.
-2.  **Async Execution:** The backend spawns a background **Thread** to run the heavy CLI tool (Nmap/ZAP/TShark/SSLScan). This prevents the UI from freezing.
-3.  **Real-Time Feedback:**
-    *   The background thread writes progress updates to a user-specific log queue.
-    *   The frontend's `EventSource` connects to the `/log_stream` endpoint, receiving these updates via **Server-Sent Events (SSE)** and displaying them in the "Live Log" terminal.
-4.  **Completion & Reporting:**
-    *   Once the tool finishes, the raw output (XML/Text) is parsed into structured JSON.
-    *   A PDF report is immediately generated using `WeasyPrint`.
-    *   Key metrics (e.g., open ports count) are saved to the database to update the user's dashboard stats.
+### 3. ZAP Web Scanner (`zap_scanner.py`)
+A generalized wrapper for OWASP ZAP targeting web frontends. Maps ZAP's internal alert definitions against our TCTR ML mapping to refine alert fatigue and eliminate "Informational" bloat.
 
-### 3. AI Analysis Integration
-After a scan is complete, the user can click **"Analyze with AI"**:
-1.  **Trigger:** The scanner page calls the `/trigger_ai_analysis` endpoint.
-2.  **Proxying:** The system locates the user's specific PDF report and proxies it to the `chatbot_bp`.
-3.  **Processing:** The report content is fed into the LLM context.
-4.  **Interaction:** The user is redirected to the Chatbot interface, where the AI has already ingested the report context and is ready to answer questions like "How do I fix the high-risk vulnerability on port 80?"
+### 4. Network Scanner (`network_scanner.py`)
+Highly threaded Nmap wrapper automating Service Version Detection (`-sV`), OS Fingerprinting (`-O`), Fragmented routing (`-f`), and UDP mapping (`-sU`). Integrates automatic **Port Blocking** (`netsh/ufw`) commands as quick remediation actions.
 
-## 🛠️ Tech Stack
-- **Backend:** Python 3.13+, Flask
-- **Database:** SQLAlchemy (SQLite)
-- **Frontend:** HTML5, CSS3 (Tailwind CSS, Glassmorphism), JavaScript
-- **AI/ML:** Scikit-learn, Pandas, Joblib
-- **Security Tools:** Nmap, OWASP ZAP, TShark (Wireshark)
-- **PDF Generation:** WeasyPrint, Jinja2
-- **Authentication:** Flask-Login
+### 5. PDF & Reporting (`pdf_generator.py`)
+Takes the raw decoupled JSON trees of every scanner and renders pixel-perfect, beautifully engineered PDF architectures utilizing `WeasyPrint` and highly nested `Jinja2` templates.
 
-## 📋 Prerequisites
+### 6. Packet Sniffer / Traffic Analysis (`packet_sniffer.py`)
+Hooks into interface adapters using TShark. Executes live deep packet regex indexing to identify out-of-band data leakage, ARP Spoofing characteristics, and anomalous DNS tunneling queries.
 
-Before running NetShieldAI, ensure you have the following installed on your system:
+### 7. SQL Scanner (`sql_scanner.py` & others)
+Specific modules mapped directly to identifying SQLi structures via Time-Based Blind and Boolean testing metrics.
 
-1.  **Python 3.13+**
-2.  **Nmap:** [Download Nmap](https://nmap.org/download.html)
-3.  **Wireshark/TShark:** [Download Wireshark](https://www.wireshark.org/download.html) (Ensure TShark is in your PATH)
-4.  **OWASP ZAP:** [Download OWASP ZAP](https://www.zaproxy.org/download/)
-5.  **GTK3 (for WeasyPrint):** WeasyPrint requires the GTK+ library. Follow the [installation instructions](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation) for your OS.
-6.  **System Utilities (Linux):** `ufw`, `lsof`, `net-tools` (typically pre-installed on most distributions).
+---
 
-## 🔧 Installation
+## ⚙️ Scheduling & Automations
 
-1.  **Clone the Repository:**
+Powered by *APScheduler* within `scheduler_service.py`.
 
-    ```bash
-    git clone https://github.com/DivyViradiya07/NetShield.git
-    cd NetShieldAI
-    ```
+*   **Cron-style Granularity:** Schedule scans to run Daily, Weekly, or on explicit calendar bounds.
+*   **Automated Email Dispatching:** Built-in `email_service.py` manages SMTP dispatching. It transforms the `.pdf` reports into formatted email HTML (`Services/PDF_templates/`) combined with actionable metadata highlights. Supports bypassing email functionality per job dynamically.
+*   **Asynchronous Background Execution:** Runs completely silently in the background of identical Flask workers ensuring zero blocking on user UX.
 
-2.  **Create a Virtual Environment:**
+---
 
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
+## 📡 API Reference
 
-3.  **Install Dependencies:**
+All services operate on explicit Blueprint routing topologies.
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+| Blueprint | Endpoint Route | Methods | Description |
+| :--- | :--- | :--- | :--- |
+| **`auth_bp`** | `/login`, `/admin` | GET/POST | JWT/Session logic, user access validations, and system monitoring. |
+| **`killchain_bp`** | `/killchain/start` | POST | Triggers the multi-tool orchestrated Cyber Attack chain. |
+| **`dashboard_bp`** | `/api/stats/*` | GET (AJAX)| Realtime retrieval of compliance scores, total vulnerabilities, etc. |
+| **`scanner_bps`**| `/*/scan` | POST | Unified target injection system (applies to ZAP, SSL, SQL). |
+| **`scanner_bps`**| `/*/log_stream` | GET (SSE) | Maintains streaming text/event connection for the UI terminal. |
+| **`chatbot_bp`** | `/chat_stream` | POST | Streams token-by-token LLM conversational replies and function flags. |
 
-4.  **Initialize the Database:**
-    ```bash
-    python init_db.py
-    ```
-    _(This will create an admin user: `admin` / `admin123` and a test user: `testuser` / `user123`)_
+---
 
-## 🖥️ Usage
+## 🎨 Frontend UI & Reporting
 
-1.  **Start the Application:**
-    ```bash
-    python run.py
-    ```
-2.  **Access the Interface:**
-    Open your web browser and navigate to `http://localhost:5100`.
-3.  **Elevated Privileges:**
-    Some features (like Nmap OS detection and Packet Sniffing) require Administrative/Root privileges. The application will attempt to elevate if necessary.
+The entire UI is built on a highly custom "Neo-Futurism" aesthetic mapping.
+
+*   **Interactivity & State:** Vanilla JS with aggressive `fetch()` integrations ensures zero page reloads. DOM elements are mutated asynchronously utilizing EventListeners attached to SSE streams.
+*   **Design Language:** Uses `.css` structural mapping defining variable blocks: Night-Black backgrounds (`#050505`), glass-morphism panels, vivid blue highlights (`#3b82f6`), and drop-down responsive transitions.
+*   **Terminals:** Integrated dark-mode terminals on each scanner view provide real-time STDOUT piping, generating exact transparency to what the backend python scripts are doing.
+
+---
 
 ## 📂 Project Structure
 
 ```text
 NetShieldAI/
-├── Data/               # Datasets and processed CVE data
-├── models/             # Pre-trained ML models for vulnerability ranking
-├── notebooks/          # Data analysis and model training notebooks
-├── routes/             # Flask Blueprints for different modules
-├── results/            # User-specific scan results and PDFs
-├── Services/           # Core scanning and analysis logic
-│   └── PDF_templates/  # HTML templates for PDF reports
-├── static/             # CSS, JS, and image assets
-├── templates/          # Jinja2 HTML templates for the web UI
-├── run.py              # Application entry point
-└── models.py           # Database models
+├── Data/                       # Base dictionaries & CWE mapping config JSONs
+├── models/                     # Compiled TCTR Machine learning artifacts (.pkl)
+├── core/
+│   ├── extensions.py           # Configs for Flask SQL Alchemy etc.
+│   ├── logger_setup.py         # Advanced rotating file logger configurations
+│   ├── forms.py                # WTForms validations
+│   └── packet_invoker.py       # TShark invoker abstraction
+├── scripts/
+│   ├── init_db.py              # Bootstraps initial DB admin state
+│   ├── update_banners.py       # Fetching newest vulnerabilities dynamically
+│   └── migrate_scheduler_db.py # DB Schema mutation configurations
+├── routes/                     # Application Blueprints
+│   ├── api_scanner_bp.py       # REST API Scanning routes
+│   ├── chatbot_bp.py           # The LLM Integration and Proxy routes
+│   ├── killchain_bp.py         # Orchestration phase configurations
+│   ├── scheduler_bp.py         # Job and automation management APIs
+│   └── ... (Other Scanners)
+├── Services/                   # Business Logic & Backend Engines
+│   ├── compliance_engine.py    # Standard mappings (PCI/GDPR)
+│   ├── killchain_service.py    # Profile orchestration logic
+│   ├── pdf_generator.py        # PDF WeasyPrint integration logic
+│   ├── scheduler_service.py    # APScheduler management
+│   ├── tctr_engine.py          # Machine learning logic and SentenceTransformers
+│   ├── pentest_modules/        # Specific logic modules (Crawler, Fuzzer_
+│   └── PDF_templates/          # Jinja2 HTML views for reporting / emails
+├── static/                     # CSS architecture, Fonts, Images
+├── templates/                  # Frontend UI views
+├── .env                        # System environment bindings
+├── requirements.txt            # System python dependencies
+├── run.py                      # Main deployment server initiator
+└── run_ngrok.py                # Wrapper for publicly proxying Webhooks
 ```
+
+---
+
+## 🔧 Installation & Deployment
+
+### Prerequisites:
+1.  **Python 3.13+**
+2.  **External Binaries:** You MUST install [Nmap](https://nmap.org/download.html), [OWASP ZAP](https://www.zaproxy.org/download/), and [Wireshark/TShark](https://www.wireshark.org/download.html). Ensure they are declared in your OS `PATH`.
+3.  **GTK3 Library:** Required natively by WeasyPrint for PDF generation. See [GTK Installation Docs](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation).
+
+### 1. Repository Setup
+```bash
+git clone https://github.com/DivyViradiya07/NetShield.git
+cd NetShieldAI
+python -m venv venv
+```
+
+### 2. Enter Environment & Install
+**Windows:**
+```bash
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+**Linux / MacOS:**
+```bash
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 3. Initialize Databases
+```bash
+# This injects your Base Admin credentials
+python scripts/init_db.py
+```
+
+### 4. Running the Ecosystem
+```bash
+# Default mode
+python run.py
+
+# Public webhook / Demonstration mode
+python run_ngrok.py
+```
+> **Notice:** Scanners utilizing raw sockets (Nmap OS Fingerprinting, Packet Sniffing APIs) require running the application environment utilizing Administrator/Root privilege elevations.
+
+Access the application via your browser at **http://localhost:5100**. Login using `admin` for comprehensive control over the entire SOAR pipeline.

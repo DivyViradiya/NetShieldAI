@@ -95,3 +95,13 @@ Traceback (most recent call last):
   File "D:\chatbot-env\Lib\site-packages\requests\adapters.py", line 700, in send
     raise ConnectionError(e, request=request)
 requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=5000): Max retries exceeded with url: /upload_report?llm_mode=gemini-2.5-flash&user_id=Admin_1&file_path=D%3A%5CNetShield%5CNetShieldAI%5Cresults%5CAdmin_1%5Ckillchain%5Creports%5Ckillchain_example_com_20260317_120228.pdf&background=false (Caused by NewConnectionError("HTTPConnection(host='127.0.0.1', port=5000): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it"))
+2026-03-18 09:04:42 - INFO - New local chat session started: cddb378e-c9c3-482e-bfb0-52427beee41f
+2026-03-18 10:57:24 - INFO - New local chat session started: 1ebc2660-3575-4bc8-a3a1-2ba510d8b874
+2026-03-18 10:58:01 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session 1ebc2660-3575-4bc8-a3a1-2ba510d8b874
+2026-03-18 10:58:05 - INFO - Stream updated local session ID to: a18d1a6e-7b89-4b0f-9379-fc3974bb7494
+2026-03-18 10:58:56 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a18d1a6e-7b89-4b0f-9379-fc3974bb7494
+2026-03-18 11:00:19 - INFO - Initiating stream to http://127.0.0.1:5000/chat_stream for session a18d1a6e-7b89-4b0f-9379-fc3974bb7494
+2026-03-18 11:00:25 - INFO - AI Action Execution requested: nmap_scan with params {'timing': 4, 'target_ip': '192.168.29.48', 'scan_type': 'aggressive'}
+2026-03-18 11:00:25 - INFO - Triggering scanner: http://127.0.0.1:5100/network_scanner/scan for user Admin
+2026-03-18 11:00:57 - INFO - Sending nmap path-based analysis request to backend (Target: None)
+2026-03-18 11:01:04 - INFO - Stored session ID from server: a18d1a6e-7b89-4b0f-9379-fc3974bb7494
