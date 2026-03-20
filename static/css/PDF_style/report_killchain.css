@@ -1,0 +1,64 @@
+/* =============================================================
+   NETSHIELDAI — report_killchain.css
+   Overrides for: killchain_report_template.html
+   Requires: report_base.css
+   ============================================================= */
+
+/* Phase grid layout — 2-column */
+.phase-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.phase-card {
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    page-break-inside: avoid;
+}
+
+.phase-title {
+    font-size: 8pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--brand-primary);
+    background: var(--brand-accent-light);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.phase-title::before {
+    content: "▸";
+    color: var(--brand-accent);
+    font-size: 10pt;
+    opacity: 0.7;
+}
+
+/* Open ports tag strip inside phase card */
+.port-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+}
+
+/* Exploiter finding count banner */
+.exploiter-banner {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--risk-high-bg);
+    border-left: 3px solid var(--risk-high);
+    border-radius: var(--radius-sm);
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: var(--risk-high);
+}
+
+/* Alert icon placeholder */
+.alert-icon { font-style: normal; }

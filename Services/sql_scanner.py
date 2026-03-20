@@ -9,10 +9,13 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
-from Services import report_manager
+from Services import report_manager, scan_logger
 from .tctr_engine import tctr_engine
 from Services.anonymity.manager import AnonymityManager
 from Services.target_validator import validate_target, TargetBlockedError
+from Services.process_manager import process_manager
+from core.logger_setup import logger
+import contextlib
 
 _anon = AnonymityManager()
 
@@ -20,19 +23,19 @@ _anon = AnonymityManager()
 # BASE_DIR should be at the root of the project (one level up from Services folder)
 BASE_DIR = Path(__file__).parent.parent
 # Path to your SQLMap script
-SQLMAP_PATH = Path(r"D:\SQLmap_setup\sqlmap.py")
+SQLMAP_PATH = os.environ.get("SQLMAP_PATH", r"D:\SQLmap_setup\sqlmap.py")
 
 # Default Fallback Directory
-DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "sql_scanner"
+DEFAULT_RESULTS_DIR = BASE_DIR / ".results" / "sql_scanner"
 
 # Logs (Shared)
-LOG_FILE = BASE_DIR / "logs" / "sql_agent_log.txt"
+LOG_FILE = BASE_DIR / ".logs" / "sql_agent_log.txt"
 
 TEMP_DIR = Path(tempfile.gettempdir()) / "NetShieldAI" / "sqlmap"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- Global State for Process Management (Isolated by user_id) ---
-active_scans = {} # { "user_id": {"process": Popen, "target": str, "start_time": float} }
+active_scans = {} # { "user_id": {"target": str, "start_time": float} }
 scan_lock = threading.Lock()
 
 # --- USER ISOLATION ---
@@ -49,6 +52,13 @@ def is_scan_running(user_id):
     with scan_lock:
         return user_id in active_scans
 
+def stop_user_scan(user_id):
+    """Terminate the SQLMap process for a specific user via ProcessManager."""
+    success = process_manager.stop_user_tool(user_id, "sqlmap")
+    if success:
+        log(f"[*] SQLMap process for user {user_id} terminated.", user_id)
+    return success
+
 from Services import scan_logger
 from core.logger_setup import logger
 
@@ -58,7 +68,7 @@ def log(message, user_id=None, to_console=False, level='INFO'):
     Logs messages using the centralized scan_logger.
     Strips legacy tag prefixes for backward compatibility while refactoring.
     """
-    if message.startswith("[!]"):
+    if message.startswith("[!"):
         level = 'ERROR'
         message = message[3:].lstrip()
     elif message.startswith("[+]"):
@@ -105,12 +115,29 @@ def send_sse_event(event_name, data="", user_id=None):
     
     log(f"EVENT: {event_name} | PAYLOAD: {data_str}", user_id)
 
+def is_local_target(target):
+    """
+    Checks if a target URL/IP is local (localhost, 127.0.0.1, or private IP ranges).
+    """
+    # Extract host from URL if needed
+    host = target.replace("https://", "").replace("http://", "").split('/')[0].split(':')[0]
+    
+    if host.lower() in ["localhost", "127.0.0.1", "::1"]:
+        return True
+    
+    # Private IP Regex (10.x.x.x, 172.16-31.x.x, 192.168.x.x)
+    private_ip_regex = r"^(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3})$"
+    if re.match(private_ip_regex, host):
+        return True
+        
+    return False
+
 def get_python_executable():
     return sys.executable
 
 def clear_log_file(user_id=None):
     """Clears the log file for a specific user or the system log."""
-    log_dir = BASE_DIR / "logs"
+    log_dir = BASE_DIR / ".logs"
     if user_id:
         user_id = str(user_id)
         target_log_file = log_dir / "users" / user_id / "sql_agent_log.txt"
@@ -140,11 +167,15 @@ def get_output_paths(output_dir=None, target=None, timestamp=None):
 
     # Use the central TEMP_DIR but create a user-specific subfolder to avoid collisions
     try:
-        user_id = base.parent.name if base.parent.name != "results" else "default"
+        user_id = base.parent.name if base.parent.name != ".results" else "default"
     except Exception:
         user_id = "default"
         
-    sqlmap_temp = TEMP_DIR / user_id
+    if timestamp:
+        sqlmap_temp = TEMP_DIR / user_id / timestamp
+    else:
+        sqlmap_temp = TEMP_DIR / user_id
+    
     sqlmap_temp.mkdir(parents=True, exist_ok=True)
 
     if target:
@@ -216,7 +247,7 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
         subdirs = [x for x in base_path.iterdir() if x.is_dir()]
         if subdirs:
             # Pick the most recently modified directory
-            target_subdir = max(subdirs, key=os.path.getmtime)
+            target_subdir = max(subdirs, key=os.getmtime)
             log(f"Found SQLMap results directory: {target_subdir.name}", user_id, level='INFO')
     except Exception as e:
         log(f"Error finding SQLMap output subdirectory: {e}", user_id, level='ERROR')
@@ -341,7 +372,7 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
         return None
 
     os.makedirs(output_dir, exist_ok=True)
-    paths = get_output_paths(output_dir)
+    paths = get_output_paths(output_dir, target=target_url, timestamp=timestamp)
     sqlmap_output_dir = paths["sqlmap_base"]
     
     # Base command optimized for speed and reliability
@@ -371,6 +402,23 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
     if scan_mode == 'full':
         cmd.extend(['--dbs', '--tables', '--passwords'])
 
+    # --- Anonymity Logic ---
+    is_local = is_local_target(target_url)
+    
+    # Check if Tor is requested but target is local
+    if _anon.enabled and _anon.mode == "tor" and is_local:
+        log("[🛡️] Bypassing Tor for LOCAL target to prevent connection timeout.", user_id, level='INFO')
+        use_anonymity = False
+    else:
+        use_anonymity = _anon.enabled
+
+    # Increase timeout if Tor is active
+    if use_anonymity and getattr(_anon, 'mode', None) == "tor":
+        log("[*] Tor Active: Increasing SQLMap timeout for network latency.", user_id)
+        cmd.extend(['--timeout=60', '--retries=3'])
+    else:
+        cmd.extend(['--timeout=30'])
+
     log(f"[STAGE] Executing SQLMap ({scan_mode.upper()}) on {target_url}...", user_id, level='STAGE', to_console=True)
 
     live_metadata = {}
@@ -378,14 +426,23 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
     try:
         creation_flags = 0x08000000 if sys.platform == 'win32' else 0
         
-        cmd.extend(_anon.get_scan_flags("sqlmap"))
-        
-        if _anon.enabled:
+        if use_anonymity:
+            cmd.extend(_anon.get_scan_flags("sqlmap"))
             logger.info(f"[🛡️] Anonymity Mode ACTIVE ({_anon.mode.upper()}). Proxying SQLMap traffic.")
         else:
-            logger.info("[🛡️] Anonymity Mode OFFLINE. Executing SQLMap from direct connection.")
+            logger.info("[🛡️] Anonymity Mode OFFLINE/BYPASSED. Executing SQLMap from direct connection.")
         
-        with _anon.apply():
+        with (_anon.apply() if use_anonymity else contextlib.nullcontext()):
+            # [FIX] If using --tor, avoid passing proxy env vars to prevent "incompatible" error
+            if use_anonymity and _anon.mode == "tor":
+                log("[🛡️] Using native SQLMap Tor module. Isolated environment active.", user_id, level='INFO')
+                cmd_env = os.environ.copy()
+                # Remove common proxy vars that might be inherited
+                for var in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"]:
+                    cmd_env.pop(var, None)
+            else:
+                cmd_env = _anon.get_subprocess_env()
+
             with scan_lock:
                 process = subprocess.Popen(
                     cmd,
@@ -393,10 +450,12 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
                     stderr=subprocess.PIPE,
                     text=True,
                     creationflags=creation_flags,
-                    env=_anon.get_subprocess_env()
+                    env=cmd_env
                 )
-                # Track this user's process
-                active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
+                # Track this user's process globally
+                process_manager.register(user_id, "sqlmap", process)
+                # Track this user's process locally
+                active_scans[user_id] = {"target": target_url, "start_time": time.time()}
 
             start_time = time.time()
             
@@ -420,20 +479,28 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
                             log(line, user_id, level='STAGE')
                         elif "vulnerable" in line.lower() or "back-end DBMS" in line:
                             log(line, user_id, level='SUCCESS')
+                        elif "[CRITICAL]" in line:
+                            log(line, user_id, level='ERROR', to_console=True)
+                            live_metadata["critical_error"] = line.split("[CRITICAL]", 1)[1].strip()
                         else:
                             log(line, user_id, level='DEBUG')
                         
                         # Capture live metadata as backup
                         if "back-end DBMS:" in line:
                             live_metadata["dbms"] = line.split(":", 1)[1].strip()
-                        if "[CRITICAL]" in line:
-                            live_metadata["critical_error"] = line.split("[CRITICAL]", 1)[1].strip()
 
-            # Always attempt to parse results even if it timed out or returned error
-            log("[+] Scan finished. Processing results...", user_id, to_console=True)
-            scan_data = parse_sqlmap_output(sqlmap_output_dir, target_url_hint=target_url, captured_metadata=live_metadata, user_id=user_id)
-            
-            json_path = save_sql_json(scan_data, output_dir, user_id=user_id, target=target_url, timestamp=timestamp)
+            process.wait()
+            # Unregister
+            process_manager.unregister(user_id, "sqlmap")
+
+        log("[+] Scan finished. Processing results...", user_id, to_console=True)
+        scan_data = parse_sqlmap_output(sqlmap_output_dir, target_url_hint=target_url, captured_metadata=live_metadata, user_id=user_id)
+        
+        # If we had a critical error and no vulns found, ensure status reflects it
+        if process.returncode != 0 and not scan_data.get("vulnerabilities"):
+             scan_data["status"] = f"Failed: {live_metadata.get('critical_error', 'Internal Error')}"
+
+        json_path = save_sql_json(scan_data, output_dir, user_id=user_id, target=target_url, timestamp=timestamp)
         
         send_sse_event("scan_complete", {
             "status": "success",
@@ -447,7 +514,7 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
         log(f"[!] System Error during scan: {str(e)}", user_id, to_console=True)
         return None
     finally:
-        # Unregister process
+        # Unregister process locally
         with scan_lock:
             if user_id in active_scans:
                 del active_scans[user_id]
@@ -456,6 +523,14 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
         try:
             import shutil
             if sqlmap_output_dir.exists():
-                shutil.rmtree(sqlmap_output_dir)
+                for i in range(3): # Try up to 3 times
+                    try:
+                        shutil.rmtree(sqlmap_output_dir)
+                        break
+                    except OSError:
+                        if i < 2:
+                            time.sleep(1.0) # Wait a bit for SQLMap to fully release files
+                        else:
+                            raise
         except Exception as e:
             log(f"[!] Warning: Failed to clean up SQLMap temp artifacts: {e}", user_id)

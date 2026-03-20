@@ -6,14 +6,14 @@ from core.extensions import db
 from models.models import ScanLog, User
 from core.logger_setup import logger
 
-BASE_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+BASE_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".logs")
 USERS_LOG_DIR = os.path.join(BASE_LOG_DIR, "users")
 
-def get_active_log_file(user_id, tool_name):
+def get_active_log_file(user_result_dir, tool_name):
     """
     Returns the absolute path to the active log file for a specific tool and user.
     """
-    user_dir = os.path.join(USERS_LOG_DIR, f"{user_id}")
+    user_dir = os.path.join(USERS_LOG_DIR, str(user_result_dir))
     os.makedirs(user_dir, exist_ok=True)
     return os.path.join(user_dir, f"{tool_name}_active.log")
 
@@ -22,7 +22,7 @@ def get_active_log_file(user_id, tool_name):
 import re as _re
 _SSE_EVENT_RE = _re.compile(r'\[EVENT\]\s+EVENT:\s+(\S+)\s+\|\s+PAYLOAD:\s+(.+)')
 
-def tail_log_file(user_id, tool_name):
+def tail_log_file(user_result_dir, tool_name):
     """
     Generator that tails the active log file for a user/tool.
     Yields new lines as they are written.
@@ -30,7 +30,7 @@ def tail_log_file(user_id, tool_name):
     'event: <name>\ndata: <payload>' SSE frames so JS EventSource.addEventListener
     listeners receive them correctly.
     """
-    log_file = get_active_log_file(user_id, tool_name)
+    log_file = get_active_log_file(user_result_dir, tool_name)
     
     # Wait for file to exist (up to 10 × 0.5 s = 5 s)
     tries = 0
@@ -40,6 +40,7 @@ def tail_log_file(user_id, tool_name):
         if tries > 10:
             return  # Give up if file never appears
 
+    heartbeat_count = 0
     with open(log_file, "r", encoding="utf-8", errors="replace") as f:
         while True:
             # Handle file truncation (new scan reset)
@@ -51,6 +52,7 @@ def tail_log_file(user_id, tool_name):
 
             line = f.readline()
             if line:
+                heartbeat_count = 0
                 stripped = line.strip()
                 if not stripped:
                     time.sleep(0.1)
@@ -69,6 +71,11 @@ def tail_log_file(user_id, tool_name):
                 except (OSError, GeneratorExit):
                     return  # Client disconnected
             else:
+                # [REFINED] Heartbeat every ~4.5 seconds (15 * 0.3)
+                heartbeat_count += 1
+                if heartbeat_count >= 15:
+                    yield ": keep-alive\n\n"
+                    heartbeat_count = 0
                 time.sleep(0.3)  # Wait for new content
 
 def sanitize_filename(target):
@@ -168,12 +175,12 @@ def create_full_scan_log(user_id, tool_name, target, duration, finding_count, st
     except Exception as e:
         logger.error(f"[!] Error logging full scan: {e}")
 
-def reset_log_file(user_id, tool_name):
+def reset_log_file(user_result_dir, tool_name):
     """
     Truncates the active log file for a specific user and tool.
     This ensures that new scans start with a fresh log view.
     """
-    log_file = get_active_log_file(user_id, tool_name)
+    log_file = get_active_log_file(user_result_dir, tool_name)
     try:
         # Create directory if it doesn't exist
         os.makedirs(os.path.dirname(log_file), exist_ok=True)
@@ -219,11 +226,11 @@ def mark_scan_failed(log_id, error_message="Scan interrupted or server restarted
         logger.error(f"[!] Error marking scan {log_id} as failed: {e}")
     return False
 
-def get_debug_log_file(user_id, tool_name):
+def get_debug_log_file(user_result_dir, tool_name):
     """
     Returns the absolute path to the debug log file for a specific tool and user.
     """
-    user_dir = os.path.join(USERS_LOG_DIR, f"{user_id}")
+    user_dir = os.path.join(USERS_LOG_DIR, str(user_result_dir))
     os.makedirs(user_dir, exist_ok=True)
     return os.path.join(user_dir, f"{tool_name}_debug.log")
 
@@ -262,7 +269,7 @@ MSG_TAGS = {
     'ERROR': '[!]'
 }
 
-def write_log(user_id, tool_name, message, level='INFO'):
+def write_log(user_result_dir, tool_name, message, level='INFO'):
     """
     Centralized logging function.
     - Writes EVERYTHING to {tool_name}_debug.log
@@ -272,7 +279,7 @@ def write_log(user_id, tool_name, message, level='INFO'):
     full_line = f"[{timestamp}] [{level}] {message}"
     
     # 1. Write to Debug Log (All levels)
-    debug_file = get_debug_log_file(user_id, tool_name)
+    debug_file = get_debug_log_file(user_result_dir, tool_name)
     try:
         with open(debug_file, 'a', encoding='utf-8') as f:
             f.write(full_line + "\n")
@@ -286,7 +293,7 @@ def write_log(user_id, tool_name, message, level='INFO'):
         
         # Verify message isn't empty or just a placeholder after cleaning
         if clean_message and clean_message.strip():
-             user_file = get_active_log_file(user_id, tool_name)
+             user_file = get_active_log_file(user_result_dir, tool_name)
              # Use the tag (e.g., [*], [~], [+], [!])
              user_line = f"[{timestamp}] {tag} {clean_message}"
              
@@ -301,31 +308,31 @@ class ScannerLogger:
     Helper class for scanners to log structured messsages with correct methods
     instead of relying on manual string pre-pending on client-side.
     """
-    def __init__(self, user_id, tool_name):
-        self.user_id = user_id
+    def __init__(self, user_result_dir, tool_name):
+        self.user_result_dir = user_result_dir
         self.tool_name = tool_name
 
     def info(self, msg):
-        write_log(self.user_id, self.tool_name, msg, level='INFO')
+        write_log(self.user_result_dir, self.tool_name, msg, level='INFO')
 
     def stage(self, msg):
-        write_log(self.user_id, self.tool_name, msg, level='STAGE')
+        write_log(self.user_result_dir, self.tool_name, msg, level='STAGE')
 
     def data(self, msg):
-        write_log(self.user_id, self.tool_name, msg, level='DATA')
+        write_log(self.user_result_dir, self.tool_name, msg, level='DATA')
 
     def success(self, msg):
-        write_log(self.user_id, self.tool_name, msg, level='SUCCESS')
+        write_log(self.user_result_dir, self.tool_name, msg, level='SUCCESS')
 
     def warning(self, msg):
-        write_log(self.user_id, self.tool_name, msg, level='WARNING')
+        write_log(self.user_result_dir, self.tool_name, msg, level='WARNING')
 
     def error(self, msg):
-        write_log(self.user_id, self.tool_name, msg, level='ERROR')
+        write_log(self.user_result_dir, self.tool_name, msg, level='ERROR')
 
-def get_scanner_logger(user_id, tool_name):
+def get_scanner_logger(user_result_dir, tool_name):
     """Factory function to provide ScannerLogger instance."""
-    return ScannerLogger(user_id, tool_name)
+    return ScannerLogger(user_result_dir, tool_name)
 
 def cleanup_old_logs(days=7):
     """

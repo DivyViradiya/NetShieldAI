@@ -22,11 +22,11 @@ from .tctr_engine import tctr_engine
 BASE_DIR = Path(__file__).parent.parent
 
 # Default global path (fallback)
-DEFAULT_RESULTS_DIR = BASE_DIR / "Services" / "results" / "packet_sniffer"
+DEFAULT_RESULTS_DIR = BASE_DIR / ".results" / "packet_sniffer"
 DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Logs (Shared)
-LOG_DIR = BASE_DIR / "logs"
+LOG_DIR = BASE_DIR / ".logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # Centralized Temp
@@ -187,7 +187,8 @@ def list_available_interfaces(user_id=None):
                     "description": description
                 }
         return interface_list
-    except:
+    except Exception as e:
+        log(f"[DEBUG] Error listing interfaces: {str(e)}", user_id)
         return {}
 
 def get_selected_interface(interface_id=None, user_id=None):
@@ -201,14 +202,31 @@ def get_selected_interface(interface_id=None, user_id=None):
         return selected_if['name']
 
     local_ip = get_local_ip()
+    log(f"[DEBUG] Auto-detecting interface for IP: {local_ip}", user_id)
     interfaces_by_ip = psutil.net_if_addrs()
+    
+    psutil_found_names = []
     for name, addrs in interfaces_by_ip.items():
         for addr in addrs:
-            if getattr(socket, 'AF_INET', None) and addr.family == socket.AF_INET and addr.address == local_ip:
-                for if_data in interface_list.values():
-                    if name in if_data['name'] or name in if_data['description']:
-                        log(f"[*] Auto-detected interface: {if_data['description']}", user_id)
-                        return if_data['name']
+            if getattr(socket, 'AF_INET', None) and addr.family == socket.AF_INET:
+                psutil_found_names.append(f"{name} ({addr.address})")
+                if addr.address == local_ip:
+                    log(f"[DEBUG] Found psutil interface '{name}' matching local IP {local_ip}", user_id)
+                    for if_data in interface_list.values():
+                        if name in if_data['name'] or name in if_data['description']:
+                            log(f"[*] Auto-detected interface: {if_data['description']}", user_id)
+                            return if_data['name']
+    
+    log(f"[DEBUG] Auto-detection failed. Psutil saw: {', '.join(psutil_found_names)}", user_id)
+    log(f"[DEBUG] TShark saw: {', '.join([f['description'] for f in interface_list.values()])}", user_id)
+    
+    # Final Fallback: First non-loopback interface
+    for if_id, if_data in interface_list.items():
+        if "loopback" not in if_data['name'].lower() and "loopback" not in if_data['description'].lower() and "etw" not in if_data['name'].lower():
+             log(f"[*] Final fallback to first available interface: {if_data['description']}", user_id)
+             return if_data['name']
+             
+    log("[!] No suitable network interface found for capture.", user_id)
     return None
 
 # --- PHASE 2: Dynamic Path Helper ---

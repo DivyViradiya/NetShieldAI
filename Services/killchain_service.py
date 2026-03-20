@@ -630,7 +630,8 @@ class KillChainService:
                 json.dump(results, f, indent=4)
 
             # Ensure PDF generation can handle the new results structure
-            pdf_generator.create_killchain_report_pdf(results, str(paths["pdf_report"]))
+            user_id_only = queue_id.split('::')[0] if '::' in queue_id else queue_id
+            pdf_generator.create_killchain_report_pdf(results, str(paths["pdf_report"]), user_id=user_id_only)
             
             if paths["pdf_report"].exists():
                 time.sleep(1.5) # Give file system a moment

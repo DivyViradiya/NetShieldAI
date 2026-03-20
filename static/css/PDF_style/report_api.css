@@ -1,0 +1,32 @@
+/* =============================================================
+   NETSHIELDAI — report_api.css
+   Overrides for: api_report_template.html
+   Requires: report_base.css
+   ============================================================= */
+
+/* API endpoint URL display */
+.endpoint-url {
+    display: block;
+    background: var(--bg-section);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    padding: 5px 10px;
+    font-family: 'Consolas','Courier New',monospace;
+    font-size: 7.5pt;
+    color: var(--brand-accent);
+    word-break: break-all;
+    margin: 4px 0 10px 0;
+}
+
+/* HTTP method badge */
+.method-get    { background: var(--risk-low-bg);    color: var(--risk-low);    border: 1px solid var(--risk-low-bd);    }
+.method-post   { background: var(--brand-accent-light); color: var(--brand-accent); border: 1px solid #93c5fd; }
+.method-put    { background: var(--risk-medium-bg); color: var(--risk-medium); border: 1px solid var(--risk-medium-bd); }
+.method-delete { background: var(--risk-high-bg);   color: var(--risk-high);   border: 1px solid var(--risk-high-bd);   }
+.method-patch  { background: var(--risk-info-bg);   color: var(--risk-info);   border: 1px solid var(--risk-info-bd);   }
+
+/* These classes share badge base styles */
+.method-get, .method-post, .method-put, .method-delete, .method-patch {
+    display: inline-block; padding: 3px 10px; font-size: 6.5pt;
+    font-weight: 800; border-radius: var(--radius-sm); text-transform: uppercase;
+}

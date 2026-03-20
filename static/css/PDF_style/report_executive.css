@@ -1,0 +1,74 @@
+/* =============================================================
+   NETSHIELDAI — report_executive.css
+   Overrides for: executive_summary_template.html
+   Requires: report_base.css
+   ============================================================= */
+
+/* Full-width prose content from Markdown */
+.summary-markdown-content {
+    font-size: 10pt;
+    line-height: 1.75;
+    color: var(--text-primary);
+}
+
+/* Markdown-generated elements */
+.summary-markdown-content h1,
+.summary-markdown-content h2 {
+    font-size: 13pt;
+    font-weight: 800;
+    color: var(--brand-primary);
+    margin: 24px 0 10px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-light);
+    text-transform: none;
+    letter-spacing: normal;
+    background: none;
+    border-left: none;
+    padding-left: 0;
+}
+
+.summary-markdown-content h3 {
+    font-size: 10pt;
+    font-weight: 800;
+    color: var(--brand-primary);
+    margin: 20px 0 8px 0;
+    padding: 0;
+    background: none;
+    border-left: none;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.summary-markdown-content table {
+    margin: 16px 0;
+}
+
+.summary-markdown-content ul,
+.summary-markdown-content ol {
+    margin: 8px 0 14px 0;
+    padding-left: 22px;
+}
+
+.summary-markdown-content li { margin-bottom: 5px; }
+
+.summary-markdown-content code {
+    font-size: 8pt;
+}
+
+.summary-markdown-content blockquote {
+    margin: 12px 0;
+    padding: 10px 14px;
+    background: var(--brand-accent-light);
+    border-left: 4px solid var(--brand-accent);
+    border-radius: var(--radius-sm);
+    color: var(--brand-primary);
+    font-style: italic;
+}
+
+/* Executive wrapper card — spacious */
+.executive-card {
+    padding: 28px 30px;
+    background: var(--bg-page);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+}

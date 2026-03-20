@@ -3,7 +3,7 @@ import os
 
 def migrate():
     basedir = r'd:\NetShield\NetShieldAI'
-    db_path = os.path.join(basedir, 'instance', 'users_db.sqlite3')
+    db_path = os.path.join(basedir, '.instance', 'users_db.sqlite3')
     
     if not os.path.exists(db_path):
         print(f"DB not found at {db_path}")

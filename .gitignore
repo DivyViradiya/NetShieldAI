@@ -11,4 +11,9 @@ Services/scan_results
 Services/temp/
 Data
 credentials.json
-token.json
+token.json
+.results/
+.logs/
+.instance/
+__pycache__/
+*.pyc

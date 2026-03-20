@@ -5,7 +5,7 @@ Recreates all scheduler tables via SQLite (no app import needed).
 import sqlite3
 import os
 
-db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'instance', 'scheduler_db.sqlite3')
+db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.instance', 'scheduler_db.sqlite3')
 conn = sqlite3.connect(db_path)
 c = conn.cursor()
 

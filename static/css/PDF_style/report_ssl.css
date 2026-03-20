@@ -1,0 +1,47 @@
+/* =============================================================
+   NETSHIELDAI — report_ssl.css
+   Overrides for: ssl_report_template.html
+   Requires: report_base.css
+   ============================================================= */
+
+/* SSL grade display — large centred letter */
+.ssl-grade {
+    font-size: 28pt;
+    font-weight: 900;
+    line-height: 1;
+}
+.ssl-grade.grade-a { color: var(--risk-low); }
+.ssl-grade.grade-b { color: var(--risk-medium); }
+.ssl-grade.grade-c,
+.ssl-grade.grade-f { color: var(--risk-high); }
+
+/* Deprecated protocol highlight in cipher table */
+.proto-deprecated {
+    color: var(--risk-high);
+    font-weight: 700;
+}
+
+.proto-deprecated-label {
+    font-size: 7pt;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-left: 4px;
+}
+
+/* Cipher bit-width warning */
+.bits-weak  { color: var(--risk-high); font-weight: 700; }
+.bits-ok    { color: var(--text-primary); }
+
+/* Certificate level badge variant */
+.cert-level-leaf         { background: var(--brand-accent-light); color: var(--brand-primary); border: 1px solid var(--brand-accent); }
+.cert-level-intermediate { background: var(--bg-section); color: var(--text-secondary); border: 1px solid var(--border-medium); }
+.cert-level-root         { background: var(--bg-header-cell); color: var(--text-secondary); border: 1px solid var(--border-medium); }
+
+/* SAN names truncated display */
+.san-list {
+    font-size: 7.5pt;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    line-height: 1.5;
+    font-family: 'Consolas','Courier New',monospace;
+}

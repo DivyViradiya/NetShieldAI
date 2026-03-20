@@ -515,6 +515,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 container.appendChild(pre);
                 container.appendChild(copyBtn);
             });
+
+            // Use IBM Plex Sans for body text, keep Code in Mono
+            const BUBBLE_FONT = "'IBM Plex Sans', sans-serif";
+            const CODE_FONT = "'JetBrains Mono', monospace";
+            tempDiv.querySelectorAll('p, li, td, th, blockquote, strong, em, span, a').forEach(el => {
+                el.style.setProperty('font-family', BUBBLE_FONT, 'important');
+            });
+            tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6, code, pre, pre *').forEach(el => {
+                el.style.setProperty('font-family', CODE_FONT, 'important');
+            });
             
             return highlightThreats(tempDiv.innerHTML);
         } catch (e) {
@@ -522,6 +532,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return text; // Fallback to raw text
         }
     }
+
 
     // [NEW] Global listener for copy code buttons
     document.addEventListener('click', (e) => {
@@ -590,6 +601,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create content container
         const contentDiv = document.createElement('div');
         contentDiv.className = 'markdown-content';
+
+        // Use IBM Plex Sans for the main bubble container
+        const BUBBLE_FONT = "'IBM Plex Sans', sans-serif";
+        contentDiv.style.setProperty('font-family', BUBBLE_FONT, 'important');
+        contentDiv.style.setProperty('font-size', '0.935rem', 'important');
+        contentDiv.style.setProperty('line-height', '1.65', 'important');
+        contentDiv.style.setProperty('letter-spacing', '0', 'important');
+
+
         
         let displayContext = cleanText;
         if (role === 'system' && displayContext.includes("SYSTEM_NOTIFICATION:")) {
@@ -1042,6 +1062,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.fileInput.value = '';
         ui.startBtn.disabled = true; 
         updateContextStatus(false);
+
+        // Auto-expand the sidebar when returning to a clean/new state
+        ui.layout.classList.remove('sidebar-collapsed');
+        ui.sidebarToggle.querySelector('span').textContent = 'chevron_left';
     }
 
     // --- Select Model Logic ---
@@ -1491,6 +1515,12 @@ document.addEventListener('DOMContentLoaded', () => {
         clearAttachments(); // Instant clear as requested
 
         isProcessing = true;
+
+        // Auto-collapse the sidebar to maximize chat area when conversation starts
+        if (!ui.layout.classList.contains('sidebar-collapsed')) {
+            ui.layout.classList.add('sidebar-collapsed');
+            ui.sidebarToggle.querySelector('span').textContent = 'chevron_right';
+        }
         
         ui.typingIndicator.style.display = 'block';
         scrollToBottom();
@@ -1854,6 +1884,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 await restoreSessionWithPolling();
             } else {
                 await restoreSession();
+            }
+
+            // [NEW] Auto-collapse sidebar if history was successfully restored
+            if (ui.chatHistory.children.length > 0) {
+                ui.layout.classList.add('sidebar-collapsed');
+                ui.sidebarToggle.querySelector('span').textContent = 'chevron_right';
             }
         } else {
             console.log("[*] No active session. Waiting for user input.");

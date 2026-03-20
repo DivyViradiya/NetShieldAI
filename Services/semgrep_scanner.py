@@ -17,9 +17,10 @@ from .tctr_engine import tctr_engine
 
 # --- Configuration ---
 BASE_DIR = Path(__file__).parent.parent
-DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "semgrep_scanner"
-LOG_DIR = BASE_DIR / "logs"
+DEFAULT_RESULTS_DIR = BASE_DIR / ".results" / "semgrep_scanner"
+LOG_DIR = BASE_DIR / ".logs"
 TEMP_DIR = Path(tempfile.gettempdir()) / "NetShieldAI" / "semgrep"
+TEMP_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- Global State for Process Management (Isolated by user_id) ---
 active_scans = {} # { "user_id": {"target": str, "start_time": float} }
@@ -188,6 +189,12 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
                 del active_scans[user_id]
         if source_dir.exists(): shutil.rmtree(source_dir, ignore_errors=True)
         if raw_report_path.exists(): raw_report_path.unlink()
+        # [FIX] Clean up the uploaded zip file from temp
+        if input_type == "zip" and os.path.exists(target_input):
+            try:
+                os.remove(target_input)
+            except Exception as e:
+                log(f"Warning: Failed to delete upload temp file: {e}", user_id)
 
 def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None, target=None, scan_duration=None):
     paths = get_output_paths(output_dir, user_id, target=target)

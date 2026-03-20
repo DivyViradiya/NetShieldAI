@@ -16,11 +16,12 @@ from core.logger_setup import logger
 from Services import report_manager, scan_logger
 from Services.anonymity.manager import AnonymityManager
 from Services.target_validator import validate_target, TargetBlockedError
+from Services.process_manager import process_manager
 
 _anon = AnonymityManager()
 
 # --- Configuration ---
-ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
+ZAP_EXECUTABLE_PATH = os.environ.get("ZAP_PATH", r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat")
 
 # --- Path and Logging Setup ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -28,9 +29,9 @@ PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
 import tempfile
 
-DEFAULT_RESULTS_DIR = os.path.join(PROJECT_ROOT, "results", "zap_scanner")
+DEFAULT_RESULTS_DIR = os.path.join(PROJECT_ROOT, ".results", "zap_scanner")
 
-LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
+LOGS_DIR = os.path.join(PROJECT_ROOT, ".logs")
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR, exist_ok=True)
 
@@ -39,25 +40,27 @@ TEMP_DIR = os.path.join(tempfile.gettempdir(), "NetShieldAI", "zap")
 if not os.path.exists(TEMP_DIR):
     os.makedirs(TEMP_DIR, exist_ok=True)
 
-# --- Global State for Process Management (Isolated by user_id) ---
-active_scans = {} # { "user_id": {"process": Popen, "target": str, "start_time": float} }
+# --- Global State for Process Management (Isolated by user_result_dir) ---
+# [NEW] Using ProcessManager for global tracking. 
+# Keeping active_scans for local state (target, start_time) only.
+active_scans = {} # { "user_result_dir": {"target": str, "start_time": float} }
 scan_lock = threading.Lock()
 
-# --- USER ISOLATION: Dictionary to hold a queue for each user_id ---
+# --- USER ISOLATION: Dictionary to hold a queue for each user_result_dir ---
 user_queues = {}
 _queue_lock = threading.Lock()  # RC-1 FIX: protect concurrent queue creation
 
-def get_user_queue(user_id):
+def get_user_queue(user_result_dir):
     """Ensures a queue exists for the user and returns it. Thread-safe."""
     with _queue_lock:
-        if user_id not in user_queues:
-            user_queues[user_id] = queue.Queue()
-        return user_queues[user_id]
+        if user_result_dir not in user_queues:
+            user_queues[user_result_dir] = queue.Queue()
+        return user_queues[user_result_dir]
 
-def is_scan_running(user_id):
+def is_scan_running(user_result_dir):
     """Checks if a scan is currently active for a specific user."""
     with scan_lock:
-        return user_id in active_scans
+        return user_result_dir in active_scans
 
 # --- ML Model Setup ---
 try:
@@ -81,7 +84,7 @@ def get_free_port():
 
 # --- LOGGING FUNCTIONS (USER-AWARE) ---
 
-def log(message, user_id=None, to_console=False, level='INFO'):
+def log(message, user_result_dir=None, to_console=False, level='INFO'):
     """
     Logs messages to:
     1. System Console (optional)
@@ -96,17 +99,17 @@ def log(message, user_id=None, to_console=False, level='INFO'):
         else:
             logger.info(message)
     
-    if user_id:
-        scan_logger.write_log(user_id, "zap_scanner", message, level=level)
+    if user_result_dir:
+        scan_logger.write_log(user_result_dir, "zap_scanner", message, level=level)
         # Keep queue for backward compatibility if the frontend polls it
-        uq = get_user_queue(user_id)
+        uq = get_user_queue(user_result_dir)
         uq.put(message)
 
-def clear_log_file(user_id):
+def clear_log_file(user_result_dir):
     """Clears the log file and queue for a specific user."""
-    if not user_id: return
-    user_id = str(user_id)
-    user_log_file = os.path.join(LOGS_DIR, "users", user_id, "zap_agent_log.txt")
+    if not user_result_dir: return
+    user_result_dir = str(user_result_dir)
+    user_log_file = os.path.join(LOGS_DIR, "users", user_result_dir, "zap_agent_log.txt")
     
     try:
         if os.path.exists(user_log_file):
@@ -114,7 +117,7 @@ def clear_log_file(user_id):
                 f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
         
         # RC-11 FIX: Drain queue using public API instead of internal mutex/queue attributes
-        uq = get_user_queue(user_id)
+        uq = get_user_queue(user_result_dir)
         while not uq.empty():
             try:
                 uq.get_nowait()
@@ -122,47 +125,24 @@ def clear_log_file(user_id):
                 break
             
     except Exception as e:
-        logger.error(f"FATAL: Could not clear log file for user {user_id}: {e}")
+        logger.error(f"FATAL: Could not clear log file for user {user_result_dir}: {e}")
 
-def stop_user_scan(user_id):
+def stop_user_scan(user_result_dir):
     """
-    RC-4 FIX: Safely terminates ONLY the ZAP process owned by this specific user.
-    Use this for user-triggered scan cancellation instead of kill_zap_processes().
+    RC-4 FIX: Safely terminates ONLY the ZAP process owned by this specific user via global ProcessManager.
     """
-    with scan_lock:
-        entry = active_scans.get(user_id)
-    if entry and entry.get("process"):
-        entry["process"].terminate()
-        log(f"[*] ZAP process for user {user_id} terminated by user request.", user_id)
-        return True
-    return False
+    success = process_manager.stop_user_tool(user_result_dir, "zap")
+    if success:
+        log(f"[*] ZAP process for user {user_result_dir} terminated by user request.", user_result_dir)
+    return success
 
-def kill_zap_processes(user_id=None):
+def kill_zap_processes(user_result_dir=None):
     """
-    SYSTEM-LEVEL RESET ONLY — Terminates ALL ZAP processes on the machine.
-
-    RC-4 WARNING: This function is GLOBAL and kills every ZAP instance system-wide,
-    regardless of which user owns it. It MUST NOT be called from any user-triggered
-    code path (e.g. scan start, scan stop, error handlers).
-    Only call this on initial server startup/full system reset.
-    For per-user cancellation, use stop_user_scan(user_id) instead.
+    SYSTEM-LEVEL RESET ONLY — Use with caution.
+    For per-user cancellation, use stop_user_scan(user_result_dir) instead.
     """
-    log("Checking for and terminating existing ZAP processes...", user_id)
-    killed_a_process = False
-    current_pid = os.getpid()
-    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-        try:
-            if proc.info['pid'] != current_pid and proc.info['cmdline'] and 'zap.jar' in ' '.join(proc.info['cmdline']).lower():
-                log(f"Found ZAP process {proc.name()} (PID: {proc.info['pid']}). Terminating...", user_id)
-                proc.kill()
-                killed_a_process = True
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
-    if not killed_a_process:
-        log("No running ZAP processes found.", user_id)
-    else:
-        log("Waiting 5 seconds for system resources to be released...", user_id)
-        time.sleep(5)
+    log("Requesting system-wide ZAP cleanup...", user_result_dir)
+    process_manager.cleanup_all()
 
 # --- ML Prediction ---
 from .tctr_engine import tctr_engine
@@ -210,7 +190,7 @@ def get_output_paths(output_dir=None, target=None, timestamp=None):
     }
 
 # --- Core Scan Logic (Simultaneous Support) ---
-def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
+def run_zap_scan(target_url, report_path, user_result_dir, scan_mode='default'):
     """
     Launches ZAP and streams output to user specific log.
     Supports simultaneous execution by assigning unique ports and directories.
@@ -219,13 +199,13 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
     try:
         validate_target(target_url)
     except TargetBlockedError as e:
-        log(f"[BLOCKED] Scan rejected by target validator: {e}", user_id, level='ERROR')
+        log(f"[BLOCKED] Scan rejected by target validator: {e}", user_result_dir, level='ERROR')
         return False
         
     # 1. REMOVED kill_zap_processes to prevent stopping other concurrent scans.
     
     if not os.path.exists(ZAP_EXECUTABLE_PATH):
-        log(f"Error: ZAP executable not found at '{ZAP_EXECUTABLE_PATH}'", user_id)
+        log(f"Error: ZAP executable not found at '{ZAP_EXECUTABLE_PATH}'", user_result_dir)
         return False
 
     # 2. Assign Unique Resources
@@ -235,15 +215,15 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
         
         # Create a unique directory for this specific scan instance/user in the central temp folder
         # This prevents the "HSQLDB Lock" error
-        unique_zap_dir = os.path.join(TEMP_DIR, f"user_{user_id}_{assigned_port}")
+        unique_zap_dir = os.path.join(TEMP_DIR, f"user_{user_result_dir}_{assigned_port}")
         if not os.path.exists(unique_zap_dir):
             os.makedirs(unique_zap_dir, exist_ok=True)
 
-        log(f"\n--- Starting ZAP Scan ({scan_mode.upper()}) (Isolated Instance) ---", user_id, to_console=True)
-        log(f"[STAGE] Starting ZAP ({scan_mode.upper()}) scan on {target_url}...", user_id, level='STAGE')
-        log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_id, to_console=True, level='DEBUG')
-        log(f"Target: {target_url}", user_id, to_console=True, level='DEBUG')
-        log(f"Report will be saved to: {report_path}", user_id, to_console=True, level='DEBUG')
+        log(f"\n--- Starting ZAP Scan ({scan_mode.upper()}) (Isolated Instance) ---", user_result_dir, to_console=True)
+        log(f"[STAGE] Starting ZAP ({scan_mode.upper()}) scan on {target_url}...", user_result_dir, level='STAGE')
+        log(f"Instance Config -> Port: {assigned_port} | Dir: {unique_zap_dir}", user_result_dir, to_console=True, level='DEBUG')
+        log(f"Target: {target_url}", user_result_dir, to_console=True, level='DEBUG')
+        log(f"Report will be saved to: {report_path}", user_result_dir, to_console=True, level='DEBUG')
 
         report_dir = os.path.dirname(report_path)
         if not os.path.exists(report_dir):
@@ -269,8 +249,8 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
                 '-quickprogress'
             ]
 
-        log(f"[STAGE] Launching ZAP daemon...", user_id, level='STAGE')
-        log(f"Executing command: {' '.join(command)}", user_id, level='DEBUG', to_console=True)
+        log(f"[STAGE] Launching ZAP daemon...", user_result_dir, level='STAGE')
+        log(f"Executing command: {' '.join(command)}", user_result_dir, level='DEBUG', to_console=True)
         zap_directory = os.path.dirname(ZAP_EXECUTABLE_PATH)
         
         command.extend(_anon.get_scan_flags("zap"))
@@ -293,10 +273,12 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
                     bufsize=1,
                     env=_anon.get_subprocess_env() 
                 )
-                # Track this user's process
-                active_scans[user_id] = {"process": process, "target": target_url, "start_time": time.time()}
+                # Track this user's process globally for cleanup
+                process_manager.register(user_result_dir, "zap", process)
+                # Track this user's process locally for metadata
+                active_scans[user_result_dir] = {"target": target_url, "start_time": time.time()}
 
-            log("--- ZAP Output Stream Started ---", user_id)
+            log("--- ZAP Output Stream Started ---", user_result_dir)
             
             # Stream stdout line by line
             for line in iter(process.stdout.readline, ''):
@@ -309,7 +291,7 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
                         if match:
                             # Log the original line with [PROGRESS] prefix so UI can parse percent
                             # but still show the original bracket format in terminal
-                            log(f"[PROGRESS] {stripped_line}", user_id)
+                            log(f"[PROGRESS] {stripped_line}", user_result_dir)
                             continue
                     
                     if not stripped_line:
@@ -320,47 +302,48 @@ def run_zap_scan(target_url, report_path, user_id, scan_mode='default'):
                         if "main" in stripped_line: continue
 
                     # We log to file/queue but NOT to console to avoid terminal clutter
-                    log(stripped_line, user_id, to_console=False, level='DEBUG')
+                    log(stripped_line, user_result_dir, to_console=False, level='DEBUG')
 
             process.wait()
         
-        # Unregister process
+        # Unregister process from all trackers
+        process_manager.unregister(user_result_dir, "zap")
         with scan_lock:
-            if user_id in active_scans:
-                del active_scans[user_id]
+            if user_result_dir in active_scans:
+                del active_scans[user_result_dir]
 
-        log("--- End of ZAP Output ---", user_id)
+        log("--- End of ZAP Output ---", user_result_dir)
 
         success = False
         if process.returncode == 0 and os.path.exists(report_path):
-            log(f"[SUCCESS] ZAP scan complete.", user_id, level='SUCCESS', to_console=True)
+            log(f"[SUCCESS] ZAP scan complete.", user_result_dir, level='SUCCESS', to_console=True)
             success = True
         else:
-            log(f"Error: ZAP process failed. Return code: {process.returncode}.", user_id, to_console=True)
+            log(f"Error: ZAP process failed. Return code: {process.returncode}.", user_result_dir, to_console=True)
             success = False
             
         return success
 
     except Exception as e:
-        log(f"An unexpected error occurred: {e}", user_id)
+        log(f"An unexpected error occurred: {e}", user_result_dir)
         return False
         
     finally:
         # 4. CLEANUP: Remove the temporary directory to save space
         if unique_zap_dir and os.path.exists(unique_zap_dir):
             try:
-                log(f"Cleaning up temporary ZAP directory: {unique_zap_dir}", user_id)
+                log(f"Cleaning up temporary ZAP directory: {unique_zap_dir}", user_result_dir)
                 shutil.rmtree(unique_zap_dir, ignore_errors=True)
             except Exception as cleanup_error:
-                log(f"Warning: Failed to clean up temp dir: {cleanup_error}", user_id)
+                log(f"Warning: Failed to clean up temp dir: {cleanup_error}", user_result_dir)
 
-def parse_zap_xml_report(report_file, user_id=None):
+def parse_zap_xml_report(report_file, user_result_dir=None):
     """Parses ZAP XML and enriches with ML."""
     if not os.path.exists(report_file):
-        log(f"Error: ZAP report file not found for parsing: {report_file}", user_id)
+        log(f"Error: ZAP report file not found for parsing: {report_file}", user_result_dir)
         return None
     
-    log(f"Parsing ZAP report: {report_file}", user_id)
+    log(f"Parsing ZAP report: {report_file}", user_result_dir)
     
     # Initialize Summary with "Info" key
     report_data = {
@@ -410,26 +393,26 @@ def parse_zap_xml_report(report_file, user_id=None):
             reverse=True
         )
 
-        log("Report parsed and enriched successfully.", user_id)
+        log("Report parsed and enriched successfully.", user_result_dir)
         return report_data
     except Exception as e:
-        log(f"An error occurred during report parsing: {e}", user_id)
+        log(f"An error occurred during report parsing: {e}", user_result_dir)
         return None
 
 def get_inner_html(element):
     if element is None: return ""
     return (element.text or '') + ''.join(ET.tostring(e, encoding='unicode') for e in element)
 
-def save_json_report(data, output_dir, user_id=None, target=None, timestamp=None):
+def save_json_report(data, output_dir, user_result_dir=None, target=None, timestamp=None):
     try:
         paths = get_output_paths(output_dir=output_dir, target=target, timestamp=timestamp)
         json_path = paths["json_report"]
 
         with open(json_path, 'w') as f:
             json.dump(data, f, indent=2)
-        log(f"JSON report saved to: {json_path}", user_id)
+        log(f"JSON report saved to: {json_path}", user_result_dir)
         return str(json_path)
     except Exception as e:
-        log(f"Error saving JSON report: {e}", user_id)
+        log(f"Error saving JSON report: {e}", user_result_dir)
         return None
 

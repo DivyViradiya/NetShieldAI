@@ -30,9 +30,9 @@ ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
-DEFAULT_RESULTS_DIR = os.path.join(PROJECT_ROOT, "results", "api_scanner")
+DEFAULT_RESULTS_DIR = os.path.join(PROJECT_ROOT, ".results", "api_scanner")
 
-LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
+LOGS_DIR = os.path.join(PROJECT_ROOT, ".logs")
 TEMP_DIR = os.path.join(tempfile.gettempdir(), "NetShieldAI", "api_scanner")
 
 # --- Global State for Process Management ---
@@ -323,6 +323,32 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
                 f.write(xml_report)
 
             log("[SUCCESS] Scan completed successfully!", user_id, level='SUCCESS')
+            
+            # --- Generate Reports ---
+            try:
+                from Services import pdf_generator
+                report_data = parse_xml_report(report_path, user_id=user_id)
+                if report_data:
+                    # Deriving metadata for JSON/PDF naming
+                    output_dir = os.path.dirname(report_path)
+                    target = target_url
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    
+                    # Save JSON
+                    save_json_report(report_data, output_dir, user_id=user_id, target=target, timestamp=timestamp)
+                    
+                    # Ensure target_url is in data for PDF template
+                    report_data["target_url"] = target_url
+                    
+                    # Generate PDF
+                    paths = get_output_paths(user_output_dir=output_dir, user_id=user_id, target=target, timestamp=timestamp)
+                    pdf_path = paths["pdf_report"]
+                    pdf_generator.create_api_report_pdf(report_data, pdf_path, user_id=user_id)
+                    
+                    log(f"[SUCCESS] API reports (JSON/PDF) generated successfully.", user_id, level='SUCCESS')
+            except Exception as e:
+                log(f"[!] Error generating API reports: {e}", user_id, level='ERROR')
+            
         return True
 
     except Exception as e:
@@ -389,7 +415,8 @@ def parse_xml_report(report_file, user_id=None):
         logger.error(f"Error parse_xml_report: {e}")
         return None
     finally:
-        if os.path.exists(report_file): os.remove(report_file)
+        # File removal is now managed by the BP or final cleanup tasks to avoid race conditions.
+        pass
 
 def save_json_report(data, output_dir, user_id=None, target=None, timestamp=None):
     try:

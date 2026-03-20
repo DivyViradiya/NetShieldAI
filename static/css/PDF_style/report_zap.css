@@ -1,0 +1,37 @@
+/* =============================================================
+   NETSHIELDAI — report_zap.css
+   Overrides for: zap_report_template.html
+   Requires: report_base.css
+   ============================================================= */
+
+/* HTTP Request/Response evidence panel */
+.http-evidence {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--risk-high-bg);
+    border: 1px dashed var(--risk-high-bd);
+    border-radius: var(--radius-sm);
+}
+
+.http-evidence .http-label {
+    display: block;
+    font-size: 6pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--risk-high);
+    margin-bottom: 6px;
+}
+
+.http-evidence pre {
+    font-size: 7pt;
+    background: var(--bg-page);
+    border: 1px solid var(--risk-high-bd);
+    color: var(--text-primary);
+    margin-top: 4px;
+}
+
+/* Confidence display */
+.confidence-high   { color: var(--risk-high);   font-weight: 700; }
+.confidence-medium { color: var(--risk-medium);  font-weight: 700; }
+.confidence-low    { color: var(--text-secondary); }

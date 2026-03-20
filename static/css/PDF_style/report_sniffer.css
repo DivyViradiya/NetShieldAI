@@ -1,0 +1,49 @@
+/* =============================================================
+   NETSHIELDAI — report_sniffer.css
+   Overrides for: sniffer_report_template.html
+   Requires: report_base.css
+   ============================================================= */
+
+/* Conversation table — monospace endpoints */
+.conv-endpoint {
+    font-family: 'Consolas','Courier New',monospace;
+    font-size: 7.5pt;
+    color: var(--text-primary);
+}
+
+.conv-arrow {
+    text-align: center;
+    color: var(--brand-accent);
+    font-weight: 700;
+    font-size: 11pt;
+}
+
+/* Protocol name in hierarchy table */
+.proto-name {
+    font-weight: 700;
+    color: var(--brand-accent);
+    font-family: 'Consolas','Courier New',monospace;
+    font-size: 8pt;
+}
+
+/* Scan activity alert */
+.scan-alert {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--risk-high-bg);
+    border-left: 4px solid var(--risk-high);
+    border-radius: var(--radius-sm);
+}
+.scan-alert .box-label { color: var(--risk-high); }
+.scan-alert ul { color: var(--risk-high); font-size: 8.5pt; }
+
+/* Cleartext credentials alert */
+.creds-alert {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--risk-medium-bg);
+    border-left: 4px solid var(--risk-medium);
+    border-radius: var(--radius-sm);
+}
+.creds-alert .box-label { color: var(--risk-medium); }
+.creds-alert ul { color: #92400e; font-size: 8.5pt; }

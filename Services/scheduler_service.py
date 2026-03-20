@@ -408,14 +408,18 @@ def _execute_scheduled_scan(job_id, force_run=False):
     user_identifier = f"{secure_filename(user.username)}_{user.id}"
 
     import os
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
     # NEW: Generate a single timestamp for the entire job run to group findings
     from Services import report_manager
     shared_timestamp = report_manager.get_timestamp()
 
-    # 5. Dispatch each target × config combination
+    # 5. Dispatch each target × config combination in parallel
     log_ids = []
+    scan_tasks = []
+
+    # Prepare task list
     for target_row in targets:
         target = target_row.target_url
         
@@ -441,25 +445,43 @@ def _execute_scheduled_scan(job_id, force_run=False):
         for config_row in configs:
             module = config_row.module
             config = json.loads(config_row.config_json) if config_row.config_json else {}
+            
+            scan_tasks.append({
+                "module": module,
+                "target": target,
+                "config": config,
+                "config_label": config_row.display_label or module
+            })
 
-            logger.info(f"[*] [SCHEDULER] Dispatching {module} scan on {target} "
-                        f"(config: {config_row.display_label or module})")
-
-            try:
-                log_id = _dispatch_module_scan(
-                    module=module,
-                    target=target,
-                    config=config,
+    # Execute tasks in parallel using a ThreadPool
+    # Limit max workers to avoid overwhelming system resources (e.g. 5 concurrent scanners)
+    MAX_CONCURRENT_SCANS = 5
+    if scan_tasks:
+        logger.info(f"[*] [SCHEDULER] Dispatching {len(scan_tasks)} tasks in parallel (Max concurrent: {MAX_CONCURRENT_SCANS})")
+        
+        with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_SCANS) as executor:
+            future_to_task = {
+                executor.submit(
+                    _dispatch_module_scan,
+                    module=task["module"],
+                    target=task["target"],
+                    config=task["config"],
                     user=user,
                     user_identifier=user_identifier,
                     base_dir=base_dir,
                     timestamp=shared_timestamp
-                )
-                if log_id:
-                    log_ids.append(log_id)
-            except Exception as e:
-                logger.error(f"[!] [SCHEDULER] Error dispatching {module} scan on {target}: {e}")
-                traceback.print_exc()
+                ): task for task in scan_tasks
+            }
+            
+            for future in as_completed(future_to_task):
+                task = future_to_task[future]
+                try:
+                    log_id = future.result()
+                    if log_id:
+                        log_ids.append(log_id)
+                except Exception as e:
+                    logger.error(f"[!] [SCHEDULER] Parallel dispatch failed for {task['module']} on {task['target']}: {e}")
+                    traceback.print_exc()
 
     # 6. Update job metadata
     job.last_run_at = datetime.now(IST).replace(tzinfo=None)
@@ -541,7 +563,7 @@ def _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=No
     protocol_type = config.get('protocol_type', 'TCP')
     timing = config.get('timing', 4)
 
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'network_scanner')
+    user_dir = os.path.join(base_dir, '.results', user_identifier, 'network_scanner')
     os.makedirs(user_dir, exist_ok=True)
 
     # Increment counter
@@ -577,7 +599,7 @@ def _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=No
     if result_file:
         try:
             if os.path.exists(user_paths["json_report"]):
-                pdf_generator.create_nmap_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
+                pdf_generator.create_nmap_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]), user_id=user_identifier)
                 if config.get('executive_summary', False):
                      _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "Nmap", target, user_identifier)
             else:
@@ -599,7 +621,7 @@ def _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=Non
 
     scan_mode = config.get('scan_mode', 'default')
 
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'zap_scanner')
+    user_dir = os.path.join(base_dir, '.results', user_identifier, 'zap_scanner')
     os.makedirs(user_dir, exist_ok=True)
 
     # Ensure target has protocol
@@ -633,7 +655,7 @@ def _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=Non
             json_path = zap_scanner.save_json_report(scan_results, user_dir, user_identifier, target=target, timestamp=timestamp)
             if json_path:
                 try:
-                    pdf_generator.create_zap_report_pdf(json_path, str(pdf_path))
+                    pdf_generator.create_zap_report_pdf(json_path, str(pdf_path), user_id=user_identifier)
                 except Exception as e:
                     logger.error(f"[!] [SCHEDULER] ZAP PDF generation failed: {e}")
 
@@ -657,7 +679,7 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=Non
     from sqlalchemy import update as sa_update
     from models.models import User as UserModel
 
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'ssl_scanner')
+    user_dir = os.path.join(base_dir, '.results', user_identifier, 'ssl_scanner')
     os.makedirs(user_dir, exist_ok=True)
 
     primary_db.session.execute(
@@ -687,7 +709,7 @@ def _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=Non
 
     if report_file:
         try:
-            pdf_generator.create_ssl_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
+            pdf_generator.create_ssl_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]), user_id=user_identifier)
             if config.get('executive_summary', False):
                  _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "SSLScan", target, user_identifier)
         except Exception as e:
@@ -708,7 +730,7 @@ def _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp
     duration_sec = config.get('duration', 60)
     interface = config.get('interface', None)
 
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'packet_sniffer')
+    user_dir = os.path.join(base_dir, '.results', user_identifier, 'packet_sniffer')
     os.makedirs(user_dir, exist_ok=True)
 
     primary_db.session.execute(
@@ -742,7 +764,7 @@ def _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp
              finding_count = len(summary_data.get("security_anomaly_report", {}).get("port_scans", []))
              packet_sniffer.save_json_report(summary_data, output_dir=user_dir, user_id=user_identifier, target=target, timestamp=timestamp)
              try:
-                 pdf_generator.create_packet_sniffer_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]))
+                 pdf_generator.create_packet_sniffer_report_pdf(str(user_paths["json_report"]), str(user_paths["pdf_report"]), user_id=user_identifier)
                  if config.get('executive_summary', False):
                       _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "Sniffer", target, user_identifier)
              except Exception as e:
@@ -764,7 +786,7 @@ def _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=Non
     from Services import sql_scanner, scan_logger, pdf_generator
 
     scan_type = config.get('scan_type', 'standard')
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'sql_scanner')
+    user_dir = os.path.join(base_dir, '.results', user_identifier, 'sql_scanner')
     os.makedirs(user_dir, exist_ok=True)
 
     primary_db.session.execute(
@@ -799,7 +821,7 @@ def _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=Non
                  data = json.load(f)
                  finding_count = len(data.get("vulnerabilities", []))
              try:
-                 pdf_generator.create_sql_report_pdf(sql_results_file, str(user_paths["pdf_report"]))
+                 pdf_generator.create_sql_report_pdf(sql_results_file, str(user_paths["pdf_report"]), user_id=user_identifier)
                  if config.get('executive_summary', False):
                       _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "SQLMap", target, user_identifier)
              except Exception as e:
@@ -820,7 +842,7 @@ def _dispatch_semgrep(target, config, user, user_identifier, base_dir):
     from Services import semgrep_scanner, scan_logger, pdf_generator
 
     ruleset = config.get('ruleset', 'auto')
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'semgrep_scanner')
+    user_dir = os.path.join(base_dir, '.results', user_identifier, 'semgrep_scanner')
     os.makedirs(user_dir, exist_ok=True)
 
     primary_db.session.execute(
@@ -860,7 +882,7 @@ def _dispatch_semgrep(target, config, user, user_identifier, base_dir):
             with open(report_file, 'r') as f:
                 data = json.load(f)
                 finding_count = data.get('total_findings', 0)
-            pdf_generator.create_semgrep_report_pdf(report_file, str(user_paths["pdf_report"]))
+            pdf_generator.create_semgrep_report_pdf(report_file, str(user_paths["pdf_report"]), user_id=user_identifier)
             if config.get('executive_summary', False):
                  _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "Semgrep", target, user_identifier)
         except Exception as e:
@@ -882,7 +904,7 @@ def _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=Non
     definition_url = config.get('definition_url', target)
     auth_token = config.get('auth_token', None)
 
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'api_scanner')
+    user_dir = os.path.join(base_dir, '.results', user_identifier, 'api_scanner')
     os.makedirs(user_dir, exist_ok=True)
 
     primary_db.session.execute(
@@ -912,7 +934,7 @@ def _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=Non
             finding_count = len(report_data.get('findings', []))
             if json_path:
                 try:
-                    pdf_generator.create_api_report_pdf(json_path, str(user_paths["pdf_report"]))
+                    pdf_generator.create_api_report_pdf(json_path, str(user_paths["pdf_report"]), user_id=user_identifier)
                     if config.get('executive_summary', False):
                          _trigger_executive_summary_generation(log_id, str(user_paths["pdf_report"]), "API Scanner", target, user_identifier)
                 except Exception as e:
@@ -933,7 +955,7 @@ def _dispatch_killchain(target, config, user, user_identifier, base_dir, timesta
     profile_name = config.get('profile', 'Full Scan')
     aggression = config.get('aggression', 'Normal')
 
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'killchain')
+    user_dir = os.path.join(base_dir, '.results', user_identifier, 'killchain')
     os.makedirs(user_dir, exist_ok=True)
 
     # Increment counter
@@ -1106,7 +1128,8 @@ def _trigger_executive_summary_generation(log_id, report_path, tool_name, target
     import os
     from Services.pdf_generator import create_executive_summary_report_pdf
 
-    SERVER_PROXY_URL = "http://127.0.0.1:5000"
+    # [FIX] Load from environment to match dashboard_bp.py
+    SERVER_PROXY_URL = os.environ.get("CHATBOT_API_URL", "http://127.0.0.1:5000")
 
     if not report_path or not os.path.exists(report_path):
         logger.warning(f"[!] [SCHEDULER] Cannot generate Executive Summary: Report path invalid ({report_path})")
@@ -1142,7 +1165,7 @@ def _trigger_executive_summary_generation(log_id, report_path, tool_name, target
             "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         
-        success = create_executive_summary_report_pdf(summary_text, metadata, exec_path)
+        success = create_executive_summary_report_pdf(summary_text, metadata, exec_path, user_id=user_identifier)
         if success:
              logger.info(f"[+] [SCHEDULER] Automated Executive Summary PDF created: {exec_path}")
              # Save to DB

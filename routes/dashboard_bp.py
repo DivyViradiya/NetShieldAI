@@ -8,32 +8,22 @@ import re
 import logging
 from datetime import datetime
 from Services import compliance_engine
-from Services import report_manager
-import glob
-from pathlib import Path
+from Services import report_manager, scan_logger
+from models.models import User, ScanLog, get_user_result_dir_name
+from core.extensions import db
 
-
-# --- Logging Setup ---
-logger = logging.getLogger(__name__)
-
-dashboard_bp = Blueprint('dashboard_bp', __name__)
+# --- Constants ---
+# [FIX] Load from .env to avoid breakage on port changes
+CHATBOT_API_URL = os.environ.get("CHATBOT_API_URL", "http://127.0.0.1:5000")
 
 # --- Helper Functions ---
 
 def get_user_results_dir():
     """
-    Constructs the path: results/<username_id>
+    Constructs the path: results/<username_id>/
+    Centralized SSOT for file storage location.
     """
-    if not current_user.is_authenticated:
-        return None
-    
-    # Composite Identifier: username_id
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'results', user_identifier)
-    
-    return user_dir
+    return report_manager.get_user_results_dir(current_user)
 
 def load_json_safe(path):
     """Helper to load JSON without crashing if file is missing/corrupt."""
@@ -657,18 +647,17 @@ def get_semgrep_stats():
 @login_required
 def get_usage_stats():
     """
-    Returns the usage metrics recorded in the User database model.
-    This powers the 'Usage Statistics' section of the dashboard.
+    Returns usage metrics derived from ScanLog (SSOT).
+    Powers the 'Usage Statistics' section of the dashboard.
     """
+    from models.models import ScanLog
     logger.info(f"\033[34m[*] Fetching System Usage Telemetry for {current_user.username}\033[0m")
-    # current_user is a proxy for the User model record defined in models.py
     user = current_user
     
     # [NEW] Dynamically Fetch AI Session Count from Chatbot Service
     ai_session_count = 0
     try:
         user_identifier = f"{secure_filename(user.username)}_{user.id}"
-        # Port 5000 is where the FastAPI chatbot server is running
         proxy_url = "http://127.0.0.1:5000/get_user_sessions"
         resp = requests.get(proxy_url, params={'user_id': user_identifier}, timeout=2)
         if resp.status_code == 200:
@@ -676,51 +665,45 @@ def get_usage_stats():
             ai_session_count = len(ai_data.get('sessions', []))
     except Exception as e:
         logger.warning(f"Could not fetch AI sessions for usage stats: {e}")
-        ai_session_count = user.scan_count_ai # Fallback to legacy counter
 
-    # Format the last login date safely
-    last_login_str = "Never"
-    if user.last_login_at:
-        # Format example: "Jan 05, 2026 12:45 PM"
-        last_login_str = user.last_login_at.strftime("%b %d, %Y %I:%M %p")
+    # [NEW] Derive Scan Counts from ScanLog (Single Source of Truth)
+    def get_count(tool_name):
+        return ScanLog.query.filter_by(user_id=user.id, tool_name=tool_name).count()
 
-    # Calculate system usage using the fresh session count instead of raw interactions
-    total_usage = (
-        user.scan_count_nmap + 
-        user.scan_count_zap + 
-        user.scan_count_ssl + 
-        user.scan_count_sniffer +
-        user.scan_count_sql +
-        ai_session_count + 
-        user.scan_count_killchain +
-        getattr(user, 'scan_count_api', 0) +
-        getattr(user, 'scan_count_semgrep', 0)
-    )
+    # Tool mapping based on how they log themselves
+    scan_counts = {
+        "nmap": get_count("Nmap"),
+        "zap": get_count("ZAP"),
+        "ssl": get_count("SSLScan"),
+        "sniffer": get_count("Packet Sniffer"),
+        "killchain": get_count("Kill Chain"),
+        "api": get_count("API Scanner"),
+        "sql": get_count("SQLMap"),
+        "semgrep": get_count("Semgrep")
+    }
+
+    last_login_str = user.last_login_at.strftime("%b %d, %Y %I:%M %p") if user.last_login_at else "Never"
+
+    total_usage = sum(scan_counts.values()) + ai_session_count
 
     response = {
         "username": user.username,
         "organization": user.organization or "Freelance",
         "account_type": "Admin" if user.is_admin else "Standard",
-        
-        # --- Activity Metrics ---
         "total_logins": user.login_count,
         "last_login": last_login_str,
         "last_ip": user.last_login_ip or "Unknown",
-        
-        # --- Scan Counters ---
         "scans": {
-            "nmap": user.scan_count_nmap,
-            "zap": user.scan_count_zap,
-            "ssl": user.scan_count_ssl,
-            "sniffer": user.scan_count_sniffer,
-            "ai_analysis": ai_session_count, # Reported as sessions
-            "killchain": user.scan_count_killchain,
-            "api": getattr(user, 'scan_count_api', 0),
-            "sql": getattr(user, 'scan_count_sql', 0),
-            "semgrep": getattr(user, 'scan_count_semgrep', 0)
+            "nmap": scan_counts["nmap"],
+            "zap": scan_counts["zap"],
+            "ssl": scan_counts["ssl"],
+            "sniffer": scan_counts["sniffer"],
+            "ai_analysis": ai_session_count,
+            "killchain": scan_counts["killchain"],
+            "api": scan_counts["api"],
+            "sql": scan_counts["sql"],
+            "semgrep": scan_counts["semgrep"]
         },
-        
-        # --- Aggregates ---
         "total_system_usage": total_usage
     }
 

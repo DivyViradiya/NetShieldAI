@@ -30,23 +30,12 @@ from Services import report_manager
 
 packet_sniffer_bp = Blueprint('packet_sniffer_bp', __name__)
 
-# --- PHASE 3: User-Specific Directory Helper ---
+# --- User-Specific Directory Helper ---
 def get_user_results_dir():
-    """
-    Constructs the path: results/<username_id>/packet_sniffer
-    """
-    if not current_user.is_authenticated:
-        return None
-    
-    # NEW LOGIC: Composite Identifier
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'packet_sniffer')
-    
-    # FIXED: Added exist_ok=True to prevent race condition crashes
+    """Constructs the path: results/<username_id>/packet_sniffer"""
+    user_base_dir = report_manager.get_user_results_dir(current_user)
+    user_dir = os.path.join(user_base_dir, 'packet_sniffer')
     os.makedirs(user_dir, exist_ok=True)
-        
     return user_dir
 
 # ==========================================
@@ -77,9 +66,21 @@ def get_interfaces_route():
     if not packet_sniffer.get_packet_capture_cmd():
         return jsonify({"status": "error", "message": "TShark (Wireshark) not found."}), 500
 
-    interfaces = packet_sniffer.list_available_interfaces()
-    interface_list_output = list(interfaces.values())
-    return jsonify({"status": "success", "interfaces": interface_list_output})
+    interfaces_dict = packet_sniffer.list_available_interfaces()
+    
+    # Convert dict to expected list format including the key as ID
+    interfaces_list = []
+    for if_id, if_data in interfaces_dict.items():
+        interfaces_list.append({
+            "id": if_id,
+            "name": if_data.get('name', 'Unknown'),
+            "description": if_data.get('description', 'Unknown')
+        })
+        
+    return jsonify({
+        "status": "success", 
+        "interfaces": interfaces_list
+    })
 
 
 @packet_sniffer_bp.route('/start_capture', methods=['POST'])
@@ -229,11 +230,11 @@ def start_capture_route():
                     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
 
                     # Create PDF using pdf_generator
-                    pdf_generator.create_packet_sniffer_report_pdf(analysis_data, str(pdf_path))
+                    pdf_generator.create_packet_sniffer_report_pdf(analysis_data, str(pdf_path), user_id=user_identifier)
 
                     if os.path.exists(pdf_path):
                         # Final synchronization wait
-                        time.sleep(1.5)
+                        report_manager.wait_for_file(str(pdf_path))
                         packet_sniffer.log(f"[+] PDF report generated successfully", user_identifier, to_console=True)
                         packet_sniffer.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_ip}", user_identifier, to_console=True)
                     else:

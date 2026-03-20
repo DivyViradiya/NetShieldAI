@@ -1,0 +1,372 @@
+/* =============================================================================
+   NETSHIELDAI — REPORT BASE CSS
+   Shared across all 9 report templates.
+   Per-template overrides live in report_<name>.css
+   Version: 2.0 | Clean Professional Light Theme
+   ============================================================================= */
+
+/* --- 1. CSS VARIABLES ------------------------------------------------------- */
+:root {
+    --brand-primary:      #1e3a5f;
+    --brand-accent:       #2563eb;
+    --brand-accent-light: #dbeafe;
+    --bg-page:            #ffffff;
+    --bg-section:         #f8fafc;
+    --bg-header-cell:     #f1f5f9;
+    --bg-code:            #0f172a;
+    --border-light:       #e2e8f0;
+    --border-medium:      #cbd5e1;
+    --text-primary:       #0f172a;
+    --text-secondary:     #475569;
+    --text-muted:         #94a3b8;
+    --text-code:          #e2e8f0;
+    --risk-critical:      #7f1d1d;  --risk-critical-bg: #fef2f2; --risk-critical-bd: #fecaca;
+    --risk-high:          #b91c1c;  --risk-high-bg:     #fff1f2; --risk-high-bd:     #fca5a5;
+    --risk-medium:        #c2410c;  --risk-medium-bg:   #fff7ed; --risk-medium-bd:   #fed7aa;
+    --risk-low:           #15803d;  --risk-low-bg:      #f0fdf4; --risk-low-bd:      #86efac;
+    --risk-info:          #0369a1;  --risk-info-bg:     #f0f9ff; --risk-info-bd:     #7dd3fc;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+}
+
+/* --- 2. PAGE / PRINT SETUP -------------------------------------------------- */
+@page {
+    size: A4;
+    margin: 1.4cm 1.2cm;
+    @bottom-center {
+        content: "CONFIDENTIAL — NetShieldAI Security Report";
+        font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+        font-size: 7px; color: #94a3b8;
+        letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+        font-size: 8px; color: #94a3b8;
+    }
+}
+
+/* --- 3. RESET & BASE -------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    font-size: 10pt; color: var(--text-primary); line-height: 1.65;
+    margin: 0; padding: 0; background: var(--bg-page);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+p  { margin: 0 0 10px 0; }
+ul, ol { margin: 6px 0 10px 0; padding-left: 20px; }
+li { margin-bottom: 4px; }
+
+/* --- 4. HEADER -------------------------------------------------------------- */
+header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 16px; margin-bottom: 32px;
+    border-bottom: 3px solid var(--brand-primary);
+}
+.logo-container { display: flex; align-items: center; }
+.logo           { height: 42px; width: auto; }
+.header-right   { text-align: right; }
+h1 {
+    font-size: 18pt; font-weight: 800; margin: 0 0 3px 0;
+    color: var(--brand-primary); text-transform: uppercase;
+    letter-spacing: -0.01em; line-height: 1.1;
+}
+.scan-subtitle {
+    font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--text-secondary); font-weight: 700;
+}
+
+/* --- 5. REPORT META INFO BAR ------------------------------------------------ */
+.report-info {
+    display: table; width: 100%;
+    border-collapse: separate; border-spacing: 10px 0; margin-bottom: 32px;
+}
+.info-box {
+    display: table-cell; padding: 14px 18px;
+    background: var(--bg-section); border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md); vertical-align: top;
+}
+.info-box strong {
+    display: block; font-size: 6.5pt; text-transform: uppercase;
+    color: var(--text-secondary); font-weight: 800;
+    letter-spacing: 0.1em; margin-bottom: 5px;
+}
+.info-box span {
+    font-weight: 700; font-size: 10pt;
+    color: var(--text-primary); word-break: break-all;
+}
+
+/* --- 6. SECTION HEADINGS ---------------------------------------------------- */
+section { margin-bottom: 10px; }
+h2 {
+    font-size: 13pt; font-weight: 800; color: var(--brand-primary);
+    margin: 36px 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid var(--border-light);
+}
+h3 {
+    font-size: 8pt; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--brand-primary);
+    margin: 36px 0 18px 0; padding: 8px 0 8px 14px;
+    border-left: 4px solid var(--brand-accent);
+    background: var(--brand-accent-light);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    page-break-after: avoid;
+}
+h4 { font-size: 10pt; font-weight: 700; color: var(--text-primary); margin: 0; }
+
+/* --- 7. SUMMARY STAT CARDS -------------------------------------------------- */
+.summary-stats { display: flex; gap: 12px; margin-bottom: 32px; }
+.stat-card {
+    flex: 1; padding: 18px 16px; background: var(--bg-section);
+    border: 1px solid var(--border-medium); border-radius: var(--radius-md); text-align: center;
+}
+.stat-label {
+    display: block; font-size: 6.5pt; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--text-secondary); font-weight: 800; margin-bottom: 8px;
+}
+.stat-value { font-size: 22pt; font-weight: 800; color: var(--text-primary); line-height: 1; }
+.stat-value.risk-critical, .stat-value.critical { color: var(--risk-critical); }
+.stat-value.risk-high,     .stat-value.high     { color: var(--risk-high); }
+.stat-value.risk-medium,   .stat-value.medium   { color: var(--risk-medium); }
+.stat-value.risk-low,      .stat-value.low      { color: var(--risk-low); }
+.stat-value.info                                 { color: var(--risk-info); }
+
+/* --- 8. HOST OVERVIEW CARDS ------------------------------------------------- */
+.host-summary-grid { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+.host-summary-card {
+    flex: 1; min-width: 100px; padding: 18px 16px;
+    background: var(--bg-section); border: 1px solid var(--border-medium); border-radius: var(--radius-md);
+}
+.host-summary-card .grid-label { display: block; margin-bottom: 6px; }
+.host-summary-card .grid-value {
+    font-size: 16pt; font-weight: 800;
+    color: var(--text-primary); line-height: 1.1; display: block;
+}
+
+/* --- 9. FINDING CARDS ------------------------------------------------------- */
+.finding-card {
+    border: 1px solid var(--border-medium); border-radius: var(--radius-md);
+    margin-bottom: 20px; overflow: hidden; page-break-inside: avoid;
+}
+.finding-header {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    background: var(--bg-header-cell); padding: 11px 18px;
+    border-bottom: 1px solid var(--border-light);
+}
+.finding-header h4 { flex: 1; word-break: break-word; }
+
+/* Killchain aliases */
+.finding-title-row { flex: 1; }
+.finding-title     { font-weight: 700; font-size: 10pt; color: var(--text-primary); }
+.finding-meta      { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+/* Both spellings — .finding-details is a killchain typo, keep both */
+.finding-detail,
+.finding-details {
+    padding: 18px; background: var(--bg-page); font-size: 9pt;
+}
+.finding-detail pre, .finding-details pre {
+    background: var(--bg-section); padding: 12px 14px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border-light);
+    font-size: 7.5pt; white-space: pre-wrap; word-break: break-word; margin: 8px 0;
+}
+
+/* --- 10. SERVICE / DATA GRID ------------------------------------------------ */
+.service-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    padding: 16px 18px; gap: 16px;
+    background: var(--bg-page); border-bottom: 1px solid var(--border-light);
+}
+.service-grid-2col { grid-template-columns: repeat(2, 1fr); }
+.grid-item  { display: flex; flex-direction: column; gap: 3px; }
+.grid-label {
+    font-size: 6pt; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-secondary); font-weight: 800;
+}
+.grid-value {
+    font-size: 9.5pt; font-weight: 600;
+    color: var(--text-primary); word-break: break-word;
+}
+.grid-value.accent { color: var(--brand-accent); }
+.grid-value.large  { font-size: 16pt; font-weight: 800; }
+
+/* --- 11. BADGES ------------------------------------------------------------- */
+.badge, .severity-badge {
+    display: inline-block; padding: 3px 10px; font-size: 6.5pt;
+    font-weight: 800; letter-spacing: 0.06em; border-radius: var(--radius-sm);
+    text-transform: uppercase; white-space: nowrap;
+}
+.badge.risk-critical, .severity-badge.critical {
+    background: var(--risk-critical-bg); color: var(--risk-critical); border: 1px solid var(--risk-critical-bd);
+}
+.badge.risk-high, .severity-badge.high, .severity-badge.danger {
+    background: var(--risk-high-bg); color: var(--risk-high); border: 1px solid var(--risk-high-bd);
+}
+.badge.risk-medium, .severity-badge.medium {
+    background: var(--risk-medium-bg); color: var(--risk-medium); border: 1px solid var(--risk-medium-bd);
+}
+.badge.risk-low, .severity-badge.low, .severity-badge.success {
+    background: var(--risk-low-bg); color: var(--risk-low); border: 1px solid var(--risk-low-bd);
+}
+.badge.risk-info, .severity-badge.info {
+    background: var(--risk-info-bg); color: var(--risk-info); border: 1px solid var(--risk-info-bd);
+}
+.severity-badge.secondary {
+    background: var(--bg-header-cell); color: var(--text-secondary); border: 1px solid var(--border-medium);
+}
+
+/* --- 12. SEVERITY SECTION DIVIDER ------------------------------------------ */
+.severity-section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin: 28px 0 12px 0; padding-bottom: 8px; border-bottom: 2px solid var(--border-light);
+    font-size: 8pt; font-weight: 800; text-transform: uppercase; color: var(--text-primary);
+}
+
+/* --- 13. TABLES ------------------------------------------------------------- */
+table {
+    width: 100%; border-collapse: collapse; margin: 16px 0;
+    border: 1px solid var(--border-medium); border-radius: var(--radius-md);
+    overflow: hidden; font-size: 9pt;
+}
+thead tr { background: var(--bg-header-cell); }
+th {
+    padding: 10px 14px; text-align: left; font-size: 6.5pt;
+    font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-secondary); border-bottom: 1px solid var(--border-medium);
+    border-right: 1px solid var(--border-light);
+}
+th:last-child { border-right: none; }
+td {
+    padding: 10px 14px; border-bottom: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-light); vertical-align: top; color: var(--text-primary);
+}
+td:last-child { border-right: none; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:nth-child(even) { background: var(--bg-section); }
+td.mono { font-family: 'Consolas','Courier New',monospace; font-size: 8pt; color: var(--brand-accent); }
+
+/* --- 14. CODE & EVIDENCE BLOCKS --------------------------------------------- */
+code {
+    font-family: 'Consolas','Courier New',monospace; font-size: 8pt;
+    background: var(--bg-section); padding: 2px 6px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border-light); color: var(--brand-accent);
+}
+pre {
+    font-family: 'Consolas','Courier New',monospace; font-size: 8pt;
+    background: var(--bg-section); padding: 12px 14px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border-light);
+    white-space: pre-wrap; word-break: break-word; margin: 8px 0; color: var(--text-primary);
+}
+.code-dark {
+    background: var(--bg-code); color: var(--text-code); border: 1px solid #334155;
+    border-radius: var(--radius-sm); padding: 12px 14px;
+    font-family: 'Consolas','Courier New',monospace; font-size: 7.5pt;
+    white-space: pre-wrap; word-break: break-word; margin: 8px 0;
+}
+.code-dark.accent-border { border-left: 4px solid var(--brand-accent); }
+.evidence-box {
+    background: var(--bg-code); color: var(--text-code); padding: 12px 14px;
+    border-radius: var(--radius-sm); border: 1px solid #334155;
+    font-family: 'Consolas','Courier New',monospace; font-size: 7.5pt;
+    white-space: pre-wrap; word-break: break-word; margin: 8px 0;
+}
+
+/* --- 15. NOTIFICATION / ALERT BOXES ----------------------------------------- */
+.alert-box {
+    padding: 12px 14px; border-radius: var(--radius-sm); margin: 12px 0;
+    font-size: 8.5pt; line-height: 1.55;
+}
+.alert-box.threat  { background: var(--risk-high-bg);   border-left: 4px solid var(--risk-high);   color: var(--risk-high); }
+.alert-box.warning { background: var(--risk-medium-bg); border-left: 4px solid var(--risk-medium); color: var(--risk-medium); }
+.alert-box.success { background: var(--risk-low-bg);    border-left: 4px solid var(--risk-low);    color: var(--risk-low); }
+.alert-box.info    { background: var(--risk-info-bg);   border-left: 4px solid var(--risk-info);   color: var(--risk-info); }
+
+.remediation-box {
+    background: var(--risk-low-bg); border-left: 4px solid var(--risk-low);
+    border-radius: var(--radius-sm); padding: 12px 14px; margin: 12px 0;
+    font-size: 8.5pt; color: #14532d;
+}
+.ai-box {
+    background: var(--brand-accent-light); border-left: 4px solid var(--brand-accent);
+    border-radius: var(--radius-sm); padding: 12px 14px; margin: 12px 0;
+    font-size: 8.5pt; font-style: italic; color: var(--brand-primary);
+}
+.box-label {
+    display: block; font-size: 6pt; font-weight: 800; font-style: normal;
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px;
+}
+.remediation-box .box-label { color: var(--risk-low); }
+.ai-box .box-label           { color: var(--brand-accent); }
+.url-block {
+    display: block; background: var(--bg-section); border: 1px solid var(--border-light);
+    border-radius: var(--radius-sm); padding: 5px 10px;
+    font-family: 'Consolas','Courier New',monospace; font-size: 7.5pt;
+    color: var(--brand-accent); word-break: break-all; margin: 4px 0 10px 0;
+}
+
+/* --- 16. ML RISK SCORE BAR -------------------------------------------------- */
+.ml-score-bar {
+    background: var(--brand-accent-light); border-left: 4px solid var(--brand-accent);
+    padding: 12px 16px; border-radius: var(--radius-sm); margin: 14px 0;
+}
+.ml-label {
+    display: block; font-size: 6pt; font-weight: 900; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--brand-accent); margin-bottom: 4px;
+}
+.ml-value {
+    display: block; font-size: 13pt; font-weight: 800;
+    color: var(--text-primary); margin-bottom: 6px;
+}
+.ml-justification { font-size: 8pt; font-style: italic; color: var(--text-secondary); line-height: 1.45; }
+
+/* --- 17. DETAIL ITEMS ------------------------------------------------------- */
+.detail-item { margin-bottom: 10px; font-size: 9pt; color: var(--text-primary); line-height: 1.55; }
+.detail-item strong { color: var(--text-primary); font-weight: 700; }
+.description-text, .solution-text { font-size: 9pt; color: var(--text-primary); line-height: 1.65; margin-bottom: 12px; }
+
+/* --- 18. EMPTY STATE -------------------------------------------------------- */
+.empty-state {
+    text-align: center; padding: 36px 24px; border: 2px dashed var(--border-medium);
+    border-radius: var(--radius-md); color: var(--text-secondary);
+    background: var(--bg-section); margin: 10px 0;
+}
+.empty-state strong { display: block; font-size: 11pt; margin-bottom: 6px; color: var(--text-primary); }
+.empty-state.secure strong { color: var(--risk-low); }
+.empty-state p { font-size: 8.5pt; color: var(--text-muted); margin: 0; }
+
+/* --- 19. LOCATION CHIPS (Semgrep) ------------------------------------------ */
+.loc-chip {
+    display: inline-block; background: var(--border-medium); color: var(--text-primary);
+    padding: 2px 7px; border-radius: var(--radius-sm); font-size: 6.5pt;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px;
+}
+.loc-value { font-size: 8pt; color: var(--text-secondary); font-weight: 600; }
+
+/* --- 20. TAG LIST (Killchain tech stack) ------------------------------------ */
+.tag-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+
+/* --- 21. FOOTER ------------------------------------------------------------- */
+footer {
+    margin-top: 56px; padding-top: 20px; border-top: 2px solid var(--border-light);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 10px;
+}
+.footer-logo, footer .logo { height: 24px; width: auto; opacity: 0.55; }
+.footer-text {
+    font-size: 7pt; color: var(--text-muted); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.12em; text-align: center;
+}
+
+/* --- 22. UTILITIES ---------------------------------------------------------- */
+.text-mono    { font-family: 'Consolas','Courier New',monospace; font-size: 8pt; }
+.text-accent  { color: var(--brand-accent)    !important; }
+.text-muted   { color: var(--text-muted)      !important; }
+.text-sub     { color: var(--text-secondary)  !important; }
+.text-danger  { color: var(--risk-high)       !important; }
+.text-success { color: var(--risk-low)        !important; }
+.text-warning { color: var(--risk-medium)     !important; }
+.fw-800       { font-weight: 800; }
+.fw-700       { font-weight: 700; }
+.no-break     { page-break-inside: avoid; }
+.page-break   { page-break-before: always; }

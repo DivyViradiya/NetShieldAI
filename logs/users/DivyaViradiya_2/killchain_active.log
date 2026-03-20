@@ -1,8 +1,0 @@
-[2026-03-19 14:52:01] Log cleared for new killchain scan.
-[2026-03-19 14:52:03] [START] [START] Kill Chain Audit: example.com (Profile: Full Scan, Aggression: Attack)
-[2026-03-19 14:52:03] [EVENT] EVENT: scan_status | PAYLOAD: {"message": "Starting scan...", "phase": "Initialization"}
-[2026-03-19 14:52:03] [INFO] [+] Resolved example.com to IP: 104.18.26.120
-[2026-03-19 14:52:03] [INFO] [SETUP] Starting background traffic capture...
-[2026-03-19 14:52:04] [EVENT] EVENT: scan_status | PAYLOAD: {"message": "Running Recon Phase...", "phase": "recon_phase"}
-[2026-03-19 14:52:04] [PHASE] [PHASE] RECONNAISSANCE - Surface Area Discovery
-[2026-03-19 14:52:04] [STAGE] [STAGE] Scanning for subdomains and active hosts...

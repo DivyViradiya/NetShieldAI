@@ -2,244 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="file:///D:/NetShieldAI/static/images/NS_Logo.png">
     <title>NetShieldAI | Network Assessment Report</title>
-    <style>
-        /* --- SUBTLE SLATE & STEEL THEME (PROFESSIONAL) --- */
-        :root {
-            --neo-blue: #475569; /* Subdued Slate */
-            --neo-blue-accent: #3b82f6; /* Subtle brand blue */
-            --neo-blue-soft: #f8fafc; /* Very light cool grey */
-            --neo-border: #e2e8f0; /* Soft border */
-            --neo-text-main: #1e293b;
-            --neo-text-sub: #64748b;
-            --risk-high: #be123c;
-            --risk-low: #059669;
-            --radius: 8px;
-        }
-
-        @page {
-            margin: 1cm;
-            @bottom-right {
-                content: "Page " counter(page) " of " counter(pages);
-                font-size: 8pt;
-                color: #64748b;
-            }
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            color: var(--neo-text-main);
-            line-height: 1.5;
-            margin: 0;
-            padding: 20px 30px;
-            background-color: #fff;
-        }
-
-        /* --- HEADER --- */
-        header {
-            border-bottom: 1px solid var(--neo-border);
-            padding-bottom: 20px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .logo-container img {
-            height: 32px;
-            display: block;
-        }
-
-        .header-right {
-            text-align: right;
-        }
-
-        h1 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin: 0;
-            color: var(--neo-text-main);
-            letter-spacing: -0.01em;
-        }
-
-        .scan-subtitle {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--neo-text-sub);
-            margin-top: 2px;
-        }
-
-        /* --- INFO BAR --- */
-        .report-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            border: 1px solid var(--neo-border);
-            background: var(--neo-blue-soft);
-            margin-bottom: 25px;
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
-
-        .info-box {
-            padding: 12px 20px;
-            border-right: 1px solid var(--neo-border);
-        }
-
-        .info-box:last-child { border-right: none; }
-
-        .info-box strong {
-            display: block;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            color: var(--neo-text-sub);
-            letter-spacing: 0.05em;
-            font-weight: 700;
-        }
-
-        .info-box span {
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        /* --- SECTION HEADERS --- */
-        h3 {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--neo-blue-accent);
-            margin: 25px 0 15px 0;
-            letter-spacing: 0.1em;
-            border-left: 3px solid var(--neo-blue-accent);
-            padding-left: 10px;
-            font-weight: 700;
-        }
-
-        /* --- SUMMARY GRID --- */
-        .host-summary-grid {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .host-summary-card {
-            flex: 1;
-            padding: 12px;
-            background: #fff;
-            border: 1px solid var(--neo-border);
-            border-radius: var(--radius);
-        }
-
-        .host-summary-label {
-            font-size: 0.6rem;
-            font-weight: 700;
-            color: var(--neo-text-sub);
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .host-summary-value {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--neo-text-main);
-        }
-
-        /* --- REDESIGNED SERVICE CARDS --- */
-        .service-card {
-            border: 1px solid var(--neo-border);
-            border-radius: var(--radius);
-            margin-bottom: 15px;
-            page-break-inside: avoid;
-            overflow: hidden;
-        }
-
-        .service-card-header {
-            background: #f1f5f9;
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--neo-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .service-card-header h4 {
-            margin: 0;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
-        .service-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            padding: 12px 15px;
-            gap: 15px;
-        }
-
-        .grid-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .grid-label {
-            font-size: 0.55rem;
-            text-transform: uppercase;
-            color: var(--neo-text-sub);
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-
-        .grid-value {
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .version-identity {
-            background: var(--neo-blue-soft);
-            border-top: 1px solid var(--neo-border);
-            padding: 8px 15px;
-            font-family: 'Consolas', monospace;
-            font-size: 0.75rem;
-            color: var(--neo-text-main);
-        }
-
-        .badge {
-            padding: 2px 8px;
-            font-size: 0.6rem;
-            font-weight: 700;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-
-        .badge-secure { background: #dcfce7; color: #166534; }
-        .badge-warning { background: #fee2e2; color: #991b1b; }
-        .badge-info { background: #e0f2fe; color: #0369a1; }
-
-        /* --- FOOTER --- */
-        footer {
-            margin-top: 40px;
-            padding: 15px 0;
-            border-top: 1px solid var(--neo-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .footer-logo { height: 18px; opacity: 0.6; }
-
-        .footer-text {
-            font-size: 0.65rem;
-            color: var(--neo-text-sub);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ data.css_path }}">
 </head>
 <body>
 
     <header>
         <div class="logo-container">
-            <img src="{{ logo_url }}" alt="NetShieldAI">
+            <img src="{{ data.logo_url }}" alt="NetShieldAI" class="logo">
         </div>
         <div class="header-right">
             <h1>Network Scan Report</h1>
@@ -247,78 +17,68 @@
         </div>
     </header>
 
-    {% set ns = namespace(vuln_count=0) %}
-    {% if data.ports %}
-        {% for p in data.ports %}
-            {% if p.vulnerability_notes and p.vulnerability_notes | length > 5 %}
-                {% set ns.vuln_count = ns.vuln_count + 1 %}
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-
     <div class="report-info">
         <div class="info-box">
             <strong>Target Node</strong>
             <span>{{ data.target_ip | default('0.0.0.0') }}</span>
         </div>
         <div class="info-box">
-            <strong>Timestamp</strong>
+            <strong>Scan Date</strong>
             <span>{{ data.scan_date | default('N/A') }}</span>
         </div>
         <div class="info-box">
             <strong>Host Status</strong>
-            <span style="color: {{ 'var(--risk-low)' if data.host_status == 'Up' else 'var(--risk-high)' }}">
+            <span class="{{ 'host-status-up' if data.host_status == 'Up' else 'host-status-down' }}">
                 {{ data.host_status | upper | default('UNKNOWN') }}
+            </span>
+        </div>
+        <div class="info-box">
+            <strong>Threats</strong>
+            <span class="{{ 'threat-count-active' if data.has_vulns else 'threat-count-clear' }}">
+                {{ data.stats.open_ports }} PORT{{ 's' if data.stats.open_ports != 1 else '' }} /
+                {{ 'THREATS DETECTED' if data.has_vulns else 'NO THREATS' }}
             </span>
         </div>
     </div>
 
     <section>
         <h3>Operational Overview</h3>
-        <div class="host-summary-grid">
-            <div class="host-summary-card">
-                <div class="host-summary-label">Open Entry Points</div>
-                <div class="host-summary-value">{{ data.ports | length if data.ports else 0 }}</div>
+        <div class="nmap-overview-grid">
+            <div class="stat-card">
+                <div class="stat-label">Open Ports</div>
+                <div class="stat-value">{{ data.stats.open_ports | default(0) }}</div>
             </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Scan Duration</div>
-                <div class="host-summary-value">{{ data.stats.scan_duration | default('N/A') }}</div>
+            <div class="stat-card">
+                <div class="stat-label">Scan Duration</div>
+                <div class="stat-value">{{ data.stats.scan_duration | default('N/A') }}</div>
             </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Threats Detected</div>
-                <div class="host-summary-value" style="color: {{ 'var(--risk-high)' if ns.vuln_count > 0 else 'var(--risk-low)' }}">
-                    {{ ns.vuln_count }}
-                </div>
-            </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">OS Fingerprint</div>
-                <div class="host-summary-value" style="font-size: 0.85rem;">
-                    {{ data.os_guess if data.os_guess else "Undefined" }}
-                </div>
+            <div class="stat-card">
+                <div class="stat-label">OS Fingerprint</div>
+                <div class="stat-value text-small">{{ data.os_guess if data.os_guess else 'Undefined' }}</div>
             </div>
         </div>
 
-        <table style="width: 100%; border: 1px solid var(--neo-border); border-radius: var(--radius); overflow: hidden;">
+        <table>
             <thead>
-                <tr style="background: var(--neo-blue-soft);">
-                    <th style="padding: 8px 15px; text-align: left; font-size: 0.65rem; color: var(--neo-text-sub); text-transform: uppercase;">Configuration Metric</th>
-                    <th style="padding: 8px 15px; text-align: left; font-size: 0.65rem; color: var(--neo-text-sub); text-transform: uppercase;">Parameters / Results</th>
+                <tr>
+                    <th style="width: 30%;">Configuration Metric</th>
+                    <th>Parameters / Results</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td style="padding: 10px 15px; border-top: 1px solid var(--neo-border); font-size: 0.8rem;"><strong>CLI Arguments</strong></td>
-                    <td style="padding: 10px 15px; border-top: 1px solid var(--neo-border); font-size: 0.75rem; font-family: monospace; color: var(--neo-blue-accent);">{{ data.scan_args }}</td>
+                    <td><strong>CLI Arguments</strong></td>
+                    <td class="scan-args-cell">{{ data.scan_args | default('N/A') }}</td>
                 </tr>
                 <tr>
-                    <td style="padding: 10px 15px; border-top: 1px solid var(--neo-border); font-size: 0.8rem;"><strong>Security Posture</strong></td>
-                    <td style="padding: 10px 15px; border-top: 1px solid var(--neo-border);">
-                        {% if ns.vuln_count > 0 %}
-                            <span class="badge badge-warning">Action Required</span>
-                        {% elif '-sn' in data.scan_args %}
-                             <span class="badge badge-info">Discovery Only</span>
+                    <td><strong>Security Posture</strong></td>
+                    <td>
+                        {% if data.has_vulns %}
+                            <span class="badge risk-high">Action Required</span>
+                        {% elif data.scan_args and '-sn' in data.scan_args %}
+                            <span class="badge risk-info">Discovery Only</span>
                         {% else %}
-                            <span class="badge badge-secure">Verified Secure</span>
+                            <span class="badge risk-low">Verified Secure</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -328,20 +88,26 @@
 
     <section>
         <h3>Service Enumeration</h3>
+
         {% if data.ports %}
             {% for port in data.ports %}
-            {% set has_vuln = port.vulnerability_notes and port.vulnerability_notes | length > 5 %}
-            <div class="service-card">
-                <div class="service-card-header">
-                    <h4>Port {{ port.port }} <span style="font-weight: 400; color: var(--neo-text-sub);">({{ port.protocol | upper }})</span></h4>
-                    <span class="badge {{ 'badge-warning' if has_vuln else 'badge-secure' }}">
+            {% set has_vuln = (port.vulnerability_notes and port.vulnerability_notes | length > 5) or port.predicted_risk_score %}
+            <div class="finding-card">
+
+                <div class="finding-header">
+                    <h4>
+                        Port {{ port.port }}
+                        <span class="text-muted" style="font-weight: 400;">({{ port.protocol | upper }})</span>
+                    </h4>
+                    <span class="badge {{ 'risk-medium' if has_vuln else 'risk-low' }}">
                         {{ 'Finding' if has_vuln else 'Operational' }}
                     </span>
                 </div>
+
                 <div class="service-grid">
                     <div class="grid-item">
                         <span class="grid-label">Service</span>
-                        <span class="grid-value"><strong>{{ port.service | upper }}</strong></span>
+                        <span class="grid-value">{{ port.service | upper }}</span>
                     </div>
                     <div class="grid-item">
                         <span class="grid-label">State</span>
@@ -352,51 +118,61 @@
                         <span class="grid-value">{{ port.process_name if port.process_name else 'N/A' }}</span>
                     </div>
                     <div class="grid-item">
-                        <span class="grid-label">CPE Trace</span>
-                        <span class="grid-value" style="font-family: monospace; font-size: 0.7rem;">{{ port.cpe if port.cpe and port.cpe != 'N/A' else 'None' }}</span>
+                        <span class="grid-label">Risk Score</span>
+                        <span class="grid-value text-accent">{{ port.predicted_risk_score | default('0.00') }}</span>
                     </div>
                 </div>
 
-                {% if port.version %}
-                <div class="version-identity">
-                    <strong style="font-size: 0.55rem; text-transform: uppercase; color: var(--neo-text-sub);">Version Identity:</strong> {{ port.version }}
-                </div>
-                {% endif %}
+                <div class="port-detail">
+                    {% if port.version %}
+                    <div class="port-version-block">
+                        <span class="grid-label">Version Identity</span>
+                        <code>{{ port.version }}</code>
+                    </div>
+                    {% endif %}
 
-                {% if has_vuln %}
-                <div style="padding: 10px 15px; background: #fff1f2; color: #991b1b; font-size: 0.8rem; border-top: 1px solid #fecdd3;">
-                    <strong>Threat Analysis:</strong> {{ port.vulnerability_notes }}
+                    {% if port.cpe and port.cpe != 'N/A' %}
+                    <div class="port-version-block">
+                        <span class="grid-label">CPE Trace</span>
+                        <span class="port-cpe">{{ port.cpe }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if has_vuln %}
+                    <div class="vuln-note">
+                        <span class="vuln-note-label">Threat Analysis</span>
+                        {{ port.vulnerability_notes }}
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
+
             </div>
             {% endfor %}
-        
+
         {% else %}
-            <div style="text-align: center; padding: 40px; border: 1px dashed var(--neo-border); border-radius: var(--radius); color: var(--neo-text-sub);">
-                {% if '-sn' in data.scan_args or 'Ping Scan' in data.scan_args %}
-                    <strong style="font-size: 1.1rem; color: var(--risk-low); display: block; margin-bottom: 5px;">Host Discovery Successful</strong>
-                    <span style="font-size: 0.8rem;">Target is <strong>ONLINE</strong>. No port scan was requested (Ping Sweep Mode).</span>
+            <div class="empty-state">
+                {% if data.scan_args and ('-sn' in data.scan_args or 'Ping Scan' in data.scan_args) %}
+                    <strong>Host Discovery Successful</strong>
+                    <span>Target is <strong>ONLINE</strong>. No port scan was requested (Ping Sweep Mode).</span>
                 {% else %}
-                    <strong style="font-size: 1.1rem; color: var(--neo-text-main); display: block; margin-bottom: 5px;">No Open Services Detected</strong>
-                    <span style="font-size: 0.8rem;">Host is likely behind a firewall or all ports are closed.</span>
+                    <strong>No Open Services Detected</strong>
+                    <span>Host is likely behind a firewall or all ports are closed.</span>
                 {% endif %}
             </div>
         {% endif %}
     </section>
 
-    {% if data.raw_output_summary %}
-    <section style="page-break-before: always;">
-        <h3>Raw Console Data</h3>
-        <div style="background: var(--neo-blue-soft); border: 1px solid var(--neo-border); padding: 15px; font-family: 'Consolas', monospace; font-size: 0.7rem; white-space: pre-wrap; color: var(--neo-text-sub); border-radius: var(--radius);">
-{{ data.raw_output_summary }}
-        </div>
+    {% if data.raw_summary %}
+    <section>
+        <h3>Raw Console Output</h3>
+        <pre class="raw-console">{{ data.raw_summary }}</pre>
     </section>
     {% endif %}
 
     <footer>
-        <img src="{{ logo_url_small }}" alt="NS Logo" class="footer-logo">
+        <img src="{{ data.logo_url_small }}" alt="NetShieldAI" class="footer-logo">
         <div class="footer-text">
-            NetShieldAI Reporting Engine // Network Assessment // {{ data.scan_date }}
+            NetShieldAI Reporting Engine // Network Assessment // {{ data.scan_date | default('') }}
         </div>
     </footer>
 

@@ -67,8 +67,8 @@ def setup_logger():
         ch.setFormatter(ColoredFormatter())
         logger.addHandler(ch)
         
-        # File Handler (logs/app_runtime.log)
-        log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'logs')
+        # File Handler (.logs/app_runtime.log)
+        log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.logs')
         os.makedirs(log_dir, exist_ok=True)
         fh = logging.FileHandler(os.path.join(log_dir, 'app_runtime.log'), encoding='utf-8')
         fh.setLevel(logging.DEBUG)

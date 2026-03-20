@@ -1,0 +1,47 @@
+/* =============================================================
+   NETSHIELDAI — report_sql.css
+   Overrides for: sql_report_template.html
+   Requires: report_base.css
+   ============================================================= */
+
+/* Payload block — dark with word-wrap */
+.payload-block {
+    font-family: 'Consolas','Courier New',monospace;
+    font-size: 7.5pt;
+    background: var(--bg-code);
+    color: var(--text-code);
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #334155;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-top: 6px;
+}
+
+/* DB fingerprint param column */
+.db-param { font-weight: 700; color: var(--text-primary); }
+
+/* Exfiltrated data section — high-severity border */
+.exfil-card {
+    border: 1px solid var(--risk-high-bd) !important;
+}
+.exfil-header {
+    background: var(--risk-high-bg) !important;
+}
+.exfil-header h4 { color: var(--risk-high); }
+
+/* Exfil list */
+.exfil-list {
+    background: var(--bg-page);
+    border: 1px solid var(--risk-high-bd);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-family: 'Consolas','Courier New',monospace;
+    font-size: 8pt;
+    color: #7f1d1d;
+    line-height: 1.65;
+}
+
+/* Status VULNERABLE / SECURE in info-box */
+.status-vulnerable { color: var(--risk-high);  font-weight: 800; }
+.status-secure     { color: var(--risk-low);   font-weight: 800; }

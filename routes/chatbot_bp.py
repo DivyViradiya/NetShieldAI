@@ -26,20 +26,21 @@ _active_scans_cache = {}   # { user_identifier: (timestamp, result) }
 _active_scans_lock = threading.Lock()
 _ACTIVE_SCANS_TTL = 10  # seconds
 
-def get_all_active_scans(user_identifier):
+def get_all_active_scans(user_result_dir):
     """Checks status across all scanner modules for a user using the DATABASE.
     Results are TTL-cached per user to avoid 8x DB queries + zombie checks on every get_history call.
     """
     # [PERF] Return cached result if still fresh (avoids expensive repeated checks within 10s)
     with _active_scans_lock:
-        cached = _active_scans_cache.get(user_identifier)
+        cached = _active_scans_cache.get(user_result_dir)
         if cached and (time.time() - cached[0]) < _ACTIVE_SCANS_TTL:
             return cached[1]
 
     active = {}
     
     try:
-        user_id = int(user_identifier.split('_')[-1])
+        # We need the user_id (int) for DB lookups
+        user_id = int(user_result_dir.split('_')[-1])
         
         # 1. Query DB for LATEST scan for each DB-supported tool
         # This ensures that even if a scan is Completed/Failed, the UI knows about it.
@@ -62,21 +63,21 @@ def get_all_active_scans(user_identifier):
                 if latest.status == 'Running':
                     is_actually_running = False
                     if tool_name == 'ZAP':
-                        is_actually_running = zap_scanner.is_scan_running(user_identifier)
+                        is_actually_running = zap_scanner.is_scan_running(user_result_dir)
                     elif tool_name == 'API':
-                        is_actually_running = api_scanner.is_scan_running(user_identifier)
+                        is_actually_running = api_scanner.is_scan_running(user_result_dir)
                     elif tool_name == 'Nmap':
-                        is_actually_running = network_scanner.is_scan_running(user_identifier)
+                        is_actually_running = network_scanner.is_scan_running(user_result_dir)
                     elif tool_name == 'SSLScan':
-                        is_actually_running = ssl_scanner.is_scan_running(user_identifier)
+                        is_actually_running = ssl_scanner.is_scan_running(user_result_dir)
                     elif tool_name == 'SQLMap':
-                        is_actually_running = sql_scanner.is_scan_running(user_identifier)
+                        is_actually_running = sql_scanner.is_scan_running(user_result_dir)
                     elif tool_name == 'Sniffer':
-                        is_actually_running = packet_sniffer.is_scan_running(user_identifier)
+                        is_actually_running = packet_sniffer.is_scan_running(user_result_dir)
                     elif tool_name == 'Semgrep SAST':
-                        is_actually_running = semgrep_scanner.is_scan_running(user_identifier)
+                        is_actually_running = semgrep_scanner.is_scan_running(user_result_dir)
                     elif tool_name == 'Kill Chain':
-                        is_actually_running = killchain_service.is_user_scanning(user_identifier)
+                        is_actually_running = killchain_service.is_user_scanning(user_result_dir)
                     
                     if not is_actually_running:
                         latest.status = 'Interrupted'
@@ -94,12 +95,12 @@ def get_all_active_scans(user_identifier):
 
     # [PERF] Store result in TTL cache (avoids repeated expensive checks)
     with _active_scans_lock:
-        _active_scans_cache[user_identifier] = (time.time(), active)
+        _active_scans_cache[user_result_dir] = (time.time(), active)
 
     return active
 
 # --- Logging Setup ---
-BASE_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+BASE_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".logs")
 SYSTEM_LOG_DIR = os.path.join(BASE_LOG_DIR, "system")
 USERS_LOG_DIR = os.path.join(BASE_LOG_DIR, "users")
 
@@ -118,7 +119,7 @@ if not logger.handlers:
     logger.addHandler(file_handler)
 
 def get_user_logger(user_identifier):
-    """Returns a logger specifically for a user, saving to logs/users/{user_id}/chatbot.log"""
+    """Returns a logger specifically for a user, saving to .logs/users/{user_id}/chatbot.log"""
     user_dir = os.path.join(USERS_LOG_DIR, user_identifier)
     os.makedirs(user_dir, exist_ok=True)
     
@@ -180,8 +181,8 @@ def get_user_pdf_path(scanner_type, target=None):
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
     # NEW LOGIC: Composite Identifier (Matches other blueprints)
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    results_root = os.path.join(base_dir, 'results', user_identifier)
+    user_result_dir = get_user_result_dir_name(current_user)
+    results_root = os.path.join(base_dir, '.results', user_identifier)
     
     from Services import report_manager
 
@@ -225,7 +226,7 @@ def get_user_pdf_path(scanner_type, target=None):
 def chatbot_page():
     """Renders the chatbot UI page with PRE-LOADED session data to prevent UI lag."""
     logger.info(f"[*] Accessing AI Analyst Page (User: {current_user.username})")
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     
     # [NEW] Handle Session ID from URL (e.g. after redirect from scanner)
@@ -277,7 +278,7 @@ def chatbot_page():
 @login_required
 def upload_report():
     """Handles manual file uploads by sending them to the central server proxy."""
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         if 'file' not in request.files:
@@ -347,7 +348,7 @@ def chat_with_ai():
     Standard (Blocking) Chat Endpoint.
     Updated to handle options like verbosity and incognito mode.
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         data = request.json
@@ -412,7 +413,7 @@ def chat_with_ai_stream():
     """
     Proxies the streaming chat request to the backend with options.
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         # Handle both JSON and Multipart/Form-Data
@@ -487,7 +488,7 @@ def scanner_analysis_proxy():
     Optimized PDF analysis: Sends the FILE PATH instead of the full BYTES.
     FastAPI will read the file directly from the local disk.
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         data = request.get_json()
@@ -556,7 +557,7 @@ def clear_history_proxy():
     """
     Wipes the chat history for the active session but keeps the report context.
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         session_id = session.get('chatbot_session_id')
@@ -577,7 +578,7 @@ def delete_all_sessions_proxy():
     """
     Master Reset: Deletes EVERYTHING for the current user.
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         proxy_url = f"{SERVER_PROXY_URL}/delete_all_sessions"
@@ -598,7 +599,7 @@ def clear_chat():
     """
     Legacy endpoint: clears the ACTIVE session.
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         session_id = session.get('chatbot_session_id')
@@ -635,7 +636,7 @@ def execute_action():
     Executes a security scan based on an AI-triggered action.
     Maps tool names to the internal Flask scanner endpoints.
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     
     try:
@@ -782,7 +783,7 @@ def get_chat_history_proxy():
     """
     Proxies the history fetch request to the backend.
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         session_id = request.args.get('session_id') or session.get('chatbot_session_id')
@@ -819,7 +820,7 @@ def get_chat_history_proxy():
 def get_sessions_proxy():
     """Proxies the request to get all user sessions."""
     try:
-        current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+        user_result_dir = get_user_result_dir_name(current_user)
         proxy_url = f"{SERVER_PROXY_URL}/get_user_sessions"
         params = {'user_id': current_user_identifier}
         
@@ -857,7 +858,7 @@ def switch_session():
 @login_required
 def get_session_graph_proxy(session_id):
     """Proxies the request to fetch the interactive topology graph."""
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         proxy_url = f"{SERVER_PROXY_URL}/chatbot/session/{session_id}/graph"
@@ -886,7 +887,7 @@ def delete_session_proxy():
     """
     Proxies the request to delete a SPECIFIC session (not necessarily the active one).
     """
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_logger = get_user_logger(user_identifier)
     try:
         data = request.json

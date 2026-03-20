@@ -24,10 +24,9 @@ BASE_DIR = Path(__file__).parent.parent
 SSLSCAN_EXECUTABLE = Path(r"C:\Program Files\sslscan\sslscan.exe")
 
 # Define default paths for storing results (Fallback)
-DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "ssl_scanner"
-
-# Logs (Shared)
-LOG_FILE = BASE_DIR / "logs" / "ssl_agent_log.txt"
+DEFAULT_RESULTS_DIR = BASE_DIR / ".results" / "ssl_scanner"
+# Ensure logs directory exists
+LOG_DIR = BASE_DIR / ".logs" / "ssl_agent_log.txt"
 
 TEMP_DIR = Path(tempfile.gettempdir()) / "NetShieldAI" / "sslscan"
 TEMP_DIR.mkdir(parents=True, exist_ok=True)
@@ -405,7 +404,7 @@ def parse_ssl_report(report_file, output_dir=None, user_id=None, target=None, ti
 
 def clear_log_file(user_id=None):
     """Clears the log file for a specific user or the system log."""
-    log_dir = BASE_DIR / "logs"
+    log_dir = BASE_DIR / ".logs"
     if user_id:
         user_id = str(user_id)
         target_log_file = log_dir / "users" / user_id / "ssl_agent_log.txt"

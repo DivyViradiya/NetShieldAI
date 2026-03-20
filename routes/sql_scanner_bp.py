@@ -30,23 +30,12 @@ from Services.target_validator import validate_target, TargetBlockedError, Autho
 
 sql_scanner_bp = Blueprint('sql_scanner_bp', __name__)
 
-# --- PHASE 3: User-Specific Directory Helper ---
+# --- User-Specific Directory Helper ---
 def get_user_results_dir():
-    """
-    Constructs the path: results/<username_id>/sql_scanner
-    """
-    if not current_user.is_authenticated:
-        return None
-    
-    # Composite Identifier: username_id
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'sql_scanner')
-    
-    # Create directory if it doesn't exist
+    """Constructs the path: results/<username_id>/sql_scanner"""
+    user_base_dir = report_manager.get_user_results_dir(current_user)
+    user_dir = os.path.join(user_base_dir, 'sql_scanner')
     os.makedirs(user_dir, exist_ok=True)
-        
     return user_dir
 
 # ==========================================
@@ -196,20 +185,22 @@ def scan_sql():
                     
                     # Check if the PDF generator has the SQL function implemented
                     if hasattr(pdf_generator, 'create_sql_report_pdf'):
-                        pdf_generator.create_sql_report_pdf(str(json_report_path), str(pdf_path))
+                        success = pdf_generator.create_sql_report_pdf(str(json_report_path), str(pdf_path), user_id=current_user_identifier)
                         
-                        if os.path.exists(pdf_path):
-                            # Final synchronization wait
-                            time.sleep(1.5)
+                        if success and os.path.exists(pdf_path):
+                            # Final synchronization wait using centralized helper
+                            report_manager.wait_for_file(pdf_path)
                             sql_scanner.log(f"[+] PDF report generated and updated in user dashboard", current_user_identifier, to_console=True)
                             sql_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_url}", current_user_identifier, to_console=True)
                         else:
-                            sql_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier, to_console=True)
+                            # If it returned False or file wasn't created, the error is already logged inside the generator
+                            # but we add a final confirmation here.
+                            sql_scanner.log("[!] PDF generation failed to produce a valid report file.", current_user_identifier, to_console=True)
                     else:
                         sql_scanner.log("[!] PDF Generator missing 'create_sql_report_pdf' function.", current_user_identifier, to_console=True)
                 
                 except Exception as e:
-                    sql_scanner.log(f"[!] FAILED to generate PDF: {str(e)}", current_user_identifier, to_console=True)
+                    sql_scanner.log(f"[!] Critical error during PDF generation: {str(e)}", current_user_identifier, to_console=True)
             else:
                 sql_scanner.log(f"[!] SQL scan failed or produced no results for {target_url}.", current_user_identifier, to_console=True)
             

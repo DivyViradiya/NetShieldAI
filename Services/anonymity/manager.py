@@ -103,6 +103,17 @@ class AnonymityManager:
             for f in cap.flags
         ]
 
+        # [FIX] SQLMap unique handling
+        if scanner == "sqlmap":
+            if self.mode == "tor":
+                # Ensure we pass the specific Tor port configured in .env
+                # SQLMap native --tor uses 9050 by default, so we add explicit port
+                flags = ["--tor", f"--tor-port={self.socks_port}", "--tor-type=SOCKS5", "--check-tor"]
+                if self.socks_host != "127.0.0.1":
+                    flags.append(f"--tor-address={self.socks_host}")
+            else:
+                flags = [f"--proxy={self.proxy_url}", "--batch", "--check-proxy"]
+
         # Prepend force_scan_type for nmap
         if cap.force_scan_type:
             flags = [cap.force_scan_type] + flags

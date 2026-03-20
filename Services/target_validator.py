@@ -33,9 +33,14 @@ STAGING_INDICATORS = [
     "qa", "sandbox", "demo", "preprod", "pre-prod", "local"
 ]
 
-# ── Blocked IP ranges (IANA special-purpose + known critical infra) ───
+# ── Blocked IP ranges (IANA special-purpose + private + known critical infra) ───
 BLOCKED_IP_RANGES = [
     "0.0.0.0/8",        # "This" network
+    "127.0.0.0/8",      # Loopback (127.0.0.1 etc)
+    "10.0.0.0/8",       # Private-Use
+    "172.16.0.0/12",    # Private-Use
+    "192.168.0.0/16",   # Private-Use
+    "169.254.0.0/16",   # Link Local
     "100.64.0.0/10",    # Shared address space
     "192.0.0.0/24",     # IETF Protocol Assignments
     "192.0.2.0/24",     # TEST-NET-1
@@ -97,6 +102,9 @@ def validate_target(target: str, user_confirmed_auth: bool = False) -> bool:
 
     if not hostname:
         raise TargetBlockedError("Invalid or empty target — cannot determine hostname.")
+
+    if hostname in ["localhost", "127.0.0.1", "::1"]:
+        raise TargetBlockedError("Scanning the local host is not permitted.")
 
     # Check blocked TLDs
     for tld in BLOCKED_TLDS:

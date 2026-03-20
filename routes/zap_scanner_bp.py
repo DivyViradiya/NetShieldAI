@@ -14,8 +14,9 @@ from werkzeug.utils import secure_filename
 # --- Logging Setup ---
 logger = logging.getLogger(__name__)
 
-# [NEW] Import db to update user stats
+# [NEW] Import db and get_user_result_dir_name to update user stats
 from core.extensions import db
+from models.models import get_user_result_dir_name
 
 # Import the new zap_scanner module
 from Services import zap_scanner
@@ -30,18 +31,10 @@ zap_scanner_bp = Blueprint('zap_scanner_bp', __name__)
 
 # --- User-Specific Directory Helper ---
 def get_user_results_dir():
-    if not current_user.is_authenticated:
-        return None
-    
-    # NEW LOGIC: Composite Identifier
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'zap_scanner')
-    
-    # FIXED: Added exist_ok=True to prevent race condition crashes
+    """Constructs the path: results/<username_id>/zap_scanner"""
+    user_base_dir = report_manager.get_user_results_dir(current_user)
+    user_dir = os.path.join(user_base_dir, 'zap_scanner')
     os.makedirs(user_dir, exist_ok=True)
-        
     return user_dir
 
 SERVER_PROXY_URL = "http://localhost:5100" 
@@ -100,14 +93,14 @@ def initiate_zap_scan():
     # [REMOVED] Legacy model check. TCTREngine handles model availability internally.
 
     # Capture User Context for Thread using Composite ID
-    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_output_dir = get_user_results_dir()
     user_id_for_log = current_user.id
     app = current_app._get_current_object()
 
     # RC-12 FIX: Prevent duplicate concurrent ZAP scans for the same user (mirrors Nmap guard)
-    if zap_scanner.is_scan_running(current_user_identifier):
-        logger.warning(f"[!] ZAP Scan already in progress for user {current_user_identifier}")
+    if zap_scanner.is_scan_running(user_result_dir):
+        logger.warning(f"[!] ZAP Scan already in progress for user {user_result_dir}")
         return jsonify({
             "status": "error",
             "message": "A ZAP scan is already in progress. Please wait for it to complete."
@@ -124,11 +117,11 @@ def initiate_zap_scan():
         db.session.commit()
     except Exception as e:
         db.session.rollback()  # RC-3 FIX: clean session before thread starts
-        zap_scanner.log(f"[!] Failed to update user stats: {e}", current_user_identifier)
+        zap_scanner.log(f"[!] Failed to update user stats: {e}", user_result_dir)
 
     def scan_and_process_task():
         # Pass composite ID to log function
-        zap_scanner.log(f"[*] Starting ZAP Quick Scan for {target_url} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
+        zap_scanner.log(f"[*] Starting ZAP Quick Scan for {target_url} (User: {user_result_dir})...", user_result_dir, to_console=True)
         
         paths = zap_scanner.get_output_paths(user_output_dir, target=target_url)
         xml_path = paths["xml_report"]
@@ -139,7 +132,7 @@ def initiate_zap_scan():
         start_time = time.time()
         
         # 1. Run Scan (Pass composite ID and scan_mode)
-        scan_successful = zap_scanner.run_zap_scan(target_url, str(xml_path), current_user_identifier, scan_mode=scan_mode)
+        scan_successful = zap_scanner.run_zap_scan(target_url, str(xml_path), user_result_dir, scan_mode=scan_mode)
 
         duration = time.time() - start_time
         finding_count = 0
@@ -147,44 +140,44 @@ def initiate_zap_scan():
 
         if scan_successful:
             status = "Completed"
-            zap_scanner.log("[+] ZAP scan command finished. Parsing...", current_user_identifier)
+            zap_scanner.log("[+] ZAP scan command finished. Parsing...", user_result_dir)
             
             # 2. Parse (Pass composite ID)
-            scan_results = zap_scanner.parse_zap_xml_report(str(xml_path), current_user_identifier)
+            scan_results = zap_scanner.parse_zap_xml_report(str(xml_path), user_result_dir)
             
             if scan_results:
                 scan_results["target_url"] = target_url
                 finding_count = len(scan_results.get("findings", []))
                 
                 # 3. Save JSON (Pass composite ID to logging inside save function if needed, usually directory is enough)
-                json_report_path = zap_scanner.save_json_report(scan_results, user_output_dir, current_user_identifier, target=target_url)
+                json_report_path = zap_scanner.save_json_report(scan_results, user_output_dir, user_result_dir, target=target_url)
                 
                 if json_report_path:
-                    zap_scanner.log(f"[+] JSON report saved.", current_user_identifier, to_console=True)
+                    zap_scanner.log(f"[+] JSON report saved.", user_result_dir, to_console=True)
                     
                     # 4. Generate PDF
                     try:
-                        zap_scanner.log("[*] Generating PDF report...", current_user_identifier, to_console=True)
-                        pdf_generator.create_zap_report_pdf(json_report_path, str(pdf_path))
+                        zap_scanner.log("[*] Generating PDF report...", user_result_dir, to_console=True)
+                        pdf_generator.create_zap_report_pdf(json_report_path, str(pdf_path), user_id=user_result_dir)
                         
                         if pdf_path.exists():
-                            # Final synchronization wait to ensure file handles are closed
-                            time.sleep(1.5)
-                            zap_scanner.log(f"[+] PDF generated successfully.", current_user_identifier, to_console=True)
-                            zap_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", current_user_identifier, to_console=True)
-                            zap_scanner.log(f"[*] Scan, analysis, and prediction complete.", current_user_identifier, to_console=True)
+                            # [FIX] Final synchronization wait using centralized helper
+                            report_manager.wait_for_file(str(pdf_path))
+                            zap_scanner.log(f"[+] PDF generated successfully.", user_result_dir, to_console=True)
+                            zap_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", user_result_dir, to_console=True)
+                            zap_scanner.log(f"[*] Scan, analysis, and prediction complete.", user_result_dir, to_console=True)
                         else:
-                             zap_scanner.log("[!] PDF generation failed (file missing).", current_user_identifier, to_console=True)
+                             zap_scanner.log("[!] PDF generation failed (file missing).", user_result_dir, to_console=True)
                              
                     except Exception as e:
-                        zap_scanner.log(f"[!] FAILED to generate PDF report: {e}", current_user_identifier, to_console=True)
+                        zap_scanner.log(f"[!] FAILED to generate PDF report: {e}", user_result_dir, to_console=True)
 
                 else:
-                    zap_scanner.log("[!] Failed to save JSON report.", current_user_identifier)
+                    zap_scanner.log("[!] Failed to save JSON report.", user_result_dir)
             else:
-                zap_scanner.log("[!] Failed to parse ZAP XML report.", current_user_identifier)
+                zap_scanner.log("[!] Failed to parse ZAP XML report.", user_result_dir)
         else:
-            zap_scanner.log(f"[!] ZAP scan failed for target: {target_url}.", current_user_identifier)
+            zap_scanner.log(f"[!] ZAP scan failed for target: {target_url}.", user_result_dir)
 
         # Log to Database (Inside App Context)
         with app.app_context():
@@ -210,14 +203,14 @@ def initiate_zap_scan():
 @login_required
 def get_zap_status():
     """Checks if a ZAP scan is currently running for the user."""
-    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    is_running = zap_scanner.is_scan_running(current_user_identifier)
+    user_result_dir = get_user_result_dir_name(current_user)
+    is_running = zap_scanner.is_scan_running(user_result_dir)
     
     # Also get the target if running
     target = None
     if is_running:
         with zap_scanner.scan_lock:
-            target = zap_scanner.active_scans[current_user_identifier].get('target')
+            target = zap_scanner.active_scans[user_result_dir].get('target')
 
     return jsonify({
         "status": "success",
@@ -232,7 +225,7 @@ def trigger_ai_analysis_route():
     """Robustly triggers AI analysis by finding the correct PDF report."""
     data = request.get_json() or {}
     target = data.get('target')
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     user_dir = get_user_results_dir()
     
     # Resolve the latest PDF report for this scanner
@@ -243,7 +236,7 @@ def trigger_ai_analysis_route():
         pdf_path_str = report_manager.find_latest_report(user_dir, scanner_name=None, extension="pdf")
 
     if not pdf_path_str or not os.path.exists(pdf_path_str):
-        zap_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_identifier)
+        zap_scanner.log(f"[!] Analysis failed: PDF report not found in {user_dir}", user_result_dir)
         return jsonify({
             "status": "error", 
             "message": "PDF report not available. Please run a scan first."
@@ -348,16 +341,16 @@ def download_pdf_report():
 def clear_zap_log_route():
     """Clears the log for the CURRENT USER only."""
     # Use composite identifier
-    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    zap_scanner.clear_log_file(current_user_identifier)
+    user_result_dir = get_user_result_dir_name(current_user)
+    zap_scanner.clear_log_file(user_result_dir)
     return jsonify({"status": "success", "message": "Log cleared."})
 
 @zap_scanner_bp.route('/log_history', methods=['GET'])
 @login_required
 def get_zap_log_history():
     """Retrieves the previously written logs for resilient frontend loading."""
-    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    log_file = os.path.join(zap_scanner.LOGS_DIR, "users", current_user_identifier, "zap_agent_log.txt")
+    user_result_dir = get_user_result_dir_name(current_user)
+    log_file = os.path.join(zap_scanner.LOGS_DIR, "users", user_result_dir, "zap_agent_log.txt")
     logs = []
     if os.path.exists(log_file):
         with open(log_file, 'r', encoding='utf-8') as f:
@@ -372,11 +365,11 @@ def zap_log_stream():
     Streams logs specifically for the logged-in user from their memory queue.
     """
     # Use composite identifier
-    current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_result_dir = get_user_result_dir_name(current_user)
     
     def generate_logs():
         # Get the specific queue for this user
-        user_queue = zap_scanner.get_user_queue(current_user_identifier)
+        user_queue = zap_scanner.get_user_queue(user_result_dir)
         
         while True:
             try:

@@ -18,20 +18,12 @@ from Services.target_validator import validate_target, TargetBlockedError, Autho
 
 api_scanner_bp = Blueprint('api_scanner_bp', __name__)
 
-# --- User-Specific Directory Helper (Isolated for API) ---
+# --- User-Specific Directory Helper ---
 def get_user_results_dir():
-    if not current_user.is_authenticated:
-        return None
-    
-    # Composite Identifier
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    # NOTE: distinct folder 'api_scanner'
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'api_scanner')
-    
+    """Constructs the path: results/<username_id>/api_scanner"""
+    user_base_dir = report_manager.get_user_results_dir(current_user)
+    user_dir = os.path.join(user_base_dir, 'api_scanner')
     os.makedirs(user_dir, exist_ok=True)
-        
     return user_dir
 
 # -----------------------------------------------
@@ -177,10 +169,10 @@ def initiate_api_scan():
                         # 4. Generate PDF
                         try:
                             api_scanner.log(f"[*] Generating PDF report for {target_url}...", current_user_identifier, to_console=True)
-                            pdf_generator.create_zap_report_pdf(json_report_path, str(pdf_path))
+                            pdf_generator.create_api_report_pdf(json_report_path, str(pdf_path), user_id=current_user_identifier)
                             
                             if os.path.exists(pdf_path):
-                                time.sleep(1.5)
+                                report_manager.wait_for_file(str(pdf_path))
                                 api_scanner.log(f"[+] PDF generated successfully.", current_user_identifier, to_console=True)
                                 api_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_url}", current_user_identifier, to_console=True)
                                 api_scanner.log(f"[*] API Scan complete.", current_user_identifier, to_console=True)

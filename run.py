@@ -54,13 +54,13 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
 
 # --- [FIX] Use Absolute Path for Database ---
 basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'instance', 'users_db.sqlite3')
+db_path = os.path.join(basedir, '.instance', 'users_db.sqlite3')
 # Increase timeout to 20s for better concurrency
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}?timeout=20'
 app.config['BASE_URL'] = os.environ.get('BASE_URL', 'http://localhost:5100')
 
 # --- Scheduler DB (separate SQLite file) ---
-scheduler_db_path = os.path.join(basedir, 'instance', 'scheduler_db.sqlite3')
+scheduler_db_path = os.path.join(basedir, '.instance', 'scheduler_db.sqlite3')
 app.config['SQLALCHEMY_BINDS'] = {
     'scheduler': f'sqlite:///{scheduler_db_path}?timeout=20'
 }
@@ -90,6 +90,25 @@ with app.app_context():
         cursor.execute("PRAGMA journal_mode=WAL")
         cursor.execute("PRAGMA synchronous=NORMAL")
         cursor.close()
+
+# --- [NEW] Startup Cleanup Hook ---
+def cleanup_stale_scans():
+    """Marks any 'Running' or 'Pending' scans from a previous session as failed."""
+    from models.models import ScanLog
+    try:
+        with app.app_context():
+            stale_scans = ScanLog.query.filter(ScanLog.status.in_(['Running', 'Pending'])).all()
+            if stale_scans:
+                logger.info(f"[*] Found {len(stale_scans)} abandoned scans from a previous session. Marking as failed...")
+                for scan in stale_scans:
+                    scan.status = "Failed (System Restart)"
+                    scan.end_time = datetime.utcnow()
+                db.session.commit()
+                logger.info("[+] Stale scan cleanup complete.")
+    except Exception as e:
+        logger.error(f"[!] Error during startup cleanup: {e}")
+
+cleanup_stale_scans()
 
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'

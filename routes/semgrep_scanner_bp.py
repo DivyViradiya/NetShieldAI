@@ -29,20 +29,10 @@ MAX_UPLOAD_SIZE = 1024 * 1024 * 1024  # 1 GB limit
 
 # --- User-Specific Directory Helper ---
 def get_user_results_dir():
-    """
-    Constructs the path: results/<username_id>/semgrep_scanner
-    """
-    if not current_user.is_authenticated:
-        return None
-    
-    # Composite Identifier
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'semgrep_scanner')
-    
+    """Constructs the path: results/<username_id>/semgrep_scanner"""
+    user_base_dir = report_manager.get_user_results_dir(current_user)
+    user_dir = os.path.join(user_base_dir, 'semgrep_scanner')
     os.makedirs(user_dir, exist_ok=True)
-        
     return user_dir
 
 @semgrep_bp.route('/')
@@ -83,9 +73,9 @@ def scan_code():
         if size > MAX_UPLOAD_SIZE:
              return jsonify({"status": "error", "message": "File too large (Max 1GB). Please remove extremely large binary files or datasets if possible."}), 400
         
-        # Save temp file securely so the thread can access it
+        # Save temp file securely in the system temp directory so the thread can access it
         temp_filename = f"upload_temp_{secure_filename(file.filename)}"
-        temp_path = os.path.join(user_output_dir, temp_filename)
+        temp_path = str(semgrep_scanner.TEMP_DIR / temp_filename)
         file.save(temp_path)
         
         target_input = temp_path
@@ -211,13 +201,13 @@ def scan_code():
                 # Ensure directory exists
                 os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
                 
-                # Call PDF Generator (Note: You need to add this function to Services/pdf_generator.py)
+                # Call PDF Generator
                 if hasattr(pdf_generator, 'create_semgrep_report_pdf'):
-                    pdf_generator.create_semgrep_report_pdf(str(json_path), str(pdf_path))
+                    pdf_generator.create_semgrep_report_pdf(str(json_path), str(pdf_path), user_id=current_user_identifier)
                     
                     if pdf_path.exists():
                         # Final synchronization wait
-                        time.sleep(1.5)
+                        report_manager.wait_for_file(str(pdf_path))
                         semgrep_scanner.log(f"[+] PDF report generated", user_id=current_user_identifier, to_console=True)
                         semgrep_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_display}", user_id=current_user_identifier, to_console=True)
                     else:

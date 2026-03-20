@@ -2,304 +2,200 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="file:///D:/NetShieldAI/static/images/NS_Logo.png">
     <title>NetShieldAI | Packet Analysis Report</title>
-    <style>
-        /* --- UNIFIED SLATE & STEEL THEME --- */
-        :root {
-            --neo-blue: #475569;
-            --neo-blue-accent: #3b82f6;
-            --neo-blue-soft: #f8fafc;
-            --neo-border: #e2e8f0;
-            --neo-text-main: #1e293b;
-            --neo-text-sub: #64748b;
-            --risk-high: #be123c;
-            --risk-medium: #d97706;
-            --risk-low: #059669;
-            --radius: 8px;
-        }
-
-        @page {
-            size: A4;
-            margin: 1cm;
-            @bottom-right {
-                content: "Page " counter(page) " of " counter(pages);
-                font-family: 'Inter', sans-serif;
-                font-size: 8px;
-                color: #94a3b8;
-            }
-        }
-
-        body {
-            font-family: 'Inter', Arial, sans-serif;
-            color: var(--neo-text-main);
-            line-height: 1.4;
-            margin: 0;
-            padding: 0;
-            background-color: #fff;
-        }
-
-        /* --- HEADER --- */
-        header {
-            border-bottom: 1px solid var(--neo-border);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .logo-container img { height: 32px; display: block; }
-        .header-right { text-align: right; }
-        h1 { font-size: 1.4rem; font-weight: 700; margin: 0; color: var(--neo-text-main); }
-        .scan-subtitle { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neo-text-sub); }
-
-        /* --- INFO BAR --- */
-        .report-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            border: 1px solid var(--neo-border);
-            background: var(--neo-blue-soft);
-            margin-bottom: 20px;
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
-        .info-box { padding: 12px 15px; border-right: 1px solid var(--neo-border); }
-        .info-box:last-child { border-right: none; }
-        .info-box strong { display: block; font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-sub); font-weight: 700; margin-bottom: 4px; }
-        .info-box span { font-weight: 600; font-size: 0.9rem; word-break: break-all; }
-
-        /* --- HEADINGS --- */
-        h3 {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            color: var(--neo-blue-accent);
-            margin: 25px 0 10px 0;
-            letter-spacing: 0.05em;
-            border-left: 4px solid var(--neo-blue-accent);
-            padding-left: 10px;
-            font-weight: 700;
-        }
-
-        /* --- CARDS & LAYOUT --- */
-        .finding-card {
-            border: 1px solid var(--neo-border);
-            border-radius: var(--radius);
-            margin-bottom: 20px;
-            overflow: hidden;
-            /* CRITICAL FIX: Prevent blank pages by handling breaks better */
-            page-break-inside: avoid; 
-        }
-
-        /* --- METRICS GRID --- */
-        .host-summary-grid { display: flex; gap: 10px; margin-bottom: 20px; }
-        .host-summary-card {
-            flex: 1;
-            padding: 12px;
-            background: var(--neo-blue-soft);
-            border: 1px solid var(--neo-border);
-            border-radius: var(--radius);
-            text-align: center;
-        }
-        .host-summary-label { font-size: 0.6rem; font-weight: 700; color: var(--neo-text-sub); text-transform: uppercase; }
-        .host-summary-value { font-size: 1.1rem; font-weight: 800; color: var(--neo-text-main); margin-top: 5px; }
-
-        /* --- TABLES --- */
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-        .data-table th { 
-            background: #f1f5f9; 
-            text-align: left; 
-            padding: 8px 12px; 
-            font-size: 0.6rem; 
-            text-transform: uppercase; 
-            color: var(--neo-text-sub); 
-            border-bottom: 1px solid #cbd5e1;
-            font-weight: 700;
-        }
-        .data-table td { 
-            padding: 6px 12px; 
-            border-bottom: 1px solid var(--neo-border); 
-            color: var(--neo-text-main); 
-        }
-        .data-table tr:last-child td { border-bottom: none; }
-        .data-table tr:nth-child(even) { background-color: #fafafa; }
-
-        /* --- BADGES --- */
-        .badge { padding: 3px 6px; font-size: 0.6rem; font-weight: 700; border-radius: 4px; text-transform: uppercase; display: inline-block; }
-        .badge-info { background: #e0f2fe; color: #0284c7; }
-        .badge-proto { background: #f3f4f6; color: #475569; border: 1px solid #e2e8f0; }
-
-        /* --- FOOTER --- */
-        footer {
-            margin-top: 30px;
-            padding-top: 10px;
-            border-top: 1px solid var(--neo-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .footer-logo { height: 16px; opacity: 0.5; }
-        .footer-text { font-size: 0.65rem; color: var(--neo-text-sub); }
-
-    </style>
+    <link rel="stylesheet" href="{{ data.css_path }}">
 </head>
 <body>
 
     <header>
         <div class="logo-container">
-            <img src="{{ data.logo_url }}" alt="NetShieldAI">
+            <img src="{{ data.logo_url }}" alt="NetShieldAI" class="logo">
         </div>
         <div class="header-right">
             <h1>Network Traffic Analysis</h1>
-            <div class="scan-subtitle">Automated Inspection Report</div>
+            <div class="scan-subtitle">// Automated Packet Inspection Report</div>
         </div>
     </header>
 
     <div class="report-info">
         <div class="info-box">
             <strong>Target Node</strong>
-            <span>{{ data.target_ip }}</span>
+            <span>{{ data.target_ip | default('Unknown') }}</span>
         </div>
         <div class="info-box">
-            <strong>Capture Timestamp</strong>
+            <strong>Capture Date</strong>
             <span>{{ data.timestamp | default('N/A') }}</span>
         </div>
         <div class="info-box">
-            <strong>Engine Version</strong>
-            <span>TShark 4.0.x</span>
+            <strong>Data Volume</strong>
+            <span>{{ data.metrics.total_bytes | default('0 KB') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Total Packets</strong>
+            <span>{{ data.metrics.total_packets | default(0) }}</span>
         </div>
     </div>
 
     <section>
         <h3>Traffic Overview</h3>
-        <div class="host-summary-grid">
-            <div class="host-summary-card">
-                <div class="host-summary-label">Total Packets</div>
-                <div class="host-summary-value">{{ data.metrics.total_packets }}</div>
+        <div class="metrics-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Packets</div>
+                <div class="stat-value">{{ data.metrics.total_packets | default(0) }}</div>
             </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Data Volume</div>
-                <div class="host-summary-value">{{ data.metrics.total_bytes }}</div>
+            <div class="stat-card">
+                <div class="stat-label">Data Volume</div>
+                <div class="stat-value">{{ data.metrics.total_bytes | default('0 KB') }}</div>
             </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Duration</div>
-                <div class="host-summary-value">{{ data.metrics.duration }}</div>
+            <div class="stat-card">
+                <div class="stat-label">Duration</div>
+                <div class="stat-value">{{ data.metrics.duration | default('N/A') }}</div>
             </div>
-            <div class="host-summary-card">
-                <div class="host-summary-label">Throughput</div>
-                <div class="host-summary-value">{{ data.metrics.avg_rate }}</div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Throughput</div>
+                <div class="stat-value">{{ data.metrics.avg_rate | default('0 bps') }}</div>
             </div>
         </div>
     </section>
 
     <section>
         <h3>Protocol Hierarchy</h3>
-        <div class="finding-card">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 40%;">Protocol Layer</th>
-                        <th style="width: 30%;">Frame Count</th>
-                        <th style="width: 30%;">Bytes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for proto in data.hierarchy %}
-                    <tr>
-                        <td style="font-weight: 600; color: var(--neo-blue);">{{ proto.proto }}</td>
-                        <td>{{ proto.frames }}</td>
-                        <td>{{ proto.bytes }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="3" style="text-align: center; color: #94a3b8; padding: 15px;">No hierarchy data available.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 40%;">Protocol Layer</th>
+                    <th style="width: 30%;">Frame Count</th>
+                    <th style="width: 30%;">Bytes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proto in data.hierarchy %}
+                <tr>
+                    <td class="proto-name">{{ proto.proto }}</td>
+                    <td>{{ proto.frames }}</td>
+                    <td>{{ proto.bytes }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No hierarchy data available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </section>
 
     <section>
         <h3>Active Conversations</h3>
-        <div class="finding-card">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 45%;">Source Endpoint</th>
-                        <th style="width: 10%; text-align: center;"></th>
-                        <th style="width: 45%;">Destination Endpoint</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for conv in data.tcp_conversations %}
-                    <tr>
-                        <td style="font-family: monospace;">{{ conv.src }}</td>
-                        <td style="text-align: center; color: var(--neo-blue-accent); font-weight: bold;">&harr;</td>
-                        <td style="font-family: monospace;">{{ conv.dst }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="3" style="text-align: center; color: #94a3b8; padding: 15px;">No conversation data captured.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 45%;">Source Endpoint</th>
+                    <th style="width: 10%;">Direction</th>
+                    <th style="width: 45%;">Destination Endpoint</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conv in data.tcp_conversations %}
+                <tr>
+                    <td class="conv-endpoint">{{ conv.src }}</td>
+                    <td class="conv-arrow">&harr;</td>
+                    <td class="conv-endpoint">{{ conv.dst }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">No conversation data captured.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </section>
 
     <section>
         <h3>Packet Inspection (Sample)</h3>
-        <div class="finding-card">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 10%;">Time</th>
-                        <th style="width: 30%;">Source</th>
-                        <th style="width: 30%;">Destination</th>
-                        <th style="width: 15%;">Protocol</th>
-                        <th style="width: 15%; text-align: right;">Len</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for pkt in data.packet_samples %}
-                    <tr>
-                        <td>{{ pkt.time }}s</td>
-                        <td style="font-family: monospace; font-size: 0.7rem;">{{ pkt.src }}</td>
-                        <td style="font-family: monospace; font-size: 0.7rem;">{{ pkt.dst }}</td>
-                        <td><span class="badge badge-proto">{{ pkt.protocol }}</span></td>
-                        <td style="text-align: right;">{{ pkt.len }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 15px; color: #94a3b8;">No packets available.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">Time</th>
+                    <th style="width: 30%;">Source</th>
+                    <th style="width: 30%;">Destination</th>
+                    <th style="width: 15%;">Protocol</th>
+                    <th style="width: 15%;">Len</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pkt in data.packet_samples %}
+                <tr>
+                    <td>{{ pkt.time }}s</td>
+                    <td class="conv-endpoint">{{ pkt.src }}</td>
+                    <td class="conv-endpoint">{{ pkt.dst }}</td>
+                    <td><span class="badge risk-info pkt-protocol">{{ pkt.protocol }}</span></td>
+                    <td class="text-right">{{ pkt.len }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No packets available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </section>
 
     <section>
         <h3>Security Insights</h3>
-        <div class="finding-card" style="padding: 15px;">
-             <p style="font-size: 0.8rem; margin-bottom: 5px;"><strong>Analysis Summary:</strong></p>
-             <p style="font-size: 0.75rem; color: var(--neo-text-sub);">{{ data.anomalies }}</p>
-             
-             {% if data.anomaly_details.scans %}
-                <p style="margin-top: 10px; font-weight: bold; font-size: 0.7rem; color: var(--risk-medium);">Scan Activity:</p>
-                <ul style="font-size: 0.7rem;">
-                {% for scan in data.anomaly_details.scans %}<li>{{ scan }}</li>{% endfor %}
-                </ul>
-             {% endif %}
+        <div class="finding-card">
+            <div class="finding-header">
+                <h4>Anomaly Analysis Summary</h4>
+            </div>
+            <div class="finding-detail">
+                <p class="anomaly-summary">{{ data.anomalies }}</p>
+
+                {% if data.anomaly_details.scans %}
+                <div class="scan-anomaly-block">
+                    <span class="anomaly-label">Detected Scan Activity</span>
+                    <ul>
+                        {% for scan in data.anomaly_details.scans %}
+                        <li>{{ scan }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if data.anomaly_details.creds %}
+                <div class="cred-anomaly-block">
+                    <span class="anomaly-label">Cleartext Credentials Detected</span>
+                    <ul>
+                        {% for cred in data.anomaly_details.creds %}
+                        <li>{{ cred }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if data.anomaly_details.web_attacks %}
+                <div class="scan-anomaly-block">
+                    <span class="anomaly-label">Web Attack Signatures</span>
+                    <ul>
+                        {% for attack in data.anomaly_details.web_attacks %}
+                        <li>{{ attack }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if not data.anomaly_details.scans and not data.anomaly_details.creds and not data.anomaly_details.web_attacks %}
+                <div class="empty-state">
+                    <strong>No Anomalies Detected</strong>
+                    <span>Traffic analysis completed with no suspicious patterns identified.</span>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </section>
 
     <footer>
-        <img src="{{ data.logo_url_small }}" alt="NS Logo" class="footer-logo">
+        <img src="{{ data.logo_url_small }}" alt="NetShieldAI" class="footer-logo">
         <div class="footer-text">
-            NetShieldAI Reporting Engine // Generated {{ data.generation_date }}
+            NetShieldAI Reporting Engine // Sniffer Module // Generated {{ data.generation_date }}
         </div>
     </footer>
 

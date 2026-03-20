@@ -933,7 +933,7 @@ def download_executive_summary_report(log_id):
             "date": log.start_time.strftime("%Y-%m-%d %H:%M:%S") if log.start_time else "N/A"
         }
         
-        success = create_executive_summary_report_pdf(summary_text, metadata, exec_path)
+        success = create_executive_summary_report_pdf(summary_text, metadata, exec_path, user_id=user_id_safe)
         if not success:
              return jsonify({"status": "error", "message": "Failed to create Executive Summary PDF."}), 500
 

@@ -30,23 +30,10 @@ network_scanner_bp = Blueprint('network_scanner_bp', __name__)
 
 # --- PHASE 3: User-Specific Directory Helper ---
 def get_user_results_dir():
-    """
-    Constructs the path: results/<username_id>/network_scanner
-    """
-    if not current_user.is_authenticated:
-        # Fallback for testing/unauthenticated (though routes are protected)
-        return None
-    
-    # NEW LOGIC: Composite Identifier
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-
-    # We navigate up from 'routes/' to root, then into results
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_dir = os.path.join(base_dir, 'results', user_identifier, 'network_scanner')
-    
-    # FIXED: Added exist_ok=True to prevent race condition crashes
+    """Constructs the path: results/<username_id>/network_scanner"""
+    user_base_dir = report_manager.get_user_results_dir(current_user)
+    user_dir = os.path.join(user_base_dir, 'network_scanner')
     os.makedirs(user_dir, exist_ok=True)
-        
     return user_dir
 
 # ==========================================
@@ -292,13 +279,12 @@ def scan_ports():
                     os.makedirs(os.path.dirname(user_pdf_path), exist_ok=True)
                     
                     # Call the generator with the file path
-                    pdf_generator.create_nmap_report_pdf(str(user_json_path), str(user_pdf_path))
+                    pdf_generator.create_nmap_report_pdf(str(user_json_path), str(user_pdf_path), user_id=user_identifier)
                     
                     if os.path.exists(user_pdf_path):
                         # Final synchronization wait to ensure file handles are closed
-                        time.sleep(1.5) 
-                        network_scanner.log(f"[+] PDF report generated successfully", user_identifier, queue_id, to_console=True)
-                        network_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_ip}", user_identifier, queue_id, to_console=True)
+                        report_manager.wait_for_file(str(user_pdf_path))
+                        network_scanner.log(f"[+] PDF report generated successfully", user_identifier, queue_id, to_console=True)                        network_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_ip}", user_identifier, queue_id, to_console=True)
                     else:
                         network_scanner.log("[!] PDF generation ran but file not found (unknown error).", user_identifier, queue_id, to_console=True)
                 else:

@@ -1,0 +1,52 @@
+/* =============================================================
+   NETSHIELDAI — report_semgrep.css
+   Overrides for: semgrep_report_template.html
+   Requires: report_base.css
+   ============================================================= */
+
+/* Semgrep code snippet — dark with accent left border */
+.sast-snippet {
+    background: var(--bg-code);
+    color: var(--text-code);
+    border-left: 4px solid var(--brand-accent);
+    border-radius: var(--radius-sm);
+    border: 1px solid #334155;
+    padding: 12px 14px;
+    font-family: 'Consolas','Courier New',monospace;
+    font-size: 7.5pt;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 8px 0;
+}
+
+/* Fix / remediation suggestion — green mono block */
+.fix-block {
+    background: var(--risk-low-bg);
+    border: 1px solid var(--risk-low-bd);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+}
+.fix-block .box-label { color: var(--risk-low); }
+.fix-block pre {
+    font-family: 'Consolas','Courier New',monospace;
+    font-size: 7.5pt;
+    color: #065f46;
+    background: transparent;
+    border: none;
+    margin: 4px 0 0 0;
+    padding: 0;
+    white-space: pre-wrap;
+}
+
+/* Truncation notice */
+.truncation-notice {
+    text-align: center;
+    padding: 12px;
+    background: var(--risk-medium-bg);
+    border: 1px solid var(--risk-medium-bd);
+    border-radius: var(--radius-sm);
+    font-size: 8.5pt;
+    color: var(--risk-medium);
+    font-weight: 700;
+    margin-bottom: 20px;
+}

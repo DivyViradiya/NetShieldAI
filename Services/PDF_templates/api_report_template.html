@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NetShieldAI | API Security Report</title>
+    <link rel="stylesheet" href="{{ data.css_path }}">
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <img src="{{ data.logo_url }}" alt="NetShieldAI" class="logo">
+        </div>
+        <div class="header-right">
+            <h1>API Security Report</h1>
+            <div class="scan-subtitle">// API Security Audit Engine</div>
+        </div>
+    </header>
+
+    <div class="report-info">
+        <div class="info-box">
+            <strong>Target Host</strong>
+            <span>{{ data.api_results.target_url | default('N/A') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Scan Date</strong>
+            <span>{{ data.api_results.scan_date | default('N/A') }}</span>
+        </div>
+        <div class="info-box">
+            <strong>Engine Version</strong>
+            <span class="engine-version">v2.1.0-ZapEnrich</span>
+        </div>
+        <div class="info-box">
+            <strong>Generated</strong>
+            <span>{{ data.generation_date }}</span>
+        </div>
+    </div>
+
+    <section>
+        <h3>Executive Summary</h3>
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Findings</div>
+                <div class="stat-value">{{ data.api_results.summary.Total | default(0) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">High Risk</div>
+                <div class="stat-value high">{{ data.api_results.summary.High | default(0) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Medium Risk</div>
+                <div class="stat-value medium">{{ data.api_results.summary.Medium | default(0) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Low / Info</div>
+                <div class="stat-value low">{{ (data.api_results.summary.Low | default(0)) + (data.api_results.summary.Info | default(0)) }}</div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Detailed API Vulnerabilities</h3>
+        {% if data.api_results.findings %}
+            {% for finding in data.api_results.findings %}
+            <div class="finding-card">
+
+                <div class="finding-header">
+                    <h4>{{ finding.name }}</h4>
+                    {% set risk_cls = finding.risk | lower %}
+                    <span class="badge risk-{{ risk_cls }}">{{ finding.risk }} Risk</span>
+                </div>
+
+                <div class="service-grid">
+                    <div class="grid-item">
+                        <span class="grid-label">Method</span>
+                        <span class="grid-value">
+                            {% if finding.method %}
+                                <span class="method-badge method-{{ finding.method | lower }}">{{ finding.method }}</span>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="grid-item">
+                        <span class="grid-label">Predicted Risk</span>
+                        <span class="grid-value text-accent">{{ finding.predicted_risk_score | default('N/A') }}</span>
+                    </div>
+                    <div class="grid-item">
+                        <span class="grid-label">Priority Level</span>
+                        <span class="grid-value">{{ finding.priority_level | default('N/A') }}</span>
+                    </div>
+                    <div class="grid-item">
+                        <span class="grid-label">CWE ID</span>
+                        <span class="grid-value cwe-tag">CWE-{{ finding.cwe_id | default('N/A') }}</span>
+                    </div>
+                </div>
+
+                <div class="finding-detail">
+                    <div class="mb-8">
+                        <span class="grid-label">Endpoint URL</span>
+                        <span class="api-endpoint-url">{{ finding.url | default('N/A') }}</span>
+                    </div>
+
+                    <div class="mb-12">
+                        <span class="grid-label">Description</span>
+                        <div class="api-description mt-8">{{ finding.description | safe }}</div>
+                    </div>
+
+                    {% if finding.risk_justification %}
+                    <div class="ai-justification mb-12">
+                        <span class="ai-justification-label">AI Risk Justification</span>
+                        <span class="ai-justification-text">{{ finding.risk_justification }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if finding.solution %}
+                    <div>
+                        <span class="grid-label">Remediation</span>
+                        <div class="api-remediation mt-8">{{ finding.solution | safe }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <strong>No API Vulnerabilities Detected</strong>
+                <span>No significant API vulnerabilities were identified during this audit.</span>
+            </div>
+        {% endif %}
+    </section>
+
+    <footer>
+        <img src="{{ data.logo_url_small }}" alt="NetShieldAI" class="footer-logo">
+        <div class="footer-text">
+            NetShieldAI Reporting Engine // API Security Audit // Generated {{ data.generation_date }}
+        </div>
+    </footer>
+
+</body>
+</html>

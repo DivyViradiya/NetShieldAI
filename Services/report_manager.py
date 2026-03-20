@@ -62,6 +62,22 @@ def parse_report_metadata(filename):
         "is_unique": bool(timestamp)
     }
 
+def get_user_results_dir(user):
+    """
+    Constructs the path: results/<username_id>/
+    Centralized SSOT for file storage location.
+    """
+    from models.models import get_user_result_dir_name
+    user_result_dir = get_user_result_dir_name(user)
+    
+    # We navigate up from 'Services/' to root, then into .results
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    user_dir = os.path.join(base_dir, '.results', user_result_dir)
+    
+    # Create directory if it doesn't exist
+    os.makedirs(user_dir, exist_ok=True)
+    return user_dir
+
 def find_latest_report(user_results_dir, scanner_name=None, target=None, extension="pdf"):
     """
     Robustly finds the most recent report file matching the criteria.
@@ -91,6 +107,29 @@ def find_latest_report(user_results_dir, scanner_name=None, target=None, extensi
         
     # Return the one with the latest modification time
     return str(max(candidates, key=os.path.getmtime))
+
+def wait_for_file(file_path, timeout=10, check_interval=0.5):
+    """
+    Polls the filesystem until a file exists and is not being written to.
+    Returns True if file found and stable, False on timeout.
+    """
+    if not file_path:
+        return False
+        
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        if os.path.exists(file_path):
+            # Check if size is stable (not being written to)
+            try:
+                size1 = os.path.getsize(file_path)
+                time.sleep(0.2)
+                size2 = os.path.getsize(file_path)
+                if size1 == size2 and size1 > 0:
+                    return True
+            except OSError:
+                pass # File might be locked or deleted
+        time.sleep(check_interval)
+    return False
 
 def get_report_history(user_results_dir, scanner_name=None, extension="pdf"):
     """

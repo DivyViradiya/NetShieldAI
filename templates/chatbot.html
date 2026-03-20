@@ -7,6 +7,10 @@
 {% block extra_css %}
   <meta name="csrf-token" content="{{ csrf_token() }}" />
 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
@@ -21,8 +25,8 @@
       --neo-blue-glow: rgba(59, 130, 246, 0.4);
       --neo-cyan: #00f7ff;
       --neo-cyan-glow: rgba(0, 247, 255, 0.3);
-      --font-primary: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-code: 'JetBrains Mono', monospace;
+      --font-primary: var(--font-ui, 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+      --font-code: var(--font-mono, 'JetBrains Mono', monospace);
       --radius-md: 12px;
       --sidebar-width: 320px;
       --sidebar-collapsed-width: 68px;
@@ -385,6 +389,7 @@
       letter-spacing: 0.15em;
       color: white;
       text-transform: uppercase;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
       background: linear-gradient(90deg, #fff, #888);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -459,6 +464,8 @@
       color: #9ca3af;
       font-weight: 500;
       letter-spacing: 0.05em;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      text-transform: uppercase;
     }
 
     body.light-mode .status-text {
@@ -491,6 +498,7 @@
       color: #52525b; 
       font-weight: 800;
       letter-spacing: 0.1em;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
       transition: color 0.2s;
     }
     
@@ -1085,18 +1093,20 @@
     .msg-row.user { justify-content: flex-end; flex-direction: column; align-items: flex-end; }
     
     .msg-bubble {
-      font-family: var(--font-primary);
-      font-size: 1rem;      
+      font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
+      font-size: 0.935rem;      
       font-weight: 400;        
-      letter-spacing: 0.01em; 
-      line-height: 1.7;
+      letter-spacing: 0; 
+      line-height: 1.65;
       padding: 1.25rem 1.75rem;
       position: relative;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      transition: max-width 0.4s ease;
+      transition: max-width 0.3s ease;
       text-align: justify;
-      word-break: break-word; /* Prevents overflow with justified text */
-      hyphens: auto; /* Uses hyphens to naturally balance justified lines */
+      word-break: break-word;
+      hyphens: none;
+      /* Ensure actions/labels don't get clipped */
+      overflow: visible;
     }
 
     /* Subtle Labels */
@@ -1109,6 +1119,7 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: #52525b;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
     }
     .msg-row.user .msg-bubble::before { right: 0.5rem; }
 
@@ -1161,19 +1172,20 @@
         box-shadow: 0 10px 30px rgba(99, 102, 241, 0.06);
     }
 
-    /* Message Actions */
+    /* Message Actions (Hover Buttons) */
     .msg-actions {
       display: flex;
       gap: 0.5rem;
-      margin-top: 1rem;
+      margin-top: 1.25rem;
       opacity: 0;
-      transition: opacity 0.3s;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.2s ease-in-out;
+      border-top: 1px solid rgba(255,255,255,0.08);
       padding-top: 0.75rem;
+      pointer-events: none; /* Prevent accidental clicks when hidden */
     }
-    body.light-mode .msg-actions { border-top-color: rgba(0,0,0,0.05); }
     .msg-bubble:hover .msg-actions {
       opacity: 1;
+      pointer-events: auto;
     }
     .action-btn {
       background: rgba(255, 255, 255, 0.05);
@@ -1681,9 +1693,38 @@
     
     /* Ensure these styles apply inside the AI/User bubbles regardless of nested classes */
     .markdown-content, .msg-bubble {
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.8rem;
+        line-height: 1.6;
+        letter-spacing: 0;
         color: #d4d4d8;
     }
-    
+
+    /* Force font inheritance on ALL children — overrides Tailwind preflight */
+    .markdown-content *, .msg-bubble * {
+        font-family: inherit !important;
+    }
+
+    /* Use Mono font only for Technical Headers/Labels/Code */
+    .markdown-content h1, .msg-bubble h1,
+    .markdown-content h2, .msg-bubble h2,
+    .markdown-content h3, .msg-bubble h3,
+    .markdown-content h4, .msg-bubble h4,
+    .markdown-content h5, .msg-bubble h5,
+    .markdown-content h6, .msg-bubble h6,
+    .markdown-content code, .msg-bubble code,
+    .markdown-content pre *, .msg-bubble pre * {
+        font-family: 'JetBrains Mono', monospace !important;
+        letter-spacing: 0.02em;
+    }
+
+    /* hr inside bubbles: even more subtle */
+    .markdown-content hr, .msg-bubble hr {
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        margin: 1.25rem 0;
+        width: 100%;
+    }
     .markdown-content p, .msg-bubble p {
         margin-bottom: 1.25rem;
     }
@@ -1717,9 +1758,27 @@
     }
     
     /* Specific Hierarchy Colors for Security Report look */
-    .markdown-content h1, .msg-bubble h1 { font-size: 1.5rem; border-bottom: 1px solid var(--neo-border); padding-bottom: 0.5rem; }
-    .markdown-content h2, .msg-bubble h2 { font-size: 1.3rem; color: var(--neo-cyan); }
-    .markdown-content h3, .msg-bubble h3 { font-size: 1.1rem; color: white; }
+    .markdown-content h1, .msg-bubble h1 { 
+      font-size: 1.3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 0.5rem;
+      color: #f8fafc;
+    }
+    .markdown-content h2, .msg-bubble h2 { 
+      font-size: 1.1rem;
+      color: var(--neo-cyan);
+      background: rgba(0, 247, 255, 0.04);
+      padding: 0.3rem 0.6rem;
+      border-left: 3px solid var(--neo-cyan);
+      border-radius: 0 4px 4px 0;
+      margin-left: -0.6rem;
+    }
+    .markdown-content h3, .msg-bubble h3 { 
+      font-size: 0.95rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
     
     body.light-mode .markdown-content h2, 
     body.light-mode .msg-bubble h2 { color: var(--accent-blue); }
@@ -1816,10 +1875,10 @@
       margin: 1.5rem 0;
       border: 1px solid var(--neo-border); 
       border-radius: 8px;
-      overflow: hidden; 
+      overflow-x: auto; 
+      display: block; /* To allow scrolling */
       font-size: 0.85rem; 
       background: rgba(0, 0, 0, 0.2);
-      display: table; /* Fallback */
     }
 
     body.light-mode .markdown-content table, 
@@ -1839,6 +1898,8 @@
       text-transform: uppercase; 
       font-size: 0.75rem; 
       letter-spacing: 0.05em;
+      hyphens: none !important;
+      word-break: normal !important;
     }
 
     body.light-mode .markdown-content th, 
@@ -1855,6 +1916,9 @@
       color: #d1d5db; 
       vertical-align: top; 
       line-height: 1.6;
+      text-align: left !important;
+      hyphens: none !important;
+      word-break: normal !important;
     }
     
     body.light-mode .markdown-content td, 
@@ -1889,16 +1953,30 @@
     /* Lists - Fix Indentation in Bubbles */
     .markdown-content ul, .msg-bubble ul {
         margin: 1rem 0;
-        padding-left: 1.5rem;
-        list-style-type: disc;
+        padding-left: 1.75rem;
+        list-style-type: none;
     }
     .markdown-content ol, .msg-bubble ol {
         margin: 1rem 0;
-        padding-left: 1.5rem;
+        padding-left: 1.75rem;
         list-style-type: decimal;
     }
-    .markdown-content li, .msg-bubble li {
-        margin-bottom: 0.5rem;
+    .markdown-content ul > li, .msg-bubble ul > li {
+        margin-bottom: 0.6rem;
+        position: relative;
+    }
+    .markdown-content ul > li::before, .msg-bubble ul > li::before {
+        content: "›";
+        position: absolute;
+        left: -1.25rem;
+        color: var(--neo-cyan, #00f7ff);
+        font-weight: 700;
+        font-size: 1rem;
+        line-height: inherit;
+        opacity: 0.6;
+    }
+    .markdown-content ol > li, .msg-bubble ol > li {
+        margin-bottom: 0.6rem;
     }
 
     /* Nested Lists (Sub-bullets) */

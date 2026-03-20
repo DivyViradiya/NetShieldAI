@@ -25,10 +25,10 @@ _anon = AnonymityManager()
 BASE_DIR = Path(__file__).parent.parent
 
 # We keep the default global path for backward compatibility or system-wide actions.
-DEFAULT_RESULTS_DIR = BASE_DIR / "results" / "network_scanner"
+DEFAULT_RESULTS_DIR = BASE_DIR / ".results" / "network_scanner"
 
 # Ensure logs directory exists
-LOG_DIR = BASE_DIR / "logs"
+LOG_DIR = BASE_DIR / ".logs"
 LOG_FILE = LOG_DIR / "network_agent_log.txt"
 
 TEMP_DIR = Path(tempfile.gettempdir()) / "NetShieldAI" / "nmap"
@@ -155,7 +155,7 @@ def get_scan_summary(user_id=None, output_dir=None):
 from Services import scan_logger
 from core.logger_setup import logger
 
-def log(message, user_id=None, queue_id=None, to_console=False, level='INFO'):
+def log(message, user_id=None, queue_id=None, to_console=False, level='INFO', scanner_name="network_scanner"):
     """
     Logs messages using the centralized scan_logger.
     """
@@ -168,7 +168,7 @@ def log(message, user_id=None, queue_id=None, to_console=False, level='INFO'):
             logger.info(message)
     
     if user_id:
-        scan_logger.write_log(user_id, "network_scanner", message, level=level)
+        scan_logger.write_log(user_id, scanner_name, message, level=level)
 
 def send_sse_event(event_name, data="", user_id=None, queue_id=None):
     """
