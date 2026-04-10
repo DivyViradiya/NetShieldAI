@@ -1136,6 +1136,8 @@
         color: var(--neo-text-main);
         line-height: 1.6;
         opacity: 0.9;
+        word-break: break-word;
+        overflow-wrap: break-word;
       }
 
       .detail-text-mono {
@@ -1146,7 +1148,8 @@
         border-radius: var(--radius-sm);
         border: 1px solid var(--neo-border);
         color: #a1a1aa;
-        overflow-x: auto;
+        overflow-x: hidden;
+        word-break: break-all;
         white-space: pre-wrap;
         max-height: 400px;
         overflow-y: auto;
@@ -1427,19 +1430,28 @@
         </div>
 
         <div class="panel-content" style="flex: 1; min-height: 0; width: 100%; overflow: hidden;">
-          <div id="findingsContent" style="display: flex; flex-direction: column; width:100%; height:100%; padding:0; overflow: hidden;">
-<div id="findingsList" class="findings-list" style="padding: 1rem; height: 100%; overflow-y: auto;">
-    <div class="w-full flex flex-col items-center justify-center animate-card" style="padding: 6rem 2rem;">
-        <div class="ai-pulse-container" style="opacity: 0.3;">
-            <div class="ai-pulse-ring"></div>
-            <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-text-muted);">api</span>
-        </div>
-        <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.2em; text-align: center;">
-            INITIATE A DAST SCAN TO VIEW VULNERABILITIES...
-        </div>
-    </div>
-</div>
-</div>
+          <div id="findingsContent"
+            style="display: flex; height: 100%; overflow: hidden; gap: 1rem; padding: 1rem;">
+            <!-- LEFT: Findings list -->
+            <div id="findingsListSide"
+              style="width: 38%; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); overflow-y: auto; flex-shrink: 0; scrollbar-width: thin; scrollbar-color: #222 transparent;">
+              <div
+                style="text-align:center; padding: 4rem 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">
+                WAITING FOR API SCAN...</div>
+            </div>
+            <!-- RIGHT: Detail view -->
+            <div id="findingsDetailSide"
+              style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 1.5rem; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); scrollbar-width: thin; scrollbar-color: #222 transparent;">
+              <div
+                style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.2;">
+                <span class="material-symbols-outlined"
+                  style="font-size: 4rem; margin-bottom: 1rem;">data_exploration</span>
+                <div
+                  style="font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">
+                  Select a vulnerability to view analysis</div>
+              </div>
+            </div>
+          </div>
           <div id="rawContent" class="hidden" style="height: 100%; display: flex; flex-direction: column; padding: 1rem; overflow: hidden; box-sizing: border-box;">
             <div id="resultsContent" style="flex: 1; overflow: auto; padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); background: var(--neo-input); border-radius: 8px; border: 1px solid var(--neo-border); white-space: pre-wrap;">// Buffer Empty</div>
           </div>

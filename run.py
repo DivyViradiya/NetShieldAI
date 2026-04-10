@@ -2,7 +2,22 @@ import sys
 import os
 import time
 import threading
+import traceback
 from pathlib import Path
+from datetime import datetime, timezone
+from core.time_utils import get_now_ist
+
+def global_excepthook(exc_type, exc_value, exc_tb):
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "crash_log.txt"), "w") as f:
+            traceback.print_exception(exc_type, exc_value, exc_tb, file=f)
+        print("CRASH DETECTED. See crash_log.txt for details.")
+        input("Press ENTER to close this window...")
+    except:
+        pass
+
+sys.excepthook = global_excepthook
+
 
 # ===========================================================================
 # CRITICAL: Check admin privileges FIRST — before importing any heavy modules.
@@ -43,7 +58,7 @@ from routes.packet_sniffer_bp import packet_sniffer_bp
 from routes.dashboard_bp import dashboard_bp
 from routes.killchain_bp import killchain_bp
 from routes.sql_scanner_bp import sql_scanner_bp
-from routes.semgrep_scanner_bp import semgrep_bp
+from routes.semgrep_scanner_bp import semgrep_scanner_bp
 from routes.api_scanner_bp import api_scanner_bp
 from routes.scheduler_bp import scheduler_bp
 
@@ -54,13 +69,16 @@ app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
 
 # --- [FIX] Use Absolute Path for Database ---
 basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, '.instance', 'users_db.sqlite3')
+db_dir = os.path.join(basedir, '.instance')
+os.makedirs(db_dir, exist_ok=True)
+
+db_path = os.path.join(db_dir, 'users_db.sqlite3')
 # Increase timeout to 20s for better concurrency
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}?timeout=20'
 app.config['BASE_URL'] = os.environ.get('BASE_URL', 'http://localhost:5100')
 
 # --- Scheduler DB (separate SQLite file) ---
-scheduler_db_path = os.path.join(basedir, '.instance', 'scheduler_db.sqlite3')
+scheduler_db_path = os.path.join(db_dir, 'scheduler_db.sqlite3')
 app.config['SQLALCHEMY_BINDS'] = {
     'scheduler': f'sqlite:///{scheduler_db_path}?timeout=20'
 }
@@ -98,17 +116,16 @@ def cleanup_stale_scans():
     try:
         with app.app_context():
             stale_scans = ScanLog.query.filter(ScanLog.status.in_(['Running', 'Pending'])).all()
+
             if stale_scans:
                 logger.info(f"[*] Found {len(stale_scans)} abandoned scans from a previous session. Marking as failed...")
                 for scan in stale_scans:
                     scan.status = "Failed (System Restart)"
-                    scan.end_time = datetime.utcnow()
+                    scan.end_time = get_now_ist()
                 db.session.commit()
                 logger.info("[+] Stale scan cleanup complete.")
     except Exception as e:
         logger.error(f"[!] Error during startup cleanup: {e}")
-
-cleanup_stale_scans()
 
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
@@ -157,7 +174,7 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 app.register_blueprint(killchain_bp, url_prefix='/killchain')
 app.register_blueprint(sql_scanner_bp, url_prefix='/sql_scanner')
-app.register_blueprint(semgrep_bp, url_prefix='/semgrep_scanner')
+app.register_blueprint(semgrep_scanner_bp, url_prefix='/semgrep_scanner')
 app.register_blueprint(api_scanner_bp, url_prefix='/api_scanner')
 app.register_blueprint(scheduler_bp, url_prefix='/scheduler')
 logger.info("[+] 12 Modules Loaded Successfully.")
@@ -242,6 +259,7 @@ if __name__ == '__main__':
             with app.app_context():
                 db.create_all()
             logger.info("[+] Database schemas verified (primary + scheduler).")
+            cleanup_stale_scans()
             logger.info("[+] System checks complete. Launching interface...\n")
 
         # --- Pre-warm ML models only in the HTTP-serving process.
@@ -264,8 +282,10 @@ if __name__ == '__main__':
 
             # --- Start APScheduler ---
             from Services import scheduler_service
+            import atexit
             scheduler_db_uri = f'sqlite:///{scheduler_db_path}'
             scheduler_service.init_scheduler(app, scheduler_db_uri)
+            atexit.register(scheduler_service.shutdown_scheduler)
 
         # Run Flask.
         debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'

@@ -2,8 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NetShieldAI | API Security Report</title>
+    <title>NetShieldAI | API Security Audit</title>
     <link rel="stylesheet" href="{{ data.css_path }}">
+    <style>
+        /* HUD Local Overrides */
+        .api-endpoint-url {
+            display: block;
+            font-family: 'Consolas', monospace;
+            font-size: 0.75rem;
+            color: var(--brand-blue-glow);
+            word-break: break-all;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--neo-border);
+            margin-top: 10px;
+        }
+
+        .method-badge {
+            font-family: 'Consolas', monospace;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        .method-get { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .method-post { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .method-put { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+        .method-delete { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        
+        .alert-id-mono {
+            font-family: 'Consolas', monospace;
+            font-size: 0.65rem;
+            color: #64748b;
+            letter-spacing: 0.05em;
+        }
+    </style>
 </head>
 <body>
 
@@ -12,39 +47,37 @@
             <img src="{{ data.logo_url }}" alt="NetShieldAI" class="logo">
         </div>
         <div class="header-right">
-            <h1>API Security Report</h1>
-            <div class="scan-subtitle">// API Security Audit Engine</div>
+            <h1>API Security Audit</h1>
+            <div class="scan-subtitle">// Endpoint Security Audit & TCTR AI Analysis</div>
         </div>
     </header>
 
     <div class="report-info">
         <div class="info-box">
-            <strong>Target Host</strong>
+            <strong>API Base URL</strong>
             <span>{{ data.api_results.target_url | default('N/A') }}</span>
         </div>
         <div class="info-box">
-            <strong>Scan Date</strong>
+            <strong>Audit Date</strong>
             <span>{{ data.api_results.scan_date | default('N/A') }}</span>
         </div>
         <div class="info-box">
-            <strong>Engine Version</strong>
-            <span class="engine-version">v2.1.0-ZapEnrich</span>
+            <strong>Threat Level</strong>
+            <span class="{% if data.api_results.summary.High > 0 %}risk-high{% elif data.api_results.summary.Medium > 0 %}risk-medium{% else %}risk-low{% endif %}">
+                {% if data.api_results.summary.High > 0 %}CRITICAL{% elif data.api_results.summary.Medium > 0 %}WARNING{% else %}SECURE{% endif %}
+            </span>
         </div>
         <div class="info-box">
-            <strong>Generated</strong>
-            <span>{{ data.generation_date }}</span>
+            <strong>Endpoints</strong>
+            <span>{{ data.api_results.findings | length }} AUDITED</span>
         </div>
     </div>
 
     <section>
-        <h3>Executive Summary</h3>
+        <h3>API Vulnerability Landscape</h3>
         <div class="summary-stats">
             <div class="stat-card">
-                <div class="stat-label">Total Findings</div>
-                <div class="stat-value">{{ data.api_results.summary.Total | default(0) }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">High Risk</div>
+                <div class="stat-label">Critical / High</div>
                 <div class="stat-value high">{{ data.api_results.summary.High | default(0) }}</div>
             </div>
             <div class="stat-card">
@@ -53,26 +86,33 @@
             </div>
             <div class="stat-card">
                 <div class="stat-label">Low / Info</div>
-                <div class="stat-value low">{{ (data.api_results.summary.Low | default(0)) + (data.api_results.summary.Info | default(0)) }}</div>
+                <div class="stat-value">{{ (data.api_results.summary.Low | default(0)) + (data.api_results.summary.Info | default(0)) }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Findings</div>
+                <div class="stat-value">{{ data.api_results.summary.Total | default(0) }}</div>
             </div>
         </div>
     </section>
 
     <section>
-        <h3>Detailed API Vulnerabilities</h3>
+        <h3>Detailed API Security Insights</h3>
         {% if data.api_results.findings %}
             {% for finding in data.api_results.findings %}
             <div class="finding-card">
 
                 <div class="finding-header">
-                    <h4>{{ finding.name }}</h4>
+                    <div style="display: flex; flex-direction: column;">
+                        <span class="alert-id-mono">ENDPOINT_IDENT: {{ finding.method | default('GENERIC') }} &rarr; {{ finding.name }}</span>
+                        <h4>{{ finding.name }}</h4>
+                    </div>
                     {% set risk_cls = finding.risk | lower %}
                     <span class="badge risk-{{ risk_cls }}">{{ finding.risk }} Risk</span>
                 </div>
 
                 <div class="service-grid">
                     <div class="grid-item">
-                        <span class="grid-label">Method</span>
+                        <span class="grid-label">HTTP Method</span>
                         <span class="grid-value">
                             {% if finding.method %}
                                 <span class="method-badge method-{{ finding.method | lower }}">{{ finding.method }}</span>
@@ -90,33 +130,36 @@
                         <span class="grid-value">{{ finding.priority_level | default('N/A') }}</span>
                     </div>
                     <div class="grid-item">
-                        <span class="grid-label">CWE ID</span>
-                        <span class="grid-value cwe-tag">CWE-{{ finding.cwe_id | default('N/A') }}</span>
+                        <span class="grid-label">CWE Mapping</span>
+                        <span class="grid-value"><span class="alert-id-mono">CWE-{{ finding.cwe_id | default('N/A') }}</span></span>
                     </div>
                 </div>
 
                 <div class="finding-detail">
-                    <div class="mb-8">
-                        <span class="grid-label">Endpoint URL</span>
+                    <div class="ml-score-bar">
+                        <div class="ml-label">TCTR THREAT MAGNITUDE (API_ENRICHED)</div>
+                        <div class="ml-value">{{ (finding.predicted_risk_score | default(0) * 100) | round(2) }}%</div>
+                        {% if finding.risk_justification %}
+                        <div class="ml-justification">
+                            <strong>AI Intelligence Breakdown:</strong> {{ finding.risk_justification }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-12">
+                        <span class="grid-label">Target Endpoint URL</span>
                         <span class="api-endpoint-url">{{ finding.url | default('N/A') }}</span>
                     </div>
 
                     <div class="mb-12">
-                        <span class="grid-label">Description</span>
-                        <div class="api-description mt-8">{{ finding.description | safe }}</div>
+                        <span class="grid-label">Vulnerability Intelligence</span>
+                        <div class="description-text mt-8">{{ finding.description | safe }}</div>
                     </div>
-
-                    {% if finding.risk_justification %}
-                    <div class="ai-justification mb-12">
-                        <span class="ai-justification-label">AI Risk Justification</span>
-                        <span class="ai-justification-text">{{ finding.risk_justification }}</span>
-                    </div>
-                    {% endif %}
 
                     {% if finding.solution %}
-                    <div>
-                        <span class="grid-label">Remediation</span>
-                        <div class="api-remediation mt-8">{{ finding.solution | safe }}</div>
+                    <div class="remediation-block mb-12">
+                        <span class="grid-label">Countermeasures & Remediation</span>
+                        <div class="solution-text mt-8">{{ finding.solution | safe }}</div>
                     </div>
                     {% endif %}
                 </div>
@@ -125,8 +168,9 @@
             {% endfor %}
         {% else %}
             <div class="empty-state">
-                <strong>No API Vulnerabilities Detected</strong>
-                <span>No significant API vulnerabilities were identified during this audit.</span>
+                <div style="font-size: 2rem; margin-bottom: 10px;">🧪</div>
+                <strong>No API Vulnerabilities Identified</strong>
+                <span>The system has finished analyzing the API endpoints and found no critical security flaws.</span>
             </div>
         {% endif %}
     </section>
@@ -134,7 +178,7 @@
     <footer>
         <img src="{{ data.logo_url_small }}" alt="NetShieldAI" class="footer-logo">
         <div class="footer-text">
-            NetShieldAI Reporting Engine // API Security Audit // Generated {{ data.generation_date }}
+            NetShieldAI Reporting Engine // API Security Audit v2.5 // Generated {{ data.generation_date }}
         </div>
     </footer>
 

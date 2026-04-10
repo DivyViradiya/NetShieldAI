@@ -42,7 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoAlertsDisplay = document.getElementById('infoAlertsDisplay');
     const findingsCountDisplay = document.getElementById('findingsCountDisplay');
     const threatLevelDisplay = document.getElementById('threatLevelDisplay');
-    const findingsList = document.getElementById('findingsList') || document.getElementById('openPortsTableBody');
+    const findingsListSide = document.getElementById('findingsListSide');
+    const findingsDetailSide = document.getElementById('findingsDetailSide');
+    const findingsList = findingsListSide; // Backward compatibility
     const copyResultsBtn = document.getElementById('copyResultsBtn');
 
     // Insights Panel
@@ -495,8 +497,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderFindings() {
+        if (!findingsListSide) return;
         const searchTerm = findingsSearch ? findingsSearch.value.toLowerCase() : '';
-        findingsList.innerHTML = '';
+        findingsListSide.innerHTML = '';
         
         const filtered = allFindings.filter(f => {
             const matchesFilter = currentFilter === 'all' || f.risk === currentFilter;
@@ -508,129 +511,160 @@ document.addEventListener('DOMContentLoaded', () => {
         if (findingsCountDisplay) findingsCountDisplay.textContent = filtered.length;
 
         if (filtered.length === 0) {
-            findingsList.innerHTML = `<div style="text-align:center; padding: 4rem; color: #555; font-family: monospace;">NO FINDINGS MATCHING CRITERIA.</div>`;
+            findingsListSide.innerHTML = `<div style="text-align:center; padding: 4rem 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.75rem;">${searchTerm ? 'NO MATCHES.' : 'NO VULNERABILITIES.'}</div>`;
+            resetDetailView();
             return;
         }
 
-        filtered.forEach(finding => {
-            const card = createFindingCard(finding);
-            findingsList.appendChild(card);
+        filtered.forEach((finding, index) => {
+            const risk = finding.risk || 'Info';
+            const color = getRiskColor(risk);
+            
+            const item = document.createElement('div');
+            item.className = 'finding-list-item';
+            item.style.cssText = 'padding: 1rem; border-bottom: 1px solid var(--neo-border); cursor: pointer; transition: background 0.2s; position: relative;';
+            if (window.selectedFindingIndex === index) item.style.background = 'rgba(59, 130, 246, 0.1)';
+
+            item.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                    <div style="font-size: 0.7rem; color: ${color}; font-weight: 800; text-transform: uppercase;">${risk}</div>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--neo-text-main); font-weight: 600; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${finding.name || finding.alert}</div>
+                <div style="font-size: 0.7rem; color: var(--neo-text-muted); font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${finding.url || 'No URL'}</div>
+            `;
+
+            item.onclick = function() {
+                document.querySelectorAll('#findingsListSide > div').forEach(el => el.style.background = 'transparent');
+                item.style.background = 'rgba(59, 130, 246, 0.1)';
+                window.selectedFindingIndex = index;
+                renderDetailView(finding);
+            };
+
+            findingsListSide.appendChild(item);
         });
+
+        if (window.selectedFindingIndex === undefined && filtered.length > 0) {
+            findingsListSide.firstChild.click();
+        } else if (window.selectedFindingIndex !== undefined && filtered[window.selectedFindingIndex]) {
+            // Keep current selection
+            renderDetailView(filtered[window.selectedFindingIndex]);
+        }
     }
 
-    function createFindingCard(finding) {
+    function resetDetailView() {
+        if (!findingsDetailSide) return;
+        findingsDetailSide.innerHTML = `
+            <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.2;">
+                <span class="material-symbols-outlined" style="font-size: 4rem; margin-bottom: 1rem;">data_exploration</span>
+                <div style="font-family: var(--font-mono); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;">Select a vulnerability to view analysis</div>
+            </div>
+        `;
+    }
+
+    function renderDetailView(finding) {
+        if (!findingsDetailSide) return;
+
         const risk = finding.risk || 'Info';
-        const rawScore = parseFloat(finding.predicted_risk_score || 0);
-        const scoreVal = (rawScore * 10).toFixed(1);
+        const baseScore = parseFloat(finding.base_score || 5.0);
+        const scoreVal = baseScore.toFixed(1);
         const color = getRiskColor(risk);
         
-        // Gauge logic
+        // Gauge logic based on Base Score (0-10)
         const radius = 20;
         const circumference = 2 * Math.PI * radius;
-        const offset = circumference - (rawScore * circumference);
+        const offset = circumference - ((baseScore / 10.0) * circumference);
         
         let gaugeClass = 'gauge-low';
-        if (rawScore > 0.7) gaugeClass = 'gauge-critical';
-        else if (rawScore > 0.5) gaugeClass = 'gauge-high';
-        else if (rawScore > 0.3) gaugeClass = 'gauge-medium';
+        if (baseScore >= 9.0) gaugeClass = 'gauge-critical';
+        else if (baseScore >= 7.0) gaugeClass = 'gauge-high';
+        else if (baseScore >= 4.0) gaugeClass = 'gauge-medium';
 
         const priorityLevel = finding.priority_level || 'P3';
         const priorityColor = priorityLevel === 'P0' ? '#ef4444' : (priorityLevel === 'P1' ? '#f59e0b' : (priorityLevel === 'P2' ? '#3b82f6' : '#10b981'));
 
-        const card = document.createElement('div');
-        card.className = 'finding-card';
-        card.style.setProperty('--accent-gradient', color);
-        
-        card.innerHTML = `
-            <div class="finding-header">
-                <div class="risk-indicator" style="color: ${color};">
-                    <div class="risk-dot" style="background: ${color};"></div>
-                    <span>${risk}</span>
-                </div>
-                
-                <div class="finding-title" title="${finding.name || finding.alert}">${finding.name || finding.alert}</div>
-                
-                <div class="score-container">
-                    <div class="risk-score-gauge">
-                        <svg class="gauge-svg" viewBox="0 0 48 48">
-                            <circle class="gauge-bg" cx="24" cy="24" r="${radius}"></circle>
-                            <circle class="gauge-fill ${gaugeClass}" cx="24" cy="24" r="${radius}" 
-                                style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset};"></circle>
-                        </svg>
-                        <span class="gauge-val">${scoreVal}</span>
+        const tctrScore = typeof finding.tctr_priority === 'number'
+            ? finding.tctr_priority.toFixed(4) : (finding.tctr_priority || '—');
+
+        findingsDetailSide.innerHTML = `
+            <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--neo-border); padding-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <div style="font-size: 0.7rem; color: ${color}; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">${risk} VULNERABILITY</div>
+                        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--neo-text-main); margin-bottom: 0.5rem;">${finding.name || finding.alert}</h2>
+                        <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted); word-break: break-all;">${finding.url || 'N/A'}</div>
+                    </div>
+                    <div class="score-container" style="margin-right: 0;">
+                        <div class="risk-score-gauge">
+                            <svg class="gauge-svg" viewBox="0 0 48 48">
+                                <circle class="gauge-bg" cx="24" cy="24" r="${radius}"></circle>
+                                <circle class="gauge-fill ${gaugeClass}" cx="24" cy="24" r="${radius}" 
+                                    style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset};"></circle>
+                            </svg>
+                            <span class="gauge-val">${scoreVal}</span>
+                        </div>
+                        <div style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800; margin-top: 4px; text-align: center;">BASE SEVERITY</div>
                     </div>
                 </div>
 
-                <span class="material-symbols-outlined expand-icon" style="margin-left: 0.5rem; font-size: 1.25rem;">expand_more</span>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <span class="badge-pill" style="background: var(--neo-input); color: var(--neo-text-main); border-color: var(--neo-border);">${finding.method || 'GET'}</span>
+                    <span class="badge-pill" style="color: ${priorityColor}; border-color: ${priorityColor}44; background: ${priorityColor}11;">Priority ${priorityLevel}</span>
+                    <span class="badge-pill" style="color: var(--neo-blue); border-color: var(--neo-blue)44; background: var(--neo-blue)11;">Confidence: ${finding.confidence || 'Medium'}</span>
+                </div>
             </div>
-            
-            <div class="finding-details">
-                <div class="details-content">
-                    <div class="detail-section">
-                        <span class="detail-label">Vulnerable Endpoint</span>
-                        <div class="flex items-center gap-3">
-                            <div class="badge-pill" style="background: var(--neo-input); border: 1px solid var(--neo-border); color: var(--neo-text-main); font-family: var(--font-mono); font-size: 0.7rem; padding: 4px 8px;">${finding.method || 'GET'}</div>
-                            <a href="${finding.url || '#'}" target="_blank" class="finding-url-link" style="font-family: var(--font-mono); font-size: 0.8rem;">${finding.url || 'N/A'}</a>
-                        </div>
-                        ${finding.param ? `<div class="detail-text" style="font-size: 0.75rem; margin-top: 4px; color: var(--neo-text-muted);">PARAMETER: <span style="color: var(--neo-text-main);">${finding.param}</span></div>` : ''}
-                    </div>
 
-                    <div class="detail-section">
-                        <span class="detail-label">Vulnerability Analysis</span>
-                        <div class="detail-text">${finding.description || 'Detailed vulnerability analysis is unavailable for this finding.'}</div>
-                    </div>
-
-                    <div class="detail-section">
-                        <span class="detail-label">Remediation & Solution</span>
-                        <div class="detail-text" style="border-left: 3px solid var(--neo-green); padding-left: 1rem; opacity: 1;">${finding.solution || 'Consult industry best practices for specific remediation steps.'}</div>
-                    </div>
-
-                    <div class="detail-section">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="detail-label">Technical Details</span>
-                            <div class="flex gap-4">
-                                <span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 700;">CONFIDENCE: <span style="color: var(--neo-text-main);">${finding.confidence || 'N/A'}</span></span>
-                                ${finding.cweid ? `<span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 700;">CWE: <span style="color: var(--neo-blue); cursor: pointer;" onclick="window.open('https://cwe.mitre.org/data/definitions/${finding.cweid}.html', '_blank')">${finding.cweid}</span></span>` : ''}
-                            </div>
-                        </div>
-                        
-                        <!-- SOC Analyst Metrics -->
-                        <div class="flex flex-col gap-2 mt-2 mb-3" style="background: rgba(0,0,0,0.2); padding: 1.25rem; border-radius: 8px; border: 1px solid var(--neo-border);">
-                            <div class="flex justify-between items-center">
-                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">ANALYST PRIORITY</span>
-                                <span class="badge-pill" style="background: ${priorityColor}22; border-color: ${priorityColor}44; color: ${priorityColor}; font-size: 0.7rem; font-weight: 800;">${priorityLevel}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">TCTR SCORE</span>
-                                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main); font-weight: 600;">${finding.tctr_priority || '0.00'}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">BASE RISK</span>
-                                <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main); font-weight: 600;">${finding.base_score || '0.0'}</span>
-                            </div>
-                            <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.05);">
-                                <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; display: block; margin-bottom: 6px; letter-spacing: 0.05em;">RISK JUSTIFICATION</span>
-                                <p style="font-size: 0.8rem; color: var(--neo-text-main); line-height: 1.5; opacity: 0.85;">${finding.risk_justification || 'Automated risk assessment performed by TCTR Engine.'}</p>
-                            </div>
-                        </div>
-
-                        <div class="detail-text detail-text-mono" style="color: #a1a1aa; background: #000; padding: 1rem; border-radius: 6px; border: 1px solid #222; overflow-x: auto; white-space: pre-wrap;">${finding.evidence || 'NO RAW EVIDENCE CAPTURED'}</div>
-                    </div>
-
-                    ${finding.reference ? `
-                    <div class="detail-section" style="border-bottom: none; padding-bottom: 0;">
-                        <span class="detail-label">References</span>
-                        <div class="detail-text" style="font-size: 0.75rem; line-height: 1.6; color: var(--neo-blue); opacity: 0.8;">${finding.reference.split('\n').map(ref => `<a href="${ref.trim()}" target="_blank" style="color: inherit; display: block; margin-bottom: 2px;">${ref.trim()}</a>`).join('')}</div>
-                    </div>` : ''}
+            <div class="flex flex-col gap-6">
+                <div class="detail-section" style="padding: 0; border: none;">
+                    <span class="detail-label">Issue Description</span>
+                    <div class="detail-text" style="font-size: 0.9rem; margin-top: 0.5rem;">${finding.description || 'No description available.'}</div>
                 </div>
+
+                <div class="detail-section" style="padding: 0; border: none;">
+                    <span class="detail-label">Remediation & Solution</span>
+                    <div class="detail-text" style="border-left: 2px solid var(--neo-green); padding-left: 1rem; margin-top: 0.5rem;">${finding.solution || 'No specific solution provided.'}</div>
+                </div>
+
+                <div class="detail-section" style="padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--neo-border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <span class="detail-label">TCTR Analyst Metrics</span>
+                        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted);">Predictive Model: TCTR-v2</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                            <div style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800;">TCTR PRIORITY</div>
+                            <div style="font-family: var(--font-mono); font-size: 1rem; color: var(--neo-text-main); font-weight: 700;">${tctrScore}</div>
+                        </div>
+                        <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 6px;">
+                            <div style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800;">BASE CVSS SCORE</div>
+                            <div style="font-family: var(--font-mono); font-size: 1rem; color: var(--neo-text-main); font-weight: 700;">${scoreVal}</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--neo-text-main); opacity: 0.8; line-height: 1.6; margin: 0;">${finding.risk_justification || 'Automated risk assessment based on vector analysis, confidence levels, and severity.'}</p>
+                </div>
+
+                <div class="detail-section" style="padding: 0; border: none;">
+                    <span class="detail-label">Evidence / Raw Data</span>
+                    <div class="detail-text-mono" style="margin-top: 0.5rem; max-height: 300px;">${finding.evidence || 'NO RAW EVIDENCE CAPTURED'}</div>
+                </div>
+
+                ${finding.reference ? `
+                <div class="detail-section" style="padding: 0; border: none;">
+                    <span class="detail-label">External References</span>
+                    <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                        ${finding.reference.split('\n').filter(r => r.trim()).map(ref => `
+                            <a href="${ref.trim()}" target="_blank" style="font-size: 0.75rem; color: var(--neo-blue); text-decoration: none; display: flex; align-items: center; gap: 4px;">
+                                <span class="material-symbols-outlined" style="font-size: 1rem;">open_in_new</span>
+                                ${ref.trim()}
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                
+                <!-- Bottom spacer to prevent clipping -->
+                <div style="height: 4rem;"></div>
             </div>
         `;
-
-        card.addEventListener('click', () => {
-            card.classList.toggle('expanded');
-        });
-
-        return card;
     }
 
     async function loadRawScanResults() {

@@ -433,6 +433,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="detail-text" style="color: #10b981; opacity: 1; border-left: 2px solid #10b981; padding-left: 1rem;">${f.fix_suggestion}</div>
                     </div>
                 ` : ''}
+
+                <!-- Bottom spacer to prevent clipping -->
+                <div style="height: 4rem;"></div>
             </div>
         `;
     }

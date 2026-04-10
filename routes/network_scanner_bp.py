@@ -131,6 +131,13 @@ def scan_ports():
     protocol_type = data.get('protocol_type', 'TCP').upper()
     scan_type = data.get('scan_type', 'default')
     
+    # [FIX] Pre-resolve target IP so that all subsequent file generation logic 
+    # (Nmap scans and PDF reports) share the exact same filesystem identifier.
+    from Services.network_scanner import resolve_to_ip
+    resolved = resolve_to_ip(target_ip)
+    if resolved:
+        target_ip = resolved
+    
     # [NEW] Extract timing parameter (Default to 4 if not provided)
     try:
         timing = int(data.get('timing', 4))
@@ -233,8 +240,8 @@ def scan_ports():
         # Use the captured identifier variable
         network_scanner.log(f"[*] Preparing {scan_type.upper()} scan for target: {target_ip} with T{timing}...", user_identifier, queue_id, to_console=True)        
         
-        from datetime import datetime
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # Generate a consistent timestamp for this single scan session in IST
+        timestamp = report_manager.get_timestamp()
         start_time = time.time()
         
         # 1. Run the Scan (Pass user directory to service)
@@ -284,7 +291,25 @@ def scan_ports():
                     if os.path.exists(user_pdf_path):
                         # Final synchronization wait to ensure file handles are closed
                         report_manager.wait_for_file(str(user_pdf_path))
-                        network_scanner.log(f"[+] PDF report generated successfully", user_identifier, queue_id, to_console=True)                        network_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_ip}", user_identifier, queue_id, to_console=True)
+                        network_scanner.log(f"[+] PDF report generated successfully", user_identifier, queue_id, to_console=True)
+                        network_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_ip}", user_identifier, queue_id, to_console=True)
+                        
+                        # [NEW] Register the PDF report in the database
+                        with app.app_context():
+                            from models.models import Report
+                            # Use relative path from the user's result directory for storage
+                            rel_path = os.path.relpath(user_pdf_path, os.path.dirname(os.path.dirname(user_output_dir)))
+                            new_report = Report(
+                                scan_log_id=log_id,
+                                user_id=user_id_for_log,
+                                filename=os.path.basename(user_pdf_path),
+                                relative_path=rel_path,
+                                file_type="pdf",
+                                category="network_scanner"
+                            )
+                            db.session.add(new_report)
+                            db.session.commit()
+                            
                     else:
                         network_scanner.log("[!] PDF generation ran but file not found (unknown error).", user_identifier, queue_id, to_console=True)
                 else:
@@ -299,7 +324,12 @@ def scan_ports():
             network_scanner.log("[!] Scan failed to produce a result file.", user_identifier, queue_id)
 
     threading.Thread(target=scan_task, args=(queue_id,), daemon=True).start()  # RC-5 FIX: daemon=True prevents process hang on shutdown
-    return jsonify({"status": "success", "message": f"{scan_type.upper()} scan for {target_ip} initiated.", "queue_id": queue_id})
+    return jsonify({
+        "status": "success", 
+        "message": f"{scan_type.upper()} scan for {target_ip} initiated.", 
+        "queue_id": queue_id,
+        "target_ip": target_ip
+    })
 
 
 @network_scanner_bp.route('/check_active_scan', methods=['GET'])
@@ -380,6 +410,12 @@ def get_report_files():
     target = request.args.get('target')
     user_dir = get_user_results_dir()
     
+    # [FIX] Resolve target to ensure consistency with scan file naming
+    from Services.network_scanner import resolve_to_ip
+    resolved = resolve_to_ip(target)
+    if resolved:
+        target = resolved
+
     latest_json = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="json")
     latest_pdf = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="pdf")
 
@@ -405,24 +441,18 @@ def download_pdf_report():
         filename = secure_filename(requested_filename)
         pdf_path = os.path.join(user_dir, filename)
     else:
+        # [FIX] Resolve target to ensure consistency with scan file naming
+        from Services.network_scanner import resolve_to_ip
+        resolved = resolve_to_ip(target)
+        if resolved:
+            target = resolved
+
         # Robustly resolve the latest PDF
         pdf_path = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="pdf")
         if not pdf_path:
              return jsonify({"status": "error", "message": "No suitable PDF report found."}), 404
         filename = os.path.basename(pdf_path)
 
-    if not os.path.exists(pdf_path):
-        return jsonify({"status": "error", "message": "PDF report file not found."}), 404
-    
-    return send_from_directory(
-        directory=os.path.dirname(pdf_path),
-        path=filename,
-        as_attachment=True
-    )
-
-    if not os.path.exists(pdf_path):
-        return jsonify({"status": "error", "message": "PDF report file not found."}), 404
-    
     return send_from_directory(
         directory=os.path.dirname(pdf_path),
         path=filename,
@@ -436,6 +466,12 @@ def get_json_report_file():
     user_dir = get_user_results_dir()
     target = request.args.get('target')
     
+    # [FIX] Resolve target to ensure consistency with scan file naming
+    from Services.network_scanner import resolve_to_ip
+    resolved = resolve_to_ip(target)
+    if resolved:
+        target = resolved
+
     user_json_path = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="json")
 
     if not user_json_path or not os.path.exists(user_json_path):

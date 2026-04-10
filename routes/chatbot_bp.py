@@ -9,12 +9,14 @@ import time
 import threading
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
+from pathlib import Path
+from core.time_utils import get_now_ist, get_now_ist_str, to_ist
 from werkzeug.utils import secure_filename
 
 # [NEW] Import db for stats tracking
 from core.extensions import db
-from models.models import ScanLog
-from Services import network_scanner, zap_scanner, ssl_scanner, sql_scanner, packet_sniffer, api_scanner, killchain_service, semgrep_scanner, scan_logger
+from Services import network_scanner, zap_scanner, ssl_scanner, sql_scanner, packet_sniffer, api_scanner, killchain_service, semgrep_scanner, scan_logger, report_manager
+from models.models import ScanLog, get_user_result_dir_name
 
 # Initialize the Flask Blueprint for chatbot-related routes
 chatbot_bp = Blueprint('chatbot_bp', __name__)
@@ -100,12 +102,12 @@ def get_all_active_scans(user_result_dir):
     return active
 
 # --- Logging Setup ---
-BASE_LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".logs")
-SYSTEM_LOG_DIR = os.path.join(BASE_LOG_DIR, "system")
-USERS_LOG_DIR = os.path.join(BASE_LOG_DIR, "users")
+BASE_LOG_DIR = Path(__file__).parent.parent / ".logs"
+SYSTEM_LOG_DIR = BASE_LOG_DIR / "system"
+USERS_LOG_DIR = BASE_LOG_DIR / "users"
 
-os.makedirs(SYSTEM_LOG_DIR, exist_ok=True)
-os.makedirs(USERS_LOG_DIR, exist_ok=True)
+SYSTEM_LOG_DIR.mkdir(parents=True, exist_ok=True)
+USERS_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # System Chatbot Logger
 log_file = os.path.join(SYSTEM_LOG_DIR, 'chatbot_system_logs.txt')
@@ -173,49 +175,39 @@ def map_llm_mode(mode):
 def get_user_pdf_path(scanner_type, target=None):
     """
     Dynamically resolves the path to a specific report PDF for the current user.
-    Supports target-specific filenames if target is provided.
     """
     if not current_user.is_authenticated:
         return None
         
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    user_results_root = report_manager.get_user_results_dir(current_user)
     
-    # NEW LOGIC: Composite Identifier (Matches other blueprints)
-    user_result_dir = get_user_result_dir_name(current_user)
-    results_root = os.path.join(base_dir, '.results', user_identifier)
-    
-    from Services import report_manager
-
-    # Map scanner_type to TWO things:
-    # 1. Subfolder inside results/Username_ID/
-    # 2. Scanner Name parameter for find_latest_report (Matching blueprint calls)
-    tool_folder_map = {
-        'nmap': ('network_scanner', 'network_scanner'),
-        'zap': ('zap_scanner', 'zap_scanner'),
-        'ssl': ('ssl_scanner', 'ssl_report'),
+    # Map scanner aliases to (Subfolder, ScannerPrefix)
+    tool_map = {
+        'nmap': ('network_scanner', 'network'),
+        'zap': ('zap_scanner', 'zap'),
+        'ssl': ('ssl_scanner', 'ssl'),
         'packet_sniffer': ('packet_sniffer', 'pcap_analysis_report'),
-        'sql': ('sql_scanner', 'sql_scanner'),
+        'sql': ('sql_scanner', 'sql'),
         'killchain': ('killchain', 'killchain'),
-        'api': ('api_scanner', 'api_report'),
-        'semgrep': ('semgrep_scanner', 'semgrep_scanner')
+        'api': ('api_scanner', 'api'),
+        'semgrep': ('semgrep_scanner', 'semgrep')
     }
     
-    if scanner_type not in tool_folder_map:
+    if scanner_type not in tool_map:
         return None
         
-    folder, scanner_name = tool_folder_map[scanner_type]
+    folder, scanner_prefix = tool_map[scanner_type]
+    scan_dir = os.path.join(user_results_root, folder)
     
-    # Check "Killchain" having a sub-folder 'reports'
     if scanner_type == 'killchain':
-        scan_dir = os.path.join(results_root, folder, 'reports')
-    else:
-        scan_dir = os.path.join(results_root, folder)
-        
+        scan_dir = os.path.join(scan_dir, 'reports')
+
     if not os.path.exists(scan_dir):
         return None
         
     try:
-        return report_manager.find_latest_report(scan_dir, scanner_name=scanner_name, target=target, extension="pdf")
+        # report_manager.find_latest_report is now robust enough to handle the beautified prefixes
+        return report_manager.find_latest_report(scan_dir, scanner_name=scanner_prefix, target=target, extension="pdf")
     except Exception as e:
         logger.error(f"Error finding latest PDF in {scan_dir}: {e}")
         return None
@@ -227,6 +219,7 @@ def chatbot_page():
     """Renders the chatbot UI page with PRE-LOADED session data to prevent UI lag."""
     logger.info(f"[*] Accessing AI Analyst Page (User: {current_user.username})")
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     
     # [NEW] Handle Session ID from URL (e.g. after redirect from scanner)
@@ -279,6 +272,7 @@ def chatbot_page():
 def upload_report():
     """Handles manual file uploads by sending them to the central server proxy."""
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         if 'file' not in request.files:
@@ -349,6 +343,7 @@ def chat_with_ai():
     Updated to handle options like verbosity and incognito mode.
     """
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         data = request.json
@@ -414,6 +409,7 @@ def chat_with_ai_stream():
     Proxies the streaming chat request to the backend with options.
     """
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         # Handle both JSON and Multipart/Form-Data
@@ -489,6 +485,7 @@ def scanner_analysis_proxy():
     FastAPI will read the file directly from the local disk.
     """
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         data = request.get_json()
@@ -558,6 +555,7 @@ def clear_history_proxy():
     Wipes the chat history for the active session but keeps the report context.
     """
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         session_id = session.get('chatbot_session_id')
@@ -579,6 +577,7 @@ def delete_all_sessions_proxy():
     Master Reset: Deletes EVERYTHING for the current user.
     """
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         proxy_url = f"{SERVER_PROXY_URL}/delete_all_sessions"
@@ -600,6 +599,7 @@ def clear_chat():
     Legacy endpoint: clears the ACTIVE session.
     """
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         session_id = session.get('chatbot_session_id')
@@ -637,6 +637,7 @@ def execute_action():
     Maps tool names to the internal Flask scanner endpoints.
     """
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     
     try:
@@ -784,6 +785,7 @@ def get_chat_history_proxy():
     Proxies the history fetch request to the backend.
     """
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         session_id = request.args.get('session_id') or session.get('chatbot_session_id')
@@ -820,9 +822,9 @@ def get_chat_history_proxy():
 def get_sessions_proxy():
     """Proxies the request to get all user sessions."""
     try:
-        user_result_dir = get_user_result_dir_name(current_user)
+        user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
         proxy_url = f"{SERVER_PROXY_URL}/get_user_sessions"
-        params = {'user_id': current_user_identifier}
+        params = {'user_id': user_identifier}
         
         response = requests.get(proxy_url, params=params, timeout=5, proxies={"http": None, "https": None})
         return jsonify(response.json())
@@ -859,6 +861,7 @@ def switch_session():
 def get_session_graph_proxy(session_id):
     """Proxies the request to fetch the interactive topology graph."""
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         proxy_url = f"{SERVER_PROXY_URL}/chatbot/session/{session_id}/graph"
@@ -888,6 +891,7 @@ def delete_session_proxy():
     Proxies the request to delete a SPECIFIC session (not necessarily the active one).
     """
     user_result_dir = get_user_result_dir_name(current_user)
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         data = request.json

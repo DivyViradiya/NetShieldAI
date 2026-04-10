@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from core.time_utils import get_now_ist
 import os
 import time
 from core.extensions import db
@@ -78,22 +79,7 @@ def tail_log_file(user_result_dir, tool_name):
                     heartbeat_count = 0
                 time.sleep(0.3)  # Wait for new content
 
-def sanitize_filename(target):
-    r"""
-    Sanitizes a target (IP, URL, Domain) for use in a filename.
-    Replaces common delimiters (e.g., ., :, /, \) with underscores.
-    """
-    if not target:
-        return "unknown_target"
-    
-    # Remove protocol prefix (http://, https://)
-    clean_target = re.sub(r'^https?://', '', str(target))
-    
-    # Replace all non-alphanumeric (except underscores/hyphens) with underscores
-    clean_target = re.sub(r'[^a-zA-Z0-9_-]', '_', clean_target)
-    
-    # Remove trailing/leading underscores
-    return clean_target.strip('_')
+from Services.report_manager import sanitize_filename
 
 def log_scan_start(user_id, tool_name, target, scan_type="Standard", origin="manual"):
     """
@@ -108,7 +94,7 @@ def log_scan_start(user_id, tool_name, target, scan_type="Standard", origin="man
             target=target,
             scan_type=scan_type,
             status="Running",
-            start_time=datetime.utcnow(),
+            start_time=get_now_ist(),
             origin=origin
         )
         db.session.add(new_log)
@@ -128,7 +114,7 @@ def log_scan_end(log_id, status="Completed", finding_count=0, critical_count=0, 
     try:
         log_entry = db.session.get(ScanLog, log_id)
         if log_entry:
-            log_entry.end_time = datetime.utcnow()
+            log_entry.end_time = get_now_ist()
             log_entry.status = status
             log_entry.finding_count = finding_count
             log_entry.severity_critical = critical_count
@@ -154,8 +140,9 @@ def create_full_scan_log(user_id, tool_name, target, duration, finding_count, st
     """
     try:
         # Calculate implied start time
-        end_time = datetime.utcnow()
-        start_time = datetime.fromtimestamp(end_time.timestamp() - duration)
+        now_ist = get_now_ist()
+        end_time = now_ist
+        start_time = datetime.fromtimestamp(now_ist.timestamp() - duration, now_ist.tzinfo)
         
         new_log = ScanLog(
             user_id=user_id,
@@ -186,7 +173,7 @@ def reset_log_file(user_result_dir, tool_name):
         os.makedirs(os.path.dirname(log_file), exist_ok=True)
         # Open in write mode to truncate
         with open(log_file, 'w', encoding='utf-8') as f:
-            f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Log cleared for new {tool_name} scan.\n")
+            f.write(f"[{get_now_ist().strftime('%Y-%m-%d %H:%M:%S')}] Log cleared for new {tool_name} scan.\n")
     except Exception as e:
         logger.error(f"[!] Error resetting log file {log_file}: {e}")
 
@@ -218,7 +205,7 @@ def mark_scan_failed(log_id, error_message="Scan interrupted or server restarted
         scan = db.session.get(ScanLog, log_id)
         if scan and scan.status == 'Running':
             scan.status = 'Failed'
-            scan.end_time = datetime.utcnow()
+            scan.end_time = get_now_ist()
             scan.error_message = error_message
             db.session.commit()
             return True
@@ -275,7 +262,7 @@ def write_log(user_result_dir, tool_name, message, level='INFO'):
     - Writes EVERYTHING to {tool_name}_debug.log
     - Writes ONLY CLEAN formatted messages to {tool_name}_active.log (User Stream) if in MSG_TAGS
     """
-    timestamp = datetime.now().strftime("%H:%M:%S")
+    timestamp = get_now_ist().strftime("%H:%M:%S")
     full_line = f"[{timestamp}] [{level}] {message}"
     
     # 1. Write to Debug Log (All levels)

@@ -8,1180 +8,1010 @@
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  
+  <script>
+    // --- API & REPORT URL CONFIGURATION ---
+    const apiEndpoints = {
+      network: "{{ url_for('dashboard_bp.get_network_stats') }}",
+      zap: "{{ url_for('dashboard_bp.get_zap_stats') }}",
+      ssl: "{{ url_for('dashboard_bp.get_ssl_stats') }}",
+      sniffer: "{{ url_for('dashboard_bp.get_sniffer_stats') }}",
+      killchain: "{{ url_for('dashboard_bp.get_killchain_stats') }}",
+      api: "{{ url_for('dashboard_bp.get_api_stats') }}",
+      sql: "{{ url_for('dashboard_bp.get_sql_stats') }}",
+      semgrep: "{{ url_for('dashboard_bp.get_semgrep_stats') }}",
+      usage: "{{ url_for('dashboard_bp.get_usage_stats') }}",
+      compliance: "{{ url_for('dashboard_bp.get_compliance_stats') }}",
+      globalHealth: "{{ url_for('dashboard_bp.get_global_health') }}",
+      reports: "{{ url_for('dashboard_bp.get_pdf_reports') }}",
+      chatbotSessions: "/chatbot/get_sessions"
+    };
+
+    const reportUrls = {
+      network: "{{ url_for('network_scanner_bp.download_pdf_report') }}",
+      zap: "{{ url_for('zap_scanner_bp.download_pdf_report') }}",
+      ssl: "{{ url_for('ssl_scanner_bp.download_pdf_report') }}",
+      sniffer: "{{ url_for('packet_sniffer_bp.download_pdf_report') }}",
+      killchain: "{{ url_for('killchain_bp.download_pdf_report') }}",
+      api: "{{ url_for('api_scanner_bp.download_pdf_report') }}",
+      database: "{{ url_for('sql_scanner_bp.download_pdf_report') }}",
+      semgrep: "{{ url_for('semgrep_scanner_bp.download_pdf_report') }}"
+    };
+  </script>
 
   <style>
-    /* --- THEME VARIABLES --- */
+    /* --- 1. THEME VARIABLES (STRICT NEO-TECH) --- */
     :root {
-      /* Palette - Stark Minimalist Dark */
       --neo-bg: #000000;
       --neo-card: rgba(10, 10, 12, 0.45);
       --neo-card-hover: rgba(15, 15, 18, 0.55);
-      --neo-input: rgba(15, 15, 18, 0.6);
-      --neo-border: rgba(255, 255, 255, 0.05); /* Subtle border from scanner */
-      
-      /* Typography */
+      --neo-border: rgba(255, 255, 255, 0.1); 
       --neo-text-main: #ffffff;
       --neo-text-muted: #888888;
-      --neo-text-label: #555555;
-      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      
-      /* Accents (User Dashboard Focus: Purple) */
       --neo-blue: #3b82f6;
       --neo-purple: #8b5cf6;
       --neo-red: #ef4444;
       --neo-green: #10b981;
       --neo-amber: #f59e0b;
-      
-      /* Radii & Effects (Scanner standard) */
-      --radius-lg: 20px;
+      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-lg: 16px;
       --radius-md: 12px;
       --radius-sm: 8px;
-      --glass-blur: blur(24px);
-      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      --neo-card-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
-      
-      /* Specific UI Mappings */
-      --kc-hero-bg: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, rgba(10, 10, 12, 0.5) 100%);
-      --panel-header-border: var(--neo-border);
-      --table-border: var(--neo-border);
-      --dl-item-bg: rgba(12, 12, 14, 0.4);
-      --dl-item-hover: rgba(25, 25, 30, 0.6);
     }
 
     body.light-mode {
       --neo-bg: #f1f5f9;
       --neo-card: #ffffff;
       --neo-card-hover: #f8faff;
-      --neo-input: #ffffff;
       --neo-border: #cbd5e1;
       --neo-text-main: #0f172a;
       --neo-text-muted: #64748b;
-      --neo-text-dim: #94a3b8;
-      --neo-text-label: #94a3b8;
       --neo-blue: #4f46e5;
-      --neo-red: #dc2626;
-      --neo-green: #059669;
-      --neo-amber: #d97706;
       --neo-purple: #7c3aed;
-      --neo-cyan: #0891b2;
-      --neo-card-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
-      --kc-hero-bg: linear-gradient(180deg, #ffffff 0%, #eef2ff 100%);
-      --radar-bg: #f1f5f9;
-      --panel-header-border: #e2e8f0;
-      --table-border: #e2e8f0;
-      --dl-item-bg: #ffffff;
-      --dl-item-hover: #f1f5f9;
-
-      --severity-critical: #dc2626;
-      --severity-critical-bg: rgba(220,38,38,0.1);
-      --severity-high: #d97706;
-      --severity-high-bg: rgba(217,119,6,0.1);
-      --severity-medium: #ca8a04;
-      --severity-medium-bg: rgba(202,138,4,0.1);
-      --severity-low: #2563eb;
-      --severity-low-bg: rgba(37,99,235,0.1);
-      --severity-success: #059669;
-      --severity-success-bg: rgba(5,150,105,0.1);
     }
 
-    /* Light Mode Specific Overrides */
-    body.light-mode .hud-title h1 { color: var(--text-primary); }
-    body.light-mode .metric-value { color: var(--text-primary); }
-    body.light-mode .metric-sub { color: var(--text-muted); }
-    body.light-mode .panel {
-      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%); /* Ice-blue wash */
-      border-color: var(--border-default);
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06); /* Indigo shadow */
-    }
-    body.light-mode .panel-title { color: var(--text-primary); }
-    body.light-mode .kc-target { color: var(--text-primary); }
-    body.light-mode .tech-badge {
-      background: var(--bg-secondary);
-      border-color: var(--border-default);
-      color: var(--text-secondary);
-    }
-    body.light-mode .standard-btn {
-      background: var(--surface-primary);
-      border-color: var(--border-default);
-      color: var(--text-secondary);
-    }
-    body.light-mode .standard-btn:hover:not(.disabled) {
-      background: var(--bg-secondary);
-      border-color: var(--text-muted);
-      color: var(--text-primary);
-    }
-    body.light-mode .mono-table td {
-      color: var(--text-secondary);
-      border-bottom-color: var(--border-subtle);
-    }
-    body.light-mode .mono-table th { color: var(--text-muted); }
-    body.light-mode .dl-item {
-      background: var(--surface-primary);
-      border-color: var(--border-default);
-    }
-    body.light-mode .dl-item:hover:not(.disabled) {
-      background: var(--bg-secondary);
-      border-color: var(--text-muted);
-    }
-    body.light-mode .dl-name { color: var(--text-secondary); }
-    body.light-mode .vuln-header { color: var(--text-primary); }
-    body.light-mode .vuln-item {
-      background: var(--bg-secondary);
-      border-color: var(--border-default);
-    }
-    body.light-mode .comp-item {
-      background: var(--surface-primary);
-      border-color: var(--border-default);
-    }
-    body.light-mode .comp-name { color: var(--text-primary); }
-    body.light-mode .comp-desc { color: var(--text-secondary); }
-    body.light-mode .comp-progress-bg { background: var(--border-subtle); }
-    body.light-mode .comp-tab-btn {
-      border-color: var(--border-default);
-      color: var(--text-muted);
-    }
-    body.light-mode .comp-tab-btn:hover {
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-    }
-    body.light-mode .user-profile-badge {
-      background: var(--surface-primary) !important;
-      border-color: var(--border-default) !important;
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06) !important;
-    }
-    body.light-mode .user-profile-badge span:first-child { color: var(--text-primary) !important; }
-    body.light-mode .user-profile-badge .kc-stat-label { color: var(--text-muted) !important; }
-
-
-    
-    /* --- CRITICAL LAYOUT RESET (ZAP-style) --- */
-    .dashboard-container *, .dashboard-container *::before, .dashboard-container *::after {
-      box-sizing: border-box;
-    }
-
-    body {
+    .dashboard-wrapper {
       background-color: var(--neo-bg);
       color: var(--neo-text-main);
-      margin: 0;
-      min-height: 100vh;
+      font-family: var(--font-ui);
+      padding: 1.5rem;
+      min-height: calc(100vh - 64px);
       display: flex;
       flex-direction: column;
-      position: relative;
+      gap: 1.5rem;
     }
 
-    .dashboard-container {
-      font-family: var(--font-ui);
-      color: var(--neo-text-main);
-      margin: 0 auto;
-      padding: 1rem 1.5rem;
-      width: 100%;
-      box-sizing: border-box;
+    /* --- TOP GLOBAL BANNER --- */
+    .global-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 2.5rem;
+      background: var(--neo-card);
+      border: 1px solid var(--neo-border);
+      border-radius: 20px;
+      backdrop-filter: blur(24px);
+    }
+
+    .scanner-title-area {
+        margin: 0;
+    }
+    .scanner-title-area h1 {
+        font-family: var(--font-mono);
+        font-size: clamp(1.2rem, 3vw, 2.25rem) !important;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        text-transform: uppercase;
+        margin: 0;
+        margin-bottom: 0.5rem;
+    }
+    .text-gradient {
+        color: #fff;
+    }
+    .gradient-accent {
+        background: linear-gradient(135deg, var(--neo-blue), #00e5ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .scanner-title-area p {
+        font-family: var(--font-mono);
+        font-size: 0.85rem !important;
+        color: var(--neo-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        opacity: 0.8;
+        font-weight: 500;
+    }
+    .title-deco-line {
+        height: 1px;
+        width: 32px;
+        background: linear-gradient(90deg, var(--neo-blue), transparent);
+    }
+    
+    .health-score-container {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding-left: 1.5rem;
+      border-left: 1px solid var(--neo-border);
+    }
+
+    .health-dial {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: conic-gradient(var(--neo-green) calc(var(--score, 0) * 1%), var(--neo-border) 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .health-dial::after {
+      content: '';
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      background: var(--neo-bg);
+      border-radius: 50%;
+    }
+    .health-value {
+      position: relative;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    /* --- TOP NAVIGATION TABS --- */
+    .tab-nav {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--neo-border);
+      padding-bottom: 1px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      border-bottom: none;
+      color: var(--neo-text-muted);
+      padding: 0.75rem 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      margin-bottom: -1px;
+    }
+
+    .tab-btn:hover { color: var(--neo-text-main); }
+    .tab-btn.active {
+      background: var(--neo-card);
+      border-color: var(--neo-border);
+      color: var(--neo-blue);
+      border-bottom: 1px solid var(--neo-bg);
+    }
+
+    /* --- BENTO GRID SYSTEM --- */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-auto-rows: minmax(200px, auto);
+      gap: 1rem;
+    }
+
+    .bento-tile {
+      background: var(--neo-card);
+      border: 1px solid var(--neo-border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    .bento-tile:hover {
+      background: var(--neo-card-hover);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .tile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--neo-border);
+    }
+    .tile-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--neo-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .tile-title i { font-size: 1rem; color: var(--neo-blue); }
+
+    .tile-content { flex: 1; display: flex; flex-direction: column; }
+
+    /* Bento Spans */
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .span-3 { grid-column: span 3; }
+    .row-2 { grid-row: span 2; }
+
+    /* --- COMPONENT SPECIFIC STYLES --- */
+    
+    /* 1. Technical HUD Elements */
+    .hud-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1.5rem;
       flex: 1;
+    }
+    .hud-metric-item {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      position: relative;
-      z-index: 10;
     }
-
-    /* --- HUD HEADER --- */
-    .hud-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid var(--neo-border);
-      padding-bottom: 1.5rem;
-    }
-    
-    .hud-title h1 {
-      font-size: 1.5rem;
-      text-transform: uppercase;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      margin: 0;
-    }
-    .hud-title span {
-      color: var(--neo-blue);
-    }
-
-    /* --- HUD CARDS --- */
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-    }
-    
-    .hud-card, .panel, .killchain-hero {
-      background: var(--neo-card);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--neo-border);
-      border-radius: 8px;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      box-shadow: var(--neo-card-shadow);
-    }
-
-    body.light-mode .hud-card, 
-    body.light-mode .panel, 
-    body.light-mode .killchain-hero {
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-    }
-
-    .hud-card {
-      padding: 1.5rem;
-      display: flex; 
-      flex-direction: column; 
-      justify-content: space-between;
-    }
-    
-    .hud-card:hover {
-      border-color: var(--neo-text-label);
-      transform: translateY(-2px);
-      box-shadow: var(--hud-card-shadow);
-    }
-    
-    /* No ::before top-glow — flat card style matching ZAP */
-    .hud-card::before, .hud-card.card-blue::before, .hud-card.card-red::before,
-    .hud-card.card-green::before, .hud-card.card-amber::before { display: none; }
-
-    .metric-label {
+    .hud-metric-label {
+      font-family: var(--font-mono);
       font-size: 0.75rem;
+      color: var(--neo-text-label);
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--neo-text-muted);
-      margin-bottom: 0.5rem;
-      display: flex;
-      justify-content: space-between;
     }
-    
-    .metric-value {
+    .hud-metric-value {
       font-family: var(--font-mono);
-      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--neo-text-main);
-      margin-bottom: 0.25rem;
-      line-height: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .hud-metric-icon {
+      font-size: 1.25rem;
+      opacity: 0.7;
+    }
+
+    /* 2. Visual Sparkline */
+    .sparkline-container {
+      width: 100%;
+      height: 60px;
+      margin-top: 1rem;
+    }
+
+    /* 3. Severity Bars (ZAP) */
+    .sev-bar-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .sev-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .sev-bar-label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted); width: 60px; }
+    .sev-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+    .sev-bar-fill { height: 100%; transition: width 1s ease; }
+
+    /* --- DATA TABLES --- */
+    .neo-table { width: 100%; border-collapse: collapse; }
+    .neo-table th {
+        text-align: left; padding: 0.75rem 1rem; font-size: 0.7rem;
+        text-transform: uppercase; color: var(--neo-text-muted);
+        border-bottom: 2px solid var(--neo-border);
+        font-family: var(--font-mono);
+    }
+    .neo-table td {
+        padding: 0.75rem 1rem; border-bottom: 1px solid var(--neo-border);
+        font-size: 0.85rem; font-family: var(--font-mono);
     }
     
-    .metric-sub {
-      font-size: 0.8rem;
-      color: var(--neo-text-label);
-      margin-top: 4px;
+    .badge {
+        padding: 4px 10px; border-radius: 4px; font-size: 0.65rem;
+        font-weight: 700; text-transform: uppercase; font-family: var(--font-mono);
     }
+    .badge-critical { background: rgba(239, 68, 68, 0.1); color: var(--neo-red); border: 1px solid var(--neo-red); }
+    .badge-secure { background: rgba(16, 185, 129, 0.1); color: var(--neo-green); border: 1px solid var(--neo-green); }
 
-    /* --- LAYOUT GRIDS --- */
-    .main-split-grid {
-      display: grid;
-      grid-template-columns: 3fr 1fr; 
-      gap: 1.5rem;
-      align-items: start;
+    /* New: Horizon Chart for Protocol Breakdown */
+    .protocol-horizon {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        margin-top: 1.25rem;
     }
-
-    .left-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+    .protocol-bar-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
-
-    .right-column {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      height: 100%; 
-    }
-
-    /* --- COMMON PANEL STYLES --- */
-    .panel {
-      background: var(--neo-card);
-      border: 1px solid var(--neo-border);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--panel-header-border);
-    }
-    .panel-title {
-        font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
-        color: var(--neo-text-main); display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.05em;
-    }
-
-    /* --- COMPLIANCE TABS --- */
-    .comp-tab-btn {
-        background: transparent;
-        border: 1px solid var(--neo-border);
-        color: var(--neo-text-muted);
-        padding: 0.4rem 0.8rem;
-        border-radius: 4px;
-        font-size: 0.7rem;
+    .protocol-label {
         font-family: var(--font-mono);
+        font-size: 0.55rem;
+        color: var(--neo-text-muted);
+        width: 40px;
+        text-transform: uppercase;
+    }
+    .protocol-track {
+        flex: 1;
+        height: 4px;
+        background: rgba(255,255,255,0.02);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+    .protocol-fill {
+        height: 100%;
+        background: var(--neo-blue);
+        border-radius: 2px;
+        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+    }
+    
+    @keyframes pulse-red {
+        0% { opacity: 1; text-shadow: 0 0 0px var(--neo-red); }
+        50% { opacity: 0.7; text-shadow: 0 0 8px var(--neo-red); }
+        100% { opacity: 1; text-shadow: 0 0 0px var(--neo-red); }
+    }
+    .status-alert { animation: pulse-red 2s infinite; font-weight: 700; color: var(--neo-red); }
+
+    .hidden { display: none !important; }
+    
+    /* --- HUD SCROLLBAR --- */
+    .hud-scroll::-webkit-scrollbar { width: 4px; }
+    .hud-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+    .hud-scroll::-webkit-scrollbar-thumb { background: var(--neo-blue); border-radius: 4px; }
+    .hud-scroll::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
+
+    /* --- NEW: COMPLIANCE HUD STYLES --- */
+    .compliance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    .framework-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--neo-border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s, border-color 0.3s;
         cursor: pointer;
-        transition: all 0.2s;
+    }
+    .framework-card:hover { transform: translateY(-3px); border-color: var(--neo-blue); background: rgba(59, 130, 246, 0.05); }
+    .framework-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    .framework-title { font-weight: 800; font-size: 1.1rem; color: #fff; }
+    .framework-gauge { width: 60px; height: 60px; position: relative; }
+    
+    .requirement-list { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .req-chip { 
+        padding: 4px 8px; font-family: var(--font-mono); font-size: 0.6rem; border-radius: 4px;
+        background: rgba(255,255,255,0.05); color: var(--neo-text-muted); border: 1px solid var(--neo-border);
+    }
+    .req-chip.pass { color: var(--neo-green); border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05); }
+    .req-chip.fail { color: var(--neo-red); border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); }
+
+    /* --- NEW: REMEDIATION MODAL --- */
+    .remedy-modal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+        display: none; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .remedy-box {
+        background: var(--neo-bg); border: 1px solid var(--neo-border);
+        width: 90%; max-width: 600px; border-radius: 16px; padding: 2rem;
+        box-shadow: 0 0 40px rgba(0,0,0,0.5); position: relative;
+    }
+    .remedy-header { border-bottom: 1px solid var(--neo-border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    .remedy-evidence { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 8px; margin-top: 1rem; font-size: 0.75rem; color: #aaa; max-height: 150px; overflow-y: auto; }
+    .remedy-advice { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--neo-blue); padding: 1rem; border-radius: 4px; margin-top: 1.5rem; }
+    /* --- NEW: REPORT ARCHIVE HUD DESIGN --- */
+    .archive-group {
+        margin-bottom: 3rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .archive-group-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .archive-group-label {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--neo-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
         white-space: nowrap;
     }
-    .comp-tab-btn:hover {
-        border-color: var(--neo-text-label);
-        color: var(--neo-text-main);
-    }
-    .comp-tab-btn.active {
-        border-color: var(--neo-blue) !important;
-        color: var(--neo-text-main) !important;
-        background: rgba(59, 130, 246, 0.1) !important;
-    }
-    #compliance-tabs-container::-webkit-scrollbar {
-        display: none;
-    }
-    #compliance-tabs-container {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+    .archive-group-line {
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--neo-blue) 0%, rgba(59, 130, 246, 0) 100%);
+        opacity: 0.3;
     }
 
-    /* --- KILLCHAIN HERO --- */
-    .killchain-hero {
-      background: var(--kc-hero-bg);
-      border: 1px solid var(--neo-border);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem 2rem; 
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1); 
+    .reports-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.25rem;
     }
 
-    .kc-scope-section {
-        display: flex; 
-        flex-direction: column; 
-        gap: 0.35rem; 
-        flex: 1.2; 
-        min-width: 0;
+    .report-hud-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--neo-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+    }
+
+    /* Interactive Scanning Hover Effect */
+    .report-hud-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.4s;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .report-hud-card:hover {
+        border-color: var(--scanner-color, var(--neo-blue));
+        background: rgba(var(--scanner-rgb, 59, 130, 246), 0.04);
+        box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.7), 
+                    inset 0 0 10px rgba(var(--scanner-rgb, 59, 130, 246), 0.05);
     }
     
-    .kc-label {
-        color: var(--neo-purple); 
-        font-size: 0.65rem; 
-        font-weight: 700; 
-        text-transform: uppercase; 
-        letter-spacing: 0.1em;
+    /* Subtle Corner Accent Reveal */
+    .report-hud-card::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 10px; height: 10px;
+        border-top: 2px solid var(--scanner-color, var(--neo-blue));
+        border-right: 2px solid var(--scanner-color, var(--neo-blue));
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    .report-hud-card:hover::after { opacity: 0.8; top: 8px; right: 8px; }
+
+    .report-hud-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 4px; /* More clinical square look */
+        background: rgba(var(--scanner-rgb, 59, 130, 246), 0.05);
+        border: 1px solid rgba(var(--scanner-rgb, 59, 130, 246), 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.25rem;
+        color: var(--scanner-color, var(--neo-blue));
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .report-hud-card:hover .report-hud-icon-box {
+        background: rgba(var(--scanner-rgb, 59, 130, 246), 0.2);
+        border-color: var(--scanner-color, var(--neo-blue));
+        box-shadow: 0 0 15px rgba(var(--scanner-rgb, 59, 130, 246), 0.2);
+    }
+
+    .report-hud-content { position: relative; z-index: 1; }
+    .report-hud-title {
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: #fff;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .report-hud-target {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        color: var(--neo-text-muted);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .report-hud-target::before { content: 'TARGET_ID:'; opacity: 0.5; font-size: 0.55rem; }
+
+    .report-hud-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-top: 1rem;
+        margin-top: 0.5rem;
+    }
+    .report-hud-stats { display: flex; flex-direction: column; gap: 4px; }
+    .report-hud-stat-item {
+        font-family: var(--font-mono);
+        font-size: 0.55rem;
+        color: var(--neo-text-muted);
+        text-transform: uppercase;
         display: flex;
         align-items: center;
         gap: 6px;
     }
-    
-    .kc-target {
-        font-family: var(--font-mono); 
-        font-size: clamp(1rem, 2.5vw, 1.35rem); 
-        font-weight: 700; 
-        color: var(--neo-text-main); 
-        line-height: 1.2;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis; 
-    }
-    
-    .kc-tech-stack {
-        display: flex; 
-        gap: 0.5rem; 
-        margin-top: 0.25rem; 
-        flex-wrap: wrap;
-    }
-    
-    .tech-badge {
-        font-family: var(--font-mono); 
-        font-size: 0.65rem; 
-        color: var(--neo-text-muted);
-        background: rgba(125,125,125,0.05); 
-        padding: 3px 8px; 
-        border-radius: 4px; 
-        border: 1px solid var(--neo-border);
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-    }
+    .report-hud-stat-item i { font-size: 0.8rem; opacity: 0.7; }
 
-    .kc-stats-section {
-        display: flex; 
-        gap: clamp(1rem, 5vw, 3.5rem); 
-        flex: 2; 
-        justify-content: center;
-        border-left: 1px solid var(--neo-border); 
-        border-right: 1px solid var(--neo-border);
-        padding: 0 2rem;
-        height: 3.5rem; 
-        align-items: center;
-    }
-    
-    .kc-stat-col { 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center;
-    }
-    
-    .kc-stat-val { 
-        font-family: var(--font-sans); 
-        font-size: clamp(1.2rem, 3vw, 1.75rem); 
-        font-weight: 800; 
-        line-height: 1; 
-        margin-bottom: 4px; 
-        text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .kc-stat-label { 
-        font-size: 0.6rem; 
-        text-transform: uppercase; 
-        color: var(--neo-text-label); 
-        font-weight: 700; 
-        letter-spacing: 0.1em;
-    }
-
-    .kc-action-section { 
-        flex: 0.8; 
-        display: flex; 
-        justify-content: flex-end; 
-    }
-    
-    .standard-btn {
-        background: var(--dl-item-bg); 
+    .report-download-btn {
+        background: rgba(255, 255, 255, 0.03);
         border: 1px solid var(--neo-border);
-        color: var(--neo-text-muted);
-        padding: 0.75rem 1.5rem; 
+        color: #fff;
+        padding: 6px 14px;
         border-radius: 6px;
-        font-weight: 600; font-size: 0.8rem; text-transform: uppercase;
-        text-decoration: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem;
-        transition: all 0.2s;
-        min-width: 100px;
-    }
-    .standard-btn:hover:not(.disabled) {
-        border-color: var(--neo-blue); background: rgba(59,130,246,0.05); color: var(--neo-text-main);
-    }
-    .standard-btn.disabled { opacity: 0.4; cursor: not-allowed; }
-    
-    /* --- MIDDLE ROW --- */
-    .dual-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
-    }
-    
-    .radar-console {
-        background: var(--radar-bg); border: 1px solid var(--neo-border); border-radius: 6px;
-        height: 300px; overflow-y: auto; padding: 0.5rem;
-    }
-
-    /* --- DOWNLOADS --- */
-    .download-grid-container { 
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; 
-    }
-    .dl-item {
-      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-      padding: 1.5rem 1rem;
-      background: var(--dl-item-bg); border: 1px solid var(--neo-border); border-radius: 8px;
-      transition: all 0.2s; height: 100%; gap: 0.75rem; text-decoration: none;
-    }
-    .dl-item:hover:not(.disabled) { border-color: var(--neo-text-label); background: var(--dl-item-hover); transform: translateY(-2px); }
-    .dl-item.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
-    .dl-icon { font-size: 1.8rem; color: var(--neo-text-label); }
-    .dl-item:hover .dl-icon { color: var(--neo-blue); }
-    .dl-name { font-size: 0.75rem; color: var(--neo-text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-
-    .right-column .panel {
-        flex: 1; 
-        min-height: 200px; 
-    }
-
-    /* Scrollbars */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--neo-bg); }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-
-    .mono-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-    .mono-table td { padding: 0.5rem 0.5rem; border-bottom: 1px solid var(--table-border); color: var(--neo-text-muted); font-family: var(--font-mono); }
-    .mono-table th { text-align: left; padding: 0 0.5rem 0.5rem 0.5rem; font-size: 0.65rem; text-transform: uppercase; color: var(--neo-text-label); }
-
-    /* --- VULN ITEMS --- */
-    .vuln-item { margin-bottom: 4px; background: rgba(125,125,125,0.05); border-radius: 4px; overflow: hidden; }
-    .vuln-header { 
-        padding: 0.5rem; display: flex; justify-content: space-between; align-items: center; 
-        cursor: pointer; font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-main);
-    }
-    .vuln-header:hover { background: rgba(125,125,125,0.1); }
-    .vuln-body { padding: 0.5rem; background: var(--radar-bg); display: none; font-size: 0.75rem; color: var(--neo-text-muted); border-top: 1px solid var(--neo-border); }
-    .vuln-body.active { display: block; }
-
-    .risk-badge { padding: 2px 6px; border-radius: 3px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
-    .risk-critical { color: var(--severity-critical); border: 1px solid var(--severity-critical); background: var(--severity-critical-bg); }
-    .risk-high { color: var(--severity-high); border: 1px solid var(--severity-high); background: var(--severity-high-bg); }
-    .risk-med { color: var(--severity-medium); border: 1px solid var(--severity-medium); background: var(--severity-medium-bg); }
-    .risk-low { color: var(--severity-low); border: 1px solid var(--severity-low); background: var(--severity-low-bg); }
-
-    body.dark-mode .risk-critical { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); }
-    body.dark-mode .risk-high { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
-    body.dark-mode .risk-med { background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.3); }
-    body.dark-mode .risk-low { background: rgba(96, 165, 250, 0.1); border-color: rgba(96, 165, 250, 0.3); }
-
-    /* --- COMPLIANCE SECTION --- */
-    .compliance-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-
-    .comp-item {
-        background: var(--dl-item-bg);
-        border: 1px solid var(--neo-border);
-        border-radius: 8px;
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.2s;
-    }
-    .comp-item:hover {
-        border-color: var(--neo-text-label);
-        background: var(--dl-item-hover);
-    }
-
-    .comp-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-    }
-
-    .comp-name {
         font-family: var(--font-mono);
+        font-size: 0.6rem;
         font-weight: 700;
-        color: var(--neo-text-main);
-        font-size: 0.9rem;
-    }
-
-    .comp-status {
-        font-size: 0.65rem;
-        padding: 2px 8px;
-        border-radius: 10px;
         text-transform: uppercase;
-        font-weight: 700;
-    }
-    .status-pass { background: var(--severity-success-bg); color: var(--severity-success); border: 1px solid var(--severity-success); }
-    .status-fail { background: var(--severity-critical-bg); color: var(--severity-critical); border: 1px solid var(--severity-critical); }
-
-    body.dark-mode .status-pass { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
-    body.dark-mode .status-fail { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); }
-
-    .comp-desc {
-        font-size: 0.75rem;
-        color: var(--neo-text-muted);
-        line-height: 1.4;
-        margin-bottom: 1rem;
-        flex-grow: 1; 
-    }
-
-    .comp-progress-bg {
-        height: 4px;
-        background: var(--neo-border);
-        border-radius: 2px;
-        width: 100%;
-        overflow: hidden;
-    }
-    .comp-progress-fill {
-        height: 100%;
-        background: var(--neo-blue);
-        width: 0%; 
-        transition: width 1s ease;
-    }
-
-
-    /* ==========================================
-       MOBILE RESPONSIVENESS (max-width: 768px)
-       ========================================== */
-    @media (max-width: 768px) {
-      .dashboard-container {
-        padding: 1rem;
-        gap: 1rem;
-      }
-
-      .hud-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.5rem;
-        padding-bottom: 1.25rem;
-      }
-
-      .hud-title h1 {
-        font-size: 1.75rem !important;
-      }
-
-      .user-profile-badge {
-        width: 100%;
-        justify-content: flex-start !important;
-        box-sizing: border-box;
-      }
-
-      .main-split-grid {
+        letter-spacing: 0.05em;
+        transition: all 0.3s;
+        text-decoration: none;
         display: flex;
-        flex-direction: column;
-      }
+        align-items: center;
+        gap: 6px;
+    }
+    .report-hud-card:hover .report-download-btn {
+        background: var(--scanner-color, var(--neo-blue));
+        border-color: var(--scanner-color, var(--neo-blue));
+        color: #fff;
+    }
 
-      .left-column, .right-column {
-        width: 100%;
-        gap: 1rem;
-      }
+    /* THEMED CLASSES */
+    .theme-zap { --scanner-color: #00e5ff; --scanner-rgb: 0, 229, 255; }
+    .theme-network { --scanner-color: #10b981; --scanner-rgb: 16, 185, 129; }
+    .theme-ssl { --scanner-color: #f59e0b; --scanner-rgb: 245, 158, 11; }
+    .theme-sniffer { --scanner-color: #3b82f6; --scanner-rgb: 59, 130, 246; }
+    .theme-killchain { --scanner-color: #ec4899; --scanner-rgb: 236, 72, 153; }
+    .theme-sql { --scanner-color: #ef4444; --scanner-rgb: 239, 68, 68; }
+    .theme-api { --scanner-color: #8b5cf6; --scanner-rgb: 139, 92, 246; }
+    .theme-semgrep { --scanner-color: #6366f1; --scanner-rgb: 99, 102, 241; }
 
-      .killchain-hero {
-        flex-direction: column;
-        padding: 1.5rem;
-        gap: 1.5rem;
-        align-items: flex-start;
-      }
-
-      .kc-scope-section, .kc-stats-section, .kc-action-section {
-        width: 100%;
-        flex: none;
-      }
-
-      .kc-stats-section {
-        border-left: none;
-        border-right: none;
-        border-top: 1px solid var(--neo-border);
-        border-bottom: 1px solid var(--neo-border);
-        padding: 1.25rem 0;
-        justify-content: space-around;
-        height: auto;
-      }
-
-      .kc-action-section {
-        justify-content: center;
-      }
-
-      .standard-btn {
-        width: 100%;
-      }
-
-      .metrics-row {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-      }
-
-      .dual-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .download-grid-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .radar-console {
-        height: 250px;
-      }
-
-      /* Horizontal scrolling for interactive bars */
-      #compliance-tabs-container, 
-      #reports-tabs-container {
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        padding-bottom: 0.5rem;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      .comp-tab-btn {
-        flex-shrink: 0;
-      }
-      
-      /* Scale mono tables for mobile */
-      .mono-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
+    @media (max-width: 1100px) {
+        .span-8, .span-4, .span-3 { grid-column: span 12; }
+        .row-2 { grid-row: span 1; }
     }
   </style>
-
 {% endblock %}
 
 {% block content %}
-
-
-<div class="dashboard-container fade-in-element">
-
-  <!-- Top Bento Banner Block -->
-  <div class="hud-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: var(--radius-lg); margin-bottom: 1rem; border: 1px solid var(--neo-border);">
-    <div class="hud-title" style="margin: 0;">
-      <h1 style="font-size: clamp(1.5rem, 4vw, 2.25rem); font-weight: 900; letter-spacing: -0.05em; line-height: 1; text-transform: uppercase;">Security <span style="background: linear-gradient(135deg, var(--neo-purple), var(--neo-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Posture</span></h1>
-      <div style="color: var(--neo-text-muted); font-size: clamp(0.7rem, 1.5vw, 0.85rem); margin-top: 10px; font-weight: 500; font-family: var(--font-mono); display: flex; align-items: center; gap: 16px; opacity: 0.8;">
-        <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-purple), transparent);"></span>
-        Security Overview & Infrastructure Analytics
-      </div>
-    </div>
+<div class="dashboard-wrapper">
     
-    <div class="hud-actions">
-        <div class="user-profile-badge" style="background: rgba(255,255,255,0.03); border: 1px solid var(--neo-border); padding: 0.5rem 1.25rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-            <div style="position: relative;">
-              <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--neo-purple), var(--neo-blue)); border-radius: 10px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-                {{ current_user.username.0|upper }}
-              </div>
-              <div style="position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; background: var(--neo-green); border: 2px solid #000; border-radius: 50%;"></div>
-            </div>
-            <div style="display: flex; flex-direction: column;">
-              <span style="font-size: 0.9rem; color: var(--neo-text-main); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.2;">{{ current_user.username }}</span>
-              <span style="font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;">Standard Operator</span>
-            </div>
-        </div>
-    </div>
-  </div>
-
-  <div class="main-split-grid">
-    
-    <div class="left-column">
-      
-      <div class="killchain-hero">
-        <div class="kc-scope-section">
-            <div class="kc-label"><span class="material-symbols-outlined" style="font-size:0.8rem; vertical-align: middle;">my_location</span> Active Target</div>
-            <div class="kc-target" id="zap-target">--</div>
-            <div class="kc-tech-stack" id="tech-stack-container">
-                 <span style="color:#444; font-size: 0.75rem; font-style: italic;">Identifying Technology...</span>
-            </div>
+    <!-- Global Header -->
+    <div class="global-banner">
+        <div class="scanner-title-area">
+            <h1 class="text-gradient">SEC-OPS <span class="gradient-accent">DASHBOARD</span></h1>
+            <p>
+                <span class="title-deco-line"></span>
+                Master Security Orchestration & Posture Analysis
+            </p>
         </div>
 
-        <div class="kc-stats-section">
-            <div class="kc-stat-col">
-                <span class="kc-stat-val" style="color: #ff0000;" id="kc-count-crit">0</span>
-                <span class="kc-stat-label">Critical</span>
-            </div>
-            <div class="kc-stat-col">
-                <span class="kc-stat-val" style="color: var(--neo-amber);" id="kc-count-high">0</span>
-                <span class="kc-stat-label">High Risk</span>
-            </div>
-            <div class="kc-stat-col">
-                <span class="kc-stat-val" style="color: var(--neo-blue);" id="kc-urls">0</span>
-                <span class="kc-stat-label">Crawled</span>
-            </div>
-        </div>
-
-        <div class="kc-action-section">
-            <a id="btn-killchain-pdf" href="#" class="standard-btn disabled">
-                <span class="material-symbols-outlined" style="font-size:1.2rem;">download</span>
-                <span>Full Audit</span>
-            </a>
-        </div>
-      </div>
-
-      <div class="metrics-row">
-        <div class="hud-card card-blue">
-           <div class="metric-label">
-             Attack Surface <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-blue);">hub</span>
-           </div>
-           <div class="metric-value" id="nmap-count">--</div>
-           <div class="metric-sub">Open Ports</div>
-        </div>
-
-        <div class="hud-card card-red">
-           <div class="metric-label">
-             Vulnerabilities <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-red);">bug_report</span>
-           </div>
-           <div class="metric-value" id="zap-count-total" style="color: var(--neo-red);">--</div>
-           <div class="metric-sub">Confirmed Risks</div>
-        </div>
-
-        <div class="hud-card card-green">
-           <div class="metric-label">
-             Cert Validity <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-green);">verified_user</span>
-           </div>
-           <div class="metric-value" id="ssl-days">--</div>
-           <div class="metric-sub">Days Remaining</div>
-        </div>
-
-        <div class="hud-card card-amber">
-           <div class="metric-label">
-             Traffic Flow <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-amber);">swap_horiz</span>
-           </div>
-           <div class="metric-value" id="sniffer-packet-count">--</div>
-           <div class="metric-sub">Packets Analyzed</div>
-        </div>
-      </div>
-
-      <div class="dual-grid">
-        <div class="panel">
-           <div class="panel-header">
-             <div class="panel-title"><span class="material-symbols-outlined" style="color:var(--neo-red);">radar</span> Threat Radar</div>
-           </div>
-           <div class="radar-console" id="zap-vuln-list">
-              <div style="text-align:center; padding:3rem; color:#333; font-size:0.75rem; font-family: var(--font-mono);">
-                  <span class="material-symbols-outlined" style="font-size:2rem; margin-bottom:0.5rem; display:block;">security</span>
-                  Awaiting scan data...
-              </div>
-           </div>
-        </div>
-
-        <div class="panel">
-           <div class="panel-header">
-             <div class="panel-title"><span class="material-symbols-outlined" style="color:var(--neo-amber);">network_check</span> Traffic Interception</div>
-             <div style="font-size:0.75rem; color: #555; font-family: var(--font-mono);" id="sniffer-duration">0s</div>
-           </div>
-           <div class="radar-console"> 
-               <table class="mono-table">
-                 <thead><tr><th>Conversation (Src &rarr; Dst)</th><th style="text-align:right;">Vol</th></tr></thead>
-                 <tbody id="sniffer-table-body">
-                   <tr><td colspan="2" style="text-align:center; color:#444; padding:1rem;">No packet data available</td></tr>
-                 </tbody>
-               </table>
-           </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header" style="margin-bottom: 0.5rem;">
-           <div class="panel-title"><span class="material-symbols-outlined">folder_shared</span> Reports & Exports</div>
-           <div style="display:flex; align-items:center; gap:0.5rem;">
-                <label for="report-group-select" style="font-size:0.65rem; color:var(--neo-text-label); font-family:var(--font-mono); text-transform:uppercase;">Group By:</label>
-                <select id="report-group-select" style="background:var(--neo-bg); border:1px solid var(--neo-border); color:var(--neo-text-main); font-family:var(--font-mono); font-size:0.7rem; padding:2px 4px; border-radius:4px; outline:none;">
-                    <option value="target">Target</option>
-                    <option value="tool">Tool Type</option>
-                </select>
-            </div>
-        </div>
-        <!-- Tabs for Reports -->
-        <div id="reports-tabs-container" style="display: flex; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid var(--neo-border); padding-bottom: 0.75rem; flex-wrap: wrap; max-height: 80px; overflow-y: auto;">
-            <!-- Dynamic Tabs -->
-        </div>
-
-        <!-- content area -->
-        <div id="reports-content-container" style="min-height: 200px;">
-             <div style="text-align:center; padding:2rem; color:var(--neo-text-muted); font-size:0.75rem; font-family:var(--font-mono);">
-                <span class="material-symbols-outlined spin-animation" style="font-size: 1.2rem; vertical-align:middle; margin-right:5px;">sync</span>
-                Loading available reports...
-             </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-           <div class="panel-title"><span class="material-symbols-outlined" style="color:var(--neo-purple);">chat_bubble</span> Recent Consultations</div>
-           <div style="font-size:0.65rem; color:var(--neo-text-label); font-family:var(--font-mono);">AI ANALYST HISTORY</div>
-        </div>
-        <div id="recent-chats-container" style="display: flex; flex-direction: column; gap: 0.75rem; flex: 1; overflow-y: auto;">
-            <!-- Chats will be injected here -->
-            <div style="text-align:center; padding:1rem; color:#444; font-size:0.75rem; font-family: var(--font-mono);">
-                Fetching history...
-            </div>
-        </div>
-      </div>
-      
-    </div> 
-
-    <div class="right-column">
-      
-      <div class="panel">
-         <div class="panel-header">
-           <div class="panel-title"><span class="material-symbols-outlined" style="color: var(--neo-blue);">dns</span> Service Intel</div>
-         </div>
-         <div style="font-size: 0.65rem; color: var(--neo-text-label); margin-bottom: 0.5rem; letter-spacing: 1px;">OPEN PORTS</div>
-         <div class="radar-console" style="background:transparent; border:none; padding:0; flex:1;">
-             <ul style="list-style:none; padding:0; margin:0;" id="nmap-service-list">
-                 <li style="color:var(--neo-text-label); text-align:center; padding:1rem; font-size:0.75rem;">Waiting for scan...</li>
-             </ul>
-         </div>
-         <div style="margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--neo-border);">
-            <div style="font-size: 0.65rem; color: var(--neo-text-label);">OS DETECTED</div>
-            <div id="nmap-os" style="font-family: var(--font-mono); color: var(--neo-blue); font-size: 0.8rem; margin-top: 2px;">Unknown</div>
-         </div>
-      </div>
-
-      <div class="panel">
-         <div class="panel-header">
-           <div class="panel-title"><span class="material-symbols-outlined">person_search</span> Activity</div>
-           <div style="font-size:0.65rem; background:var(--dl-item-bg); padding:2px 6px; border-radius:4px; border:1px solid var(--neo-border); color:var(--neo-text-muted);">OPERATOR</div>
-         </div>
-         <div style="display:flex; justify-content: space-between; margin-bottom: 0.5rem;">
-            <div>
-              <div style="font-size:0.6rem; color:var(--neo-text-label);">LAST LOGIN</div>
-              <div id="usage-last-login" style="font-family: var(--font-mono); font-size: 0.75rem;">--</div>
-            </div>
-            <div style="text-align: right;">
-              <div style="font-size:0.6rem; color:var(--neo-text-label);">TOTAL SCANS</div>
-              <div id="usage-total-scans" style="font-family: var(--font-mono); font-size: 0.75rem;">0</div>
-            </div>
-         </div>
-         <div style="flex: 1; position: relative; min-height: 100px;">
-             <canvas id="usageChart"></canvas>
-         </div>
-      </div>
-
-      <div class="panel">
-         <div class="panel-header">
-           <div class="panel-title"><span class="material-symbols-outlined">terminal</span> Sys Events</div>
-         </div>
-         <div id="system-event-log" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.75rem;">
-             <div style="display: flex; gap: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px dashed var(--neo-border); opacity: 0.5;">
-                <span class="material-symbols-outlined" style="font-size: 0.9rem;">info</span>
-                <div>
-                    <div style="color: var(--neo-text-muted);">System Ready</div>
-                    <div style="font-size: 0.65rem; color: var(--neo-text-label);">Waiting for user...</div>
+        <div style="display: flex; gap: 2rem; align-items: center;">
+            <div id="tech-stack-header" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; max-width: 300px;"></div>
+            <div class="health-score-container">
+                <div style="text-align: right;">
+                    <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase;">Security Health</div>
+                    <div style="font-weight: 700; font-size: 0.85rem;" id="health-status-text">--</div>
+                </div>
+                <div class="health-dial" id="global-health-dial">
+                    <span class="health-value" id="global-health-val">0</span>
                 </div>
             </div>
-         </div>
-         <!-- Hidden containers for data tracking -->
-         <span id="ssl-key-info" style="display:none;"></span>
-         <span id="ssl-protocols" style="display:none;"></span>
-         <span id="sql-vuln-count" style="display:none;"></span>
-         <span id="api-vuln-count" style="display:none;"></span>
-         <span id="semgrep-vuln-count" style="display:none;"></span>
-      </div>
+        </div>
+    </div>
 
-    </div> 
-  </div>
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="live-telemetry">Live Telemetry</button>
+        <button class="tab-btn" data-tab="compliance-frameworks">Compliance</button>
+        <button class="tab-btn" data-tab="report-archives">Report Archives</button>
+    </div>
 
-  <div class="panel" style="margin-top: 1.5rem;">
-      <div class="panel-header" style="border-bottom: none; margin-bottom: 0.5rem; align-items: center;">
-          <div class="panel-title">
-             <span class="material-symbols-outlined" style="color: var(--neo-green);">gavel</span> 
-             Regulatory Compliance & Standards
-          </div>
-          <div style="font-size: 0.65rem; color: var(--neo-text-label); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">
-              Framework Analysis
-          </div>
-      </div>
+    <!-- Tab Context Panels -->
+    <div id="tab-content-container">
+        
+        <!-- Tab 1: Live Telemetry (User Requested Bento Overhaul) -->
+        <div id="tab-live-telemetry" class="tab-pane">
+            <div class="bento-grid">
+                
+                <!-- Tile 1: Attack Surface (Network Analysis) - Span 8 -->
+                <div class="bento-tile span-8">
+                    <div class="tile-header">
+                        <div class="tile-title"><i class="material-symbols-outlined">hub</i> Network Attack Surface</div>
+                        <div id="tile-net-os" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase;">OS Context: --</div>
+                    </div>
+                    <div class="tile-content" style="flex-direction: row; gap: 2rem;">
+                          <div style="flex: 0.6; display: flex; flex-direction: column; gap: 1rem;">
+                               <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--neo-border);">
+                                   <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-label); text-transform: uppercase; margin-bottom: 0.75rem;">Target Specification</div>
+                                   
+                                   <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                                       <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
+                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">EXT_IP</span>
+                                           <span id="tile-net-external-ip" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-blue); font-weight: 700;">PENDING</span>
+                                       </div>
+                                       <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
+                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">HOST_ID</span>
+                                           <span id="tile-net-target-hostname" style="font-family: var(--font-mono); font-size: 0.9rem; color: #fff;">--</span>
+                                       </div>
+                                       <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
+                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">RESOLVER</span>
+                                           <span id="tile-net-dns" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-amber);">---</span>
+                                       </div>
+                                       <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">TUNNEL</span>
+                                           <span style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--neo-green); font-weight: 700;">ENCRYPTED</span>
+                                       </div>
+                                   </div>
+                               </div>
 
-      <!-- Target Selection Tabs -->
-      <div id="compliance-tabs-container" style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--neo-border); padding-bottom: 0.75rem; overflow-x: auto;">
-          <!-- Tabs will be injected here by JS -->
-      </div>
+                               <div style="margin-top: auto; padding: 0.75rem; border-top: 1px solid var(--neo-border);">
+                                   <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-label); text-transform: uppercase;">Command Origin</div>
+                                   <div id="tile-net-scan-args" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-blue); word-break: break-all; opacity: 0.7; margin-top: 5px;">--</div>
+                               </div>
+                          </div>
 
-      <div id="compliance-container">
-          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; color: var(--neo-text-label);">
-              <span class="material-symbols-outlined spin-animation" style="font-size: 2rem; margin-bottom: 0.5rem;">sync</span>
-              <span style="font-size: 0.8rem; font-family: var(--font-mono);">Evaluating Audit Data against Standards...</span>
-          </div>
-      </div>
-  </div>
+                          <div style="flex: 1.4; border-left: 1px solid var(--neo-border); padding-left: 2rem; display: flex; flex-direction: column;">
+                              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                  <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-label); text-transform: uppercase;">Active Services & Risk Map</div>
+                                  <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); padding: 2px 6px; border: 1px solid var(--neo-border); border-radius: 4px;">TCTR RANKED</div>
+                              </div>
+                              
+                              <div style="flex: 1; overflow-y: auto; max-height: 220px;">
+                                  <table style="width: 100%; font-family: var(--font-mono); font-size: 0.85rem; border-collapse: collapse;">
+                                      <thead style="position: sticky; top: 0; background: var(--neo-card); z-index: 10;">
+                                          <tr style="text-align: left; color: var(--neo-text-muted); border-bottom: 1px solid var(--neo-border);">
+                                              <th style="padding: 4px 0;">PORT</th>
+                                              <th style="padding: 4px 0;">SERVICE/ENTITY</th>
+                                              <th style="padding: 4px 0; text-align: right;">PRIORITY</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody id="tile-net-port-list">
+                                          <!-- Dynamic Port Mapping -->
+                                          <tr><td colspan="3" style="padding: 2rem; text-align: center; opacity: 0.5;">No telemetry data available.</td></tr>
+                                      </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                    </div>
+                </div>
 
+
+
+                <!-- Tile 3: Traffic Analysis (Sniffer) - Span 4 -->
+                <div class="bento-tile span-4">
+                    <div class="tile-header">
+                        <div class="tile-title"><i class="material-symbols-outlined">insights</i> Traffic Analysis (Sniffer)</div>
+                    </div>
+                    <div class="tile-content" style="display: flex; flex-direction: column; height: 100%;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 0.25rem 0.5rem;">
+                            <div style="font-family: var(--font-mono);">
+                                <div style="font-size: 1.75rem; font-weight: 800; line-height: 1; color: var(--neo-blue); letter-spacing: -1px;" id="tile-sniffer-rate">0.00 <span style="font-size: 0.7rem; font-weight: 400; color: var(--neo-text-muted); letter-spacing: 0;">KB/s</span></div>
+                                <div style="font-size: 0.75rem; color: var(--neo-text-muted); text-transform: uppercase; margin-top: 6px; letter-spacing: 0.1em;">Throughput</div>
+                            </div>
+                            <div style="text-align: right; font-family: var(--font-mono);">
+                                <div id="tile-sniffer-total" style="font-size: 1.05rem; font-weight: 700; color: #fff;">0.00 MB</div>
+                                <div style="font-size: 0.7rem; color: var(--neo-text-muted); text-transform: uppercase;">Total TX</div>
+                            </div>
+                        </div>
+
+                        <!-- [NEW] Conversation Graph Canvas -->
+                        <div id="tile-sniffer-graph" style="flex: 1; min-height: 140px; margin: 0.5rem 0; border: 1px solid var(--neo-border); border-radius: 12px; background: rgba(0,0,0,0.3); overflow: hidden; position: relative;">
+                            <!-- Placeholder if no data -->
+                            <div id="tile-sniffer-graph-empty" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: var(--neo-text-muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none;">
+                                Waiting for data...
+                            </div>
+                        </div>
+
+                        <!-- Protocol Horizon Section -->
+                        <div class="protocol-horizon" id="protocolHorizonList">
+                             <div class="protocol-bar-row"><span class="protocol-label">TCP</span><div class="protocol-track"><div class="protocol-fill" style="width: 0%;"></div></div></div>
+                             <div class="protocol-bar-row"><span class="protocol-label">UDP</span><div class="protocol-track"><div class="protocol-fill" style="width: 0%; opacity: 0.6;"></div></div></div>
+                             <div class="protocol-bar-row"><span class="protocol-label">HTTPS</span><div class="protocol-track"><div class="protocol-fill" style="width: 0%; opacity: 0.4;"></div></div></div>
+                        </div>
+
+                        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--neo-border); display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <div class="hud-metric-label">Duration</div>
+                                <div id="tile-sniffer-duration" style="font-family: var(--font-mono); font-size: 0.9rem; color: #eee;">--</div>
+                            </div>
+                            <div>
+                                <div class="hud-metric-label">Detection</div>
+                                <div id="tile-sniffer-anomalies" class="status-alert" style="font-family: var(--font-mono); font-size: 0.9rem;">None</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 4: Web Application Scanner (ZAP) - Span 8 [EXPANDED] -->
+                <div class="bento-tile span-8">
+                    <div class="tile-header">
+                        <div class="tile-title"><i class="material-symbols-outlined">language</i> Web Application Posture (ZAP)</div>
+                        <div id="tile-zap-target" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-blue);">TARGET: --</div>
+                    </div>
+                    <div class="tile-content" style="flex-direction: row; gap: 2rem;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+                                <div style="font-family: var(--font-mono);">
+                                    <div style="font-size: 2.5rem; font-weight: 800;" id="tile-zap-url-count">0</div>
+                                    <div style="font-size: 0.7rem; color: var(--neo-text-muted); text-transform: uppercase;">URLs Crawled</div>
+                                </div>
+                                <div style="text-align: right; font-family: var(--font-mono);">
+                                    <div id="tile-zap-confidence" style="color: var(--neo-blue); font-weight: 700; font-size: 1.25rem;">--</div>
+                                    <div style="font-size: 0.6rem; color: var(--neo-text-muted); text-transform: uppercase;">Confidence Score</div>
+                                </div>
+                            </div>
+                            <div class="sev-bar-container">
+                                 <div class="sev-bar-row">
+                                     <span class="sev-bar-label">HIGH</span>
+                                     <div class="sev-bar-track"><div id="zap-bar-high" class="sev-bar-fill" style="background: var(--neo-red); width: 0%;"></div></div>
+                                 </div>
+                                 <div class="sev-bar-row">
+                                     <span class="sev-bar-label">MEDIUM</span>
+                                     <div class="sev-bar-track"><div id="zap-bar-med" class="sev-bar-fill" style="background: var(--neo-amber); width: 0%;"></div></div>
+                                 </div>
+                                 <div class="sev-bar-row">
+                                     <span class="sev-bar-label">LOW</span>
+                                     <div class="sev-bar-track"><div id="zap-bar-low" class="sev-bar-fill" style="background: var(--neo-blue); width: 0%;"></div></div>
+                                 </div>
+                            </div>
+                        </div>
+                        <div style="flex: 1.5; border-left: 1px solid var(--neo-border); padding-left: 2rem; overflow-y: auto; max-height: 220px;">
+                            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); margin-bottom: 1rem; text-transform: uppercase;">Risk Inventory Brief</div>
+                            <div id="tile-zap-findings-list" style="display: flex; flex-direction: column; gap: 0.6rem;">
+                                 <!-- Findings list -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 5: Cryptographic Health (SSL) - Span 4 -->
+                <div class="bento-tile span-4">
+                    <div class="tile-header">
+                        <div class="tile-title"><i class="material-symbols-outlined">lock</i> Cryptographic Health (SSL)</div>
+                    </div>
+                    <div class="tile-content">
+                        <div id="tile-ssl-encryption" style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 800; color: var(--neo-green); margin-bottom: 1rem;">SECURE</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-family: var(--font-mono); font-size: 0.75rem;">
+                            <div>
+                                <div class="hud-metric-label">Compression</div>
+                                <div id="tile-ssl-compression">DISABLED</div>
+                            </div>
+                            <div>
+                                <div class="hud-metric-label">Ciphers</div>
+                                <div id="tile-ssl-ciphers">0 Active</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1.5rem;">
+                            <div class="hud-metric-label">Cert Issuer</div>
+                            <div id="tile-ssl-issuer" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px;">--</div>
+                        </div>
+                        <div style="margin-top: 1.25rem; border-top: 1px solid var(--neo-border); padding-top: 1rem;">
+                            <div class="hud-metric-label">Protocol Support</div>
+                            <div id="tile-ssl-protocols" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-blue); margin-top: 4px;">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 6: Killchain Audit - Span 3 -->
+                <div class="bento-tile span-3">
+                    <div class="tile-header">
+                        <div class="tile-title"><i class="material-symbols-outlined">account_tree</i> Killchain Audit</div>
+                        <div id="tile-kc-status" class="badge">--</div>
+                    </div>
+                    <div class="tile-content">
+                        <div id="tile-kc-phases" style="display: flex; gap: 0.4rem; margin-bottom: 1rem;">
+                            <!-- Progress Dots -->
+                        </div>
+                        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); margin-bottom: 0.5rem; text-transform: uppercase;">Top Killchain Findings</div>
+                        <div id="tile-kc-findings" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                            <div style="opacity: 0.4; font-size: 0.7rem;">NO ACTIVE AUDIT DATA</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 7: API Security - Span 3 -->
+                <div class="bento-tile span-3">
+                    <div class="tile-header">
+                        <div class="tile-title"><i class="material-symbols-outlined">api</i> API Security Analysis</div>
+                    </div>
+                    <div class="tile-content">
+                        <div id="tile-api-summary" style="display: flex; justify-content: space-between; margin-bottom: 1.5rem;">
+                             <div style="font-family: var(--font-mono);">
+                                 <div id="api-vuln-count" style="font-size: 1.75rem; font-weight: 700;">0</div>
+                                 <div style="font-size: 0.6rem; color: var(--neo-text-muted); text-transform: uppercase;">High/Med Risks</div>
+                             </div>
+                             <div id="api-scan-status" class="badge badge-secure" style="align-self: center;">IDLE</div>
+                        </div>
+                        <div id="tile-api-findings" style="display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; max-height: 120px;">
+                             <!-- Dynamic API findings -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 8: Code SAST (Semgrep) - Span 3 -->
+                <div class="bento-tile span-3">
+                    <div class="tile-header">
+                        <div class="tile-title"><i class="material-symbols-outlined">code</i> Code Security (SAST)</div>
+                        <div id="tile-semgrep-duration" style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--neo-text-muted);">SCAN TIME: --</div>
+                    </div>
+                    <div class="tile-content" style="display: flex; flex-direction: column; height: 100%;">
+                        <div id="tile-semgrep-findings-list" class="hud-scroll" style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--neo-border); font-family: var(--font-mono); font-size: 0.7rem; flex: 1; overflow-y: auto; height: 210px; display: flex; flex-direction: column; gap: 0.5rem;">
+                             <div style="color: var(--neo-text-muted); opacity: 0.5; padding: 1rem; text-align: center;">// ANALYZER IDLE</div>
+                        </div>
+                        <div id="semgrep-vuln-count" style="margin-top: 0.75rem; font-family: var(--font-mono); font-size: 0.8rem; text-align: right; color: var(--neo-blue); font-weight: 700;">TOTAL FINDINGS: 0</div>
+                    </div>
+                </div>
+
+                <!-- Tile 9: SQL Injection Security - Span 3 -->
+                <div class="bento-tile span-3">
+                    <div class="tile-header">
+                        <div class="tile-title"><i class="material-symbols-outlined">database</i> SQL & DB Posture</div>
+                        <div id="tile-sql-status" class="badge badge-secure">STABLE</div>
+                    </div>
+                    <div class="tile-content">
+                        <div id="tile-sql-meta" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); margin-bottom: 1rem;">
+                             USER: <span id="sql-user">--</span> | DB: <span id="sql-db">--</span>
+                        </div>
+                        <div id="tile-sql-findings" style="display: flex; flex-direction: column; gap: 0.5rem; min-height: 80px;">
+                             <div style="font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.5;">Awaiting discovery data...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 10: Recent AI Consultations [NEW] - Span 12 -->
+                <div class="bento-tile span-12">
+                    <div class="tile-header">
+                        <div class="tile-title"><i class="material-symbols-outlined">history_edu</i> Recent AI Security Consultations</div>
+                        <a href="{{ url_for('chatbot_bp.chatbot_page') }}" style="font-size: 0.65rem; color: var(--neo-blue); text-transform: uppercase; font-family: var(--font-mono);">New Session</a>
+                    </div>
+                    <div class="tile-content">
+                         <div id="recent-chats-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+                              <!-- Sessions injected via JS -->
+                              <div style="text-align:center; padding:1.5rem; color:var(--neo-text-muted); font-size: 0.8rem;">Fetching session history...</div>
+                         </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tab 2: Compliance Frameworks -->
+        <div id="tab-compliance-frameworks" class="tab-pane hidden">
+            <div style="margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;">
+                <div style="flex: 1;">
+                    <h2 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; letter-spacing: -0.5px;">Compliance Command Center</h2>
+                    <p style="color: var(--neo-text-muted); font-size: 0.85rem;">Automated security assessment per targeted asset.</p>
+                </div>
+                <div style="min-width: 250px;">
+                    <div class="hud-metric-label" style="margin-bottom: 8px;">Switch Audited Target</div>
+                    <select id="complianceTargetSelector" class="neo-select" style="width: 100%;">
+                        <option value="Global">Loading Targets...</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="compliance-grid" id="compliance-grid-container">
+                <!-- Standard Cards injected by JS -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 4rem; opacity: 0.5;">
+                    <div class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 1rem;">gavel</div>
+                    <div>Awaiting compliance assessment data...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Report Archives -->
+        <div id="tab-report-archives" class="tab-pane hidden">
+            <div class="filter-bar">
+                <div class="filter-group" style="flex: 2; min-width: 300px;">
+                    <div class="filter-label">Quick Search</div>
+                    <div style="position: relative;">
+                        <span class="material-symbols-outlined" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--neo-text-muted); font-size: 1.2rem;">search</span>
+                        <input type="text" id="reportFilterSearch" class="neo-input" placeholder="Search by target or filename..." style="padding-left: 40px;">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Target Asset</div>
+                    <select id="reportFilterTarget" class="neo-select">
+                        <option value="all">All Targets</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Scanner Module</div>
+                    <select id="reportFilterScanner" class="neo-select">
+                        <option value="all">All Modules</option>
+                        <option value="zap_scanner">ZAP Web Scan</option>
+                        <option value="network_scanner">Nmap Discovery</option>
+                        <option value="ssl_scanner">SSL/TLS Audit</option>
+                        <option value="semgrep_scanner">Code Security (SAST)</option>
+                        <option value="api_scanner">API Security</option>
+                        <option value="sql_scanner">SQL Injection</option>
+                        <option value="packet_sniffer">Traffic Analysis</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">Audit Date</div>
+                    <input type="text" id="reportFilterDate" class="neo-input" placeholder="Select date range...">
+                </div>
+            </div>
+
+            <div id="reports-grid-container">
+                <!-- Grouped report containers injected by JS -->
+                <div style="text-align: center; padding: 4rem; opacity: 0.3;">
+                    <div class="material-symbols-outlined" style="font-size: 3rem; margin-bottom: 1rem;">folder_open</div>
+                    <div>SYNCHRONIZING SECURE VAULT...</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
-<script>
-  const apiEndpoints = {
-    killchain: "{{ url_for('dashboard_bp.get_killchain_stats') }}",
-    network: "{{ url_for('dashboard_bp.get_network_stats') }}",
-    zap: "{{ url_for('dashboard_bp.get_zap_stats') }}",
-    ssl: "{{ url_for('dashboard_bp.get_ssl_stats') }}",
-    sniffer: "{{ url_for('dashboard_bp.get_sniffer_stats') }}",
-    compliance: "{{ url_for('dashboard_bp.get_compliance_stats') }}",
-    usage: "{{ url_for('dashboard_bp.get_usage_stats') }}",
-    api: "{{ url_for('dashboard_bp.get_api_stats') }}",
-    sql: "{{ url_for('dashboard_bp.get_sql_stats') }}",
-    semgrep: "{{ url_for('dashboard_bp.get_semgrep_stats') }}",
-    databaseStatus: "{{ url_for('sql_scanner_bp.get_report_files') }}" 
-  };
-  
-  const reportUrls = {
-    killchain: "{{ url_for('killchain_bp.download_pdf_report') }}",
-    network: "{{ url_for('network_scanner_bp.download_pdf_report') }}",
-    zap: "{{ url_for('zap_scanner_bp.download_pdf_report') }}",
-    ssl: "{{ url_for('ssl_scanner_bp.download_pdf_report') }}",
-    sniffer: "{{ url_for('packet_sniffer_bp.download_pdf_report') }}",
-    database: "{{ url_for('sql_scanner_bp.download_pdf_report') }}",
-    api: "{{ url_for('api_scanner_bp.download_pdf_report') }}",
-    semgrep: "{{ url_for('semgrep_bp.download_pdf_report') }}"
-  };
-</script>
+<!-- Compliance Remedy Modal -->
+<div id="remedyModal" class="remedy-modal">
+    <div class="remedy-box">
+        <div class="remedy-header">
+            <div id="remedy-std" style="font-size: 0.65rem; color: var(--neo-blue); text-transform: uppercase; font-family: var(--font-mono);">PCI-DSS 4.2.1</div>
+            <h3 id="remedy-title" style="margin-top: 5px;">Strong Cryptography</h3>
+        </div>
+        <div id="remedy-content">
+            <div style="font-size: 0.85rem; color: #eee; line-height: 1.6;">
+                <div class="hud-metric-label" style="margin-bottom: 5px;">Remediation Advice</div>
+                <div id="remedy-advice-text" class="remedy-advice">Loading fix instructions...</div>
+            </div>
+            <div style="margin-top: 20px;">
+                <div class="hud-metric-label" style="margin-bottom: 5px;">Technical Evidence</div>
+                <div id="remedy-evidence-list" class="remedy-evidence"></div>
+            </div>
+        </div>
+        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+            <button onclick="document.getElementById('remedyModal').style.display='none'" class="tab-btn" style="padding: 8px 24px;">CLOSE</button>
+        </div>
+    </div>
+</div>
 
+<!-- Reference the core dashboard JS -->
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-
-<script>
-  // --- NEW: FETCH PDF REPORTS (REDESIGNED V2) ---
-  document.addEventListener("DOMContentLoaded", function() {
-      const groupSelect = document.getElementById("report-group-select");
-      let allReports = [];
-
-      function getIconForTool(toolName) {
-           toolName = toolName.toLowerCase();
-           if(toolName.includes("killchain")) return { icon: "security", color: "var(--neo-purple)" };
-           if(toolName.includes("network") || toolName.includes("nmap")) return { icon: "hub", color: "var(--neo-blue)" };
-           if(toolName.includes("zap") || toolName.includes("web")) return { icon: "public", color: "var(--neo-red)" };
-           if(toolName.includes("ssl")) return { icon: "verified_user", color: "var(--neo-green)" };
-           if(toolName.includes("sniffer") || toolName.includes("pcap")) return { icon: "query_stats", color: "var(--neo-amber)" };
-           if(toolName.includes("sql")) return { icon: "database", color: "var(--neo-blue)" };
-           if(toolName.includes("api")) return { icon: "api", color: "var(--neo-purple)" };
-           if(toolName.includes("semgrep") || toolName.includes("sast")) return { icon: "code", color: "var(--neo-pink)" };
-           return { icon: "description", color: "var(--neo-text-muted)" };
-      }
-
-      function renderReports(groupingMode) {
-            const tabsContainer = document.getElementById("reports-tabs-container");
-            const contentContainer = document.getElementById("reports-content-container");
-            
-            if(!tabsContainer || !contentContainer) return;
-            
-            tabsContainer.innerHTML = "";
-            contentContainer.innerHTML = "";
-
-            if(!allReports || allReports.length === 0) {
-                 contentContainer.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--neo-text-muted); font-size:0.75rem; font-family:var(--font-mono);">No PDF reports found. Run a scan to generate one.</div>';
-                 tabsContainer.style.display = 'none';
-                 return;
-            }
-            tabsContainer.style.display = 'flex';
-
-            const grouped = {};
-            const generalLabel = "General";
-
-            allReports.forEach(file => {
-                let key = generalLabel;
-                
-                let toolName = "Unknown";
-                let targetName = generalLabel;
-
-                // Known prefixes to strip to find the target name
-                const prefixes = [
-                    "zap_scanner_", "zap_report_",
-                    "network_scanner_", "nmap_report_",
-                    "ssl_report_", "ssl_scanner_",
-                    "pcap_analysis_report_", "sniffer_report_",
-                    "killchain_report_", "killchain_",
-                    "sql_scanner_", "sql_report_",
-                    "api_scanner_", "api_scan_report_",
-                    "semgrep_scanner_", "semgrep_report_"
-                ];
-
-                // Remove .pdf extension for parsing the target
-                let baseName = file.filename.replace(/\.pdf$/i, "");
-                
-                // Try to find a matching prefix
-                let matchedPrefix = null;
-                for (const prefix of prefixes) {
-                    if (baseName.toLowerCase().startsWith(prefix)) {
-                        matchedPrefix = prefix;
-                        break;
-                    }
-                }
-
-                if (matchedPrefix) {
-                    // Extract toolName from prefix (e.g., "zap_scanner_" -> "zap_scanner")
-                    toolName = matchedPrefix.endsWith('_') ? matchedPrefix.slice(0, -1) : matchedPrefix;
-                    // Target is everything after the prefix
-                    targetName = baseName.slice(matchedPrefix.length);
-                    // If target is empty (e.g. just "zap_report.pdf"), use generalLabel
-                    if (!targetName) {
-                        targetName = generalLabel;
-                    }
-                } else {
-                    // Fallback
-                    if(file.folder) toolName = file.folder.replace("_scanner", "");
-                    if (baseName.includes("_")) {
-                         const portions = baseName.split("_");
-                         if(portions.length > 1) targetName = portions[portions.length-1];
-                    }
-                }
-
-                if (groupingMode === 'target') {
-                    key = targetName;
-                } else {
-                    // Group by Tool
-                    // Clean up tool name for display
-                    key = toolName.charAt(0).toUpperCase() + toolName.slice(1).replace(/_/g, " ");
-                }
-
-                file.extractedTarget = targetName;
-                file.extractedTool = toolName;
-
-                if(!grouped[key]) grouped[key] = [];
-                grouped[key].push(file);
-            });
-
-            const keys = Object.keys(grouped).sort();
-
-            keys.forEach((groupName, index) => {
-                // 1. Create Tab
-                const btn = document.createElement('button');
-                btn.className = `comp-tab-btn ${index === 0 ? 'active' : ''}`;
-                // Replace underscores with dots for display
-                btn.textContent = groupName.replace(/_/g, '.');
-                btn.onclick = () => {
-                    document.querySelectorAll('#reports-tabs-container .comp-tab-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    document.querySelectorAll('.report-target-pane').forEach(p => p.style.display = 'none');
-                    document.getElementById(`report-pane-${index}`).style.display = 'grid';
-                };
-                tabsContainer.appendChild(btn);
-
-                // 2. Create Pane (Grid)
-                const pane = document.createElement('div');
-                pane.id = `report-pane-${index}`;
-                pane.className = 'report-target-pane compliance-grid';
-                pane.style.display = index === 0 ? 'grid' : 'none';
-                
-                let paneHtml = '';
-                grouped[groupName].forEach(file => {
-                    // Determine styling
-                    // If grouped by Tool, we might want to show Target in card?
-                    // If grouped by Target, we show Tool in card.
-                    
-                    // Re-derive tool info for icon
-                    let toolForIcon = file.folder || file.filename;
-                    const style = getIconForTool(toolForIcon);
-                    
-                    const downloadUrl = `{{ url_for('dashboard_bp.download_generic_report') }}?path=${encodeURIComponent(file.rel_path)}`;
-                    
-                    // Extract display name based on what we are NOT grouping by
-                    let mainLabel = file.type; // Default
-                    if (groupingMode === 'target') {
-                         mainLabel = file.type; // Show Scanner Type
-                    } else {
-                         // Grouping by Tool, so show Target Name
-                         mainLabel = file.extractedTarget || "Unknown";
-                    }
-
-                    paneHtml += `
-                    <div class="comp-item" style="position:relative;">
-                        <div class="comp-header">
-                            <span class="comp-name" style="font-size:0.8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${mainLabel}">${mainLabel}</span>
-                            <span class="comp-status status-pass">READY</span>
-                        </div>
-                        <div class="comp-desc" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
-                            <span class="material-symbols-outlined" style="color:${style.color}; font-size:1.2rem;">${style.icon}</span>
-                            <span style="font-family:var(--font-mono); font-size:0.7rem;">${file.date}</span>
-                        </div>
-                       
-                        <div style="margin-top:auto; padding-top:0.5rem; border-top:1px solid var(--neo-border); display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-size:0.65rem; color:var(--neo-text-label);">${file.size}</span>
-                            <a href="${downloadUrl}" class="standard-btn" style="padding:0.3rem 0.6rem; font-size:0.7rem; min-width:auto; height:auto; background:transparent; border:1px solid var(--neo-border);">
-                               DOWNLOAD
-                            </a>
-                        </div>
-                    </div>`;
-                });
-                
-                pane.innerHTML = paneHtml;
-                contentContainer.appendChild(pane);
-            });
-      }
-
-      // Initial Fetch
-      fetch("{{ url_for('dashboard_bp.get_pdf_reports') }}")
-        .then(r => r.json())
-        .then(data => {
-            if(data.reports) {
-                allReports = data.reports;
-                renderReports('target'); // Default mode
-            }
-        })
-        .catch(console.error);
-
-      // Listener for dropdown
-      if(groupSelect) {
-          groupSelect.addEventListener('change', function(e) {
-              renderReports(e.target.value);
-          });
-      }
-  });
-</script>
 {% endblock %}

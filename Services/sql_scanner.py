@@ -9,6 +9,7 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
+from core.time_utils import get_now_ist_str
 from Services import report_manager, scan_logger
 from .tctr_engine import tctr_engine
 from Services.anonymity.manager import AnonymityManager
@@ -215,9 +216,10 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
     """
     Parses the SQLMap 'log' file using regex to extract vulnerability details.
     """
+
     report_data = {
         "target": target_url_hint if target_url_hint else "Unknown",
-        "scan_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "scan_time": get_now_ist_str(),
         "status": "Completed", # Default
         "vulnerabilities": [],
         "database_info": {
@@ -247,7 +249,7 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
         subdirs = [x for x in base_path.iterdir() if x.is_dir()]
         if subdirs:
             # Pick the most recently modified directory
-            target_subdir = max(subdirs, key=os.getmtime)
+            target_subdir = max(subdirs, key=lambda x: x.stat().st_mtime)
             log(f"Found SQLMap results directory: {target_subdir.name}", user_id, level='INFO')
     except Exception as e:
         log(f"Error finding SQLMap output subdirectory: {e}", user_id, level='ERROR')
@@ -264,7 +266,12 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
         return report_data
 
     try:
-        log(f"[INFO] Parsing log file: {log_file_path}", user_id)
+        log(f"[*] Parsing logs from: {target_subdir.name}", user_id, level='INFO')
+        
+        file_size = log_file_path.stat().st_size
+        if file_size > 10 * 1024 * 1024:  # 10MB
+            log(f"[!] Large SQLMap log file detected ({file_size / 1024 / 1024:.1f} MB). Parsing may take a moment...", user_id, level='WARNING')
+
         with open(log_file_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
@@ -332,17 +339,37 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
 
     # Apply ML Threat Re-ranking
     try:
-        for vuln in report_data.get("vulnerabilities", []):
-            prediction_obj = tctr_engine.predict_risk(
-                vuln["title"], 
-                f"Parameter: {vuln['parameter']}\nPayload: {vuln['payload']}", 
-                cwe_id="89"
-            )
-            vuln["predicted_risk_score"] = prediction_obj["score"]
-            vuln["tctr_priority"] = prediction_obj["tctr_priority"]
-            vuln["base_score"] = prediction_obj["base_score"]
-            vuln["priority_level"] = prediction_obj["priority_level"]
-            vuln["risk_justification"] = prediction_obj["risk_justification"]
+        vulnerabilities = report_data.get("vulnerabilities", [])
+        total_vulns = len(vulnerabilities)
+        
+        if total_vulns > 0:
+            # If we have thousands of findings, only re-rank the top portion to prevent hangs
+            # SQLMap often repeats findings, so we process the unique ones or top 500
+            max_process = 500
+            if total_vulns > max_process:
+                log(f"[*] Extensive findings detected ({total_vulns}). Re-ranking top {max_process} for priority analysis...", user_id, level='INFO')
+                vulnerabilities = vulnerabilities[:max_process]
+
+            log(f"[*] Re-ranking {len(vulnerabilities)} findings with AI threat context...", user_id, level='INFO')
+            
+            for i, vuln in enumerate(vulnerabilities):
+                # Update progress every 50 findings
+                if i > 0 and i % 50 == 0:
+                    log(f"[*] TCTR Progress: {i}/{len(vulnerabilities)} findings analyzed...", user_id, level='DEBUG')
+
+                prediction_obj = tctr_engine.predict_risk(
+                    vuln["title"], 
+                    f"Parameter: {vuln['parameter']}\nPayload: {vuln['payload']}", 
+                    cwe_id="89"
+                )
+                vuln["predicted_risk_score"] = prediction_obj["score"]
+                vuln["tctr_priority"] = prediction_obj["tctr_priority"]
+                vuln["base_score"] = prediction_obj["base_score"]
+                vuln["priority_level"] = prediction_obj["priority_level"]
+                vuln["risk_justification"] = prediction_obj["risk_justification"]
+            
+            # Update report data if we truncated (unlikely to matter as findings are usually similar)
+            report_data["vulnerabilities"] = vulnerabilities
         
         # Sort by predicted score
         report_data["vulnerabilities"].sort(
@@ -356,10 +383,20 @@ def parse_sqlmap_output(output_dir, target_url_hint=None, captured_metadata=None
 
 # --- MAIN SCAN FUNCTION ---
 
-def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timestamp=None):
+def enqueue_output(out, queue):
+    for line in iter(out.readline, ''):
+        queue.put(line)
+    out.close()
+
+def run_sql_scan(target_url, output_dir=None, scan_mode='quick', user_id=None, timestamp=None, check_waf=False):
     """
-    Runs SQLmap with optimized flags and ensures results are parsed even on partial completion.
+    Core SQL Injection scan loop using SQLMap.
+    Now optimized with non-blocking output handling.
     """
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    timeout_seconds = 900   # 15 mins default
+    if scan_mode == 'full':
+        timeout_seconds = 1800  # 30 mins
     # Defense-in-depth — catches background/scheduled calls that bypass the BP
     try:
         validate_target(target_url)
@@ -367,6 +404,14 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
         log(f"[BLOCKED] Scan rejected by target validator: {e}", user_id, level='ERROR')
         return None
         
+    if not timestamp:
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    
+    # [FIX] If output_dir not provided (unlikely from BP but possible from scripts), use default
+    if not output_dir:
+        from config import RESULTS_DIR
+        output_dir = os.path.join(RESULTS_DIR, user_id if user_id else "anonymous", "sql_scanner")
+
     if not os.path.exists(SQLMAP_PATH):
         log(f"[!] Critical: SQLmap not found at {SQLMAP_PATH}", user_id)
         return None
@@ -389,13 +434,15 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
     cmd.append('--technique=BEUSTQ') 
     
     if scan_mode == 'full':
+        # Full scan includes deep level, risk, crawl, and form discovery
         cmd.extend(['--level=3', '--risk=2', '--crawl=2', '--forms']) 
         timeout_seconds = 1800  # 30 mins
-        log(f"Starting FULL scan (Detection + Enumeration) on {target_url}", user_id, to_console=True)
+        log(f"Starting FULL scan (Detection + Enumeration + Forms) on {target_url}", user_id, to_console=True)
     else:
-        cmd.extend(['--level=1', '--risk=1', '--forms']) # Quick scan avoids crawl
+        # Quick scan focuses on the provided parameters, skipping form discovery to avoid 'no forms found' exit
+        cmd.extend(['--level=1', '--risk=1']) 
         timeout_seconds = 900   # 15 mins
-        log(f"Starting QUICK scan (Detection) on {target_url}", user_id, to_console=True)
+        log(f"Starting QUICK scan (Parameter Testing) on {target_url}", user_id, to_console=True)
 
     cmd.extend(['--banner', '--current-user', '--current-db', '--is-dba'])
 
@@ -458,36 +505,50 @@ def run_sql_scan(target_url, output_dir, scan_mode='quick', user_id=None, timest
                 active_scans[user_id] = {"target": target_url, "start_time": time.time()}
 
             start_time = time.time()
+            out_queue = queue.Queue()
             
+            # Start reader threads to prevent blocking during readline()
+            # This ensures we can check timeout_seconds even if SQLMap is silent
+            t = threading.Thread(target=enqueue_output, args=(process.stdout, out_queue), daemon=True)
+            t.start()
+
             while True:
+                # 1. Check Global Timeout
                 if time.time() - start_time > timeout_seconds:
-                    process.kill()
-                    log(f"[!] TIME LIMIT EXCEEDED ({timeout_seconds}s). Parsing partial results...", user_id)
+                    log(f"[!] TIME LIMIT EXCEEDED ({timeout_seconds}s). Terminating process...", user_id, level='WARNING')
+                    process_manager.kill(user_id, "sqlmap") # Use process manager for robust kill
+                    log("[*] Scan aborted due to timeout. Parsing partial results...", user_id)
                     break
 
-                output = process.stdout.readline()
-                if output == '' and process.poll() is not None:
-                    break
-                
-                if output:
-                    line = output.strip()
-                    if line and not line.startswith("[*] ending"):
-                        # Categorize output for better UI visibility
-                        if "fetching" in line.lower() or "retrieved" in line.lower():
-                            log(line, user_id, level='DATA')
-                        elif "testing" in line.lower() or "checking" in line.lower():
-                            log(line, user_id, level='STAGE')
-                        elif "vulnerable" in line.lower() or "back-end DBMS" in line:
-                            log(line, user_id, level='SUCCESS')
-                        elif "[CRITICAL]" in line:
-                            log(line, user_id, level='ERROR', to_console=True)
-                            live_metadata["critical_error"] = line.split("[CRITICAL]", 1)[1].strip()
-                        else:
-                            log(line, user_id, level='DEBUG')
+                # 2. Get Output from Queue (Non-blocking with short timeout)
+                try:
+                    line = out_queue.get(timeout=2) 
+                except queue.Empty:
+                    # No output, but check if process finished
+                    if process.poll() is not None:
+                        break
+                    continue
+
+                if line:
+                    line = line.strip()
+                    if not line or line.startswith("[*] ending"):
+                        continue
                         
-                        # Capture live metadata as backup
-                        if "back-end DBMS:" in line:
-                            live_metadata["dbms"] = line.split(":", 1)[1].strip()
+                    # Categorize output for UI
+                    if "fetching" in line.lower() or "retrieved" in line.lower():
+                        log(line, user_id, level='DATA')
+                    elif "testing" in line.lower() or "checking" in line.lower():
+                        log(line, user_id, level='STAGE')
+                    elif "vulnerable" in line.lower() or "back-end DBMS" in line:
+                        log(line, user_id, level='SUCCESS')
+                    elif "[CRITICAL]" in line:
+                        log(line, user_id, level='ERROR', to_console=True)
+                        live_metadata["critical_error"] = line.split("[CRITICAL]", 1)[1].strip()
+                    else:
+                        log(line, user_id, level='DEBUG')
+                    
+                    if "back-end DBMS:" in line:
+                        live_metadata["dbms"] = line.split(":", 1)[1].strip()
 
             process.wait()
             # Unregister

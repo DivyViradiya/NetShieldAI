@@ -120,8 +120,17 @@ def initiate_zap_scan():
         zap_scanner.log(f"[!] Failed to update user stats: {e}", user_result_dir)
 
     def scan_and_process_task():
+        # [NEW] Log Start in DB
+        with app.app_context():
+            log_id = scan_logger.log_scan_start(
+                user_id=user_id_for_log,
+                tool_name="ZAP",
+                target=target_url,
+                scan_type=f"ZAP {scan_mode.capitalize()}"
+            )
+
         # Pass composite ID to log function
-        zap_scanner.log(f"[*] Starting ZAP Quick Scan for {target_url} (User: {user_result_dir})...", user_result_dir, to_console=True)
+        zap_scanner.log(f"[*] Starting ZAP {scan_mode.capitalize()} Scan for {target_url} (User: {user_result_dir})...", user_result_dir, to_console=True)
         
         paths = zap_scanner.get_output_paths(user_output_dir, target=target_url)
         xml_path = paths["xml_report"]
@@ -166,6 +175,22 @@ def initiate_zap_scan():
                             zap_scanner.log(f"[+] PDF generated successfully.", user_result_dir, to_console=True)
                             zap_scanner.log("SYSTEM_EVENT: READY_FOR_ANALYSIS", user_result_dir, to_console=True)
                             zap_scanner.log(f"[*] Scan, analysis, and prediction complete.", user_result_dir, to_console=True)
+
+                            # [NEW] Register the PDF report in the database
+                            with app.app_context():
+                                from models.models import Report
+                                # Use relative path from the user's result directory for storage
+                                rel_path = os.path.relpath(str(pdf_path), os.path.dirname(os.path.dirname(user_output_dir)))
+                                new_report = Report(
+                                    scan_log_id=log_id,
+                                    user_id=user_id_for_log,
+                                    filename=os.path.basename(str(pdf_path)),
+                                    relative_path=rel_path,
+                                    file_type="pdf",
+                                    category="zap_scanner"
+                                )
+                                db.session.add(new_report)
+                                db.session.commit()
                         else:
                              zap_scanner.log("[!] PDF generation failed (file missing).", user_result_dir, to_console=True)
                              
@@ -181,14 +206,11 @@ def initiate_zap_scan():
 
         # Log to Database (Inside App Context)
         with app.app_context():
-            scan_logger.create_full_scan_log(
-                user_id=user_id_for_log,
-                tool_name="ZAP",
-                target=target_url,
-                duration=duration,
-                finding_count=finding_count,
+            scan_logger.log_scan_end(
+                log_id=log_id,
                 status=status,
-                scan_type="Quick Scan"
+                finding_count=finding_count,
+                duration=duration
             )
 
     threading.Thread(target=scan_and_process_task, daemon=True).start()  # RC-5 FIX: daemon=True

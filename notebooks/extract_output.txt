@@ -1,0 +1,24 @@
+
+================ 01_data_preprocessing_and_temporal_split.ipynb ================
+# 01. Data Preprocessing and Temporal Split
+## 1. Load Raw CVE Data
+## 2. Data Cleaning and Formatting
+## 3. Temporal Splitting
+## 4. Save Processed Datasets
+
+================ 02_feature_engineering.ipynb ================
+# 02. Feature Engineering
+## 1. Load Split Data
+## 2. Temporal Dynamics (EPSS Features)
+## 3. Contextual Exposure (Text Embeddings)
+## 4. Semantic Graph Features
+## 5. Save Feature Data
+
+================ 03_baseline_and_ltr_models.ipynb ================
+# 03. Baseline and Learning-to-Rank (LTR) Models
+
+================ 04_advanced_neural_models.ipynb ================
+# 04. Advanced Neural Models (Graph Attention Networks)
+
+================ 05_evaluation_and_explainability.ipynb ================
+# 05. Evaluation and Explainability

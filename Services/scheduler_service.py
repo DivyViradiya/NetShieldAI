@@ -11,6 +11,7 @@ import uuid
 import threading
 import traceback
 from datetime import datetime, timezone
+from core.time_utils import get_now_ist, get_now_ist_str
 from zoneinfo import ZoneInfo
 IST = ZoneInfo("Asia/Kolkata")
 from pathlib import Path
@@ -96,8 +97,14 @@ def shutdown_scheduler():
     """Gracefully shut down the scheduler."""
     global _scheduler
     if _scheduler and _scheduler.running:
-        _scheduler.shutdown(wait=False)
-        logger.info("[*] [SCHEDULER] APScheduler shut down.")
+        try:
+            # Wait for currently executing jobs to finish
+            _scheduler.shutdown(wait=True)
+            logger.info("[*] [SCHEDULER] APScheduler shut down gracefully.")
+        except Exception as e:
+            logger.warning(f"[*] [SCHEDULER] Error during shutdown: {e}")
+        finally:
+            _scheduler = None
 
 
 def _log_cleanup_job():
@@ -1162,7 +1169,7 @@ def _trigger_executive_summary_generation(log_id, report_path, tool_name, target
         metadata = {
             "target": target,
             "tool_name": tool_name,
-            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "date": get_now_ist_str()
         }
         
         success = create_executive_summary_report_pdf(summary_text, metadata, exec_path, user_id=user_identifier)
@@ -1269,7 +1276,7 @@ def _deliver_reports(job, log_ids):
              html_content = render_template('email/report_delivery.html', 
                                             profile_name=profile.name,
                                             links_info=links_info,
-                                            current_year=dt.datetime.now().year)
+                                            current_year=get_now_ist().year)
 
         success = send_report_link_email(
             recipient_email=recipient.email,
@@ -1326,7 +1333,7 @@ def resend_report_delivery(log_id, recipient_email):
         html_content = render_template('email/report_delivery.html', 
                                        profile_name=profile_name,
                                        links_info=links_info,
-                                       current_year=dt.datetime.now().year)
+                                       current_year=get_now_ist().year)
 
     success = send_report_link_email(
         recipient_email=recipient_email,

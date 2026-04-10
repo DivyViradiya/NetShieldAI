@@ -52,12 +52,14 @@ def is_scan_running(user_id):
 from Services import scan_logger
 from core.logger_setup import logger
 
+from core.time_utils import get_now_ist_str
+
 def log(message, user_id=None, to_console=False, level='INFO'):
     """
     Logs messages using the centralized scan_logger.
     """
     if to_console:
-        logger.info(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
+        logger.info(f"[{get_now_ist_str('%H:%M:%S')}] {message}")
     
     if user_id:
         scan_logger.write_log(user_id, "ssl_scanner", message, level=level)
@@ -114,8 +116,8 @@ def get_output_paths(output_dir=None, user_id=None, target=None, timestamp=None)
             json_filename = f"{stem}.json"
             pdf_filename = f"{stem}.pdf"
         else:
-            json_filename = report_manager.generate_report_filename("ssl_report", target, "json")
-            pdf_filename = report_manager.generate_report_filename("ssl_report", target, "pdf")
+            json_filename = report_manager.generate_report_filename("ssl_scanner", target, "json")
+            pdf_filename = report_manager.generate_report_filename("ssl_scanner", target, "pdf")
     else:
         json_filename = "ssl_report.json"
         pdf_filename = "ssl_report.pdf"

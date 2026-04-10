@@ -14,6 +14,7 @@ import time
 import json
 import uuid
 from pathlib import Path
+from core.time_utils import get_now_ist_str
 from Services import report_manager
 from .tctr_engine import tctr_engine
 from Services.anonymity.manager import AnonymityManager
@@ -341,12 +342,13 @@ def ensure_admin_privileges():
     try:
         if platform.system() == "Windows":
             # Re-launch with the 'runas' verb to trigger the UAC prompt
+            safe_args = [f'"{os.path.abspath(sys.argv[0])}"'] + [f'"{arg}"' for arg in sys.argv[1:]]
             ctypes.windll.shell32.ShellExecuteW(
                 None,           # Handle to parent window
                 "runas",        # Verb: ask for elevation
                 sys.executable, # File to execute (the python interpreter)
-                " ".join(sys.argv), # Parameters (the script file and its args)
-                None,           # Working directory
+                " ".join(safe_args), # Parameters (the absolute script path and args)
+                os.getcwd(),    # Working directory
                 1               # Show the new window
             )
         
@@ -551,8 +553,9 @@ def parse_nmap_grepable_output(file_path, user_id=None, queue_id=None):
     """
     Parses the Nmap -oG (Grepable) text file into a Python Dictionary.
     """
+
     parsed_data = {
-        "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "scan_date": get_now_ist_str("%Y-%m-%d %H:%M:%S"),
         "scan_args": "N/A",
         "target_ip": "Unknown",
         "host_status": "Down",

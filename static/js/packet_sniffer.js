@@ -431,7 +431,8 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.conversationStatsBody.innerHTML = '';
         const textSecondary = 'var(--neo-text-muted)';
     
-        const validLines = (lines || []).filter(l => l.includes('<->'));
+        // Allow lines with either conversational arrow (<->) or directional arrow (→)
+        const validLines = (lines || []).filter(l => l.includes('<->') || l.includes('\u2192'));
     
         if (validLines.length === 0) {
             elements.conversationStatsBody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center" style="color: var(--neo-text-muted);">No conversations recorded.</td></tr>`;

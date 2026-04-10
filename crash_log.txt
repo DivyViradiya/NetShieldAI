@@ -1,0 +1,39 @@
+Traceback (most recent call last):
+  File "D:\NetShield\NetShieldAI\run.py", line 174, in <module>
+    app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\flask\sansio\scaffold.py", line 47, in wrapper_func
+    return f(self, *args, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\flask\sansio\app.py", line 595, in register_blueprint
+    blueprint.register(self, options)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\flask\sansio\blueprints.py", line 335, in register
+    deferred(state)
+    ~~~~~~~~^^^^^^^
+  File "D:\chatbot-env\Lib\site-packages\flask\sansio\blueprints.py", line 434, in <lambda>
+    lambda s: s.add_url_rule(
+              ~~~~~~~~~~~~~~^
+        rule,
+        ^^^^^
+    ...<3 lines>...
+        **options,
+        ^^^^^^^^^^
+    )
+    ^
+  File "D:\chatbot-env\Lib\site-packages\flask\sansio\blueprints.py", line 110, in add_url_rule
+    self.app.add_url_rule(
+    ~~~~~~~~~~~~~~~~~~~~~^
+        rule,
+        ^^^^^
+    ...<3 lines>...
+        **options,
+        ^^^^^^^^^^
+    )
+    ^
+  File "D:\chatbot-env\Lib\site-packages\flask\sansio\scaffold.py", line 47, in wrapper_func
+    return f(self, *args, **kwargs)
+  File "D:\chatbot-env\Lib\site-packages\flask\sansio\app.py", line 657, in add_url_rule
+    raise AssertionError(
+    ...<2 lines>...
+    )
+AssertionError: View function mapping is overwriting an existing endpoint function: dashboard_bp.get_killchain_stats

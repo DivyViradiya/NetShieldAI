@@ -67,14 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State Variables ---
     const API_BASE_URL = '/network_scanner';
     const CHATBOT_REDIRECT_URL = '/chatbot'; 
-    let lastScanType = 'tcp'; 
     let isActionInProgress = false;
     let reportDownloadUrl = null;
     let eventSource = null;
-
-    // [NEW] Scan Mode State
     let currentScanMode = 'default';
     let currentProtocol = 'TCP';
+    let lastScanType = 'default';
+    let currentResolvedTarget = null; // [NEW] Track the target used by the most recent scan
 
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -412,7 +411,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function checkReportStatus() {
-        const target = elements.targetIpInput.value.trim();
+        // [FIX] Prioritize the resolved target from the current scan, fallback to input field
+        const target = currentResolvedTarget || elements.targetIpInput.value.trim();
+        
         if (elements.downloadReportBtn) {
             elements.downloadReportBtn.disabled = true;
             elements.downloadReportBtn.style.opacity = '0.5';
@@ -701,6 +702,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 if (data && data.queue_id) {
+                    // [FIX] Update tracked target ID for report polling
+                    if (data.target_ip) {
+                        currentResolvedTarget = data.target_ip;
+                        appendLog(`[*] Target resolved to: ${currentResolvedTarget}`);
+                    }
                     initializeLogStream(data.queue_id);
                 } else {
                     throw new Error("Scan initiation failed or no queue_id received.");

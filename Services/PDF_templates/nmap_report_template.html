@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NetShieldAI | Network Assessment Report</title>
+    <title>NetShieldAI | Network Intelligence Report</title>
     <link rel="stylesheet" href="{{ data.css_path }}">
 </head>
 <body>
@@ -12,15 +12,15 @@
             <img src="{{ data.logo_url }}" alt="NetShieldAI" class="logo">
         </div>
         <div class="header-right">
-            <h1>Network Scan Report</h1>
-            <div class="scan-subtitle">// Autonomous Defense Grid</div>
+            <h1>Network Intelligence Report</h1>
+            <div class="scan-subtitle">// Target: {{ data.target_ip }}</div>
         </div>
     </header>
 
     <div class="report-info">
         <div class="info-box">
-            <strong>Target Node</strong>
-            <span>{{ data.target_ip | default('0.0.0.0') }}</span>
+            <strong>Target IP</strong>
+            <span>{{ data.target_ip | default('N/A') }}</span>
         </div>
         <div class="info-box">
             <strong>Scan Date</strong>
@@ -28,151 +28,104 @@
         </div>
         <div class="info-box">
             <strong>Host Status</strong>
-            <span class="{{ 'host-status-up' if data.host_status == 'Up' else 'host-status-down' }}">
-                {{ data.host_status | upper | default('UNKNOWN') }}
-            </span>
+            <span>{{ data.host_status | upper }}</span>
         </div>
         <div class="info-box">
-            <strong>Threats</strong>
-            <span class="{{ 'threat-count-active' if data.has_vulns else 'threat-count-clear' }}">
-                {{ data.stats.open_ports }} PORT{{ 's' if data.stats.open_ports != 1 else '' }} /
-                {{ 'THREATS DETECTED' if data.has_vulns else 'NO THREATS' }}
-            </span>
+            <strong>Environment</strong>
+            <span>{{ data.os_guess | default('Multiple/Unknown') | truncate(25) }}</span>
         </div>
     </div>
 
     <section>
-        <h3>Operational Overview</h3>
-        <div class="nmap-overview-grid">
+        <h3>Executive Summary</h3>
+        <div class="summary-stats">
             <div class="stat-card">
-                <div class="stat-label">Open Ports</div>
+                <div class="stat-label">Total Services</div>
                 <div class="stat-value">{{ data.stats.open_ports | default(0) }}</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Scan Duration</div>
+                <div class="stat-label">Active Scans</div>
                 <div class="stat-value">{{ data.stats.scan_duration | default('N/A') }}</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">OS Fingerprint</div>
-                <div class="stat-value text-small">{{ data.os_guess if data.os_guess else 'Undefined' }}</div>
+                <div class="stat-label">Threat Status</div>
+                <div class="stat-value {% if data.has_vulns %}high{% else %}low{% endif %}">
+                    {% if data.has_vulns %}VULNERABLE{% else %}SECURE{% endif %}
+                </div>
             </div>
         </div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 30%;">Configuration Metric</th>
-                    <th>Parameters / Results</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>CLI Arguments</strong></td>
-                    <td class="scan-args-cell">{{ data.scan_args | default('N/A') }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Security Posture</strong></td>
-                    <td>
-                        {% if data.has_vulns %}
-                            <span class="badge risk-high">Action Required</span>
-                        {% elif data.scan_args and '-sn' in data.scan_args %}
-                            <span class="badge risk-info">Discovery Only</span>
-                        {% else %}
-                            <span class="badge risk-low">Verified Secure</span>
-                        {% endif %}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </section>
 
     <section>
-        <h3>Service Enumeration</h3>
+        <h3>Service Enumeration & TCTR Analysis</h3>
 
         {% if data.ports %}
             {% for port in data.ports %}
-            {% set has_vuln = (port.vulnerability_notes and port.vulnerability_notes | length > 5) or port.predicted_risk_score %}
             <div class="finding-card">
-
                 <div class="finding-header">
-                    <h4>
-                        Port {{ port.port }}
-                        <span class="text-muted" style="font-weight: 400;">({{ port.protocol | upper }})</span>
-                    </h4>
-                    <span class="badge {{ 'risk-medium' if has_vuln else 'risk-low' }}">
-                        {{ 'Finding' if has_vuln else 'Operational' }}
+                    <h4>Port {{ port.port }} ({{ port.service | upper }})</h4>
+                    <span class="badge risk-{{ 'high' if (port.predicted_risk_score|default(0) > 0.7) else 'medium' if (port.predicted_risk_score|default(0) > 0.3) else 'low' }}">
+                        {{ port.priority_level | default('P3') }} PRIORITY
                     </span>
                 </div>
 
                 <div class="service-grid">
                     <div class="grid-item">
-                        <span class="grid-label">Service</span>
-                        <span class="grid-value">{{ port.service | upper }}</span>
+                        <span class="grid-label">Protocol</span>
+                        <span class="grid-value">{{ port.protocol | upper }}</span>
                     </div>
                     <div class="grid-item">
                         <span class="grid-label">State</span>
-                        <span class="grid-value">{{ port.state | title }}</span>
+                        <span class="grid-value">{{ port.state | upper }}</span>
                     </div>
                     <div class="grid-item">
-                        <span class="grid-label">Process</span>
-                        <span class="grid-value">{{ port.process_name if port.process_name else 'N/A' }}</span>
+                        <span class="grid-label">Service Version</span>
+                        <span class="grid-value">{{ port.version if port.version else 'N/A' }}</span>
                     </div>
                     <div class="grid-item">
-                        <span class="grid-label">Risk Score</span>
-                        <span class="grid-value text-accent">{{ port.predicted_risk_score | default('0.00') }}</span>
+                        <span class="grid-label">CPE</span>
+                        <span class="grid-value">{{ port.cpe if port.cpe else 'N/A' }}</span>
                     </div>
                 </div>
 
-                <div class="port-detail">
-                    {% if port.version %}
-                    <div class="port-version-block">
-                        <span class="grid-label">Version Identity</span>
-                        <code>{{ port.version }}</code>
+                <div class="finding-detail">
+                    <div class="ml-score-bar">
+                        <div class="ml-label">TCTR THREAT MAGNITUDE</div>
+                        <div class="ml-value">{{ (port.predicted_risk_score | default(0) * 100) | round(2) }}%</div>
+                        {% if port.risk_justification %}
+                        <div class="ml-justification">
+                            <strong>Intelligence Breakdown:</strong> {{ port.risk_justification }}
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endif %}
 
-                    {% if port.cpe and port.cpe != 'N/A' %}
-                    <div class="port-version-block">
-                        <span class="grid-label">CPE Trace</span>
-                        <span class="port-cpe">{{ port.cpe }}</span>
-                    </div>
-                    {% endif %}
-
-                    {% if has_vuln %}
-                    <div class="vuln-note">
-                        <span class="vuln-note-label">Threat Analysis</span>
-                        {{ port.vulnerability_notes }}
+                    {% if port.vulnerability_notes %}
+                    <div class="description-text">
+                        <strong>Vulnerability Notes:</strong> {{ port.vulnerability_notes }}
                     </div>
                     {% endif %}
                 </div>
-
             </div>
             {% endfor %}
-
         {% else %}
             <div class="empty-state">
-                {% if data.scan_args and ('-sn' in data.scan_args or 'Ping Scan' in data.scan_args) %}
-                    <strong>Host Discovery Successful</strong>
-                    <span>Target is <strong>ONLINE</strong>. No port scan was requested (Ping Sweep Mode).</span>
-                {% else %}
-                    <strong>No Open Services Detected</strong>
-                    <span>Host is likely behind a firewall or all ports are closed.</span>
-                {% endif %}
+                <strong>No Active Services Detected</strong>
+                <span>The target host does not appear to have any open ports.</span>
             </div>
         {% endif %}
     </section>
 
     {% if data.raw_summary %}
     <section>
-        <h3>Raw Console Output</h3>
-        <pre class="raw-console">{{ data.raw_summary }}</pre>
+        <h3>Raw Scanner Output</h3>
+        <pre class="evidence-box">{{ data.raw_summary }}</pre>
     </section>
     {% endif %}
 
     <footer>
         <img src="{{ data.logo_url_small }}" alt="NetShieldAI" class="footer-logo">
         <div class="footer-text">
-            NetShieldAI Reporting Engine // Network Assessment // {{ data.scan_date | default('') }}
+            NetShieldAI Reporting Engine // Network Scanner // Generated {{ data.generation_date }}
         </div>
     </footer>
 

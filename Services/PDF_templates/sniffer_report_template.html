@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>NetShieldAI | Packet Analysis Report</title>
+    <title>NetShieldAI | Network Traffic Analysis Report</title>
     <link rel="stylesheet" href="{{ data.css_path }}">
 </head>
 <body>
@@ -13,14 +13,14 @@
         </div>
         <div class="header-right">
             <h1>Network Traffic Analysis</h1>
-            <div class="scan-subtitle">// Automated Packet Inspection Report</div>
+            <div class="scan-subtitle">// Target: {{ data.target_ip }}</div>
         </div>
     </header>
 
     <div class="report-info">
         <div class="info-box">
             <strong>Target Node</strong>
-            <span>{{ data.target_ip | default('Unknown') }}</span>
+            <span>{{ data.target_ip | default('Any') }}</span>
         </div>
         <div class="info-box">
             <strong>Capture Date</strong>
@@ -37,159 +37,116 @@
     </div>
 
     <section>
-        <h3>Traffic Overview</h3>
-        <div class="metrics-grid">
-            <div class="stat-card">
-                <div class="stat-label">Total Packets</div>
-                <div class="stat-value">{{ data.metrics.total_packets | default(0) }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Data Volume</div>
-                <div class="stat-value">{{ data.metrics.total_bytes | default('0 KB') }}</div>
-            </div>
+        <h3>Traffic Summary</h3>
+        <div class="summary-stats">
             <div class="stat-card">
                 <div class="stat-label">Duration</div>
-                <div class="stat-value">{{ data.metrics.duration | default('N/A') }}</div>
+                <div class="stat-value">{{ data.metrics.duration | default('0s') }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Avg Throughput</div>
                 <div class="stat-value">{{ data.metrics.avg_rate | default('0 bps') }}</div>
             </div>
+            <div class="stat-card">
+                <div class="stat-label">Anomalies Detected</div>
+                <div class="stat-value {% if data.anomaly_details.scans or data.anomaly_details.creds or data.anomaly_details.web_attacks %}high{% else %}low{% endif %}">
+                    {% if data.anomaly_details.scans or data.anomaly_details.creds or data.anomaly_details.web_attacks %}CRITICAL{% else %}NORMAL{% endif %}
+                </div>
+            </div>
         </div>
     </section>
 
     <section>
-        <h3>Protocol Hierarchy</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 40%;">Protocol Layer</th>
-                    <th style="width: 30%;">Frame Count</th>
-                    <th style="width: 30%;">Bytes</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for proto in data.hierarchy %}
-                <tr>
-                    <td class="proto-name">{{ proto.proto }}</td>
-                    <td>{{ proto.frames }}</td>
-                    <td>{{ proto.bytes }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3" class="text-center text-muted">No hierarchy data available.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
-
-    <section>
-        <h3>Active Conversations</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 45%;">Source Endpoint</th>
-                    <th style="width: 10%;">Direction</th>
-                    <th style="width: 45%;">Destination Endpoint</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for conv in data.tcp_conversations %}
-                <tr>
-                    <td class="conv-endpoint">{{ conv.src }}</td>
-                    <td class="conv-arrow">&harr;</td>
-                    <td class="conv-endpoint">{{ conv.dst }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3" class="text-center text-muted">No conversation data captured.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
-
-    <section>
-        <h3>Packet Inspection (Sample)</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 10%;">Time</th>
-                    <th style="width: 30%;">Source</th>
-                    <th style="width: 30%;">Destination</th>
-                    <th style="width: 15%;">Protocol</th>
-                    <th style="width: 15%;">Len</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pkt in data.packet_samples %}
-                <tr>
-                    <td>{{ pkt.time }}s</td>
-                    <td class="conv-endpoint">{{ pkt.src }}</td>
-                    <td class="conv-endpoint">{{ pkt.dst }}</td>
-                    <td><span class="badge risk-info pkt-protocol">{{ pkt.protocol }}</span></td>
-                    <td class="text-right">{{ pkt.len }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5" class="text-center text-muted">No packets available.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
-
-    <section>
-        <h3>Security Insights</h3>
+        <h3>Security Insights (ML-Powered)</h3>
         <div class="finding-card">
             <div class="finding-header">
                 <h4>Anomaly Analysis Summary</h4>
+                {% if data.anomaly_details.scans or data.anomaly_details.creds or data.anomaly_details.web_attacks %}
+                    <span class="badge risk-high">ATTENTION REQUIRED</span>
+                {% else %}
+                    <span class="badge risk-low">NO THREATS</span>
+                {% endif %}
             </div>
             <div class="finding-detail">
-                <p class="anomaly-summary">{{ data.anomalies }}</p>
+                <p class="description-text">{{ data.anomalies }}</p>
 
                 {% if data.anomaly_details.scans %}
-                <div class="scan-anomaly-block">
-                    <span class="anomaly-label">Detected Scan Activity</span>
-                    <ul>
+                <div class="evidence-box" style="margin-top: 15px;">
+                    <div style="font-weight: bold; margin-bottom: 5px; color: #d32f2f;">Detected Scan Activity:</div>
+                    <ul style="margin: 0; padding-left: 20px;">
                         {% for scan in data.anomaly_details.scans %}
-                        <li>{{ scan }}</li>
+                        <li>{{ scan.event if scan.event else scan }}</li>
                         {% endfor %}
                     </ul>
                 </div>
                 {% endif %}
 
                 {% if data.anomaly_details.creds %}
-                <div class="cred-anomaly-block">
-                    <span class="anomaly-label">Cleartext Credentials Detected</span>
-                    <ul>
+                <div class="evidence-box" style="margin-top: 15px; border-left-color: #f57c00;">
+                    <div style="font-weight: bold; margin-bottom: 5px; color: #f57c00;">Cleartext Protocol Warning:</div>
+                    <ul style="margin: 0; padding-left: 20px;">
                         {% for cred in data.anomaly_details.creds %}
-                        <li>{{ cred }}</li>
+                        <li>{{ cred.event if cred.event else cred }}</li>
                         {% endfor %}
                     </ul>
-                </div>
-                {% endif %}
-
-                {% if data.anomaly_details.web_attacks %}
-                <div class="scan-anomaly-block">
-                    <span class="anomaly-label">Web Attack Signatures</span>
-                    <ul>
-                        {% for attack in data.anomaly_details.web_attacks %}
-                        <li>{{ attack }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-
-                {% if not data.anomaly_details.scans and not data.anomaly_details.creds and not data.anomaly_details.web_attacks %}
-                <div class="empty-state">
-                    <strong>No Anomalies Detected</strong>
-                    <span>Traffic analysis completed with no suspicious patterns identified.</span>
                 </div>
                 {% endif %}
             </div>
         </div>
+    </section>
+
+    <section>
+        <h3>Traffic Intelligence (Packet Inspection)</h3>
+        {% if data.packet_samples %}
+            {% for pkt in data.packet_samples %}
+            <div class="finding-card" style="margin-bottom: 15px; border-left: 3px solid #eee;">
+                <div class="finding-header" style="background: #fafafa; padding: 10px 15px;">
+                    <h4 style="font-size: 14px;">[{{ pkt.time }}s] {{ pkt.src }} &rarr; {{ pkt.dst }}</h4>
+                    <span class="badge risk-{{ 'high' if (pkt.predicted_risk_score|default(0) > 0.7) else 'medium' if (pkt.predicted_risk_score|default(0) > 0.3) else 'info' }}">
+                        {{ pkt.protocol }}
+                    </span>
+                </div>
+                <div class="finding-detail" style="padding: 10px 15px;">
+                    <div class="ml-score-bar">
+                        <div class="ml-label">TCTR MAGNITUDE (Pkt {{ loop.index }})</div>
+                        <div class="ml-value">{{ (pkt.predicted_risk_score | default(0) * 100) | round(1) }}%</div>
+                        {% if pkt.risk_justification %}
+                        <div class="ml-justification">
+                             {{ pkt.risk_justification }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <strong>No Packet Data Captured</strong>
+                <span>Analysis was completed but no individual packets were recorded.</span>
+            </div>
+        {% endif %}
+    </section>
+
+    <section>
+        <h3>Protocol Distribution</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">Layer</th>
+                    <th style="width: 30%; text-align: center;">Frames</th>
+                    <th style="width: 30%; text-align: right;">Volume (Bytes)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proto in data.hierarchy %}
+                <tr>
+                    <td style="font-family: 'Courier New', Courier, monospace; font-weight: bold;">{{ proto.proto }}</td>
+                    <td style="text-align: center;">{{ proto.frames }}</td>
+                    <td style="text-align: right;">{{ proto.bytes }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </section>
 
     <footer>

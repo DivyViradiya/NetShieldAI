@@ -5,7 +5,7 @@ import psutil
 import socket
 import shutil
 import re
-from datetime import datetime
+from core.time_utils import get_now_ist_str
 import xml.etree.ElementTree as ET
 import json
 import pandas as pd
@@ -114,7 +114,7 @@ def clear_log_file(user_result_dir):
     try:
         if os.path.exists(user_log_file):
             with open(user_log_file, 'w', encoding='utf-8') as f:
-                f.write(f"--- Log cleared at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---\n")
+                f.write(f"--- Log cleared at {get_now_ist_str()} ---\n")
         
         # RC-11 FIX: Drain queue using public API instead of internal mutex/queue attributes
         uq = get_user_queue(user_result_dir)
@@ -347,7 +347,7 @@ def parse_zap_xml_report(report_file, user_result_dir=None):
     
     # Initialize Summary with "Info" key
     report_data = {
-        "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "scan_date": get_now_ist_str(),
         "summary": {"High": 0, "Medium": 0, "Low": 0, "Info": 0, "Total": 0},
         "findings": []
     }

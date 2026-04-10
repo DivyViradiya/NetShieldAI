@@ -26,13 +26,29 @@ def authenticate_gmail():
         creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
     
     # If there are no (valid) credentials available, let the user log in.
+    import google.auth.exceptions
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except google.auth.exceptions.RefreshError:
+                logger.warning("[!] [EMAIL] Token refresh failed (invalid_grant).")
+                if __name__ == '__main__':
+                    logger.info("[*] [EMAIL] Forcing re-authentication...")
+                    if os.path.exists(TOKEN_PATH): os.remove(TOKEN_PATH)
+                    flow = InstalledAppFlow.from_client_secrets_file(CREDENTIALS_PATH, SCOPES)
+                    creds = flow.run_local_server(port=0)
+                else:
+                    logger.error("[!] [EMAIL] Gmail API Token expired and cannot be refreshed automatically. Run 'python Services/email_service.py' manually as administrator.")
+                    return None
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                CREDENTIALS_PATH, SCOPES)
-            creds = flow.run_local_server(port=0)
+            if __name__ == '__main__':
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    CREDENTIALS_PATH, SCOPES)
+                creds = flow.run_local_server(port=0)
+            else:
+                logger.error("[!] [EMAIL] Gmail API Token missing. Run 'python Services/email_service.py' manually as administrator.")
+                return None
         # Save the credentials for the next run
         with open(TOKEN_PATH, 'w') as token:
             token.write(creds.to_json())

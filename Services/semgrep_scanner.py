@@ -12,8 +12,10 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from core.time_utils import get_now_ist_str
 from Services import report_manager
 from .tctr_engine import tctr_engine
+import re
 
 # --- Configuration ---
 BASE_DIR = Path(__file__).parent.parent
@@ -96,14 +98,8 @@ def get_output_paths(output_dir=None, user_id=None, target=None, timestamp=None)
     scan_uuid = str(uuid.uuid4())[:8]
     
     if target:
-        if timestamp:
-            sanitized = report_manager.sanitize_filename(target)
-            stem = f"semgrep_{sanitized}_{timestamp}"
-            json_filename = f"{stem}.json"
-            pdf_filename = f"{stem}.pdf"
-        else:
-            json_filename = report_manager.generate_report_filename("semgrep_scanner", target, "json")
-            pdf_filename = report_manager.generate_report_filename("semgrep_scanner", target, "pdf")
+        json_filename = report_manager.generate_report_filename("semgrep_scanner", target, "json", timestamp=timestamp)
+        pdf_filename = report_manager.generate_report_filename("semgrep_scanner", target, "pdf", timestamp=timestamp)
     else:
         json_filename = "semgrep_report.json"
         pdf_filename = "semgrep_report.pdf"
@@ -115,11 +111,11 @@ def get_output_paths(output_dir=None, user_id=None, target=None, timestamp=None)
         "source_code": user_temp / f"source_{scan_uuid}"
     }
 
-def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=None, target=None):
+def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=None, target=None, timestamp=None):
     semgrep_cmd = get_semgrep_path()
     if not semgrep_cmd: return None
 
-    paths = get_output_paths(output_dir, user_id)
+    paths = get_output_paths(output_dir, user_id, target=target, timestamp=timestamp)
     source_dir = paths["source_code"]
     raw_report_path = paths["raw_json"]
 
@@ -179,7 +175,7 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
             log(f"[!] Semgrep finished but no results file was generated.", user_id)
             return None
             
-        return parse_semgrep_results(raw_report_path, output_dir, user_id, target=target, scan_duration=scan_duration)
+        return parse_semgrep_results(raw_report_path, output_dir, user_id, target=target, scan_duration=scan_duration, timestamp=timestamp)
     except Exception as e:
         log(f"Scan Error: {e}", user_id)
         return None
@@ -196,15 +192,15 @@ def run_semgrep_scan(target_input, input_type="zip", output_dir=None, user_id=No
             except Exception as e:
                 log(f"Warning: Failed to delete upload temp file: {e}", user_id)
 
-def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None, target=None, scan_duration=None):
-    paths = get_output_paths(output_dir, user_id, target=target)
+def parse_semgrep_results(raw_json_path, output_dir=None, user_id=None, target=None, scan_duration=None, timestamp=None):
+    paths = get_output_paths(output_dir, user_id, target=target, timestamp=timestamp)
     output_file = paths["parsed_json"]
     try:
         with open(raw_json_path, 'r', encoding='utf-8') as f: 
             data = json.load(f)
-        
+                
         report = {
-            "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "scan_date": get_now_ist_str(),
             "tool": "Semgrep OSS",
             "target": target or "Unknown",
             "scan_duration": scan_duration,

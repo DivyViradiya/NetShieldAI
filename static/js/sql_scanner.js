@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const API_BASE_URL = '/sql_scanner';
     const CHATBOT_REDIRECT_URL = '/chatbot'; 
     let isActionInProgress = false;
+    let isFetchingReport = false;
     let reportDownloadUrl = null;
     let currentFindings = [];
     let activeFilter = 'all';
@@ -254,6 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- API & Data Functions ---
 
     async function fetchReportData(specificTarget = null) {
+        if (isFetchingReport) return;
+        isFetchingReport = true;
+        
         const target = specificTarget || elements.targetUrlInput?.value.trim();
         try {
             const url = target ? `${API_BASE_URL}/report?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report`;
@@ -267,10 +271,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const errorData = await response.json();
                 appendLog(`[!] Failed to load findings: ${errorData.message || 'Unknown error'}`);
             }
-            await checkReportAvailability();
         } catch (error) {
             console.error('Error fetching report:', error);
             appendLog(`[!] Connection error while fetching results.`);
+        } finally {
+            isFetchingReport = false;
         }
     }
 
@@ -628,30 +633,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const message = event.data;
             if (message.startsWith(':')) return;
             
-            // Handle Structured Events
+            // 1. Structured Completion Event (Highest Priority)
             if (message.includes("EVENT: scan_complete")) {
                 try {
                     const payloadStr = message.split('| PAYLOAD: ')[1];
                     const payload = JSON.parse(payloadStr);
+                    
                     setStatus('Ready', 'success');
-                    fetchReportData(payload.target).then(() => {
-                        setButtonsDisabled(false);
-                        toggleSpinner(elements.startScanBtn, false);
-                    });
+                    setButtonsDisabled(false);
+                    toggleSpinner(elements.startScanBtn, false);
+                    
+                    // Controlled Refresh
+                    fetchReportData(payload.target);
+                    checkReportAvailability();
                 } catch (e) { console.error("Error parsing scan_complete event:", e); }
                 return;
             }
 
+            // 2. Report Availability Signal
             if (message.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
                 checkReportAvailability();
-            }
-
-            if (message.toLowerCase().includes("scan complete") || message.toLowerCase().includes("finished")) {
-                setStatus('Ready', 'success');
-                fetchReportData().then(() => {
-                    setButtonsDisabled(false);
-                    toggleSpinner(elements.startScanBtn, false);
-                });
             }
 
             if (!message.includes("EVENT:")) appendLog(message);
@@ -767,7 +768,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeLogStream();
     
     // Initial Check
-    fetchReportData().then(() => {
+    Promise.all([
+        fetchReportData(),
+        checkReportAvailability()
+    ]).then(() => {
         if (currentFindings.length > 0) {
             renderFindings(currentFindings);
         }

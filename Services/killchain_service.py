@@ -9,7 +9,7 @@ import queue
 import traceback
 import uuid
 from pathlib import Path
-from datetime import datetime
+from core.time_utils import get_now_ist_str
 from concurrent.futures import ThreadPoolExecutor
 
 # --- Tool Imports ---
@@ -89,7 +89,7 @@ if not isinstance(sys.stdout, SmartLogger):
 # ==========================================
 
 def log(queue_id, message, level="INFO", to_console=True):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = get_now_ist_str()
     formatted_msg = f"[{timestamp}] [{level}] {message}"
     
     if to_console:
@@ -497,7 +497,7 @@ class KillChainService:
             paths = self._get_paths(user_output_dir, queue_id, target=target, timestamp=timestamp)
             results = {
                 "target": target, "profile": profile_name, "aggression": aggression_level,
-                "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "scan_date": get_now_ist_str(),
                 "recon": {}, "network": {}, "web_audit": {}, "vulns": [], "urls": [], "tech": {}
             }
 

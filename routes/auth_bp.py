@@ -11,6 +11,8 @@ from flask_mail import Message
 from flask import session
 from core.logger_setup import logger
 from Services.email_service import send_otp_email
+from core.time_utils import get_now_ist, get_now_ist_str
+from datetime import datetime, timedelta
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -254,7 +256,8 @@ def register():
             full_name=form.full_name.data,
             phone_number=form.phone_number.data,
             organization=form.organization.data,
-            job_title=form.job_title.data
+            job_title=form.job_title.data,
+            is_onboarded=True
         )
         new_user.set_password(form.password.data)
         
@@ -266,9 +269,7 @@ def register():
             db.session.commit()
             # [OTP VERIFICATION] Generate and send OTP
             import random
-            from datetime import datetime, timedelta
-            otp_code = str(random.randint(100000, 999999))
-            expires_at = datetime.utcnow() + timedelta(minutes=15)
+            expires_at = get_now_ist().replace(tzinfo=None) + timedelta(minutes=15)
             
             otp_entry = RegistrationOTP(user_id=new_user.id, code=otp_code, expires_at=expires_at)
             db.session.add(otp_entry)
@@ -279,7 +280,7 @@ def register():
             html_content = render_template('email/register_otp.html', 
                                          user=new_user, 
                                          otp_code=otp_code, 
-                                         current_year=datetime.now().year)
+                                         current_year=get_now_ist().year)
             
             logo_path = os.path.join(current_app.root_path, 'static', 'images', 'NS_Logo.png')
             send_otp_email(new_user.email, otp_code, html_content=html_content, logo_path=logo_path)
@@ -547,7 +548,7 @@ def send_reset_email(user):
     
     # 1. Generate 6-Digit OTP code
     otp_code = str(random.randint(100000, 999999))
-    expires_at = datetime.utcnow() + timedelta(minutes=10)
+    expires_at = get_now_ist().replace(tzinfo=None) + timedelta(minutes=10)
     
     # 2. Overwrite any existing active resets for this user in DB
     PasswordResetOTP.query.filter_by(user_id=user.id).delete()
@@ -568,7 +569,7 @@ def send_reset_email(user):
     html_content = render_template('email/reset_password.html', 
                                    user=user, 
                                    otp_code=otp_code, 
-                                   current_year=datetime.now().year)
+                                   current_year=get_now_ist().year)
                                    
     msg.html = html_content
     try:
@@ -660,7 +661,7 @@ def verify_otp():
             return redirect(url_for('auth.forgot_password'))
             
         from datetime import datetime
-        if otp_entry.expires_at < datetime.utcnow():
+        if otp_entry.expires_at < get_now_ist().replace(tzinfo=None):
             db.session.delete(otp_entry)
             db.session.commit()
             flash('This verification code has expired. Please request a new one.', 'danger')
@@ -779,7 +780,7 @@ def verify_registration():
             return render_template('base/verify_registration.html', form=form)
             
         from datetime import datetime
-        if otp_entry.expires_at < datetime.utcnow():
+        if otp_entry.expires_at < get_now_ist().replace(tzinfo=None):
             flash('This code has expired. Please request a new one.', 'danger')
             return render_template('base/verify_registration.html', form=form)
             
@@ -826,9 +827,7 @@ def resend_verification():
 
     # Generate and send new OTP
     import random
-    from datetime import datetime, timedelta
-    otp_code = str(random.randint(100000, 999999))
-    expires_at = datetime.utcnow() + timedelta(minutes=15)
+    expires_at = get_now_ist().replace(tzinfo=None) + timedelta(minutes=15)
 
     otp_entry = RegistrationOTP(user_id=user.id, code=otp_code, expires_at=expires_at)
     db.session.add(otp_entry)
@@ -838,7 +837,7 @@ def resend_verification():
     html_content = render_template('email/register_otp.html', 
                                  user=user, 
                                  otp_code=otp_code, 
-                                 current_year=datetime.now().year)
+                                 current_year=get_now_ist().year)
     
     logo_path = os.path.join(current_app.root_path, 'static', 'images', 'NS_Logo.png')
     send_otp_email(user.email, otp_code, html_content=html_content, logo_path=logo_path)

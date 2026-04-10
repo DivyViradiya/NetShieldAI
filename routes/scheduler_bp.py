@@ -802,7 +802,7 @@ def deliver_report(token):
 
     # Success
     if not link.opened_at:
-        link.opened_at = datetime.now()
+        link.opened_at = datetime.now(IST).replace(tzinfo=None)
         link.opened_from_ip = request.remote_addr
     
     link.is_used = True

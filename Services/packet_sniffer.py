@@ -15,6 +15,7 @@ import uuid
 import psutil
 from datetime import datetime, timezone
 from pathlib import Path
+from core.time_utils import get_now_ist_iso
 from Services import report_manager
 from .tctr_engine import tctr_engine
 
@@ -546,7 +547,7 @@ def analyze_pcap_to_json(pcap_path, target_ip, max_packets=50, user_id=None):
     anomalies = detect_anomalies({"dissected_packets": packet_data, "application_flow_analysis": flows}, target_ip, user_id=user_id)
 
     return {
-        "status": "success", "timestamp": datetime.now(timezone.utc).isoformat(),
+        "status": "success", "timestamp": get_now_ist_iso(),
         "target_ip": target_ip, "pcap_file": str(pcap_path),
         "traffic_summary": stats, "application_flow_analysis": flows,
         "security_anomaly_report": anomalies, "packets_analyzed_detail": len(packet_data),

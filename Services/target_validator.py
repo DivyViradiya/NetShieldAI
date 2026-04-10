@@ -33,14 +33,12 @@ STAGING_INDICATORS = [
     "qa", "sandbox", "demo", "preprod", "pre-prod", "local"
 ]
 
-# ── Blocked IP ranges (IANA special-purpose + private + known critical infra) ───
+# ── Blocked IP ranges (IANA special-purpose + Link-Local + Multicast) ───
+# Note: Private RFC 1918 ranges (10.x, 172.16.x, 192.168.x) are ALLOWED for personal infrastructure audits.
 BLOCKED_IP_RANGES = [
     "0.0.0.0/8",        # "This" network
     "127.0.0.0/8",      # Loopback (127.0.0.1 etc)
-    "10.0.0.0/8",       # Private-Use
-    "172.16.0.0/12",    # Private-Use
-    "192.168.0.0/16",   # Private-Use
-    "169.254.0.0/16",   # Link Local
+    "169.254.0.0/16",   # Link Local (Protects Cloud Metadata IMDS)
     "100.64.0.0/10",    # Shared address space
     "192.0.0.0/24",     # IETF Protocol Assignments
     "192.0.2.0/24",     # TEST-NET-1

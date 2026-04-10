@@ -1,0 +1,67 @@
+   - Current State: chatbot_bp.py is a proxy that forwards requests to a backend server at
+     http://127.0.0.1:5000. It manages session IDs and handles report uploads and chat
+     history.
+   - Missing Link: The FastAPI backend is likely a separate repository or process, as it's not
+     present in D:\NetShieldAI.
+   - Goal: Transform the chatbot into an "Action Model" (AI Agent) that can understand natural
+     language intent, gather parameters, and execute security scans.
+
+  The "Action Model" Plan
+
+
+  To achieve this, we will implement a "Tools/Functions" capability in the AI agent.
+
+
+  1. Core Concept
+  The AI agent will be equipped with "Tools" (definitions of our existing scanner functions).
+  When a user says, "Scan my website example.com," the LLM will:
+   1. Identify the intent: run_zap_scan.
+   2. Extract parameters: target_url="http://example.com".
+   3. If a parameter is missing (e.g., scan type), it will ask: "Would you like a Quick Scan
+      or a Full Scan?"
+   4. Once all parameters are ready, it will call a Tool Execution Endpoint on our backend.
+
+  ---
+
+  2. Required Updates (FastAPI Backend)
+  Since the FastAPI backend handles the LLM logic, we need to update it as follows:
+
+
+   - Tool Definitions: Add a list of available tools (JSON schema) that the LLM can use. This
+     includes:
+       * network_scan(target_ip, scan_type)
+       * zap_scan(target_url, scan_type)
+       * ssl_scan(target_host)
+       * sql_injection_scan(target_url)
+   - System Prompt Update: Instruct the LLM that it is a "Security Orchestrator" for
+     NetShieldAI and should use tools to perform actions.
+   - Function Calling Logic: Implement logic to handle "tool_calls" from the LLM. When the LLM
+     decides to use a tool, the FastAPI backend should:
+       1. Return a "action_required" status to the Flask proxy.
+       2. OR (Better) Call the corresponding Flask endpoint internally if they share a
+          network.
+
+  ---
+
+  3. Required Updates (Flask `chatbot_bp.py`)
+  Since Flask owns the scanners, it must be the one to execute them.
+
+
+   - Action Execution Endpoint: Create a new endpoint /chatbot/execute_action that the AI
+     backend can call (or the frontend can call based on AI instructions).
+   - Tool Mapping: Map AI "tool names" to internal Flask functions/blueprints.
+   - Input Validation: Add a verification layer to ensure URLs and IPs provided by the AI are
+     valid before starting a scan.
+
+  ---
+
+
+  4. Execution Strategy
+
+
+   1. Step 1: Define the Tool Schema. I will create a structured definition of all available
+      security tools in this project.
+   2. Step 2: Update Flask Proxy. Modify chatbot_bp.py to handle "Action Requests" from the
+      backend.
+   3. Step 3: UI Enhancement. Update chatbot.js (if necessary) to show "Action Status" (e.g.,
+      "AI is initiating a ZAP Scan...").

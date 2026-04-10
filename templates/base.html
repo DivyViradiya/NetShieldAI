@@ -18,6 +18,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hud_components.css') }}">
     <style>
       /*******************************************/
       /* --- GLOBAL VARIABLES & THEME SETUP --- */
@@ -1606,6 +1607,7 @@
         document.querySelectorAll('.fade-in-element').forEach((el) => observer.observe(el));
       });
     </script>
+    <script src="{{ url_for('static', filename='js/hud_components.js') }}"></script>
     {% block extra_scripts %}
 
     {% endblock %}

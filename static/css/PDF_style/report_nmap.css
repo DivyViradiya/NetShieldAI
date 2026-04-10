@@ -4,34 +4,13 @@
    Requires: report_base.css
    ============================================================= */
 
-/* Vulnerability notes block inside a port card */
-.vuln-notes {
+.nmap-service-info {
     margin-top: 10px;
-    padding: 12px 14px;
-    background: var(--risk-high-bg);
-    border-left: 4px solid var(--risk-high);
-    border-radius: var(--radius-sm);
-    font-size: 8.5pt;
-    line-height: 1.55;
-    color: var(--risk-high);
-}
-.vuln-notes .box-label { color: var(--risk-high); }
-
-/* Version string code block */
-.version-row        { margin-bottom: 8px; }
-.version-row code   { display: block; margin-top: 3px; font-size: 7.5pt; }
-
-/* CPE identifier */
-.cpe-row {
-    margin-bottom: 8px;
-    font-size: 7.5pt;
-    color: var(--text-secondary);
-    font-family: 'Consolas','Courier New',monospace;
 }
 
-/* Scan CLI args cell */
-.cli-args {
-    font-family: 'Consolas','Courier New',monospace;
-    font-size: 8pt;
-    color: var(--brand-accent);
+.port-status-open { color: #16a34a; font-weight: 700; }
+.port-status-closed { color: #dc2626; font-weight: 700; }
+
+.tctr-intelligence {
+    margin-top: 15px;
 }

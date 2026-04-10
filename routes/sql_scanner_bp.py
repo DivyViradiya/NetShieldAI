@@ -67,6 +67,7 @@ def scan_sql():
     
     logger.info(f"SQL Injection Scan requested for {target_url} by {current_user.username}")
     scan_mode = data.get('scan_mode', 'quick') # Default to 'quick'
+    check_waf = data.get('check_waf', False) # [NEW]
 
     if not target_url:
         sql_scanner.log("[!] Target URL cannot be empty for SQL scan.")
@@ -148,8 +149,8 @@ def scan_sql():
             
             start_time = time.time()
             
-            # Generate a consistent timestamp for this single scan session
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            # Generate a consistent timestamp for this single scan session in IST
+            timestamp = report_manager.get_timestamp()
             
             # 1. Run the Scan (Returns path to JSON report if successful)
             # We now run it directly in user_base_dir instead of a timestamped subfolder
@@ -158,7 +159,8 @@ def scan_sql():
                 output_dir=user_base_dir, 
                 scan_mode=scan_mode,
                 user_id=current_user_identifier,
-                timestamp=timestamp
+                timestamp=timestamp,
+                check_waf=check_waf
             )
             
             duration = time.time() - start_time

@@ -7,7 +7,7 @@ import psutil
 import socket
 import shutil
 import uuid
-from datetime import datetime
+from core.time_utils import get_now_ist, get_now_ist_str
 import xml.etree.ElementTree as ET
 import json
 import pandas as pd
@@ -332,7 +332,7 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
                     # Deriving metadata for JSON/PDF naming
                     output_dir = os.path.dirname(report_path)
                     target = target_url
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    timestamp = get_now_ist().strftime("%Y%m%d_%H%M%S")
                     
                     # Save JSON
                     save_json_report(report_data, output_dir, user_id=user_id, target=target, timestamp=timestamp)
@@ -372,7 +372,7 @@ def run_api_scan(target_url, definition_url, report_path, user_id, auth_token=No
 def parse_xml_report(report_file, user_id=None):
     if not os.path.exists(report_file): return None
     report_data = {
-        "scan_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "scan_date": get_now_ist_str(),
         "summary": {"High": 0, "Medium": 0, "Low": 0, "Info": 0, "Total": 0},
         "findings": []
     }

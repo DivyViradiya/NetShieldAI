@@ -173,6 +173,22 @@ def scan_ssl():
                         report_manager.wait_for_file(str(pdf_path))
                         ssl_scanner.log(f"[+] SSL_SCAN_FINALIZED_SUCCESSFULLY", current_user_identifier, to_console=True)
                         ssl_scanner.log(f"SYSTEM_EVENT: READY_FOR_ANALYSIS:{target_host}", current_user_identifier, to_console=True)
+
+                        # [NEW] Register the PDF report in the database
+                        with app.app_context():
+                            from models.models import Report
+                            # Use relative path from the user's result directory for storage
+                            rel_path = os.path.relpath(str(pdf_path), os.path.dirname(os.path.dirname(user_output_dir)))
+                            new_report = Report(
+                                scan_log_id=log_id,
+                                user_id=user_id,
+                                filename=os.path.basename(str(pdf_path)),
+                                relative_path=rel_path,
+                                file_type="pdf",
+                                category="ssl_scanner"
+                            )
+                            db.session.add(new_report)
+                            db.session.commit()
                     else:
                         ssl_scanner.log("[!] PDF generation ran but file not found.", current_user_identifier, to_console=True)
                 
@@ -226,7 +242,7 @@ def check_active_scan():
 @login_required
 def get_ssl_report_history():
     user_dir = get_user_results_dir()
-    history = report_manager.get_report_history(user_dir, scanner_name="ssl_report")
+    history = report_manager.get_report_history(user_dir, scanner_name="ssl_scanner")
     return jsonify({"status": "success", "history": history})
 
 @ssl_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
@@ -239,7 +255,7 @@ def trigger_ai_analysis_route():
     user_dir = get_user_results_dir()
     
     # Resolve the latest PDF report for this scanner
-    pdf_path_str = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="pdf")
+    pdf_path_str = report_manager.find_latest_report(user_dir, "ssl_scanner", target=target, extension="pdf")
     
     if not pdf_path_str:
         # Fallback to any PDF in the scanner's folder
@@ -265,8 +281,8 @@ def get_report_files():
     target = request.args.get('target')
     user_dir = get_user_results_dir()
     
-    latest_json = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="json")
-    latest_pdf = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="pdf")
+    latest_json = report_manager.find_latest_report(user_dir, "ssl_scanner", target=target, extension="json")
+    latest_pdf = report_manager.find_latest_report(user_dir, "ssl_scanner", target=target, extension="pdf")
 
     if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
@@ -289,7 +305,7 @@ def download_pdf_report():
         filename = secure_filename(requested_filename)
         pdf_path = os.path.join(user_dir, filename)
     else:
-        pdf_path = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="pdf")
+        pdf_path = report_manager.find_latest_report(user_dir, "ssl_scanner", target=target, extension="pdf")
         if not pdf_path:
              return jsonify({"status": "error", "message": "No SSL PDF report found."}), 404
         filename = os.path.basename(pdf_path)
@@ -321,7 +337,7 @@ def get_json_report_file():
     target = request.args.get('target')
     user_dir = get_user_results_dir()
     
-    json_path_str = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="json")
+    json_path_str = report_manager.find_latest_report(user_dir, "ssl_scanner", target=target, extension="json")
 
     if not json_path_str or not os.path.exists(json_path_str):
         return jsonify({"status": "error", "message": "JSON report file not found."}), 404
@@ -345,7 +361,7 @@ def get_ssl_report():
     user_dir = get_user_results_dir()
     target = request.args.get('target')
     
-    json_path_str = report_manager.find_latest_report(user_dir, "ssl_report", target=target, extension="json")
+    json_path_str = report_manager.find_latest_report(user_dir, "ssl_scanner", target=target, extension="json")
 
     if not json_path_str or not os.path.exists(json_path_str):
         return jsonify({

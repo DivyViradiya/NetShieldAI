@@ -1,9 +1,12 @@
 import os
+import pathlib
 import sys
 import json
 import logging
+import time
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
+from core.time_utils import get_now_ist, get_now_ist_str
 import contextlib
 
 # --- Suppress GLib/GIO Warnings (Windows) during WeasyPrint Import ---
@@ -40,7 +43,19 @@ with suppress_stderr():
 
 import pathlib
 import re
-from Services.network_scanner import log
+from Services import scan_logger
+from core.logger_setup import logger
+
+def log(message, user_id=None, queue_id=None, to_console=False, level='INFO', scanner_name="pdf_generator"):
+    if to_console:
+        if level.upper() == 'ERROR' or level.upper() == 'CRITICAL':
+            logger.error(message)
+        elif level.upper() == 'WARNING':
+            logger.warning(message)
+        else:
+            logger.info(message)
+    if user_id:
+        scan_logger.write_log(user_id, scanner_name, message, level=level)
 
 # --- Suppress Noisy Logs ---
 logging.getLogger('weasyprint').setLevel(logging.ERROR)
@@ -168,10 +183,18 @@ def create_nmap_report_pdf(source_data, pdf_path, user_id=None):
     else:
         nmap_data = source_data
 
-    # 2. Derived values
+    # 2. Derived values & Sorting
     ports_list = nmap_data.get("ports", [])
+    
+    # Sort ports by risk score descending (High risk first)
+    ports_list = sorted(
+        ports_list, 
+        key=lambda x: x.get("predicted_risk_score", 0), 
+        reverse=True
+    )
+    
     open_count = sum(1 for p in ports_list if p.get('state') == 'open')
-    has_vulns  = any(len(p.get('vulnerability_notes', '')) > 0 for p in ports_list)
+    has_vulns  = any(len(p.get('vulnerability_notes', '')) > 0 for p in ports_list) or any(p.get('predicted_risk_score', 0) > 0.5 for p in ports_list)
 
     duration    = "N/A"
     raw_summary = nmap_data.get("raw_output_summary", "")
@@ -188,7 +211,7 @@ def create_nmap_report_pdf(source_data, pdf_path, user_id=None):
         "logo_url_small":  logo_url_small,
         "css_path":        pathlib.Path(CSS_BASE).as_uri(),
         "scan_date":       nmap_data.get("scan_date"),
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generation_date": get_now_ist().strftime("%Y-%m-%d %H:%M:%S"),
         "scan_args":       nmap_data.get("scan_args"),
         "target_ip":       nmap_data.get("target_ip"),
         "host_status":     nmap_data.get("host_status", "Unknown"),
@@ -246,7 +269,7 @@ def create_zap_report_pdf(source_data, pdf_path, user_id=None):
         "scan_mode":       zap_data.get("scan_mode"),
         "use_ajax":        zap_data.get("use_ajax"),
         "scan_date":       zap_data.get("scan_date"),
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generation_date": get_now_ist().strftime("%Y-%m-%d %H:%M:%S"),
         "summary":         zap_data.get("summary", {}),
         "findings":        sorted_findings,
         "risk_classes":    {
@@ -343,7 +366,7 @@ def create_ssl_report_pdf(source_data, pdf_path, user_id=None):
         "ip":              ssl_data.get("ip", "N/A"),
         "port":            ssl_data.get("port", "443"),
         "grade":           ssl_data.get("grade", "N/A"),
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generation_date": get_now_ist().strftime("%Y-%m-%d %H:%M:%S"),
         "configs":         configs,
         "tls_compression": configs.get("tls_compression", {}),
         "renegotiation":   configs.get("renegotiation", {}),
@@ -430,6 +453,9 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path, user_id=None):
             "len":      layers.get("frame", {}).get("frame.len", "0"),
             "src":      "N/A",
             "dst":      "N/A",
+            "predicted_risk_score": p.get("predicted_risk_score", 0),
+            "priority_level":       p.get("priority_level", "P3 (Low)"),
+            "risk_justification":   p.get("risk_justification", ""),
         }
         if "ip" in layers:
             p_info["src"] = layers["ip"].get("ip.src")
@@ -450,7 +476,7 @@ def create_packet_sniffer_report_pdf(source_data, pdf_path, user_id=None):
         "css_path":        pathlib.Path(CSS_BASE).as_uri(),
         "target_ip":       sniffer_data.get("target_ip", "Unknown"),
         "timestamp":       sniffer_data.get("timestamp"),
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generation_date": get_now_ist().strftime("%Y-%m-%d %H:%M:%S"),
         "metrics": {
             "total_packets": summary_io.get("total_packets", 0),
             "total_bytes":   f"{summary_io.get('total_bytes', 0) / 1024:.2f} KB",
@@ -531,9 +557,9 @@ def create_killchain_report_pdf(source_data, pdf_path, user_id=None):
         "target_ip":       str(data.get("target_ip", "N/A")),
         "profile":         str(data.get("profile", "Unknown Profile")).replace("_", " ").title(),
         "aggression":      str(data.get("aggression", "Normal")).replace("_", " ").title(),
-        "scan_date":       str(data.get("scan_date", datetime.now().strftime("%Y-%m-%d %H:%M:%S"))),
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "report_id":       f"KC-{int(datetime.now().timestamp())}",
+        "scan_date":       str(data.get("scan_date", get_now_ist_str())),
+        "generation_date": get_now_ist_str(),
+        "report_id":       f"KC-{int(get_now_ist().timestamp())}",
         "recon": {
             "subdomains":     data.get("recon", {}).get("subdomains", [])      if isinstance(data.get("recon"), dict) else [],
             "resolved_hosts": data.get("recon", {}).get("resolved_hosts", []) if isinstance(data.get("recon"), dict) else [],
@@ -623,7 +649,7 @@ def create_sql_report_pdf(source_data, pdf_path, user_id=None):
         "css_path":        pathlib.Path(CSS_BASE).as_uri(),
         "target":          sql_data.get("target", "Unknown Target"),
         "scan_time":       sql_data.get("scan_time", "N/A"),
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generation_date": get_now_ist().strftime("%Y-%m-%d %H:%M:%S"),
         "db_info": {
             "dbms":       db_info.get("dbms",       "Not Detected"),
             "version":    db_info.get("version",    "Not Detected"),
@@ -703,7 +729,7 @@ def create_semgrep_report_pdf(source_data, pdf_path, user_id=None):
         "logo_url_small":  logo_url_small,
         "css_path":        pathlib.Path(CSS_BASE).as_uri(),
         "scan_date":       data.get("scan_date"),
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generation_date": get_now_ist().strftime("%Y-%m-%d %H:%M:%S"),
         "tool":            data.get("tool", "Semgrep"),
         "stats": {
             "total":           total_findings_count,
@@ -745,7 +771,7 @@ def create_api_report_pdf(source_data, pdf_path, user_id=None):
         "logo_url_small":  logo_url_small,
         "css_path":        pathlib.Path(CSS_BASE).as_uri(),
         "api_results":     api_data,
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generation_date": get_now_ist_str(),
     }
 
     # 3. Render
@@ -789,9 +815,9 @@ def create_executive_summary_report_pdf(summary_text, metadata, pdf_path, user_i
         "metadata": {
             "target":    metadata.get("target",    "N/A"),
             "tool_name": metadata.get("tool_name", "Security Analyzer"),
-            "date":      metadata.get("date",      datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+            "date":      metadata.get("date",      get_now_ist_str()),
         },
-        "generation_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "generation_date": get_now_ist_str(),
     }
 
     # 3. Render

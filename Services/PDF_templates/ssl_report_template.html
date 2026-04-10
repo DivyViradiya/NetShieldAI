@@ -28,9 +28,7 @@
         </div>
         <div class="info-box">
             <strong>Overall Grade</strong>
-            <span class="{% if 'A' in data.grade %}grade-a{% elif 'B' in data.grade %}grade-b{% elif 'C' in data.grade %}grade-c{% else %}grade-df{% endif %}">
-                {{ data.grade | default('N/A') }}
-            </span>
+            <span>{{ data.grade | default('N/A') }}</span>
         </div>
         <div class="info-box">
             <strong>Scan Date</strong>
@@ -50,16 +48,18 @@
                     </span>
                 </div>
                 <div class="finding-detail">
-                    <div class="mb-12">
-                        <span class="grid-label">Description</span>
-                        <div class="description-text mt-8">{{ vuln.description }}</div>
+                    <div class="ml-score-bar">
+                        <div class="ml-label">TCTR THREAT MAGNITUDE</div>
+                        <div class="ml-value">{{ (vuln.predicted_risk_score | default(0) * 100) | round(2) }}%</div>
+                        {% if vuln.risk_justification %}
+                        <div class="ml-justification">
+                            <strong>Intelligence Breakdown:</strong> {{ vuln.risk_justification }}
+                        </div>
+                        {% endif %}
                     </div>
-                    {% if vuln.solution %}
-                    <div class="remediation-block">
-                        <span class="grid-label">Remediation</span>
-                        <div class="solution-text mt-8">{{ vuln.solution }}</div>
+                    <div class="description-text">
+                        <strong>Description:</strong> {{ vuln.description }}
                     </div>
-                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -73,130 +73,60 @@
 
     <section>
         <h3>Server Configuration</h3>
-        <div class="config-grid">
-            <div class="config-card">
-                <div class="grid-label">TLS Compression</div>
-                <div class="grid-value mt-8">
-                    {% if data.tls_compression.supported %}
-                        <span class="badge risk-high">Enabled</span>
-                    {% else %}
-                        <span class="badge risk-low">Disabled</span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="config-card">
-                <div class="grid-label">Secure Renegotiation</div>
-                <div class="grid-value mt-8">
-                    {% if data.renegotiation.secure %}
-                        <span class="badge risk-low">Supported</span>
-                    {% else %}
-                        <span class="badge risk-high">Unsupported</span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="config-card">
-                <div class="grid-label">OCSP Stapling</div>
-                <div class="grid-value mt-8">
-                    {% if data.ocsp_stapling %}
-                        <span class="badge risk-low">Enabled</span>
-                    {% else %}
-                        <span class="badge risk-info">Disabled</span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="config-card">
-                <div class="grid-label">Fallback SCSV</div>
-                <div class="grid-value mt-8">
-                    {% if data.fallback_scsv %}
-                        <span class="badge risk-low">Supported</span>
-                    {% else %}
-                        <span class="badge risk-medium">Unsupported</span>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+        <table class="config-table">
+            <thead>
+                <tr>
+                    <th>Configuration Parameter</th>
+                    <th>Status / Support</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>TLS Compression</td>
+                    <td><span class="badge risk-{{ 'high' if data.tls_compression.supported else 'low' }}">{{ 'Enabled' if data.tls_compression.supported else 'Disabled' }}</span></td>
+                </tr>
+                <tr>
+                    <td>Secure Renegotiation</td>
+                    <td><span class="badge risk-{{ 'low' if data.renegotiation.secure else 'high' }}">{{ 'Supported' if data.renegotiation.secure else 'Unsupported' }}</span></td>
+                </tr>
+                <tr>
+                    <td>OCSP Stapling</td>
+                    <td><span class="badge risk-{{ 'low' if data.ocsp_stapling else 'info' }}">{{ 'Enabled' if data.ocsp_stapling else 'Disabled' }}</span></td>
+                </tr>
+                <tr>
+                    <td>Fallback SCSV</td>
+                    <td><span class="badge risk-{{ 'low' if data.fallback_scsv else 'medium' }}">{{ 'Supported' if data.fallback_scsv else 'Unsupported' }}</span></td>
+                </tr>
+            </tbody>
+        </table>
     </section>
 
     <section>
-        <h3>Protocols &amp; Cipher Suites</h3>
+        <h3>Protocols & Ciphers</h3>
         {% for proto, ciphers in data.grouped_ciphers.items() %}
         <div class="finding-card">
             <div class="finding-header">
-                <h4 class="{{ 'proto-deprecated' if proto in ['TLSv1.0', 'TLSv1.1', 'SSLv2', 'SSLv3'] else '' }}">
-                    {{ proto }}
-                    {% if proto in ['TLSv1.0', 'TLSv1.1', 'SSLv2', 'SSLv3'] %}
-                        <span class="proto-deprecated-note">(Deprecated)</span>
-                    {% endif %}
-                </h4>
+                <h4>{{ proto }}</h4>
                 <span class="badge risk-info">{{ ciphers | length }} Ciphers</span>
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 65%;">Cipher Suite Name</th>
-                        <th style="width: 20%;">Key Size</th>
-                        <th style="width: 15%;">Status</th>
+                        <th>Cipher Suite</th>
+                        <th>Key Size</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for cipher in ciphers %}
                     <tr>
-                        <td class="cipher-name">{{ cipher.name }}</td>
-                        <td>
-                            {% if cipher.bits < 128 %}
-                                <span class="cipher-weak">{{ cipher.bits }} bits</span>
-                            {% else %}
-                                {{ cipher.bits }} bits
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="badge risk-info">{{ cipher.status | default('Accepted') }}</span>
-                        </td>
+                        <td>{{ cipher.name }}</td>
+                        <td>{{ cipher.bits }} bits</td>
+                        <td>{{ cipher.status | default('Accepted') }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-        {% endfor %}
-    </section>
-
-    <section>
-        <h3>Certificate Chain</h3>
-        {% for cert in data.certificates %}
-        <div class="finding-card">
-            <div class="finding-header">
-                <h4>
-                    <span class="cert-level {{ cert.level | lower }}">{{ cert.level | title }}</span>
-                    Certificate
-                </h4>
-                <span class="text-small text-muted">Expires: {{ cert.not_after }}</span>
-            </div>
-            <div class="finding-detail">
-                <div class="service-grid">
-                    <div class="grid-item">
-                        <span class="grid-label">Subject / Common Name</span>
-                        <span class="grid-value text-accent">{{ cert.subject }}</span>
-                    </div>
-                    <div class="grid-item">
-                        <span class="grid-label">Issuer</span>
-                        <span class="grid-value">{{ cert.issuer }}</span>
-                    </div>
-                    <div class="grid-item">
-                        <span class="grid-label">Algorithm</span>
-                        <span class="grid-value">{{ cert.algorithm }}</span>
-                    </div>
-                    <div class="grid-item">
-                        <span class="grid-label">Key Type</span>
-                        <span class="grid-value">{{ cert.key_type }} ({{ cert.bits }} bits)</span>
-                    </div>
-                </div>
-                {% if cert.alt_names and cert.alt_names != 'None' %}
-                <div class="mt-8">
-                    <span class="grid-label">Subject Alternative Names (SANs)</span>
-                    <div class="san-list">{{ cert.alt_names | truncate(200) }}</div>
-                </div>
-                {% endif %}
-            </div>
         </div>
         {% endfor %}
     </section>

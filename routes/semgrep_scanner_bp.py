@@ -22,7 +22,7 @@ from Services import report_manager
 from Services.target_validator import validate_target, TargetBlockedError, AuthorizationRequiredError
 from core.logger_setup import logger
 
-semgrep_bp = Blueprint('semgrep_bp', __name__)
+semgrep_scanner_bp = Blueprint('semgrep_scanner_bp', __name__)
 
 # --- CONFIGURATION ---
 MAX_UPLOAD_SIZE = 1024 * 1024 * 1024  # 1 GB limit
@@ -35,7 +35,7 @@ def get_user_results_dir():
     os.makedirs(user_dir, exist_ok=True)
     return user_dir
 
-@semgrep_bp.route('/')
+@semgrep_scanner_bp.route('/')
 @login_required
 def semgrep_scanner_page():
     """Renders the Semgrep scanner page."""
@@ -45,7 +45,7 @@ def semgrep_scanner_page():
         return render_template('mobile_scanners/semgrep_scanner.html')
     return render_template('scanners/semgrep_scanner.html')
 
-@semgrep_bp.route('/scan', methods=['POST'])
+@semgrep_scanner_bp.route('/scan', methods=['POST'])
 @login_required
 def scan_code():
     """
@@ -147,6 +147,7 @@ def scan_code():
     # 3. Define Background Task
     # 3. Define Background Task
     def scan_task():
+        start_time = time.time()
         # Use DB Logging
         with app.app_context():
             log_id = scan_logger.log_scan_start(
@@ -158,7 +159,8 @@ def scan_code():
 
         semgrep_scanner.log(f"[*] Starting Semgrep SAST scan on {target_display} (User: {current_user_identifier})...", user_id=current_user_identifier, to_console=True)
         
-        start_time = time.time()
+        # [FIX] Generate a consistent timestamp for this single scan session in IST
+        timestamp = report_manager.get_timestamp()
         
         # Run Scan
         report_file = semgrep_scanner.run_semgrep_scan(
@@ -166,7 +168,8 @@ def scan_code():
             input_type=input_type, 
             output_dir=user_output_dir,
             user_id=current_user_identifier,
-            target=target_display
+            target=target_display,
+            timestamp=timestamp
         )
 
         duration = time.time() - start_time
@@ -180,26 +183,22 @@ def scan_code():
             except:
                 pass
 
-        if report_file:
+        if report_file and os.path.exists(report_file):
             status = "Completed"
             semgrep_scanner.log(f"[+] Semgrep scan complete. Generating PDF report for {target_display}...", user_id=current_user_identifier, to_console=True)
             
             # Extract finding count from saved JSON
             try:
-                user_paths = semgrep_scanner.get_output_paths(user_output_dir, target=target_display)
-                json_path = user_paths["parsed_json"]
+                json_path = report_file # This is the absolute path to the parsed JSON
+                user_paths = semgrep_scanner.get_output_paths(user_output_dir, target=target_display, timestamp=timestamp)
                 pdf_path = user_paths["pdf_report"]
                 
                 with open(json_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     finding_count = data.get('total_findings', 0)
-            except:
-                pass
 
-            # Generate PDF Report
-            try:
-                # Ensure directory exists
-                os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
+                # Ensure directory exists for PDF
+                os.makedirs(os.path.dirname(str(pdf_path)), exist_ok=True)
                 
                 # Call PDF Generator
                 if hasattr(pdf_generator, 'create_semgrep_report_pdf'):
@@ -230,7 +229,7 @@ def scan_code():
     return jsonify({"status": "success", "message": f"Code scan started for {target_display}."})
 
 
-@semgrep_bp.route('/status', methods=['GET'])
+@semgrep_scanner_bp.route('/status', methods=['GET'])
 @login_required
 def get_semgrep_status():
     """Checks if a Semgrep scan is currently running for the user."""
@@ -276,7 +275,7 @@ def get_semgrep_status():
         "target": target
     })
 
-@semgrep_bp.route('/report_history', methods=['GET'])
+@semgrep_scanner_bp.route('/report_history', methods=['GET'])
 @login_required
 def get_semgrep_report_history():
     user_dir = get_user_results_dir()
@@ -285,7 +284,7 @@ def get_semgrep_report_history():
 
 # --- Standard Routes (Replicating SSL Scanner Pattern) ---
 
-@semgrep_bp.route('/trigger_ai_analysis', methods=['POST'])
+@semgrep_scanner_bp.route('/trigger_ai_analysis', methods=['POST'])
 @login_required
 def trigger_ai_analysis_route():
     """Robustly triggers AI analysis by finding the correct PDF report."""
@@ -314,7 +313,7 @@ def trigger_ai_analysis_route():
         "target": target
     })
 
-@semgrep_bp.route('/report_files', methods=['GET'])
+@semgrep_scanner_bp.route('/report_files', methods=['GET'])
 @login_required
 def get_report_files():
     """Checks availability of reports."""
@@ -333,7 +332,7 @@ def get_report_files():
         "pdf_report": f"/semgrep_scanner/download_pdf?target={target}" if target else "/semgrep_scanner/download_pdf"
     })
 
-@semgrep_bp.route('/download_pdf', methods=['GET'])
+@semgrep_scanner_bp.route('/download_pdf', methods=['GET'])
 @login_required
 def download_pdf_report():
     """Serves the latest Semgrep PDF report dynamically."""
@@ -359,7 +358,7 @@ def download_pdf_report():
         as_attachment=True
     )
 
-@semgrep_bp.route('/get_json_report', methods=['GET'])
+@semgrep_scanner_bp.route('/get_json_report', methods=['GET'])
 @login_required
 def get_json_report_file():
     """Serves the latest JSON report file for Semgrep scans."""
@@ -380,7 +379,7 @@ def get_json_report_file():
         as_attachment=True
     )
 
-@semgrep_bp.route('/report', methods=['GET'])
+@semgrep_scanner_bp.route('/report', methods=['GET'])
 @login_required
 def get_semgrep_report():
     """
@@ -415,14 +414,14 @@ def get_semgrep_report():
             "message": f"Failed to read report: {str(e)}"
         }), 500
 
-@semgrep_bp.route('/clear_log', methods=['POST'])
+@semgrep_scanner_bp.route('/clear_log', methods=['POST'])
 @login_required
 def clear_log_route():
     current_user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     semgrep_scanner.clear_log_file(current_user_identifier)
     return jsonify({"status": "success", "message": "Log cleared."})
 
-@semgrep_bp.route('/log_stream')
+@semgrep_scanner_bp.route('/log_stream')
 @login_required
 def log_stream():
     """Server-Sent Events (SSE) endpoint."""
