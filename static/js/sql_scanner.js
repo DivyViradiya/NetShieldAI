@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
         scanOptionsBtn: document.getElementById('scanOptionsBtn'),
         scanOptionsDropdown: document.getElementById('scanOptionsDropdown'),
         scanMode: document.getElementById('scanMode'),
+        scanTiming: document.getElementById('scanTiming'),
+        scanLevel: document.getElementById('scanLevel'),
+        tamperScript: document.getElementById('tamperScript'),
+        scanTechnique: document.getElementById('scanTechnique'),
+        toggleOptionsBtn: document.getElementById('toggleAdvancedOptionsBtn'),
+        advancedOptionsArea: document.getElementById('advancedScanOptions'),
         checkWaf: document.getElementById('checkWaf'),
         
         // Metrics / Status
@@ -511,7 +517,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     target_url: targetUrl,
                     scan_mode: elements.scanMode.value,
                     check_waf: elements.checkWaf.checked,
-                    user_confirmed_auth: userConfirmedAuth
+                    user_confirmed_auth: userConfirmedAuth,
+                    risk_level: elements.scanTiming ? elements.scanTiming.value : '3',
+                    scan_level: elements.scanLevel ? elements.scanLevel.value : '3',
+                    tamper: elements.tamperScript ? elements.tamperScript.value : '',
+                    technique: elements.scanTechnique ? elements.scanTechnique.value : 'BEUSTQ'
                 }),
             });
             const data = await response.json();
@@ -666,6 +676,10 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.scanOptionsBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
             elements.scanOptionsDropdown.classList.toggle('hidden');
+        });
+
+        elements.toggleOptionsBtn?.addEventListener('click', () => {
+            elements.advancedOptionsArea?.classList.toggle('hidden');
         });
 
         document.addEventListener('click', (e) => {

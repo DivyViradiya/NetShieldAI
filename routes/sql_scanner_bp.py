@@ -68,6 +68,10 @@ def scan_sql():
     logger.info(f"SQL Injection Scan requested for {target_url} by {current_user.username}")
     scan_mode = data.get('scan_mode', 'quick') # Default to 'quick'
     check_waf = data.get('check_waf', False) # [NEW]
+    risk_level = data.get('risk_level', '3')
+    scan_level = data.get('scan_level', '3')
+    tamper = data.get('tamper', '')
+    technique = data.get('technique', 'BEUSTQ')
 
     if not target_url:
         sql_scanner.log("[!] Target URL cannot be empty for SQL scan.")
@@ -160,7 +164,11 @@ def scan_sql():
                 scan_mode=scan_mode,
                 user_id=current_user_identifier,
                 timestamp=timestamp,
-                check_waf=check_waf
+                check_waf=check_waf,
+                risk_level=risk_level,
+                scan_level=scan_level,
+                tamper=tamper,
+                technique=technique
             )
             
             duration = time.time() - start_time

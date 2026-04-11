@@ -388,7 +388,7 @@ def enqueue_output(out, queue):
         queue.put(line)
     out.close()
 
-def run_sql_scan(target_url, output_dir=None, scan_mode='quick', user_id=None, timestamp=None, check_waf=False):
+def run_sql_scan(target_url, output_dir=None, scan_mode='quick', user_id=None, timestamp=None, check_waf=False, risk_level='2', scan_level='3', tamper='', technique=''):
     """
     Core SQL Injection scan loop using SQLMap.
     Now optimized with non-blocking output handling.
@@ -426,23 +426,30 @@ def run_sql_scan(target_url, output_dir=None, scan_mode='quick', user_id=None, t
         '-u', target_url,
         '--batch',              
         '--random-agent',
-        '--threads=10',          
         '--output-dir', str(sqlmap_output_dir),
-        '--flush-session' 
+        '--answers=extending=N,follow=N,keep=N,exploit=N' # Speed up batch mode decisions
     ]
 
-    cmd.append('--technique=BEUSTQ') 
-    
-    if scan_mode == 'full':
-        # Full scan includes deep level, risk, crawl, and form discovery
-        cmd.extend(['--level=3', '--risk=2', '--crawl=2', '--forms']) 
-        timeout_seconds = 1800  # 30 mins
-        log(f"Starting FULL scan (Detection + Enumeration + Forms) on {target_url}", user_id, to_console=True)
+    # Dynamically adjust technique based on anonymity
+    if technique:
+        cmd.append(f'--technique={technique}')
     else:
-        # Quick scan focuses on the provided parameters, skipping form discovery to avoid 'no forms found' exit
-        cmd.extend(['--level=1', '--risk=1']) 
-        timeout_seconds = 900   # 15 mins
-        log(f"Starting QUICK scan (Parameter Testing) on {target_url}", user_id, to_console=True)
+        # Default to BEUQ (Boolean, Error, Union, Inline) - skip Time-based by default over Tor
+        cmd.append('--technique=BEUQ') 
+        
+    cmd.extend([f'--level={scan_level}', f'--risk={risk_level}'])
+    if tamper:
+        cmd.extend([f'--tamper={tamper}'])
+
+    if scan_mode == 'full':
+        # Full scan includes further enumeration
+        cmd.extend(['--crawl=2', '--forms']) 
+        timeout_seconds = 1800 if int(scan_level) < 4 else 3600  # 30 mins, or 60 mins for high level
+        log(f"Starting FULL scan (Detection + Enumeration + Forms) on {target_url} (Level {scan_level}, Risk {risk_level})", user_id, to_console=True)
+    else:
+        # Quick scan focuses on the provided parameters
+        timeout_seconds = 900 if int(scan_level) < 4 else 1800   # 15 mins, or 30 mins for high level
+        log(f"Starting QUICK scan (Parameter Testing) on {target_url} (Level {scan_level}, Risk {risk_level})", user_id, to_console=True)
 
     cmd.extend(['--banner', '--current-user', '--current-db', '--is-dba'])
 
@@ -450,25 +457,18 @@ def run_sql_scan(target_url, output_dir=None, scan_mode='quick', user_id=None, t
         cmd.extend(['--dbs', '--tables', '--passwords'])
 
     # --- Anonymity Logic ---
-    is_local = is_local_target(target_url)
+    # User expressly requested to bypass Tor for SQLmap to fix the timeouts
+    # and maximize execution speed natively.
+    use_anonymity = False
+    log("[🛡️] Anonymity Mode (Tor) is manually bypassed for SQLMap. Executing directly for maximum speed.", user_id, level='INFO')
     
-    # Check if Tor is requested but target is local
-    if _anon.enabled and _anon.mode == "tor" and is_local:
-        log("[🛡️] Bypassing Tor for LOCAL target to prevent connection timeout.", user_id, level='INFO')
-        use_anonymity = False
-    else:
-        use_anonymity = _anon.enabled
-
-    # Increase timeout if Tor is active
-    if use_anonymity and getattr(_anon, 'mode', None) == "tor":
-        log("[*] Tor Active: Increasing SQLMap timeout for network latency.", user_id)
-        cmd.extend(['--timeout=60', '--retries=3'])
-    else:
-        cmd.extend(['--timeout=30'])
+    # SQLMap has a hard-coded maximum limit of 10 threads. 
+    cmd.extend(['--timeout=30', '--threads=10'])
 
     log(f"[STAGE] Executing SQLMap ({scan_mode.upper()}) on {target_url}...", user_id, level='STAGE', to_console=True)
 
     live_metadata = {}
+    full_stdout_log = []
 
     try:
         creation_flags = 0x08000000 if sys.platform == 'win32' else 0
@@ -481,14 +481,20 @@ def run_sql_scan(target_url, output_dir=None, scan_mode='quick', user_id=None, t
         
         with (_anon.apply() if use_anonymity else contextlib.nullcontext()):
             # [FIX] If using --tor, avoid passing proxy env vars to prevent "incompatible" error
-            if use_anonymity and _anon.mode == "tor":
-                log("[🛡️] Using native SQLMap Tor module. Isolated environment active.", user_id, level='INFO')
+            if use_anonymity:
+                if _anon.mode == "tor":
+                    log("[🛡️] Using native SQLMap Tor module. Isolated environment active.", user_id, level='INFO')
+                    cmd_env = os.environ.copy()
+                    # Remove common proxy vars that might be inherited
+                    for var in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"]:
+                        cmd_env.pop(var, None)
+                else:
+                    cmd_env = _anon.get_subprocess_env()
+            else:
                 cmd_env = os.environ.copy()
-                # Remove common proxy vars that might be inherited
+                # Clear any inherited proxy variables just to be safe and ensure direct connection
                 for var in ["HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"]:
                     cmd_env.pop(var, None)
-            else:
-                cmd_env = _anon.get_subprocess_env()
 
             with scan_lock:
                 process = subprocess.Popen(
@@ -516,7 +522,7 @@ def run_sql_scan(target_url, output_dir=None, scan_mode='quick', user_id=None, t
                 # 1. Check Global Timeout
                 if time.time() - start_time > timeout_seconds:
                     log(f"[!] TIME LIMIT EXCEEDED ({timeout_seconds}s). Terminating process...", user_id, level='WARNING')
-                    process_manager.kill(user_id, "sqlmap") # Use process manager for robust kill
+                    process_manager.stop_user_tool(user_id, "sqlmap") # Use process manager for robust kill
                     log("[*] Scan aborted due to timeout. Parsing partial results...", user_id)
                     break
 
@@ -531,6 +537,7 @@ def run_sql_scan(target_url, output_dir=None, scan_mode='quick', user_id=None, t
 
                 if line:
                     line = line.strip()
+                    full_stdout_log.append(line)
                     if not line or line.startswith("[*] ending"):
                         continue
                         
@@ -583,6 +590,18 @@ def run_sql_scan(target_url, output_dir=None, scan_mode='quick', user_id=None, t
         # CLEANUP: Remove SQLMap artifacts from temp within this scan's directory
         try:
             import shutil
+            
+            # --- SAVE RAW LOG ---
+            try:
+                if output_dir:
+                    saved_log_path = Path(output_dir) / f"sqlmap_raw_log_{timestamp}.txt"
+                    with open(saved_log_path, 'w', encoding='utf-8') as f:
+                        f.write("\n".join(full_stdout_log) if full_stdout_log else "No output captured from SQLMap.")
+                    log(f"[*] Raw SQLMap execution log saved to {saved_log_path}", user_id, level='INFO')
+            except Exception as e:
+                log(f"[!] Warning: Failed to save raw SQLMap execution log: {e}", user_id)
+            # --------------------
+
             if sqlmap_output_dir.exists():
                 for i in range(3): # Try up to 3 times
                     try:

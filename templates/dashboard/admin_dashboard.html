@@ -15,142 +15,154 @@
     /*  ADMIN OVERWATCH — STANDARD DASHBOARD        */
     /* ============================================ */
 
+    /* --- 1. THEME VARIABLES (STRICT NEO-TECH) --- */
     :root {
-      /* Palette - Stark Minimalist Dark */
       --neo-bg: #000000;
       --neo-card: rgba(10, 10, 12, 0.45);
       --neo-card-hover: rgba(15, 15, 18, 0.55);
-      --neo-input: rgba(15, 15, 18, 0.6);
-      --neo-border: rgba(255, 255, 255, 0.05); /* Standardized thin border */
-      
-      /* Typography */
+      --neo-border: rgba(255, 255, 255, 0.1); 
       --neo-text-main: #ffffff;
       --neo-text-muted: #888888;
-      --neo-text-label: #555555;
-      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      
-      /* Accents (Admin Dashboard Focus: Cyan/Teal) */
       --neo-blue: #3b82f6;
-      --neo-cyan: #06b6d4;
-      --neo-teal: #14b8a6;
       --neo-purple: #8b5cf6;
       --neo-red: #ef4444;
       --neo-green: #10b981;
-      
-      /* Radii & Effects (Matching Scanner Standard) */
-      --radius-lg: 20px;
+      --neo-amber: #f59e0b;
+      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-lg: 16px;
       --radius-md: 12px;
       --radius-sm: 8px;
-      --card-radius: var(--radius-lg);
-      --glass-blur: blur(24px);
-      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      --neo-card-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
-      
-      /* Health / Severity tokens */
-      --severity-critical: #ef4444;
-      --severity-critical-bg: rgba(239,68,68,0.1);
-      --severity-high: #f59e0b;
-      --severity-high-bg: rgba(245,158,11,0.1);
-      --severity-medium: #eab308;
-      --severity-medium-bg: rgba(234,179,8,0.1);
-      --severity-success: #10b981;
-      --severity-success-bg: rgba(16,185,129,0.1);
     }
 
     body.light-mode {
       --neo-bg: #f1f5f9;
       --neo-card: #ffffff;
       --neo-card-hover: #f8faff;
-      --neo-input: #ffffff;
       --neo-border: #cbd5e1;
       --neo-text-main: #0f172a;
       --neo-text-muted: #64748b;
-      --neo-text-dim: #94a3b8;
-      --neo-text-label: #94a3b8;
       --neo-blue: #4f46e5;
-      --neo-red: #dc2626;
-      --neo-green: #059669;
-      --neo-amber: #d97706;
       --neo-purple: #7c3aed;
-      --neo-cyan: #0891b2;
-      --neo-card-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
-
-      --severity-critical: #dc2626;
-      --severity-critical-bg: rgba(220,38,38,0.1);
-      --severity-high: #d97706;
-      --severity-high-bg: rgba(217,119,6,0.1);
-      --severity-medium: #ca8a04;
-      --severity-medium-bg: rgba(202,138,4,0.1);
-      --severity-success: #059669;
-      --severity-success-bg: rgba(5,150,105,0.1);
     }
 
     /* --- LIGHT MODE OVERRIDES --- */
-    body.light-mode .panel {
-      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
-      border-color: var(--border-default);
-      box-shadow: var(--neo-card-shadow);
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
-    body.light-mode .panel::before { display: none; }
-    body.light-mode .hud-card {
-      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
-      box-shadow: var(--neo-card-shadow);
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
-    body.light-mode .hud-card::before { display: none; }
-    body.light-mode .metric-value { color: var(--text-primary); }
-    body.light-mode .metric-sub { color: var(--text-muted); }
-    body.light-mode .panel-title { color: var(--text-primary); }
-    body.light-mode .admin-hero { 
-      background: linear-gradient(135deg, #ffffff 0%, #eef2ff 100%);
+    body.light-mode .bento-tile, 
+    body.light-mode .hud-card,
+    body.light-mode .global-banner {
+      background: #ffffff;
+      border-color: var(--neo-border);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
       backdrop-filter: none;
     }
-    body.light-mode .admin-hero::before { display: none; }
-    body.light-mode .ow-table th {
-      background: var(--bg-secondary);
-      color: var(--text-muted);
-      border-bottom-color: var(--border-default);
+    body.light-mode .neo-table th {
+      background: #f8fafc;
+      color: var(--neo-text-muted);
     }
-    body.light-mode .ow-table td { color: var(--text-secondary); border-bottom-color: var(--border-subtle); }
-    body.light-mode .ow-table tr:hover td { background: rgba(99, 102, 241, 0.03); }
-    body.light-mode .admin-badge-wrap {
-      background: var(--surface-primary) !important;
-      border-color: var(--border-default) !important;
-      box-shadow: var(--neo-card-shadow) !important;
+    body.light-mode .neo-table td { color: var(--neo-text-main); }
+    body.light-mode .text-gradient { color: var(--neo-text-main); }
+
+    /* --- ADMIN NAVIGATION (TABS) --- */
+    .admin-nav {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
     }
-    body.light-mode .user-avatar { border-color: var(--border-default); }
-    body.light-mode .leaderboard-item { border-bottom-color: var(--border-subtle); }
-    body.light-mode .health-bar-track { background: var(--border-default); }
-    body.light-mode .feed-scroll::-webkit-scrollbar-thumb { background-color: var(--border-default); }
-    body.light-mode .hero-stat-val { color: var(--text-primary); }
-    body.light-mode .hero-stat-label { color: var(--text-muted); }
+    .admin-tab-btn {
+      background: var(--neo-card);
+      border: 1px solid var(--neo-border);
+      color: var(--neo-text-muted);
+      padding: 0.6rem 1.25rem;
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+    .admin-tab-btn span { font-size: 1.1rem; }
+    .admin-tab-btn:hover {
+      background: var(--neo-card-hover);
+      border-color: var(--neo-blue);
+      color: var(--neo-text-main);
+    }
+    .admin-tab-btn.active {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--neo-blue);
+      color: var(--neo-blue);
+    }
 
     /* ============================================ */
     /*  BASE                                        */
     /* ============================================ */
-    /* --- CRITICAL LAYOUT RESET (ZAP-style) --- */
-    .dashboard-container *, .dashboard-container *::before, .dashboard-container *::after {
-      box-sizing: border-box;
-    }
-
-
-    .dashboard-container {
-      font-family: var(--font-ui);
+    .dashboard-wrapper {
+      background-color: var(--neo-bg);
       color: var(--neo-text-main);
-      margin: 0 auto;
-      padding: 1rem 1.5rem;
-      width: 100%;
-      box-sizing: border-box;
-      flex: 1;
+      font-family: var(--font-ui);
+      padding: 1.5rem;
+      min-height: calc(100vh - 64px);
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      position: relative;
-      z-index: 10;
+      gap: 1.5rem;
+    }
+
+    /* --- TOP GLOBAL BANNER --- */
+    .global-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 2.5rem;
+      background: var(--neo-card);
+      border: 1px solid var(--neo-border);
+      border-radius: 20px;
+      backdrop-filter: blur(24px);
+    }
+
+    .scanner-title-area {
+        margin: 0;
+    }
+    .scanner-title-area h1 {
+        font-family: var(--font-mono);
+        font-size: clamp(1.2rem, 3vw, 2.25rem) !important;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        text-transform: uppercase;
+        margin: 0;
+        margin-bottom: 0.5rem;
+    }
+    .text-gradient {
+        color: #fff;
+    }
+    .gradient-accent {
+        background: linear-gradient(135deg, var(--neo-blue), #00e5ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .scanner-title-area p {
+        font-family: var(--font-mono);
+        font-size: 0.85rem !important;
+        color: var(--neo-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        opacity: 0.8;
+        font-weight: 500;
+    }
+    .title-deco-line {
+        height: 1px;
+        width: 32px;
+        background: linear-gradient(90deg, var(--neo-blue), transparent);
     }
 
     /* ============================================ */
@@ -228,41 +240,75 @@
     /* ============================================ */
     /*  TIERED ZONE LAYOUT                           */
     /* ============================================ */
-    .zone-cockpit { width: 100%; margin-bottom: 1.5rem; }
-    
-    .zone-telemetry {
+    /* --- BENTO GRID SYSTEM --- */
+    .bento-grid {
       display: grid;
-      grid-template-columns: 280px 1fr 320px;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
+      grid-template-columns: repeat(12, 1fr);
+      grid-gap: 1.5rem;
     }
 
-    .zone-personnel { width: 100%; }
-
-    /* For backwards compat or specific 75/25 needs */
-    .main-split-grid {
-      display: grid;
-      grid-template-columns: 3fr 1fr;
-      gap: 1.5rem;
-      align-items: start;
-    }
-
-    /* ============================================ */
-    /*  SHARED PANEL STYLE                          */
-    /* ============================================ */
-    .panel {
+    .bento-tile {
       background: var(--neo-card);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
       border: 1px solid var(--neo-border);
-      border-radius: var(--card-radius);
-      padding: 1.25rem;
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      transition: all 0.3s ease;
       display: flex;
       flex-direction: column;
-      position: relative;
       overflow: hidden;
-      box-shadow: var(--neo-card-shadow);
+      position: relative;
+      backdrop-filter: blur(24px);
     }
+    .bento-tile:hover {
+      background: var(--neo-card-hover);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .tile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--neo-border);
+    }
+    .tile-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--neo-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .tile-title i { font-size: 1.1rem; color: var(--neo-blue); }
+
+    .tile-content { flex: 1; display: flex; flex-direction: column; }
+
+    /* Zone Visibility Logic */
+    .bento-grid { display: grid; }
+
+    /* For Mobile: Default to Tabs */
+    @media (max-width: 992px) {
+        #zone-cockpit, #zone-telemetry, #zone-personnel { display: none; }
+        .zone-active { display: grid !important; }
+        .admin-nav { display: flex !important; }
+    }
+
+    /* For Desktop: Show all concurrently for Overwatch view */
+    @media (min-width: 993px) {
+        #zone-cockpit, #zone-telemetry, #zone-personnel { display: grid !important; }
+        .admin-nav { display: none !important; }
+    }
+
+    /* Bento Spans */
+    .span-12 { grid-column: span 12; }
+    .span-8 { grid-column: span 8; }
+    .span-6 { grid-column: span 6; }
+    .span-4 { grid-column: span 4; }
+    .span-3 { grid-column: span 3; }
+    .row-2 { grid-row: span 2; }
     /* No ::before top-glow — flat panel style matching ZAP */
     .panel::before { display: none; }
     .panel-header {
@@ -294,135 +340,110 @@
     }
 
     /* ============================================ */
-    /*  ADMIN HERO                                  */
+    /*  TABLE STYLES (NEO-TABLE)                   */
     /* ============================================ */
-    .admin-hero {
-      background: linear-gradient(180deg, var(--neo-card) 0%, rgba(10,10,12,0.4) 100%);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--neo-border);
-      border-radius: var(--card-radius);
-      padding: 1.25rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--neo-card-shadow);
-      position: relative;
-      overflow: hidden;
+    .hud-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: var(--neo-border) transparent;
     }
-    /* No ::before top-glow on hero either */
-    .admin-hero::before { display: none; }
-    .hero-scope {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      flex: 1.2;
-      min-width: 0;
-    }
-    .hero-label {
-      color: var(--neo-purple);
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .hero-value {
-      font-family: var(--font-mono);
-      font-size: clamp(1rem, 2.5vw, 1.35rem);
-      font-weight: 700;
-      color: var(--neo-text-main);
-      line-height: 1.2;
-    }
-    .hero-stats {
-      display: flex;
-      gap: clamp(1rem, 5vw, 3.5rem);
-      flex: 2;
-      justify-content: center;
-      border-left: 1px solid var(--neo-border);
-      border-right: 1px solid var(--neo-border);
-      padding: 0 2rem;
-      height: 3.5rem;
-      align-items: center;
-    }
-    .hero-stat-col {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .hero-stat-val {
-      font-family: var(--font-sans);
-      font-size: clamp(1.2rem, 3vw, 1.75rem);
-      font-weight: 800;
-      line-height: 1;
-      margin-bottom: 4px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .hero-stat-label {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      color: var(--neo-text-label);
-      font-weight: 700;
-      letter-spacing: 0.1em;
-    }
-    .hero-action {
-      flex: 0.8;
-      display: flex;
-      justify-content: flex-end;
-    }
-    .hero-rate-bar {
+    .hud-scroll::-webkit-scrollbar { width: 4px; }
+    .hud-scroll::-webkit-scrollbar-track { background: transparent; }
+    .hud-scroll::-webkit-scrollbar-thumb { background: var(--neo-border); border-radius: 10px; }
+
+    .neo-table {
       width: 100%;
-      height: 3px;
-      background: var(--neo-border);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-top: 0.5rem;
+      border-collapse: collapse;
+      font-size: 0.8rem;
     }
-    .hero-rate-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    .neo-table th {
+      text-align: left;
+      color: var(--neo-text-muted);
+      font-weight: 700;
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid var(--neo-border);
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      position: sticky;
+      top: 0;
+      background: var(--neo-card);
+      z-index: 10;
     }
+    .neo-table td {
+      padding: 0.75rem 0.5rem;
+      border-bottom: 1px solid var(--neo-border);
+      color: var(--neo-text-main);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      vertical-align: middle;
+    }
+    .neo-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* ============================================ */
+    /*  BADGES & CHIPS                              */
+    /* ============================================ */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: 1px solid var(--neo-border);
+      font-family: var(--font-mono);
+    }
+    .badge-secure { color: var(--neo-green); border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.1); }
+    .badge-critical { color: var(--neo-red); border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); }
+    .badge-warning { color: var(--neo-amber); border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.1); }
+
+    /* Action Buttons */
+    .action-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--neo-border);
+      color: var(--neo-text-muted);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .action-btn:hover { border-color: var(--neo-blue); color: var(--neo-blue); background: rgba(59, 130, 246, 0.05); }
+    .action-btn.btn-delete:hover { border-color: var(--neo-red); color: var(--neo-red); background: rgba(239, 68, 68, 0.05); }
 
     /* ============================================ */
     /*  HUD METRIC CARDS                            */
     /* ============================================ */
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-    }
     .hud-card {
       background: var(--neo-card);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
       border: 1px solid var(--neo-border);
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       padding: 1.5rem;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      box-shadow: var(--neo-card-shadow);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(24px);
     }
-    .hud-card:hover {
-      border-color: var(--neo-text-label);
-      transform: translateY(-2px);
+    .hud-card:hover { 
+      border-color: var(--neo-blue); 
+      transform: translateY(-2px); 
+      background: var(--neo-card-hover);
     }
-
     .metric-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: var(--neo-text-muted);
       margin-bottom: 0.5rem;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
     }
     .metric-value {
       font-family: var(--font-mono);
@@ -433,150 +454,19 @@
       line-height: 1;
     }
     .metric-sub {
-      font-size: 0.8rem;
-      color: var(--neo-text-label);
-      margin-top: 4px;
-    }
-
-    /* ============================================ */
-    /*  DUAL GRID                                   */
-    /* ============================================ */
-    .dual-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-
-    /* ============================================ */
-    /*  TABLE STYLES                                */
-    /* ============================================ */
-    .feed-scroll {
-      max-height: 340px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-    }
-    .feed-scroll::-webkit-scrollbar { width: 5px; }
-    .feed-scroll::-webkit-scrollbar-thumb {
-      background-color: var(--neo-border);
-      border-radius: 10px;
-    }
-    .ow-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-    }
-    .ow-table th {
-      text-align: left;
-      color: var(--neo-text-dim);
-      font-weight: 700;
-      padding: 0.6rem 0.5rem;
-      border-bottom: 1px solid var(--neo-border);
-      text-transform: uppercase;
       font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      position: sticky;
-      top: 0;
-      background: var(--neo-card);
-      z-index: 10;
-    }
-    .ow-table td {
-      padding: 0.6rem 0.5rem;
-      border-bottom: 1px solid var(--neo-border);
-      color: var(--neo-text-main);
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      vertical-align: middle;
-    }
-    .ow-table tr:last-child td { border-bottom: none; }
-    .ow-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-    /* ============================================ */
-    /*  BADGES & BUTTONS                            */
-    /* ============================================ */
-    .status-badge {
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-    }
-    .st-active { color: var(--neo-green); border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); }
-    .st-suspended { color: var(--neo-red); border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.1); }
-    .st-ok { color: var(--neo-green); border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); }
-    .st-fail { color: var(--neo-red); border: 1px solid rgba(244, 63, 94, 0.3); background: rgba(244, 63, 94, 0.1); }
-
-    .role-chip {
-      font-size: 0.6rem;
-      font-weight: 800;
+      color: var(--neo-text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-    }
-    .role-admin { color: var(--neo-purple); }
-    .role-user { color: var(--neo-blue); }
-
-    .user-avatar {
-      width: 30px; height: 30px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      border: 1px solid var(--neo-border);
-      background: rgba(59, 130, 246, 0.08);
-      color: var(--neo-blue);
-      flex-shrink: 0;
-    }
-    .user-identity {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .user-identity-text .user-name {
-      font-weight: 700;
-      color: var(--neo-text-main);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-    }
-    .user-identity-text .user-email {
-      font-size: 0.65rem;
-      color: var(--neo-text-dim);
-      font-family: inherit;
-    }
-
-    .action-group { display: flex; gap: 0.35rem; }
-    .action-btn {
-      background: transparent;
-      border: 1px solid var(--neo-border);
-      color: var(--neo-text-dim);
-      width: 26px; height: 26px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .action-btn span { font-size: 0.95rem; }
-    .action-btn:hover { color: var(--neo-text-main); border-color: var(--neo-text-main); }
-    .btn-suspend:hover { border-color: var(--neo-amber); color: var(--neo-amber); }
-    .btn-delete:hover { border-color: var(--neo-red); color: var(--neo-red); }
-    .btn-promote:hover { border-color: var(--neo-purple); color: var(--neo-purple); }
-
-    /* ============================================ */
-    /*  CHART                                       */
-    /* ============================================ */
-    .chart-wrapper {
-      position: relative;
-      height: 240px;
-      width: 100%;
+      font-weight: 600;
     }
 
     /* ============================================ */
-    /*  SYSTEM HEALTH (Right Column)                */
+    /*  CHART & HEALTH                              */
     /* ============================================ */
+    .chart-wrapper { position: relative; width: 100%; }
+    .health-bar-track { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; margin: 8px 0; }
+    .health-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease-in-out; }
     .health-stat {
       display: flex;
       justify-content: space-between;
@@ -587,7 +477,7 @@
       font-size: 0.6rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--neo-text-dim);
+      color: var(--neo-text-muted);
       font-weight: 700;
     }
     .health-stat-value {
@@ -596,24 +486,16 @@
       font-weight: 700;
       color: var(--neo-text-main);
     }
-    .health-bar-track {
-      height: 4px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-top: 0.35rem;
-    }
-    .health-bar-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
     .health-detail {
       font-size: 0.6rem;
-      color: var(--neo-text-dim);
+      color: var(--neo-text-muted);
       margin-top: 0.2rem;
     }
     .health-divider {
+      border: none;
+      border-top: 1px solid var(--neo-border);
+      margin: 0.75rem 0;
+    }
       border: none;
       border-top: 1px solid var(--neo-border);
       margin: 0.75rem 0;
@@ -750,21 +632,20 @@
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-container fade-in-element">
+<div class="dashboard-wrapper">
 
-  <!-- ======== HEADER ======== -->
-  <!-- Top Bento Banner Block -->
-  <div class="panel" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: var(--radius-lg); margin-bottom: 1.5rem; margin-top: 1rem; border: 1px solid var(--neo-border);">
-    <div class="hud-title" style="margin: 0;">
-      <h1 style="font-size: clamp(1.5rem, 4vw, 2.25rem); font-weight: 900; letter-spacing: -0.05em; line-height: 1; text-transform: uppercase;">Admin <span style="background: linear-gradient(135deg, var(--neo-cyan), var(--neo-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Overwatch</span></h1>
-      <div class="hud-subtitle" style="color: var(--neo-text-muted); font-size: clamp(0.7rem, 1.5vw, 0.85rem); margin-top: 10px; font-weight: 500; font-family: var(--font-mono); display: flex; align-items: center; gap: 16px; opacity: 0.8;">
-        <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-cyan), transparent);"></span>
+  <!-- Global Header -->
+  <div class="global-banner">
+    <div class="scanner-title-area">
+      <h1 class="text-gradient">ADMIN <span class="gradient-accent">OVERWATCH</span></h1>
+      <p>
+        <span class="title-deco-line"></span>
         System Administration & Global Infrastructure Telemetry
-      </div>
+      </p>
     </div>
-    
+
     <div class="admin-badge-wrap" style="background: rgba(255,255,255,0.03); border: 1px solid var(--neo-border); padding: 0.5rem 1.25rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
-      <div class="admin-avatar" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--neo-cyan), var(--neo-teal)); border-radius: 10px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+      <div class="admin-avatar" style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--neo-blue), var(--neo-purple)); border-radius: 10px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2); position: relative;">
         <span class="material-symbols-outlined" style="font-size:1.4rem;">security</span>
         <div class="status-dot" style="position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; background: var(--neo-green); border: 2px solid #000; border-radius: 50%;"></div>
       </div>
@@ -776,146 +657,147 @@
   </div>
 
 
-  <!-- ======== MOBILE NAVIGATION TABS ======== -->
-  <div class="admin-mobile-tabs">
-    <button class="admin-tab-btn active" onclick="switchZone('personnel')">
-      <span class="material-symbols-outlined" style="font-size:1.1rem;">group</span> Operators
-    </button>
-    <button class="admin-tab-btn" onclick="switchZone('cockpit')">
-      <span class="material-symbols-outlined" style="font-size:1.1rem;">dashboard</span> Status
+  <!-- ======== NAVIGATION (VISIBLE ON MOBILE ONLY) ======== -->
+  <div class="admin-nav" style="margin-top: 1.5rem; display: none;">
+    <button class="admin-tab-btn active" onclick="switchZone('cockpit')">
+      <span class="material-symbols-outlined">dashboard</span>
+      Cockpit
     </button>
     <button class="admin-tab-btn" onclick="switchZone('telemetry')">
-      <span class="material-symbols-outlined" style="font-size:1.1rem;">monitoring</span> Feed
+      <span class="material-symbols-outlined">analytics</span>
+      Telemetry
+    </button>
+    <button class="admin-tab-btn" onclick="switchZone('personnel')">
+      <span class="material-symbols-outlined">group</span>
+      Personnel
     </button>
   </div>
 
 
 
   <!-- ======== ZONE 1: COCKPIT (Status Overview) ======== -->
-  <div id="zone-cockpit" class="zone-cockpit">
+  <div id="zone-cockpit" class="bento-grid zone-active" style="margin-top: 1.5rem;">
       <!-- ADMIN SUMMARY HERO -->
-      <div class="admin-hero" style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
-        <div class="hero-scope">
-          <div class="hero-label">
-            <span class="material-symbols-outlined" style="font-size:0.8rem; vertical-align: middle;">admin_panel_settings</span>
-            Platform Overview
-          </div>
-          <div class="hero-value">{{ total_users }} Operators — {{ total_system_scans }} Scans Executed</div>
-          <div class="hero-rate-bar">
-            <div class="hero-rate-fill" style="width:{{ success_rate }}%; background: var(--neo-green);"></div>
-          </div>
-        </div>
+      <div class="bento-tile span-12" style="background: linear-gradient(180deg, var(--neo-card) 0%, rgba(10,10,12,0.4) 100%);">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div class="hero-scope">
+              <div class="hero-label" style="color: var(--neo-purple); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 6px;">
+                <span class="material-symbols-outlined" style="font-size:0.8rem; vertical-align: middle;">admin_panel_settings</span> Platform Overview
+              </div>
+              <div class="hero-value" style="font-family: var(--font-mono); font-size: clamp(1rem, 2.5vw, 1.35rem); font-weight: 700; color: var(--neo-text-main); line-height: 1.2;">{{ total_users }} Operators — {{ total_system_scans }} Scans Executed</div>
+              <div class="hero-rate-bar" style="width: 100%; height: 3px; background: var(--neo-border); border-radius: 2px; overflow: hidden; margin-top: 0.5rem;">
+                <div class="hero-rate-fill" style="width:{{ success_rate }}%; background: var(--neo-green); height: 100%; transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);"></div>
+              </div>
+            </div>
 
-        <div class="hero-stats">
-          <div class="hero-stat-col">
-            <span class="hero-stat-val" style="color: var(--neo-green);">{{ success_rate }}%</span>
-            <span class="hero-stat-label">Success</span>
-          </div>
-          <div class="hero-stat-col">
-            <span class="hero-stat-val" style="color: var(--neo-red);">{{ total_findings }}</span>
-            <span class="hero-stat-label">Findings</span>
-          </div>
-          <div class="hero-stat-col">
-            <span class="hero-stat-val" style="color: var(--neo-amber);">{{ total_critical }}</span>
-            <span class="hero-stat-label">Critical</span>
-          </div>
-        </div>
+            <div class="hero-stats" style="display: flex; gap: clamp(1rem, 5vw, 3.5rem); justify-content: center; border-left: 1px solid var(--neo-border); border-right: 1px solid var(--neo-border); padding: 0 2rem; height: 3.5rem; align-items: center;">
+              <div class="hero-stat-col" style="display: flex; flex-direction: column; align-items: center;">
+                <span class="hero-stat-val" style="color: var(--neo-green); font-size: clamp(1.2rem, 3vw, 1.75rem); font-weight: 800; line-height: 1;">{{ success_rate }}%</span>
+                <span class="hero-stat-label" style="font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-muted); font-weight: 700; letter-spacing: 0.1em;">Success</span>
+              </div>
+              <div class="hero-stat-col" style="display: flex; flex-direction: column; align-items: center;">
+                <span class="hero-stat-val" style="color: var(--neo-red); font-size: clamp(1.2rem, 3vw, 1.75rem); font-weight: 800; line-height: 1;">{{ total_findings }}</span>
+                <span class="hero-stat-label" style="font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-muted); font-weight: 700; letter-spacing: 0.1em;">Findings</span>
+              </div>
+              <div class="hero-stat-col" style="display: flex; flex-direction: column; align-items: center;">
+                <span class="hero-stat-val" style="color: var(--neo-amber); font-size: clamp(1.2rem, 3vw, 1.75rem); font-weight: 800; line-height: 1;">{{ total_critical }}</span>
+                <span class="hero-stat-label" style="font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-muted); font-weight: 700; letter-spacing: 0.1em;">Critical</span>
+              </div>
+            </div>
 
-        <div class="hero-action">
-          <div style="text-align: center;">
-            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-label); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Avg Duration</div>
-            <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 800; color: var(--neo-blue);">{{ avg_duration }}s</div>
-          </div>
+            <div class="hero-action" style="padding-left: 2rem;">
+              <div style="text-align: center;">
+                <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Avg Duration</div>
+                <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 800; color: var(--neo-blue);">{{ avg_duration }}s</div>
+              </div>
+            </div>
         </div>
       </div>
 
       <!-- 4 HUD METRIC CARDS -->
-      <div class="metrics-row">
-        <div class="hud-card card-blue">
+      <div class="hud-card span-3">
           <div class="metric-label">
             Total Operators <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-blue);">group</span>
           </div>
           <div class="metric-value">{{ total_users }}</div>
           <div class="metric-sub">Registered Accounts</div>
-        </div>
+      </div>
 
-        <div class="hud-card card-green">
+      <div class="hud-card span-3">
           <div class="metric-label">
             Active Accounts <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-green);">verified_user</span>
           </div>
           <div class="metric-value">{{ active_users }}</div>
           <div class="metric-sub">Currently Enabled</div>
-        </div>
+      </div>
 
-        <div class="hud-card card-amber">
+      <div class="hud-card span-3">
           <div class="metric-label">
             Total Scans <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-amber);">radar</span>
           </div>
           <div class="metric-value">{{ total_system_scans }}</div>
           <div class="metric-sub">Executed Operations</div>
-        </div>
+      </div>
 
-        <div class="hud-card card-purple">
+      <div class="hud-card span-3">
           <div class="metric-label">
             Threat Findings <span class="material-symbols-outlined" style="font-size:1.1rem; color:var(--neo-purple);">bug_report</span>
           </div>
           <div class="metric-value" style="color: var(--neo-red);">{{ total_findings }}</div>
           <div class="metric-sub">{{ total_critical }} Critical</div>
-        </div>
       </div>
   </div>
 
   <!-- ======== ZONE 2: TELEMETRY MATRIX ======== -->
-  <div id="zone-telemetry" class="zone-telemetry">
+  <div id="zone-telemetry" class="bento-grid zone-active" style="margin-top: 1.5rem;">
 
     <!-- Col 1: Health & Alerts -->
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        <!-- SYSTEM HEALTH -->
-        <div class="panel">
-            <div class="panel-header">
-            <div class="panel-title">
-                <span class="material-symbols-outlined" style="color:var(--neo-green);">monitor_heart</span>
+    <div class="bento-tile span-3">
+        <div class="tile-header">
+            <div class="tile-title">
+                <i class="material-symbols-outlined">monitor_heart</i>
                 System Health
             </div>
-            </div>
+        </div>
+        <div class="tile-content">
             <div>
-                <div class="health-stat">
-                    <span class="health-stat-label">Disk Storage</span>
-                    <span class="health-stat-value">{{ storage_info.percent }}%</span>
+                <div class="health-stat" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                    <span class="health-stat-label" style="font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-muted); font-weight: 700;">Disk Storage</span>
+                    <span class="health-stat-value" style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: var(--neo-text-main);">{{ storage_info.percent }}%</span>
                 </div>
-                <div class="health-bar-track">
-                    <div class="health-bar-fill" style="width:{{ storage_info.percent }}%; background: {% if storage_info.percent > 85 %}var(--neo-red){% elif storage_info.percent > 60 %}var(--neo-amber){% else %}var(--neo-blue){% endif %};"></div>
+                <div class="health-bar-track" style="height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-top: 0.35rem;">
+                    <div class="health-bar-fill" style="width:{{ storage_info.percent }}%; height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); background: {% if storage_info.percent > 85 %}var(--neo-red){% elif storage_info.percent > 60 %}var(--neo-amber){% else %}var(--neo-blue){% endif %};"></div>
                 </div>
-                <div class="health-detail">Used {{ storage_info.used_gb }}GB / {{ storage_info.total_gb }}GB</div>
+                <div class="health-detail" style="font-size: 0.6rem; color: var(--neo-text-muted); margin-top: 0.2rem;">Used {{ storage_info.used_gb }}GB / {{ storage_info.total_gb }}GB</div>
             </div>
 
-            <hr class="health-divider">
+            <hr class="health-divider" style="border: none; border-top: 1px solid var(--neo-border); margin: 0.75rem 0;">
 
-            <div class="alert-row">
+            <div class="alert-row" style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0;">
             <div>
-                <div class="health-stat-label">Failed Logins</div>
-                <div class="alert-count" style="color: {{ 'var(--neo-red)' if total_failed_logins > 0 else 'var(--neo-text-main)' }};">
+                <div class="health-stat-label" style="font-size: 0.6rem; text-transform: uppercase; color: var(--neo-text-muted); font-weight: 700;">Failed Logins</div>
+                <div class="alert-count" style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: {{ 'var(--neo-red)' if total_failed_logins > 0 else 'var(--neo-text-main)' }};">
                 {{ total_failed_logins }}
                 </div>
             </div>
             <span class="material-symbols-outlined" style="color:var(--neo-red); opacity:0.4; font-size:1.5rem;">gpp_maybe</span>
             </div>
 
-            <hr class="health-divider">
+            <hr class="health-divider" style="border: none; border-top: 1px solid var(--neo-border); margin: 0.75rem 0;">
 
             <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <div style="display: flex; gap: 0.75rem; padding-bottom: 0.75rem; border-bottom: 1px dashed var(--neo-border);">
                     <span class="material-symbols-outlined" style="font-size: 0.9rem; color: var(--neo-amber);">speed</span>
                     <div>
                         <div style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono);">{{ success_rate }}% Success</div>
-                        <div style="font-size: 0.65rem; color: var(--neo-text-label);">System Productivity</div>
+                        <div style="font-size: 0.65rem; color: var(--neo-text-muted);">System Productivity</div>
                     </div>
                 </div>
                 <div style="display: flex; gap: 0.75rem;">
                     <span class="material-symbols-outlined" style="font-size: 0.9rem; color: var(--neo-red);">bug_report</span>
                     <div>
                         <div style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono);">{{ total_critical }} Critical Findings</div>
-                        <div style="font-size: 0.65rem; color: var(--neo-text-label);">Action Required</div>
+                        <div style="font-size: 0.65rem; color: var(--neo-text-muted);">Action Required</div>
                     </div>
                 </div>
             </div>
@@ -923,170 +805,178 @@
     </div>
 
     <!-- Col 2: Live Scan Feed -->
-    <div class="panel">
-        <div class="panel-header">
-            <div class="panel-title">
-                <span class="material-symbols-outlined" style="color:var(--neo-blue);">history</span>
+    <div class="bento-tile span-6">
+        <div class="tile-header">
+            <div class="tile-title">
+                <i class="material-symbols-outlined">history</i>
                 Live Scan Feed
             </div>
-            <span class="panel-badge" style="background: rgba(59,130,246,0.1); color: var(--neo-blue); border: 1px solid rgba(59,130,246,0.2);">Real-time</span>
+            <div class="badge badge-secure">Real-time Telemetry</div>
         </div>
-        <div class="feed-scroll" style="max-height: 400px;">
-            <table class="ow-table">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Operator</th>
-                        <th>Tool</th>
-                        <th>Target</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in recent_scans %}
-                    <tr>
-                        <td style="font-size:0.65rem; color:var(--neo-text-dim);">{{ log.start_time.strftime('%H:%M:%S') }}</td>
-                        <td style="color:var(--neo-blue); font-weight:600;">{{ log.user.username }}</td>
-                        <td>{{ log.tool_name }}</td>
-                        <td style="max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ log.target }}</td>
-                        <td>
-                            {% if log.status == 'Completed' %}
-                            <span class="status-badge st-ok">OK</span>
-                            {% else %}
-                            <span class="status-badge st-fail">FAIL</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% if recent_scans|length == 0 %}
-                    <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--neo-text-dim);">No scan activity.</td></tr>
-                    {% endif %}
-                </tbody>
-            </table>
+        <div class="tile-content">
+            <div class="hud-scroll" style="max-height: 400px; overflow-y: auto;">
+                <table class="neo-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Operator</th>
+                            <th>Tool</th>
+                            <th>Target</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in recent_scans %}
+                        <tr>
+                            <td style="font-size:0.65rem; color:var(--neo-text-muted);">{{ log.start_time.strftime('%H:%M:%S') }}</td>
+                            <td style="color:var(--neo-blue); font-weight:700;">{{ log.user.username }}</td>
+                            <td>{{ log.tool_name }}</td>
+                            <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ log.target }}</td>
+                            <td>
+                                {% if log.status == 'Completed' %}
+                                <span class="badge badge-secure">OK</span>
+                                {% else %}
+                                <span class="badge badge-critical">FAIL</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if recent_scans|length == 0 %}
+                        <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--neo-text-muted); opacity: 0.5;">No scan activity detected.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- Col 3: Chart + Leaderboard -->
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <!-- Col 3: Tool Distribution & Leaderboard -->
+    <div class="span-3" style="display: flex; flex-direction: column; gap: 1.5rem;">
         <!-- TELEMETRY CHART -->
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">
-                    <span class="material-symbols-outlined" style="color:var(--neo-purple);">pie_chart</span>
+        <div class="bento-tile">
+            <div class="tile-header">
+                <div class="tile-title">
+                    <i class="material-symbols-outlined">pie_chart</i>
                     Tool Distribution
                 </div>
             </div>
-            <div class="chart-wrapper">
-                <canvas id="toolUsageChart"></canvas>
+            <div class="tile-content">
+                <div class="chart-wrapper" style="height: 200px; position: relative;">
+                    <canvas id="toolUsageChart"></canvas>
+                </div>
             </div>
         </div>
 
         <!-- TOP OPERATORS -->
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">
-                    <span class="material-symbols-outlined" style="color:var(--neo-amber);">leaderboard</span>
+        <div class="bento-tile">
+            <div class="tile-header">
+                <div class="tile-title">
+                    <i class="material-symbols-outlined">leaderboard</i>
                     Top Operators
                 </div>
             </div>
-            <div style="display: flex; flex-direction: column;">
-                {% for label in top_users_labels %}
-                <div class="leaderboard-item">
-                    <span class="lb-rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">{{ loop.index }}</span>
-                    <span class="lb-name">{{ label }}</span>
-                    <span class="lb-score">{{ top_users_data[loop.index0] }} ops</span>
+            <div class="tile-content">
+                <div style="display: flex; flex-direction: column;">
+                    {% for label in top_users_labels %}
+                    <div class="leaderboard-item" style="display: flex; align-items: center; padding: 0.65rem 0; border-bottom: 1px solid var(--neo-border); gap: 0.75rem;">
+                        <span class="lb-rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}" style="width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800; border: 1px solid var(--neo-border); color: var(--neo-text-muted); background: rgba(255,255,255,0.03);">{{ loop.index }}</span>
+                        <span class="lb-name" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main); font-weight: 600; flex: 1;">{{ label }}</span>
+                        <span class="lb-score" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-blue); font-weight: 700;">{{ top_users_data[loop.index0] }} ops</span>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>
   </div>
 
   <!-- ======== ZONE 0: PERSONNEL COMMAND (Operator Table — Bottom) ======== -->
-  <div id="zone-personnel" class="zone-personnel zone-active">
-      <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span class="material-symbols-outlined">dns</span>
+  <div id="zone-personnel" class="bento-grid zone-active" style="margin-top: 1.5rem;">
+      <div class="bento-tile span-12">
+        <div class="tile-header">
+          <div class="tile-title">
+            <i class="material-symbols-outlined">dns</i>
             Operator Database Management
           </div>
-          <span class="panel-badge" style="background: rgba(99,102,241,0.1); color: var(--neo-purple); border: 1px solid rgba(99,102,241,0.2);">{{ users|length }} Enrolled</span>
+          <div class="badge badge-secure">{{ users|length }} Operators Enrolled</div>
         </div>
-        <div class="feed-scroll" style="max-height: 500px;">
-          <table class="ow-table">
-            <thead>
-              <tr>
-                <th style="width:40px;">ID</th>
-                <th>Identity</th>
-                <th>Role</th>
-                <th>Context</th>
-                <th>Scans</th>
-                <th>Status</th>
-                <th style="text-align:right;">Access Controls</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for user in users %}
-              <tr>
-                <td style="color:var(--neo-text-dim);">#{{ user.id }}</td>
-                <td>
-                  <div class="user-identity">
-                    <div class="user-avatar">{{ user.username[:2] }}</div>
-                    <div class="user-identity-text">
-                      <div class="user-name">{{ user.username }}</div>
-                      <div class="user-email">{{ user.email }}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  {% if user.is_admin %}
-                    <span class="role-chip role-admin">ADMIN</span>
-                  {% else %}
-                    <span class="role-chip role-user">OPERATOR</span>
-                  {% endif %}
-                </td>
-                <td>
-                  {% if user.organization %}
-                    <div style="font-size:0.75rem;">{{ user.organization }}</div>
-                    <div style="font-size:0.6rem; color:var(--neo-text-dim);">{{ user.job_title }}</div>
-                  {% else %}
-                    <span style="color:var(--neo-text-dim);">—</span>
-                  {% endif %}
-                </td>
-                <td style="font-weight:700;">{{ user.total_scans }}</td>
-                <td>
-                  {% if user.is_active_account %}
-                    <span class="status-badge st-active">ACTIVE</span>
-                  {% else %}
-                    <span class="status-badge st-suspended">SUSPENDED</span>
-                  {% endif %}
-                </td>
-                <td style="text-align:right;">
-                  <div class="action-group" style="justify-content:flex-end;">
-                    <form action="{{ url_for('auth.toggle_user_status', user_id=user.id) }}" method="POST">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                      <button type="submit" class="action-btn btn-suspend" title="{% if user.is_active_account %}Suspend{% else %}Activate{% endif %}">
-                        <span class="material-symbols-outlined">{% if user.is_active_account %}block{% else %}check_circle_outline{% endif %}</span>
-                      </button>
-                    </form>
-                    <form action="{{ url_for('auth.toggle_user_role', user_id=user.id) }}" method="POST">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                      <button type="submit" class="action-btn btn-promote" title="Authority Toggle">
-                        <span class="material-symbols-outlined">shield_person</span>
-                      </button>
-                    </form>
-                    <form action="{{ url_for('auth.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('DANGER: This will permanently wipe operator {{ user.username }}. Proceed?');">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                      <button type="submit" class="action-btn btn-delete" title="Purge Record">
-                        <span class="material-symbols-outlined">delete_forever</span>
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+        <div class="tile-content">
+            <div class="hud-scroll" style="max-height: 500px; overflow-y: auto;">
+              <table class="neo-table">
+                <thead>
+                  <tr>
+                    <th style="width:40px;">ID</th>
+                    <th>Identity</th>
+                    <th>Role</th>
+                    <th>Context</th>
+                    <th>Scans</th>
+                    <th>Status</th>
+                    <th style="text-align:right;">Access Controls</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for user in users %}
+                  <tr>
+                    <td style="color:var(--neo-text-muted); font-family: var(--font-mono);">#{{ user.id }}</td>
+                    <td>
+                      <div class="user-identity" style="display: flex; align-items: center; gap: 0.6rem;">
+                        <div class="user-avatar" style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; border: 1px solid var(--neo-border); background: rgba(59, 130, 246, 0.08); color: var(--neo-blue); flex-shrink: 0;">{{ user.username[:2] }}</div>
+                        <div class="user-identity-text">
+                          <div class="user-name" style="font-weight: 700; color: var(--neo-text-main); font-family: var(--font-mono); font-size: 0.8rem;">{{ user.username }}</div>
+                          <div class="user-email" style="font-size: 0.65rem; color: var(--neo-text-muted);">{{ user.email }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      {% if user.is_admin %}
+                        <span class="badge" style="color: var(--neo-purple); border-color: var(--neo-purple); background: rgba(139, 92, 246, 0.1);">ADMIN</span>
+                      {% else %}
+                        <span class="badge" style="color: var(--neo-blue); border-color: var(--neo-blue); background: rgba(59, 130, 246, 0.1);">OPERATOR</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if user.organization %}
+                        <div style="font-size:0.75rem; color: var(--neo-text-main);">{{ user.organization }}</div>
+                        <div style="font-size:0.6rem; color:var(--neo-text-muted);">{{ user.job_title }}</div>
+                      {% else %}
+                        <span style="color:var(--neo-text-muted);">—</span>
+                      {% endif %}
+                    </td>
+                    <td style="font-weight:700; color: var(--neo-text-main); font-family: var(--font-mono);">{{ user.total_scans }}</td>
+                    <td>
+                      {% if user.is_active_account %}
+                        <span class="badge badge-secure">ACTIVE</span>
+                      {% else %}
+                        <span class="badge badge-critical">SUSPENDED</span>
+                      {% endif %}
+                    </td>
+                    <td style="text-align:right;">
+                      <div class="action-group" style="justify-content:flex-end; display: flex; gap: 0.5rem;">
+                        <form action="{{ url_for('auth.toggle_user_status', user_id=user.id) }}" method="POST">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                          <button type="submit" class="action-btn" title="{% if user.is_active_account %}Suspend{% else %}Activate{% endif %}">
+                            <span class="material-symbols-outlined">{% if user.is_active_account %}block{% else %}check_circle_outline{% endif %}</span>
+                          </button>
+                        </form>
+                        <form action="{{ url_for('auth.toggle_user_role', user_id=user.id) }}" method="POST">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                          <button type="submit" class="action-btn" title="Authority Toggle">
+                            <span class="material-symbols-outlined">shield_person</span>
+                          </button>
+                        </form>
+                        <form action="{{ url_for('auth.delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('DANGER: This will permanently wipe operator {{ user.username }}. Proceed?');">
+                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                          <button type="submit" class="action-btn btn-delete" title="Purge Record">
+                            <span class="material-symbols-outlined">delete_forever</span>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
         </div>
       </div>
   </div></div>

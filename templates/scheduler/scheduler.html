@@ -946,6 +946,17 @@
         .arsenal-search, h3.arsenal-title { grid-column: 1 / -1; }
         .config-drawer { width: 100vw; max-width: 100vw; }
       }
+
+      @media (max-width: 768px) {
+        .dashboard-wrapper { padding: 0.5rem !important; }
+        .dash-panel { padding: 1.25rem !important; }
+        .scanner-title-area h1 { font-size: 1.4rem !important; margin-bottom: 0.25rem !important; }
+        .scanner-title-area p { font-size: 0.6rem !important; gap: 8px !important; }
+        .scanner-title-area p span { width: 16px !important; }
+        .flex.gap-3 { gap: 0.5rem !important; }
+        .btn-dash { height: 36px !important; padding: 0 0.75rem !important; }
+        .btn-dash span:not(.material-symbols-outlined) { display: none; }
+      }
     </style>
 {% endblock %}
 
@@ -986,27 +997,27 @@
   <div class="dashboard-wrapper">
     <!-- Header card -->
     <!-- Header Area: Ultra-Condensed -->
-    <div class="dash-panel" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 0.75rem 2rem; border-radius: var(--radius-lg); margin-top: 0; border: 1px solid var(--neo-border);">
-      <div class="scanner-title-area">
-        <h1 class="text-gradient" style="margin: 0; font-size: 1.5rem; letter-spacing: -0.04em; font-weight: 900; text-transform: uppercase;">Mission <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Orchestrator</span></h1>
-        <p style="color: var(--neo-text-muted); font-size: 0.65rem; font-weight: 500; font-family: var(--font-mono); margin: 2px 0 0 0; display: flex; align-items: center; gap: 8px; opacity: 0.7;">
-          <span style="height: 1px; width: 16px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
+    <div class="dash-panel" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-radius: 16px; border: 1px solid var(--neo-border);">
+      <div class="scanner-title-area" style="margin: 0;">
+        <h1 class="text-gradient" style="margin-bottom: 0.25rem; font-size: 1.75rem; letter-spacing: -0.02em; font-weight: 400;">Mission <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Orchestrator</span></h1>
+        <p style="color: var(--neo-text-muted); font-size: 0.75rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 12px; opacity: 0.8;">
+          <span style="height: 1px; width: 24px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
           Automated Security &amp; Monitoring
         </p>
       </div>
       
       <div class="flex gap-3">
-        <button class="btn-dash" onclick="openGlobalReportsDrawer()" style="background: rgba(59,130,246,0.05); height: 32px; border-radius: 6px; padding: 0 0.75rem; border-color: rgba(59, 130, 246, 0.3);">
-          <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">auto_stories</span>
-          <span style="font-size: 0.65rem;">Archive</span>
+        <button class="btn-dash" onclick="openGlobalReportsDrawer()" style="background: rgba(59,130,246,0.05); height: 36px; border-radius: 6px; padding: 0 0.85rem; border-color: rgba(59, 130, 246, 0.3);">
+          <span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--neo-blue);">auto_stories</span>
+          <span style="font-size: 0.7rem;">Archive</span>
         </button>
-        <button id="refreshJobsBtn" class="btn-dash" style="background: rgba(255,255,255,0.03); height: 32px; border-radius: 6px; padding: 0 0.75rem;">
-          <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">sync</span>
-          <span style="font-size: 0.65rem;">Sync</span>
+        <button id="refreshJobsBtn" class="btn-dash" style="background: rgba(255,255,255,0.03); height: 36px; border-radius: 6px; padding: 0 0.85rem;">
+          <span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--neo-blue);">sync</span>
+          <span style="font-size: 0.7rem;">Sync</span>
         </button>
-        <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.03); height: 32px; border-radius: 6px; padding: 0 0.75rem;">
-          <span class="material-symbols-outlined" style="font-size: 1rem;">home</span>
-          <span style="font-size: 0.65rem;">Hub</span>
+        <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.03); height: 36px; border-radius: 6px; padding: 0 0.85rem;">
+          <span class="material-symbols-outlined" style="font-size: 1.1rem;">home</span>
+          <span style="font-size: 0.7rem;">Hub</span>
         </a>
       </div>
     </div>

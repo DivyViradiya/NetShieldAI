@@ -1227,6 +1227,33 @@
                 <option value="2">RISK 2</option>
                 <option value="3" selected>RISK 3</option>
             </select>
+            <button id="toggleAdvancedOptionsBtn" class="btn-dash btn-secondary" title="Advanced Options" style="height: 38px; padding: 0 10px; border-radius: 4px;">
+                <span class="material-symbols-outlined" style="font-size: 1.2rem;">tune</span>
+            </button>
+        </div>
+
+        <div id="advancedScanOptions" class="hidden" style="margin-top: 0.5rem; display: flex; gap: 0.5rem; width: 100%;">
+             <select id="scanLevel" class="timing-select" title="Scan Level" style="flex: 1; height: 38px;">
+                 <option value="1">LEVEL 1 (Basic)</option>
+                 <option value="2">LEVEL 2</option>
+                 <option value="3" selected>LEVEL 3 (Standard)</option>
+                 <option value="4">LEVEL 4</option>
+                 <option value="5">LEVEL 5 (Aggressive)</option>
+             </select>
+             <select id="tamperScript" class="timing-select" title="Tamper Script" style="flex: 1; height: 38px;">
+                 <option value="">NO TAMPER</option>
+                 <option value="space2comment" selected>SPACE2COMMENT</option>
+                 <option value="randomcase">RANDOMCASE</option>
+                 <option value="apostrophemask">APOSTROPHEMASK</option>
+                 <option value="charencode">CHARENCODE</option>
+             </select>
+             <select id="scanTechnique" class="timing-select" title="Technique" style="flex: 1; height: 38px;">
+                 <option value="BEUSTQ" selected>ALL (BEUSTQ)</option>
+                 <option value="B">BOOLEAN (B)</option>
+                 <option value="E">ERROR (E)</option>
+                 <option value="U">UNION (U)</option>
+                 <option value="T">TIME (T)</option>
+             </select>
         </div>
 
         <div class="control-row-bottom" style="margin-top: 0.5rem; justify-content: space-between; align-items: center;">
