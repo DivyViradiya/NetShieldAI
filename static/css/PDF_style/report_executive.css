@@ -4,71 +4,253 @@
    Requires: report_base.css
    ============================================================= */
 
+/* Executive content container */
+.executive-content {
+    margin-top: 20px;
+    padding: 0 10px;
+}
+
 /* Full-width prose content from Markdown */
 .summary-markdown-content {
     font-size: 10pt;
     line-height: 1.75;
-    color: var(--text-primary);
+    color: var(--neo-text-main);
 }
 
-/* Markdown-generated elements */
+/* --- ARCHETYPE 1: Section Dividers --- */
+.llm-section-divider {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 40px 0 25px 0;
+}
+.llm-divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--neo-border) 0%, transparent 100%);
+}
+.llm-divider-line-rev {
+    background: linear-gradient(90deg, transparent 0%, var(--neo-border) 100%);
+}
+.llm-section-pill {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--brand-blue-glow);
+    letter-spacing: 0.12em;
+    border: 1px solid var(--brand-blue-glow);
+    padding: 3px 12px;
+    border-radius: 20px;
+    background: var(--brand-bg);
+    white-space: nowrap;
+}
+.llm-section-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--neo-text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+/* --- ARCHETYPE 2: Table Panels --- */
+.llm-table-panel {
+    background: var(--brand-bg);
+    border: 1px solid var(--neo-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin: 25px 0;
+}
+.llm-table-panel-header {
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--neo-border);
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--neo-text-sub);
+    background: #f1f5f9;
+}
+.llm-table-panel table {
+    border: none !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+.llm-table-panel td, .llm-table-panel th {
+    border-left: none !important;
+    border-right: none !important;
+}
+
+/* --- ARCHETYPE 3: Finding Cards (HUD Style) --- */
+.llm-finding-card {
+    position: relative;
+    border: 1px solid var(--neo-border);
+    margin: 30px 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #fff;
+    page-break-inside: avoid;
+}
+.llm-finding-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--card-accent, var(--brand-blue));
+}
+.llm-finding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--neo-border);
+}
+.llm-finding-meta {
+    display: flex;
+    flex-direction: column;
+}
+.llm-finding-number {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--neo-text-sub);
+    letter-spacing: 0.1em;
+}
+.llm-finding-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--neo-text-main);
+}
+.llm-severity-badge {
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 6px;
+    text-transform: uppercase;
+    border: 1px solid var(--card-accent, var(--neo-border));
+    color: var(--card-accent, var(--neo-text-main));
+    background: #fff;
+}
+.llm-finding-body {
+    padding: 20px;
+    font-size: 0.95rem;
+    color: var(--neo-text-main);
+    line-height: 1.6;
+}
+
+/* Severity specific colors for finding cards */
+.sev-critical { --card-accent: var(--risk-critical); }
+.sev-high     { --card-accent: var(--risk-high); }
+.sev-medium   { --card-accent: var(--risk-medium); }
+.sev-low      { --card-accent: var(--risk-low); }
+.sev-info     { --card-accent: var(--risk-info); }
+
+/* --- ARCHETYPE 4: Risk Label Badges --- */
+.llm-risk-label {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: 1px solid var(--neo-border);
+}
+.llm-risk-label.critical { color: var(--risk-critical); background: #fee2e2; border-color: #fecaca; }
+.llm-risk-label.high     { color: var(--risk-high);     background: #fff1f2; border-color: #fda4af; }
+.llm-risk-label.moderate { color: var(--risk-medium);   background: #fff7ed; border-color: #fed7aa; }
+.llm-risk-label.low      { color: var(--risk-low);      background: #f0fdf4; border-color: #bbf7d0; }
+.llm-risk-label.safe     { color: var(--risk-info);     background: #f0f9ff; border-color: #bae6fd; }
+
+/* --- ARCHETYPE 6: Score Fill Bars --- */
+.llm-score-cell {
+    position: relative;
+    padding: 0 !important;
+}
+.llm-score-bar-container {
+    padding: 12px 15px;
+    position: relative;
+    z-index: 1;
+}
+.llm-score-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: rgba(0, 82, 204, 0.1);
+    z-index: -1;
+}
+
+/* Standard Markdown elements inside summary */
 .summary-markdown-content h1,
 .summary-markdown-content h2 {
-    font-size: 13pt;
+    font-size: 1.3rem;
     font-weight: 800;
-    color: var(--brand-primary);
-    margin: 24px 0 10px 0;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border-light);
-    text-transform: none;
-    letter-spacing: normal;
-    background: none;
-    border-left: none;
-    padding-left: 0;
+    color: var(--brand-blue);
+    margin: 30px 0 15px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--neo-border);
 }
 
 .summary-markdown-content h3 {
-    font-size: 10pt;
+    font-size: 1rem;
     font-weight: 800;
-    color: var(--brand-primary);
-    margin: 20px 0 8px 0;
-    padding: 0;
-    background: none;
-    border-left: none;
-    text-transform: none;
-    letter-spacing: normal;
+    color: var(--brand-blue-glow);
+    margin: 25px 0 10px 0;
+    border-left: 5px solid var(--brand-blue-glow);
+    padding-left: 15px;
 }
 
 .summary-markdown-content table {
-    margin: 16px 0;
+    width: 100%;
+    margin: 20px 0;
+    border-collapse: collapse;
 }
 
-.summary-markdown-content ul,
-.summary-markdown-content ol {
-    margin: 8px 0 14px 0;
-    padding-left: 22px;
+.summary-markdown-content th {
+    background: #f1f5f9;
+    color: var(--neo-text-sub);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    text-align: left;
+    font-weight: 800;
+    border: 1px solid var(--neo-border);
 }
 
-.summary-markdown-content li { margin-bottom: 5px; }
-
-.summary-markdown-content code {
-    font-size: 8pt;
+.summary-markdown-content td {
+    padding: 10px 15px;
+    border: 1px solid var(--neo-border);
+    font-size: 0.9rem;
+    color: var(--neo-text-main);
 }
 
 .summary-markdown-content blockquote {
-    margin: 12px 0;
-    padding: 10px 14px;
-    background: var(--brand-accent-light);
-    border-left: 4px solid var(--brand-accent);
-    border-radius: var(--radius-sm);
-    color: var(--brand-primary);
+    margin: 20px 0;
+    padding: 15px 20px;
+    background: var(--brand-bg);
+    border-left: 5px solid var(--brand-blue);
+    border-radius: 4px;
     font-style: italic;
+    color: var(--neo-text-sub);
 }
 
-/* Executive wrapper card — spacious */
-.executive-card {
-    padding: 28px 30px;
-    background: var(--bg-page);
-    border: 1px solid var(--border-medium);
+.summary-markdown-content code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.summary-markdown-content pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 20px;
     border-radius: var(--radius-md);
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.summary-markdown-content pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
 }

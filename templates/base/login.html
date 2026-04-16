@@ -7,173 +7,382 @@
 {% block extra_css %}
   <style>
     :root {
-      --neo-card: rgba(10, 10, 12, 0.85);
-      --neo-border: rgba(255, 255, 255, 0.1);
-      --neo-text-primary: #ffffff;
-      --neo-text-secondary: #888888;
-      --neo-text-label: #555555;
+      --neo-card: rgba(10, 10, 12, 0.4);
+      --neo-border: rgba(255, 255, 255, 0.08);
       --neo-blue: #3b82f6;
-      --neo-card-hover: rgba(15, 15, 18, 0.6);
-      --bg-color: #000000;
+      --neo-text-primary: #f8fafc;
+      --neo-text-secondary: #94a3b8;
+      --neo-text-tertiary: #64748b;
       --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-    }
-    body.light-mode {
-      --neo-card: #ffffff;
-      --neo-border: #cbd5e1;
-      --neo-text-primary: #0f172a;
-      --neo-text-secondary: #1e293b;
-      --neo-text-label: #64748b;
-      --neo-blue: #4f46e5;
-      --neo-card-hover: #f8faff;
-      --bg-color: #f1f5f9;
-    }
-    /* Scope IBM Plex Sans to the card only — navbar unaffected */
-    #login-card,
-    #login-card * {
-      font-family: var(--font-ui);
-    }
-    body.light-mode .alert-danger {
-      background-color: rgba(220, 38, 38, 0.1) !important;
-      color: #dc2626 !important;
-      border-color: #dc2626 !important;
-    }
-    body.light-mode .alert-info {
-      background-color: rgba(37, 99, 235, 0.1) !important;
-      color: #2563eb !important;
-      border-color: #2563eb !important;
-    }
-    body.light-mode .md\:flex.w-1\/2 {
-      background-image: none !important;
-      background-color: #f1f5f9 !important;
+      --font-mono: 'JetBrains Mono', monospace;
+      --glass-blur: blur(24px);
     }
     
-    /* ── Mobile-only fixes ── */
-    @media (max-width: 768px) {
-      .min-h-\[85vh\] {
-        min-height: unset !important;
-        padding: 1.25rem 1rem !important;
-        align-items: flex-start !important;
-      }
-      .max-w-\[1000px\] {
-        min-height: unset !important;
-        border-radius: 14px !important;
-      }
-      .w-full.md\:w-1\/2.p-8 {
-        padding: 1.5rem 1.25rem !important;
-      }
-      #loginForm ~ p {
-        margin-top: 1rem !important;
-      }
-      @media (max-width: 400px) {
-        .flex.items-center.justify-between.text-xs {
-          flex-direction: column !important;
-          align-items: flex-start !important;
-          gap: 0.5rem !important;
-        }
-      }
-      .grid.grid-cols-2.gap-4 {
-        grid-template-columns: 1fr !important;
-        gap: 0.5rem !important;
-      }
+    body.light-mode {
+      --neo-card: rgba(255, 255, 255, 0.7);
+      --neo-border: #cbd5e1;
+      --neo-text-primary: #0f172a;
+      --neo-text-secondary: #475569;
+      --neo-text-tertiary: #94a3b8;
+      --neo-blue: #4f46e5;
+    }
+
+    /* Force Full Screen & No Scroll */
+    html, body {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    footer {
+      display: none !important;
+    }
+
+    .main-content {
+      height: 100vh !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden;
+    }
+
+    .login-portal {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg-primary);
+      position: relative;
+    }
+
+    /* Left Side: Immersive Visuals */
+    .portal-visual {
+      flex: 1.2;
+      position: relative;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 4rem;
+      border-right: 1px solid var(--neo-border);
+    }
+
+    .portal-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(var(--neo-text-tertiary) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.15;
+      z-index: 1;
+    }
+
+    .portal-visual .content-wrap {
+      position: relative;
+      z-index: 10;
+    }
+
+    .visual-tagline {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.4em;
+      color: var(--neo-blue);
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+
+    .visual-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1;
+      font-weight: 800;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      letter-spacing: -0.04em;
+    }
+
+    .visual-title span {
+      display: block;
+      color: var(--neo-text-tertiary);
+    }
+
+    .visual-description {
+      font-size: 1.1rem;
+      color: var(--neo-text-secondary);
+      max-width: 480px;
+      line-height: 1.6;
+      border-left: 3px solid var(--neo-blue);
+      padding-left: 1.5rem;
+    }
+
+    /* Right Side: Simple Login Flow */
+    .portal-auth {
+      flex: 0.8;
+      background: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem;
+      position: relative;
+      backdrop-filter: var(--glass-blur);
+    }
+
+    .auth-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .auth-header h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--neo-text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+      color: var(--neo-text-tertiary);
+      font-size: 0.9rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--neo-text-tertiary);
+      margin-bottom: 0.5rem;
+      display: block;
+      letter-spacing: 0.1em;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid var(--neo-border) !important;
+      color: var(--neo-text-primary) !important;
+      padding: 0.85rem 1rem !important;
+      border-radius: 4px !important;
+      font-family: var(--font-ui);
+      transition: all 0.3s ease;
+    }
+
+    body.light-mode .form-input {
+      background: #fff !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    .form-input:focus {
+      border-color: var(--neo-blue) !important;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+
+    .btn-auth-primary {
+      width: 100%;
+      background: var(--neo-blue);
+      color: #fff;
+      font-weight: 700;
+      padding: 0.85rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      border: none;
+      margin-top: 1rem;
+    }
+
+    .btn-auth-primary:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .social-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn-social {
+      background: transparent;
+      border: 1px solid var(--neo-border);
+      color: var(--neo-text-secondary);
+      padding: 0.65rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-social:hover {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--neo-text-tertiary);
+      color: var(--neo-text-primary);
+    }
+
+    .divider {
+      position: relative;
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: var(--neo-border);
+    }
+
+    .divider span {
+      position: relative;
+      background: var(--bg-secondary);
+      padding: 0 1rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--neo-text-tertiary);
+      letter-spacing: 0.1em;
+    }
+
+    .auth-footer {
+      position: absolute;
+      bottom: 2rem;
+      left: 4rem;
+      right: 4rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--neo-text-tertiary);
+    }
+
+    .auth-footer a {
+      color: var(--neo-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Flash Messages Overlay */
+    .flash-overlay {
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .portal-visual { display: none; }
+      .portal-auth { flex: 1; padding: 2rem; }
     }
   </style>
 {% endblock %}
 
 {% block content %}
-  <div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
-    <div id="login-card" class="relative z-10 flex w-full max-w-[1000px] min-h-[600px] h-auto bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden transition-all duration-700 ease-in-out">
-      <div class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[var(--bg-color)] bg-[radial-gradient(var(--neo-text-label)_1px,transparent_1px)] [background-size:20px_20px] border-r border-[var(--neo-border)]">
-        <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-color)] via-transparent to-transparent"></div>
+<div class="login-portal">
+  <!-- Interactive Visual Panel -->
+  <div class="portal-visual">
+    <div class="logo-wrap" style="position: relative; z-index: 10;">
+      <img src="{{ url_for('static', filename='images/NS_Logo.png') }}" alt="NetShieldAI Logo" class="h-20 w-auto dark-logo" />
+      <img src="{{ url_for('static', filename='images/NS_Logo_pdf.png') }}" alt="NetShieldAI Logo" class="h-20 w-auto light-logo" />
+    </div>
 
-        <div class="relative z-10">
-          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg dark-logo" />
-          <img src="{{ url_for('static', filename='images/NetShieldAI_logo_PDF.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg light-logo" />
-        </div>
-
-        <div class="relative z-10 mb-8">
-          <h2 class="text-3xl font-bold text-[var(--neo-text-primary)] mb-4 tracking-tight drop-shadow-md" style="font-size: clamp(1.5rem, 4vw, 2.5rem);">Secure.<br />Autonomous.<br />Verified.</h2>
-          <p class="text-[var(--neo-text-secondary)] text-sm max-w-xs border-l-2 border-[var(--neo-blue)] pl-4">Monitor threats, analyze vulnerabilities, and secure infrastructure in real time.</p>
-        </div>
-      </div>
-
-      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[var(--neo-card)] flex flex-col justify-center relative">
-        <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2" style="font-size: clamp(1.25rem, 3vw, 1.75rem);">Welcome back</h3>
-        <p class="text-[var(--neo-text-secondary)] text-sm mb-8">Please enter your details to sign in.</p>
-
-        {% with messages=get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <div class="mb-6 space-y-2">
-              {% for category, message in messages %}
-                <div class="p-3 rounded text-sm border 
-                  {% if category == 'danger' %}
-                    
-                    bg-red-900/20 text-red-400 border-red-900 alert-danger
-
-                  {% else %}
-                    
-                    bg-blue-900/20 text-blue-400 border-blue-900 alert-info
-
-                  {% endif %}">{{ message }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
-
-        <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-5" id="loginForm">
-          {{ form.hidden_tag() }}
-
-          <input type="hidden" name="next" value="{{ request.args.get('next', '') }}" />
-
-          <div>{{ form.username.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-            {{ form.username(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='Enter your ID') }}</div>
-
-          <div>{{ form.password.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-            {{ form.password(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)]', placeholder='••••••••') }}</div>
-
-          <div class="flex items-center justify-between text-xs pt-1">
-            <label class="flex items-center gap-2 text-[var(--neo-text-secondary)] cursor-pointer hover:text-[var(--neo-text-primary)] transition"><input type="checkbox" class="rounded border-[var(--neo-border)] bg-[var(--bg-color)] text-[var(--neo-blue)] focus:ring-0 focus:ring-offset-0" />Remember me</label>
-            <a href="{{ url_for('auth.forgot_password') }}" class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] transition opacity-80 hover:opacity-100">Forgot password?</a>
-          </div>
-
-          <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"><span>Sign In</span></button>
-
-          <div class="relative py-4">
-            <div class="absolute inset-0 flex items-center">
-              <span class="w-full border-t border-[var(--neo-border)]"></span>
-            </div>
-            <div class="relative flex justify-center text-xs uppercase">
-              <span class="bg-[var(--neo-card)] px-4 text-[var(--neo-text-label)] font-medium z-10">Or continue with</span>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <button onclick="window.location.href='{{ url_for('auth.login_google') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition">Google</button>
-            <button onclick="window.location.href='{{ url_for('auth.login_github') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition">GitHub</button>
-          </div>
-        </form>
-
-        <p class="text-sm text-[var(--neo-text-secondary)] mt-8 text-center">
-          Don’t have an account? <a href="{{ url_for('auth.register') }}" class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] font-medium transition opacity-80 hover:opacity-100">Create account</a>
-        </p>
-      </div>
+    <div class="content-wrap">
+      <h1 class="visual-title" style="font-size: 2.5rem; margin-bottom: 0.5rem;">NetShield<b>AI</b></h1>
+      <p class="visual-description" style="border: none; padding-left: 0; font-size: 0.9rem; opacity: 0.7;">
+        Autonomous Security Overwatch & Intelligence.
+      </p>
     </div>
   </div>
 
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
-      e.preventDefault()
-      const btn = document.getElementById('submitBtn')
-      const card = document.getElementById('login-card')
-    
-      const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`
-      btn.innerHTML = spinner + 'Authenticating...'
-      btn.classList.add('opacity-75', 'cursor-not-allowed')
-    
-      card.classList.add('opacity-0', 'scale-95')
-    
-      setTimeout(() => {
-        e.target.submit()
-      }, 600)
-    })
-  </script>
+  <!-- Focused Auth Panel -->
+  <div class="portal-auth">
+    <div class="auth-header">
+      <h3>Welcome back</h3>
+      <p>Please log in to your account.</p>
+    </div>
+
+    {% with messages=get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-overlay space-y-2">
+          {% for category, message in messages %}
+            <div class="p-3 rounded text-sm border 
+              {% if category == 'danger' %}
+                bg-red-900/10 text-red-500 border-red-900/50
+              {% else %}
+                bg-blue-900/10 text-blue-500 border-blue-900/50
+              {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm">
+      {{ form.hidden_tag() }}
+      <input type="hidden" name="next" value="{{ request.args.get('next', '') }}" />
+
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        {{ form.username(class='form-input', placeholder='Enter your username', id='username') }}
+      </div>
+
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label class="form-label" for="password">Password</label>
+          <a href="{{ url_for('auth.forgot_password') }}" style="font-size: 0.65rem; color: var(--neo-blue); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Forgot?</a>
+        </div>
+        {{ form.password(class='form-input', placeholder='••••••••', id='password', type='password') }}
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem;">
+        <input type="checkbox" id="remember" class="w-4 h-4 rounded border-var(--neo-border) bg-transparent text-var(--neo-blue) focus:ring-0">
+        <label for="remember" style="font-size: 0.75rem; color: var(--neo-text-secondary); cursor: pointer;">Remember me</label>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-auth-primary">
+        <span>Log In</span>
+        <span class="material-symbols-outlined" style="font-size: 1.1rem;">login</span>
+      </button>
+
+      <div class="divider">
+        <span>Or log in with</span>
+      </div>
+
+      <div class="social-grid">
+        <button onclick="window.location.href='{{ url_for('auth.login_google') }}'" type="button" class="btn-social">
+          Google
+        </button>
+        <button onclick="window.location.href='{{ url_for('auth.login_github') }}'" type="button" class="btn-social">
+          GitHub
+        </button>
+      </div>
+    </form>
+
+    <div class="auth-footer">
+      New user? <a href="{{ url_for('auth.register') }}">Create an account</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    const btn = document.getElementById('submitBtn');
+    const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+    btn.innerHTML = spinner + 'Authorizing...';
+    btn.classList.add('opacity-75', 'cursor-not-allowed');
+  });
+</script>
 {% endblock %}

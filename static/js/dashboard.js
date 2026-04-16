@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   portListEl.innerHTML += `
                     <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
                         <td style="padding: 6px 0; color: ${riskColor}; font-weight: 700;">${port}</td>
-                        <td style="padding: 6px 0; color: #eee; opacity: 0.9;">${desc}</td>
+                        <td style="padding: 6px 0; color: var(--neo-text-primary); opacity: 0.9;">${desc}</td>
                         <td style="padding: 6px 0; text-align: right; color: ${riskColor}; opacity: 0.8; font-size: 0.6rem;">[${priority}]</td>
                     </tr>
                   `;
@@ -141,8 +141,8 @@ document.addEventListener("DOMContentLoaded", function () {
                   const color = risk.risk === "High" ? "var(--neo-red)" : (risk.risk === "Medium" ? "var(--neo-amber)" : "var(--neo-blue)");
                   listEl.innerHTML += `
                     <div style="padding: 0.4rem; background: rgba(255,255,255,0.03); border-radius: 4px; border-left: 2px solid ${color}; margin-bottom: 4px;">
-                       <div style="font-weight: 700; font-size: 0.65rem; color: #fff;">${risk.name}</div>
-                       <div style="font-size: 0.55rem; color: #aaa; margin-top: 1px;">PRIORITY: ${risk.tctr_priority ? risk.tctr_priority.toFixed(2) : "1.00"}</div>
+                       <div style="font-weight: 700; font-size: 0.65rem; color: var(--neo-text-primary);">${risk.name}</div>
+                       <div style="font-size: 0.55rem; color: var(--neo-text-secondary); margin-top: 1px;">PRIORITY: ${risk.tctr_priority ? risk.tctr_priority.toFixed(2) : "1.00"}</div>
                     </div>
                   `;
                 });
@@ -233,10 +233,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       if (emptyLabel) emptyLabel.classList.add('hidden');
 
+      const isLight = document.body.classList.contains('light-mode');
+      const fontColor = isLight ? '#0f172a' : '#ffffff';
+      const edgeColor = isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)';
       const options = {
           nodes: {
               shape: 'dot',
-              font: { face: 'Inter', size: 9, color: '#ffffff' },
+              font: { face: 'Inter', size: 9, color: fontColor },
               scaling: { min: 8, max: 20 },
               borderWidth: 0,
               shadow: { enabled: true, color: 'rgba(0,0,0,0.5)', size: 5 }
@@ -246,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function () {
               external: { color: { background: 'var(--neo-red)', highlight: '#f87171' } }
           },
           edges: {
-              color: { color: 'rgba(255,255,255,0.1)', highlight: 'var(--neo-blue)' },
+              color: { color: edgeColor, highlight: 'var(--neo-blue)' },
               smooth: { type: 'continuous', roundness: 0.5 },
               width: 1
           },
@@ -377,7 +380,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <span style="color: ${severityColor}; font-weight: 800; font-size: 0.6rem;">[${f.severity}] LINE ${f.line}</span>
                             <span style="color: var(--neo-text-muted); font-size: 0.55rem;">${f.file.split('/').pop()}</span>
                         </div>
-                        <div style="color: #eee; font-size: 0.65rem; line-height: 1.3; font-weight: 500;">${f.message}</div>
+                        <div style="color: var(--neo-text-primary); font-size: 0.65rem; line-height: 1.3; font-weight: 500;">${f.message}</div>
                         <div style="font-size: 0.55rem; color: var(--neo-text-muted); opacity: 0.7;">PATTERN_DETECTED_IN_SOURCE</div>
                     </div>
                   `;
@@ -494,12 +497,12 @@ document.addEventListener("DOMContentLoaded", function () {
             if (sessionsArr.length > 0) {
               sessionsArr.slice(0, 4).forEach(session => {
                 container.innerHTML += `
-                  <a href="/chatbot/?session_id=${session.id}" class="bento-tile" style="padding: 1rem; text-decoration: none; border: 1px solid var(--neo-border); background: rgba(255,255,255,0.02); transition: all 0.2s ease;">
+                  <a href="/chatbot/?session_id=${session.session_id}" class="bento-tile" style="padding: 1rem; text-decoration: none; border: 1px solid var(--neo-border); background: rgba(255,255,255,0.02); transition: all 0.2s ease;">
                      <div style="display: flex; align-items: center; gap: 0.75rem;">
                          <i class="material-symbols-outlined" style="color: var(--neo-purple);">chat_bubble</i>
                          <div style="flex: 1;">
-                            <div style="font-size: 0.75rem; font-weight: 700; color: var(--neo-text-main);">${session.name || "Unnamed Session"}</div>
-                            <div style="font-size: 0.6rem; color: var(--neo-text-muted); margin-top: 2px;">${session.created_at || "Recent"}</div>
+                            <div style="font-size: 0.75rem; font-weight: 700; color: var(--neo-text-main);">${session.title || "Unnamed Session"}</div>
+                            <div style="font-size: 0.6rem; color: var(--neo-text-muted); margin-top: 2px;">${session.subtitle || "Recent"}</div>
                          </div>
                          <i class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">arrow_forward</i>
                      </div>
@@ -762,7 +765,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <circle cx="30" cy="30" r="25" fill="none" stroke="var(--neo-blue)" stroke-width="4" 
                                 stroke-dasharray="${dashArray} 157" stroke-linecap="round" style="transition: stroke-dasharray 1.5s ease; filter: drop-shadow(0 0 3px var(--neo-blue));"></circle>
                         </svg>
-                        <div style="position: absolute; top:0; left:0; width:100%; height:100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 800; color: #fff;">
+                        <div style="position: absolute; top:0; left:0; width:100%; height:100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 800; color: var(--neo-text-primary);">
                             ${Math.round(score)}%
                         </div>
                     </div>

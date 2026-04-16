@@ -118,35 +118,62 @@ document.addEventListener('DOMContentLoaded', () => {
     function appendLog(message) {
         if (!elements.logOutput) return;
 
-        // Cleanup timestamps from message
-        message = message.replace(/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/, '');
-        message = message.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '');
-        message = message.replace(/(\[[A-Z]+\])\s*\1/g, '$1');
-        message = message.replace(/\s\s+/g, ' ');
-        message = message.trim();
-
-        if (!message || message === '|' || message.includes('deprecated method')) return;
-
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        let contentStyle = 'color:#999';
-        if (message.includes('[!]') || message.toLowerCase().includes('error')) contentStyle = 'color:var(--neo-red)'; 
-        else if (message.includes('[+]') || message.toLowerCase().includes('success')) contentStyle = 'color:var(--neo-green)'; 
-        else if (message.includes('[*]') || message.includes('[STAGE]')) contentStyle = 'color:var(--neo-blue)';
-        else if (message.includes('[DATA]')) contentStyle = 'color:var(--neo-amber)';
+        let cleanedMessage = message.replace(/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/, '');
+        cleanedMessage = cleanedMessage.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '');
+        cleanedMessage = cleanedMessage.replace(/(\[[A-Z]+\])\s*\1/g, '$1');
+        cleanedMessage = cleanedMessage.trim();
+
+        if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
+
+        // Professional Log Iconography Mapping
+        const logMap = {
+            '[!]': { color: '#ef4444', icon: 'error' },
+            '[x]': { color: '#ef4444', icon: 'cancel' },
+            '[✓]': { color: '#10b981', icon: 'check_circle' },
+            '[+]': { color: '#10b981', icon: 'add_circle' },
+            '[*]': { color: '#3b82f6', icon: 'info' },
+            '[STAGE]': { color: '#8b5cf6', icon: 'rocket_launch' },
+            '[DATA]': { color: '#f59e0b', icon: 'database' }
+        };
+
+        let activeIcon = 'radio_button_checked';
+        let activeColor = 'var(--neo-text-muted)';
+        let isSpecial = false;
+
+        for (const [key, val] of Object.entries(logMap)) {
+            if (cleanedMessage.includes(key)) {
+                activeIcon = val.icon;
+                activeColor = val.color;
+                cleanedMessage = cleanedMessage.replace(key, '').trim();
+                isSpecial = true;
+                break;
+            }
+        }
+
+        if (!isSpecial && cleanedMessage.toLowerCase().includes('error')) {
+            activeIcon = 'error';
+            activeColor = '#ef4444';
+        } else if (!isSpecial && (cleanedMessage.toLowerCase().includes('success') || cleanedMessage.toLowerCase().includes('vulnerable'))) {
+            activeIcon = 'check_circle';
+            activeColor = '#10b981';
+        }
 
         const line = document.createElement('div');
         line.className = 'log-line';
+        
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${message}</div>
+            <div class="log-content" style="color: ${activeColor}; display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 0.9rem; opacity: 0.6;">${activeIcon}</span>
+                <span>${cleanedMessage.toUpperCase()}</span>
+            </div>
         `;
         
-        if (elements.logOutput) {
-            elements.logOutput.appendChild(line);
-            elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
-        }
+        elements.logOutput.appendChild(line);
+        elements.logOutput.scrollTop = elements.logOutput.scrollHeight;
     }
 
     function setStatus(text, type = 'ready') {

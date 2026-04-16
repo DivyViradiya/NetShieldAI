@@ -26,37 +26,48 @@
       :root {
         /* NEO-TECH DARK (Aligned with scanner/dashboard pages) */
         --bg-primary: #000000;
-        --bg-secondary: #0a0a0b;
-        --surface-primary: #0f0f11;
-        --surface-elevated: #161618;
-        --surface-subtle: #121214;
+        --bg-secondary: #050505;
+        --surface-primary: #000000;
+        --surface-elevated: #080808;
+        --surface-subtle: #050505;
         
-        --border-default: #27272a;
-        --border-subtle: #18181b;
+        --border-default: #111113;
+        --border-subtle: #09090b;
         
         --text-primary: #f8fafc;
         --text-secondary: #cbd5e1;
         --text-muted: #94a3b8;
         
-        --accent-primary: #3b82f6;
+        --accent-primary: #3b82f6;   /* Core Neo Blue */
         --accent-hover: #2563eb;
+        --accent-blue: #3b82f6;
 
         /* Standardized Severity (Dark) */
         --severity-critical: #ef4444;
         --severity-high: #f59e0b;
         --severity-medium: #fbbf24;
-        --severity-low: #60a5fa;
+        --severity-low: #3b82f6;
         --severity-success: #10b981;
-        --severity-info: #94a3b8;
+        --severity-info: #00e5ff;
+
+        /* Identity Palette (Overwatch System) */
+        --identity-zap: #00e5ff;
+        --identity-network: #10b981;
+        --identity-ssl: #f59e0b;
+        --identity-sniffer: #3b82f6;
+        --identity-killchain: #ec4899;
+        --identity-sql: #ef4444;
+        --identity-api: #8b5cf6;
+        --identity-semgrep: #6366f1;
 
         /* Compatibility Mappings */
         --bg-color: var(--bg-primary);
         --surface-color: var(--surface-primary);
         --border-color: var(--border-default);
         --text-light: var(--text-primary);
-        --text-muted-old: var(--text-muted); /* Internal mapping */
-        --accent-blue: var(--accent-primary);
+        --text-muted-old: var(--text-muted);
         
+        --neo-bg: var(--bg-primary);
         --neo-card: var(--surface-primary);
         --neo-border: var(--border-default);
         --neo-blue: var(--accent-primary);
@@ -64,7 +75,11 @@
         --neo-text-secondary: var(--text-muted);
         --neo-text-label: #64748b;
         --neo-card-hover: var(--surface-elevated);
-        --accent-vibrant-spinner: #00FFFF; /* Vibrant cyan for spinner */
+        --accent-vibrant-spinner: #00FFFF;
+
+        --glass-bg: #000000;
+        --glass-border: rgba(255, 255, 255, 0.03);
+        --glass-blur: blur(24px);
 
         /* Standardized Heights */
         --navbar-height: 64px;
@@ -78,38 +93,49 @@
         --scrollbar-hover: var(--accent-primary);
       }
 
-      /* LIGHT MODE — NEO-TECH SLATE-INDIGO */
+      /* LIGHT MODE — ENTERPRISE NAVY (Authoritative & Secure) */
       body.light-mode {
-        --bg-primary: #f1f5f9;       /* Slate-100 — warm off-white base */
-        --bg-secondary: #e8edf5;     /* Indigo-tinted wash for sidebar/inputs */
+        --bg-primary: #f8fafc;       /* Slate-50 — solid, professional neutral base */
+        --bg-secondary: #f1f5f9;     /* Slate-100 — industrial depth for sidebars/inputs */
         --surface-primary: #ffffff;
         --surface-elevated: #ffffff;
-        --surface-subtle: #f8faff;   /* Faint indigo tint for hover states */
+        --surface-subtle: #f1f5f9;   /* Slate-100 for hover states */
 
-        --border-default: #cbd5e1;   /* Slate-300 — clearly visible borders */
+        --border-default: #cbd5e1;   /* Slate-300 — clearly visible enterprise borders */
         --border-subtle: #e2e8f0;    /* Slate-200 — soft inner dividers */
 
-        --text-primary: #0f172a;     /* Slate-900 — strong contrast */
-        --text-secondary: #1e293b;   /* Slate-800 — body text */
-        --text-muted: #64748b;       /* Slate-500 — high readability */
+        --text-primary: #0f172a;     /* Slate-900 — authoritative navy for headings */
+        --text-secondary: #334155;   /* Slate-700 — body text industrial gray-blue */
+        --text-muted: #64748b;       /* Slate-500 — readable muted text */
+        --text-label: #475569;       /* Slate-600 — clear labeling */
 
-        --accent-primary: #4f46e5;   /* Indigo-600 — single unified accent */
-        --accent-hover: #4338ca;     /* Indigo-700 */
-        --accent-blue: #2563eb;      /* Blue-600 — secondary interactive */
+        --accent-primary: #1e40af;   /* Blue-800 — authoritative enterprise navy */
+        --accent-hover: #1e3a8a;     /* Blue-900 — deep navy hover state */
+        --accent-blue: #3b82f6;      /* Blue-500 — interactive blue highlights */
 
-        /* Severity tokens — richer for light context */
-        --severity-critical: #dc2626;
-        --severity-critical-bg: #fef2f2;
-        --severity-high: #d97706;
-        --severity-high-bg: #fffbeb;
-        --severity-medium: #ca8a04;
-        --severity-medium-bg: #fefce8;
-        --severity-low: #2563eb;
-        --severity-low-bg: #eff6ff;
-        --severity-success: #059669;
-        --severity-success-bg: #ecfdf5;
-        --severity-info: #4f46e5;
-        --severity-info-bg: #eef2ff;
+        /* Enterprise Identifiers */
+        --identity-zap: #0891b2;     /* Teal-600 */
+        --identity-network: #059669; /* Emerald-600 */
+        --identity-ssl: #d97706;     /* Amber-600 */
+        --identity-sniffer: #1e40af; /* Navy-800 */
+        --identity-killchain: #be185d;/* Pink-700 */
+        --identity-sql: #dc2626;     /* Red-600 */
+        --identity-api: #6d28d9;     /* Violet-700 */
+        --identity-semgrep: #4f46e5; /* Indigo-600 */
+
+        /* Severity tokens — industrial strength for light context */
+        --severity-critical: #dc2626;   /* Red-600 */
+        --severity-critical-bg: #fee2e2; /* Red-100 */
+        --severity-high: #ea580c;       /* Orange-600 */
+        --severity-high-bg: #ffedd5;    /* Orange-100 */
+        --severity-medium: #d97706;     /* Amber-600 */
+        --severity-medium-bg: #fef3c7;  /* Amber-100 */
+        --severity-low: #1e40af;        /* Blue-800 */
+        --severity-low-bg: #dbeafe;     /* Blue-100 */
+        --severity-success: #059669;    /* Emerald-600 */
+        --severity-success-bg: #d1fae5; /* Emerald-100 */
+        --severity-info: #0891b2;       /* Teal-600 */
+        --severity-info-bg: #e0f2f1;    /* Teal-50 */
 
         /* Compatibility mappings */
         --bg-color: var(--bg-primary);
@@ -118,27 +144,32 @@
         --text-light: var(--text-primary);
 
         /* neo-* namespace unified */
+        --neo-bg: var(--bg-primary);
         --neo-card: var(--surface-primary);
         --neo-border: var(--border-default);
         --neo-blue: var(--accent-primary);
         --neo-text-primary: var(--text-primary);
         --neo-text-secondary: var(--text-secondary);
-        --neo-text-label: var(--text-muted);
+        --neo-text-label: var(--text-label);
         --neo-card-hover: var(--surface-subtle);
-        --accent-vibrant-spinner: #4f46e5;
+        --accent-vibrant-spinner: var(--accent-primary);
 
-        --scrollbar-thumb: rgba(79, 70, 229, 0.15);
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --glass-border: var(--border-default);
+        --glass-blur: blur(20px);
+
+        --scrollbar-thumb: rgba(15, 23, 42, 0.15);
         --scrollbar-hover: var(--accent-primary);
       }
 
-      /* Subtle dot-grid background — indigo tint at 5% */
+      /* Subtle dot-grid background — Slate tint at 4% */
       body.light-mode::before {
         content: '';
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background-image: radial-gradient(circle, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
-        background-size: 28px 28px;
+        background-image: radial-gradient(circle, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+        background-size: 32px 32px;
         pointer-events: none;
         z-index: 0;
       }
@@ -149,10 +180,26 @@
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        padding-top: var(--navbar-height);
         color: var(--text-secondary);
         position: relative;
         overflow-x: hidden;
+        cursor: default;
+        caret-color: transparent; /* Hide caret globally */
+      }
+
+      /* Global Cursor & Interaction Reset */
+      * {
+        cursor: default;
+      }
+
+      a, button, select, option, label, .btn-dash, .tab-pill, .dropdown-link, .interactive, .material-symbols-outlined, [role="button"] {
+        cursor: pointer !important;
+      }
+
+      input, textarea, [contenteditable="true"], .selectable-text, .log-content, #resultsContent, .dash-table td {
+        cursor: text !important;
+        user-select: text !important;
+        caret-color: auto !important; /* Restore caret for inputs */
       }
 
       .text-mono {
@@ -516,9 +563,17 @@
         font-size: 1.1rem;
       }
 
+      body.light-mode .profile-dropdown-content .user-header .full-name {
+        color: var(--text-primary);
+      }
+
       .profile-dropdown-content .user-header .user-email {
         font-size: 0.85rem;
         color: #9ca3af; /* A softer gray */
+      }
+
+      body.light-mode .profile-dropdown-content .user-header .user-email {
+        color: var(--text-muted);
       }
       
       /* New: Meta Data Section (Job/Org/Audit) */
@@ -542,6 +597,10 @@
         font-size: 0.85rem;
         color: #9ca3af;
         margin-bottom: 0.6rem;
+      }
+
+      body.light-mode .meta-row {
+        color: var(--text-secondary);
       }
 
       .meta-row:last-child {
@@ -575,6 +634,10 @@
         transition: all 0.2s;
         border-radius: 8px; /* Tighter rounding */
         margin-bottom: 2px;
+      }
+
+      body.light-mode .profile-dropdown-content a:not(.logout-link) {
+        color: var(--text-secondary);
       }
 
       .profile-dropdown-content a .material-symbols-outlined {
@@ -840,14 +903,14 @@
       }
 
       body.light-mode .section-card {
-        background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%); /* Ice-blue wash */
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%); /* Slate-blue wash */
         border-color: var(--border-default);
-        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06); /* Soft indigo glow */
+        box-shadow: 0 4px 20px rgba(37, 99, 235, 0.05); /* Soft blue glow */
       }
 
       body.light-mode .section-card:hover {
-        border-color: rgba(99, 102, 241, 0.3); /* Indigo-tinted border */
-        box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1); /* Deeper indigo glow */
+        border-color: rgba(37, 99, 235, 0.2); /* Blue-tinted border */
+        box-shadow: 0 8px 32px rgba(37, 99, 235, 0.08); /* Deeper blue glow */
       }
       
       .fade-in-element {

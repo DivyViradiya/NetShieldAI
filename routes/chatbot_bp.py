@@ -687,7 +687,10 @@ def execute_action():
                 'stream_url': f"{base_url}/sql_scanner/log_stream",
                 'payload': {
                     'target_url': params.get('target_url'),
-                    'scan_mode': params.get('scan_mode', 'quick')
+                    'scan_mode': params.get('scan_mode', 'quick'),
+                    'risk_level': params.get('risk_level', '3'),
+                    'scan_level': params.get('scan_level', '3'),
+                    'check_waf': params.get('check_waf', False)
                 }
             },
             'packet_sniffer': {
@@ -943,3 +946,34 @@ def toggle_pin_proxy():
         return jsonify(response.json()), response.status_code
     except Exception as e:
          return jsonify({'error': str(e)}), 500
+
+@chatbot_bp.route('/submit_feedback', methods=['POST'])
+@login_required
+def submit_feedback():
+    """
+    Handles Like/Dislike feedback for AI responses.
+    Proxies to the backend if an endpoint exists, or simply logs it.
+    """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
+    try:
+        data = request.json
+        session_id = data.get('session_id')
+        is_helpful = data.get('is_helpful')
+        
+        user_logger.info(f"[*] User Feedback: Session {session_id} | Helpful: {is_helpful}")
+        
+        # Proxy to FastAPI backend
+        proxy_url = f"{SERVER_PROXY_URL}/submit_feedback"
+        try:
+            resp = requests.post(proxy_url, json=data, timeout=3, proxies={"http": None, "https": None})
+            if resp.status_code == 200:
+                return jsonify(resp.json())
+        except Exception:
+            # If backend doesn't have this yet, just return success since we logged it
+            pass
+            
+        return jsonify({'success': True, 'message': 'Feedback received.'})
+    except Exception as e:
+        user_logger.error(f"Error in submit_feedback: {e}")
+        return jsonify({'error': str(e)}), 500

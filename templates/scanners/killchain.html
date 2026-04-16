@@ -16,44 +16,25 @@
     }
 
     /* --- NEO-TECH THEME VARIABLES --- */
-    :root {
-      --neo-bg: #000000;
-      --neo-card: rgba(10, 10, 12, 0.5);
-      --neo-card-hover: rgba(15, 15, 18, 0.6);
-      --neo-input: rgba(15, 15, 18, 0.6);
-      --neo-border: rgba(255, 255, 255, 0.1);
-      --neo-text-main: #ffffff;
-      --neo-text-muted: #888888;
-      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --neo-blue: #3b82f6;
-      --neo-red: #ef4444;
-      --neo-green: #10b981;
-      --neo-amber: #f59e0b;
-      --risk-high: var(--neo-red);
-      --risk-med: var(--neo-amber);
-      --risk-low: #eab308;
-      --risk-info: var(--neo-blue);
-      --status-online: var(--neo-green);
-      --radius-card: 12px;
-      --radius-sm: 8px;
-      --shadow-blue: 0 0 15px rgba(59, 130, 246, 0.2);
-      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    /* --- SCANNER THEME OVERRIDES --- */
+    .dashboard-wrapper {
+      background-color: var(--neo-bg);
+      color: var(--neo-text-main);
+      font-family: var(--font-ui);
+      padding: calc(var(--navbar-height) + 1.25rem) 1.5rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
 
-    body.light-mode {
-      --neo-bg: #f1f5f9;
-      --neo-card: #ffffff;
-      --neo-card-hover: #f8faff;
-      --neo-input: #ffffff;
-      --neo-border: #cbd5e1;
-      --neo-text-main: #0f172a;
-      --neo-text-muted: #64748b;
-      --neo-blue: #4f46e5;
-      --neo-red: #dc2626;
-      --neo-green: #059669;
-      --neo-amber: #d97706;
-    }
+    /* Risk Level Mapping Standardized */
+    .risk-critical { --card-accent: var(--severity-critical); }
+    .risk-high { --card-accent: var(--severity-high); }
+    .risk-medium { --card-accent: var(--severity-medium); }
+    .risk-low { --card-accent: var(--severity-low); }
+    .risk-safe { --card-accent: var(--severity-success); }
+
 
     /* Light Mode Overrides */
     body.light-mode .text-gradient {
@@ -84,21 +65,6 @@
     body.light-mode .timing-select option { background: var(--surface-primary) !important; color: var(--text-secondary) !important; }
     body.light-mode #jsonOutput { background-color: var(--bg-secondary) !important; color: var(--text-secondary) !important; }
 
-    /* --- GLOBAL WRAPPER --- */
-    .dashboard-wrapper {
-      background-color: var(--neo-bg);
-      color: var(--neo-text-main);
-      font-family: var(--font-ui);
-      line-height: 1.5;
-      width: 100%;
-      margin: 0 auto;
-      padding: 1rem 1.5rem;
-      min-height: calc(100vh - 64px);
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      transition: none !important;
-    }
 
     /* Dashboard-scoped Utilities */
     .dashboard-wrapper .relative { position: relative; }
@@ -122,29 +88,27 @@
     .dashboard-wrapper .bg-black { background-color: #000; }
 
     /* --- HUD CARDS --- */
-    .control-card, .metric-card, .dash-panel, .terminal-footer {
-      background: rgba(10, 10, 12, 0.45);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: var(--radius-card);
-      position: relative;
-      box-shadow: var(--shadow-glass);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    body.light-mode .control-card, body.light-mode .metric-card,
-    body.light-mode .dash-panel, body.light-mode .terminal-footer {
-      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,244,255,0.7) 100%);
+    /* Component Styles using Global Tokens */
+    .control-card, .metric-card, .dash-panel, .terminal-footer, .discovery-card {
+      background: #000000;
       border: 1px solid var(--neo-border);
-      box-shadow: none;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      border-radius: var(--radius-card, 4px);
     }
+
+    body.light-mode .control-card, 
+    body.light-mode .metric-card, 
+    body.light-mode .dash-panel, 
+    body.light-mode .terminal-footer,
+    body.light-mode .discovery-card {
+      background: var(--surface-primary);
+      border-color: var(--border-default);
+    }
+
     .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover {
-      background: linear-gradient(165deg, #050505 0%, #000000 100%);
-      border-color: var(--neo-border) !important;
-      box-shadow: none !important;
-      transform: none !important;
+      background: #080808;
+      border-color: rgba(255, 255, 255, 0.02) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+      transform: translateY(-2px);
     }
     body.light-mode .control-card:hover, body.light-mode .metric-card:hover,
     body.light-mode .dash-panel:hover, body.light-mode .terminal-footer:hover {
@@ -631,7 +595,7 @@
       }
 
       .finding-card {
-        background: linear-gradient(145deg, rgba(15,15,18,0.8) 0%, rgba(5,5,5,0.9) 100%);
+        background: #000000;
         border: 1px solid var(--neo-border);
         border-radius: var(--radius-sm);
         display: flex;
@@ -647,8 +611,10 @@
       }
 
       .finding-card:hover {
-        border-color: var(--accent-gradient, var(--neo-text-muted));
+        background: #080808;
+        border-color: rgba(255, 255, 255, 0.02);
         transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       }
       
       .finding-header {
@@ -854,7 +820,7 @@
       .dash-panel { height: 500px; }
     }
     @media (max-width: 768px) {
-      .dashboard-wrapper { padding: 0.5rem !important; }
+      .dashboard-wrapper { padding: calc(var(--navbar-height) + 0.5rem) 0.5rem 1rem !important; }
       .control-row-top { flex-direction: column !important; gap: 0.75rem !important; }
       .search-container { width: 100% !important; flex: none !important; }
       .control-row-bottom { flex-direction: column-reverse !important; align-items: stretch !important; gap: 1rem !important; margin-top: 0.75rem !important; }
@@ -870,7 +836,7 @@
 {% block content %}
 <div class="dashboard-wrapper">
     <!-- Top Bento Banner Block -->
-    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 20px;">
+    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
       <div class="scanner-title-area" style="margin: 0;">
         <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Kill Chain <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Audit</span></h1>
         <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">

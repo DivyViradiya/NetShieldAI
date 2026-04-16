@@ -785,10 +785,158 @@ def create_api_report_pdf(source_data, pdf_path, user_id=None):
     return success
 
 
+from bs4 import BeautifulSoup
+
+# =============================================================================
+# ENRICHMENT HELPERS
+# =============================================================================
+
+def _enrich_executive_summary_html(html_content):
+    """
+    Transforms plain Markdown-generated HTML into the structured archetypes 
+    seen in the chatbot (finding cards, section dividers, etc.).
+    """
+    if not html_content:
+        return ""
+
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    # --- Pass 1: Section Dividers (h2 with numbers) ---
+    for h2 in soup.find_all('h2'):
+        text = h2.get_text().strip()
+        # Match "1. Executive Summary" or "2. Technical Findings"
+        match = re.match(r'^(\d+)\.\s+(.+)$', text)
+        if match:
+            divider = soup.new_tag('div', attrs={'class': 'llm-section-divider'})
+            divider.append(soup.new_tag('div', attrs={'class': 'llm-divider-line'}))
+
+            pill = soup.new_tag('span', attrs={'class': 'llm-section-pill'})
+            pill.string = f"§{match.group(1)}"
+            divider.append(pill)
+
+            title = soup.new_tag('span', attrs={'class': 'llm-section-title'})
+            title.string = match.group(2)
+            divider.append(title)
+
+            divider.append(soup.new_tag('div', attrs={'class': 'llm-divider-line llm-divider-line-rev'}))
+            h2.replace_with(divider)
+
+    # --- Pass 2: Finding Cards ---
+    # Patterns: "Finding #1 — Name | Severity"
+    finding_pattern = re.compile(r'Finding\s+#?(\d+)\s*[\u2014\u2013-]\s*(.+?)\s*\|\s*(CRITICAL|HIGH|MEDIUM|LOW|INFO)', re.IGNORECASE)
+
+    # Check headers first
+    for h in soup.find_all(['h3', 'h4']):
+        text = h.get_text().strip()
+        match = finding_pattern.search(text)
+        if match:
+            num, name, sev = match.groups()
+            sev = sev.upper()
+
+            card = soup.new_tag('div', attrs={'class': f'llm-finding-card sev-{sev.lower()}'})
+
+            header = soup.new_tag('div', attrs={'class': 'llm-finding-header'})
+            meta = soup.new_tag('div', attrs={'class': 'llm-finding-meta'})
+
+            f_num = soup.new_tag('span', attrs={'class': 'llm-finding-number'})
+            f_num.string = f"FINDING #{num}"
+            meta.append(f_num)
+
+            f_name = soup.new_tag('span', attrs={'class': 'llm-finding-name'})
+            f_name.string = name.strip()
+            meta.append(f_name)
+
+            header.append(meta)
+
+            badge = soup.new_tag('span', attrs={'class': 'llm-severity-badge'})
+            badge.string = sev
+            header.append(badge)
+
+            card.append(header)
+
+            body = soup.new_tag('div', attrs={'class': 'llm-finding-body'})
+            # Collect siblings until next header or divider
+            curr = h.next_sibling
+            to_remove = []
+            while curr and getattr(curr, 'name', None) not in ['h2', 'h3', 'h4', 'div']:
+                if hasattr(curr, 'extract'):
+                    body.append(curr.extract())
+                    curr = h.next_sibling
+                else:
+                    curr = curr.next_sibling
+
+            card.append(body)
+            h.replace_with(card)
+
+    # --- Pass 3: Table Panels ---
+    for table in soup.find_all('table'):
+        # Skip if already wrapped (unlikely but safe)
+        if table.parent and 'llm-table-panel' in table.parent.get('class', []):
+            continue
+
+        # Try to find a label (header or paragraph before the table)
+        label_text = "REPORT DATA"
+        prev = table.find_previous(['h2', 'h3', 'h4', 'p'])
+        if prev:
+            ptxt = prev.get_text().strip()
+            if ptxt and len(ptxt) < 100:
+                label_text = ptxt.upper()
+
+        panel = soup.new_tag('div', attrs={'class': 'llm-table-panel'})
+        header = soup.new_tag('div', attrs={'class': 'llm-table-panel-header'})
+        header.string = label_text
+        panel.append(header)
+
+        table.replace_with(panel)
+        panel.append(table)
+
+    # --- Pass 4: Risk Labels in Tables ---
+    risk_map = {
+        'critical': 'critical', 'high': 'high', 'moderate': 'moderate', 
+        'medium': 'moderate', 'low': 'low', 'safe': 'safe', 'info': 'safe'
+    }
+    for td in soup.find_all('td'):
+        txt = td.get_text().strip().lower()
+        if txt in risk_map:
+            cls = risk_map[txt]
+            badge = soup.new_tag('span', attrs={'class': f'llm-risk-label {cls}'})
+            badge.string = td.get_text().strip().upper()
+            td.string = ""
+            td.append(badge)
+
+    # --- Pass 5: Score Bars ---
+    for td in soup.find_all('td'):
+        # Only if not already a risk label
+        if td.find('span', class_='llm-risk-label'):
+            continue
+
+        txt = td.get_text().strip()
+        try:
+            score = float(txt)
+            if 0 <= score <= 10 and (txt == str(score) or txt == f"{score:.1f}"):
+                td['class'] = td.get('class', []) + ['llm-score-cell']
+
+                # We need a container for text to sit above the bar
+                container = soup.new_tag('div', attrs={'class': 'llm-score-bar-container'})
+                container.string = txt
+
+                bar = soup.new_tag('div', attrs={'class': 'llm-score-bar'})
+                # We can't do easy animation in PDF but we can set the width
+                bar['style'] = f"width: {score*10}%;"
+
+                td.string = ""
+                td.append(bar)
+                td.append(container)
+        except ValueError:
+            continue
+
+    return str(soup)
+
+
 def create_executive_summary_report_pdf(summary_text, metadata, pdf_path, user_id=None):
     """
     Renders an AI-generated Markdown summary into an Executive Summary PDF.
-    Converts Markdown → HTML before passing to the Jinja2 template.
+    Converts Markdown → HTML, enriches it with archetypes, then renders.
     """
     log(f"[*] Starting Executive Summary PDF generation: {pdf_path}",
         to_console=True, user_id=user_id)
@@ -805,13 +953,21 @@ def create_executive_summary_report_pdf(summary_text, metadata, pdf_path, user_i
             scanner_name="executive_summary", user_id=user_id)
         html_summary = f"<pre>{summary_text}</pre>"
 
-    # 2. Build context
+    # 2. Enrich HTML with Chatbot-style Archetypes
+    try:
+        enriched_html = _enrich_executive_summary_html(html_summary)
+    except Exception as e:
+        log(f"[!] HTML Enrichment failed: {e} — using raw HTML.",
+            scanner_name="executive_summary", user_id=user_id)
+        enriched_html = html_summary
+
+    # 3. Build context
     logo_url, logo_url_small = _logo_paths()
     template_data = {
         "logo_url":        logo_url,
         "logo_url_small":  logo_url_small,
         "css_path":        pathlib.Path(CSS_BASE).as_uri(),
-        "summary_content": html_summary,   # Pre-rendered HTML — use | safe in template
+        "summary_content": enriched_html,   # Enriched HTML — use | safe in template
         "metadata": {
             "target":    metadata.get("target",    "N/A"),
             "tool_name": metadata.get("tool_name", "Security Analyzer"),
@@ -820,7 +976,7 @@ def create_executive_summary_report_pdf(summary_text, metadata, pdf_path, user_i
         "generation_date": get_now_ist_str(),
     }
 
-    # 3. Render
+    # 4. Render
     success = _render_to_pdf(
         EXECUTIVE_SUMMARY_TEMPLATE_FILE, template_data, pdf_path,
         [CSS_BASE, CSS_EXECUTIVE], "executive_summary", user_id

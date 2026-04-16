@@ -5,280 +5,510 @@
 {% block extra_css %}
 <style>
   :root {
-    --neo-card: rgba(10, 10, 12, 0.85);
-    --neo-border: rgba(255, 255, 255, 0.1);
-    --neo-text-primary: #ffffff;
-    --neo-text-secondary: #888888;
-    --neo-text-label: #555555;
+    --neo-card: rgba(10, 10, 12, 0.4);
+    --neo-border: rgba(255, 255, 255, 0.08);
     --neo-blue: #3b82f6;
-    --neo-card-hover: rgba(15, 15, 18, 0.6);
-    --bg-color: #000000;
+    --neo-text-primary: #f8fafc;
+    --neo-text-secondary: #94a3b8;
+    --neo-text-tertiary: #64748b;
     --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --glass-blur: blur(24px);
   }
+  
   body.light-mode {
-    --neo-card: #ffffff;
+    --neo-card: rgba(255, 255, 255, 0.7);
     --neo-border: #cbd5e1;
     --neo-text-primary: #0f172a;
-    --neo-text-secondary: #1e293b;
-    --neo-text-label: #64748b;
+    --neo-text-secondary: #475569;
+    --neo-text-tertiary: #94a3b8;
     --neo-blue: #4f46e5;
-    --neo-card-hover: #f8faff;
-    --bg-color: #f1f5f9;
-  }
-  /* Scope IBM Plex Sans to the register card only */
-  #registerForm, #registerForm *, .max-w-\[1000px\], .max-w-\[1000px\] * {
-    font-family: var(--font-ui);
-  }
-  body.light-mode .alert-danger {
-    background-color: rgba(220,38,38,0.1) !important;
-    color: #dc2626 !important;
-    border-color: #dc2626 !important;
-  }
-  body.light-mode .alert-info {
-    background-color: rgba(37,99,235,0.1) !important;
-    color: #2563eb !important;
-    border-color: #2563eb !important;
-  }
-  body.light-mode .md\:flex.w-1\/2 {
-    background-image: none !important;
-    background-color: #f1f5f9 !important;
   }
 
-  /* ── Mobile-only fixes ── */
-  @media (max-width: 768px) {
-    .min-h-\[85vh\] {
-      min-height: unset !important;
-      padding: 1.25rem 1rem !important;
-      align-items: flex-start !important;
-    }
-    .max-w-\[1000px\] {
-      min-height: unset !important;
-      border-radius: 14px !important;
-    }
-    .w-full.md\:w-1\/2.p-8 {
-      padding: 1.5rem 1.25rem !important;
-    }
-    .mb-8 { margin-bottom: 1rem !important; }
-    .flex.gap-3.mt-8 {
-      margin-top: 1.25rem !important;
-      gap: 0.5rem !important;
-    }
-    .mt-6 { margin-top: 1rem !important; }
+  /* Force Full Screen & No Scroll */
+  html, body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  footer {
+    display: none !important;
+  }
+
+  .main-content {
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  .register-portal {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background: var(--bg-primary);
+    position: relative;
+    flex-direction: row-reverse; /* INVERTED: Branding Right, Form Left */
+  }
+
+  /* Portal Visual (Now on the Right) */
+  .portal-visual {
+    flex: 1.2;
+    position: relative;
+    background: #000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4rem;
+    border-left: 1px solid var(--neo-border);
+  }
+
+  .portal-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(var(--neo-text-tertiary) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.15;
+    z-index: 1;
+  }
+
+  .logo-wrap {
+    position: relative;
+    z-index: 10;
+  }
+
+  .portal-visual .content-wrap {
+    position: relative;
+    z-index: 10;
+  }
+
+  .visual-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.04em;
+  }
+
+  .visual-description {
+    font-size: 0.9rem;
+    color: var(--neo-text-secondary);
+    max-width: 400px;
+    line-height: 1.6;
+    opacity: 0.7;
+  }
+
+  #dynamic-text h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 1rem;
+  }
+
+  #dynamic-text p {
+    font-size: 0.85rem;
+    color: var(--neo-text-secondary);
+    border-left: 2px solid var(--neo-blue);
+    padding-left: 1rem;
+    line-height: 1.5;
+  }
+
+  /* Indicators */
+  #step-indicators {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+  .indicator-dot {
+    height: 4px;
+    border-radius: 2px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Portal Auth (Now on the Left) */
+  .portal-auth {
+    flex: 0.8;
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem;
+    position: relative;
+    backdrop-filter: var(--glass-blur);
+    overflow-y: auto; /* Fallback if form is very tall */
+  }
+
+  .auth-header {
+    margin-bottom: 2rem;
+  }
+
+  .auth-header h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--neo-text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .auth-header p {
+    color: var(--neo-text-tertiary);
+    font-size: 0.85rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--neo-text-tertiary);
+    margin-bottom: 0.4rem;
+    display: block;
+    letter-spacing: 0.1em;
+  }
+
+  .form-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid var(--neo-border) !important;
+    color: var(--neo-text-primary) !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 4px !important;
+    font-family: var(--font-ui);
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+  }
+
+  body.light-mode .form-input {
+    background: #fff !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  .form-input:focus {
+    border-color: var(--neo-blue) !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    outline: none;
+  }
+
+  .btn-auth-primary {
+    background: var(--neo-blue);
+    color: #fff;
+    font-weight: 700;
+    padding: 0.85rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border: none;
+  }
+
+  .btn-auth-primary:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  .btn-auth-secondary {
+    background: transparent;
+    border: 1px solid var(--neo-border);
+    color: var(--neo-text-tertiary);
+    font-weight: 700;
+    padding: 0.85rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .btn-auth-secondary:hover {
+    color: var(--neo-text-primary);
+    border-color: var(--neo-text-tertiary);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .btn-auth-submit {
+    background: var(--severity-success);
+    color: #fff;
+  }
+  .btn-auth-submit:hover:not(:disabled) {
+    background: #059669;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .social-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-social {
+    background: transparent;
+    border: 1px solid var(--neo-border);
+    color: var(--neo-text-secondary);
+    padding: 0.65rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .btn-social:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: var(--neo-text-tertiary);
+    color: var(--neo-text-primary);
+  }
+
+  .divider {
+    position: relative;
+    text-align: center;
+    margin: 1.5rem 0;
+  }
+
+  .divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--neo-border);
+  }
+
+  .divider span {
+    position: relative;
+    background: var(--bg-secondary);
+    padding: 0 1rem;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--neo-text-tertiary);
+    letter-spacing: 0.1em;
+  }
+
+  .auth-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--neo-text-tertiary);
+  }
+
+  .auth-footer a {
+    color: var(--neo-blue);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* Flash Messages */
+  .flash-overlay {
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 1024px) {
+    .portal-visual { display: none; }
+    .portal-auth { flex: 1; padding: 2rem; }
+    .register-portal { flex-direction: column; }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-  <div class="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
-    
-    <div
-      class="relative z-10 flex w-full max-w-[1000px] min-h-[600px] h-auto bg-[var(--neo-card)] rounded-2xl border border-[var(--neo-border)] shadow-2xl overflow-hidden transition-all duration-500">
-    
-      <div class="w-full md:w-1/2 p-8 md:p-12 bg-[var(--neo-card)] flex flex-col justify-center relative">
-    
-        <div class="mb-8">
-          <h3 class="text-2xl font-bold text-[var(--neo-text-primary)] mb-2" id="step-title" style="font-size: clamp(1.25rem, 3vw, 1.75rem);">Identity</h3>
-          <p class="text-[var(--neo-text-secondary)] text-sm" id="step-desc">Establish your primary access credentials.</p>
-        </div>
+<div class="register-portal">
+  <!-- Interactive Visual Panel (Right) -->
+  <div class="portal-visual">
+    <div class="logo-wrap">
+      <img src="{{ url_for('static', filename='images/NS_Logo.png') }}" alt="NetShieldAI Logo" class="h-20 w-auto dark-logo" />
+      <img src="{{ url_for('static', filename='images/NS_Logo_pdf.png') }}" alt="NetShieldAI Logo" class="h-20 w-auto light-logo" />
+    </div>
 
-        {% with messages=get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <div class="mb-6 space-y-2">
-              {% for category, message in messages %}
-                <div class="p-3 rounded text-sm border 
-                  {% if category == 'danger' %}
-                    bg-red-900/20 text-red-400 border-red-900 alert-danger
-                  {% else %}
-                    bg-blue-900/20 text-blue-400 border-blue-900 alert-info
-                  {% endif %}">
-                  {{ message }}
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
-
-        <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
-          {{ form.hidden_tag() }}
-
-          <!-- Single Sign-On Option -->
-          <div class="mb-5">
-            <div class="grid grid-cols-2 gap-4">
-              <button onclick="window.location.href='{{ url_for('auth.login_google') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition text-center">Google</button>
-              <button onclick="window.location.href='{{ url_for('auth.login_github') }}'" type="button" class="bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] py-2.5 rounded-lg hover:bg-[var(--neo-card-hover)] transition text-center">GitHub</button>
-            </div>
-            <p class="text-[0.65rem] text-[var(--neo-text-secondary)] mt-3 leading-tight text-center">
-              By proceeding with Google or GitHub, you acknowledge that you have read and agree to our <a href="#" class="text-[var(--neo-blue)] hover:underline">Terms of Service</a> and <a href="#" class="text-[var(--neo-blue)] hover:underline">Privacy Policy</a>.
-            </p>
-            <div class="relative py-4">
-              <div class="absolute inset-0 flex items-center">
-                <span class="w-full border-t border-[var(--neo-border)]"></span>
-              </div>
-              <div class="relative flex justify-center text-xs uppercase">
-                <span class="bg-[var(--neo-card)] px-4 text-[var(--neo-text-label)] font-medium z-10">Or fill details manually</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-step transition-opacity duration-300" id="step1">
-            <div class="space-y-4">
-              <div>
-                {{ form.username.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-                {{ form.username(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
-                placeholder-[var(--neo-text-label)] req-input') }}
-                {% for error in form.username.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
-                </div>
-              <div>
-                {{ form.email.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-                {{ form.email(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1 focus:outline-none
-                focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300 placeholder-[var(--neo-text-label)] req-input')
-                }}
-                {% for error in form.email.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
-                </div>
-                </div>
-          </div>
-
-          <div class="form-step hidden opacity-0 transition-opacity duration-300" id="step2">
-            <div class="space-y-4">
-              <div>
-                {{ form.full_name.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-                {{ form.full_name(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
-                placeholder-[var(--neo-text-label)] req-input') }}
-              </div>
-              <div>
-                {{ form.phone_number.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-                {{ form.phone_number(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
-                placeholder-[var(--neo-text-label)] req-input') }}
-              </div>
-            </div>
-          </div>
-
-          <div class="form-step hidden opacity-0 transition-opacity duration-300" id="step3">
-            <div class="space-y-4">
-              <div>
-                {{ form.organization.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-                {{ form.organization(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
-                placeholder-[var(--neo-text-label)] req-input') }}
-                </div>
-                <div>
-                  {{ form.job_title.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-                  {{ form.job_title(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
-                  focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
-                  placeholder-[var(--neo-text-label)] req-input') }}
-                </div>
-                </div>
-          </div>
-
-          <div class="form-step hidden opacity-0 transition-opacity duration-300" id="step4">
-            <div class="space-y-4">
-              <div>
-                {{ form.password.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-                {{ form.password(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
-                focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
-                placeholder-[var(--neo-text-label)] req-input') }}
-                {% for error in form.password.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
-                </div>
-                <div>
-                  {{ form.confirm_password.label(class='text-xs font-bold text-[var(--neo-text-label)] uppercase ml-1 tracking-wider') }}
-                  {{ form.confirm_password(class='w-full bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-primary)] rounded-lg px-4 py-3 mt-1
-                  focus:outline-none focus:border-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] transition-colors duration-300
-                  placeholder-[var(--neo-text-label)] req-input') }}
-                  {% for error in form.confirm_password.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
-                </div>
-                
-                <div class="flex items-start gap-2 mt-4 text-xs">
-                  {{ form.tos_agreement(class='rounded border-[var(--neo-border)] bg-[var(--bg-color)] text-[var(--neo-blue)] focus:ring-1 focus:ring-[var(--neo-blue)] focus:ring-offset-0 transition-colors duration-300 req-input mt-0.5') }}
-                  <div>
-                    {{ form.tos_agreement.label(class='text-[var(--neo-text-secondary)]') }} <a href="#" class="text-[var(--neo-blue)] hover:underline">Terms of Service</a> and <a href="#" class="text-[var(--neo-blue)] hover:underline">Privacy Policy</a>.
-                    {% for error in form.tos_agreement.errors %}<span class="text-xs text-red-500 block mt-1">{{ error }}</span>{% endfor %}
-                  </div>
-                </div>
-                </div>
-          </div>
-
-          <div class="flex gap-3 mt-8">
-            <button type="button" id="prevBtn"
-              class="w-1/3 bg-[var(--bg-color)] border border-[var(--neo-border)] text-[var(--neo-text-label)] font-bold py-3 rounded-lg hidden hover:text-[var(--neo-text-primary)] transition">Back</button>
-            <button type="button" id="nextBtn"
-              class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 transition-all transform hover:-translate-y-0.5">Next
-              Step</button>
-            {{ form.submit(id='submitBtn', class='w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500
-            hover:to-green-600 text-white font-bold py-3 rounded-lg shadow-lg shadow-green-900/20 transition-all transform
-            hover:-translate-y-0.5 hidden') }}
-          </div>
-        </form>
-
-        <p class="text-sm text-[var(--neo-text-secondary)] mt-6 text-center">
-          Already have an account? <a href="{{ url_for('auth.login') }}"
-            class="text-[var(--neo-blue)] hover:text-[var(--neo-blue)] font-medium transition opacity-80 hover:opacity-100">Log in</a>
-        </p>
+    <div class="content-wrap">
+      <div id="dynamic-text">
+        <h2 id="panel-title">Step 1</h2>
+        <p id="panel-desc">Create your login credentials to get started.</p>
+      </div>
+      
+      <div id="step-indicators">
+        <div class="indicator-dot w-8 bg-[var(--neo-blue)]"></div>
+        <div class="indicator-dot w-2 bg-[var(--neo-text-tertiary)]"></div>
+        <div class="indicator-dot w-2 bg-[var(--neo-text-tertiary)]"></div>
+        <div class="indicator-dot w-2 bg-[var(--neo-text-tertiary)]"></div>
       </div>
 
-      <div
-        class="hidden md:flex w-1/2 relative flex-col justify-between p-10 bg-[var(--bg-color)] bg-[radial-gradient(var(--neo-text-label)_1px,transparent_1px)] [background-size:20px_20px] border-l border-[var(--neo-border)]">
-      
-        <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-color)] via-transparent to-transparent"></div>
-
-        <div class="relative z-10">
-          <img src="{{ url_for('static', filename='images/NetShieldAI_logo.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg dark-logo" />
-          <img src="{{ url_for('static', filename='images/NetShieldAI_logo_PDF.png') }}" alt="NetShieldAI Logo" class="h-12 w-auto drop-shadow-lg light-logo" />
-        </div>
-
-        <div class="relative z-10 mb-8">
-          <div id="dynamic-text">
-            <h2 class="text-3xl font-bold text-[var(--neo-text-primary)] mb-4 leading-tight drop-shadow-md" style="font-size: clamp(1.5rem, 4vw, 2.5rem);">Step 1: Identity</h2>
-            <p class="text-[var(--neo-text-secondary)] text-sm leading-relaxed border-l-2 border-[var(--neo-blue)] pl-4">
-              Initializing secure handshake. Please provide valid identification parameters to begin the registration sequence.
-            </p>
-          </div>
-          <div class="flex gap-2 mt-6 pl-4" id="step-indicators">
-            <div class="w-8 h-1 bg-[var(--neo-blue)] rounded-full transition-all duration-300"></div>
-            <div class="w-2 h-1 bg-[var(--neo-text-label)] rounded-full transition-all duration-300"></div>
-            <div class="w-2 h-1 bg-[var(--neo-text-label)] rounded-full transition-all duration-300"></div>
-            <div class="w-2 h-1 bg-[var(--neo-text-label)] rounded-full transition-all duration-300"></div>
-          </div>
-        </div>
+      <div style="margin-top: 3rem;">
+        <h1 class="visual-title">NetShield<b>AI</b></h1>
+        <p class="visual-description">Autonomous Security Overwatch & Intelligence Gateway.</p>
       </div>
     </div>
   </div>
+
+  <!-- Focused Auth Panel (Left) -->
+  <div class="portal-auth">
+    <div class="auth-header">
+      <h3 id="step-title">Identity</h3>
+      <p id="step-desc">Establish your primary access credentials.</p>
+    </div>
+
+    {% with messages=get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-overlay space-y-2">
+          {% for category, message in messages %}
+            <div class="p-3 rounded text-sm border 
+              {% if category == 'danger' %}
+                bg-red-900/10 text-red-500 border-red-900/50
+              {% else %}
+                bg-blue-900/10 text-blue-500 border-blue-900/50
+              {% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+      {{ form.hidden_tag() }}
+
+      <!-- SSO -->
+      <div id="sso-section">
+        <div class="social-grid">
+          <button onclick="window.location.href='{{ url_for('auth.login_google') }}'" type="button" class="btn-social">Google</button>
+          <button onclick="window.location.href='{{ url_for('auth.login_github') }}'" type="button" class="btn-social">GitHub</button>
+        </div>
+        <div class="divider"><span>Or Register Manually</span></div>
+      </div>
+
+      <!-- Step 1: Identity -->
+      <div class="form-step transition-all duration-300" id="step1">
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          {{ form.username(class='form-input', placeholder='Choose a username', id='username') }}
+          {% for error in form.username.errors %}<span class="text-[0.65rem] text-red-500 block mt-1"><i class="material-symbols-outlined" style="font-size: 0.8rem; vertical-align: middle;">error</i> {{ error }}</span>{% endfor %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          {{ form.email(class='form-input', placeholder='name@example.com', id='email') }}
+          {% for error in form.email.errors %}<span class="text-[0.65rem] text-red-500 block mt-1"><i class="material-symbols-outlined" style="font-size: 0.8rem; vertical-align: middle;">error</i> {{ error }}</span>{% endfor %}
+        </div>
+      </div>
+
+      <!-- Step 2: Profile -->
+      <div class="form-step hidden opacity-0 transition-all duration-300" id="step2">
+        <div class="form-group">
+          <label class="form-label" for="full_name">Full Name</label>
+          {{ form.full_name(class='form-input', placeholder='Enter your full name', id='full_name') }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="phone_number">Phone Number</label>
+          {{ form.phone_number(class='form-input', placeholder='+1 (555) 000-0000', id='phone_number') }}
+        </div>
+      </div>
+
+      <!-- Step 3: Professional -->
+      <div class="form-step hidden opacity-0 transition-all duration-300" id="step3">
+        <div class="form-group">
+          <label class="form-label" for="organization">Organization</label>
+          {{ form.organization(class='form-input', placeholder='Company or project name', id='organization') }}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="job_title">Job Title</label>
+          {{ form.job_title(class='form-input', placeholder='Your role', id='job_title') }}
+        </div>
+      </div>
+
+      <!-- Step 4: Security -->
+      <div class="form-step hidden opacity-0 transition-all duration-300" id="step4">
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          {{ form.password(class='form-input', placeholder='••••••••', id='password', type='password') }}
+          {% for error in form.password.errors %}<span class="text-[0.65rem] text-red-500 block mt-1">{{ error }}</span>{% endfor %}
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="confirm_password">Confirm Password</label>
+          {{ form.confirm_password(class='form-input', placeholder='••••••••', id='confirm_password', type='password') }}
+        </div>
+        <div class="flex items-start gap-3 mt-4">
+          {{ form.tos_agreement(class='w-4 h-4 rounded border-var(--neo-border) bg-transparent text-var(--neo-blue) focus:ring-0 mt-0.5') }}
+          <label class="text-[0.7rem] text-[var(--neo-text-tertiary)] leading-tight">
+            I agree to the <a href="#" class="text-[var(--neo-blue)]">Terms of Service</a> and <a href="#" class="text-[var(--neo-blue)]">Privacy Policy</a>.
+          </label>
+        </div>
+        {% for error in form.tos_agreement.errors %}<span class="text-[0.65rem] text-red-500 block mt-1">{{ error }}</span>{% endfor %}
+      </div>
+
+      <!-- Navigation -->
+      <div class="flex gap-3 mt-8">
+        <button type="button" id="prevBtn" class="btn-auth-secondary w-1/3 hidden">Back</button>
+        <button type="button" id="nextBtn" class="btn-auth-primary w-full">
+          <span>Next Step</span>
+          <span class="material-symbols-outlined" style="font-size: 1rem;">arrow_forward</span>
+        </button>
+        {{ form.submit(id='submitBtn', class='btn-auth-primary btn-auth-submit w-full hidden', value='Create Account') }}
+      </div>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a>
+    </div>
+  </div>
+</div>
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     let currentStep = 1;
     const totalSteps = 4;
 
-    const steps = [document.getElementById('step1'), document.getElementById('step2'), document.getElementById('step3'), document.getElementById('step4')];
+    const steps = [
+      document.getElementById('step1'), 
+      document.getElementById('step2'), 
+      document.getElementById('step3'), 
+      document.getElementById('step4')
+    ];
+    
     const nextBtn = document.getElementById('nextBtn');
     const prevBtn = document.getElementById('prevBtn');
     const submitBtn = document.getElementById('submitBtn');
-    // Removed progressBar element selection
+    const ssoSection = document.getElementById('sso-section');
+
     const stepTitle = document.getElementById('step-title');
     const stepDesc = document.getElementById('step-desc');
-
-    // Dynamic Right Panel Elements
-    const dynamicHeader = document.querySelector('#dynamic-text h2');
-    const dynamicPara = document.querySelector('#dynamic-text p');
+    const panelTitle = document.getElementById('panel-title');
+    const panelDesc = document.getElementById('panel-desc');
     const indicators = document.getElementById('step-indicators').children;
 
     const content = {
       1: {
-        title: "Identity", desc: "Establish your primary access credentials.",
-        panelTitle: "Step 1: Identity", panelDesc: "Initializing secure handshake. Please provide valid identification parameters to begin the registration sequence."
+        title: "Account", desc: "Create your login credentials.",
+        panelTitle: "Step 1", panelDesc: "Create your login credentials to get started."
       },
       2: {
-        title: "Profile", desc: "We need your contact details for verification.",
-        panelTitle: "Step 2: User Profile", panelDesc: "Linking physical entity to digital identifier. This data is encrypted and stored locally."
+        title: "Profile", desc: "Enter your personal details.",
+        panelTitle: "Step 2", panelDesc: "Enter your personal details for verification."
       },
       3: {
-        title: "Professional", desc: "Your organizational context.",
-        panelTitle: "Step 3: Access Level", panelDesc: "Determining organizational role and calculating appropriate permission scopes."
+        title: "Work", desc: "Your professional background.",
+        panelTitle: "Step 3", panelDesc: "Tell us about your organization and role."
       },
       4: {
-        title: "Security", desc: "Secure your account with a strong password.",
-        panelTitle: "Step 4: Encryption", panelDesc: "Finalizing account creation. Hashing credentials and generating access tokens."
+        title: "Security", desc: "Secure your account.",
+        panelTitle: "Step 4", panelDesc: "Create a strong password to protect your account."
       }
     };
 
@@ -287,57 +517,59 @@
       steps.forEach((step, index) => {
         if (index + 1 === currentStep) {
           step.classList.remove('hidden');
-          setTimeout(() => step.classList.remove('opacity-0'), 50); // Fade in
+          setTimeout(() => step.classList.remove('opacity-0'), 50);
         } else {
           step.classList.add('opacity-0');
           step.classList.add('hidden');
         }
       });
 
-      // Removed progressBar width update logic
+      // SSO visibility
+      if (currentStep === 1) {
+        ssoSection.classList.remove('hidden');
+      } else {
+        ssoSection.classList.add('hidden');
+      }
 
-      // Update Text (Left Panel)
+      // Update Text
       stepTitle.textContent = content[currentStep].title;
       stepDesc.textContent = content[currentStep].desc;
-
-      // Update Text (Right Panel)
-      dynamicHeader.textContent = content[currentStep].panelTitle;
-      dynamicPara.textContent = content[currentStep].panelDesc;
+      panelTitle.textContent = content[currentStep].panelTitle;
+      panelDesc.textContent = content[currentStep].panelDesc;
 
       // Update Buttons
       if (currentStep === 1) {
         prevBtn.classList.add('hidden');
-        nextBtn.classList.remove('w-2/3');
         nextBtn.classList.add('w-full');
+        nextBtn.classList.remove('w-2/3');
       } else {
         prevBtn.classList.remove('hidden');
-        nextBtn.classList.add('w-2/3'); // Share space
+        nextBtn.classList.add('w-2/3');
         nextBtn.classList.remove('w-full');
       }
 
       if (currentStep === totalSteps) {
         nextBtn.classList.add('hidden');
         submitBtn.classList.remove('hidden');
-        submitBtn.classList.add('w-2/3');
+        submitBtn.classList.add(currentStep === 1 ? 'w-full' : 'w-2/3');
       } else {
         nextBtn.classList.remove('hidden');
         submitBtn.classList.add('hidden');
       }
 
-      // Update Right Panel Indicators
+      // Update Indicators
       Array.from(indicators).forEach((dot, index) => {
         if (index + 1 === currentStep) {
-          dot.classList.remove('bg-gray-700', 'w-2');
-          dot.classList.add('bg-blue-500', 'w-8');
+          dot.classList.remove('bg-[var(--neo-text-tertiary)]', 'w-2');
+          dot.classList.add('bg-[var(--neo-blue)]', 'w-8');
         } else {
-          dot.classList.add('bg-gray-700', 'w-2');
-          dot.classList.remove('bg-blue-500', 'w-8');
+          dot.classList.add('bg-[var(--neo-text-tertiary)]', 'w-2');
+          dot.classList.remove('bg-[var(--neo-blue)]', 'w-8');
         }
       });
     }
 
     nextBtn.addEventListener('click', () => {
-      // Simple HTML5 validation check
       const currentInputs = steps[currentStep - 1].querySelectorAll('input');
       let valid = true;
       currentInputs.forEach(input => {
@@ -360,7 +592,14 @@
       }
     });
 
-    // Initialize
+    // Form Submission Spinner
+    document.getElementById('registerForm').addEventListener('submit', function() {
+      const btn = document.getElementById('submitBtn');
+      const spinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+      btn.innerHTML = spinner + 'Initializing...';
+      btn.classList.add('opacity-75', 'cursor-not-allowed');
+    });
+
     updateUI();
   });
 </script>

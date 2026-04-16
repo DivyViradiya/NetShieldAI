@@ -134,7 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
 
-        let cleanedMessage = message.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
+        let cleanedMessage = message.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*/, '').trim();
+        cleanedMessage = cleanedMessage.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "");
         cleanedMessage = cleanedMessage.replace(/^\[?\d{1,2}:\d{2}:\d{2}\]?\s*/, '');
         cleanedMessage = cleanedMessage.replace(/(\[[A-Z]+\])\s*\1/g, '$1');
         cleanedMessage = cleanedMessage.replace(/\[(?:ZAP Daemon|ZAP-daemon|ZAP-IO-[^\]]+)\]\s*/gi, '');
@@ -155,13 +156,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        let contentStyle = '';
-        if (cleanedMessage.includes('[!]') || cleanedMessage.includes('Error')) {
-            contentStyle = 'color:#ef4444';
-        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('Success')) {
-            contentStyle = 'color:#10b981';
-        } else if (cleanedMessage.includes('[*]')) {
-            contentStyle = 'color:#3b82f6';
+        // Professional Log Formatting Map
+        const logMap = {
+            '[!]': { color: '#ef4444', icon: 'error' },
+            '[x]': { color: '#ef4444', icon: 'cancel' },
+            '[✓]': { color: '#10b981', icon: 'check_circle' },
+            '[+]': { color: '#10b981', icon: 'add_circle' },
+            '[*]': { color: '#3b82f6', icon: 'info' }
+        };
+
+        let activeIcon = 'radio_button_checked';
+        let activeColor = '#999';
+
+        for (const [key, val] of Object.entries(logMap)) {
+            if (cleanedMessage.includes(key)) {
+                activeIcon = val.icon;
+                activeColor = val.color;
+                cleanedMessage = cleanedMessage.replace(key, '').trim();
+                break;
+            }
         }
 
         const line = document.createElement('div');
@@ -170,7 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}"${dataAttr}>${cleanedMessage}</div>
+            <div class="log-content" style="color: ${activeColor}; display: flex; align-items: center; gap: 8px;"${dataAttr}>
+                <span class="material-symbols-outlined" style="font-size: 0.9rem; opacity: 0.6;">${activeIcon}</span>
+                <span>${cleanedMessage.toUpperCase()}</span>
+            </div>
         `;
         
         logOutput.appendChild(line);

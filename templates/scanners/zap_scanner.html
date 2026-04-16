@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  NetShieldAI - Network Scanner
+  NetShieldAI - Application Security Scanner
 {% endblock %}
 
 {% block extra_css %}
@@ -16,57 +16,24 @@
       }
   
       /* --- NEO-TECH THEME VARIABLES --- */
-      :root {
-        /* Palette - Stark Minimalist Dark */
-        --neo-bg: #000000;
-        --neo-card: rgba(10, 10, 12, 0.5);
-        --neo-card-hover: rgba(15, 15, 18, 0.6);
-        --neo-input: rgba(15, 15, 18, 0.6);
-        --neo-border: rgba(255, 255, 255, 0.1); 
-        
-        /* Typography */
-        --neo-text-main: #ffffff;
-        --neo-text-muted: #888888;
-        --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-        --font-mono: 'JetBrains Mono', monospace;
-        
-        /* Accents */
-        --neo-blue: #3b82f6; 
-        --neo-red: #ef4444;
-        --neo-green: #10b981;
-        --neo-amber: #f59e0b;
-        
-        /* Risk Mapping */
-        --risk-high: var(--neo-red);
-        --risk-med: var(--neo-amber);
-        --risk-low: #eab308;
-        --risk-info: var(--neo-blue);
-        --status-online: var(--neo-green);
-  
-        /* Radii - Sharp / Brutalist */
-        --radius-card: 12px;
-        --radius-sm: 8px;
+      /* --- SCANNER THEME OVERRIDES --- */
+      .dashboard-wrapper {
+        background-color: var(--neo-bg);
+        color: var(--neo-text-main);
+        padding: calc(var(--navbar-height) + 1.25rem) 1.5rem 1rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
 
-        /* Shadows & Glows */
-        --shadow-blue: 0 0 15px rgba(59, 130, 246, 0.2);
-        --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      }
-  
-      body.light-mode {
-        --neo-bg: #f1f5f9;
-        --neo-card: #ffffff;
-        --neo-card-hover: #f8faff;
-        --neo-input: #ffffff;
-        --neo-border: #cbd5e1;
-        
-        --neo-text-main: #0f172a;
-        --neo-text-muted: #64748b;
-        
-        --neo-blue: #4f46e5;
-        --neo-red: #dc2626;
-        --neo-green: #059669;
-        --neo-amber: #d97706;
-      }
+      /* Risk Level Mapping Standardized */
+      .risk-critical { --card-accent: var(--severity-critical); }
+      .risk-high { --card-accent: var(--severity-high); }
+      .risk-medium { --card-accent: var(--severity-medium); }
+      .risk-low { --card-accent: var(--severity-low); }
+      .risk-safe { --card-accent: var(--severity-success); }
+
   
       /* Light Mode Specific Overrides */
       body.light-mode .text-gradient {
@@ -143,7 +110,7 @@
   
       body.light-mode .tab-pills {
         background: var(--bg-secondary);
-        border-color: var(--border-default);
+        border: 1px solid var(--border-default);
       }
   
       body.light-mode .custom-dropdown {
@@ -173,32 +140,40 @@
         background-color: var(--bg-secondary) !important;
         color: var(--text-secondary) !important;
       }
-  
-      body.light-mode .timing-select {
-        background: var(--surface-primary) !important;
-        color: var(--text-secondary) !important;
-        border-color: var(--border-default) !important;
+
+      /* ZAP Split-Pane Light Mode Branding */
+      .glass-pane {
+        background: rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
       }
+
+      body.light-mode .glass-pane {
+        background: rgba(255, 255, 255, 0.5) !important;
+        border-color: var(--neo-border) !important;
+      }
+
+      /* Light Mode Overrides for Components */
+      body.light-mode .finding-card, 
+      body.light-mode .dash-panel, 
+      body.light-mode .control-card, 
+      body.light-mode .metric-card {
+        background: var(--surface-primary);
+        border-color: var(--border-default);
+      }
+
+      body.light-mode .filter-chip {
+        background: var(--bg-secondary);
+        border-color: var(--border-subtle);
+        color: var(--text-muted);
+      }
+
+      body.light-mode .filter-chip.active {
+        background: var(--accent-primary);
+        color: #fff;
+        border-color: var(--accent-primary);
+      }
+
       
-      body.light-mode .timing-select option {
-        background: var(--surface-primary) !important;
-        color: var(--text-secondary) !important;
-      }
-      
-      .dashboard-wrapper {
-        background-color: var(--neo-bg);
-        color: var(--neo-text-main);
-        font-family: var(--font-ui);
-        line-height: 1.5;
-        width: 100%;
-        margin: 0 auto;
-        padding: 1rem 1.5rem;
-        min-height: calc(100vh - 64px); /* Account for navbar */
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        transition: none !important; 
-      }
       
       /* Dashboard-scoped Utilities */
       .dashboard-wrapper .relative { position: relative; }
@@ -223,43 +198,39 @@
       .dashboard-wrapper .bg-black { background-color: #000; }
       
       /* --- COMPONENT: HUD CARDS (Shared Style) --- */
-      .control-card, .metric-card, .dash-panel, .terminal-footer {
-        background: rgba(10, 10, 12, 0.45);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: var(--radius-card);
-        position: relative;
-        box-shadow: var(--shadow-glass);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-  
-      body.light-mode .control-card, 
-      body.light-mode .metric-card, 
-      body.light-mode .dash-panel, 
-      body.light-mode .terminal-footer {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 244, 255, 0.7) 100%);
+      /* Global Component Logic */
+      .control-card, .metric-card, .dash-panel, .finding-card {
+        background: #000000;
         border: 1px solid var(--neo-border);
-        box-shadow: none;
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
+        border-radius: 4px;
       }
-  
-      /* Override hover effects to be subtle with no jumping */
-      .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover {
-        background: linear-gradient(165deg, #050505 0%, #000000 100%);
-        border-color: var(--neo-border) !important;
-        box-shadow: none !important;
-        transform: none !important;
+
+      /* Override hover effects with micro-elevation */
+      .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover, .finding-card:hover {
+        background: rgba(10, 10, 12, 0.7);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        transform: translateY(-2px);
       }
   
       body.light-mode .control-card:hover, 
       body.light-mode .metric-card:hover, 
       body.light-mode .dash-panel:hover,
-      body.light-mode .terminal-footer:hover {
-        border-color: rgba(99, 102, 241, 0.3) !important;
-        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1) !important;
+      body.light-mode .terminal-footer:hover,
+      body.light-mode .finding-card:hover {
+        background: #ffffff;
+        border-color: var(--accent-blue);
+        box-shadow: 0 15px 45px rgba(99, 102, 241, 0.12);
       }
+
+      body.light-mode .control-card, 
+      body.light-mode .metric-card, 
+      body.light-mode .dash-panel, 
+      body.light-mode .finding-card {
+        background: var(--surface-primary);
+        border-color: var(--border-default);
+      }
+
   
       /* --- LAYOUT GRIDS --- */
       .scan-overview-grid {
@@ -364,8 +335,6 @@
         font-size: 1.2rem;
         color: var(--neo-blue);
       }
-  
-      .metric-card:hover { border-color: var(--neo-blue); }
   
       .metric-label {
         font-family: var(--font-mono);
@@ -485,7 +454,7 @@
       
       /* Buttons */
       .btn-dash {
-        height: 48px; padding: 0 1.5rem; border-radius: var(--radius-sm);
+        height: 38px; padding: 0 1.5rem; border-radius: var(--radius-sm);
         font-family: var(--font-mono); font-weight: 400; font-size: 0.8rem; 
         display: flex; align-items: center; justify-content: center;
         gap: 0.5rem; cursor: pointer; transition: all 0.2s ease;
@@ -556,18 +525,21 @@
         border: 1px solid var(--neo-border);
       }
       .tab-pill {
-        padding: 8px 16px; font-size: 0.75rem; color: var(--neo-text-muted); font-family: var(--font-mono);
-        cursor: pointer; font-weight: 400; transition: all 0.2s;
-        text-transform: uppercase; letter-spacing: 0.05em;
+        padding: 8px 16px; font-size: 0.75rem; color: var(--neo-text-muted); font-family: var(--font-ui);
+        cursor: pointer; font-weight: 600; transition: all 0.2s;
+        text-transform: uppercase; letter-spacing: 0.1em;
         border-right: 1px solid var(--neo-border);
+        display: flex; align-items: center; gap: 8px;
       }
       .tab-pill:last-child { border-right: none; }
       .tab-pill.active {
-        background: var(--neo-bg); color: var(--neo-text-main);
+        background: var(--accent-blue);
+        color: white;
+        border-color: var(--accent-blue);
       }
   
       body.light-mode .tab-pill.active {
-          background: var(--text-primary);
+          background: var(--accent-blue);
           color: white;
       }
   
@@ -632,9 +604,7 @@
       }
   
       .discovery-card {
-        background: linear-gradient(165deg, #050505 0%, #000000 100%);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: #000000;
         border: 1px solid var(--neo-border);
         border-radius: var(--radius-card);
         padding: 1rem;
@@ -644,13 +614,6 @@
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
-      }
-  
-      .discovery-card:hover {
-        background: linear-gradient(165deg, #050505 0%, #000000 100%);
-        border-color: var(--neo-border);
-        transform: none;
-        box-shadow: none;
       }
 
       body.light-mode .discovery-card {
@@ -798,7 +761,7 @@
       }
 
       .finding-card {
-        background: linear-gradient(145deg, rgba(15,15,18,0.8) 0%, rgba(5,5,5,0.9) 100%);
+        background: #000000;
         border: 1px solid var(--neo-border);
         border-radius: var(--radius-sm);
         display: flex;
@@ -811,11 +774,6 @@
       body.light-mode .finding-card {
         background: var(--surface-primary);
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      }
-
-      .finding-card:hover {
-        border-color: var(--accent-gradient, var(--neo-text-muted));
-        transform: translateY(-2px);
       }
       
       .finding-header {
@@ -1125,6 +1083,16 @@
         display: flex; 
         flex-direction: column; 
         overflow: hidden;
+        border: 1px solid var(--neo-border);
+        border-radius: 4px;
+        background: rgba(5, 5, 5, 0.4);
+        backdrop-filter: blur(12px);
+      }
+      
+      body.light-mode .terminal-footer {
+        background: #ffffff;
+        border-color: var(--border-default) !important;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.05);
       }
 
       .term-title {
@@ -1247,7 +1215,7 @@
 
       @media (max-width: 768px) {
         /* 1. Header Area */
-        .dashboard-wrapper { padding: 0.5rem !important; }
+        .dashboard-wrapper { padding: calc(var(--navbar-height) + 0.5rem) 0.5rem 1rem !important; }
         .dashboard-wrapper > .flex.flex-col.mb-6 {
           flex-direction: row !important;
           align-items: center !important;
@@ -1346,9 +1314,9 @@
 {% block content %}
   <div class="dashboard-wrapper">
     <!-- Top Bento Banner Block -->
-    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 20px;">
+    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
       <div class="scanner-title-area" style="margin: 0;">
-        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Web App <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Scanner</span></h1>
+        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Application Security <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Scanner</span></h1>
         <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
           <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
           Dynamic Application Security Testing
@@ -1356,7 +1324,7 @@
       </div>
       
       <div class="flex gap-3">
-        <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.05); height: 42px; border-radius: 8px;">
+        <a href="{{ url_for('tools_hub') }}" class="btn-dash glass-pane" style="height: 42px; border-radius: 8px;">
           <span class="material-symbols-outlined" style="font-size: 1.2rem;">home</span>
           <span>Security Hub</span>
         </a>
@@ -1471,8 +1439,14 @@
             </div>
           </div>
           <div class="tab-pills">
-            <div id="findingsTabBtn" class="tab-pill active">Vulnerabilities</div>
-            <div id="rawTabBtn" class="tab-pill">Raw Log</div>
+            <div id="findingsTabBtn" class="tab-pill active">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">bug_report</span>
+              <span>Vulnerabilities</span>
+            </div>
+            <div id="rawTabBtn" class="tab-pill">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">terminal</span>
+              <span>Raw Log</span>
+            </div>
           </div>
         </div>
 
@@ -1481,15 +1455,15 @@
           <div id="findingsContent"
             style="display: flex; height: 100%; overflow: hidden; gap: 1rem; padding: 1rem;">
             <!-- LEFT: Findings list -->
-            <div id="findingsListSide"
-              style="width: 38%; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); overflow-y: auto; flex-shrink: 0; scrollbar-width: thin; scrollbar-color: #222 transparent;">
+            <div id="findingsListSide" class="glass-pane"
+              style="width: 38%; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); overflow-y: auto; flex-shrink: 0; scrollbar-width: thin; scrollbar-color: #222 transparent;">
               <div
                 style="text-align:center; padding: 4rem 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">
                 WAITING FOR DAST SCAN...</div>
             </div>
             <!-- RIGHT: Detail view -->
-            <div id="findingsDetailSide"
-              style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 1.5rem; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); background: rgba(0,0,0,0.2); scrollbar-width: thin; scrollbar-color: #222 transparent;">
+            <div id="findingsDetailSide" class="glass-pane"
+              style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 1.5rem; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); scrollbar-width: thin; scrollbar-color: #222 transparent;">
               <div
                 style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.2;">
                 <span class="material-symbols-outlined"
@@ -1516,7 +1490,7 @@
       <div class="flex flex-col gap-6" style="height: 100%; min-height: 0;">
         <!-- INTELLIGENCE ACTIONS -->
         <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1rem; overflow: visible !important;">
-          <div id="aiProcessingOverlay" class="processing-overlay hidden" style="overflow: hidden; border-radius: var(--radius-card);">
+          <div id="aiProcessingOverlay" class="processing-overlay hidden" style="overflow: hidden; border-radius: 4px;">
             <div class="ai-pulse-container">
               <div class="ai-pulse-ring"></div>
               <div class="ai-pulse-ring"></div>
@@ -1526,18 +1500,14 @@
           
           <div class="flex justify-between items-center mb-4">
             <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence</h5>
-            <button id="refreshResultsBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px; border-radius:6px;" title="Refresh Scan Data">
-                <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
+            <button id="refreshResultsBtn" class="btn-dash btn-secondary btn-icon-only" style="height:38px; width:38px; border-radius:4px;" title="Refresh Scan Data">
+                <span class="material-symbols-outlined" style="font-size:1.1rem;">refresh</span>
             </button>
           </div>
 
           <div class="flex flex-col gap-3">
-            <div class="flex justify-between items-center mb-1" style="background: rgba(239, 68, 68, 0.05); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.1);">
-                <span style="font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">AVG TCTR RISK</span>
-                <span id="avgRiskScore" style="font-family: var(--font-mono); font-size: 1.1rem; color: var(--neo-red); font-weight: 800;">0.0</span>
-            </div>
             <div class="relative w-full">
-              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;" onclick="toggleDropdown('llmAnalysisOptions')">
+              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7; height: 38px;" onclick="toggleDropdown('llmAnalysisOptions')">
                 <span>AI Analysis</span>
                 <span class="material-symbols-outlined">expand_more</span>
               </button>
@@ -1554,12 +1524,12 @@
               </div>
             </div>
 
-            <button id="downloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+            <button id="downloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7; height: 38px;">
               <span>Export PDF</span>
               <span class="material-symbols-outlined">picture_as_pdf</span>
             </button>
 
-            <button id="nmapHistoryBtn" class="btn-dash btn-secondary w-full justify-between">
+            <button id="nmapHistoryBtn" class="btn-dash btn-secondary w-full justify-between" style="height: 38px;">
               <span>Prior Scans</span>
               <span class="material-symbols-outlined">history</span>
             </button>
@@ -1577,16 +1547,16 @@
           <div class="panel-content overflow-auto" style="padding: 1.25rem;">
             <div class="flex flex-col gap-4">
                 <div class="flex justify-between">
-                    <span style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800;">ANALYSIS TARGET</span>
+                    <span style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">ANALYSIS TARGET</span>
                     <span id="metaTarget" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-blue); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">---</span>
                 </div>
                 <div class="flex justify-between">
-                    <span style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800;">SCAN DURATION</span>
+                    <span style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">SCAN DURATION</span>
                     <span id="metaDuration" style="font-family: var(--font-mono); font-size: 0.7rem;">---</span>
                 </div>
                 <div style="height: 1px; background: var(--neo-border);"></div>
                 <div>
-                    <label style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800; margin-bottom: 4px; display: block;">INSIGHTS</label>
+                    <label style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800; margin-bottom: 4px; display: block; letter-spacing: 0.05em;">AI INSIGHTS</label>
                     <p id="discoveryInsights" style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono); line-height: 1.4;">No infrastructure data.</p>
                 </div>
             </div>
@@ -1601,7 +1571,7 @@
           <div class="term-status-dot"></div>
           LIVE ACTIVITY STREAM
         </div>
-        <button id="clearLogBtn">CLEAR CONSOLE</button>
+        <button id="clearLogBtn" class="btn-dash btn-secondary" style="height: 38px; padding: 0 1rem; font-size: 0.7rem;">CLEAR CONSOLE</button>
       </div>
 
       <div id="logOutput" class="term-window"></div>

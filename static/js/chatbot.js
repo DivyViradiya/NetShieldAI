@@ -474,62 +474,305 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function highlightThreats(text) {
-        const patterns = {
-            'CRITICAL': /critical/gi,
-            'HIGH': /high/gi,
-            'MEDIUM': /medium/gi,
-            'LOW': /low/gi,
-            'INFO': /info/gi
-        };
-        
-        let highlighted = text;
-        // Simple word replacement for common security terms
-        highlighted = highlighted.replace(/\b(critical|high|medium|low|info)\b/gi, (match) => {
-            const cls = `threat-${match.toLowerCase()}`;
-            return `<span class="${cls}">${match}</span>`;
+        // Split-regex approach: the alternation matches either an HTML tag (returned unchanged)
+        // or a risk word in TEXT context (highlighted). This prevents corruption of CSS class names.
+        return text.replace(/(<[^>]*>)|(\b(critical|high|medium|low|info)\b)/gi, (match, tag, word) => {
+            if (tag) return tag; // HTML tag — return untouched
+            const cls = `threat-${word.toLowerCase()}`;
+            return `<span class="${cls}">${word}</span>`;
         });
-        return highlighted;
     }
 
-    // Custom Markdown parsing with threat highlighting
+    // Custom Markdown parsing with threat highlighting and report sectioning
     function parseContent(text) {
         if (!text) return "";
         try {
-            let html = marked.parse(text);
-            
-            // Wrap pre blocks in a container with a copy button
+            let processedText = text;
+
+            // ================================================================
+            // PRE-PROCESSOR: Decision Guide (PATH N — STATUS [...] blocks)
+            // Runs BEFORE marked.parse(). Marked.js leaves block-level <div>
+            // HTML untouched, so we inject card HTML here and it survives.
+            // ================================================================
+            if (/PATH\s*\d+\s*[—–\-]/m.test(processedText)) {
+                const _pathSevClass = (s) => {
+                    const l = (s || '').toLowerCase();
+                    if (l.includes('critical'))                  return 'path-critical';
+                    if (l.includes('at risk') || l.includes('risk')) return 'path-risk';
+                    if (l.includes('moderate'))                  return 'path-moderate';
+                    if (l.includes('secure') || l.includes('safe')) return 'path-secure';
+                    return '';
+                };
+
+                const firstIdx = processedText.search(/PATH\s*\d+\s*[—–\-]/m);
+                if (firstIdx !== -1) {
+                    // Everything before the first PATH block (strip trailing ━ lines)
+                    const before = processedText.substring(0, firstIdx).replace(/[━─]+[\s\n]*$/, '').trimEnd();
+                    const pathsBlock = processedText.substring(firstIdx);
+
+                    // Split into individual PATH sections on each PATH N header
+                    const sections = pathsBlock.split(/(?=\bPATH\s*\d+\s*[—–\-])/m).filter(s => s.trim());
+                    let hubHtml = '<div class="decision-grid">';
+
+                    sections.forEach(section => {
+                        const nlIdx = section.indexOf('\n');
+                        if (nlIdx === -1) return;
+                        // Strip stray ━ chars from header line
+                        const headerLine = section.substring(0, nlIdx).replace(/[━─]/g, '').trim();
+                        const bodyText   = section.substring(nlIdx + 1);
+
+                        const hm = headerLine.match(/PATH\s*(\d+)\s*[—–\-]\s*(.+?)(?:\s*\[([^\]]*)\])?\s*$/i);
+                        if (!hm) return;
+
+                        const [, num, rawStatus, metadata] = hm;
+                        const cleanStatus = rawStatus.trim();
+                        const isActive    = (metadata || '').toUpperCase().includes('YOU ARE HERE');
+                        const sevClass    = _pathSevClass(cleanStatus);
+
+                        // Parse body lines into description / steps / timeline
+                        const descParts = [], steps = [];
+                        let timeline = '';
+
+                        bodyText.split('\n').forEach(line => {
+                            const l = line.trim();
+                            if (!l || /^[━─]+/.test(l)) return;
+                            if (/^Recommended Timeline/i.test(l)) {
+                                timeline = l.replace(/^Recommended Timeline\s*:\s*/i, '').trim();
+                            } else if (l.includes('→') || l.includes('\u2192')) {
+                                l.split(/→|\u2192/).forEach(p => { const t = p.trim(); if (t) steps.push(t); });
+                            } else {
+                                descParts.push(l);
+                            }
+                        });
+
+                        const stepsHtml = steps.map((s, i) =>
+                            `<div class="path-step"><span class="path-step-num">${i + 1}</span><span class="path-step-text">${s}</span></div>`
+                        ).join('');
+
+                        const footerHtml = timeline
+                            ? `<div class="path-card-footer"><div class="path-timeline"><span class="material-symbols-outlined path-timeline-icon">schedule</span>${timeline}</div></div>`
+                            : '';
+
+                        const rightBadges = isActive
+                            ? `<span class="path-status-badge">${cleanStatus}</span><span class="path-here-badge">YOU ARE HERE</span>`
+                            : `<span class="path-status-badge">${cleanStatus}</span>`;
+
+                        hubHtml +=
+                            `<div class="path-card ${sevClass}${isActive ? ' active' : ''}">` +
+                                `<div class="path-card-header">` +
+                                    `<span class="path-num-pill">PATH ${num}</span>` +
+                                    `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">${rightBadges}</div>` +
+                                `</div>` +
+                                `<div class="path-card-body">` +
+                                    (descParts.length ? `<div class="path-description">${descParts.join(' ')}</div>` : '') +
+                                    `<div class="path-steps">${stepsHtml}</div>` +
+                                `</div>` +
+                                footerHtml +
+                            `</div>`;
+                    });
+
+                    hubHtml += '</div>';
+                    processedText = before + '\n\n' + hubHtml + '\n\n';
+                }
+            }
+
+            let html = marked.parse(processedText);
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
-            const preBlocks = tempDiv.querySelectorAll('pre');
-            
-            preBlocks.forEach(pre => {
+
+            // ===================================================================
+            // IMMERSIVE REPORT RENDERER — 7 Sequential Enrichment Passes
+            // ===================================================================
+
+            // --- PASS 1: Section Dividers (numbered H2 headers) ---
+            tempDiv.querySelectorAll('h2').forEach(h2 => {
+                const text = h2.innerText.trim();
+                const match = text.match(/^(\d+)\.\s+(.+)$/);
+                if (!match) return;
+                const div = document.createElement('div');
+                div.className = 'llm-section-divider';
+                div.innerHTML = `
+                    <div class="llm-divider-line"></div>
+                    <span class="llm-section-pill">§${match[1]}</span>
+                    <span class="llm-section-title">${match[2]}</span>
+                    <div class="llm-divider-line llm-divider-line-rev"></div>
+                `;
+                h2.replaceWith(div);
+            });
+
+            // --- PASS 2: Finding Cards (H3/H4 or bold-para matching Finding pattern) ---
+            // Detects: "Finding #1 — CSP Header Not Set | MEDIUM" in any heading level
+            // or as **strong** inside a paragraph. Wraps block into a severity-coloured card.
+            const _buildFindingCard = (num, name, sev, siblings) => {
+                const sevLower = sev.toLowerCase();
+                const card = document.createElement('div');
+                card.className = `llm-finding-card sev-${sevLower}`;
+                card.innerHTML = `
+                    <div class="llm-finding-header">
+                        <div class="llm-finding-meta">
+                            <span class="llm-finding-number">FINDING #${num}</span>
+                            <span class="llm-finding-name">${name.trim()}</span>
+                        </div>
+                        <span class="llm-severity-badge">${sev}</span>
+                    </div>
+                    <div class="llm-finding-body"></div>
+                `;
+                const body = card.querySelector('.llm-finding-body');
+                siblings.forEach(s => body.appendChild(s));
+                return card;
+            };
+
+            const _collectSiblings = (startEl) => {
+                const siblings = [];
+                let next = startEl.nextElementSibling;
+                while (next &&
+                    !['H2','H3','H4'].includes(next.tagName) &&
+                    !next.classList.contains('llm-section-divider') &&
+                    !next.classList.contains('llm-finding-card')) {
+                    const toAdd = next;
+                    next = next.nextElementSibling;
+                    siblings.push(toAdd);
+                }
+                return siblings;
+            };
+
+            // Heading-based findings (H3 / H4)
+            tempDiv.querySelectorAll('h3, h4').forEach(hx => {
+                const rawText = hx.innerText.trim();
+                const m = rawText.match(/Finding\s+#?(\d+)\s*[\u2014\u2013-]\s*(.+?)\s*\|\s*(CRITICAL|HIGH|MEDIUM|LOW|INFO)/i);
+                if (!m) return;
+                const card = _buildFindingCard(m[1], m[2], m[3], _collectSiblings(hx));
+                hx.replaceWith(card);
+            });
+
+            // Bold-paragraph-based findings (rendered as **bold** in markdown)
+            tempDiv.querySelectorAll('p').forEach(p => {
+                const strong = p.querySelector('strong');
+                if (!strong) return;
+                const rawText = strong.innerText.trim();
+                const m = rawText.match(/Finding\s+#?(\d+)\s*[\u2014\u2013-]\s*(.+?)\s*\|\s*(CRITICAL|HIGH|MEDIUM|LOW|INFO)/i);
+                if (!m) return;
+                const card = _buildFindingCard(m[1], m[2], m[3], _collectSiblings(p));
+                p.replaceWith(card);
+            });
+
+            // --- PASS 3: Table Panel Wrapping ---
+            // Each table gets a glassmorphic container with a context label.
+            // Variant classes cycle to ensure adjacent tables look different.
+            const _panelVariants = ['variant-meta', 'variant-stat', 'variant-compare', 'variant-action'];
+            let _tableIdx = 0;
+            tempDiv.querySelectorAll('table').forEach(table => {
+                if (table.closest('.llm-table-panel')) return; // Already wrapped
+                const variant = _panelVariants[_tableIdx % _panelVariants.length];
+                _tableIdx++;
+
+                // Derive a label from the nearest preceding text element
+                let prev = table.previousElementSibling;
+                let label = 'REPORT DATA';
+                while (prev) {
+                    const txt = (prev.innerText || prev.textContent || '').trim();
+                    if (txt && txt.length > 0 && txt.length < 120) {
+                        label = txt.replace(/^[#§\s]+/, '').replace(/^\d+\.\s*/, '')
+                                   .toUpperCase().substring(0, 55);
+                        break;
+                    }
+                    prev = prev.previousElementSibling;
+                }
+
+                const wrapper = document.createElement('div');
+                wrapper.className = `llm-table-panel ${variant}`;
+                wrapper.innerHTML = `<div class="llm-table-panel-header">${label}</div>`;
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            });
+
+            // --- PASS 4: Risk Label Badges (whole-cell keyword match only) ---
+            // Replaces plain text risk words in table cells with styled badge spans.
+            const _riskClassMap = {
+                'critical': 'critical', 'high': 'high', 'at risk': 'high',
+                'moderate': 'moderate', 'medium': 'moderate',
+                'low': 'low', 'safe': 'safe', 'info': 'safe'
+            };
+            tempDiv.querySelectorAll('td').forEach(td => {
+                if (td.querySelector('.llm-risk-label')) return; // Already processed
+                const txt = td.innerText.trim().toLowerCase();
+                for (const [key, cls] of Object.entries(_riskClassMap)) {
+                    if (txt === key) {
+                        const badge = document.createElement('span');
+                        badge.className = `llm-risk-label ${cls}`;
+                        badge.textContent = td.innerText.trim().toUpperCase();
+                        td.innerHTML = '';
+                        td.appendChild(badge);
+                        break;
+                    }
+                }
+            });
+
+            // --- PASS 5: Remediation Priority Row Accents ---
+            // Priority 1 → rose accent, 2 → stone, 3 → steel blue
+            tempDiv.querySelectorAll('tr').forEach(tr => {
+                const firstTd = tr.querySelector('td:first-child');
+                if (!firstTd || firstTd.querySelector('.llm-priority-badge')) return;
+                const txt = firstTd.innerText.trim();
+                if (['1','2','3'].includes(txt)) {
+                    tr.classList.add(`llm-priority-${txt}`);
+                    firstTd.innerHTML = `<span class="llm-priority-badge p${txt}">${txt}</span>`;
+                }
+            });
+
+            // --- PASS 6: Risk Score Animated Fill Bars ---
+            // Detects numeric 0-10 scores in table cells and adds an animated
+            // colour-coded background fill bar.
+            tempDiv.querySelectorAll('td').forEach(td => {
+                if (td.querySelector('.llm-risk-label,.llm-score-bar')) return;
+                const txt = td.innerText.trim();
+                const score = parseFloat(txt);
+                // Only match pure numeric values between 0–10
+                if (isNaN(score) || score < 0 || score > 10) return;
+                if (txt !== String(score) && txt !== score.toFixed(1)) return;
+
+                td.classList.add('llm-score-cell');
+                const barColor = score >= 7.5 ? 'rgba(251,113,133,0.18)' :
+                                  score >= 4.5 ? 'rgba(251,191,36,0.14)' :
+                                                 'rgba(96,165,250,0.14)';
+                const bar = document.createElement('div');
+                bar.className = 'llm-score-bar';
+                bar.style.cssText = `--bar-color: ${barColor}; width: 0%;`;
+                td.prepend(bar);
+                // Animate on next frame to trigger CSS transition
+                requestAnimationFrame(() => {
+                    setTimeout(() => { bar.style.width = (score * 10) + '%'; }, 80);
+                });
+            });
+
+            // --- PASS 7: Code Container Standardization (preserved) ---
+            tempDiv.querySelectorAll('pre').forEach(pre => {
+                if (pre.closest('.code-container')) return;
                 const container = document.createElement('div');
                 container.className = 'code-container';
-                
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'copy-code-btn';
                 copyBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">content_copy</span> Copy';
-                
-                // Wrap pre in container and add button
                 pre.parentNode.insertBefore(container, pre);
                 container.appendChild(pre);
                 container.appendChild(copyBtn);
             });
 
-            // Use IBM Plex Sans for body text, keep Code in Mono
-            const BUBBLE_FONT = "'IBM Plex Sans', sans-serif";
-            const CODE_FONT = "'JetBrains Mono', monospace";
-            tempDiv.querySelectorAll('p, li, td, th, blockquote, strong, em, span, a').forEach(el => {
-                el.style.setProperty('font-family', BUBBLE_FONT, 'important');
+            // --- Font Sanitization (preserved, with carve-outs for new elements) ---
+            const FONT_UI   = "'IBM Plex Sans', sans-serif";
+            const FONT_MONO = "'JetBrains Mono', monospace";
+            const _uiEls = 'p, li, td, th, blockquote, strong, em, a';
+            tempDiv.querySelectorAll(_uiEls).forEach(el => {
+                el.style.setProperty('font-family', FONT_UI, 'important');
             });
-            tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6, code, pre, pre *').forEach(el => {
-                el.style.setProperty('font-family', CODE_FONT, 'important');
+            tempDiv.querySelectorAll('h1, h3, h4, h5, h6, code, pre, pre *').forEach(el => {
+                el.style.setProperty('font-family', FONT_MONO, 'important');
             });
-            
+
             return highlightThreats(tempDiv.innerHTML);
         } catch (e) {
             console.error("Markdown parsing error:", e);
-            return text; // Fallback to raw text
+            return text;
         }
     }
 
@@ -592,11 +835,13 @@ document.addEventListener('DOMContentLoaded', () => {
         bubble.className = 'msg-bubble';
         
         // Define labels based on role
-        let label = 'NetShield AI';
-        if (role === 'user') label = 'Human Analyst';
-        else if (role === 'system') label = 'System Core';
-
-        bubble.setAttribute('data-label', label);
+        if (role === 'ai' || role === 'system') {
+            row.classList.add('unbounded');
+            bubble.setAttribute('data-label', ''); // Remove 'System Core' and 'NetShield AI' labels
+        } else {
+            let label = role === 'user' ? 'Human Analyst' : 'Security Log'; // Security Log as fallback
+            bubble.setAttribute('data-label', label);
+        }
         
         // Create content container
         const contentDiv = document.createElement('div');
@@ -649,8 +894,8 @@ document.addEventListener('DOMContentLoaded', () => {
         bubble.appendChild(contentDiv);
 
         if (role === 'ai' || role === 'assistant' || role === 'system') {
-            if (role !== 'system') {
-                const actions = document.createElement('div');
+            // Enable actions for all AI and System summary responses
+            const actions = document.createElement('div');
                 actions.className = 'msg-actions';
                 actions.innerHTML = `
                     <button class="action-btn copy-btn" title="Copy response"><span class="material-symbols-outlined" style="font-size:14px">content_copy</span></button>
@@ -680,7 +925,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 bubble.appendChild(actions);
-            }
         } else {
             lastUserMessage = cleanText;
         }
@@ -1155,71 +1399,98 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- 9. ACTION EXECUTION LOGIC ---
+    // Tool icon map for the action card header
+    const _toolIconMap = {
+        'nmap_scan': 'radar', 'zap_scan': 'bolt', 'ssl_scan': 'lock',
+        'sql_injection_scan': 'database', 'packet_sniffer': 'wifi_tethering',
+        'api_security_scan': 'api', 'killchain_audit': 'account_tree',
+        'semgrep_sast_scan': 'code'
+    };
+
     async function handleAction(action, isRestore = false, reattachStreamUrl = null, isCompleted = false) {
         if (!action || !action.tool) return;
 
-        const displayTool = action.tool.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-        
-        let statusMsg = "";
-        if (isCompleted) {
-             statusMsg = `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.`;
-        } else if (isRestore) {
-             statusMsg = `[HISTORY]: ${displayTool} Module was deployed.`;
+        const displayTool = action.tool.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        const toolIcon    = _toolIconMap[action.tool] || 'security';
+
+        let stateClass, stateLabel, stateIcon, stateIconSpin;
+        if (isCompleted || isRestore) {
+            stateClass = 'state-complete'; stateLabel = 'DATA ACQUIRED'; stateIcon = 'check_circle'; stateIconSpin = false;
         } else if (reattachStreamUrl) {
-             statusMsg = `[ACTIVE]: Synchronizing ${displayTool} Telemetry...`;
+            stateClass = 'state-active';   stateLabel = 'SYNCHRONIZING'; stateIcon = 'sync';          stateIconSpin = true;
         } else {
-             statusMsg = `[ANALYSIS]: Deploying ${displayTool} Module...`;
+            stateClass = 'state-deploy';   stateLabel = 'DEPLOYING';     stateIcon = 'sync';          stateIconSpin = true;
         }
-        
-        // Format Parameters nicely
-        let paramsHtml = '<div style="display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin-top: 10px;">';
+
+        // Build parameter rows
+        let paramRowsHtml = '';
         if (action.parameters) {
             for (const [key, value] of Object.entries(action.parameters)) {
-                paramsHtml += `
-                    <span style="color:var(--neo-blue); font-weight:700; text-transform:uppercase; font-size:0.6rem; letter-spacing:0.05em; align-self: center;">${key.replace(/_/g, ' ')}:</span>
-                    <span style="color:#adbac7; word-break:break-all; font-family:var(--font-code); font-size:0.75rem; background: rgba(255,255,255,0.03); padding: 2px 6px; border-radius: 4px;">${value}</span>
-                `;
+                paramRowsHtml += `
+                    <div class="ac-param-row">
+                        <span class="ac-param-key">${key.replace(/_/g, ' ')}</span>
+                        <span class="ac-param-val">${value}</span>
+                    </div>`;
             }
         }
-        paramsHtml += '</div>';
 
-        // Add a system-style message to the chat
+        const terminalHidden = (isRestore || isCompleted) ? 'display:none' : (reattachStreamUrl ? '' : 'display:none');
+        const footerHidden   = (isRestore || isCompleted) ? '' : 'display:none';
+        const dlHidden       = (isRestore || isCompleted) ? '' : 'display:none';
+        const footerLabel    = (isRestore || isCompleted) ? 'DATASET LOADED FROM CACHE.' : 'SYNCHRONIZING ANALYTICS...';
+
         const row = document.createElement('div');
         row.className = 'msg-row system-action';
         row.innerHTML = `
-            <div class="msg-bubble action-bubble ${isRestore || isCompleted ? 'success' : ''}" style="border-color: rgba(59, 130, 246, 0.5) !important;">
-                <div class="action-header" style="display: flex; align-items: center; gap: 10px; color: var(--neo-blue); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em;">
-                    <span class="material-symbols-outlined ${isRestore || isCompleted ? '' : 'spin'}" style="font-size: 1.2rem;">${isRestore || isCompleted ? 'check_circle' : 'sync'}</span>
-                    <span class="header-text">${statusMsg}</span>
-                </div>
-                <div class="action-details">
-                    ${paramsHtml}
-                    <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;">
-                        <button class="action-btn btn-redirect" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px;">VIEW MODULE PAGE</button>
-                        <button class="action-btn btn-download" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; ${isRestore || isCompleted ? 'display: block;' : 'display: none;'}">DOWNLOAD PDF REPORT</button>
+            <div class="action-card ${stateClass}">
+                <div class="ac-header">
+                    <div class="ac-title-group">
+                        <div class="ac-tool-icon">
+                            <span class="material-symbols-outlined">${toolIcon}</span>
+                        </div>
+                        <div class="ac-tool-info">
+                            <span class="ac-tool-name">${displayTool}</span>
+                            <span class="ac-tool-sub">Security Module</span>
+                        </div>
+                    </div>
+                    <div class="ac-state-badge">
+                        <span class="material-symbols-outlined ac-state-icon${stateIconSpin ? ' spin' : ''}">${stateIcon}</span>
+                        <span>${stateLabel}</span>
                     </div>
                 </div>
-                <div class="terminal-container" style="${isRestore || isCompleted ? 'display:none;' : (reattachStreamUrl ? 'display:flex;' : 'display:none;')} margin-top: 1.5rem; border: 1px solid rgba(255,255,255,0.05);">
-                    <div class="terminal-header" style="background: rgba(255,255,255,0.05); height: 36px; display: flex; align-items: center; padding: 0 1rem; gap: 1.5rem;">
-                        <div class="terminal-title" style="flex-shrink: 0;">
-                            <span class="material-symbols-outlined" style="font-size: 0.9rem;">terminal</span>
-                            TELEMETRY
+
+                ${paramRowsHtml ? `<div class="ac-params">${paramRowsHtml}</div>` : ''}
+
+                <div class="ac-actions">
+                    <button class="ac-btn btn-redirect">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">open_in_new</span>
+                        VIEW MODULE
+                    </button>
+                    <button class="ac-btn btn-download" style="${dlHidden}">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">download</span>
+                        PDF REPORT
+                    </button>
+                </div>
+
+                <div class="ac-terminal" style="${terminalHidden}">
+                    <div class="ac-terminal-header">
+                        <div class="ac-terminal-title">
+                            <span class="material-symbols-outlined" style="font-size:0.85rem">terminal</span>
+                            LIVE TELEMETRY
                         </div>
-                        
-                        <div class="progress-container" style="display: none; flex: 1; align-items: center; gap: 1rem;">
-                            <div style="flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
-                                <div class="progress-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--neo-blue), var(--neo-cyan)); transition: width 0.4s ease;"></div>
+                        <div class="progress-container" style="display:none; flex:1; align-items:center; gap:0.75rem; max-width:240px;">
+                            <div class="ac-progress-track">
+                                <div class="progress-fill"></div>
                             </div>
-                            <span class="progress-percent" style="font-size: 0.65rem; color: var(--neo-blue); font-weight: 700; font-family: var(--font-code); min-width: 30px; text-align: right;">0%</span>
+                            <span class="progress-percent">0%</span>
                         </div>
                     </div>
                     <div class="terminal-body"></div>
                 </div>
-                <div class="action-footer" style="${isRestore || isCompleted ? 'display:flex;' : 'display:none;'} margin-top:1rem; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:0.75rem;">
-                    <span class="status-badge" style="font-size:0.65rem; color:#10b981; font-family:var(--font-code); display: flex; align-items: center; gap: 6px;">
-                        <span class="material-symbols-outlined" style="font-size: 1rem;">insights</span>
-                        ${isRestore || isCompleted ? 'DATASET LOADED FROM CACHE.' : 'SYNCHRONIZING ANALYTICS...'}
-                    </span>
+
+                <div class="ac-footer" style="${footerHidden}">
+                    <span class="material-symbols-outlined" style="font-size:0.9rem">insights</span>
+                    <span class="status-badge">${footerLabel}</span>
                 </div>
             </div>
         `;
@@ -1291,15 +1562,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.status === 'success') {
                 setupStreaming(result.stream_url, row, displayTool, action.tool, btnDownload);
             } else {
-                bubble.classList.remove('success');
-                bubble.classList.add('error');
-                icon.textContent = 'error';
-                icon.classList.remove('spin');
-                headerText.textContent = `[FAILED]: ${displayTool.toUpperCase()} CORE OFFLINE.`;
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'action-error-text';
+                const card = row.querySelector('.action-card');
+                const stateIcon = row.querySelector('.ac-state-icon');
+                const stateBadge = row.querySelector('.ac-state-badge');
+                if (card) { card.classList.remove('state-deploy'); card.classList.add('state-error'); }
+                if (stateIcon) { stateIcon.textContent = 'error'; stateIcon.classList.remove('spin'); }
+                if (stateBadge) stateBadge.querySelector('span:last-child').textContent = 'OFFLINE';
+                const errorDiv = document.createElement('p');
+                errorDiv.className = 'ac-prompt-text';
+                errorDiv.style.color = '#fb7185';
                 errorDiv.textContent = result.message || "Unknown scanner initialization error.";
-                row.querySelector('.action-details').appendChild(errorDiv);
+                row.querySelector('.ac-params')?.appendChild(errorDiv) || row.querySelector('.action-card')?.appendChild(errorDiv);
             }
         } catch (e) {
             console.error("Action execution failed:", e);
@@ -1310,20 +1583,19 @@ document.addEventListener('DOMContentLoaded', () => {
      * Internal helper to manage the SSE stream for terminal output
      */
     function setupStreaming(streamUrl, row, displayTool, toolName, btnDownload) {
-        const bubble = row.querySelector('.msg-bubble');
-        const icon = row.querySelector('.action-header .material-symbols-outlined');
-        const headerText = row.querySelector('.header-text');
-        const terminalContainer = row.querySelector('.terminal-container');
+        const card        = row.querySelector('.action-card');
+        const stateIcon   = row.querySelector('.ac-state-icon');
+        const stateBadge  = row.querySelector('.ac-state-badge span:last-child');
+        const terminalEl  = row.querySelector('.ac-terminal');
         const terminalBody = row.querySelector('.terminal-body');
 
-        bubble.classList.add('success');
-        icon.textContent = 'check_circle';
-        icon.classList.remove('spin');
-        headerText.textContent = `[SUCCESS]: ${displayTool.toUpperCase()} CORE ACTIVE.`;
-        
-        terminalContainer.style.display = 'flex';
+        if (card)      { card.classList.remove('state-deploy'); card.classList.add('state-active'); }
+        if (stateIcon) { stateIcon.textContent = 'check_circle'; stateIcon.classList.remove('spin'); }
+        if (stateBadge) stateBadge.textContent = 'CORE ACTIVE';
+
+        if (terminalEl) terminalEl.style.display = '';
         const eventSource = new EventSource(streamUrl);
-        
+
         eventSource.onmessage = (e) => {
             if (e.data === ': keep-alive') return;
 
@@ -1416,22 +1688,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function promptForAnalysis(tool) {
         scrollToBottom();
-        
+
         const row = document.createElement('div');
-        row.className = 'msg-row system system-action';
+        row.className = 'msg-row system-action';
         row.innerHTML = `
-            <div class="msg-bubble action-bubble" style="border-radius: 12px; border-color: rgba(59, 130, 246, 0.5) !important;">
-                <div class="action-header" style="display: flex; align-items: center; gap: 10px; color: var(--neo-blue); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em;">
-                    <span class="material-symbols-outlined" style="font-size: 1.2rem;">help</span>
-                    <span class="header-text">Scan Complete. Would you like the AI to analyze the PDF report?</span>
+            <div class="action-card state-prompt">
+                <div class="ac-header">
+                    <div class="ac-title-group">
+                        <div class="ac-tool-icon" style="--ac-icon-bg: rgba(59,130,246,0.1); --ac-icon-color: var(--neo-blue);">
+                            <span class="material-symbols-outlined">smart_toy</span>
+                        </div>
+                        <div class="ac-tool-info">
+                            <span class="ac-tool-name">AI Analysis Ready</span>
+                            <span class="ac-tool-sub">Scan complete — dataset acquired</span>
+                        </div>
+                    </div>
+                    <div class="ac-state-badge" style="--ac-badge-color: var(--neo-blue); --ac-badge-bg: rgba(59,130,246,0.08);">
+                        <span class="material-symbols-outlined ac-state-icon">help_outline</span>
+                        <span>ACTION REQUIRED</span>
+                    </div>
                 </div>
-                <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;" class="prompt-actions">
-                    <button class="action-btn btn-yes" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #10b981;">YES, ANALYZE</button>
-                    <button class="action-btn btn-no" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #ef4444;">NO, SKIP</button>
+                <p class="ac-prompt-text">The scan completed successfully. Would you like the AI Analyst to parse the PDF report and generate a structured security assessment?</p>
+                <div class="ac-actions prompt-actions">
+                    <button class="ac-btn btn-yes">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">analytics</span>
+                        YES, ANALYZE
+                    </button>
+                    <button class="ac-btn btn-no">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">close</span>
+                        SKIP
+                    </button>
                 </div>
             </div>
         `;
-        
+
         ui.chatHistory.appendChild(row);
         scrollToBottom();
 

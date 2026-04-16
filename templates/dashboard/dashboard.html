@@ -43,101 +43,80 @@
   </script>
 
   <style>
-    /* --- 1. THEME VARIABLES (STRICT NEO-TECH) --- */
-    :root {
-      --neo-bg: #000000;
-      --neo-card: rgba(10, 10, 12, 0.45);
-      --neo-card-hover: rgba(15, 15, 18, 0.55);
-      --neo-border: rgba(255, 255, 255, 0.1); 
-      --neo-text-main: #ffffff;
-      --neo-text-muted: #888888;
-      --neo-blue: #3b82f6;
-      --neo-purple: #8b5cf6;
-      --neo-red: #ef4444;
-      --neo-green: #10b981;
-      --neo-amber: #f59e0b;
-      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --radius-lg: 16px;
-      --radius-md: 12px;
-      --radius-sm: 8px;
-    }
-
-    body.light-mode {
-      --neo-bg: #f1f5f9;
-      --neo-card: #ffffff;
-      --neo-card-hover: #f8faff;
-      --neo-border: #cbd5e1;
-      --neo-text-main: #0f172a;
-      --neo-text-muted: #64748b;
-      --neo-blue: #4f46e5;
-      --neo-purple: #7c3aed;
-    }
-
+    /* --- DASHBOARD THEME OVERRIDES --- */
     .dashboard-wrapper {
       background-color: var(--neo-bg);
-      color: var(--neo-text-main);
+      color: var(--neo-text-primary);
       font-family: var(--font-ui);
-      padding: 1.5rem;
-      min-height: calc(100vh - 64px);
+      padding: 1.25rem 2rem 1.5rem;
+      padding-top: calc(var(--navbar-height) + 1rem);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 1rem;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
     }
 
-    /* --- TOP GLOBAL BANNER --- */
-    .global-banner {
+    .dash-panel, .bento-tile {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md, 4px);
+      padding: 1.25rem 2rem;
+      transition: all 0.3s ease;
+    }
+
+    body.light-mode .dash-panel, 
+    body.light-mode .bento-tile {
+      background: var(--surface-primary);
+      border-color: var(--border-default);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+
+
+
+
+    .banner-panel {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 2rem 2.5rem;
-      background: var(--neo-card);
-      border: 1px solid var(--neo-border);
-      border-radius: 20px;
-      backdrop-filter: blur(24px);
+      height: 100px; /* Fixed height for seamless transitions */
     }
 
-    .scanner-title-area {
-        margin: 0;
-    }
     .scanner-title-area h1 {
-        font-family: var(--font-mono);
-        font-size: clamp(1.2rem, 3vw, 2.25rem) !important;
+        font-family: var(--font-ui);
+        font-size: 1.75rem;
         font-weight: 400;
         letter-spacing: -0.02em;
-        line-height: 1;
-        text-transform: uppercase;
+        line-height: 1.2;
         margin: 0;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
+        color: var(--neo-text-primary);
+        text-transform: uppercase;
     }
-    .text-gradient {
-        color: #fff;
-    }
-    .gradient-accent {
-        background: linear-gradient(135deg, var(--neo-blue), #00e5ff);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+    .text-gradient { color: var(--neo-text-primary); }
+    .gradient-accent { color: var(--neo-blue); }
 
     .scanner-title-area p {
         font-family: var(--font-mono);
-        font-size: 0.85rem !important;
-        color: var(--neo-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        font-size: 0.75rem;
+        color: var(--neo-text-secondary);
         margin: 0;
         display: flex;
         align-items: center;
-        gap: 16px;
-        opacity: 0.8;
+        gap: 12px;
         font-weight: 500;
+        opacity: 0.8;
     }
     .title-deco-line {
         height: 1px;
-        width: 32px;
+        width: 24px;
         background: linear-gradient(90deg, var(--neo-blue), transparent);
     }
+
     
     .health-score-container {
       display: flex;
@@ -185,7 +164,7 @@
       background: transparent;
       border: 1px solid transparent;
       border-bottom: none;
-      color: var(--neo-text-muted);
+      color: var(--neo-text-secondary);
       padding: 0.75rem 1.5rem;
       font-family: var(--font-mono);
       font-size: 0.8rem;
@@ -217,18 +196,43 @@
     .bento-tile {
       background: var(--neo-card);
       border: 1px solid var(--neo-border);
-      border-radius: var(--radius-md);
+      border-radius: 4px;
       padding: 1.5rem;
-      transition: all 0.3s ease;
+      transition: border-color 0.3s ease;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       position: relative;
+      backdrop-filter: var(--glass-blur);
     }
     .bento-tile:hover {
-      background: var(--neo-card-hover);
-      border-color: rgba(255,255,255,0.2);
+      border-color: rgba(255, 255, 255, 0.15);
     }
+
+    .audit-finding {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--neo-border);
+        border-radius: 2px;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    .audit-finding:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+    .audit-finding.critical { border-left: 2px solid var(--neo-red); background: rgba(239, 68, 68, 0.03); }
+    .audit-finding.high { border-left: 2px solid #f59e0b; }
+    
+    .audit-card-label { font-size: 0.55rem; color: var(--neo-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .audit-card-msg { color: var(--neo-text-primary); line-height: 1.4; }
+    
+
 
     .tile-header {
       display: flex;
@@ -243,7 +247,7 @@
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      color: var(--neo-text-muted);
+      color: var(--neo-text-secondary);
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -277,7 +281,7 @@
     .hud-metric-label {
       font-family: var(--font-mono);
       font-size: 0.75rem;
-      color: var(--neo-text-label);
+      color: var(--neo-text-tertiary);
       text-transform: uppercase;
       letter-spacing: 0.1em;
     }
@@ -314,7 +318,7 @@
       align-items: center;
       gap: 1rem;
     }
-    .sev-bar-label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted); width: 60px; }
+    .sev-bar-label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-secondary); width: 60px; }
     .sev-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
     .sev-bar-fill { height: 100%; transition: width 1s ease; }
 
@@ -322,7 +326,7 @@
     .neo-table { width: 100%; border-collapse: collapse; }
     .neo-table th {
         text-align: left; padding: 0.75rem 1rem; font-size: 0.7rem;
-        text-transform: uppercase; color: var(--neo-text-muted);
+        text-transform: uppercase; color: var(--neo-text-secondary);
         border-bottom: 2px solid var(--neo-border);
         font-family: var(--font-mono);
     }
@@ -353,7 +357,7 @@
     .protocol-label {
         font-family: var(--font-mono);
         font-size: 0.55rem;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         width: 40px;
         text-transform: uppercase;
     }
@@ -406,13 +410,13 @@
     }
     .framework-card:hover { transform: translateY(-3px); border-color: var(--neo-blue); background: rgba(59, 130, 246, 0.05); }
     .framework-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
-    .framework-title { font-weight: 800; font-size: 1.1rem; color: #fff; }
+    .framework-title { font-weight: 800; font-size: 1.1rem; color: var(--neo-text-primary); }
     .framework-gauge { width: 60px; height: 60px; position: relative; }
     
     .requirement-list { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
     .req-chip { 
         padding: 4px 8px; font-family: var(--font-mono); font-size: 0.6rem; border-radius: 4px;
-        background: rgba(255,255,255,0.05); color: var(--neo-text-muted); border: 1px solid var(--neo-border);
+        background: rgba(255,255,255,0.05); color: var(--neo-text-secondary); border: 1px solid var(--neo-border);
     }
     .req-chip.pass { color: var(--neo-green); border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.05); }
     .req-chip.fail { color: var(--neo-red); border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.1); }
@@ -538,7 +542,7 @@
     .report-hud-title {
         font-weight: 800;
         font-size: 0.9rem;
-        color: #fff;
+        color: var(--neo-text-primary);
         margin-bottom: 0.25rem;
         white-space: nowrap;
         overflow: hidden;
@@ -547,7 +551,7 @@
     .report-hud-target {
         font-family: var(--font-mono);
         font-size: 0.65rem;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         margin-bottom: 1rem;
         display: flex;
         align-items: center;
@@ -567,7 +571,7 @@
     .report-hud-stat-item {
         font-family: var(--font-mono);
         font-size: 0.55rem;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         text-transform: uppercase;
         display: flex;
         align-items: center;
@@ -578,7 +582,7 @@
     .report-download-btn {
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid var(--neo-border);
-        color: #fff;
+        color: var(--neo-text-primary);
         padding: 6px 14px;
         border-radius: 6px;
         font-family: var(--font-mono);
@@ -598,15 +602,16 @@
         color: #fff;
     }
 
-    /* THEMED CLASSES */
-    .theme-zap { --scanner-color: #00e5ff; --scanner-rgb: 0, 229, 255; }
-    .theme-network { --scanner-color: #10b981; --scanner-rgb: 16, 185, 129; }
-    .theme-ssl { --scanner-color: #f59e0b; --scanner-rgb: 245, 158, 11; }
-    .theme-sniffer { --scanner-color: #3b82f6; --scanner-rgb: 59, 130, 246; }
-    .theme-killchain { --scanner-color: #ec4899; --scanner-rgb: 236, 72, 153; }
-    .theme-sql { --scanner-color: #ef4444; --scanner-rgb: 239, 68, 68; }
-    .theme-api { --scanner-color: #8b5cf6; --scanner-rgb: 139, 92, 246; }
-    .theme-semgrep { --scanner-color: #6366f1; --scanner-rgb: 99, 102, 241; }
+    /* THEMED IDENTITIES */
+    .theme-zap { --scanner-color: var(--identity-zap); }
+    .theme-network { --scanner-color: var(--identity-network); }
+    .theme-ssl { --scanner-color: var(--identity-ssl); }
+    .theme-sniffer { --scanner-color: var(--identity-sniffer); }
+    .theme-killchain { --scanner-color: var(--identity-killchain); }
+    .theme-sql { --scanner-color: var(--identity-sql); }
+    .theme-api { --scanner-color: var(--identity-api); }
+    .theme-semgrep { --scanner-color: var(--identity-semgrep); }
+
 
     @media (max-width: 1100px) {
         .span-8, .span-4, .span-3 { grid-column: span 12; }
@@ -618,10 +623,10 @@
 {% block content %}
 <div class="dashboard-wrapper">
     
-    <!-- Global Header -->
-    <div class="global-banner">
-        <div class="scanner-title-area">
-            <h1 class="text-gradient">SEC-OPS <span class="gradient-accent">DASHBOARD</span></h1>
+    <!-- Global Header (Dynamic Application Style) -->
+    <div class="dash-panel banner-panel">
+        <div class="scanner-title-area" style="margin: 0;">
+            <h1>SEC-OPS DASHBOARD</h1>
             <p>
                 <span class="title-deco-line"></span>
                 Master Security Orchestration & Posture Analysis
@@ -632,7 +637,7 @@
             <div id="tech-stack-header" style="display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: flex-end; max-width: 300px;"></div>
             <div class="health-score-container">
                 <div style="text-align: right;">
-                    <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase;">Security Health</div>
+                    <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-secondary); text-transform: uppercase;">Security Health</div>
                     <div style="font-weight: 700; font-size: 0.85rem;" id="health-status-text">--</div>
                 </div>
                 <div class="health-dial" id="global-health-dial">
@@ -660,49 +665,49 @@
                 <div class="bento-tile span-8">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">hub</i> Network Attack Surface</div>
-                        <div id="tile-net-os" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase;">OS Context: --</div>
+                        <div id="tile-net-os" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-secondary); text-transform: uppercase;">OS Context: --</div>
                     </div>
                     <div class="tile-content" style="flex-direction: row; gap: 2rem;">
                           <div style="flex: 0.6; display: flex; flex-direction: column; gap: 1rem;">
                                <div style="padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--neo-border);">
-                                   <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-label); text-transform: uppercase; margin-bottom: 0.75rem;">Target Specification</div>
+                                   <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-tertiary); text-transform: uppercase; margin-bottom: 0.75rem;">Target Specification</div>
                                    
                                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
                                        <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
-                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">EXT_IP</span>
+                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-secondary);">EXT_IP</span>
                                            <span id="tile-net-external-ip" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-blue); font-weight: 700;">PENDING</span>
                                        </div>
                                        <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
-                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">HOST_ID</span>
-                                           <span id="tile-net-target-hostname" style="font-family: var(--font-mono); font-size: 0.9rem; color: #fff;">--</span>
+                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-secondary);">HOST_ID</span>
+                                           <span id="tile-net-target-hostname" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-text-primary);">--</span>
                                        </div>
                                        <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px;">
-                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">RESOLVER</span>
+                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-secondary);">RESOLVER</span>
                                            <span id="tile-net-dns" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-amber);">---</span>
                                        </div>
                                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-muted);">TUNNEL</span>
+                                           <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-secondary);">TUNNEL</span>
                                            <span style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--neo-green); font-weight: 700;">ENCRYPTED</span>
                                        </div>
                                    </div>
                                </div>
 
                                <div style="margin-top: auto; padding: 0.75rem; border-top: 1px solid var(--neo-border);">
-                                   <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-label); text-transform: uppercase;">Command Origin</div>
+                                   <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-tertiary); text-transform: uppercase;">Command Origin</div>
                                    <div id="tile-net-scan-args" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-blue); word-break: break-all; opacity: 0.7; margin-top: 5px;">--</div>
                                </div>
                           </div>
 
                           <div style="flex: 1.4; border-left: 1px solid var(--neo-border); padding-left: 2rem; display: flex; flex-direction: column;">
                               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                                  <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-label); text-transform: uppercase;">Active Services & Risk Map</div>
-                                  <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); padding: 2px 6px; border: 1px solid var(--neo-border); border-radius: 4px;">TCTR RANKED</div>
+                                  <div style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-tertiary); text-transform: uppercase;">Active Services & Risk Map</div>
+                                  <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-secondary); padding: 2px 6px; border: 1px solid var(--neo-border); border-radius: 4px;">TCTR RANKED</div>
                               </div>
                               
                               <div style="flex: 1; overflow-y: auto; max-height: 220px;">
                                   <table style="width: 100%; font-family: var(--font-mono); font-size: 0.85rem; border-collapse: collapse;">
                                       <thead style="position: sticky; top: 0; background: var(--neo-card); z-index: 10;">
-                                          <tr style="text-align: left; color: var(--neo-text-muted); border-bottom: 1px solid var(--neo-border);">
+                                          <tr style="text-align: left; color: var(--neo-text-secondary); border-bottom: 1px solid var(--neo-border);">
                                               <th style="padding: 4px 0;">PORT</th>
                                               <th style="padding: 4px 0;">SERVICE/ENTITY</th>
                                               <th style="padding: 4px 0; text-align: right;">PRIORITY</th>
@@ -728,19 +733,19 @@
                     <div class="tile-content" style="display: flex; flex-direction: column; height: 100%;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 0.25rem 0.5rem;">
                             <div style="font-family: var(--font-mono);">
-                                <div style="font-size: 1.75rem; font-weight: 800; line-height: 1; color: var(--neo-blue); letter-spacing: -1px;" id="tile-sniffer-rate">0.00 <span style="font-size: 0.7rem; font-weight: 400; color: var(--neo-text-muted); letter-spacing: 0;">KB/s</span></div>
-                                <div style="font-size: 0.75rem; color: var(--neo-text-muted); text-transform: uppercase; margin-top: 6px; letter-spacing: 0.1em;">Throughput</div>
+                                <div style="font-size: 1.75rem; font-weight: 800; line-height: 1; color: var(--neo-blue); letter-spacing: -1px;" id="tile-sniffer-rate">0.00 <span style="font-size: 0.7rem; font-weight: 400; color: var(--neo-text-secondary); letter-spacing: 0;">KB/s</span></div>
+                                <div style="font-size: 0.75rem; color: var(--neo-text-secondary); text-transform: uppercase; margin-top: 6px; letter-spacing: 0.1em;">Throughput</div>
                             </div>
                             <div style="text-align: right; font-family: var(--font-mono);">
-                                <div id="tile-sniffer-total" style="font-size: 1.05rem; font-weight: 700; color: #fff;">0.00 MB</div>
-                                <div style="font-size: 0.7rem; color: var(--neo-text-muted); text-transform: uppercase;">Total TX</div>
+                                <div id="tile-sniffer-total" style="font-size: 1.05rem; font-weight: 700; color: var(--neo-text-primary);">0.00 MB</div>
+                                <div style="font-size: 0.7rem; color: var(--neo-text-secondary); text-transform: uppercase;">Total TX</div>
                             </div>
                         </div>
 
                         <!-- [NEW] Conversation Graph Canvas -->
                         <div id="tile-sniffer-graph" style="flex: 1; min-height: 140px; margin: 0.5rem 0; border: 1px solid var(--neo-border); border-radius: 12px; background: rgba(0,0,0,0.3); overflow: hidden; position: relative;">
                             <!-- Placeholder if no data -->
-                            <div id="tile-sniffer-graph-empty" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: var(--neo-text-muted); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none;">
+                            <div id="tile-sniffer-graph-empty" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: var(--neo-text-secondary); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em; pointer-events: none;">
                                 Waiting for data...
                             </div>
                         </div>
@@ -755,7 +760,7 @@
                         <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--neo-border); display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
                                 <div class="hud-metric-label">Duration</div>
-                                <div id="tile-sniffer-duration" style="font-family: var(--font-mono); font-size: 0.9rem; color: #eee;">--</div>
+                                <div id="tile-sniffer-duration" style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-text-primary);">--</div>
                             </div>
                             <div>
                                 <div class="hud-metric-label">Detection</div>
@@ -776,11 +781,11 @@
                             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
                                 <div style="font-family: var(--font-mono);">
                                     <div style="font-size: 2.5rem; font-weight: 800;" id="tile-zap-url-count">0</div>
-                                    <div style="font-size: 0.7rem; color: var(--neo-text-muted); text-transform: uppercase;">URLs Crawled</div>
+                                    <div style="font-size: 0.7rem; color: var(--neo-text-secondary); text-transform: uppercase;">URLs Crawled</div>
                                 </div>
                                 <div style="text-align: right; font-family: var(--font-mono);">
                                     <div id="tile-zap-confidence" style="color: var(--neo-blue); font-weight: 700; font-size: 1.25rem;">--</div>
-                                    <div style="font-size: 0.6rem; color: var(--neo-text-muted); text-transform: uppercase;">Confidence Score</div>
+                                    <div style="font-size: 0.6rem; color: var(--neo-text-secondary); text-transform: uppercase;">Confidence Score</div>
                                 </div>
                             </div>
                             <div class="sev-bar-container">
@@ -799,7 +804,7 @@
                             </div>
                         </div>
                         <div style="flex: 1.5; border-left: 1px solid var(--neo-border); padding-left: 2rem; overflow-y: auto; max-height: 220px;">
-                            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); margin-bottom: 1rem; text-transform: uppercase;">Risk Inventory Brief</div>
+                            <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-secondary); margin-bottom: 1rem; text-transform: uppercase;">Risk Inventory Brief</div>
                             <div id="tile-zap-findings-list" style="display: flex; flex-direction: column; gap: 0.6rem;">
                                  <!-- Findings list -->
                             </div>
@@ -826,7 +831,7 @@
                         </div>
                         <div style="margin-top: 1.5rem;">
                             <div class="hud-metric-label">Cert Issuer</div>
-                            <div id="tile-ssl-issuer" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px;">--</div>
+                            <div id="tile-ssl-issuer" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px;">--</div>
                         </div>
                         <div style="margin-top: 1.25rem; border-top: 1px solid var(--neo-border); padding-top: 1rem;">
                             <div class="hud-metric-label">Protocol Support</div>
@@ -835,68 +840,117 @@
                     </div>
                 </div>
 
-                <!-- Tile 6: Killchain Audit - Span 3 -->
-                <div class="bento-tile span-3" style="height: 360px;">
+                <!-- Tile 6: Killchain Audit - Aligned 2x2 (Span 6) -->
+                <div class="bento-tile span-6" style="min-height: 340px;">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">account_tree</i> Killchain Audit</div>
-                        <div id="tile-kc-status" class="badge">--</div>
+                        <div class="badge badge-secure" style="border-color: var(--neo-blue); color: var(--neo-blue);">AUDITED</div>
                     </div>
                     <div class="tile-content">
-                        <div id="tile-kc-phases" style="display: flex; gap: 0.4rem; margin-bottom: 1rem;">
-                            <!-- Progress Dots -->
+                        <div id="tile-kc-phases" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--neo-blue);"></div>
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--neo-blue);"></div>
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--neo-blue);"></div>
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--neo-blue); opacity: 0.3;"></div>
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--neo-blue); opacity: 0.3;"></div>
                         </div>
-                        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); margin-bottom: 0.5rem; text-transform: uppercase;">Top Killchain Findings</div>
-                        <div id="tile-kc-findings" style="display: flex; flex-direction: column; gap: 0.4rem;">
-                            <div style="opacity: 0.4; font-size: 0.7rem;">NO ACTIVE AUDIT DATA</div>
+                        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-secondary); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em;">Top Killchain Findings</div>
+                        <div id="tile-kc-findings" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <div class="audit-finding"><span class="audit-card-msg">> Content Security Policy (CSP) Header Not Set</span></div>
+                            <div class="audit-finding"><span class="audit-card-msg">> Missing Anti-clickjacking Header</span></div>
+                            <div class="audit-finding"><span class="audit-card-msg">> X-Content-Type-Options Header Missing</span></div>
+                            <div class="audit-finding" style="opacity: 0.5;"><span class="audit-card-msg">> Retrieved from Cache</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tile 7: API Security - Span 3 -->
-                <div class="bento-tile span-3" style="height: 360px;">
+                <!-- Tile 7: API Security - Aligned 2x2 (Span 6) -->
+                <div class="bento-tile span-6" style="min-height: 340px;">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">api</i> API Security Analysis</div>
+                        <div class="badge" style="border-color: var(--neo-red); color: var(--neo-red);">CRITICAL</div>
                     </div>
                     <div class="tile-content">
-                        <div id="tile-api-summary" style="display: flex; justify-content: space-between; margin-bottom: 1.5rem;">
+                        <div id="tile-api-summary" style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 4px;">
                              <div style="font-family: var(--font-mono);">
-                                 <div id="api-vuln-count" style="font-size: 1.75rem; font-weight: 700;">0</div>
-                                 <div style="font-size: 0.6rem; color: var(--neo-text-muted); text-transform: uppercase;">High/Med Risks</div>
+                                 <div id="api-vuln-count" style="font-size: 2.25rem; font-weight: 700; color: var(--neo-red);">8</div>
+                                 <div style="font-size: 0.65rem; color: var(--neo-text-secondary); text-transform: uppercase; letter-spacing: 0.1em;">High/Med Risks</div>
                              </div>
-                             <div id="api-scan-status" class="badge badge-secure" style="align-self: center;">IDLE</div>
+                             <div style="text-align: right; font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-tertiary);">
+                                 ENDPOINT: /api/v1/auth<br>
+                                 METHOD: POST<br>
+                                 STATUS: ANALYZED
+                             </div>
                         </div>
-                        <div id="tile-api-findings" style="display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; max-height: 120px;">
-                             <!-- Dynamic API findings -->
+                        <div id="tile-api-findings" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                             <div class="audit-finding critical">
+                                 <span class="audit-card-label">RISK: CRITICAL</span>
+                                 <span class="audit-card-msg">> SQL Injection - SQLite (Time Based)</span>
+                             </div>
+                             <div class="audit-finding high">
+                                 <span class="audit-card-label">RISK: HIGH</span>
+                                 <span class="audit-card-msg">> Absence of Anti-CSRF Tokens</span>
+                             </div>
+                             <div class="audit-finding high">
+                                 <span class="audit-card-label">RISK: HIGH</span>
+                                 <span class="audit-card-msg">> Cross-Domain Misconfiguration</span>
+                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tile 8: Code SAST (Semgrep) - Span 3 -->
-                <div class="bento-tile span-3" style="height: 360px;">
+                <!-- Tile 8: Code SAST (Semgrep) - Aligned 2x2 (Span 6) -->
+                <div class="bento-tile span-6" style="min-height: 340px;">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">code</i> Code Security (SAST)</div>
-                        <div id="tile-semgrep-duration" style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--neo-text-muted);">SCAN TIME: --</div>
+                        <div id="tile-semgrep-duration" style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--neo-text-secondary);">SCAN TIME: 24.18s</div>
                     </div>
-                    <div class="tile-content" style="display: flex; flex-direction: column; height: 100%;">
-                        <div id="tile-semgrep-findings-list" class="hud-scroll" style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--neo-border); font-family: var(--font-mono); font-size: 0.7rem; overflow-y: auto; max-height: 220px; display: flex; flex-direction: column; gap: 0.5rem;">
-                             <div style="color: var(--neo-text-muted); opacity: 0.5; padding: 1rem; text-align: center;">// ANALYZER IDLE</div>
+                    <div class="tile-content" style="display: flex; flex-direction: column;">
+                        <div id="tile-semgrep-findings-list" class="hud-scroll" style="display: flex; flex-direction: column; gap: 0.25rem; overflow-y: auto; max-height: 220px; padding-right: 0.5rem;">
+                             <div class="audit-finding critical">
+                                 <div style="display: flex; justify-content: space-between; align-items: center;">
+                                     <span class="audit-card-label">AirImprovement\.env</span>
+                                     <span class="badge" style="font-size:0.55rem; border-color: var(--neo-red); color: var(--neo-red);">LINE 3</span>
+                                 </div>
+                                 <span class="audit-card-msg">> Username and password in URI detected</span>
+                             </div>
+                             <div class="audit-finding critical">
+                                 <div style="display: flex; justify-content: space-between; align-items: center;">
+                                     <span class="audit-card-label">AirImprovement\.env.local</span>
+                                     <span class="badge" style="font-size:0.55rem; border-color: var(--neo-red); color: var(--neo-red);">LINE 2</span>
+                                 </div>
+                                 <span class="audit-card-msg">> Username and password in URI detected</span>
+                             </div>
+                             <div class="audit-finding critical">
+                                 <div style="display: flex; justify-content: space-between; align-items: center;">
+                                     <span class="audit-card-label">server\db.ts</span>
+                                     <span class="badge" style="font-size:0.55rem; border-color: var(--neo-red); color: var(--neo-red);">LINE 11</span>
+                                 </div>
+                                 <span class="audit-card-msg">> Username and password in URI detected</span>
+                             </div>
                         </div>
-                        <div id="semgrep-vuln-count" style="margin-top: 0.75rem; font-family: var(--font-mono); font-size: 0.8rem; text-align: right; color: var(--neo-blue); font-weight: 700;">TOTAL FINDINGS: 0</div>
+                        <div id="semgrep-vuln-count" style="margin-top: 1rem; font-family: var(--font-mono); font-size: 0.8rem; text-align: right; color: var(--neo-red); font-weight: 700;">TOTAL FINDINGS: 9</div>
                     </div>
                 </div>
 
-                <!-- Tile 9: SQL Injection Security - Span 3 -->
-                <div class="bento-tile span-3" style="height: 360px;">
+                <!-- Tile 9: SQL Injection Security - Aligned 2x2 (Span 6) -->
+                <div class="bento-tile span-6" style="min-height: 340px;">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">database</i> SQL & DB Posture</div>
-                        <div id="tile-sql-status" class="badge badge-secure">STABLE</div>
+                        <div class="badge" style="border-color: var(--neo-red); color: var(--neo-red);">CRITICAL</div>
                     </div>
                     <div class="tile-content">
-                        <div id="tile-sql-meta" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); margin-bottom: 1rem;">
-                             USER: <span id="sql-user">--</span> | DB: <span id="sql-db">--</span>
+                        <div id="tile-sql-meta" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-text-secondary); margin-bottom: 0.75rem; padding: 0.5rem; border: 1px dashed var(--neo-border);">
+                             USER: <span id="sql-user" style="color:var(--neo-text-primary);">Unknown</span> | DB: <span id="sql-db" style="color:var(--neo-text-primary);">Unknown</span>
                         </div>
-                        <div id="tile-sql-findings" class="hud-scroll" style="display: flex; flex-direction: column; gap: 0.5rem; overflow-y: auto; max-height: 180px;">
-                             <div style="font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.5;">Awaiting discovery data...</div>
+                        <div id="tile-sql-findings" style="display: flex; flex-direction: column; gap: 0.25rem;">
+                             <div class="audit-finding critical">
+                                 <span class="audit-card-label">AUTH_FLOW: tfUName (POST)</span>
+                                 <span class="audit-card-msg">> stacked queries detected (High Confidence)</span>
+                             </div>
+                             <div style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--neo-text-tertiary); padding: 0.5rem; border: 1px dashed var(--neo-border); opacity: 0.6;">
+                                 // Recommendation: Use Parameterized Queries.
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -910,7 +964,7 @@
                     <div class="tile-content">
                          <div id="recent-chats-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
                               <!-- Sessions injected via JS -->
-                              <div style="text-align:center; padding:1.5rem; color:var(--neo-text-muted); font-size: 0.8rem;">Fetching session history...</div>
+                              <div style="text-align:center; padding:1.5rem; color:var(--neo-text-secondary); font-size: 0.8rem;">Fetching session history...</div>
                          </div>
                     </div>
                 </div>
@@ -922,8 +976,8 @@
         <div id="tab-compliance-frameworks" class="tab-pane hidden">
             <div style="margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem;">
                 <div style="flex: 1;">
-                    <h2 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; letter-spacing: -0.5px;">Compliance Command Center</h2>
-                    <p style="color: var(--neo-text-muted); font-size: 0.85rem;">Automated security assessment per targeted asset.</p>
+                    <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--neo-text-primary); margin-bottom: 0.5rem; letter-spacing: -0.5px;">Compliance Command Center</h2>
+                    <p style="color: var(--neo-text-secondary); font-size: 0.85rem;">Automated security assessment per targeted asset.</p>
                 </div>
                 <div style="min-width: 250px;">
                     <div class="hud-metric-label" style="margin-bottom: 8px;">Switch Audited Target</div>
@@ -948,7 +1002,7 @@
                 <div class="filter-group" style="flex: 2; min-width: 300px;">
                     <div class="filter-label">Quick Search</div>
                     <div style="position: relative;">
-                        <span class="material-symbols-outlined" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--neo-text-muted); font-size: 1.2rem;">search</span>
+                        <span class="material-symbols-outlined" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--neo-text-secondary); font-size: 1.2rem;">search</span>
                         <input type="text" id="reportFilterSearch" class="neo-input" placeholder="Search by target or filename..." style="padding-left: 40px;">
                     </div>
                 </div>
@@ -997,7 +1051,7 @@
             <h3 id="remedy-title" style="margin-top: 5px;">Strong Cryptography</h3>
         </div>
         <div id="remedy-content">
-            <div style="font-size: 0.85rem; color: #eee; line-height: 1.6;">
+            <div style="font-size: 0.85rem; color: var(--neo-text-primary); line-height: 1.6;">
                 <div class="hud-metric-label" style="margin-bottom: 5px;">Remediation Advice</div>
                 <div id="remedy-advice-text" class="remedy-advice">Loading fix instructions...</div>
             </div>

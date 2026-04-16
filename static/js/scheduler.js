@@ -127,7 +127,7 @@ function toast(msg, type = 'success') {
         padding: 1rem 1.5rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace;
         font-size: 0.8rem; text-transform: uppercase; display: flex; align-items: center; gap: 12px;
         background: ${type === 'success' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)'};
-        color: white; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(8px);
+        color: #fff; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(8px);
         box-shadow: 0 8px 32px rgba(0,0,0,0.4); transition: all 0.3s ease; opacity: 0; transform: translateY(20px);
     `;
     el.innerHTML = `<span class="material-symbols-outlined">${type === 'success' ? 'check_circle' : 'error'}</span> <span>${escapeHTML(msg)}</span>`;
@@ -233,7 +233,7 @@ function renderMissionCard(p) {
                 </div>
             </div>
             <p style="font-size: 0.68rem; color: var(--neo-text-muted); min-height: 1rem; margin-bottom: 0.5rem; padding-left: 0.4rem; line-height: 1.3;">${escapeHTML(p.description) || 'Continuous monitoring of infrastructure endpoints.'}</p>
-            <div style="background: rgba(0,0,0,0.1); padding: 0.3rem; border-radius: 5px; border: 1px solid rgba(255,255,255,0.02); margin-bottom: 0.5rem;">
+            <div style="background: var(--neo-bg); opacity: 0.8; padding: 0.3rem; border-radius: 5px; border: 1px solid var(--neo-border); margin-bottom: 0.5rem;">
                 ${jobsHtml}
             </div>
             <div class="mission-actions" style="gap: 0.3rem;">
@@ -330,7 +330,7 @@ function renderHistory(history) {
     const { scanner, target, isGlobal } = currentHistoryFilters;
 
     const filterHtml = `
-        <div style="margin-bottom: 1.5rem; background: rgba(255,255,255,0.03); border: 1px solid var(--neo-border); border-radius: 12px; padding: 1rem;">
+        <div style="margin-bottom: 1.5rem; background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 12px; padding: 1rem;">
             <div style="font-size: 0.65rem; color: var(--neo-text-muted); text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 0.75rem; letter-spacing: 0.05em;">Tactical Filters</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                 <div class="form-group" style="margin:0;">
@@ -362,14 +362,14 @@ function renderHistory(history) {
         const accentCol = COLOR_MAP[log.tool_name.toLowerCase()] || 'var(--neo-blue)';
         
         const deliveryHtml = log.delivery_logs && log.delivery_logs.length > 0 ? `
-            <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--neo-border);">
                 <div style="font-size: 0.6rem; color: var(--neo-text-muted); text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 4px;">
                     <span class="material-symbols-outlined" style="font-size: 0.8rem; color: var(--neo-green);">mail</span>
                     Recipient Delivery Log
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 4px; font-family: var(--font-mono); font-size: 0.65rem;">
                     ${log.delivery_logs.map(d => `
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 4px 6px; border-radius: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--neo-bg); padding: 4px 6px; border-radius: 4px;">
                             <span style="color: var(--neo-text-main); font-weight: 600;">${escapeHTML(d.email)}</span>
                             <span style="font-size: 0.6rem; color: ${d.opened_at ? 'var(--neo-green)' : 'var(--neo-text-muted)'}; display: flex; align-items: center; gap: 4px;" title="${d.ip ? 'IP: ' + d.ip : ''}">
                                 <span class="status-dot" style="background: ${d.opened_at ? 'var(--neo-green)' : 'var(--neo-text-muted)'}; width: 4px; height: 4px;"></span>
@@ -382,7 +382,7 @@ function renderHistory(history) {
         ` : '';
         
         return `
-            <div class="log-entry" style="background: rgba(255,255,255,0.02); border: 1px solid var(--neo-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; position: relative; overflow: hidden;">
+            <div class="log-entry" style="background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; position: relative; overflow: hidden;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem;">
                     <div>
                         <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:${accentCol}; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
@@ -402,8 +402,8 @@ function renderHistory(history) {
                 </div>
 
                 <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem; font-family:var(--font-mono); font-size:0.65rem;">
-                    <div style="background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px;">Findings: <span style="color:var(--neo-amber)">${log.finding_count || 0}</span></div>
-                    <div style="background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:4px;">Duration: ${log.duration || 0}s</div>
+                    <div style="background:var(--neo-bg); padding:4px 8px; border-radius:4px; border: 1px solid var(--neo-border);">Findings: <span style="color:var(--neo-amber)">${log.finding_count || 0}</span></div>
+                    <div style="background:var(--neo-bg); padding:4px 8px; border-radius:4px; border: 1px solid var(--neo-border);">Duration: ${log.duration || 0}s</div>
                 </div>
 
                 ${deliveryHtml}
@@ -464,7 +464,7 @@ function renderDrawer() {
         const niceName = MODULE_NAMES[d.module] || d.module.toUpperCase();
         
         bannerEl.innerHTML = `
-            <div style="background: rgba(255, 255, 255, 0.015); border-bottom: 1px solid var(--glass-border); padding: 0.65rem 1.75rem; display: flex; align-items: center; gap: 0.75rem;">
+            <div style="background: var(--neo-bg); border-bottom: 1px solid var(--neo-border); padding: 0.65rem 1.75rem; display: flex; align-items: center; gap: 0.75rem;">
                 <div class="template-icon" style="width: 24px; height: 24px; color: ${color}; background: ${color}15; border: 1px solid ${color}33; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                     <span class="material-symbols-outlined" style="font-size: 0.95rem;">${icon}</span>
                 </div>
@@ -508,7 +508,7 @@ function renderDrawer() {
                 <button class="btn-dash" onclick="window.updateDraftStep(${i}, ${d.step - 1})">
                     <span class="material-symbols-outlined" style="font-size:0.9rem;">arrow_back</span>Back
                 </button>` : ''}
-            <button class="btn-dash btn-primary" style="background: ${isLast ? 'var(--neo-green)' : 'var(--neo-blue)'}; color: #000;" id="drawerNextBtn" onclick="${isLast ? `saveDraft(${i})` : `tryAdvanceStep(${i}, ${d.step + 1})`}">
+            <button class="btn-dash btn-primary" style="background: ${isLast ? 'var(--neo-green)' : 'var(--neo-blue)'}; color: #fff;" id="drawerNextBtn" onclick="${isLast ? `saveDraft(${i})` : `tryAdvanceStep(${i}, ${d.step + 1})`}">
                 ${isLast
                     ? `<span class="material-symbols-outlined" style="font-size:0.9rem;">rocket_launch</span>${d.isEdit ? 'Update Mission' : 'Deploy Mission'}`
                     : 'Next<span class="material-symbols-outlined" style="font-size:0.9rem;">arrow_forward</span>'}

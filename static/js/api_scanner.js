@@ -145,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
 
+        // Progress Bar handling (keep textual for now to avoid breaking UI layout)
         const isProgressBar = cleanedMessage.startsWith('[PROGRESS]') || (cleanedMessage.startsWith('[') && cleanedMessage.includes('%'));
         if (isProgressBar) {
             const lastLine = logOutput.lastElementChild;
@@ -152,19 +153,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 const logContent = lastLine.querySelector('.log-content');
                 if (logContent && logContent.getAttribute('data-is-progress') === 'true') {
                     lastLine.querySelector('.log-time').textContent = timeStr;
-                    logContent.textContent = cleanedMessage;
+                    logContent.querySelector('span:last-child').textContent = cleanedMessage;
                     return;
                 }
             }
         }
         
-        let contentStyle = '';
-        if (cleanedMessage.includes('[!]') || cleanedMessage.includes('Error')) {
-            contentStyle = 'color:#ef4444';
-        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('Success')) {
-            contentStyle = 'color:#10b981';
-        } else if (cleanedMessage.includes('[*]')) {
-            contentStyle = 'color:#3b82f6';
+        // Professional Log Iconography Mapping
+        const logMap = {
+            '[!]': { color: '#ef4444', icon: 'error' },
+            '[x]': { color: '#ef4444', icon: 'cancel' },
+            '[✓]': { color: '#10b981', icon: 'check_circle' },
+            '[+]': { color: '#10b981', icon: 'add_circle' },
+            '[*]': { color: '#3b82f6', icon: 'info' }
+        };
+
+        let activeIcon = 'radio_button_checked';
+        let activeColor = 'var(--neo-text-muted)';
+        let isSpecial = false;
+
+        for (const [key, val] of Object.entries(logMap)) {
+            if (cleanedMessage.includes(key)) {
+                activeIcon = val.icon;
+                activeColor = val.color;
+                cleanedMessage = cleanedMessage.replace(key, '').trim();
+                isSpecial = true;
+                break;
+            }
+        }
+
+        if (!isSpecial && cleanedMessage.toLowerCase().includes('error')) {
+            activeIcon = 'error';
+            activeColor = '#ef4444';
+        } else if (!isSpecial && cleanedMessage.toLowerCase().includes('success')) {
+            activeIcon = 'check_circle';
+            activeColor = '#10b981';
         }
 
         const line = document.createElement('div');
@@ -173,7 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}"${dataAttr}>${cleanedMessage}</div>
+            <div class="log-content" style="color: ${activeColor}; display: flex; align-items: center; gap: 8px;"${dataAttr}>
+                <span class="material-symbols-outlined" style="font-size: 0.9rem; opacity: 0.6;">${activeIcon}</span>
+                <span>${cleanedMessage.toUpperCase()}</span>
+            </div>
         `;
         
         logOutput.appendChild(line);

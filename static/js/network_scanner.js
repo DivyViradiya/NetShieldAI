@@ -132,9 +132,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const line = document.createElement('div');
         line.className = 'log-line';
         
+        // Professional Log Formatting
+        const logMap = {
+            '[!]': { color: '#ef4444', icon: 'error' },
+            '[x]': { color: '#ef4444', icon: 'cancel' },
+            '[✓]': { color: '#10b981', icon: 'check_circle' },
+            '[+]': { color: '#10b981', icon: 'add_circle' },
+            '[*]': { color: '#3b82f6', icon: 'info' }
+        };
+
+        let activeIcon = 'radio_button_checked';
+        let activeColor = '#999';
+
+        for (const [key, val] of Object.entries(logMap)) {
+            if (cleanedMessage.includes(key)) {
+                activeIcon = val.icon;
+                activeColor = val.color;
+                cleanedMessage = cleanedMessage.replace(key, '').trim();
+                break;
+            }
+        }
+
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+            <div class="log-content" style="color: ${activeColor}; display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 0.9rem; opacity: 0.6;">${activeIcon}</span>
+                <span>${cleanedMessage.toUpperCase()}</span>
+            </div>
         `;
         
         elements.logOutput.appendChild(line);
@@ -144,7 +168,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function setStatus(text, type = 'ready') {
         if (!elements.scanStatus) return;
         
-        elements.scanStatus.textContent = text.toUpperCase();
+        let professionalText = text.toUpperCase();
+        if (professionalText === 'READY') professionalText = 'SYSTEM INITIALIZED';
+        if (professionalText === 'SCANNING') professionalText = 'NETWORK SYNCHRONIZATION';
+        if (professionalText === 'FINISHED') professionalText = 'ANALYSIS COMPLETE';
+        if (professionalText === 'ERROR') professionalText = 'FAULT DETECTED';
+
+        elements.scanStatus.textContent = professionalText;
         
         const isLight = document.body.classList.contains("light-mode");
         elements.scanStatus.style.color = isLight ? '#64748b' : '#a1a1aa';
@@ -152,6 +182,45 @@ document.addEventListener('DOMContentLoaded', () => {
         if (type === 'busy') elements.scanStatus.style.color = '#eab308';
         else if (type === 'success') elements.scanStatus.style.color = '#10b981';
         else if (type === 'error') elements.scanStatus.style.color = '#ef4444';
+    }
+
+    function showErrorDisplay(type, message) {
+        if (!elements.openPortsTableBody) return;
+        
+        let icon = 'error_outline';
+        let title = 'EXECUTION FAULT';
+        let description = message || 'An unexpected error occurred during the synchronization phase.';
+        let actionHtml = '';
+
+        if (type === 'SSE_DISCONNECT') {
+            icon = 'sync_disabled';
+            title = 'SYNC INTERRUPTED';
+            description = 'The real-time data stream was lost. This often happens due to network instability or a server-side timeout.';
+            actionHtml = `<button onclick="location.reload()" class="btn-dash btn-primary">RECONNECT STREAM</button>`;
+        } else if (type === 'TIMEOUT') {
+            icon = 'timer_off';
+            title = 'PROBE TIMEOUT';
+            description = 'The infrastructure probe exceeded the 5-minute threshold without returning new data packets.';
+            actionHtml = `<button onclick="location.reload()" class="btn-dash btn-primary">RETRY DISCOVERY</button>`;
+        } else if (type === 'EMPTY') {
+            icon = 'visibility_off';
+            title = 'NULL DETECTION';
+            description = 'No exposed infrastructure or active services were identified at the provided destination.';
+            actionHtml = `<button onclick="elements.targetIpInput.focus()" class="btn-dash btn-secondary">VALIDATE TARGET</button>`;
+        }
+
+        elements.openPortsTableBody.innerHTML = `
+            <div class="error-panel">
+                <div class="error-icon-box">
+                    <span class="material-symbols-outlined" style="font-size: 2.5rem;">${icon}</span>
+                </div>
+                <div class="error-title">${title}</div>
+                <div class="error-desc">${description}</div>
+                <div class="recovery-actions">
+                    ${actionHtml}
+                    <button onclick="location.reload()" class="btn-dash btn-secondary">RESET CONSOLE</button>
+                </div>
+            </div>`;
     }
 
     // --- API & Data Functions ---
@@ -282,16 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (isReady && (!ports || ports.length === 0)) {
                 // Keep the initial "READY" state instead of showing "NO INFRASTRUCTURE DETECTED"
-                elements.openPortsTableBody.innerHTML = `
-                    <div class="w-full flex flex-col items-center justify-center animate-card" style="grid-column: 1 / -1; padding: 6rem 2rem;">
-                      <div class="ai-pulse-container" style="opacity: 0.3;">
-                        <div class="ai-pulse-ring"></div>
-                        <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-text-muted);">radar</span>
-                      </div>
-                      <div style="font-family: var(--font-mono); font-size: 0.9rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.2em; text-align: center;">
-                        READY FOR INFRASTRUCTURE SCAN
-                      </div>
-                    </div>`;
+                showErrorDisplay('EMPTY', 'Target host is active but no publicly exposed services were identified during this probe.');
                 return;
             }
 
@@ -312,8 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             return;
         }
-        
-        ports.forEach((p, index) => {
+         ports.forEach((p, index) => {
             const rawScore = p.predicted_risk_score !== undefined ? p.predicted_risk_score : 0;
             const displayScore = (rawScore * 10).toFixed(1);
             
@@ -327,13 +386,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const assessment = p.vulnerability || (p.vulnerability_notes ? 'Notes Available' : 'Safe / Low Priority');
 
             const card = `
-                <div class="discovery-card ${riskClass} animate-card" style="animation-delay: ${index * 0.05}s">
+                <div class="discovery-card ${riskClass} animate-card" style="animation-delay: ${index * 0.05}s" role="article" aria-label="Port ${p.port} service discovery results">
                     <div class="card-header">
                         <div class="service-main">
                             <span class="service-title">${p.service}</span>
                             <span class="service-ver">${p.version || 'VERSION UNDETECTED'}</span>
                         </div>
-                        <div class="port-badge">
+                        <div class="port-badge" aria-label="Port: ${p.port}, Protocol: ${p.protocol}">
                             <span class="port-num">${p.port}</span>
                             <span class="protocol-label">${p.protocol}</span>
                         </div>
@@ -341,10 +400,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     <div class="risk-section">
                         <div class="risk-header">
-                            <span style="color: var(--card-accent)">${riskLabel} RISK LEVEL</span>
-                            <span>${displayScore}/10</span>
+                            <div class="flex items-center gap-2">
+                                <span class="risk-tag" style="--card-accent-rgb: ${riskClass === 'risk-critical' ? '239, 68, 68' : '150, 150, 150'}">${riskLabel}</span>
+                                <span style="color: var(--card-accent); font-weight: 700;">RISK LEVEL</span>
+                            </div>
+                            <span aria-label="Risk score: ${displayScore} out of 10">${displayScore}/10</span>
                         </div>
-                        <div class="risk-score-bar">
+                        <div class="risk-score-bar" role="progressbar" aria-valuenow="${rawScore * 10}" aria-valuemin="0" aria-valuemax="10">
                             <div class="risk-score-fill" style="width: ${rawScore * 100}%"></div>
                         </div>
                     </div>
@@ -705,7 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // [FIX] Update tracked target ID for report polling
                     if (data.target_ip) {
                         currentResolvedTarget = data.target_ip;
-                        appendLog(`[*] Target resolved to: ${currentResolvedTarget}`);
+                        appendLog(`[*] Resolution Complete: Target established at ${currentResolvedTarget}`);
                     }
                     initializeLogStream(data.queue_id);
                 } else {
@@ -739,8 +801,38 @@ document.addEventListener('DOMContentLoaded', () => {
         // Establish EventSource - queueId is optional for general logs
         const url = queueId ? `${API_BASE_URL}/log_stream?queue_id=${queueId}` : `${API_BASE_URL}/log_stream`;
         eventSource = new EventSource(url);
+  
+        // [FIX] Phase 1 - Distinct Error Recovery UI
+        let scanWatchdog = setTimeout(() => {
+            if (isActionInProgress) {
+                appendLog('[!] ERROR: Scan execution exceeded timeout window.');
+                showErrorDisplay('TIMEOUT');
+                setStatus('TIMEOUT', 'error');
+                if (eventSource) eventSource.close();
+            }
+        }, 300000); // 5 minute pulse watchdog
+
+        eventSource.onerror = (err) => {
+            console.error("SSE Error:", err);
+            if (isActionInProgress) {
+                appendLog('[!] ERROR: Synchronization stream interrupted.');
+                showErrorDisplay('SSE_DISCONNECT');
+                setStatus('DISCONNECTED', 'error');
+                clearTimeout(scanWatchdog);
+            }
+            if (eventSource) eventSource.close();
+        };
 
         eventSource.onmessage = (event) => {
+            // Reset watchdog on pulse
+            clearTimeout(scanWatchdog);
+            scanWatchdog = setTimeout(() => {
+                if (isActionInProgress) {
+                    showErrorDisplay('TIMEOUT');
+                    setStatus('TIMEOUT', 'error');
+                }
+            }, 300000);
+
             let rawData = event.data;
             if (rawData.startsWith(':')) return; // Keep-alive messages
 
@@ -782,7 +874,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (displayMessage.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
-                appendLog('[✓] Network Scan Complete!');
+                appendLog('[✓] INFRASTRUCTURE MAPPING FINALIZED');
                 setStatus('FINISHED', 'success');
                 fetchAndDisplayOpenPorts();
                 loadScanResults(lastScanType);

@@ -9,46 +9,29 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
     <style>
-      /* --- NEO-TECH THEME VARIABLES --- */
-      :root {
-        --neo-bg: #000000;
-        --neo-card: rgba(10, 10, 12, 0.45);
-        --neo-card-hover: rgba(15, 15, 18, 0.55);
-        --neo-input: rgba(15, 15, 18, 0.6);
-        --neo-border: rgba(255, 255, 255, 0.05); 
-        
-        --neo-text-main: #ffffff;
-        --neo-text-muted: #888888;
-        --neo-text-label: #555555;
-        --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-        --font-mono: 'JetBrains Mono', monospace;
-        
-        --neo-blue: #3b82f6; 
-        --neo-cyan: #06b6d4;
-        --neo-red: #ef4444;
-        --neo-green: #10b981;
-        --neo-amber: #f59e0b;
-        --neo-purple: #8b5cf6;
-        
-        --radius-lg: 20px;
-        --radius-md: 12px;
-        --radius-sm: 8px;
-        --radius-card: var(--radius-lg);
+    /* --- SCANNER THEME OVERRIDES --- */
+    .dashboard-wrapper {
+      background-color: var(--neo-bg);
+      color: var(--neo-text-primary);
+      font-family: var(--font-ui);
+      height: 100vh;
+      padding: 1.25rem 2rem 1.5rem;
+      padding-top: calc(var(--navbar-height) + 1rem);
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      overflow: hidden;
+    }
 
-        --shadow-blue: 0 0 20px rgba(59, 130, 246, 0.15);
-        --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-        --glass-blur: blur(24px);
-        --glass-bg: var(--neo-card);
-        --glass-border: var(--neo-border);
-      }
-  
-      body.light-mode {
-        --neo-bg: #f1f5f9;
-        --neo-card: #ffffff;
-        --neo-border: #cbd5e1;
-        --neo-text-main: #0f172a;
-        --neo-text-muted: #64748b;
-      }
+    /* Category Identity Mapping */
+    .cat-network { --cat-accent: var(--identity-network); }
+    .cat-web { --cat-accent: var(--identity-zap); }
+    .cat-code { --cat-accent: var(--identity-semgrep); }
+    .cat-cert { --cat-accent: var(--identity-ssl); }
+
   
       *, *::before, *::after {
         box-sizing: border-box;
@@ -64,20 +47,26 @@
         display: none !important; /* Remove footer */
       }
 
-      .dashboard-wrapper {
-        background-color: var(--neo-bg);
-        color: var(--neo-text-main);
-        font-family: var(--font-ui);
-        height: calc(100vh - 64px); /* Exact fit minus navbar */
-        padding: 0.75rem 2rem 1.5rem; /* Balanced top and bottom padding */
-        display: flex;
-        flex-direction: column;
-        gap: 1rem; /* Tightened gap */
-        max-width: 1600px;
-        margin: 0 auto;
-        width: 100%;
-        overflow: hidden; /* Prevent wrapper scroll */
-      }
+    /* Component Styles using Global Tokens */
+    .dash-panel, .control-card, .arsenal-sidebar, .mission-canvas, .config-panel {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card, 4px);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      transition: all 0.3s ease;
+    }
+
+    body.light-mode .dash-panel,
+    body.light-mode .control-card, 
+    body.light-mode .arsenal-sidebar, 
+    body.light-mode .mission-canvas, 
+    body.light-mode .config-panel {
+      background: var(--surface-primary);
+      border-color: var(--border-default);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+
 
       /* --- MISSING UTILITY CLASSES (Replaces Tailwind) --- */
       .flex { display: flex; }
@@ -90,30 +79,56 @@
       .p-2 { padding: 0.5rem; }
       .rounded { border-radius: 0.25rem; }
       .border { border-width: 1px; border-style: solid; border-color: var(--neo-border); }
-      .bg-black\/20 { background-color: rgba(0, 0, 0, 0.2); }
-      .border-white\/5 { border-color: rgba(255, 255, 255, 0.05); }
+      .bg-black\/20 { background-color: var(--neo-card-subtle); }
+      .border-white\/5 { border-color: var(--neo-border); }
 
       /* --- COMPONENTS --- */
-      .control-card, .dash-panel {
-        background: var(--glass-bg);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius-card);
-        padding: 1.5rem;
-        box-shadow: var(--shadow-glass);
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    .dash-panel {
+      padding: 1.25rem 2rem;
+    }
+
+      .banner-panel {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 100px; /* Fixed height for seamless transitions */
       }
 
-      .control-card:hover {
-        border-color: rgba(255, 255, 255, 0.15);
+      .scanner-title-area h1 {
+          font-family: var(--font-ui);
+          font-size: 1.75rem;
+          font-weight: 400;
+          letter-spacing: -0.02em;
+          line-height: 1.2;
+          margin: 0;
+          margin-bottom: 0.25rem;
+          color: var(--neo-text-primary);
+          text-transform: uppercase;
+      }
+
+      .scanner-title-area p {
+          font-family: var(--font-mono);
+          font-size: 0.75rem;
+          color: var(--neo-text-secondary);
+          margin: 0;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          opacity: 0.8;
+          font-weight: 500;
+      }
+
+      .title-deco-line {
+          height: 1px;
+          width: 24px;
+          background: linear-gradient(90deg, var(--neo-blue), transparent);
       }
 
       /* Custom Scrollbar */
       .arsenal-sidebar::-webkit-scrollbar { width: 4px; }
       .arsenal-sidebar::-webkit-scrollbar-track { background: transparent; }
       .arsenal-sidebar::-webkit-scrollbar-thumb { background: var(--neo-border); border-radius: 10px; }
-      .arsenal-sidebar::-webkit-scrollbar-thumb:hover { background: var(--neo-text-muted); }
+      .arsenal-sidebar::-webkit-scrollbar-thumb:hover { background: var(--neo-text-secondary); }
       
       .req-star { color: var(--neo-red); margin-left: 2px; }
       .field-error { 
@@ -144,15 +159,17 @@
         width: 48px;
         height: 48px;
         background: var(--neo-blue);
-        color: #000;
-        border-radius: 12px;
+        color: #fff;
+        border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
         pointer-events: none;
         z-index: 10000;
         box-shadow: 0 8px 32px rgba(96, 165, 250, 0.4);
-        border: 1px solid rgba(255,255,255,0.2);
+        z-index: 10000;
+        box-shadow: 0 8px 32px rgba(96, 165, 250, 0.4);
+        border: 1px solid var(--neo-border);
       }
       .drag-ghost .material-symbols-outlined {
         font-family: 'Material Symbols Outlined';
@@ -161,7 +178,7 @@
       }
 
       .text-gradient {
-        background: linear-gradient(180deg, #fff 0%, #ccc 100%);
+        background: linear-gradient(180deg, var(--neo-text-primary) 0%, var(--neo-text-secondary) 100%);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       }
 
@@ -172,7 +189,7 @@
         gap: 1.5rem;
         flex: 1;
         min-height: 0;
-        margin-top: 0.25rem; /* Reduced gap from header */
+        margin-top: 0; /* Aligned with newer dashboard layout */
       }
 
       /* ================================================
@@ -199,7 +216,7 @@
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.18em;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         margin-bottom: 0.25rem;
         margin-top: 0.75rem;
         display: flex;
@@ -226,17 +243,17 @@
         top: 50%;
         transform: translateY(-50%);
         font-size: 1rem;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         pointer-events: none;
       }
 
       .arsenal-search-input {
         width: 100%;
-        background: rgba(255, 255, 255, 0.04);
+        background: var(--neo-input);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius-sm);
         padding: 0.55rem 0.75rem 0.55rem 2.25rem;
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
         font-family: var(--font-mono);
         font-size: 0.75rem;
         outline: none;
@@ -244,11 +261,11 @@
         box-sizing: border-box;
       }
 
-      .arsenal-search-input::placeholder { color: var(--neo-text-muted); }
+      .arsenal-search-input::placeholder { color: var(--neo-text-secondary); }
       .arsenal-search-input:focus { border-color: rgba(96, 165, 250, 0.4); }
 
       .template-card {
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--neo-card);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius-sm);
         padding: 0.85rem 1rem;
@@ -260,10 +277,8 @@
       }
 
       .template-card:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.2);
-        transform: translateX(6px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        background: var(--neo-card-hover);
+        border-color: var(--neo-blue);
       }
 
       .template-card.hidden { display: none; }
@@ -271,8 +286,8 @@
       .template-icon {
         width: 36px;
         height: 36px;
-        background: rgba(59, 130, 246, 0.1);
-        border-radius: 6px;
+        background: var(--neo-card-subtle);
+        border-radius: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -289,7 +304,7 @@
 
       .template-info p {
         font-size: 0.68rem;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         margin: 0;
       }
 
@@ -312,11 +327,13 @@
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       }
+      body.light-mode .mission-card { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
       .mission-card:hover {
         border-color: var(--neo-blue);
-        box-shadow: var(--shadow-blue);
+        transform: translateY(-2px);
       }
 
 
@@ -336,7 +353,7 @@
 
       .mission-target {
         font-size: 0.72rem;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         font-family: var(--font-mono);
         margin-bottom: 0.5rem;
       }
@@ -357,7 +374,7 @@
         text-transform: uppercase;
         letter-spacing: 0.08em;
         padding: 3px 8px;
-        border-radius: 20px;
+        border-radius: 4px;
         font-weight: 700;
       }
 
@@ -368,8 +385,8 @@
       }
 
       .status-pill.paused {
-        color: var(--neo-text-muted);
-        background: rgba(255, 255, 255, 0.04);
+        color: var(--neo-text-secondary);
+        background: var(--neo-card-subtle);
         border: 1px solid var(--neo-border);
       }
 
@@ -395,11 +412,12 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: rgba(0, 0, 0, 0.2);
+        background: var(--neo-input);
         padding: 0.25rem 0.4rem;
-        border-radius: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        border: 1px solid var(--neo-border);
         margin-bottom: 0.35rem;
+        color: var(--neo-text-primary);
       }
 
       .job-row:last-child { margin-bottom: 0; }
@@ -419,14 +437,14 @@
       .tutorial-viz {
         width: 200px;
         height: 120px;
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--neo-card-subtle);
         border: 1px solid var(--glass-border);
-        border-radius: 12px;
+        border-radius: var(--radius-md);
         position: relative;
         margin-bottom: 2rem;
         overflow: hidden;
         display: flex;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        box-shadow: var(--shadow-glass);
       }
       .tutorial-sidebar {
         width: 60px;
@@ -436,20 +454,21 @@
         display: flex;
         flex-direction: column;
         gap: 6px;
-        background: rgba(255, 255, 255, 0.01);
+        background: var(--neo-card-subtle);
       }
       .dummy-card {
         width: 100%;
         height: 20px;
-        background: rgba(96, 165, 250, 0.1);
-        border: 1px solid rgba(96, 165, 250, 0.2);
+        background: var(--neo-card-subtle);
+        border: 1px solid var(--neo-blue);
         border-radius: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
+        opacity: 0.3;
       }
       .dummy-card .status-dot { width: 3px; height: 3px; background: var(--neo-blue); margin-right: 3px; border-radius: 50%; }
-      .dummy-line { width: 20px; height: 2px; background: rgba(255,255,255,0.1); border-radius: 1px; }
+      .dummy-line { width: 20px; height: 2px; background: var(--neo-text-tertiary); border-radius: 1px; }
 
       .tutorial-canvas {
         flex: 1;
@@ -462,15 +481,15 @@
       .drop-target {
         width: 60px;
         height: 40px;
-        border: 1px dashed rgba(255,255,255,0.1);
+        border: 1px dashed var(--neo-border);
         border-radius: 8px;
-        background: rgba(255,255,255,0.02);
+        background: var(--neo-card-subtle);
       }
 
       .tutorial-hand {
         position: absolute;
         font-size: 1.25rem;
-        color: white;
+        color: var(--neo-text-primary);
         z-index: 5;
         animation: tutorial-drag 4s infinite cubic-bezier(0.45, 0, 0.55, 1);
         pointer-events: none;
@@ -483,8 +502,8 @@
         height: 16px;
         background: var(--neo-blue);
         border-radius: 4px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        border: 1px solid var(--neo-border);
         animation: tutorial-card-move 4s infinite cubic-bezier(0.45, 0, 0.55, 1);
         z-index: 4;
         pointer-events: none;
@@ -507,7 +526,7 @@
         100% { left: 10px; top: 10px; opacity: 0; }
       }
       .drop-zone-empty {
-        background: rgba(255, 255, 255, 0.02);
+        background: var(--neo-bg);
         border: 1px solid var(--glass-border);
         border-radius: var(--radius-card);
         padding: 4rem 2rem;
@@ -515,7 +534,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         width: 100%;
         flex: 1;
@@ -526,15 +545,15 @@
       .empty-icon-wrap {
         width: 80px;
         height: 80px;
-        background: rgba(255, 255, 255, 0.03);
+        background: var(--neo-card-subtle);
         border: 1px solid var(--glass-border);
-        border-radius: 20px;
+        border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 2rem;
         color: var(--neo-blue);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        box-shadow: var(--shadow-glass);
         animation: ghost-float 3s ease-in-out infinite;
       }
 
@@ -570,7 +589,7 @@
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         font-family: var(--font-mono);
         font-size: 0.7rem;
         text-transform: uppercase;
@@ -592,22 +611,22 @@
         font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800;
         display: flex; align-items: center; gap: 0.4rem; cursor: pointer;
         transition: all 0.2s ease; border: 1px solid var(--neo-border);
-        background: transparent; color: var(--neo-text-muted);
+        background: transparent; color: var(--neo-text-secondary);
         text-transform: uppercase;
       }
 
       .btn-icon {
         height: 30px; width: 30px; padding: 0;
-        border-radius: 6px; justify-content: center;
+        border-radius: 4px; justify-content: center;
       }
 
-      .btn-primary { background: var(--neo-text-main); color: var(--neo-bg); border: none; }
+      .btn-primary { background: var(--neo-text-primary); color: var(--neo-bg); border: none; }
       .btn-primary:hover { opacity: 0.9; }
 
       .btn-danger { color: var(--neo-red); border-color: rgba(239, 68, 68, 0.3); }
       .btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
 
-      .btn-dash:hover { border-color: rgba(255,255,255,0.2); color: var(--neo-text-main); }
+      .btn-dash:hover { border-color: var(--neo-blue); color: var(--neo-text-primary); }
 
       /* Form Elements */
       .form-group { margin-bottom: 1.1rem; }
@@ -617,18 +636,18 @@
         font-family: var(--font-mono);
         font-size: 0.68rem;
         text-transform: uppercase;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         margin-bottom: 0.45rem;
         letter-spacing: 0.06em;
       }
 
       .form-input {
         width: 100%;
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--neo-card);
         border: 1px solid var(--neo-border);
         border-radius: 4px;
         padding: 0.65rem 0.9rem;
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
         font-family: var(--font-mono);
         font-size: 0.83rem;
         box-sizing: border-box;
@@ -641,7 +660,7 @@
 
       .form-input option {
         background-color: var(--neo-bg);
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
       }
 
       /* Day-of-week chips for weekly scheduling */
@@ -662,7 +681,7 @@
         cursor: pointer;
         border: 1px solid var(--neo-border);
         background: transparent;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         transition: all 0.15s ease;
       }
 
@@ -699,14 +718,18 @@
         width: 480px;
         max-width: 95vw;
         height: 100vh;
-        background: #0a0a0c;
+        background: var(--neo-bg);
         border-left: 1px solid var(--glass-border);
-        box-shadow: -16px 0 64px rgba(0, 0, 0, 0.7);
+        box-shadow: -16px 0 64px rgba(0, 0, 0, 0.3);
         z-index: 101;
         display: flex;
         flex-direction: column;
         transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
+      }
+
+      body.light-mode .config-drawer {
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.08);
       }
 
       .config-drawer.open {
@@ -718,7 +741,7 @@
         align-items: center;
         justify-content: space-between;
         padding: 1.5rem 1.75rem 1rem;
-        border-bottom: 1px solid var(--glass-border);
+        border-bottom: 1px solid var(--neo-border);
         flex-shrink: 0;
       }
 
@@ -727,7 +750,7 @@
         font-size: 0.65rem;
         text-transform: uppercase;
         letter-spacing: 0.15em;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         margin-bottom: 0.25rem;
       }
 
@@ -784,7 +807,7 @@
         font-family: var(--font-mono);
         font-size: 0.65rem;
         font-weight: 700;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         background: var(--neo-bg);
         transition: all 0.3s ease;
         z-index: 1;
@@ -793,13 +816,13 @@
       .step-item.completed .step-circle {
         background: var(--neo-blue);
         border-color: var(--neo-blue);
-        color: #000;
+        color: #fff;
       }
 
       .step-item.active .step-circle {
         border-color: var(--neo-blue);
         color: var(--neo-blue);
-        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
       }
 
       .step-label {
@@ -807,13 +830,13 @@
         font-size: 0.58rem;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         margin-top: 0.35rem;
         text-align: center;
       }
 
       .step-item.active .step-label { color: var(--neo-blue); }
-      .step-item.completed .step-label { color: var(--neo-text-muted); }
+      .step-item.completed .step-label { color: var(--neo-text-secondary); }
 
       /* Drawer body — scrollable */
       .drawer-body {
@@ -863,7 +886,7 @@
 
       .review-table tr td {
         padding: 0.65rem 0;
-        border-bottom: 1px solid rgba(255,255,255,0.04);
+        border-bottom: 1px solid var(--neo-border);
         font-family: var(--font-mono);
         font-size: 0.78rem;
         vertical-align: top;
@@ -872,7 +895,7 @@
       .review-table tr:last-child td { border-bottom: none; }
 
       .review-table td:first-child {
-        color: var(--neo-text-muted);
+        color: var(--neo-text-secondary);
         font-size: 0.68rem;
         text-transform: uppercase;
         letter-spacing: 0.06em;
@@ -880,7 +903,7 @@
         padding-right: 1rem;
       }
 
-      .review-table td:last-child { color: var(--neo-text-main); }
+      .review-table td:last-child { color: var(--neo-text-primary); }
 
       /* Executing state overlay on mission card */
       .mission-card.executing {
@@ -908,8 +931,8 @@
         transition: all 0.2s ease;
       }
       .log-entry:hover {
-        border-color: rgba(255,255,255,0.1) !important;
-        background: rgba(255,255,255,0.04) !important;
+        border-color: var(--neo-blue) !important;
+        background: var(--neo-card-hover) !important;
         transform: translateY(-2px);
       }
       
@@ -996,26 +1019,25 @@
 
   <div class="dashboard-wrapper">
     <!-- Header card -->
-    <!-- Header Area: Ultra-Condensed -->
-    <div class="dash-panel" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-radius: 16px; border: 1px solid var(--neo-border);">
+    <div class="dash-panel banner-panel">
       <div class="scanner-title-area" style="margin: 0;">
-        <h1 class="text-gradient" style="margin-bottom: 0.25rem; font-size: 1.75rem; letter-spacing: -0.02em; font-weight: 400;">Mission <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Orchestrator</span></h1>
-        <p style="color: var(--neo-text-muted); font-size: 0.75rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 12px; opacity: 0.8;">
-          <span style="height: 1px; width: 24px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
+        <h1>MISSION ORCHESTRATOR</h1>
+        <p>
+          <span class="title-deco-line"></span>
           Automated Security &amp; Monitoring
         </p>
       </div>
       
       <div class="flex gap-3">
-        <button class="btn-dash" onclick="openGlobalReportsDrawer()" style="background: rgba(59,130,246,0.05); height: 36px; border-radius: 6px; padding: 0 0.85rem; border-color: rgba(59, 130, 246, 0.3);">
+        <button class="btn-dash" onclick="openGlobalReportsDrawer()" style="background: var(--neo-card-subtle); height: 36px; border-radius: 4px; padding: 0 0.85rem; border-color: var(--neo-blue); opacity: 0.8;">
           <span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--neo-blue);">auto_stories</span>
           <span style="font-size: 0.7rem;">Archive</span>
         </button>
-        <button id="refreshJobsBtn" class="btn-dash" style="background: rgba(255,255,255,0.03); height: 36px; border-radius: 6px; padding: 0 0.85rem;">
+        <button id="refreshJobsBtn" class="btn-dash" style="background: var(--neo-card); height: 36px; border-radius: 4px; padding: 0 0.85rem;">
           <span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--neo-blue);">sync</span>
           <span style="font-size: 0.7rem;">Sync</span>
         </button>
-        <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.03); height: 36px; border-radius: 6px; padding: 0 0.85rem;">
+        <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: var(--neo-card); height: 36px; border-radius: 4px; padding: 0 0.85rem;">
           <span class="material-symbols-outlined" style="font-size: 1.1rem;">home</span>
           <span style="font-size: 0.7rem;">Hub</span>
         </a>
@@ -1054,7 +1076,7 @@
           </div>
 
           <div class="template-card" draggable="true" data-module="sniffer" data-category="network" data-search="sniffer traffic analysis anomaly packet">
-            <div class="template-icon" style="color: var(--neo-green); background: rgba(16, 185, 129, 0.1);">
+            <div class="template-icon" style="color: var(--neo-green); background: var(--neo-card-subtle);">
               <span class="material-symbols-outlined">wifi_tethering</span>
             </div>
             <div class="template-info">
@@ -1067,7 +1089,7 @@
           <h3 class="arsenal-title" data-category="web">Web</h3>
 
           <div class="template-card" draggable="true" data-module="zap" data-category="web" data-search="owasp zap web vulnerability scan">
-            <div class="template-icon" style="color: var(--neo-red); background: rgba(239, 68, 68, 0.1);">
+            <div class="template-icon" style="color: var(--neo-red); background: var(--neo-card-subtle);">
               <span class="material-symbols-outlined">security</span>
             </div>
             <div class="template-info">
@@ -1077,7 +1099,7 @@
           </div>
 
           <div class="template-card" draggable="true" data-module="sql" data-category="web" data-search="sqli probe sql injection automated database">
-            <div class="template-icon" style="color: var(--neo-amber); background: rgba(245, 158, 11, 0.1);">
+            <div class="template-icon" style="color: var(--neo-amber); background: var(--neo-card-subtle);">
               <span class="material-symbols-outlined">database</span>
             </div>
             <div class="template-info">
@@ -1087,7 +1109,7 @@
           </div>
 
           <div class="template-card" draggable="true" data-module="api" data-category="web" data-search="api scanner endpoint fuzzing rest">
-            <div class="template-icon" style="color: #06b6d4; background: rgba(6, 182, 212, 0.1);">
+            <div class="template-icon" style="color: #06b6d4; background: var(--neo-card-subtle);">
               <span class="material-symbols-outlined">api</span>
             </div>
             <div class="template-info">
@@ -1100,7 +1122,7 @@
           <h3 class="arsenal-title" data-category="code">Code</h3>
 
           <div class="template-card" draggable="true" data-module="semgrep" data-category="code" data-search="semgrep sast static code analysis">
-            <div class="template-icon" style="color: #a855f7; background: rgba(168, 85, 247, 0.1);">
+            <div class="template-icon" style="color: #a855f7; background: var(--neo-card-subtle);">
               <span class="material-symbols-outlined">code_blocks</span>
             </div>
             <div class="template-info">
@@ -1113,7 +1135,7 @@
           <h3 class="arsenal-title" data-category="audit">Cert &amp; Audit</h3>
 
           <div class="template-card" draggable="true" data-module="ssl" data-category="audit" data-search="ssl audit cert certificate config verify tls">
-            <div class="template-icon" style="color: var(--neo-blue); background: rgba(59, 130, 246, 0.1);">
+            <div class="template-icon" style="color: var(--neo-blue); background: var(--neo-card-subtle);">
               <span class="material-symbols-outlined">shield_lock</span>
             </div>
             <div class="template-info">
@@ -1123,7 +1145,7 @@
           </div>
 
           <div class="template-card" draggable="true" data-module="killchain" data-category="audit" data-search="kill chain full spectrum audit recon network web">
-            <div class="template-icon" style="color: var(--neo-red); background: rgba(239, 68, 68, 0.1);">
+            <div class="template-icon" style="color: var(--neo-red); background: var(--neo-card-subtle);">
               <span class="material-symbols-outlined">account_tree</span>
             </div>
             <div class="template-info">
@@ -1133,7 +1155,7 @@
           </div>
 
           <!-- No-results message -->
-          <p id="noModulesMsg" style="display:none; font-family: var(--font-mono); font-size: 0.72rem; color: var(--neo-text-muted); text-align: center; padding: 1rem 0;">
+          <p id="noModulesMsg" style="display:none; font-family: var(--font-mono); font-size: 0.72rem; color: var(--neo-text-secondary); text-align: center; padding: 1rem 0;">
             No modules match
           </p>
         </div>
@@ -1159,7 +1181,7 @@
               </div>
             </div>
             
-            <h3 style="font-family: var(--font-mono); color: var(--neo-text-main); font-size: 1.1rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">No Active Missions</h3>
+            <h3 style="font-family: var(--font-mono); color: var(--neo-text-primary); font-size: 1.1rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">No Active Missions</h3>
             <p style="font-size: 0.75rem; opacity: 0.5; max-width: 300px; line-height: 1.6;">Drag a security module from the Arsenal sidebar to begin your orchestration.</p>
           </div>
 
