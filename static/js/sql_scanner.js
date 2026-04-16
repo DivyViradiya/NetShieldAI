@@ -230,17 +230,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         elements.findingsList.innerHTML = filtered.map((f, index) => {
             const riskLabel = getRiskLabel(f.type);
-            const riskColor = getRiskColor(f.type);
+            const riskClass = `risk-${riskLabel.toLowerCase()}`;
             
             // [NEW] Risk Score Rendering
             const rawScore = f.predicted_risk_score !== undefined ? f.predicted_risk_score : 0;
             const score = (rawScore * 10).toFixed(1);
 
             return `
-                <div class="finding-card" data-index="${index}">
+                <div class="finding-card ${riskClass} animate-card" data-index="${index}" style="animation-delay: ${index * 0.1}s">
                     <div class="finding-header">
-                        <div class="risk-indicator" style="color: ${riskColor}">
-                            <div class="risk-dot" style="background: ${riskColor}"></div>
+                        <div class="risk-indicator">
+                            <div class="risk-dot"></div>
                             ${riskLabel}
                         </div>
                         <div class="finding-title">${f.type} on parameter '${f.parameter}'</div>
@@ -258,11 +258,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                             <div class="detail-section">
                                 <span class="detail-label">Confirmed Payload</span>
-                                <div class="detail-text-mono" style="background: var(--neo-input); padding: 1rem; border-radius: 6px; word-break: break-all;">${f.payload}</div>
+                                <div class="detail-text-mono">${f.payload}</div>
                             </div>
                             <div class="detail-section">
                                 <span class="detail-label">Affected Parameter</span>
-                                <span class="detail-text-mono">${f.parameter}</span>
+                                <span class="detail-text-mono" style="padding: 0.5rem 0.75rem; display: inline-block;">${f.parameter}</span>
                             </div>
                             <div class="detail-section">
                                 <span class="detail-label">Target URL</span>

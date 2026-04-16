@@ -91,13 +91,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
 
-        let contentStyle = '';
-        if (cleanedMessage.includes('[!]') || cleanedMessage.includes('Error')) {
-            contentStyle = 'color:#ef4444';
-        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('Success')) {
-            contentStyle = 'color:#10b981';
-        } else if (cleanedMessage.includes('[*]')) {
-            contentStyle = 'color:#3b82f6';
+        // Professional Log Formatting
+        const logMap = {
+            '[!]': { color: '#ef4444', icon: 'error' },
+            '[x]': { color: '#ef4444', icon: 'cancel' },
+            '[✓]': { color: '#10b981', icon: 'check_circle' },
+            '[+]': { color: '#10b981', icon: 'add_circle' },
+            '[*]': { color: '#3b82f6', icon: 'info' }
+        };
+
+        let activeIcon = 'radio_button_checked';
+        let activeColor = '#999';
+
+        for (const key in logMap) {
+            if (cleanedMessage.includes(key)) {
+                activeIcon = logMap[key].icon;
+                activeColor = logMap[key].color;
+                cleanedMessage = cleanedMessage.replace(key, '').trim();
+                break;
+            }
         }
 
         const line = document.createElement('div');
@@ -105,7 +117,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+            <div class="log-content" style="color: ${activeColor}; display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 0.9rem; opacity: 0.6;">${activeIcon}</span>
+                <span>${cleanedMessage.toUpperCase()}</span>
+            </div>
         `;
         
         elements.logOutput.appendChild(line);
@@ -344,18 +359,27 @@ document.addEventListener('DOMContentLoaded', function() {
         return '#3b82f6';
     }
 
-    function createFindingCard(finding) {
-        const risk = (finding.severity || 'Info').toLowerCase();
+    function createFindingCard(finding, index) {
+        const severity = (finding.severity || 'Info').toLowerCase();
         const score = finding.predicted_risk_score !== undefined ? finding.predicted_risk_score : 0;
         const displayScore = (score * 10).toFixed(1);
         
+        let riskClass = 'risk-safe';
+        let riskLabel = 'LOW';
+        if (severity === 'critical') { riskClass = 'risk-critical'; riskLabel = 'CRITICAL'; }
+        else if (severity === 'high') { riskClass = 'risk-high'; riskLabel = 'HIGH'; }
+        else if (severity === 'medium') { riskClass = 'risk-medium'; riskLabel = 'MEDIUM'; }
+        else if (severity === 'low') { riskClass = 'risk-low'; riskLabel = 'LOW'; }
+        else { riskClass = 'risk-info'; riskLabel = 'INFO'; }
+
         const card = document.createElement('div');
-        card.className = `discovery-card risk-${risk}`;
+        card.className = `discovery-card ${riskClass} animate-card`;
+        card.style.animationDelay = (index * 0.05) + 's';
         
         card.innerHTML = `
             <div class="card-header">
                 <div class="finding-main">
-                    <span class="finding-severity">${risk}</span>
+                    <span class="finding-severity">${severity.toUpperCase()}</span>
                     <h4 class="finding-title">${finding.name}</h4>
                 </div>
                 <div class="risk-badge">
@@ -363,8 +387,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span class="risk-label">ML RISK</span>
                 </div>
             </div>
+
+            <div class="risk-section">
+                <div class="risk-header">
+                    <div class="flex items-center gap-2">
+                        <span class="risk-tag" style="--card-accent-rgb: ${riskClass === 'risk-critical' ? '239, 68, 68' : '150, 150, 150'}">${riskLabel}</span>
+                        <span style="color: var(--card-accent); font-weight: 700;">RISK LEVEL</span>
+                    </div>
+                    <span>${displayScore}/10</span>
+                </div>
+                <div class="risk-score-bar">
+                    <div class="risk-score-fill" style="width: ${score * 100}%"></div>
+                </div>
+            </div>
             
             <div class="analysis-footer">
+                <div style="font-weight: 800; font-size: 0.6rem; color: var(--card-accent); margin-bottom: 0.25rem;">[AI ANALYSIS]</div>
                 ${finding.description || 'No detailed analysis available.'}
             </div>
 
@@ -408,8 +446,8 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        vulnerabilities.forEach(vuln => {
-            const card = createFindingCard(vuln);
+        vulnerabilities.forEach((vuln, index) => {
+            const card = createFindingCard(vuln, index);
             elements.vulnerabilitiesList.appendChild(card);
         });
     }

@@ -199,7 +199,6 @@
         background: rgba(10, 10, 12, 0.7);
         border-color: rgba(255, 255, 255, 0.1);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-        transform: translateY(-2px);
       }
   
       body.light-mode .control-card:hover, 
@@ -381,16 +380,15 @@
       
       .dash-input {
         width: 100%; 
-        background: var(--neo-bg); 
+        background: rgba(15, 15, 18, 0.4); 
         border: 1px solid var(--neo-border);
-        color: var(--neo-text-main); 
+        color: var(--neo-text-primary); 
         padding: 0 16px 0 44px; 
-        border-radius: var(--radius-sm);
+        border-radius: 4px;
         height: 48px;
         font-size: 0.85rem; 
-        transition: all 0.2s ease; 
+        transition: all 0.3s ease; 
         font-family: var(--font-mono);
-        text-transform: uppercase;
       }
   
       .dash-input:-webkit-autofill,
@@ -398,18 +396,20 @@
       .dash-input:-webkit-autofill:focus, 
       .dash-input:-webkit-autofill:active {
           -webkit-box-shadow: 0 0 0 30px var(--neo-bg) inset !important;
-          -webkit-text-fill-color: var(--neo-text-main) !important;
+          -webkit-text-fill-color: var(--neo-text-primary) !important;
           transition: background-color 5000s ease-in-out 0s;
       }
       .dash-input:focus { 
         outline: none; 
-        border-color: var(--neo-text-muted); 
+        border-color: var(--accent-blue); 
+        background: rgba(15, 15, 18, 0.8);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
       }
   
       .timing-select {
           background: rgba(15, 15, 17, 0.6); 
           border: 1px solid var(--neo-border);
-          color: var(--neo-text-main); 
+          color: var(--neo-text-primary); 
           height: 48px; 
           border-radius: var(--radius-sm);
           padding: 0 16px; 
@@ -421,31 +421,41 @@
           text-transform: uppercase;
       }
       .timing-select:hover, .timing-select:focus { 
-        border-color: var(--neo-text-main); 
+        border-color: var(--neo-text-primary); 
         background: rgba(25, 25, 28, 0.8);
       }
       .timing-select option {
         background: #000000;
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
         font-family: var(--font-mono);
         padding: 10px;
       }
       
       /* Buttons */
       .btn-dash {
-        height: 48px; padding: 0 1.5rem; border-radius: var(--radius-sm);
-        font-family: var(--font-mono); font-weight: 400; font-size: 0.8rem; 
-        display: flex; align-items: center; justify-content: center;
-        gap: 0.5rem; cursor: pointer; transition: all 0.2s ease;
+        height: 44px; 
+        padding: 0 1.5rem; 
+        border-radius: 4px;
+        font-family: var(--font-ui); 
+        font-weight: 600; 
+        font-size: 0.8rem; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        gap: 0.6rem; 
+        cursor: pointer; 
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid var(--neo-border); 
-        color: var(--neo-text-muted); 
+        color: var(--text-secondary); 
         text-decoration: none;
-        white-space: nowrap; text-transform: uppercase;
-        background: var(--neo-bg);
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.03);
       }
       .btn-dash:hover:not(:disabled) { 
-        color: var(--neo-text-main); 
-        border-color: var(--neo-text-main); 
+        color: var(--text-primary); 
+        border-color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.07);
+        transform: translateY(-1px);
       }
       .btn-icon-only { padding: 0; width: 48px; justify-content: center; flex-shrink: 0; }
       
@@ -478,7 +488,7 @@
         flex-direction: column;
         overflow: hidden; 
         position: relative;
-        border-radius: var(--radius-card);
+        border-radius: 4px;
       }
       .panel-header {
         padding: 1rem;
@@ -501,6 +511,7 @@
       .tab-pills {
         display: flex; gap: 0; background: transparent;
         border: 1px solid var(--neo-border);
+        border-radius: 4px; overflow: hidden;
       }
       .tab-pill {
         padding: 8px 16px; font-size: 0.75rem; color: var(--neo-text-muted); font-family: var(--font-ui);
@@ -521,7 +532,7 @@
           color: white;
       }
   
-      .tab-pill:hover:not(.active) { color: var(--neo-text-main); }
+      .tab-pill:hover:not(.active) { color: var(--neo-text-primary); }
   
       .panel-content { position: relative; flex: 1; overflow: hidden; width: 100%; height: 100%; }
       
@@ -537,7 +548,7 @@
       }
       
       .dash-table td {
-        padding: 0.75rem 1rem; color: var(--neo-text-main);
+        padding: 0.75rem 1rem; color: var(--neo-text-primary);
         border-bottom: 1px solid var(--neo-border); font-size: 0.8rem;
         font-family: var(--font-mono);
       }
@@ -545,29 +556,59 @@
   
       /* --- DROPDOWNS --- */
       .custom-dropdown {
-        background: rgba(15, 15, 17, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--neo-border);
-        border-radius: var(--radius-sm);
-        padding: 0;
+        background: rgba(10, 10, 12, 0.85);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 6px;
         min-width: 100%;
-        z-index: 999;
-        animation: dropdownSlide 0.15s ease-out forwards;
+        z-index: 1005;
+        animation: dropdownSlide 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
         transform-origin: top;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
       }
-  
+
+      @keyframes dropdownSlide {
+        from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
       .dropdown-link {
-        display: flex; align-items: center; padding: 12px 16px;
-        font-size: 0.8rem; color: var(--neo-text-muted); text-decoration: none;
-        border-radius: 0; transition: all 0.2s ease;
-        border-bottom: 1px solid var(--neo-border); font-family: var(--font-mono);
+        display: flex; align-items: center; padding: 10px 14px;
+        font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none;
+        border-radius: 6px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: var(--font-mono);
         text-transform: uppercase;
+        margin-bottom: 2px;
       }
-      .dropdown-link:last-child { border-bottom: none; }
+      .dropdown-link:last-child { margin-bottom: 0; }
   
       .dropdown-link:hover {
-        background: rgba(40, 40, 45, 0.8); color: var(--neo-text-main);
+        background: rgba(59, 130, 246, 0.08);
+        color: var(--neo-blue);
+        padding-left: 18px;
+      }
+
+      .dropdown-link.active {
+        background: rgba(59, 130, 246, 0.12);
+        color: var(--neo-blue);
+        border-left: 3px solid var(--neo-blue);
+        padding-left: 18px;
+        font-weight: 700;
+      }
+
+      .dropdown-category {
+        padding: 12px 16px 4px 16px;
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: var(--neo-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-family: var(--font-mono);
+        opacity: 0.9;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
   
       /* --- VIBRANT TECH CARD GRID (Service Discovery Redesign) --- */
@@ -582,24 +623,22 @@
       }
   
       .discovery-card {
-        background: var(--neo-card);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: rgba(5, 5, 5, 0.4);
         border: 1px solid var(--neo-border);
-        border-radius: var(--radius-card);
-        padding: 1rem;
+        border-radius: 4px;
+        padding: 1.25rem;
         position: relative;
         overflow: hidden;
-        transition: background 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 1rem;
+        backdrop-filter: blur(10px);
       }
   
       .discovery-card:hover {
         background: var(--neo-bg);
         border-color: var(--neo-blue);
-        transform: translateY(-2px);
       }
 
       body.light-mode .discovery-card {
@@ -661,7 +700,7 @@
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.02em;
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
       }
 
       .service-ver {
@@ -769,7 +808,7 @@
       }
   
       .processing-text {
-        font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-main);
+        font-family: var(--font-mono); font-size: 0.8rem; color: var(--neo-text-primary);
         letter-spacing: 0.2em; text-transform: uppercase;
         animation: text-fade 1.5s ease-in-out infinite alternate;
       }
@@ -869,7 +908,7 @@
       }
   
       .log-content { 
-          color: var(--neo-text-main); 
+          color: var(--neo-text-primary); 
           opacity: 0.8;
           word-break: break-all; 
           white-space: pre-wrap;
@@ -888,7 +927,7 @@
   
       #clearLogBtn:hover {
           background: #111 !important;
-          color: var(--neo-text-main) !important;
+          color: var(--neo-text-primary) !important;
           border-color: var(--neo-blue) !important;
       }
   
@@ -1008,7 +1047,7 @@
         flex: 1;
         font-size: 0.95rem;
         font-weight: 600;
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -1036,7 +1075,7 @@
         font-family: var(--font-mono);
         font-size: 1.1rem;
         font-weight: 800;
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
         line-height: 1;
       }
 
@@ -1047,7 +1086,7 @@
 
       .finding-card.expanded .expand-icon {
         transform: rotate(180deg);
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
       }
 
       .finding-details {
@@ -1094,7 +1133,7 @@
 
       .detail-text {
         font-size: 0.85rem;
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
         line-height: 1.6;
         opacity: 0.9;
         word-break: break-word;
@@ -1164,7 +1203,7 @@
         font-family: var(--font-mono);
         font-size: 0.65rem;
         font-weight: 800;
-        color: var(--neo-text-main);
+        color: var(--neo-text-primary);
       }
 
       .gauge-low     { stroke: var(--neo-green); }
@@ -1285,10 +1324,10 @@
     <!-- Top Bento Banner Block -->
     <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
       <div class="scanner-title-area" style="margin: 0;">
-        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">API <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Intelligence</span></h1>
+        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">API <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Security</span></h1>
         <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
           <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
-          REST/GraphQL Endpoint Security Analysis & Compliance
+          Stress test RESTful endpoints against BOLA and mass assignment flaws.
         </p>
       </div>
       
@@ -1297,6 +1336,55 @@
           <span class="material-symbols-outlined" style="font-size: 1.2rem;">home</span>
           <span>Security Hub</span>
         </a>
+
+        <!-- Quick Switcher Dropdown -->
+        <div class="relative" style="z-index: 1001;">
+          <button class="btn-dash" style="background: rgba(255, 255, 255, 0.05); height: 42px; border-radius: 8px;" onclick="toggleDropdown('scannerSwitchDropdown')">
+            <span class="material-symbols-outlined" style="font-size: 1.2rem;">swap_horiz</span>
+            <span>Switch Tool</span>
+            <span class="material-symbols-outlined" style="font-size: 1.2rem;">expand_more</span>
+          </button>
+          
+          <div id="scannerSwitchDropdown" class="hidden absolute top-full right-0 mt-2 custom-dropdown" style="min-width: 280px; z-index: 1002; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div class="dropdown-category">Network Infrastructure</div>
+            <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">radar</span>
+              Service Discovery
+            </a>
+            <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">troubleshoot</span>
+              Traffic Sniffer
+            </a>
+
+            <div class="dropdown-category">Web Applications</div>
+            <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">language</span>
+              Audit (DAST)
+            </a>
+            <a href="{{ url_for('api_scanner_bp.api_scanner_page') }}" class="dropdown-link active">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">api</span>
+              API Security
+            </a>
+            <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">database</span>
+              SQL Integrity
+            </a>
+
+            <div class="dropdown-category">Audit & Verification</div>
+            <a href="{{ url_for('semgrep_scanner_bp.semgrep_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">code</span>
+              Source Audit (SAST)
+            </a>
+            <a href="{{ url_for('ssl_scanner_bp.ssl_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">shield_lock</span>
+              Encryption Audit
+            </a>
+            <a href="{{ url_for('killchain_bp.killchain_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">view_in_ar</span>
+              Penetration Simulation
+            </a>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1323,7 +1411,7 @@
             </div>
 
             <div class="flex items-center gap-2" style="flex-shrink: 0;">
-                <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em; white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">TARGET: <span id="lastScannedUrlDisplay" style="color: var(--neo-text-main);">---</span></div>
+                <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em; white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis;">TARGET: <span id="lastScannedUrlDisplay" style="color: var(--neo-text-primary);">---</span></div>
                 <div class="badge-pill" style="padding: 2px 6px; border-radius: 2px; font-size: 0.55rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green); flex-shrink: 0;">
                     <span id="scanStatus">READY</span>
                 </div>
@@ -1489,7 +1577,7 @@
                 <div style="height: 1px; background: var(--neo-border);"></div>
                 <div>
                     <label style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 800; margin-bottom: 4px; display: block;">INSIGHTS</label>
-                    <p id="discoveryInsights" style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono); line-height: 1.4;">No infrastructure data.</p>
+                    <p id="discoveryInsights" style="font-size: 0.75rem; color: var(--neo-text-primary); font-family: var(--font-mono); line-height: 1.4;">No infrastructure data.</p>
                 </div>
             </div>
           </div>
@@ -1543,7 +1631,7 @@
               <span class="panel-title" style="color: var(--neo-amber);">Authorization Required</span>
           </div>
           <div class="panel-content p-6 flex flex-col gap-4">
-              <p id="authModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main);"></p>
+              <p id="authModalMessage" style="font-size: 0.85rem; color: var(--neo-text-primary);"></p>
               <p style="font-size: 0.8rem; color: var(--neo-text-muted);"><strong>By confirming, you declare that you hold written authorization from this organization.</strong></p>
               <div class="flex gap-2 justify-end mt-4">
                   <button id="cancelAuthBtn" class="btn-dash btn-secondary" style="height: 38px;">Cancel</button>
@@ -1560,7 +1648,7 @@
               <span class="panel-title" style="color: var(--neo-red);">Scan Blocked</span>
           </div>
           <div class="panel-content p-6 flex flex-col gap-4">
-              <p id="blockedModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main);"></p>
+              <p id="blockedModalMessage" style="font-size: 0.85rem; color: var(--neo-text-primary);"></p>
               <p style="font-size: 0.8rem; color: var(--neo-text-muted);">If you are an authorized security professional, contact support to enable authorized testing mode.</p>
               <div class="flex justify-end mt-4">
                   <button id="closeBlockedModalBtn" class="btn-dash btn-secondary" style="height: 38px;">Understood</button>
@@ -1571,6 +1659,12 @@
 {% endblock %}
 
 {% block extra_scripts %}
+  <script>
+    function toggleDropdown(id) {
+      const dropdown = document.getElementById(id);
+      if (dropdown) dropdown.classList.toggle('hidden');
+    }
+  </script>
   <script src="{{ url_for('static', filename='js/api_scanner.js') }}"></script>
 {% endblock %}
 

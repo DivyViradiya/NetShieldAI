@@ -124,12 +124,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let contentStyle = '';
+    let icon = 'info';
+
     if (cleanedMessage.includes('[x]') || cleanedMessage.includes('CRITICAL') || cleanedMessage.includes('ERROR')) {
         contentStyle = 'color:#ef4444';
-    } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('SUCCESS') || cleanedMessage.includes('Complete')) {
+        icon = 'error';
+    } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('SUCCESS') || cleanedMessage.includes('Complete') || cleanedMessage.includes('PHASE')) {
         contentStyle = 'color:#10b981';
-    } else if (cleanedMessage.includes('[*]') || cleanedMessage.includes('PHASE')) {
+        icon = 'check_circle';
+    } else if (cleanedMessage.includes('[*]')) {
         contentStyle = 'color:#3b82f6';
+        icon = 'info';
     }
 
     const line = document.createElement("div");
@@ -137,7 +142,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     line.innerHTML = `
         <div class="log-time">${timeStr}</div>
-        <div class="log-content" style="${contentStyle}" ${isProgress ? 'data-is-progress="true"' : ''}>${cleanedMessage}</div>
+        <div class="log-content" ${isProgress ? 'data-is-progress="true"' : ''}>
+            ${!isProgress ? `<span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle; margin-right: 8px; ${contentStyle}">${icon}</span>` : ''}
+            <span style="${contentStyle}">${isProgress ? cleanedMessage : cleanedMessage.toUpperCase()}</span>
+        </div>
     `;
     
     els.logOutput.appendChild(line);

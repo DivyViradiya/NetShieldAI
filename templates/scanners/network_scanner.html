@@ -86,7 +86,6 @@
         background: rgba(10, 10, 12, 0.7);
         border-color: rgba(255, 255, 255, 0.1);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-        transform: translateY(-2px);
       }
   
       body.light-mode .control-card:hover, 
@@ -424,6 +423,7 @@
       .tab-pills {
         display: flex; gap: 0; background: transparent;
         border: 1px solid var(--neo-border);
+        border-radius: 4px; overflow: hidden;
       }
       .tab-pill {
         padding: 8px 16px; font-size: 0.75rem; color: var(--neo-text-muted); font-family: var(--font-ui);
@@ -468,35 +468,46 @@
   
       /* --- DROPDOWNS --- */
       .custom-dropdown {
-        background: rgba(15, 15, 17, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--neo-border);
-        border-radius: 4px;
-        padding: 0;
+        background: rgba(10, 10, 12, 0.85);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 6px;
         min-width: 100%;
-        z-index: 999;
-        animation: dropdownSlide 0.15s ease-out forwards;
+        z-index: 1005;
+        animation: dropdownSlide 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
         transform-origin: top;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
       }
 
-      body.light-mode .custom-dropdown {
-        background: #ffffff;
-        border-color: var(--border-default);
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      @keyframes dropdownSlide {
+        from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
       }
 
       .dropdown-link {
-        display: flex; align-items: center; padding: 12px 16px;
-        font-size: 0.8rem; color: var(--neo-text-muted); text-decoration: none;
-        border-radius: 4px; transition: all 0.2s ease;
-        border-bottom: 1px solid var(--neo-border); font-family: var(--font-mono);
+        display: flex; align-items: center; padding: 10px 14px;
+        font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none;
+        border-radius: 6px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: var(--font-mono);
         text-transform: uppercase;
+        margin-bottom: 2px;
       }
-      .dropdown-link:last-child { border-bottom: none; }
+      .dropdown-link:last-child { margin-bottom: 0; }
   
       .dropdown-link:hover {
-        background: rgba(40, 40, 45, 0.8); color: var(--neo-text-main);
+        background: rgba(59, 130, 246, 0.08);
+        color: var(--neo-blue);
+        padding-left: 18px;
+      }
+
+      .dropdown-link.active {
+        background: rgba(59, 130, 246, 0.12);
+        color: var(--neo-blue);
+        border-left: 3px solid var(--neo-blue);
+        padding-left: 18px;
+        font-weight: 700;
       }
 
       body.light-mode .dropdown-link {
@@ -506,6 +517,19 @@
       body.light-mode .dropdown-link:hover {
         background: var(--bg-secondary);
         color: var(--accent-primary);
+      }
+
+      .dropdown-category {
+        padding: 12px 16px 4px 16px;
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: var(--neo-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-family: var(--font-mono);
+        opacity: 0.9;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
 
       /* --- VIBRANT TECH CARD GRID (Service Discovery Redesign) --- */
@@ -1047,10 +1071,10 @@
     <!-- Top Bento Banner Block -->
     <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
       <div class="scanner-title-area" style="margin: 0;">
-        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Network <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Intelligence</span></h1>
+        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Service <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Discovery</span></h1>
         <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
           <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
-          Professional Infrastructure Discovery & Asset Profiling
+          High-performance network reconnaissance and port analysis engine.
         </p>
       </div>
       
@@ -1059,6 +1083,55 @@
           <span class="material-symbols-outlined" style="font-size: 1.2rem;">home</span>
           <span>Security Hub</span>
         </a>
+
+        <!-- Quick Switcher Dropdown -->
+        <div class="relative" style="z-index: 1001;">
+          <button class="btn-dash" style="background: rgba(255, 255, 255, 0.05); height: 42px; border-radius: 8px;" onclick="toggleDropdown('scannerSwitchDropdown')">
+            <span class="material-symbols-outlined" style="font-size: 1.2rem;">swap_horiz</span>
+            <span>Switch Tool</span>
+            <span class="material-symbols-outlined" style="font-size: 1.2rem;">expand_more</span>
+          </button>
+          
+          <div id="scannerSwitchDropdown" class="hidden absolute top-full right-0 mt-2 custom-dropdown" style="min-width: 280px; z-index: 1002; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div class="dropdown-category">Network Infrastructure</div>
+            <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="dropdown-link active">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">radar</span>
+              Service Discovery
+            </a>
+            <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">troubleshoot</span>
+              Traffic Sniffer
+            </a>
+
+            <div class="dropdown-category">Web Applications</div>
+            <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">language</span>
+              Audit (DAST)
+            </a>
+            <a href="{{ url_for('api_scanner_bp.api_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">api</span>
+              API Security
+            </a>
+            <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">database</span>
+              SQL Integrity
+            </a>
+
+            <div class="dropdown-category">Audit & Verification</div>
+            <a href="{{ url_for('semgrep_scanner_bp.semgrep_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">code</span>
+              Source Audit (SAST)
+            </a>
+            <a href="{{ url_for('ssl_scanner_bp.ssl_scanner_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">shield_lock</span>
+              Encryption Audit
+            </a>
+            <a href="{{ url_for('killchain_bp.killchain_page') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">view_in_ar</span>
+              Penetration Simulation
+            </a>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-NetShieldAI - Network Scanner
+  NetShieldAI - Semgrep Scanner
 {% endblock %}
 
 {% block extra_css %}
@@ -18,156 +18,49 @@ NetShieldAI - Network Scanner
     box-sizing: border-box;
   }
 
-  /* --- SCANNER THEME OVERRIDES --- */
+  /* --- PREMIUM THEME VARIABLES --- */
   .dashboard-wrapper {
     background-color: var(--neo-bg);
-    color: var(--neo-text-main);
+    color: var(--neo-text-primary);
     font-family: var(--font-ui);
     padding: calc(var(--navbar-height) + 1.25rem) 1.5rem 1rem;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    transition: background-color 0.4s ease;
+    --neo-input: rgba(15, 15, 18, 0.4);
   }
 
-  /* Risk Level Mapping Standardized */
-  .risk-critical { --card-accent: var(--severity-critical); }
-  .risk-high { --card-accent: var(--severity-high); }
-  .risk-medium { --card-accent: var(--severity-medium); }
-  .risk-low { --card-accent: var(--severity-low); }
-  .risk-safe { --card-accent: var(--severity-success); }
+  /* Risk Level Mapping Standardized (Professional Palette) */
+  .risk-critical { --card-accent: var(--severity-critical); --card-glow: rgba(239, 68, 68, 0.1); }
+  .risk-high { --card-accent: var(--severity-high); --card-glow: rgba(245, 158, 11, 0.1); }
+  .risk-medium { --card-accent: var(--severity-medium); --card-glow: rgba(251, 191, 36, 0.1); }
+  .risk-low { --card-accent: var(--severity-low); --card-glow: rgba(59, 130, 246, 0.1); }
+  .risk-safe { --card-accent: var(--severity-success); --card-glow: rgba(16, 185, 129, 0.1); }
 
 
-  /* Light Mode Specific Overrides */
-  body.light-mode .text-gradient {
-    background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  body.light-mode .dash-table th {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    border-bottom-color: var(--border-default);
-  }
-
-  body.light-mode .dash-table td {
-    color: var(--text-secondary);
-    border-bottom-color: var(--border-subtle);
-  }
-
-  body.light-mode .panel-header {
-    background: var(--surface-primary);
-    border-bottom-color: var(--border-default);
-  }
-
-  body.light-mode .terminal-header {
-    background: var(--bg-secondary);
-    border-bottom-color: var(--border-default);
-  }
-
-  body.light-mode .term-window {
-    background: var(--surface-primary);
-  }
-
-  body.light-mode .log-time {
-    color: var(--text-muted);
-  }
-
-  body.light-mode .log-content {
-    color: var(--text-secondary);
-  }
-
-  body.light-mode .metric-value {
-    color: var(--text-primary);
-  }
-
-  body.light-mode .metric-info {
-    color: var(--text-muted);
-  }
-
-  body.light-mode .badge-pill {
-    background: var(--severity-success-bg);
-    color: var(--severity-success);
-    border-color: var(--severity-success);
-  }
-
-  body.light-mode .btn-dash {
-    background: var(--surface-primary);
-    color: var(--text-secondary);
-    border-color: var(--border-default);
-  }
-
-  body.light-mode .btn-dash:hover:not(:disabled) {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    border-color: var(--text-muted);
-  }
-
-  body.light-mode .dash-input {
-    background: var(--surface-primary) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--border-default) !important;
-  }
-
-  body.light-mode .tab-pills {
-    background: var(--bg-secondary);
-    border-color: var(--border-default);
-  }
-
-  body.light-mode .custom-dropdown {
-    background: var(--surface-primary) !important;
-    border-color: var(--border-default) !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
-  }
-
-  body.light-mode .dropdown-link {
-    color: var(--text-secondary) !important;
-  }
-
-  body.light-mode .dropdown-link:hover {
-    background: var(--bg-secondary) !important;
-    color: var(--text-primary) !important;
-  }
-
-  body.light-mode .processing-text {
-    color: var(--text-primary);
-  }
-
-  body.light-mode .term-title {
-    color: var(--text-muted);
-  }
-
-  body.light-mode #resultsContent {
-    background-color: var(--bg-secondary) !important;
-    color: var(--text-secondary) !important;
-  }
-
-  body.light-mode .timing-select {
-    background: var(--surface-primary) !important;
-    color: var(--text-secondary) !important;
-    border-color: var(--border-default) !important;
-  }
-
-  body.light-mode .timing-select option {
-    background: var(--surface-primary) !important;
-    color: var(--text-secondary) !important;
-  }
 
   /* Component Styles using Global Tokens */
-  .control-card, .metric-card, .dash-panel, .discovery-card {
-    background: #000000;
+  .control-card, .metric-card, .dash-panel {
+    background: rgba(5, 5, 5, 0.5);
     border: 1px solid var(--neo-border);
-    border-radius: var(--radius-card, 4px);
+    border-radius: 4px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   body.light-mode .control-card, 
   body.light-mode .metric-card, 
-  body.light-mode .dash-panel, 
-  body.light-mode .discovery-card {
-    background: var(--surface-primary);
+  body.light-mode .dash-panel {
+    background: rgba(255, 255, 255, 0.82);
     border-color: var(--border-default);
+    backdrop-filter: blur(12px);
+  }
+
+  body.light-mode {
+     --neo-input: #ffffff;
   }
 
 
@@ -254,6 +147,22 @@ NetShieldAI - Network Scanner
   .dashboard-wrapper .bg-black {
     background-color: #000;
   }
+  
+  /* Override hover effects with micro-elevation */
+  .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover {
+    background: rgba(10, 10, 12, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  body.light-mode .control-card:hover, 
+  body.light-mode .metric-card:hover, 
+  body.light-mode .dash-panel:hover,
+  body.light-mode .terminal-footer:hover {
+    background: #ffffff;
+    border-color: var(--accent-blue);
+    box-shadow: 0 15px 45px rgba(99, 102, 241, 0.12);
+  }
 
   /* --- COMPONENT: HUD CARDS (Shared Style) --- */
   .control-card,
@@ -284,7 +193,6 @@ NetShieldAI - Network Scanner
     background: #080808;
     border-color: rgba(255, 255, 255, 0.02) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
-    transform: translateY(-2px);
   }
 
   body.light-mode .control-card:hover,
@@ -298,19 +206,17 @@ NetShieldAI - Network Scanner
   /* --- LAYOUT GRIDS --- */
   .scan-overview-grid {
     display: grid;
-    grid-template-columns: 50fr 50fr;
-    gap: 0.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
     margin-bottom: 0.5rem;
     width: 100%;
     align-items: stretch;
-    min-height: 120px;
-    /* Let content expand height */
   }
 
   .main-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
-    gap: 0.5rem;
+    grid-template-columns: minmax(0, 1fr) 360px; 
+    gap: 1rem;
     height: clamp(600px, calc(100vh - 250px), 1200px);
     width: 100%;
   }
@@ -494,9 +400,21 @@ NetShieldAI - Network Scanner
     transition: background-color 5000s ease-in-out 0s;
   }
 
-  .dash-input:focus {
-    outline: none;
-    border-color: var(--neo-text-muted);
+  .dash-input:focus { 
+    outline: none; 
+    border-color: var(--accent-blue); 
+    background: rgba(15, 15, 18, 0.8);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  }
+
+  body.light-mode .dash-input {
+    background: #ffffff !important;
+    border-color: var(--border-default) !important;
+    color: var(--text-primary) !important;
+  }
+  body.light-mode .dash-input:focus {
+    background: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1) !important;
   }
 
   .timing-select {
@@ -529,29 +447,40 @@ NetShieldAI - Network Scanner
 
   /* Buttons */
   .btn-dash {
-    height: 48px;
-    padding: 0 1.5rem;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
-    font-weight: 400;
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
+    height: 44px; 
+    padding: 0 1.5rem; 
+    border-radius: 4px;
+    font-family: var(--font-ui); 
+    font-weight: 600; 
+    font-size: 0.8rem; 
+    display: flex; 
+    align-items: center; 
     justify-content: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 1px solid var(--neo-border);
-    color: var(--neo-text-muted);
+    gap: 0.6rem; 
+    cursor: pointer; 
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--neo-border); 
+    color: var(--text-secondary); 
     text-decoration: none;
     white-space: nowrap;
-    text-transform: uppercase;
-    background: var(--neo-bg);
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .btn-dash:hover:not(:disabled) { 
+    color: var(--text-primary); 
+    border-color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateY(-1px);
   }
 
-  .btn-dash:hover:not(:disabled) {
-    color: var(--neo-text-main);
-    border-color: var(--neo-text-main);
+  body.light-mode .btn-dash {
+    background: #ffffff;
+    border-color: var(--border-default);
+    color: var(--text-secondary);
+  }
+  body.light-mode .btn-dash:hover:not(:disabled) {
+    background: var(--bg-secondary);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
   }
 
   .btn-icon-only {
@@ -630,19 +559,23 @@ NetShieldAI - Network Scanner
     gap: 0;
     background: transparent;
     border: 1px solid var(--neo-border);
+    border-radius: 4px; overflow: hidden;
   }
 
   .tab-pill {
     padding: 8px 16px;
     font-size: 0.75rem;
     color: var(--neo-text-muted);
-    font-family: var(--font-mono);
+    font-family: var(--font-ui);
     cursor: pointer;
-    font-weight: 400;
+    font-weight: 600;
     transition: all 0.2s;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
     border-right: 1px solid var(--neo-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .tab-pill:last-child {
@@ -650,18 +583,17 @@ NetShieldAI - Network Scanner
   }
 
   .tab-pill.active {
-    background: var(--neo-bg);
-    color: var(--neo-text-main);
+    background: var(--accent-blue);
+    color: white;
+    border-color: var(--accent-blue);
   }
 
   body.light-mode .tab-pill.active {
-    background: var(--text-primary);
+    background: var(--accent-blue);
     color: white;
   }
 
-  .tab-pill:hover:not(.active) {
-    color: var(--neo-text-main);
-  }
+  .tab-pill:hover:not(.active) { color: var(--neo-text-main); }
 
   .panel-content {
     position: relative;
@@ -705,39 +637,59 @@ NetShieldAI - Network Scanner
 
   /* --- DROPDOWNS --- */
   .custom-dropdown {
-    background: rgba(15, 15, 17, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--neo-border);
-    border-radius: var(--radius-sm);
-    padding: 0;
+    background: rgba(10, 10, 12, 0.85);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 6px;
     min-width: 100%;
-    z-index: 999;
-    animation: dropdownSlide 0.15s ease-out forwards;
+    z-index: 1005;
+    animation: dropdownSlide 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
     transform-origin: top;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  @keyframes dropdownSlide {
+    from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   .dropdown-link {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    font-size: 0.8rem;
-    color: var(--neo-text-muted);
-    text-decoration: none;
-    border-radius: 0;
-    transition: all 0.2s ease;
-    border-bottom: 1px solid var(--neo-border);
+    display: flex; align-items: center; padding: 10px 14px;
+    font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none;
+    border-radius: 6px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: var(--font-mono);
     text-transform: uppercase;
+    margin-bottom: 2px;
   }
-
-  .dropdown-link:last-child {
-    border-bottom: none;
-  }
+  .dropdown-link:last-child { margin-bottom: 0; }
 
   .dropdown-link:hover {
-    background: rgba(40, 40, 45, 0.8);
-    color: var(--neo-text-main);
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--neo-blue);
+    padding-left: 18px;
+  }
+
+  .dropdown-link.active {
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--neo-blue);
+    border-left: 3px solid var(--neo-blue);
+    padding-left: 18px;
+    font-weight: 700;
+  }
+
+  .dropdown-category {
+    padding: 12px 16px 4px 16px;
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--neo-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-family: var(--font-mono);
+    opacity: 0.9;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   /* --- VIBRANT TECH CARD GRID (Service Discovery Redesign) --- */
@@ -769,7 +721,6 @@ NetShieldAI - Network Scanner
   .discovery-card:hover {
     background: #080808;
     border-color: rgba(255, 255, 255, 0.02);
-    transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   }
 
@@ -1027,14 +978,22 @@ NetShieldAI - Network Scanner
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
   }
 
-  .terminal-footer {
-    height: 35vh;
-    min-height: 250px;
-    max-height: 450px;
+  .terminal-footer { 
+    height: clamp(250px, 35vh, 450px);
     flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
+    display: flex; 
+    flex-direction: column; 
     overflow: hidden;
+    border: 1px solid var(--neo-border);
+    border-radius: 4px;
+    background: rgba(5, 5, 5, 0.4);
+    backdrop-filter: blur(12px);
+  }
+
+  body.light-mode .terminal-footer {
+    background: #ffffff;
+    border-color: var(--border-default);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
   }
 
   .term-title {
@@ -1085,24 +1044,23 @@ NetShieldAI - Network Scanner
     align-items: flex-start;
   }
 
-  .log-time {
-    color: var(--neo-text-muted);
-    font-weight: 700;
-    white-space: nowrap;
+  .log-time { 
+      color: #444; 
+      font-weight: 700;
+      white-space: nowrap; 
   }
 
   .log-prompt {
-    color: var(--neo-blue);
-    font-weight: 900;
-    text-align: center;
-    opacity: 0.7;
+      color: var(--neo-blue);
+      font-weight: 900;
+      text-align: center;
+      opacity: 0.7;
   }
 
-  .log-content {
-    color: var(--neo-text-main);
-    opacity: 0.8;
-    word-break: break-all;
-    white-space: pre-wrap;
+  .log-content { 
+      color: #999; 
+      word-break: break-all; 
+      white-space: pre-wrap;
   }
 
   #clearLogBtn {
@@ -1362,7 +1320,7 @@ NetShieldAI - Network Scanner
       height: auto !important;
       min-height: 150px !important;
       max-height: 30vh !important;
-      border-radius: 12px 12px 0 0 !important;
+      border-radius: 4px 4px 0 0 !important;
       margin-inline: -0.5rem;
       margin-bottom: -0.5rem;
       border-left: none !important;
@@ -1391,27 +1349,69 @@ NetShieldAI - Network Scanner
 {% block content %}
 <div class="dashboard-wrapper">
   <!-- Top Bento Banner Block -->
-  <div class="control-card"
-    style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
+  <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
     <div class="scanner-title-area" style="margin: 0;">
-      <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Source Code
-        <span
-          style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Scanner</span>
-      </h1>
-      <p
-        style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
-        <span
-          style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
-        Static Application Security Testing (SAST) · Powered by Semgrep OSS
+      <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Source Audit <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">(SAST)</span></h1>
+      <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
+        <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
+        Heuristic-based static analysis to detect hardcoded secrets and dangerous code patterns.
       </p>
     </div>
-
+    
     <div class="flex gap-3">
-      <a href="{{ url_for('tools_hub') }}" class="btn-dash glass-pane"
-        style="height: 42px; border-radius: 8px;">
-               <span class="material-symbols-outlined" style="font-size: 1.2rem;">home</span>
+      <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255, 255, 255, 0.05); height: 42px; border-radius: 8px;">
+        <span class="material-symbols-outlined" style="font-size: 1.2rem;">home</span>
         <span>Security Hub</span>
       </a>
+
+      <!-- Quick Switcher Dropdown -->
+      <div class="relative" style="z-index: 1001;">
+        <button class="btn-dash" style="background: rgba(255, 255, 255, 0.05); height: 42px; border-radius: 8px;" onclick="toggleDropdown('scannerSwitchDropdown')">
+          <span class="material-symbols-outlined" style="font-size: 1.2rem;">swap_horiz</span>
+          <span>Switch Tool</span>
+          <span class="material-symbols-outlined" style="font-size: 1.2rem;">expand_more</span>
+        </button>
+        
+        <div id="scannerSwitchDropdown" class="hidden absolute top-full right-0 mt-2 custom-dropdown" style="min-width: 280px; z-index: 1002; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          <div class="dropdown-category">Network Infrastructure</div>
+          <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="dropdown-link">
+            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">radar</span>
+            Service Discovery
+          </a>
+          <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="dropdown-link">
+            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">troubleshoot</span>
+            Traffic Sniffer
+          </a>
+
+          <div class="dropdown-category">Web Applications</div>
+          <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="dropdown-link">
+            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">language</span>
+            Audit (DAST)
+          </a>
+          <a href="{{ url_for('api_scanner_bp.api_scanner_page') }}" class="dropdown-link">
+            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">api</span>
+            API Security
+          </a>
+          <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="dropdown-link">
+            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">database</span>
+            SQL Integrity
+          </a>
+
+          <div class="dropdown-category">Audit & Verification</div>
+          <a href="{{ url_for('semgrep_scanner_bp.semgrep_scanner_page') }}" class="dropdown-link active">
+            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">code</span>
+            Source Audit (SAST)
+          </a>
+          <a href="{{ url_for('ssl_scanner_bp.ssl_scanner_page') }}" class="dropdown-link">
+            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">shield_lock</span>
+            Encryption Audit
+          </a>
+          <a href="{{ url_for('killchain_bp.killchain_page') }}" class="dropdown-link">
+            <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">view_in_ar</span>
+            Penetration Simulation
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1444,7 +1444,7 @@ NetShieldAI - Network Scanner
 
         <!-- Reset Button -->
         <button id="resetScanBtn" class="btn-dash btn-secondary" title="Clear & Reset"
-          style="height: 38px; padding: 0 0.75rem; flex-shrink: 0;">
+          style="height: 38px; padding: 0 0.75rem; border-radius: 4px; flex-shrink: 0;">
           <span class="material-symbols-outlined" style="font-size: 1.1rem;">restart_alt</span>
         </button>
       </div>
@@ -1460,7 +1460,7 @@ NetShieldAI - Network Scanner
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <button id="initiateScanBtn" class="btn-dash btn-primary" title="Start SAST Scan"
-            style="min-width: 130px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 8px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+            style="min-width: 120px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 4px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
             <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
             <span class="button-text">START SCAN</span>
             <span class="spinner hidden"></span>
@@ -1522,8 +1522,14 @@ NetShieldAI - Network Scanner
         <div class="flex items-center gap-3" style="flex-shrink: 0;">
           <span class="panel-title">Scan Results</span>
           <div class="tab-pills">
-            <div id="findingsTabBtn" class="tab-pill active">Code Findings</div>
-            <div id="rawTabBtn" class="tab-pill">JSON Output</div>
+            <div id="findingsTabBtn" class="tab-pill active">
+              <span class="material-symbols-outlined" style="font-size: 1rem;">list_alt</span>
+              <span>Findings</span>
+            </div>
+            <div id="rawTabBtn" class="tab-pill">
+              <span class="material-symbols-outlined" style="font-size: 1rem;">terminal</span>
+              <span>Raw Output</span>
+            </div>
           </div>
         </div>
         <!-- Search bar (visible on findings tab) -->
@@ -1768,5 +1774,11 @@ NetShieldAI - Network Scanner
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{{ url_for('static', filename='js/semgrep_scanner.js') }}"></script>
+  <script>
+    function toggleDropdown(id) {
+      const dropdown = document.getElementById(id);
+      if (dropdown) dropdown.classList.toggle('hidden');
+    }
+  </script>
+  <script src="{{ url_for('static', filename='js/semgrep_scanner.js') }}"></script>
 {% endblock %}

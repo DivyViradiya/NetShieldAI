@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         gitUrlInput: document.getElementById('gitUrlInput'),
         fileUploadInput: document.getElementById('fileUploadInput'),
         triggerUploadBtn: document.getElementById('triggerUploadBtn'),
-        resetScanBtn: document.getElementById('resetScanBtn'), // <--- ADDED THIS
+        resetScanBtn: document.getElementById('resetScanBtn'), 
         initiateScanBtn: document.getElementById('initiateScanBtn'),
         scanStatus: document.getElementById('scanStatus'),
         
@@ -98,13 +98,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!cleanedMessage || cleanedMessage === '|' || cleanedMessage.includes('deprecated method')) return;
 
-        let contentStyle = '';
-        if (cleanedMessage.includes('[!]') || cleanedMessage.includes('Error')) {
-            contentStyle = 'color:#ef4444';
-        } else if (cleanedMessage.includes('[+]') || cleanedMessage.includes('Success')) {
-            contentStyle = 'color:#10b981';
-        } else if (cleanedMessage.includes('[*]')) {
-            contentStyle = 'color:#3b82f6';
+        // Professional Log Formatting
+        const logMap = {
+            '[!]': { color: '#ef4444', icon: 'error' },
+            '[x]': { color: '#ef4444', icon: 'cancel' },
+            '[✓]': { color: '#10b981', icon: 'check_circle' },
+            '[+]': { color: '#10b981', icon: 'add_circle' },
+            '[*]': { color: '#3b82f6', icon: 'info' }
+        };
+
+        let activeIcon = 'radio_button_checked';
+        let activeColor = '#999';
+
+        for (const [key, val] of Object.entries(logMap)) {
+            if (cleanedMessage.includes(key)) {
+                activeIcon = val.icon;
+                activeColor = val.color;
+                cleanedMessage = cleanedMessage.replace(key, '').trim();
+                break;
+            }
         }
 
         const line = document.createElement('div');
@@ -112,7 +124,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         line.innerHTML = `
             <div class="log-time">${timeStr}</div>
-            <div class="log-content" style="${contentStyle}">${cleanedMessage}</div>
+            <div class="log-content" style="color: ${activeColor === '#999' ? '' : activeColor}; display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 0.9rem; opacity: 0.6;">${activeIcon}</span>
+                <span>${cleanedMessage.toUpperCase()}</span>
+            </div>
         `;
         
         elements.logOutput.appendChild(line);
@@ -422,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 <div class="detail-section">
                     <span class="detail-label">Code Evidence</span>
-                    <div style="background: #000; padding: 1rem; border-radius: 8px; border: 1px solid #222; overflow-x: auto; margin-top: 0.5rem;">
+                    <div style="background: #000; padding: 1rem; border-radius: 4px; border: 1px solid #222; overflow-x: auto; margin-top: 0.5rem;">
                         <pre style="font-family: var(--font-mono); font-size: 0.75rem; color: #a1a1aa; margin: 0;">${f.code_snippet || 'No code evidence available.'}</pre>
                     </div>
                 </div>
