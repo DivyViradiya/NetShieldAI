@@ -27,7 +27,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
     transition: background-color 0.4s ease;
     --neo-input: rgba(15, 15, 18, 0.4);
   }
@@ -42,25 +42,28 @@
 
 
   /* Component Styles using Global Tokens */
-  .control-card, .metric-card, .dash-panel {
-    background: rgba(5, 5, 5, 0.5);
-    border: 1px solid var(--neo-border);
-    border-radius: 4px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  .control-card, .metric-card, .dash-panel, .finding-card {
+    background: linear-gradient(180deg, rgba(10, 10, 14, 0.8) 0%, rgba(5, 5, 7, 0.9) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 6px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
   }
 
   body.light-mode .control-card, 
   body.light-mode .metric-card, 
-  body.light-mode .dash-panel {
-    background: rgba(255, 255, 255, 0.82);
-    border-color: var(--border-default);
+  body.light-mode .dash-panel,
+  body.light-mode .finding-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid #d1d5db;
     backdrop-filter: blur(12px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   }
 
   body.light-mode {
-     --neo-input: #ffffff;
+    --neo-input: rgba(255, 255, 255, 0.9);
   }
 
 
@@ -128,13 +131,8 @@
     gap: 0.5rem;
   }
 
-  .dashboard-wrapper .gap-4 {
-    gap: 0.75rem;
-  }
-
-  .dashboard-wrapper .gap-6 {
-    gap: 1rem;
-  }
+  .dashboard-wrapper .gap-4 { gap: 0.5rem; }
+  .dashboard-wrapper .gap-6 { gap: 0.5rem; }
 
   .dashboard-wrapper .mb-6 {
     margin-bottom: 1.5rem;
@@ -149,7 +147,7 @@
   }
   
   /* Override hover effects with micro-elevation */
-  .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover {
+  .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover, .finding-card:hover {
     background: rgba(10, 10, 12, 0.7);
     border-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
@@ -158,66 +156,30 @@
   body.light-mode .control-card:hover, 
   body.light-mode .metric-card:hover, 
   body.light-mode .dash-panel:hover,
-  body.light-mode .terminal-footer:hover {
+  body.light-mode .terminal-footer:hover,
+  body.light-mode .finding-card:hover {
     background: #ffffff;
     border-color: var(--accent-blue);
     box-shadow: 0 15px 45px rgba(99, 102, 241, 0.12);
-  }
-
-  /* --- COMPONENT: HUD CARDS (Shared Style) --- */
-  .control-card,
-  .metric-card,
-  .dash-panel,
-  .terminal-footer {
-    background: #000000;
-    border: 1px solid var(--neo-border);
-    border-radius: var(--radius-card);
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  body.light-mode .control-card,
-  body.light-mode .metric-card,
-  body.light-mode .dash-panel,
-  body.light-mode .terminal-footer {
-    background: var(--neo-card);
-    border: 1px solid var(--neo-border);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  }
-
-  /* Override hover effects to be subtle with no jumping */
-  .control-card:hover,
-  .metric-card:hover,
-  .dash-panel:hover,
-  .terminal-footer:hover {
-    background: #080808;
-    border-color: rgba(255, 255, 255, 0.02) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
-  }
-
-  body.light-mode .control-card:hover,
-  body.light-mode .metric-card:hover,
-  body.light-mode .dash-panel:hover,
-  body.light-mode .terminal-footer:hover {
-    border-color: rgba(99, 102, 241, 0.3) !important;
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1) !important;
   }
 
   /* --- LAYOUT GRIDS --- */
   .scan-overview-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+    margin-bottom: 0px;
     width: 100%;
     align-items: stretch;
   }
 
   .main-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 360px; 
-    gap: 1rem;
-    height: clamp(600px, calc(100vh - 250px), 1200px);
+    grid-template-columns: minmax(0, 1fr) 340px; 
+    gap: 0.5rem;
+    min-height: 600px;
+    height: calc(100vh - 250px);
+    max-height: 1200px;
     width: 100%;
   }
 
@@ -227,8 +189,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 100%;
-    /* Fill parent naturally without restricting content */
+    min-height: 110px;
+    height: auto; 
     z-index: 20;
   }
 
@@ -273,8 +235,7 @@
 
   .metrics-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    /* Matches the 4-card HTML layout */
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
     min-height: 100%;
     width: 100%;
@@ -284,8 +245,10 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 100%;
-    padding: 0.85rem;
+    height: auto;
+    min-height: 110px;
+    padding: 0.85rem; 
+    overflow: hidden;
   }
 
   .metric-top {
@@ -309,24 +272,27 @@
   }
 
   .metric-label {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-family: var(--font-ui);
+    font-size: 0.65rem; 
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.15em;
     color: var(--neo-text-muted);
-    font-weight: 400;
+    font-weight: 700;
     z-index: 2;
+    opacity: 0.8;
   }
 
   .metric-value {
     font-family: var(--font-mono);
-    font-size: clamp(2rem, 3vw, 3rem);
-    font-weight: 400;
+    font-size: clamp(1.75rem, 2.5vw, 2.75rem);
+    font-weight: 700;
     line-height: 1;
-    color: var(--neo-text-main);
+    color: var(--neo-text-primary);
     position: relative;
     z-index: 2;
-    margin: 1rem 0 0.5rem 0;
+    margin: 0.75rem 0 0.25rem 0;
+    letter-spacing: -0.02em;
+    transition: color 0.4s ease;
   }
 
   /* --- SCANNER TITLE AREA --- */
@@ -348,6 +314,27 @@
     letter-spacing: 0.05em;
   }
 
+  body.light-mode .scanner-title-area h1 {
+    color: var(--text-primary);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  body.light-mode .scanner-title-area p {
+    color: var(--text-secondary);
+    opacity: 1;
+  }
+
+  body.light-mode .banner-subtitle {
+    color: var(--text-secondary) !important;
+    opacity: 1 !important;
+  }
+
+  body.light-mode .control-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    border-color: #d1d5db !important;
+  }
+
   .metric-info {
     margin-top: auto;
     padding-top: 1rem;
@@ -362,7 +349,6 @@
     gap: 4px;
     font-family: var(--font-mono);
     text-transform: uppercase;
-    border-top: 1px solid var(--neo-border);
   }
 
   /* --- INPUTS & BUTTONS --- */
@@ -380,11 +366,11 @@
     width: 100%;
     background: var(--neo-bg);
     border: 1px solid var(--neo-border);
-    color: var(--neo-text-main);
+    color: var(--neo-text-primary);
     padding: 0 16px 0 44px;
-    border-radius: var(--radius-sm);
-    height: 48px;
-    font-size: 0.85rem;
+    border-radius: 4px;
+    height: 38px;
+    font-size: 0.8rem;
     transition: all 0.3s ease;
     font-family: var(--font-mono);
     text-transform: uppercase;
@@ -411,10 +397,17 @@
     background: #ffffff !important;
     border-color: var(--border-default) !important;
     color: var(--text-primary) !important;
+    height: 38px !important;
   }
   body.light-mode .dash-input:focus {
     background: #ffffff !important;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1) !important;
+  }
+
+  .finding-card {
+    background: rgba(5, 5, 5, 0.4);
+    border: 1px solid var(--neo-border);
+    border-radius: 6px;
   }
 
   .timing-select {
@@ -576,7 +569,7 @@
     flex-direction: column;
     overflow: hidden;
     position: relative;
-    border-radius: var(--radius-card);
+    border-radius: 6px;
   }
 
   .panel-header {
@@ -682,19 +675,31 @@
     border-bottom: none;
   }
 
-  /* --- DROPDOWNS --- */
+  /* --- DROPDOWNS (Security Overwatch Standard - Ultra-Compact Grid) --- */
   .custom-dropdown {
-    background: rgba(10, 10, 12, 0.85);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    background: linear-gradient(180deg, rgba(20, 20, 25, 0.98) 0%, rgba(10, 10, 12, 1) 100%);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.15); /* Sharpened top lid */
     border-radius: 8px;
-    padding: 6px;
-    min-width: 100%;
+    padding: 10px;
+    min-width: 440px; /* Dual-column layout */
     z-index: 1005;
-    animation: dropdownSlide 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    animation: dropdownSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transform-origin: top;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+
+  body.light-mode .custom-dropdown {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid #d1d5db !important;
+    border-top: 1px solid #ffffff !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+    grid-template-columns: 1fr 1fr !important;
   }
 
   @keyframes dropdownSlide {
@@ -703,40 +708,52 @@
   }
 
   .dropdown-link {
-    display: flex; align-items: center; padding: 10px 14px;
-    font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none;
+    display: flex; align-items: center; padding: 8px 12px;
+    font-size: 0.65rem; color: var(--neo-text-muted); text-decoration: none;
     border-radius: 6px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: var(--font-mono);
     text-transform: uppercase;
-    margin-bottom: 2px;
+    letter-spacing: 0.01em;
   }
-  .dropdown-link:last-child { margin-bottom: 0; }
 
   .dropdown-link:hover {
     background: rgba(59, 130, 246, 0.08);
     color: var(--neo-blue);
-    padding-left: 18px;
   }
 
   .dropdown-link.active {
     background: rgba(59, 130, 246, 0.12);
     color: var(--neo-blue);
-    border-left: 3px solid var(--neo-blue);
-    padding-left: 18px;
     font-weight: 700;
   }
 
+  body.light-mode .dropdown-link {
+    color: var(--text-secondary) !important;
+  }
+
+  body.light-mode .dropdown-link:hover {
+    background: rgba(59, 130, 246, 0.05) !important;
+    color: var(--neo-blue) !important;
+  }
+
   .dropdown-category {
-    padding: 12px 16px 4px 16px;
-    font-size: 0.6rem;
-    font-weight: 800;
+    grid-column: 1 / -1;
+    padding: 10px 14px 6px 14px;
+    font-size: 0.55rem;
+    font-weight: 900;
     color: var(--neo-blue);
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     font-family: var(--font-mono);
-    opacity: 0.9;
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    opacity: 0.8;
+    margin-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.01);
+  }
+
+  body.light-mode .dropdown-category {
+    border-top-color: rgba(0, 0, 0, 0.05) !important;
+    opacity: 0.8 !important;
   }
 
   /* --- VIBRANT TECH CARD GRID (Service Discovery Redesign) --- */
@@ -751,35 +768,44 @@
   }
 
   .discovery-card {
-    background: linear-gradient(165deg, #050505 0%, #000000 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--neo-border);
-    border-radius: var(--radius-card);
-    padding: 1rem;
+    background: linear-gradient(165deg, rgba(12, 12, 16, 0.95) 0%, rgba(4, 4, 6, 1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    padding: 1.25rem;
     position: relative;
     overflow: hidden;
-    transition: background 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.7),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.02);
   }
 
   .discovery-card:hover {
-    background: #080808;
-    border-color: rgba(255, 255, 255, 0.02);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    background: rgba(10, 10, 15, 0.6);
+    border-color: var(--card-accent);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 15px var(--card-glow);
   }
 
   body.light-mode .discovery-card {
-    background: var(--surface-primary, #ffffff);
-    border: 1px solid var(--neo-border);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    color: var(--text-primary, #0f172a);
+    background: linear-gradient(165deg, #ffffff 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-top: 1px solid #ffffff;
+    box-shadow: 
+      0 10px 25px rgba(0, 0, 0, 0.04),
+      0 4px 6px rgba(0, 0, 0, 0.02);
+    color: #0f172a;
   }
 
   body.light-mode .discovery-card:hover {
-    background: var(--surface-primary, #ffffff);
+    background: #ffffff;
+    border-color: var(--card-accent);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
   }
 
   .card-header {
@@ -791,7 +817,7 @@
   .port-badge {
     background: var(--neo-bg);
     padding: 0.5rem 0.75rem;
-    border-radius: 0px;
+    border-radius: 4px;
     border: 1px solid var(--neo-border);
     display: flex;
     flex-direction: column;
@@ -858,9 +884,9 @@
   }
 
   .risk-score-bar {
-    height: 2px;
-    background: var(--neo-bg);
-    border-radius: 0px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
     overflow: hidden;
   }
 
@@ -870,8 +896,9 @@
 
   .risk-score-fill {
     height: 100%;
-    background: var(--card-accent);
-    transition: width 1s ease-out;
+    background: linear-gradient(90deg, var(--card-accent), transparent);
+    transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+    border-radius: 4px;
   }
 
   .analysis-footer {
@@ -881,7 +908,7 @@
     color: var(--neo-text-muted);
     background: transparent;
     padding: 0.75rem;
-    border-radius: 0px;
+    border-radius: 4px;
     border: 1px solid var(--neo-border);
     text-transform: uppercase;
   }
@@ -1077,7 +1104,7 @@
 
   .term-window::-webkit-scrollbar-thumb {
     background: #222;
-    border-radius: 10px;
+    border-radius: 4px;
   }
 
   .log-line {
@@ -1367,7 +1394,7 @@
       height: auto !important;
       min-height: 150px !important;
       max-height: 30vh !important;
-      border-radius: 4px 4px 0 0 !important;
+      border-radius: 12px 12px 0 0 !important;
       margin-inline: -0.5rem;
       margin-bottom: -0.5rem;
       border-left: none !important;
@@ -1389,6 +1416,14 @@
     #advancedScanOptions .grid {
       grid-template-columns: 1fr !important;
     }
+
+    /* Compact Dropdown Mobile Reset */
+    .custom-dropdown {
+      min-width: 280px !important;
+      grid-template-columns: 1fr !important;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
   }
 </style>
 {% endblock %}
@@ -1399,7 +1434,7 @@
   <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
     <div class="scanner-title-area" style="margin: 0;">
       <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Source Audit <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">(SAST)</span></h1>
-      <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
+      <p class="banner-subtitle" style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
         <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
         Heuristic-based static analysis to detect hardcoded secrets and dangerous code patterns.
       </p>
@@ -1469,10 +1504,10 @@
         <div class="search-container" style="flex: 2; min-width: 0;">
           <span class="material-symbols-outlined search-icon" style="font-size: 1.1rem;">code</span>
           <input type="text" id="gitUrlInput" class="dash-input" placeholder="PASTE GIT URL OR UPLOAD ZIP..."
-            style="padding: 0.5rem 1rem 0.5rem 2.25rem; height: 38px; font-size: 0.8rem; width: 100%;" />
+            style="padding: 0 16px 0 44px; height: 38px; font-size: 0.8rem; width: 100%; border-radius: 4px;" />
         </div>
 
-        <select id="scanCategory" class="timing-select" title="Ruleset" style="flex: 1.5; min-width: 0; height: 38px;">
+        <select id="scanCategory" class="timing-select" title="Ruleset" style="flex: 1.5; min-width: 0; height: 38px; border-radius: 4px;">
           <option value="default" selected>AUTO DETECT</option>
           <option value="p/ci">CI RULES</option>
           <option value="p/security-audit">SECURITY AUDIT</option>
@@ -1485,7 +1520,7 @@
 
         <!-- Upload Zip Button -->
         <button id="triggerUploadBtn" class="btn-dash btn-secondary" title="Upload ZIP Archive"
-          style="height: 38px; padding: 0 0.75rem; flex-shrink: 0;">
+          style="height: 38px; padding: 0 0.75rem; flex-shrink: 0; border-radius: 4px;">
           <span class="material-symbols-outlined" style="font-size: 1.1rem;">upload_file</span>
         </button>
 
@@ -1498,16 +1533,16 @@
 
       <div class="control-row-bottom" style="margin-top: 0.5rem; justify-content: space-between; align-items: center;">
         <div class="flex items-center gap-3">
-          <div
-            style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">
-            STATUS: <span class="badge-pill"
-              style="padding: 2px 8px; border-radius: 4px; font-size: 0.55rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green); margin-left: 6px;"><span
-                id="scanStatus">READY</span></span>
+          <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px;">
+            STATUS: 
+            <div class="badge-pill" style="padding: 2px 8px; border-radius: 4px; font-size: 0.6rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green);">
+              <span id="scanStatus">READY</span>
+            </div>
           </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <button id="initiateScanBtn" class="btn-dash btn-primary" title="Start SAST Scan"
-            style="min-width: 120px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 4px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+            style="min-width: 140px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 4px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
             <span class="material-symbols-outlined" style="font-size:1.1rem">play_arrow</span>
             <span class="button-text">START SCAN</span>
             <span class="spinner hidden"></span>
@@ -1521,39 +1556,28 @@
       <div class="metric-card">
         <div class="metric-top">
           <span class="metric-label">Target</span>
-          <div class="metric-icon-box"><span class="material-symbols-outlined">radar</span></div>
+          <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">radar</span>
         </div>
-        <span id="metricTarget" class="metric-value"
-          style="font-size: 0.9rem; word-break: break-all; margin: 0.5rem 0;">---</span>
+        <span id="metricTarget" class="metric-value">---</span>
         <div class="metric-info"><span class="material-symbols-outlined" style="font-size:0.7rem;">folder_zip</span>
           Source</div>
       </div>
       <div class="metric-card">
         <div class="metric-top">
           <span class="metric-label" style="color: var(--neo-blue);">Findings</span>
-          <div class="metric-icon-box"><span class="material-symbols-outlined"
-              style="color: var(--neo-blue);">bug_report</span></div>
+          <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">bug_report</span>
         </div>
         <span id="metricTotal" class="metric-value" style="color: var(--neo-blue);">0</span>
         <div class="metric-info"><span class="material-symbols-outlined" style="font-size:0.7rem;">checklist</span>
           Total</div>
       </div>
-      <div class="metric-card">
-        <div class="metric-top">
-          <span class="metric-label" style="color: var(--neo-red);">Critical</span>
-          <div class="metric-icon-box"><span class="material-symbols-outlined"
-              style="color: var(--neo-red);">warning</span></div>
-        </div>
-        <span id="metricHigh" class="metric-value" style="color: var(--neo-red);">0</span>
-        <div class="metric-info"><span class="material-symbols-outlined" style="font-size:0.7rem;">priority_high</span>
-          ERROR / HIGH</div>
-      </div>
+
       <div class="metric-card">
         <div class="metric-top">
           <span class="metric-label">Duration</span>
-          <div class="metric-icon-box"><span class="material-symbols-outlined">timer</span></div>
+          <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">timer</span>
         </div>
-        <span id="metricDuration" class="metric-value" style="font-size: 1.4rem;">---</span>
+        <span id="metricDuration" class="metric-value">---</span>
         <div class="metric-info"><span class="material-symbols-outlined" style="font-size:0.7rem;">schedule</span> Scan
           Time</div>
       </div>
@@ -1580,10 +1604,10 @@
           </div>
         </div>
         <!-- Search bar (visible on findings tab) -->
-        <div id="findingsSearchBar" class="search-container" style="flex: 1; max-width: 260px; margin-left: auto;">
-          <span class="material-symbols-outlined search-icon" style="font-size: 0.9rem;">search</span>
-          <input type="text" id="findingsSearch" class="dash-input" placeholder="FILTER FINDINGS..."
-            style="height: 32px; font-size: 0.7rem; padding-left: 2rem;" />
+        <div id="findingsSearchBar" class="search-container" style="width: 180px;">
+          <span class="material-symbols-outlined search-icon" style="font-size: 0.9rem; left: 10px;">search</span>
+          <input type="text" id="findingsSearch" class="dash-input" placeholder="SEARCH..."
+            style="height: 28px; font-size: 0.7rem; padding-left: 30px; border-radius: 4px;" />
         </div>
         <span id="filteredCountBadge" class="badge-pill"
           style="font-size: 0.6rem; flex-shrink: 0; display: none;"></span>
@@ -1602,14 +1626,14 @@
           style="display: flex; flex: 1; min-height: 0; overflow: hidden; gap: 1rem; padding: 1rem;">
           <!-- LEFT: Findings list -->
           <div id="findingsListSide" class="glass-pane"
-            style="width: 38%; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); overflow-y: auto; flex-shrink: 0; scrollbar-width: thin; scrollbar-color: #222 transparent;">
+            style="width: 38%; border: 1px solid var(--neo-border); border-radius: 4px; overflow-y: auto; flex-shrink: 0; scrollbar-width: thin; scrollbar-color: #222 transparent;">
             <div
               style="text-align:center; padding: 4rem 2rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">
               WAITING FOR CODE SCAN...</div>
           </div>
           <!-- RIGHT: Detail view -->
           <div id="findingsDetailSide" class="glass-pane"
-            style="flex: 1; overflow-y: auto; padding: 1.5rem; border: 1px solid var(--neo-border); border-radius: var(--radius-sm); scrollbar-width: thin; scrollbar-color: #222 transparent;">
+            style="flex: 1; overflow-y: auto; padding: 1.5rem; border: 1px solid var(--neo-border); border-radius: 4px; scrollbar-width: thin; scrollbar-color: #222 transparent;">
             <div
               style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.2;">
               <span class="material-symbols-outlined"
@@ -1636,70 +1660,64 @@
     <div class="flex flex-col gap-6" style="min-height: 400px; height: 100%;">
 
       <!-- Intelligence Actions -->
-      <div class="dash-panel"
-        style="height: auto; flex-shrink: 0; padding: 1rem; overflow: visible !important; position: relative;">
-        <div id="aiProcessingOverlay" class="processing-overlay hidden"
-          style="overflow: hidden; border-radius: var(--radius-card);">
+      <div class="dash-panel" style="height: auto !important; flex-shrink: 0; padding: 1rem; overflow: visible !important;">
+        <div id="aiProcessingOverlay" class="processing-overlay hidden" style="overflow: hidden; border-radius: 4px;">
           <div class="ai-pulse-container">
             <div class="ai-pulse-ring"></div>
             <div class="ai-pulse-ring"></div>
           </div>
           <span id="aiProcessingText" class="processing-text">INITIALIZING AI...</span>
         </div>
-
+        
         <div class="flex justify-between items-center mb-4">
-          <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence</h5>
-          <button id="refreshReportBtn" class="btn-dash btn-secondary btn-icon-only"
-            style="height:32px; width:32px; border-radius:6px;" title="Refresh Scan Data">
-            <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--neo-blue);">code</span>
+            <h5 class="panel-title" style="font-size: 0.9rem;">CODE INTEL</h5>
+          </div>
+          <button id="refreshReportBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px; border-radius:4px;" title="Refresh Scan Data">
+              <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
           </button>
         </div>
 
-        <div class="intelligence-action-row">
-          <button id="downloadReportBtn" disabled class="btn-dash btn-intel-success-glass"
-            style="opacity: 0.5;">
-            <span class="material-symbols-outlined" style="font-size: 1.1rem;">picture_as_pdf</span>
-            <span>TECHNICAL REPORT</span>
-          </button>
-
-          <button id="execSummaryBtn" disabled class="btn-dash btn-intel-premium">
-            <span id="execSummaryLabel">EXECUTIVE BRIEF</span>
-            <span style="display:flex; align-items:center; gap:4px;">
-              <span class="exec-badge">AI</span>
-              <span id="execSummaryIcon" class="material-symbols-outlined">auto_awesome</span>
-              <span id="execSummarySpinner" class="spinner hidden"></span>
-            </span>
-          </button>
-        </div>
-
-        <div class="flex flex-col gap-3 mt-4">
+        <div class="flex flex-col gap-3">
           <div class="relative w-full">
-            <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between"
-              style="opacity: 0.7; height: 38px;">
-              <span style="display: flex; align-items: center; gap: 8px;">
-                <span class="material-symbols-outlined" style="font-size: 1.1rem;">psychology</span>
-                <span>AI ANALYSIS</span>
-              </span>
+            <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+              <span>AI ANALYSIS</span>
               <span class="material-symbols-outlined">expand_more</span>
             </button>
-            <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown"
-              style="z-index: 100;">
+
+            <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
               <a href="#" data-llm-mode="local" class="dropdown-link">
                 <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
-                Local LLM (Private)
+                LOCAL LLM (PRIVATE)
               </a>
-              <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
+                <a href="#" data-llm-mode="gemini-1.5-pro" class="dropdown-link">
                 <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
-                Gemini 2.0 Flash (Cloud)
+                GEMINI 1.5 PRO (CLOUD)
               </a>
             </div>
           </div>
 
-          <button id="semgrepHistoryBtn" class="btn-dash btn-secondary w-full justify-between" style="height: 38px;">
-            <span style="display: flex; align-items: center; gap: 8px;">
-              <span class="material-symbols-outlined" style="font-size: 1.1rem;">history</span>
-              <span>PRIOR SCANS</span>
-            </span>
+          <div class="intelligence-action-row">
+            <button id="downloadReportBtn" disabled class="btn-dash btn-secondary justify-between" style="opacity: 0.7;">
+              <span style="font-size: 0.65rem; font-weight: 800; opacity: 0.9;">TECHNICAL PDF</span>
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">description</span>
+            </button>
+
+            <button id="execSummaryBtn" disabled
+              class="btn-dash justify-between btn-intel-premium"
+              style="opacity: 0.5;">
+              <span id="execSummaryLabel" style="font-size: 0.65rem; font-weight: 800; opacity: 0.9;">SAST BRIEF</span>
+              <span style="display:flex; align-items:center; gap:2px;">
+                <span id="execSummaryIcon" class="material-symbols-outlined" style="font-size: 1.1rem;">auto_awesome</span>
+                <span id="execSummarySpinner" class="spinner hidden"></span>
+              </span>
+            </button>
+          </div>
+
+          <button id="semgrepHistoryBtn" class="btn-dash btn-secondary w-full" style="height: 38px; justify-content: space-between;">
+            <span style="font-size: 0.65rem; font-weight: 800; opacity: 0.9;">SCAN HISTORY</span>
+            <span class="material-symbols-outlined" style="font-size: 1.1rem;">history</span>
           </button>
         </div>
       </div>
@@ -1796,42 +1814,36 @@
 </div>
 
 <!-- Authorization Confirmation Modal -->
-<div id="authModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center hidden">
-  <div class="bg-zinc-900 border border-amber-500/30 rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
-    <div class="flex items-center gap-3 mb-4">
-      <span class="material-symbols-outlined text-amber-500 text-3xl">warning</span>
-      <h3 class="text-xl font-bold text-zinc-100">Authorization Required</h3>
+<div id="authModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="dash-panel w-full max-w-md flex flex-col overflow-hidden">
+        <div class="panel-header">
+            <span class="panel-title" style="color: var(--neo-amber);">Authorization Required</span>
+        </div>
+        <div class="panel-content p-6 flex flex-col gap-4">
+            <p id="authModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main);"></p>
+            <p style="font-size: 0.8rem; color: var(--neo-text-muted);"><strong>By confirming, you declare that you have full legal authority to audit this source code.</strong></p>
+            <div class="flex gap-2 justify-end mt-4">
+                <button id="cancelAuthBtn" class="btn-dash btn-secondary" style="height: 38px;">Cancel</button>
+                <button id="confirmAuthBtn" class="btn-dash btn-primary" style="height: 38px; background: var(--neo-amber); border-color: var(--neo-amber); color: #000;">Confirm & Audit</button>
+            </div>
+        </div>
     </div>
-    <p id="authModalMessage" class="text-zinc-300 mb-6 text-sm">
-      This target appear to be a high-value or staging environment. Do you have explicit authorization to scan it?
-    </p>
-    <div class="flex gap-3 justify-end">
-      <button id="cancelAuthBtn" class="px-4 py-2 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-semibold transition">
-        Cancel
-      </button>
-      <button id="confirmAuthBtn" class="px-4 py-2 rounded bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition">
-        Yes, Proceed
-      </button>
-    </div>
-  </div>
 </div>
 
 <!-- Hard Blocked Modal -->
-<div id="blockedModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center hidden">
-  <div class="bg-zinc-900 border border-red-500/30 rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
-    <div class="flex items-center gap-3 mb-4">
-      <span class="material-symbols-outlined text-red-500 text-3xl">block</span>
-      <h3 class="text-xl font-bold text-zinc-100">Scan Blocked</h3>
+<div id="blockedModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="dash-panel w-full max-w-md flex flex-col overflow-hidden">
+        <div class="panel-header">
+            <span class="panel-title" style="color: var(--neo-red);">Scan Blocked</span>
+        </div>
+        <div class="panel-content p-6 flex flex-col gap-4">
+            <p id="blockedModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main);"></p>
+            <p style="font-size: 0.8rem; color: var(--neo-text-muted);">This repository contains restricted assets or patterns. Audit mode is disabled for this target.</p>
+            <div class="flex justify-end mt-4">
+                <button id="closeBlockedModalBtn" class="btn-dash btn-secondary" style="height: 38px;">Understood</button>
+            </div>
+        </div>
     </div>
-    <p id="blockedModalMessage" class="text-zinc-300 mb-6 text-sm">
-      This target matches critical infrastructure or financial systems and cannot be scanned.
-    </p>
-    <div class="flex justify-end">
-      <button id="closeBlockedModalBtn" class="px-4 py-2 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-semibold transition">
-        Close
-      </button>
-    </div>
-  </div>
 </div>
 
 {% endblock %}

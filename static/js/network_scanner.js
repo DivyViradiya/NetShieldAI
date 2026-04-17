@@ -550,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state === 'disabled') {
             btn.disabled = true;
             btn.style.opacity = '0.5';
-            label.textContent = 'EXECUTIVE BRIEF';
+            label.textContent = 'NETWORK BRIEF';
             icon.classList.remove('hidden');
             spinner.classList.add('hidden');
             btn.onclick = null;
@@ -1159,6 +1159,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
+        if (elements.analyzeReportDropdown) {
+            elements.analyzeReportDropdown.addEventListener('click', (e) => {
+                if (!elements.analyzeReportDropdown.disabled) {
+                    if (elements.llmAnalysisOptions) {
+                        elements.llmAnalysisOptions.classList.toggle('hidden');
+                        e.stopPropagation();
+                    }
+                }
+            });
+        }
+
         if(elements.llmAnalysisOptions) {
             elements.llmAnalysisOptions.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1171,6 +1182,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+
+        document.addEventListener('click', (e) => {
+            if (elements.llmAnalysisOptions && elements.analyzeReportDropdown && !elements.analyzeReportDropdown.contains(e.target)) {
+                elements.llmAnalysisOptions.classList.add('hidden');
+            }
+        });
     }
 
     async function init() {

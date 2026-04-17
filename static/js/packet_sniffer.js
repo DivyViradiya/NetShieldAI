@@ -1322,7 +1322,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (state === 'download') {
             btn.classList.add('btn-intel-success-glass');
             label.textContent = 'DOWNLOAD BRIEF';
-            icon.textContent = 'download';
+            icon.textContent = 'file_download';
             icon.classList.remove('hidden');
             spinner.classList.add('hidden');
             btn.dataset.downloadUrl = downloadUrl;
@@ -1332,7 +1332,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('btn-intel-premium');
             btn.style.opacity = "0.5";
             btn.disabled = true;
-            label.textContent = 'EXECUTIVE BRIEF';
+            label.textContent = 'TRAFFIC BRIEF';
         }
     }
 

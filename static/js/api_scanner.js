@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (state === 'download') {
             execSummaryBtn.classList.add('btn-intel-success-glass');
             execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
-            execSummaryIcon.textContent = 'download';
+            execSummaryIcon.textContent = 'file_download';
             execSummaryIcon.classList.remove('hidden');
             execSummarySpinner.classList.add('hidden');
             execSummaryBtn.dataset.downloadUrl = downloadUrl;
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
             execSummaryBtn.classList.add('btn-intel-premium');
             execSummaryBtn.style.opacity = "0.5";
             execSummaryBtn.disabled = true;
-            execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
+            execSummaryLabel.textContent = 'API SEC BRIEF';
         }
     }
 
@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     downloadReportBtn.style.opacity = "1";
                     downloadReportBtn.onclick = () => {
                         window.open(data.pdf_report, '_blank');
-                        appendLog('[✓] DOWNLOADING TECHNICAL REPORT...');
+                        appendLog('[✓] DOWNLOADING TECHNICAL PDF...');
                     };
                 }
                 
@@ -986,8 +986,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (analyzeReportDropdown) {
         analyzeReportDropdown.addEventListener('click', (e) => {
             if (!analyzeReportDropdown.disabled) {
-                llmAnalysisOptions.classList.toggle('hidden');
-                e.stopPropagation(); 
+                if (llmAnalysisOptions) {
+                    llmAnalysisOptions.classList.toggle('hidden');
+                    e.stopPropagation(); // Standardize propagation control
+                }
             }
         });
     }

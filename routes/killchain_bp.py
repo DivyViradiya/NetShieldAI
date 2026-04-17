@@ -242,18 +242,28 @@ def get_report_files():
     scan_dir = get_fixed_scan_dir()
     if not scan_dir or not os.path.exists(scan_dir):
         return jsonify({"status": "pending", "message": "No reports found."}), 404
-
+ 
     reports_dir = os.path.join(scan_dir, "reports")
     
     json_path = report_manager.find_latest_report(reports_dir, "killchain", target=target, extension="json")
     pdf_path = report_manager.find_latest_report(reports_dir, "killchain", target=target, extension="pdf")
-
+ 
     json_exists = bool(json_path) and os.path.exists(json_path)
     pdf_exists = bool(pdf_path) and os.path.exists(pdf_path)
-
+ 
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
-
+ 
+    # [AI BRIEF] Retrieve the latest completed scan log ID and check for existing executive summary
+    from models.models import ScanLog
+    latest_log = ScanLog.query.filter_by(
+        user_id=current_user.id,
+        tool_name="Kill Chain",
+        status="Completed"
+    ).order_by(ScanLog.start_time.desc()).first()
+ 
+    scan_log_id = latest_log.id if latest_log else None
+ 
     # [AI BRIEF] Check for existing executive summary
     exec_summary_report = None
     if latest_log and latest_log.executive_summary_path:
@@ -265,7 +275,7 @@ def get_report_files():
         potential_exec = pdf_path.replace(".pdf", "_executive.pdf") if pdf_path else None
         if potential_exec and os.path.exists(potential_exec):
             exec_summary_report = f"/killchain/download_pdf?target={target}&type=executive" if target else "/killchain/download_pdf?type=executive"
-
+ 
     return jsonify({
         "status": "success",
         "json_report": f"/killchain/get_json_report?target={target}" if json_exists else None,

@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         strengthDisplay: document.getElementById('strengthDisplay'), // Used as Risk Score display
         
         // Intelligence & Insights
-        refreshResultsBtn: document.getElementById('refreshResultsBtn'),
+        refreshReportBtn: document.getElementById('refreshReportBtn'),
         downloadReportBtn: document.getElementById('downloadReportBtn'),
         execSummaryBtn: document.getElementById('execSummaryBtn'),
         execSummaryLabel: document.getElementById('execSummaryLabel'),
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         [
             elements.startScanBtn, 
             elements.scanOptionsBtn, 
-            elements.refreshResultsBtn,
+            elements.refreshReportBtn,
             elements.execSummaryBtn
         ].forEach(btn => {
             if (btn) {
@@ -392,19 +392,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Report & Button Management ---
-
+ 
     function updateExecSummaryButton(state, downloadUrl = null) {
         if (!elements.execSummaryBtn) return;
-
-        elements.execSummaryBtn.dataset.state = state;
-        elements.execSummaryBtn.classList.remove('btn-intel-processing', 'btn-intel-success-glass', 'btn-intel-premium');
-        elements.execSummaryBtn.disabled = false;
+ 
         elements.execSummaryBtn.style.opacity = "1";
-
+        elements.execSummaryBtn.classList.add('cursor-pointer');
+        elements.execSummaryBtn.classList.remove('cursor-not-allowed');
+ 
         if (state === 'ready') {
             elements.execSummaryBtn.classList.add('btn-intel-premium');
             elements.execSummaryLabel.textContent = 'GENERATE BRIEF';
             elements.execSummaryIcon.classList.remove('hidden');
+            elements.execSummaryIcon.textContent = 'auto_awesome';
             elements.execSummarySpinner.classList.add('hidden');
             elements.execSummaryBtn.dataset.downloadUrl = '';
         } 
@@ -414,11 +414,12 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.execSummaryIcon.classList.add('hidden');
             elements.execSummarySpinner.classList.remove('hidden');
             elements.execSummaryBtn.disabled = true;
+            elements.execSummaryBtn.classList.add('cursor-not-allowed');
         } 
         else if (state === 'download') {
             elements.execSummaryBtn.classList.add('btn-intel-success-glass');
             elements.execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
-            elements.execSummaryIcon.textContent = 'download';
+            elements.execSummaryIcon.textContent = 'file_download';
             elements.execSummaryIcon.classList.remove('hidden');
             elements.execSummarySpinner.classList.add('hidden');
             elements.execSummaryBtn.dataset.downloadUrl = downloadUrl;
@@ -428,7 +429,8 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.execSummaryBtn.classList.add('btn-intel-premium');
             elements.execSummaryBtn.style.opacity = "0.5";
             elements.execSummaryBtn.disabled = true;
-            elements.execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
+            elements.execSummaryBtn.classList.add('cursor-not-allowed');
+            elements.execSummaryLabel.textContent = 'SQL BRIEF';
         }
     }
 
@@ -809,8 +811,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        elements.refreshResultsBtn?.addEventListener('click', () => {
-            const icon = elements.refreshResultsBtn.querySelector('.material-symbols-outlined');
+        elements.refreshReportBtn?.addEventListener('click', () => {
+            const icon = elements.refreshReportBtn.querySelector('.material-symbols-outlined');
             if (icon) icon.classList.add('animate-spin');
             
             Promise.all([
@@ -848,9 +850,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (elements.analyzeReportDropdown) {
+        elements.analyzeReportDropdown.addEventListener('click', (e) => {
+            if (!elements.analyzeReportDropdown.disabled) {
+                if (elements.llmAnalysisOptions) {
+                    elements.llmAnalysisOptions.classList.toggle('hidden');
+                    e.stopPropagation();
+                }
+            }
+        });
+    }
+
     elements.llmAnalysisOptions?.addEventListener('click', (e) => {
         const opt = e.target.closest('a[data-llm-mode]');
-        if (opt) analyzeReport(opt.dataset.llmMode);
+        if (opt) {
+            elements.llmAnalysisOptions.classList.add('hidden');
+            analyzeReport(opt.dataset.llmMode);
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (elements.llmAnalysisOptions && elements.analyzeReportDropdown && !elements.analyzeReportDropdown.contains(e.target)) {
+            elements.llmAnalysisOptions.classList.add('hidden');
+        }
     });
 
         elements.findingsSearch?.addEventListener('input', () => renderFindings(currentFindings));

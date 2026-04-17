@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (state === 'download') {
             elements.execSummaryBtn.classList.add('btn-intel-success-glass');
             elements.execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
-            elements.execSummaryIcon.textContent = 'download';
+            elements.execSummaryIcon.textContent = 'file_download';
             elements.execSummaryIcon.classList.remove('hidden');
             elements.execSummarySpinner.classList.add('hidden');
             elements.execSummaryBtn.dataset.downloadUrl = downloadUrl;
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.execSummaryBtn.classList.add('btn-intel-premium');
             elements.execSummaryBtn.style.opacity = "0.5";
             elements.execSummaryBtn.disabled = true;
-            elements.execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
+            elements.execSummaryLabel.textContent = 'SSL SEC BRIEF';
         }
     }
 
@@ -810,7 +810,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (elements.refreshReportBtn) {
         elements.refreshReportBtn.addEventListener('click', function() {
-            fetchAndDisplayReport();
+            var icon = elements.refreshReportBtn.querySelector('.material-symbols-outlined');
+            if (icon) icon.classList.add('animate-spin');
+            
+            Promise.all([
+                fetchAndDisplayReport(),
+                checkReportAvailability()
+            ]).finally(function() {
+                setTimeout(function() {
+                    if (icon) icon.classList.remove('animate-spin');
+                }, 800);
+            });
         });
     }
 
@@ -835,6 +845,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    if (elements.analyzeReportDropdown) {
+        elements.analyzeReportDropdown.addEventListener('click', function(e) {
+            if (!elements.analyzeReportDropdown.disabled) {
+                if (elements.llmAnalysisOptions) elements.llmAnalysisOptions.classList.toggle('hidden');
+                e.stopPropagation();
+            }
+        });
+    }
+
     // Dropdown Selection Handling (delegated to items)
     if (elements.llmAnalysisOptions) {
         elements.llmAnalysisOptions.addEventListener('click', function(e) {
@@ -848,6 +867,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    document.addEventListener('click', function(e) {
+        if (elements.llmAnalysisOptions && elements.analyzeReportDropdown && !elements.analyzeReportDropdown.contains(e.target)) {
+            elements.llmAnalysisOptions.classList.add('hidden');
+        }
+    });
 
     // --- Log Streaming ---
     function setupLogStream() {

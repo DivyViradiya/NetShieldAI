@@ -29,9 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
     metricSubdomains: document.getElementById("metricSubdomains"),
     metricPorts: document.getElementById("metricPorts"),
 
-    aiAnalysisDropdown: document.getElementById("aiAnalysisDropdown"),
-    aiAnalysisOptions: document.getElementById("aiAnalysisOptions"),
-    downloadPdfBtn: document.getElementById("downloadPdfBtn"),
+    analyzeReportDropdown: document.getElementById("analyzeReportDropdown"),
+    llmAnalysisOptions: document.getElementById("llmAnalysisOptions"),
+    downloadReportBtn: document.getElementById("downloadReportBtn"),
     execSummaryBtn: document.getElementById("execSummaryBtn"),
     execSummaryLabel: document.getElementById("execSummaryLabel"),
     execSummaryIcon: document.getElementById("execSummaryIcon"),
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const opacity = reportButtonsEnabled ? "1" : "0.7";
     const cursor = reportButtonsEnabled ? "pointer" : "not-allowed";
 
-    [els.aiAnalysisDropdown, els.downloadPdfBtn, els.copyJsonBtn, els.execSummaryBtn].forEach(
+    [els.analyzeReportDropdown, els.downloadReportBtn, els.copyJsonBtn, els.execSummaryBtn].forEach(
       (btn) => {
         if (btn) {
           btn.disabled = !reportButtonsEnabled;
@@ -218,16 +218,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateExecSummaryButton(state, downloadUrl = null) {
     if (!els.execSummaryBtn) return;
-
+ 
     els.execSummaryBtn.dataset.state = state;
     els.execSummaryBtn.classList.remove('btn-intel-processing', 'btn-intel-success-glass', 'btn-intel-premium');
     els.execSummaryBtn.disabled = false;
     els.execSummaryBtn.style.opacity = "1";
-
+    els.execSummaryBtn.classList.add('cursor-pointer');
+    els.execSummaryBtn.classList.remove('cursor-not-allowed');
+ 
     if (state === 'ready') {
         els.execSummaryBtn.classList.add('btn-intel-premium');
         els.execSummaryLabel.textContent = 'GENERATE BRIEF';
         els.execSummaryIcon.classList.remove('hidden');
+        els.execSummaryIcon.textContent = 'auto_awesome';
         els.execSummarySpinner.classList.add('hidden');
         els.execSummaryBtn.dataset.downloadUrl = '';
     } 
@@ -237,11 +240,12 @@ document.addEventListener("DOMContentLoaded", () => {
         els.execSummaryIcon.classList.add('hidden');
         els.execSummarySpinner.classList.remove('hidden');
         els.execSummaryBtn.disabled = true;
+        els.execSummaryBtn.classList.add('cursor-not-allowed');
     } 
     else if (state === 'download') {
         els.execSummaryBtn.classList.add('btn-intel-success-glass');
         els.execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
-        els.execSummaryIcon.textContent = 'download';
+        els.execSummaryIcon.textContent = 'file_download';
         els.execSummaryIcon.classList.remove('hidden');
         els.execSummarySpinner.classList.add('hidden');
         els.execSummaryBtn.dataset.downloadUrl = downloadUrl;
@@ -251,7 +255,8 @@ document.addEventListener("DOMContentLoaded", () => {
         els.execSummaryBtn.classList.add('btn-intel-premium');
         els.execSummaryBtn.style.opacity = "0.5";
         els.execSummaryBtn.disabled = true;
-        els.execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
+        els.execSummaryBtn.classList.add('cursor-not-allowed');
+        els.execSummaryLabel.textContent = 'AUDIT BRIEF';
     }
   }
 
@@ -303,6 +308,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await response.json();
         if (data.status === "success") {
           toggleButtons(false); // Enable base report buttons
+
+          // AI Analysis Dropdown
+          if (els.analyzeReportDropdown) {
+              els.analyzeReportDropdown.disabled = false;
+              els.analyzeReportDropdown.style.opacity = "1";
+          }
 
           // AI Executive Summary state
           els.lastScanLogId = data.scan_log_id;
@@ -897,18 +908,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (els.downloadPdfBtn) {
-    els.downloadPdfBtn.addEventListener("click", () => {
+  if (els.downloadReportBtn) {
+    els.downloadReportBtn.addEventListener('click', () => {
       const target = els.targetInput.value.trim();
-      // Use currentScanId if target input is empty, assuming we resumed a scan
-      const downloadIdentifier = target || currentScanId;
-
-      if (!downloadIdentifier) {
-        appendLog("[frontend] Error: Cannot download PDF. No target or scan ID available.");
-        return;
-      }
-      const url = `${API_BASE}/download_pdf?target=${encodeURIComponent(downloadIdentifier)}`;
-      window.location.href = url;
+      const url = target 
+        ? `${API_BASE}/download_pdf?target=${encodeURIComponent(target)}`
+        : `${API_BASE}/download_pdf?scan_id=${currentScanId}`;
+      window.open(url, '_blank');
+      appendLog('[✓] DOWNLOADING TECHNICAL REPORT...');
     });
   }
 
@@ -928,35 +935,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Toggle AI Dropdown
-  if (els.aiAnalysisDropdown) {
-    els.aiAnalysisDropdown.addEventListener("click", (e) => {
-      if (els.aiAnalysisDropdown.disabled) return;
-      e.stopPropagation();
-      els.aiAnalysisOptions.classList.toggle("hidden");
+  if (els.analyzeReportDropdown) {
+    els.analyzeReportDropdown.addEventListener('click', (e) => {
+      if (!els.analyzeReportDropdown.disabled) {
+        if (els.llmAnalysisOptions) els.llmAnalysisOptions.classList.toggle('hidden');
+        e.stopPropagation();
+      }
     });
   }
 
-  // Global Click listener for dropdowns
-  document.addEventListener("click", (docEvent) => {
-    if (els.aiAnalysisOptions && !els.aiAnalysisOptions.classList.contains("hidden")) {
-      if (!els.aiAnalysisOptions.contains(docEvent.target) && docEvent.target !== els.aiAnalysisDropdown) {
-        els.aiAnalysisOptions.classList.add("hidden");
-      }
+  // Global Click listener for dropdowns (Safe for stops)
+  document.addEventListener("click", (e) => {
+    if (els.llmAnalysisOptions && els.analyzeReportDropdown && !els.analyzeReportDropdown.contains(e.target)) {
+      els.llmAnalysisOptions.classList.add('hidden');
     }
   });
 
-  // AI Option Selection
-  if (els.aiAnalysisOptions) {
-    els.aiAnalysisOptions.addEventListener("click", (e) => {
+  // Handle LLM Mode Selection
+  document.querySelectorAll('[data-llm-mode]').forEach(link => {
+    link.addEventListener('click', (e) => {
       e.preventDefault();
-      const link = e.target.closest("a[data-llm-mode]");
-      if (link) {
-        const mode = link.dataset.llmMode;
-        els.aiAnalysisOptions.classList.add("hidden");
-        analyzeReport(mode);
-      }
+      const mode = link.getAttribute('data-llm-mode');
+      analyzeReport(mode);
     });
-  }
+  });
 
   // --- TAB LOGIC ---
   window.switchTab = (tabName) => {

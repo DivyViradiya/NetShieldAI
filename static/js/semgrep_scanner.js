@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (state === 'download') {
             elements.execSummaryBtn.classList.add('btn-intel-success-glass');
             elements.execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
-            elements.execSummaryIcon.textContent = 'download';
+            elements.execSummaryIcon.textContent = 'file_download';
             elements.execSummaryIcon.classList.remove('hidden');
             elements.execSummarySpinner.classList.add('hidden');
             elements.execSummaryBtn.dataset.downloadUrl = downloadUrl;
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.execSummaryBtn.classList.add('btn-intel-premium');
             elements.execSummaryBtn.style.opacity = "0.5";
             elements.execSummaryBtn.disabled = true;
-            elements.execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
+            elements.execSummaryLabel.textContent = 'SAST BRIEF';
         }
     }
 
@@ -869,23 +869,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Dropdown Handling
     if (elements.analyzeReportDropdown) {
         elements.analyzeReportDropdown.addEventListener('click', function(e) {
             if (!elements.analyzeReportDropdown.disabled) {
-                elements.llmAnalysisOptions.classList.toggle('hidden');
-                e.stopPropagation(); 
-                
-                var closeAiMenu = function(docEvent) {
-                    if (!elements.llmAnalysisOptions.contains(docEvent.target) && docEvent.target !== elements.analyzeReportDropdown) {
-                        elements.llmAnalysisOptions.classList.add('hidden');
-                        document.removeEventListener('click', closeAiMenu);
-                    }
-                };
-                document.addEventListener('click', closeAiMenu);
+                if (elements.llmAnalysisOptions) {
+                    elements.llmAnalysisOptions.classList.toggle('hidden');
+                    e.stopPropagation();
+                }
             }
         });
     }
+    
+    document.addEventListener('click', function(e) {
+        if (elements.llmAnalysisOptions && elements.analyzeReportDropdown && !elements.analyzeReportDropdown.contains(e.target)) {
+            elements.llmAnalysisOptions.classList.add('hidden');
+        }
+    });
     
     if (elements.llmAnalysisOptions) {
         elements.llmAnalysisOptions.addEventListener('click', function(e) {

@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let scanStartTime = null;
 
     // Actions
-    const refreshResultsBtn = document.getElementById('refreshResultsBtn');
+    const refreshReportBtn = document.getElementById('refreshReportBtn');
     const downloadReportBtn = document.getElementById('downloadReportBtn'); 
     const execSummaryBtn = document.getElementById('execSummaryBtn');
     const execSummaryLabel = document.getElementById('execSummaryLabel');
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (state === 'download') {
             execSummaryBtn.classList.add('btn-intel-success-glass');
             execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
-            execSummaryIcon.textContent = 'download';
+            execSummaryIcon.textContent = 'file_download';
             execSummaryIcon.classList.remove('hidden');
             execSummarySpinner.classList.add('hidden');
             execSummaryBtn.dataset.downloadUrl = downloadUrl;
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
             execSummaryBtn.classList.add('btn-intel-premium');
             execSummaryBtn.style.opacity = "0.5";
             execSummaryBtn.disabled = true;
-            execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
+            execSummaryLabel.textContent = 'APP SEC BRIEF';
         }
     }
 
@@ -1017,9 +1017,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (refreshResultsBtn) {
-        refreshResultsBtn.addEventListener('click', () => {
-            fetchAndDisplayResults();
+    if (refreshReportBtn) {
+        refreshReportBtn.addEventListener('click', function() {
+            const icon = refreshReportBtn.querySelector('.material-symbols-outlined');
+            if (icon) icon.classList.add('animate-spin');
+            
+            Promise.all([
+                fetchAndDisplayResults(),
+                checkReportAvailability()
+            ]).finally(() => {
+                setTimeout(() => {
+                    if (icon) icon.classList.remove('animate-spin');
+                }, 800);
+            });
         });
     }
     
@@ -1027,8 +1037,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (analyzeReportDropdown) {
         analyzeReportDropdown.addEventListener('click', (e) => {
             if (!analyzeReportDropdown.disabled) {
-                if (llmAnalysisOptions) llmAnalysisOptions.classList.toggle('hidden');
-                e.stopPropagation(); 
+                if (llmAnalysisOptions) {
+                    llmAnalysisOptions.classList.toggle('hidden');
+                    e.stopPropagation(); 
+                }
             }
         });
     }

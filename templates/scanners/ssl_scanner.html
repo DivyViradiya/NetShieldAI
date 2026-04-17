@@ -95,6 +95,7 @@
         background: var(--surface-primary) !important;
         color: var(--text-primary) !important;
         border-color: var(--border-default) !important;
+        height: 38px !important;
       }
   
       body.light-mode .tab-pills {
@@ -103,9 +104,10 @@
       }
   
       body.light-mode .custom-dropdown {
-        background: var(--surface-primary) !important;
-        border-color: var(--border-default) !important;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        border: 1px solid #d1d5db !important;
+        border-top: 1px solid #ffffff !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
       }
   
       body.light-mode .dropdown-link {
@@ -113,8 +115,13 @@
       }
   
       body.light-mode .dropdown-link:hover {
-        background: var(--bg-secondary) !important;
-        color: var(--text-primary) !important;
+        background: rgba(59, 130, 246, 0.05) !important;
+        color: var(--neo-blue) !important;
+      }
+
+      body.light-mode .dropdown-category {
+        border-top-color: rgba(0, 0, 0, 0.05) !important;
+        opacity: 0.8 !important;
       }
   
       body.light-mode .processing-text {
@@ -143,15 +150,19 @@
       }
 
       body.light-mode .discovery-card {
-        background: var(--surface-primary, #ffffff) !important;
-        border: 1px solid var(--neo-border);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        color: var(--text-primary, #0f172a);
+        background: linear-gradient(165deg, #ffffff 0%, #f1f5f9 100%);
+        border: 1px solid #e2e8f0;
+        border-top: 1px solid #ffffff;
+        box-shadow: 
+          0 10px 25px rgba(0, 0, 0, 0.04),
+          0 4px 6px rgba(0, 0, 0, 0.02);
+        color: #0f172a;
       }
-
+  
       body.light-mode .discovery-card:hover {
-        background: var(--surface-primary, #ffffff) !important;
-        border-color: var(--accent-primary) !important;
+        background: #ffffff;
+        border-color: var(--card-accent);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
       }
 
       body.light-mode .risk-badge {
@@ -195,8 +206,8 @@
       .dashboard-wrapper .items-center { align-items: center; }
       .dashboard-wrapper .gap-2 { gap: 0.5rem; }
       .dashboard-wrapper .gap-3 { gap: 0.5rem; }
-      .dashboard-wrapper .gap-4 { gap: 0.75rem; }
-      .dashboard-wrapper .gap-6 { gap: 1rem; }
+      .dashboard-wrapper .gap-4 { gap: 0.5rem; }
+      .dashboard-wrapper .gap-6 { gap: 0.5rem; }
       .dashboard-wrapper .mb-6 { margin-bottom: 1.5rem; }
       .dashboard-wrapper .mb-4 { margin-bottom: 1rem; }
       .dashboard-wrapper .bg-black { background-color: #000; }
@@ -204,9 +215,13 @@
       /* --- COMPONENT: HUD CARDS (Shared Style) --- */
       /* Component Styles using Global Tokens */
       .control-card, .metric-card, .dash-panel, .terminal-footer, .discovery-card {
-        background: #000000;
-        border: 1px solid var(--neo-border);
-        border-radius: var(--radius-card, 4px);
+        background: linear-gradient(180deg, rgba(10, 10, 14, 0.8) 0%, rgba(5, 5, 7, 0.9) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 6px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
       }
 
       body.light-mode .control-card, 
@@ -214,8 +229,10 @@
       body.light-mode .dash-panel, 
       body.light-mode .terminal-footer,
       body.light-mode .discovery-card {
-        background: var(--surface-primary);
-        border-color: var(--border-default);
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        border: 1px solid #d1d5db;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
       }
 
   
@@ -250,7 +267,9 @@
         display: grid;
         grid-template-columns: minmax(0, 1fr) 340px; 
         gap: 0.5rem;
-        height: clamp(600px, calc(100vh - 250px), 1200px);
+        min-height: 600px;
+        height: calc(100vh - 250px);
+        max-height: 1200px;
         width: 100%;
       }
   
@@ -380,10 +399,31 @@
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
+
+      body.light-mode .scanner-title-area h1 {
+        color: var(--text-primary);
+        font-weight: 600;
+        letter-spacing: 0.05em;
+      }
+
+      body.light-mode .scanner-title-area p {
+        color: var(--text-secondary);
+        opacity: 1;
+      }
+
+      body.light-mode .banner-subtitle {
+        color: var(--text-secondary) !important;
+        opacity: 1 !important;
+      }
+
+      body.light-mode .control-card {
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+        border-color: #d1d5db !important;
+      }
   
       .metric-info {
         margin-top: auto;
-        padding-top: 1.25rem;
+        padding-top: 1rem;
         font-size: 0.7rem;
         color: var(--neo-text-muted);
         font-weight: 400;
@@ -395,7 +435,6 @@
         gap: 4px;
         font-family: var(--font-mono);
         text-transform: uppercase;
-        border-top: 1px solid var(--neo-border);
       }
   
       /* --- INPUTS & BUTTONS --- */
@@ -411,8 +450,8 @@
         color: var(--neo-text-primary); 
         padding: 0 16px 0 44px; 
         border-radius: var(--radius-sm);
-        height: 48px;
-        font-size: 0.85rem; 
+        height: 38px;
+        font-size: 0.8rem; 
         transition: all 0.2s ease; 
         font-family: var(--font-mono);
         text-transform: uppercase;
@@ -433,8 +472,8 @@
   
       /* Buttons */
       .btn-dash {
-        height: 44px; 
-        padding: 0 1.5rem; 
+        height: 38px; 
+        padding: 0 1.25rem; 
         border-radius: 4px;
         font-family: var(--font-ui); 
         font-weight: 600; 
@@ -457,7 +496,7 @@
         background: rgba(255, 255, 255, 0.07);
         transform: translateY(-1px);
       }
-      .btn-icon-only { padding: 0; width: 48px; justify-content: center; flex-shrink: 0; }
+      .btn-icon-only { padding: 0; width: 38px; justify-content: center; flex-shrink: 0; }
       
       .btn-primary {
         background: var(--neo-text-primary); 
@@ -555,7 +594,7 @@
       .tab-pills {
         display: flex; gap: 0; background: transparent;
         border: 1px solid var(--neo-border);
-        border-radius: 4px; overflow: hidden;
+        border-radius: 8px; overflow: hidden;
       }
       .tab-pill {
         padding: 8px 16px; font-size: 0.75rem; color: var(--neo-text-muted); font-family: var(--font-ui);
@@ -598,19 +637,23 @@
       }
       .dash-table tr:last-child td { border-bottom: none; }
   
-      /* --- DROPDOWNS --- */
+      /* --- DROPDOWNS (Security Overwatch Standard - Ultra-Compact Grid) --- */
       .custom-dropdown {
-        background: rgba(10, 10, 12, 0.85);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
+        background: linear-gradient(180deg, rgba(20, 20, 25, 0.98) 0%, rgba(10, 10, 12, 1) 100%);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
         border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 0.15); /* Sharpened top lid */
         border-radius: 8px;
-        padding: 6px;
-        min-width: 100%;
+        padding: 10px;
+        min-width: 440px; /* Dual-column layout */
         z-index: 1005;
-        animation: dropdownSlide 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        animation: dropdownSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         transform-origin: top;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
       }
 
       @keyframes dropdownSlide {
@@ -619,40 +662,38 @@
       }
 
       .dropdown-link {
-        display: flex; align-items: center; padding: 10px 14px;
-        font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none;
+        display: flex; align-items: center; padding: 8px 12px;
+        font-size: 0.65rem; color: var(--neo-text-muted); text-decoration: none;
         border-radius: 6px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         font-family: var(--font-mono);
         text-transform: uppercase;
-        margin-bottom: 2px;
+        letter-spacing: 0.01em;
       }
-      .dropdown-link:last-child { margin-bottom: 0; }
-  
+
       .dropdown-link:hover {
         background: rgba(59, 130, 246, 0.08);
         color: var(--neo-blue);
-        padding-left: 18px;
       }
 
       .dropdown-link.active {
         background: rgba(59, 130, 246, 0.12);
         color: var(--neo-blue);
-        border-left: 3px solid var(--neo-blue);
-        padding-left: 18px;
         font-weight: 700;
       }
 
       .dropdown-category {
-        padding: 12px 16px 4px 16px;
-        font-size: 0.6rem;
-        font-weight: 800;
+        grid-column: 1 / -1;
+        padding: 10px 14px 6px 14px;
+        font-size: 0.55rem;
+        font-weight: 900;
         color: var(--neo-blue);
         text-transform: uppercase;
-        letter-spacing: 0.15em;
+        letter-spacing: 0.2em;
         font-family: var(--font-mono);
-        opacity: 0.9;
-        background: rgba(255, 255, 255, 0.02);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        opacity: 0.8;
+        margin-top: 4px;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+        background: rgba(255, 255, 255, 0.01);
       }
 
       /* --- DISCOVERY GRID (Card Layout for Findings) --- */
@@ -675,9 +716,10 @@
       }
 
       .discovery-card {
-        background: rgba(5, 5, 5, 0.4);
-        border: 1px solid var(--neo-border);
-        border-radius: 4px;
+        background: linear-gradient(165deg, rgba(12, 12, 16, 0.95) 0%, rgba(4, 4, 6, 1) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
         padding: 1.25rem;
         position: relative;
         overflow: hidden;
@@ -685,7 +727,10 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(20px);
+        box-shadow: 
+          0 10px 40px rgba(0, 0, 0, 0.7),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.02);
       }
 
       .discovery-card.expanded {
@@ -708,7 +753,7 @@
       .risk-badge {
         background: var(--neo-bg);
         padding: 0.35rem 0.6rem;
-        border-radius: 0px;
+        border-radius: 6px;
         border: 1px solid var(--neo-border);
         display: flex;
         flex-direction: column;
@@ -985,6 +1030,7 @@
         padding: 0.75rem;
         margin-bottom: 0.5rem;
         font-size: 0.75rem;
+        border-radius: 8px;
       }
       .cert-label { color: var(--neo-text-muted); font-weight: 800; margin-right: 0.5rem; text-transform: uppercase; font-size: 0.6rem; }
       .cert-val { color: var(--neo-text-primary); font-family: var(--font-mono); }
@@ -992,6 +1038,16 @@
       #resultsContent {
         font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted);
         padding: 1rem; white-space: pre-wrap; overflow: auto; height: 100%;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+        .custom-dropdown {
+          min-width: 280px !important;
+          grid-template-columns: 1fr !important;
+          max-height: 50vh;
+          overflow-y: auto;
+        }
       }
     </style>
 {% endblock %}
@@ -1002,7 +1058,7 @@
     <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
       <div class="scanner-title-area" style="margin: 0;">
         <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Encryption <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Audit</span></h1>
-        <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
+        <p class="banner-subtitle" style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
           <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
           Validate certificate authority chains and TLS cipher suite integrity.
         </p>
@@ -1062,6 +1118,7 @@
             </a>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -1078,7 +1135,7 @@
         <div class="control-row-bottom" style="margin-top: 0.5rem; justify-content: space-between; align-items: center;">
             <div class="flex items-center gap-3">
                 <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-muted); font-weight: 800; letter-spacing: 0.05em;">IP: <span id="summaryIp" style="color: var(--neo-text-primary);">---</span></div>
-                <div class="badge-pill" style="padding: 2px 6px; border-radius: 2px; font-size: 0.55rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green);">
+                <div class="badge-pill" style="padding: 2px 6px; border-radius: 4px; font-size: 0.55rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--neo-green);">
                     <span id="scanStatus">READY</span>
                 </div>
             </div>
@@ -1097,6 +1154,7 @@
         <div class="metric-card">
           <div class="metric-top">
             <span class="metric-label">Port</span>
+            <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">security</span>
           </div>
           <span id="summaryPort" class="metric-value">---</span>
           <span class="metric-info">Detected Service Port</span>
@@ -1104,13 +1162,15 @@
         <div class="metric-card">
           <div class="metric-top">
             <span class="metric-label">Renegotiation</span>
+            <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">sync_alt</span>
           </div>
-          <span id="summaryRenegotiation" class="metric-value" style="font-size: 1.5rem; margin-top: 1.5rem;">---</span>
+          <span id="summaryRenegotiation" class="metric-value">---</span>
           <span class="metric-info">Handshake Security</span>
         </div>
         <div class="metric-card">
           <div class="metric-top">
             <span class="metric-label" style="color: var(--neo-red);">Findings</span>
+            <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-red);">bug_report</span>
           </div>
           <span id="vulnCountDisplay" class="metric-value" style="color: var(--neo-red);">0</span>
           <span class="metric-info">Identified SSL Risks</span>
@@ -1193,9 +1253,9 @@
       </div>
 
       <div class="flex flex-col gap-6" style="height: 100%; min-height: 0;">
-        <!-- INTELLIGENCE ACTIONS -->
-        <div class="dash-panel" style="height: auto; flex-shrink: 0; padding: 1rem; overflow: visible !important;">
-          <div id="aiProcessingOverlay" class="processing-overlay hidden" style="border-radius: var(--radius-card); overflow: hidden;">
+        <!-- Intelligence Actions -->
+        <div class="dash-panel" style="height: auto !important; flex-shrink: 0; padding: 1rem; overflow: visible !important;">
+          <div id="aiProcessingOverlay" class="processing-overlay hidden" style="overflow: hidden; border-radius: 6px;">
             <div class="ai-pulse-container">
               <div class="ai-pulse-ring"></div>
               <div class="ai-pulse-ring"></div>
@@ -1204,57 +1264,54 @@
           </div>
           
           <div class="flex justify-between items-center mb-4">
-            <h5 class="panel-title" style="font-size: 0.9rem;">Intelligence Center</h5>
-            <button id="refreshReportBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px; border-radius:4px;" title="Reload SSL Data">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem; color: var(--neo-blue);">security</span>
+              <h5 class="panel-title" style="font-size: 0.9rem;">CRYPTO INTEL</h5>
+            </div>
+            <button id="refreshReportBtn" class="btn-dash btn-secondary btn-icon-only" style="height:32px; width:32px; border-radius:6px;" title="Refresh Scan Data">
                 <span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
             </button>
           </div>
 
-          <div class="intelligence-action-row">
-            <button id="downloadReportBtn" disabled class="btn-dash btn-intel-success-glass"
-              style="opacity: 0.5;">
-              <span class="material-symbols-outlined" style="font-size: 1.1rem;">picture_as_pdf</span>
-              <span>TECHNICAL REPORT</span>
-            </button>
-
-            <button id="execSummaryBtn" disabled class="btn-dash btn-intel-premium">
-              <span id="execSummaryLabel">EXECUTIVE BRIEF</span>
-              <span style="display:flex; align-items:center; gap:4px;">
-                <span class="exec-badge">AI</span>
-                <span id="execSummaryIcon" class="material-symbols-outlined">auto_awesome</span>
-                <span id="execSummarySpinner" class="spinner hidden"></span>
-              </span>
-            </button>
-          </div>
-
-          <div class="flex flex-col gap-3 mt-4">
+          <div class="flex flex-col gap-3">
             <div class="relative w-full">
-              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between"
-                style="opacity: 0.7; height: 38px;">
-                <span style="display: flex; align-items: center; gap: 8px;">
-                  <span class="material-symbols-outlined" style="font-size: 1.1rem;">psychology</span>
-                  <span>AI ANALYSIS</span>
-                </span>
+              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
+                <span>AI ANALYSIS</span>
                 <span class="material-symbols-outlined">expand_more</span>
               </button>
-              <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown"
-                style="z-index: 100;">
+
+              <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
                 <a href="#" data-llm-mode="local" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
-                  Local LLM (Private)
+                  LOCAL LLM (PRIVATE)
                 </a>
-                <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
+                <a href="#" data-llm-mode="gemini-1.5-pro" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
-                  Gemini 2.0 Flash (Cloud)
+                  GEMINI 1.5 PRO (CLOUD)
                 </a>
               </div>
             </div>
 
-            <button id="sslHistoryBtn" class="btn-dash btn-secondary w-full justify-between" style="height: 38px;">
-              <span style="display: flex; align-items: center; gap: 8px;">
-                <span class="material-symbols-outlined" style="font-size:1.1rem">history</span>
-                <span>PRIOR SCANS</span>
-              </span>
+            <div class="intelligence-action-row">
+              <button id="downloadReportBtn" disabled class="btn-dash btn-secondary justify-between" style="opacity: 0.7;">
+                <span style="font-size: 0.65rem; font-weight: 800; opacity: 0.9;">TECHNICAL PDF</span>
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">description</span>
+              </button>
+
+              <button id="execSummaryBtn" disabled
+                class="btn-dash justify-between btn-intel-premium"
+                style="opacity: 0.5;">
+                <span id="execSummaryLabel" style="font-size: 0.65rem; font-weight: 800; opacity: 0.9;">SSL SEC BRIEF</span>
+                <span style="display:flex; align-items:center; gap:2px;">
+                  <span id="execSummaryIcon" class="material-symbols-outlined" style="font-size: 1.1rem;">auto_awesome</span>
+                  <span id="execSummarySpinner" class="spinner hidden"></span>
+                </span>
+              </button>
+            </div>
+
+            <button id="sslHistoryBtn" class="btn-dash btn-secondary w-full" style="height: 38px; justify-content: space-between;">
+              <span style="font-size: 0.65rem; font-weight: 800; opacity: 0.9;">SCAN HISTORY</span>
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">history</span>
             </button>
           </div>
         </div>
@@ -1376,7 +1433,7 @@
   </script>
   <!-- Authorization Confirmation Modal -->
   <div id="authModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden" style="z-index: 9999;">
-    <div class="bg-zinc-900 border border-amber-500/30 rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
+    <div class="dash-panel p-6 max-w-md w-full mx-4 shadow-2xl" style="background: var(--neo-bg); border: 1px solid var(--neo-border); border-radius: 6px;">
       <div class="flex items-center gap-3 mb-4">
         <span class="material-symbols-outlined text-amber-500 text-3xl">warning</span>
         <h3 class="text-xl font-bold text-zinc-100">Authorization Required</h3>
@@ -1397,7 +1454,7 @@
 
   <!-- Hard Blocked Modal -->
   <div id="blockedModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden" style="z-index: 9999;">
-    <div class="bg-zinc-900 border border-red-500/30 rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
+    <div class="dash-panel p-6 max-w-md w-full mx-4 shadow-2xl" style="background: var(--neo-bg); border: 1px solid var(--neo-border); border-radius: 6px;">
       <div class="flex items-center gap-3 mb-4">
         <span class="material-symbols-outlined text-red-500 text-3xl">block</span>
         <h3 class="text-xl font-bold text-zinc-100">Scan Blocked</h3>
