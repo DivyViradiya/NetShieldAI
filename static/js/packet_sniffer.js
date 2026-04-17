@@ -13,7 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
         startCaptureBtn: document.getElementById('startCaptureBtn'),
         stopCaptureBtn: document.getElementById('stopCaptureBtn'),
         refreshSnifferResultsBtn: document.getElementById('refreshSnifferResultsBtn'),
-        snifferDownloadReportBtn: document.getElementById('snifferDownloadReportBtn'),
+        downloadReportBtn: document.getElementById('downloadReportBtn'),
+        execSummaryBtn: document.getElementById('execSummaryBtn'),
+        execSummaryLabel: document.getElementById('execSummaryLabel'),
+        execSummaryIcon: document.getElementById('execSummaryIcon'),
+        execSummarySpinner: document.getElementById('execSummarySpinner'),
         snifferHistoryBtn: document.getElementById('snifferHistoryBtn'),
         historyModal: document.getElementById('historyModal'),
         closeHistoryModal: document.getElementById('closeHistoryModal'),
@@ -80,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isActionInProgress = false;
     let reportDownloadUrl = null;
+    let lastScanLogId = null; 
     let eventSource = null;
     let networkInstance = null; 
 
@@ -1161,13 +1166,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        if(elements.snifferDownloadReportBtn) {
-            elements.snifferDownloadReportBtn.addEventListener('click', () => {
-                if (reportDownloadUrl) {
-                    window.location.href = reportDownloadUrl;
-                    appendLog('[✓] Downloading PDF report...');
-                } else {
-                    appendLog('[!] No report available.');
+        if(elements.downloadReportBtn) {
+            elements.downloadReportBtn.addEventListener('click', () => {
+                const target = elements.targetIpInput ? elements.targetIpInput.value.trim() : "";
+                const url = target 
+                    ? `${API_BASE_URL}/download_pdf?target=${encodeURIComponent(target)}`
+                    : `${API_BASE_URL}/download_pdf`;
+                
+                window.location.href = url;
+                appendLog('[✓] DOWNLOADING TECHNICAL REPORT...');
+            });
+        }
+
+        if (elements.execSummaryBtn) {
+            elements.execSummaryBtn.addEventListener('click', () => {
+                const state = elements.execSummaryBtn.dataset.state || 'ready';
+                if (state === 'ready') {
+                    generateExecutiveSummary();
+                } else if (state === 'download') {
+                    const downloadUrl = elements.execSummaryBtn.dataset.downloadUrl;
+                    if (downloadUrl) {
+                        window.location.href = downloadUrl;
+                        appendLog('[✓] DOWNLOADING EXECUTIVE BRIEF...');
+                    }
                 }
             });
         }
@@ -1244,7 +1265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok && data.status === 'success') {
                 if (elements.aiProcessingText) elements.aiProcessingText.textContent = 'REDIRECTING...';
-                appendLog(`[✓] Analysis complete. Redirecting...`);
+                appendLog(`[✓] AI ANALYSIS COMPLETE. REDIRECTING...`);
                 
                 setTimeout(() => {
                     const params = new URLSearchParams({
@@ -1258,7 +1279,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.message);
             }
         } catch (error) {
-            appendLog(`[!] AI Analysis Error: ${error.message}`);
+            appendLog(`[!] AI ANALYSIS ERROR: ${error.message}`);
             setStatus('Analysis failed', 'error');
             
             // Hide overlay to allow retry
@@ -1266,6 +1287,130 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.snifferAnalyzeReportDropdown.disabled = false;
         } finally {
             checkReportAvailability(); 
+        }
+    }
+
+    // --- AI EXECUTIVE SUMMARY LOGIC ---
+
+    function updateExecSummaryButton(state, downloadUrl = null) {
+        const btn = elements.execSummaryBtn;
+        const label = elements.execSummaryLabel;
+        const icon = elements.execSummaryIcon;
+        const spinner = elements.execSummarySpinner;
+
+        if (!btn) return;
+
+        btn.dataset.state = state;
+        btn.classList.remove('btn-intel-processing', 'btn-intel-success-glass', 'btn-intel-premium');
+        btn.disabled = false;
+        btn.style.opacity = "1";
+
+        if (state === 'ready') {
+            btn.classList.add('btn-intel-premium');
+            label.textContent = 'GENERATE BRIEF';
+            icon.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            btn.dataset.downloadUrl = '';
+        } 
+        else if (state === 'generating') {
+            btn.classList.add('btn-intel-processing');
+            label.textContent = 'SYNTHESIZING...';
+            icon.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            btn.disabled = true;
+        } 
+        else if (state === 'download') {
+            btn.classList.add('btn-intel-success-glass');
+            label.textContent = 'DOWNLOAD BRIEF';
+            icon.textContent = 'download';
+            icon.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            btn.dataset.downloadUrl = downloadUrl;
+        }
+        else {
+            // Disabled state
+            btn.classList.add('btn-intel-premium');
+            btn.style.opacity = "0.5";
+            btn.disabled = true;
+            label.textContent = 'EXECUTIVE BRIEF';
+        }
+    }
+
+    async function generateExecutiveSummary() {
+        if (!lastScanLogId) {
+            appendLog("[!] SCAN LOG ID MISSING. CANNOT GENERATE BRIEF.");
+            return;
+        }
+
+        updateExecSummaryButton('generating');
+        appendLog("[*] INITIATING EXECUTIVE BRIEF SYNTHESIS...");
+
+        try {
+            const target = elements.targetIpInput ? elements.targetIpInput.value.trim() : "";
+            const response = await fetch(`${API_BASE_URL}/trigger_executive_summary`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    log_id: lastScanLogId,
+                    target: target
+                })
+            });
+
+            const data = await response.json();
+            if (data.status === 'success') {
+                appendLog("[✓] EXECUTIVE BRIEF SYNTHESIZED SUCCESSFULLY.");
+                updateExecSummaryButton('download', data.download_url);
+            } else {
+                throw new Error(data.message || "SYNTHESIS FAILED");
+            }
+        } catch (err) {
+            appendLog(`[x] BRIEF ERROR: ${err.message.toUpperCase()}`);
+            updateExecSummaryButton('ready');
+        }
+    }
+
+    async function checkReportAvailability() {
+        try {
+            const target = elements.targetIpInput ? elements.targetIpInput.value.trim() : "";
+            const url = target 
+                ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}`
+                : `${API_BASE_URL}/report_files`;
+
+            const res = await fetch(url);
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                // Technical Report
+                if (elements.downloadReportBtn) {
+                    elements.downloadReportBtn.disabled = false;
+                    elements.downloadReportBtn.style.opacity = "1";
+                }
+                
+                // AI Analysis Dropdown
+                if (elements.snifferAnalyzeReportDropdown) {
+                    elements.snifferAnalyzeReportDropdown.disabled = false;
+                    elements.snifferAnalyzeReportDropdown.style.opacity = "1";
+                }
+
+                // AI Executive Summary
+                lastScanLogId = data.scan_log_id;
+                if (data.exec_summary_report) {
+                    updateExecSummaryButton('download', data.exec_summary_report);
+                } else if (lastScanLogId) {
+                    updateExecSummaryButton('ready');
+                } else {
+                    updateExecSummaryButton('disabled');
+                }
+            } else {
+                if (elements.downloadReportBtn) elements.downloadReportBtn.disabled = true;
+                if (elements.snifferAnalyzeReportDropdown) elements.snifferAnalyzeReportDropdown.disabled = true;
+                updateExecSummaryButton('disabled');
+            }
+        } catch (e) {
+            updateExecSummaryButton('disabled');
         }
     }
 

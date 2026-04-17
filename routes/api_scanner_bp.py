@@ -335,19 +335,35 @@ def get_report_files():
     if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
-    # [AI BRIEF] Retrieve the latest completed scan log ID for executive summary generation
+    # [AI BRIEF] Retrieve the latest completed scan log ID and check for existing executive summary
     from models.models import ScanLog
     latest_log = ScanLog.query.filter_by(
         user_id=current_user.id,
         tool_name="API",
         status="Completed"
     ).order_by(ScanLog.start_time.desc()).first()
+    
     scan_log_id = latest_log.id if latest_log else None
+    
+    # Check if executive summary already exists (either in DB or on disk)
+    exec_summary_report = None
+    if latest_log and latest_log.executive_summary_path:
+        if os.path.exists(latest_log.executive_summary_path):
+             exec_summary_report = f"/api_scanner/download_pdf?target={target}&type=executive" if target else "/api_scanner/download_pdf?type=executive"
+    
+    # Fallback to disk check if DB is out of sync
+    if not exec_summary_report:
+        exec_path = report_manager.find_latest_report(user_dir, "api_scanner", target=target, extension="pdf")
+        if exec_path:
+            potential_exec = exec_path.replace(".pdf", "_executive.pdf")
+            if os.path.exists(potential_exec):
+                exec_summary_report = f"/api_scanner/download_pdf?target={target}&type=executive" if target else "/api_scanner/download_pdf?type=executive"
 
     return jsonify({
         "status": "success",
         "json_report": f"/api_scanner/scan_results?target={target}" if target else "/api_scanner/scan_results",
         "pdf_report": f"/api_scanner/download_pdf?target={target}" if target else "/api_scanner/download_pdf",
+        "exec_summary_report": exec_summary_report,
         "scan_log_id": scan_log_id
     })
 
@@ -359,6 +375,7 @@ def download_pdf_report():
     user_dir = get_user_results_dir()
     requested_filename = request.args.get('filename')
     target = request.args.get('target')
+    report_type = request.args.get('type') # 'executive' or None
 
     if requested_filename:
         filename = secure_filename(requested_filename)
@@ -367,6 +384,12 @@ def download_pdf_report():
         pdf_path = report_manager.find_latest_report(user_dir, "api_scanner", target=target, extension="pdf")
         if not pdf_path:
              return jsonify({"status": "error", "message": "No API PDF report found."}), 404
+             
+        if report_type == 'executive':
+            pdf_path = pdf_path.replace(".pdf", "_executive.pdf")
+            if not os.path.exists(pdf_path):
+                 return jsonify({"status": "error", "message": "Executive brief not found."}), 404
+        
         filename = os.path.basename(pdf_path)
 
     if not os.path.exists(pdf_path):
@@ -404,3 +427,44 @@ def api_log_stream():
         scan_logger.tail_log_file(current_user_identifier, "api_scanner"), 
         mimetype='text/event-stream'
     )
+
+
+@api_scanner_bp.route('/trigger_executive_summary', methods=['POST'])
+@login_required
+def trigger_executive_summary():
+    """Triggers the AI Executive Brief generation for the API report."""
+    data = request.get_json() or {}
+    log_id = data.get('log_id')
+    target = data.get('target')
+    
+    if not log_id:
+        return jsonify({"status": "error", "message": "Missing Scan Log ID"}), 400
+        
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_dir = get_user_results_dir()
+    
+    # 1. Resolve Technical Report Path
+    report_path = report_manager.find_latest_report(user_dir, "api_scanner", target=target, extension="pdf")
+    
+    if not report_path or not os.path.exists(report_path):
+        return jsonify({"status": "error", "message": "Technical report not found. Run a scan first."}), 404
+
+    # 2. Call Centralized AI Service
+    from Services.ai_report_service import generate_executive_summary
+    success, result = generate_executive_summary(
+        log_id=log_id,
+        user_identifier=user_identifier,
+        report_path=report_path,
+        target=target,
+        tool_name="Application Interface Security Audit"
+    )
+    
+    if success:
+        download_url = f"/api_scanner/download_pdf?target={target}&type=executive" if target else "/api_scanner/download_pdf?type=executive"
+        return jsonify({
+            "status": "success",
+            "message": "Executive brief synthesized.",
+            "download_url": download_url
+        })
+    else:
+        return jsonify({"status": "error", "message": result}), 500

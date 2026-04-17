@@ -352,6 +352,60 @@
   
       .btn-secondary { background: var(--neo-card); color: var(--neo-text-muted); }
       .btn-secondary:hover:not(:disabled) { border-color: var(--neo-text-muted) !important; background: var(--neo-bg); }
+
+      /* --- INTELLIGENCE ACTIONS --- */
+      .intelligence-action-row {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+      }
+      .intelligence-action-row .btn-dash {
+        flex: 1;
+        height: 40px;
+        font-size: 0.75rem;
+        padding: 0 0.75rem;
+      }
+      .btn-intel-premium {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--neo-border) !important;
+        color: var(--neo-text-muted) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .btn-intel-premium:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border-color: var(--neo-text-primary) !important;
+        color: var(--neo-text-primary) !important;
+        transform: translateY(-1px);
+      }
+      .btn-intel-processing {
+        animation: intelPulse 2s infinite;
+        border-color: var(--neo-blue) !important;
+        pointer-events: none;
+      }
+      @keyframes intelPulse {
+        0% { background: rgba(59, 130, 246, 0.08); box-shadow: 0 0 0px var(--neo-blue); }
+        50% { background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 10px rgba(59, 130, 246, 0.15); }
+        100% { background: rgba(59, 130, 246, 0.08); box-shadow: 0 0 0px var(--neo-blue); }
+      }
+      .btn-intel-success-glass {
+        border-color: var(--neo-border) !important;
+        color: var(--neo-text-primary) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+      }
+      .btn-intel-success-glass:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: var(--neo-text-primary) !important;
+      }
+      .exec-badge {
+        background: var(--neo-blue);
+        color: #fff;
+        font-size: 0.55rem;
+        padding: 1px 4px;
+        border-radius: 3px;
+        font-weight: 800;
+        margin-right: -2px;
+        transform: scale(0.9);
+      }
   
       /* --- PANELS & TABLES --- */
       .dash-panel {
@@ -1059,21 +1113,22 @@
               </div>
             </div>
 
-            <button id="snifferDownloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
-              <span>Export PDF</span>
-              <span class="material-symbols-outlined">picture_as_pdf</span>
-            </button>
+            <div class="intelligence-action-row">
+              <button id="downloadReportBtn" disabled class="btn-dash btn-secondary justify-between" style="opacity: 0.7;">
+                <span style="font-size: 0.65rem; font-weight: 800; opacity: 0.9;">TECHNICAL REPORT</span>
+                <span class="material-symbols-outlined" style="font-size: 1.1rem;">description</span>
+              </button>
 
-            <button id="execSummaryBtn" disabled
-              class="btn-dash w-full justify-between exec-summary-btn"
-              style="opacity: 0.5; border: 1px solid rgba(251,191,36,0.3); color: var(--neo-amber); background: rgba(251,191,36,0.05);">
-              <span id="execSummaryLabel">AI Brief</span>
-              <span style="display:flex; align-items:center; gap:4px;">
-                <span class="exec-badge">AI</span>
-                <span id="execSummaryIcon" class="material-symbols-outlined">auto_awesome</span>
-                <span id="execSummarySpinner" class="spinner hidden"></span>
-              </span>
-            </button>
+              <button id="execSummaryBtn" disabled
+                class="btn-dash justify-between btn-intel-premium"
+                style="opacity: 0.5;">
+                <span id="execSummaryLabel" style="font-size: 0.65rem; font-weight: 800; opacity: 0.9;">EXECUTIVE BRIEF</span>
+                <span style="display:flex; align-items:center; gap:2px;">
+                  <span id="execSummaryIcon" class="material-symbols-outlined" style="font-size: 1.1rem;">auto_awesome</span>
+                  <span id="execSummarySpinner" class="spinner hidden"></span>
+                </span>
+              </button>
+            </div>
 
             <button id="snifferHistoryBtn" class="btn-dash btn-secondary w-full justify-between">
               <span>Prior Scans</span>

@@ -105,7 +105,7 @@ def get_user_results_dir(user):
     os.makedirs(user_dir, exist_ok=True)
     return user_dir
 
-def find_latest_report(user_results_dir, scanner_name=None, target=None, extension="pdf"):
+def find_latest_report(user_results_dir, scanner_name=None, target=None, extension="pdf", exclude_executive=True):
     """
     Finds the latest matching report. Supports both legacy and beautified formats via flexible glob.
     """
@@ -130,6 +130,13 @@ def find_latest_report(user_results_dir, scanner_name=None, target=None, extensi
     for pattern in patterns:
         all_candidates.extend(results_path.glob(pattern))
         
+    if not all_candidates:
+        return None
+
+    # [FIX] Filter out any '_executive.pdf' summaries if we only want technical reports
+    if exclude_executive and extension == "pdf":
+         all_candidates = [c for c in all_candidates if not str(c).lower().endswith("_executive.pdf")]
+         
     if not all_candidates:
         return None
         

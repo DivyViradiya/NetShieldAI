@@ -47,7 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Actions
     const refreshResultsBtn = document.getElementById('refreshResultsBtn');
-    const downloadPdfBtn = document.getElementById('downloadReportBtn'); 
+    const downloadReportBtn = document.getElementById('downloadReportBtn'); 
+    const execSummaryBtn = document.getElementById('execSummaryBtn');
+    const execSummaryLabel = document.getElementById('execSummaryLabel');
+    const execSummaryIcon = document.getElementById('execSummaryIcon');
+    const execSummarySpinner = document.getElementById('execSummarySpinner');
     
     // AI Analysis & Overlay Elements
     const analyzeReportDropdown = document.getElementById('analyzeReportDropdown');
@@ -60,6 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyModal = document.getElementById('historyModal');
     const closeHistoryModal = document.getElementById('closeHistoryModal');
     const historyTableBody = document.getElementById('historyTableBody');
+
+    let lastScanLogId = null;
 
     // Tab Switching
     const findingsTabBtn = document.getElementById('findingsTabBtn');
@@ -208,42 +214,136 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Report & Button Management ---
 
-    async function checkReportStatus() {
-        const target = targetUrlInput.value.trim();
-        if (downloadPdfBtn) {
-            downloadPdfBtn.disabled = true;
-            downloadPdfBtn.style.opacity = '0.5';
-        }
-        if (analyzeReportDropdown) {
-            analyzeReportDropdown.disabled = true;
-            analyzeReportDropdown.style.opacity = '0.5';
-        }
+    function updateExecSummaryButton(state, downloadUrl = null) {
+        if (!execSummaryBtn) return;
 
-        try {
-            const url = target ? `${REPORT_FILES_ENDPOINT}?target=${encodeURIComponent(target)}` : REPORT_FILES_ENDPOINT;
-            const response = await fetch(url);
-            if (!response.ok) return;
-            const data = await response.json();
-    
-            if (data.status === "success" && data.pdf_report) {
-                // Track the resolved target for AI analysis
-                resolvedTarget = target || '';
+        execSummaryBtn.dataset.state = state;
+        execSummaryBtn.classList.remove('btn-intel-processing', 'btn-intel-success-glass', 'btn-intel-premium');
+        execSummaryBtn.disabled = false;
+        execSummaryBtn.style.opacity = "1";
 
-                if (downloadPdfBtn) {
-                    downloadPdfBtn.disabled = false;
-                    downloadPdfBtn.style.opacity = '1';
-                    downloadPdfBtn.onclick = () => window.open(data.pdf_report, '_blank');
-                }
-                
-                if (analyzeReportDropdown) {
-                    analyzeReportDropdown.disabled = false;
-                    analyzeReportDropdown.style.opacity = '1';
-                }
-            }
-        } catch (error) {
-            console.error("Error checking report status:", error);
+        if (state === 'ready') {
+            execSummaryBtn.classList.add('btn-intel-premium');
+            execSummaryLabel.textContent = 'GENERATE BRIEF';
+            execSummaryIcon.classList.remove('hidden');
+            execSummarySpinner.classList.add('hidden');
+            execSummaryBtn.dataset.downloadUrl = '';
+        } 
+        else if (state === 'generating') {
+            execSummaryBtn.classList.add('btn-intel-processing');
+            execSummaryLabel.textContent = 'SYNTHESIZING...';
+            execSummaryIcon.classList.add('hidden');
+            execSummarySpinner.classList.remove('hidden');
+            execSummaryBtn.disabled = true;
+        } 
+        else if (state === 'download') {
+            execSummaryBtn.classList.add('btn-intel-success-glass');
+            execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
+            execSummaryIcon.textContent = 'download';
+            execSummaryIcon.classList.remove('hidden');
+            execSummarySpinner.classList.add('hidden');
+            execSummaryBtn.dataset.downloadUrl = downloadUrl;
+        }
+        else {
+            // Disabled state
+            execSummaryBtn.classList.add('btn-intel-premium');
+            execSummaryBtn.style.opacity = "0.5";
+            execSummaryBtn.disabled = true;
+            execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
         }
     }
+
+    async function generateExecutiveSummary() {
+        if (!lastScanLogId) {
+            appendLog("[!] SCAN LOG ID MISSING. CANNOT GENERATE BRIEF.");
+            return;
+        }
+
+        updateExecSummaryButton('generating');
+        appendLog("[*] INITIATING EXECUTIVE BRIEF SYNTHESIS...");
+
+        try {
+            const target = targetUrlInput ? targetUrlInput.value.trim() : resolvedTarget;
+            const response = await fetch(`${API_BASE_URL}/trigger_executive_summary`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    log_id: lastScanLogId,
+                    target: target
+                })
+            });
+
+            const data = await response.json();
+            if (data.status === 'success') {
+                appendLog("[✓] EXECUTIVE BRIEF SYNTHESIZED SUCCESSFULLY.");
+                updateExecSummaryButton('download', data.download_url);
+            } else {
+                throw new Error(data.message || "SYNTHESIS FAILED");
+            }
+        } catch (err) {
+            appendLog(`[x] BRIEF ERROR: ${err.message.toUpperCase()}`);
+            updateExecSummaryButton('ready');
+        }
+    }
+
+    async function checkReportAvailability() {
+        const target = targetUrlInput ? targetUrlInput.value.trim() : "";
+        
+        try {
+            const url = target 
+                ? `${REPORT_FILES_ENDPOINT}?target=${encodeURIComponent(target)}`
+                : REPORT_FILES_ENDPOINT;
+
+            const res = await fetch(url);
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                // Technical Report
+                if (downloadReportBtn) {
+                    downloadReportBtn.disabled = false;
+                    downloadReportBtn.style.opacity = "1";
+                    downloadReportBtn.onclick = () => {
+                        window.open(data.pdf_report, '_blank');
+                        appendLog('[✓] DOWNLOADING TECHNICAL REPORT...');
+                    };
+                }
+                
+                // AI Analysis Dropdown
+                if (analyzeReportDropdown) {
+                    analyzeReportDropdown.disabled = false;
+                    analyzeReportDropdown.style.opacity = "1";
+                }
+
+                // AI Executive Summary
+                lastScanLogId = data.scan_log_id;
+                if (data.exec_summary_report) {
+                    updateExecSummaryButton('download', data.exec_summary_report);
+                } else if (lastScanLogId) {
+                    updateExecSummaryButton('ready');
+                } else {
+                    updateExecSummaryButton('disabled');
+                }
+            } else {
+                if (downloadReportBtn) {
+                    downloadReportBtn.disabled = true;
+                    downloadReportBtn.style.opacity = "0.5";
+                }
+                if (analyzeReportDropdown) {
+                    analyzeReportDropdown.disabled = true;
+                    analyzeReportDropdown.style.opacity = "0.5";
+                }
+                updateExecSummaryButton('disabled');
+            }
+        } catch (e) {
+            updateExecSummaryButton('disabled');
+        }
+    }
+
+    // LEGACY REDIRECT: Ensure compatibility with existing calls
+    const checkReportStatus = checkReportAvailability;
 
     // --- HISTORY LOGIC ---
 
@@ -366,7 +466,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok && data.status === 'success') {
                 if (aiProcessingText) aiProcessingText.textContent = 'REDIRECTING...';
-                updateScanStatus('Redirecting...', 'success');
+                updateScanStatus('AI ANALYSIS COMPLETE. REDIRECTING...', 'success');
+                appendLog('[✓] AI ANALYSIS COMPLETE. REDIRECTING...');
                 setTimeout(() => {
                     const params = new URLSearchParams({
                         mode: data.llm_mode,
@@ -379,12 +480,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.message || `Analysis failed`);
             }
         } catch (error) {
-            appendLog(`[!] AI Analysis Error: ${error.message}`);
+            appendLog(`[!] AI ANALYSIS ERROR: ${error.message}`);
             updateScanStatus('Analysis failed', 'error');
             if (aiProcessingOverlay) aiProcessingOverlay.classList.add('hidden');
             analyzeReportDropdown.disabled = false;
         } finally {
-            checkReportStatus(); 
+            checkReportAvailability(); 
         }
     }
 
@@ -851,7 +952,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             if (event.data.includes("SYSTEM_EVENT: READY_FOR_ANALYSIS")) {
-                checkReportStatus();
+                checkReportAvailability();
             }
 
             if (event.data.includes("EVENT:") || event.data.startsWith("EVENT:")) return;
@@ -952,11 +1053,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize — match ZAP scanner pattern exactly
     async function init() {
-        setTimeout(() => appendLog('System Ready. Initializing API Security Scanner...'), 100);
-        checkReportStatus();
+        setTimeout(() => appendLog('System Ready. Initializing Application Interface Security Audit...'), 100);
+        checkReportAvailability();
         fetchAndDisplayResults();
         checkScanStatus();
         setupLogStream();
+    }
+
+    if (execSummaryBtn) {
+        execSummaryBtn.addEventListener('click', () => {
+            const state = execSummaryBtn.dataset.state || 'ready';
+            if (state === 'ready') {
+                generateExecutiveSummary();
+            } else if (state === 'download') {
+                const downloadUrl = execSummaryBtn.dataset.downloadUrl;
+                if (downloadUrl) {
+                    window.location.href = downloadUrl;
+                    appendLog('[✓] DOWNLOADING EXECUTIVE BRIEF...');
+                }
+            }
+        });
     }
 
     init();

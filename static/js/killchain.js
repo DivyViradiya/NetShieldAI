@@ -32,6 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
     aiAnalysisDropdown: document.getElementById("aiAnalysisDropdown"),
     aiAnalysisOptions: document.getElementById("aiAnalysisOptions"),
     downloadPdfBtn: document.getElementById("downloadPdfBtn"),
+    execSummaryBtn: document.getElementById("execSummaryBtn"),
+    execSummaryLabel: document.getElementById("execSummaryLabel"),
+    execSummaryIcon: document.getElementById("execSummaryIcon"),
+    execSummarySpinner: document.getElementById("execSummarySpinner"),
     refreshReportBtn: document.getElementById("refreshReportBtn"),
 
     aiOverlay: document.getElementById("aiProcessingOverlay"),
@@ -50,6 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
     historyModal: document.getElementById('historyModal'),
     closeHistoryModal: document.getElementById('closeHistoryModal'),
     historyTableBody: document.getElementById('historyTableBody'),
+    
+    lastScanLogId: null // State variable for log ID
   };
 
   // --- LOGGING LOGIC ---
@@ -199,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const opacity = reportButtonsEnabled ? "1" : "0.7";
     const cursor = reportButtonsEnabled ? "pointer" : "not-allowed";
 
-    [els.aiAnalysisDropdown, els.downloadPdfBtn, els.copyJsonBtn].forEach(
+    [els.aiAnalysisDropdown, els.downloadPdfBtn, els.copyJsonBtn, els.execSummaryBtn].forEach(
       (btn) => {
         if (btn) {
           btn.disabled = !reportButtonsEnabled;
@@ -208,6 +214,113 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     );
+  }
+
+  function updateExecSummaryButton(state, downloadUrl = null) {
+    if (!els.execSummaryBtn) return;
+
+    els.execSummaryBtn.dataset.state = state;
+    els.execSummaryBtn.classList.remove('btn-intel-processing', 'btn-intel-success-glass', 'btn-intel-premium');
+    els.execSummaryBtn.disabled = false;
+    els.execSummaryBtn.style.opacity = "1";
+
+    if (state === 'ready') {
+        els.execSummaryBtn.classList.add('btn-intel-premium');
+        els.execSummaryLabel.textContent = 'GENERATE BRIEF';
+        els.execSummaryIcon.classList.remove('hidden');
+        els.execSummarySpinner.classList.add('hidden');
+        els.execSummaryBtn.dataset.downloadUrl = '';
+    } 
+    else if (state === 'generating') {
+        els.execSummaryBtn.classList.add('btn-intel-processing');
+        els.execSummaryLabel.textContent = 'SYNTHESIZING...';
+        els.execSummaryIcon.classList.add('hidden');
+        els.execSummarySpinner.classList.remove('hidden');
+        els.execSummaryBtn.disabled = true;
+    } 
+    else if (state === 'download') {
+        els.execSummaryBtn.classList.add('btn-intel-success-glass');
+        els.execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
+        els.execSummaryIcon.textContent = 'download';
+        els.execSummaryIcon.classList.remove('hidden');
+        els.execSummarySpinner.classList.add('hidden');
+        els.execSummaryBtn.dataset.downloadUrl = downloadUrl;
+    }
+    else {
+        // Disabled state
+        els.execSummaryBtn.classList.add('btn-intel-premium');
+        els.execSummaryBtn.style.opacity = "0.5";
+        els.execSummaryBtn.disabled = true;
+        els.execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
+    }
+  }
+
+  async function generateExecutiveSummary() {
+    if (!els.lastScanLogId) {
+        appendLog("[!] SCAN LOG ID MISSING. CANNOT GENERATE BRIEF.");
+        return;
+    }
+
+    updateExecSummaryButton('generating');
+    appendLog("[*] INITIATING EXECUTIVE BRIEF SYNTHESIS...");
+
+    try {
+        const target = els.targetInput.value.trim();
+        const response = await fetch(`${API_BASE}/trigger_executive_summary`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken 
+            },
+            body: JSON.stringify({ 
+                log_id: els.lastScanLogId,
+                target: target
+            })
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+            appendLog("[✓] EXECUTIVE BRIEF SYNTHESIZED SUCCESSFULLY.");
+            updateExecSummaryButton('download', data.download_url);
+        } else {
+            throw new Error(data.message || "SYNTHESIS FAILED");
+        }
+    } catch (err) {
+        appendLog(`[x] BRIEF ERROR: ${err.message.toUpperCase()}`);
+        updateExecSummaryButton('ready');
+    }
+  }
+
+  async function checkReportAvailability() {
+    // Prioritize currentQueueId's target or use els.targetInput
+    const target = els.targetInput.value.trim();
+    if (!target && !currentScanId) return;
+
+    try {
+      const url = target ? `${API_BASE}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE}/report_files?scan_id=${currentScanId}`;
+      const response = await fetch(url);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === "success") {
+          toggleButtons(false); // Enable base report buttons
+
+          // AI Executive Summary state
+          els.lastScanLogId = data.scan_log_id;
+          if (data.exec_summary_report) {
+            updateExecSummaryButton('download', data.exec_summary_report);
+          } else if (els.lastScanLogId) {
+            updateExecSummaryButton('ready');
+          } else {
+            updateExecSummaryButton('disabled');
+          }
+          return;
+        }
+      }
+      updateExecSummaryButton('disabled');
+    } catch (error) { 
+      console.error(error); 
+      updateExecSummaryButton('disabled');
+    }
   }
 
   function setSelectedOption(selectId, valueToSelect) {
@@ -483,6 +596,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const jsonRes = await fetch(jsonUrl);
         const report = await jsonRes.json();
         renderReport(report);
+        checkReportAvailability(); // Check AI brief status
       } else if (checkData.status === "pending") {
           // Reports not ready yet — only lock the start button if a scan is actively running
           if (isScanning) {
@@ -520,6 +634,7 @@ document.addEventListener("DOMContentLoaded", () => {
       updateStatus("Last Scan Loaded", "success");
       toggleButtons(false); // enable PDF / AI buttons
       renderReport(report);
+      checkReportAvailability(); // Check AI brief status
     } catch (e) {
       // Silently ignore — no previous report is perfectly fine on first run
       console.warn('[killchain] No previous report to restore:', e.message);
@@ -794,6 +909,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const url = `${API_BASE}/download_pdf?target=${encodeURIComponent(downloadIdentifier)}`;
       window.location.href = url;
+    });
+  }
+
+  if (els.execSummaryBtn) {
+    els.execSummaryBtn.addEventListener('click', function() {
+        var state = els.execSummaryBtn.dataset.state || 'ready';
+        if (state === 'ready') {
+            generateExecutiveSummary();
+        } else if (state === 'download') {
+            var downloadUrl = els.execSummaryBtn.dataset.downloadUrl;
+            if (downloadUrl) {
+                window.location.href = downloadUrl;
+                appendLog('[✓] DOWNLOADING EXECUTIVE BRIEF...');
+            }
+        }
     });
   }
 

@@ -543,53 +543,49 @@ document.addEventListener('DOMContentLoaded', () => {
         const spinner = elements.execSummarySpinner;
 
         // Reset Styles
-        btn.classList.remove('btn-primary', 'btn-success');
-        btn.style.borderColor = 'rgba(251,191,36,0.3)';
-        btn.style.color = 'var(--neo-amber)';
+        btn.classList.remove('btn-intel-success-glass', 'btn-intel-processing');
+        btn.style.opacity = '1';
         icon.textContent = 'auto_awesome';
 
         if (state === 'disabled') {
             btn.disabled = true;
             btn.style.opacity = '0.5';
-            label.textContent = 'AI BRIEF';
+            label.textContent = 'EXECUTIVE BRIEF';
             icon.classList.remove('hidden');
             spinner.classList.add('hidden');
             btn.onclick = null;
         } else if (state === 'ready') {
             btn.disabled = false;
-            btn.style.opacity = '1';
             label.textContent = 'GENERATE BRIEF';
             icon.classList.remove('hidden');
             spinner.classList.add('hidden');
             btn.onclick = () => generateExecutiveSummary();
         } else if (state === 'generating') {
             btn.disabled = true;
-            label.textContent = 'GENERATING BRIEF...';
+            btn.classList.add('btn-intel-processing');
+            label.textContent = 'SYNTHESIZING...';
             icon.classList.add('hidden');
             spinner.classList.remove('hidden');
         } else if (state === 'download') {
             btn.disabled = false;
-            btn.style.opacity = '1';
+            btn.classList.add('btn-intel-success-glass');
             label.textContent = 'DOWNLOAD BRIEF';
-            icon.textContent = 'download';
+            icon.textContent = 'file_download';
             icon.classList.remove('hidden');
             spinner.classList.add('hidden');
             btn.onclick = () => { window.location.href = downloadUrl; };
-            btn.style.borderColor = 'var(--neo-green)';
-            btn.style.color = 'var(--neo-green)';
-            btn.style.background = 'rgba(16, 185, 129, 0.05)';
         }
     }
 
     async function generateExecutiveSummary() {
         if (!lastScanLogId) {
-            appendLog('[!] Error: No 최근 scan log identifier found.');
+            appendLog('[!] Error: No recent scan log identifier found.');
             return;
         }
         
         const target = currentResolvedTarget || elements.targetIpInput.value.trim();
         updateExecSummaryButton('generating');
-        appendLog('[*] Initiating AI Executive Summary generation flow...');
+        appendLog('[*] Initiating AI Executive Brief generation flow...');
         
         try {
             const response = await fetch(`${API_BASE_URL}/trigger_executive_summary`, {
@@ -606,13 +602,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const data = await response.json();
             if (data.status === 'success') {
-                appendLog('[✓] AI Executive Summary synthesized successfully.');
+                appendLog('[✓] AI Executive Brief synthesized successfully.');
                 updateExecSummaryButton('download', data.download_url);
             } else {
                 throw new Error(data.message);
             }
         } catch (error) {
-            console.error('Executive summary failed:', error);
+            console.error('Executive brief failed:', error);
             appendLog(`[x] Brief Generation Failed: ${error.message}`);
             updateExecSummaryButton('ready');
         }

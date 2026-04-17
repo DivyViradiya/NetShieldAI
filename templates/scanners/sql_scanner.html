@@ -394,6 +394,60 @@
       .btn-secondary { background: var(--neo-card); color: var(--neo-text-muted); }
       .btn-secondary:hover:not(:disabled) { border-color: var(--neo-text-muted) !important; background: var(--neo-bg); }
   
+      /* --- INTELLIGENCE ACTIONS --- */
+      .intelligence-action-row {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+      }
+      .intelligence-action-row .btn-dash {
+        flex: 1;
+        height: 40px;
+        font-size: 0.75rem;
+        padding: 0 0.75rem;
+      }
+      .btn-intel-premium {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--neo-border) !important;
+        color: var(--neo-text-muted) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .btn-intel-premium:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border-color: var(--neo-text-primary) !important;
+        color: var(--neo-text-primary) !important;
+        transform: translateY(-1px);
+      }
+      .btn-intel-processing {
+        animation: intelPulse 2s infinite;
+        border-color: var(--neo-blue) !important;
+        pointer-events: none;
+      }
+      @keyframes intelPulse {
+        0% { background: rgba(59, 130, 246, 0.08); box-shadow: 0 0 0px var(--neo-blue); }
+        50% { background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 10px rgba(59, 130, 246, 0.15); }
+        100% { background: rgba(59, 130, 246, 0.08); box-shadow: 0 0 0px var(--neo-blue); }
+      }
+      .btn-intel-success-glass {
+        border-color: var(--neo-border) !important;
+        color: var(--neo-text-primary) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+      }
+      .btn-intel-success-glass:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: var(--neo-text-primary) !important;
+      }
+      .exec-badge {
+        background: var(--neo-blue);
+        color: #fff;
+        font-size: 0.55rem;
+        padding: 1px 4px;
+        border-radius: 3px;
+        font-weight: 800;
+        margin-right: -2px;
+        transform: scale(0.9);
+      }
+  
       /* --- PANELS & TABLES --- */
       .dash-panel {
         display: flex;
@@ -1546,14 +1600,35 @@
             </button>
           </div>
 
-          <div class="flex flex-col gap-3">
+          <div class="intelligence-action-row">
+            <button id="downloadReportBtn" disabled class="btn-dash btn-intel-success-glass"
+              style="opacity: 0.5;">
+              <span class="material-symbols-outlined" style="font-size: 1.1rem;">picture_as_pdf</span>
+              <span>TECHNICAL REPORT</span>
+            </button>
+
+            <button id="execSummaryBtn" disabled class="btn-dash btn-intel-premium">
+              <span id="execSummaryLabel">EXECUTIVE BRIEF</span>
+              <span style="display:flex; align-items:center; gap:4px;">
+                <span class="exec-badge">AI</span>
+                <span id="execSummaryIcon" class="material-symbols-outlined">auto_awesome</span>
+                <span id="execSummarySpinner" class="spinner hidden"></span>
+              </span>
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-3 mt-4">
             <div class="relative w-full">
-              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
-                <span>AI Analysis</span>
+              <button id="analyzeReportDropdown" disabled class="btn-dash btn-secondary w-full justify-between"
+                style="opacity: 0.7; height: 38px;">
+                <span style="display: flex; align-items: center; gap: 8px;">
+                  <span class="material-symbols-outlined" style="font-size: 1.1rem;">psychology</span>
+                  <span>AI ANALYSIS</span>
+                </span>
                 <span class="material-symbols-outlined">expand_more</span>
               </button>
-
-              <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
+              <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown"
+                style="z-index: 100;">
                 <a href="#" data-llm-mode="local" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
                   Local LLM (Private)
@@ -1565,25 +1640,11 @@
               </div>
             </div>
 
-            <button id="downloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
-              <span>Export PDF</span>
-              <span class="material-symbols-outlined">picture_as_pdf</span>
-            </button>
-
-            <button id="execSummaryBtn" disabled
-              class="btn-dash w-full justify-between exec-summary-btn"
-              style="opacity: 0.5; border: 1px solid rgba(251,191,36,0.3); color: var(--neo-amber); background: rgba(251,191,36,0.05);">
-              <span id="execSummaryLabel">AI Brief</span>
-              <span style="display:flex; align-items:center; gap:4px;">
-                <span class="exec-badge">AI</span>
-                <span id="execSummaryIcon" class="material-symbols-outlined">auto_awesome</span>
-                <span id="execSummarySpinner" class="spinner hidden"></span>
+            <button id="sqlHistoryBtn" class="btn-dash btn-secondary w-full justify-between" style="height: 38px;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size:1.1rem">history</span>
+                <span>PRIOR SCANS</span>
               </span>
-            </button>
-
-            <button id="sqlHistoryBtn" class="btn-dash btn-secondary w-full justify-between">
-              <span>Prior Scans</span>
-              <span class="material-symbols-outlined">history</span>
             </button>
           </div>
         </div>

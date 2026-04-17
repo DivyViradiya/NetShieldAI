@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Intelligence & Overlay
         downloadReportBtn: document.getElementById('downloadReportBtn'),
+        execSummaryBtn: document.getElementById('execSummaryBtn'),
+        execSummaryLabel: document.getElementById('execSummaryLabel'),
+        execSummaryIcon: document.getElementById('execSummaryIcon'),
+        execSummarySpinner: document.getElementById('execSummarySpinner'),
+        
         analyzeReportDropdown: document.getElementById('analyzeReportDropdown'),
         llmAnalysisOptions: document.getElementById('llmAnalysisOptions'),
         aiProcessingOverlay: document.getElementById('aiProcessingOverlay'),
@@ -43,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var eventSource = null;
     var reportDownloadUrl = null;
+    var lastScanLogId = null;
 
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
     var csrfToken = document.querySelector('meta[name="csrf-token"]') 
@@ -153,55 +159,128 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         if(elements.resultsContent) elements.resultsContent.textContent = '// JSON OUTPUT';
         
-        [elements.downloadReportBtn, elements.analyzeReportDropdown].forEach(function(btn) {
+        [elements.downloadReportBtn, elements.analyzeReportDropdown, elements.execSummaryBtn].forEach(function(btn) {
             if (btn) {
                 btn.disabled = true;
-                btn.style.opacity = '0.7';
+                btn.style.opacity = '0.5';
             }
         });
         reportDownloadUrl = null;
     }
 
-    async function checkReportAvailability() {
-        var target = elements.targetHostInput.value.trim();
+    function updateExecSummaryButton(state, downloadUrl = null) {
+        if (!elements.execSummaryBtn) return;
+
+        elements.execSummaryBtn.dataset.state = state;
+        elements.execSummaryBtn.classList.remove('btn-intel-processing', 'btn-intel-success-glass', 'btn-intel-premium');
+        elements.execSummaryBtn.disabled = false;
+        elements.execSummaryBtn.style.opacity = "1";
+
+        if (state === 'ready') {
+            elements.execSummaryBtn.classList.add('btn-intel-premium');
+            elements.execSummaryLabel.textContent = 'GENERATE BRIEF';
+            elements.execSummaryIcon.classList.remove('hidden');
+            elements.execSummarySpinner.classList.add('hidden');
+            elements.execSummaryBtn.dataset.downloadUrl = '';
+        } 
+        else if (state === 'generating') {
+            elements.execSummaryBtn.classList.add('btn-intel-processing');
+            elements.execSummaryLabel.textContent = 'SYNTHESIZING...';
+            elements.execSummaryIcon.classList.add('hidden');
+            elements.execSummarySpinner.classList.remove('hidden');
+            elements.execSummaryBtn.disabled = true;
+        } 
+        else if (state === 'download') {
+            elements.execSummaryBtn.classList.add('btn-intel-success-glass');
+            elements.execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
+            elements.execSummaryIcon.textContent = 'download';
+            elements.execSummaryIcon.classList.remove('hidden');
+            elements.execSummarySpinner.classList.add('hidden');
+            elements.execSummaryBtn.dataset.downloadUrl = downloadUrl;
+        }
+        else {
+            // Disabled state
+            elements.execSummaryBtn.classList.add('btn-intel-premium');
+            elements.execSummaryBtn.style.opacity = "0.5";
+            elements.execSummaryBtn.disabled = true;
+            elements.execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
+        }
+    }
+
+    async function generateExecutiveSummary() {
+        if (!lastScanLogId) {
+            appendLog("[!] SCAN LOG ID MISSING. CANNOT GENERATE BRIEF.");
+            return;
+        }
+
+        updateExecSummaryButton('generating');
+        appendLog("[*] INITIATING EXECUTIVE BRIEF SYNTHESIS...");
+
         try {
-            var url = target ? REPORT_FILES_ENDPOINT + '?target=' + encodeURIComponent(target) : REPORT_FILES_ENDPOINT;
-            var response = await fetch(url);
+            const target = elements.targetHostInput.value.trim();
+            const response = await fetch(`${API_BASE_URL}/trigger_executive_summary`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    log_id: lastScanLogId,
+                    target: target
+                })
+            });
+
+            const data = await response.json();
+            if (data.status === 'success') {
+                appendLog("[✓] EXECUTIVE BRIEF SYNTHESIZED SUCCESSFULLY.");
+                updateExecSummaryButton('download', data.download_url);
+            } else {
+                throw new Error(data.message || "SYNTHESIS FAILED");
+            }
+        } catch (err) {
+            appendLog(`[x] BRIEF ERROR: ${err.message.toUpperCase()}`);
+            updateExecSummaryButton('ready');
+        }
+    }
+
+    async function checkReportAvailability() {
+        const target = elements.targetHostInput.value.trim();
+        try {
+            const url = target ? `${REPORT_FILES_ENDPOINT}?target=${encodeURIComponent(target)}` : REPORT_FILES_ENDPOINT;
+            const response = await fetch(url);
             if (response.ok) {
-                var data = await response.json();
-                if (data.status === 'success' && data.pdf_report) {
-                    // Use the URL provided by the backend to ensure compatibility with timestamped filenames
-                    reportDownloadUrl = data.pdf_report;
-                    
-                    if (elements.downloadReportBtn) {
-                        elements.downloadReportBtn.disabled = false;
-                        elements.downloadReportBtn.style.opacity = '1';
-                        elements.downloadReportBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                const data = await response.json();
+                if (data.status === 'success') {
+                    // Technical Report
+                    if (data.pdf_report) {
+                        reportDownloadUrl = data.pdf_report;
+                        if (elements.downloadReportBtn) {
+                            elements.downloadReportBtn.disabled = false;
+                            elements.downloadReportBtn.style.opacity = '1';
+                        }
+                        if (elements.analyzeReportDropdown) {
+                            elements.analyzeReportDropdown.disabled = false;
+                            elements.analyzeReportDropdown.style.opacity = '1';
+                        }
                     }
-                    
-                    // Keep AI dropdown interactive even if report not verified yet
-                    if (elements.analyzeReportDropdown) {
-                        elements.analyzeReportDropdown.disabled = false;
-                        elements.analyzeReportDropdown.style.opacity = '1';
-                        elements.analyzeReportDropdown.classList.remove('opacity-70', 'cursor-not-allowed');
+
+                    // AI Executive Summary
+                    lastScanLogId = data.scan_log_id;
+                    if (data.exec_summary_report) {
+                        updateExecSummaryButton('download', data.exec_summary_report);
+                    } else if (lastScanLogId) {
+                        updateExecSummaryButton('ready');
+                    } else {
+                        updateExecSummaryButton('disabled');
                     }
                     return;
                 }
             }
-        } catch (error) {
-            console.error('Error checking report availability:', error);
+            updateExecSummaryButton('disabled');
+        } catch (error) { 
+            console.error(error); 
+            updateExecSummaryButton('disabled');
         }
-        
-        if (elements.downloadReportBtn) {
-            elements.downloadReportBtn.disabled = true;
-            elements.downloadReportBtn.style.opacity = '0.5';
-        }
-        // AI Analysis button remains enabled so user can see options/trigger logic
-        if (elements.analyzeReportDropdown) {
-            elements.analyzeReportDropdown.disabled = false;
-            elements.analyzeReportDropdown.style.opacity = '1';
-        }
-        reportDownloadUrl = null;
     }
     // --- HISTORY LOGIC ---
 
@@ -341,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.message || 'Analysis failed');
             }
         } catch (error) {
-            appendLog('[x] AI Analysis Error: ' + error.message);
+            appendLog('[x] AI ANALYSIS ERROR: ' + error.message.toUpperCase());
             updateStatus('Analysis Failed', 'error');
             elements.aiProcessingOverlay.classList.add('hidden'); // Hide overlay to allow retry
         } finally {
@@ -741,6 +820,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    if (elements.execSummaryBtn) {
+        elements.execSummaryBtn.addEventListener('click', function() {
+            var state = elements.execSummaryBtn.dataset.state || 'ready';
+            if (state === 'ready') {
+                generateExecutiveSummary();
+            } else if (state === 'download') {
+                var downloadUrl = elements.execSummaryBtn.dataset.downloadUrl;
+                if (downloadUrl) {
+                    window.location.href = downloadUrl;
+                    appendLog('[✓] DOWNLOADING EXECUTIVE BRIEF...');
+                }
+            }
+        });
+    }
+
     // Dropdown Selection Handling (delegated to items)
     if (elements.llmAnalysisOptions) {
         elements.llmAnalysisOptions.addEventListener('click', function(e) {
@@ -778,9 +872,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Init ---
-    setTimeout(function() { appendLog('System Ready. Initializing SSL Scanner...'); }, 100);
-    setupLogStream();
-    fetchAndDisplayReport(); 
+    async function init() {
+        appendLog('[*] SYSTEM READY. INITIALIZING SSL/TLS VULNERABILITY AUDIT...');
+        
+        // Active Scan Check
+        try {
+            const res = await fetch(`${API_BASE_URL}/check_active_scan`);
+            const data = await res.json();
+            if (data.status === 'active') {
+                toggleSpinner(elements.initiateScanBtn, true);
+                updateStatus('Scanning...', 'busy');
+                appendLog('[*] DETECTED ACTIVE SSL/TLS AUDIT. RE-ATTACHING...');
+                if (elements.targetHostInput) elements.targetHostInput.value = data.target || '';
+            }
+        } catch(e) {}
+
+        setupLogStream();
+        fetchAndDisplayReport(); 
+    }
+
+    init();
 });
 
 // --- Mobile Helper Functions (Global for compatibility) ---

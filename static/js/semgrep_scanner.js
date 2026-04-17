@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Intelligence & Overlay (Shared Logic)
         downloadReportBtn: document.getElementById('downloadReportBtn'),
+        execSummaryBtn: document.getElementById('execSummaryBtn'),
+        execSummaryLabel: document.getElementById('execSummaryLabel'),
+        execSummaryIcon: document.getElementById('execSummaryIcon'),
+        execSummarySpinner: document.getElementById('execSummarySpinner'),
+        
         analyzeReportDropdown: document.getElementById('analyzeReportDropdown'),
         llmAnalysisOptions: document.getElementById('llmAnalysisOptions'),
         aiProcessingOverlay: document.getElementById('aiProcessingOverlay'),
@@ -41,6 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
         closeHistoryModal: document.getElementById('closeHistoryModal'),
         historyTableBody: document.getElementById('historyTableBody'),
     };
+
+    var lastScanLogId = null;
 
     var CHATBOT_REDIRECT_URL = '/chatbot'; 
     var ANALYZE_ENDPOINT = '/semgrep_scanner/trigger_ai_analysis';
@@ -154,12 +161,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if(elements.resultsContent) elements.resultsContent.textContent = '// JSON OUTPUT';
         
-        [elements.downloadReportBtn, elements.analyzeReportDropdown].forEach(function(btn) {
+        [elements.downloadReportBtn, elements.analyzeReportDropdown, elements.execSummaryBtn].forEach(function(btn) {
             if (btn) {
                 btn.disabled = true;
-                btn.style.opacity = '0.7';
+                btn.style.opacity = '0.5';
             }
         });
+        updateExecSummaryButton('disabled');
         reportDownloadUrl = null;
     }
 
@@ -213,6 +221,83 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Data Fetching & Rendering ---
 
+    // --- Report & Button Management ---
+
+    function updateExecSummaryButton(state, downloadUrl = null) {
+        if (!elements.execSummaryBtn) return;
+
+        elements.execSummaryBtn.dataset.state = state;
+        elements.execSummaryBtn.classList.remove('btn-intel-processing', 'btn-intel-success-glass', 'btn-intel-premium');
+        elements.execSummaryBtn.disabled = false;
+        elements.execSummaryBtn.style.opacity = "1";
+
+        if (state === 'ready') {
+            elements.execSummaryBtn.classList.add('btn-intel-premium');
+            elements.execSummaryLabel.textContent = 'GENERATE BRIEF';
+            elements.execSummaryIcon.classList.remove('hidden');
+            elements.execSummarySpinner.classList.add('hidden');
+            elements.execSummaryBtn.dataset.downloadUrl = '';
+        } 
+        else if (state === 'generating') {
+            elements.execSummaryBtn.classList.add('btn-intel-processing');
+            elements.execSummaryLabel.textContent = 'SYNTHESIZING...';
+            elements.execSummaryIcon.classList.add('hidden');
+            elements.execSummarySpinner.classList.remove('hidden');
+            elements.execSummaryBtn.disabled = true;
+        } 
+        else if (state === 'download') {
+            elements.execSummaryBtn.classList.add('btn-intel-success-glass');
+            elements.execSummaryLabel.textContent = 'DOWNLOAD BRIEF';
+            elements.execSummaryIcon.textContent = 'download';
+            elements.execSummaryIcon.classList.remove('hidden');
+            elements.execSummarySpinner.classList.add('hidden');
+            elements.execSummaryBtn.dataset.downloadUrl = downloadUrl;
+        }
+        else {
+            // Disabled state
+            elements.execSummaryBtn.classList.add('btn-intel-premium');
+            elements.execSummaryBtn.style.opacity = "0.5";
+            elements.execSummaryBtn.disabled = true;
+            elements.execSummaryLabel.textContent = 'EXECUTIVE BRIEF';
+        }
+    }
+
+    async function generateExecutiveSummary() {
+        if (!lastScanLogId) {
+            appendLog("[!] SCAN LOG ID MISSING. CANNOT GENERATE BRIEF.");
+            return;
+        }
+
+        updateExecSummaryButton('generating');
+        appendLog("[*] INITIATING EXECUTIVE BRIEF SYNTHESIS...");
+
+        try {
+            var target = selectedFile ? selectedFile.name : elements.gitUrlInput.value.trim();
+            const response = await fetch('/semgrep_scanner/trigger_executive_summary', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    log_id: lastScanLogId,
+                    target: target
+                })
+            });
+
+            const data = await response.json();
+            if (data.status === 'success') {
+                appendLog("[✓] EXECUTIVE BRIEF SYNTHESIZED SUCCESSFULLY.");
+                updateExecSummaryButton('download', data.download_url);
+            } else {
+                throw new Error(data.message || "SYNTHESIS FAILED");
+            }
+        } catch (err) {
+            appendLog(`[x] BRIEF ERROR: ${err.message.toUpperCase()}`);
+            updateExecSummaryButton('ready');
+        }
+    }
+
     async function checkReportAvailability() {
         var target = selectedFile ? selectedFile.name : elements.gitUrlInput.value.trim();
         try {
@@ -220,25 +305,36 @@ document.addEventListener('DOMContentLoaded', function() {
             var response = await fetch(url);
             if (response.ok) {
                 var data = await response.json();
-                if (data.status === 'success' && data.pdf_report) {
-                    reportDownloadUrl = data.pdf_report;
-                    
-                    if (elements.downloadReportBtn) {
-                        elements.downloadReportBtn.disabled = false;
-                        elements.downloadReportBtn.style.opacity = '1';
-                        elements.downloadReportBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                if (data.status === 'success') {
+                    // Technical Report
+                    if (data.pdf_report) {
+                        reportDownloadUrl = data.pdf_report;
+                        if (elements.downloadReportBtn) {
+                            elements.downloadReportBtn.disabled = false;
+                            elements.downloadReportBtn.style.opacity = '1';
+                        }
+                        if (elements.analyzeReportDropdown) {
+                            elements.analyzeReportDropdown.disabled = false;
+                            elements.analyzeReportDropdown.style.opacity = '1';
+                        }
                     }
-                    
-                    if (elements.analyzeReportDropdown) {
-                        elements.analyzeReportDropdown.disabled = false;
-                        elements.analyzeReportDropdown.style.opacity = '1';
-                        elements.analyzeReportDropdown.classList.remove('opacity-70', 'cursor-not-allowed');
+
+                    // AI Executive Summary
+                    lastScanLogId = data.scan_log_id;
+                    if (data.exec_summary_report) {
+                        updateExecSummaryButton('download', data.exec_summary_report);
+                    } else if (lastScanLogId) {
+                        updateExecSummaryButton('ready');
+                    } else {
+                        updateExecSummaryButton('disabled');
                     }
                     return;
                 }
             }
+            updateExecSummaryButton('disabled');
         } catch (error) {
             console.error('Error checking report availability:', error);
+            updateExecSummaryButton('disabled');
         }
     }
 
@@ -591,7 +687,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.message || 'Analysis failed');
             }
         } catch (error) {
-            appendLog('[x] AI Analysis Error: ' + error.message);
+            appendLog('[x] AI ANALYSIS ERROR: ' + error.message);
             updateStatus('Analysis Failed', 'error');
             elements.aiProcessingOverlay.classList.add('hidden');
         } finally {
@@ -758,6 +854,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    if (elements.execSummaryBtn) {
+        elements.execSummaryBtn.addEventListener('click', function() {
+            var state = elements.execSummaryBtn.dataset.state || 'ready';
+            if (state === 'ready') {
+                generateExecutiveSummary();
+            } else if (state === 'download') {
+                var downloadUrl = elements.execSummaryBtn.dataset.downloadUrl;
+                if (downloadUrl) {
+                    window.location.href = downloadUrl;
+                    appendLog('[✓] DOWNLOADING EXECUTIVE BRIEF...');
+                }
+            }
+        });
+    }
+    
     // Dropdown Handling
     if (elements.analyzeReportDropdown) {
         elements.analyzeReportDropdown.addEventListener('click', function(e) {
@@ -817,15 +928,20 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    async function checkActiveScan() {
+    // --- Initialization ---
+    async function init() {
+        appendLog('[*] SYSTEM READY. INITIALIZING STATIC ANALYSIS SECURITY AUDIT...');
+        checkReportAvailability();
+        fetchAndDisplayReport();
+        
+        // Setup status check loop if needed, or initial check
         try {
             const res = await fetch('/semgrep_scanner/status');
             const data = await res.json();
-            
-            if (data.status === 'success' && data.is_running) {
-                appendLog('[*] Resuming active scan for: ' + data.target);
-                updateStatus('Scanning...', 'busy');
+            if (data.is_running) {
                 toggleSpinner(elements.initiateScanBtn, true);
+                updateStatus('Scanning...', 'busy');
+                appendLog('[*] DETECTED ACTIVE SEMGREP SCAN. RE-ATTACHING...');
                 if (elements.metricTarget) elements.metricTarget.textContent = data.target;
                 
                 // Show "Scanning" in findings list

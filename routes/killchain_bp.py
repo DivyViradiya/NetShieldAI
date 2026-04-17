@@ -190,6 +190,48 @@ def log_stream():
     )
 
 
+@killchain_bp.route('/trigger_executive_summary', methods=['POST'])
+@login_required
+def trigger_executive_summary():
+    """Triggers the AI Executive Brief generation for the Kill Chain report."""
+    data = request.get_json() or {}
+    log_id = data.get('log_id')
+    target = data.get('target')
+    
+    if not log_id:
+        return jsonify({"status": "error", "message": "Missing Scan Log ID"}), 400
+        
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    scan_dir = get_fixed_scan_dir()
+    reports_dir = os.path.join(scan_dir, "reports")
+    
+    # 1. Resolve Technical Report Path
+    report_path = report_manager.find_latest_report(reports_dir, "killchain", target=target, extension="pdf")
+    
+    if not report_path or not os.path.exists(report_path):
+        return jsonify({"status": "error", "message": "Technical report not found. Run a scan first."}), 404
+
+    # 2. Call Centralized AI Service
+    from Services.ai_report_service import generate_executive_summary
+    success, result = generate_executive_summary(
+        log_id=log_id,
+        user_identifier=user_identifier,
+        report_path=report_path,
+        target=target,
+        tool_name="Kill Chain Security Orchestration (Multi-Tool)"
+    )
+    
+    if success:
+        download_url = f"/killchain/download_pdf?target={target}&type=executive" if target else "/killchain/download_pdf?type=executive"
+        return jsonify({
+            "status": "success",
+            "message": "Executive brief synthesized.",
+            "download_url": download_url
+        })
+    else:
+        return jsonify({"status": "error", "message": result}), 500
+
+
 @killchain_bp.route('/report_files', methods=['GET'])
 @login_required
 def get_report_files():
@@ -212,19 +254,23 @@ def get_report_files():
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
-    # [AI BRIEF] Retrieve the latest completed scan log ID for executive summary generation
-    from models.models import ScanLog
-    latest_log = ScanLog.query.filter_by(
-        user_id=current_user.id,
-        tool_name="Kill Chain",
-        status="Completed"
-    ).order_by(ScanLog.start_time.desc()).first()
-    scan_log_id = latest_log.id if latest_log else None
+    # [AI BRIEF] Check for existing executive summary
+    exec_summary_report = None
+    if latest_log and latest_log.executive_summary_path:
+        if os.path.exists(latest_log.executive_summary_path):
+             exec_summary_report = f"/killchain/download_pdf?target={target}&type=executive" if target else "/killchain/download_pdf?type=executive"
+    
+    # Fallback to disk check
+    if not exec_summary_report:
+        potential_exec = pdf_path.replace(".pdf", "_executive.pdf") if pdf_path else None
+        if potential_exec and os.path.exists(potential_exec):
+            exec_summary_report = f"/killchain/download_pdf?target={target}&type=executive" if target else "/killchain/download_pdf?type=executive"
 
     return jsonify({
         "status": "success",
         "json_report": f"/killchain/get_json_report?target={target}" if json_exists else None,
         "pdf_report": f"/killchain/download_pdf?target={target}" if pdf_exists else None,
+        "exec_summary_report": exec_summary_report,
         "scan_log_id": scan_log_id
     })
 
@@ -234,6 +280,7 @@ def get_report_files():
 def download_pdf_report():
     target = request.args.get('target')
     requested_filename = request.args.get('filename')
+    report_type = request.args.get('type') # 'executive' or None
     scan_dir = get_fixed_scan_dir()
     if not scan_dir: return jsonify({"status": "error"}), 404
     
@@ -245,6 +292,10 @@ def download_pdf_report():
     elif target:
         pdf_path = report_manager.find_latest_report(reports_dir, "killchain", target=target, extension="pdf")
         if pdf_path:
+             if report_type == 'executive':
+                 pdf_path = pdf_path.replace(".pdf", "_executive.pdf")
+                 if not os.path.exists(pdf_path):
+                      return jsonify({"status": "error", "message": "Executive brief not found."}), 404
              filename = os.path.basename(pdf_path)
     else:
         # Fallback to latest
@@ -252,6 +303,12 @@ def download_pdf_report():
         if not history:
              return jsonify({"status": "error", "message": "No reports found."}), 404
         pdf_path = history[0]['path']
+        
+        if report_type == 'executive':
+            pdf_path = pdf_path.replace(".pdf", "_executive.pdf")
+            if not os.path.exists(pdf_path):
+                 return jsonify({"status": "error", "message": "Executive brief not found."}), 404
+                 
         filename = os.path.basename(pdf_path)
 
     if not pdf_path or not os.path.exists(pdf_path):
