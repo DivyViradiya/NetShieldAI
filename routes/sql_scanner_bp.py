@@ -310,10 +310,20 @@ def get_report_files():
     if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
+    # [AI BRIEF] Retrieve the latest completed scan log ID for executive summary generation
+    from models.models import ScanLog
+    latest_log = ScanLog.query.filter_by(
+        user_id=current_user.id,
+        tool_name="SQLMap",
+        status="Completed"
+    ).order_by(ScanLog.start_time.desc()).first()
+    scan_log_id = latest_log.id if latest_log else None
+
     return jsonify({
         "status": "success",
         "json_report": f"/sql_scanner/get_json_report?target={target}" if target else "/sql_scanner/get_json_report",
-        "pdf_report": f"/sql_scanner/download_pdf?target={target}" if target else "/sql_scanner/download_pdf"
+        "pdf_report": f"/sql_scanner/download_pdf?target={target}" if target else "/sql_scanner/download_pdf",
+        "scan_log_id": scan_log_id
     })
 
 @sql_scanner_bp.route('/download_pdf', methods=['GET'])

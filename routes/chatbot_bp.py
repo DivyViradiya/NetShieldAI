@@ -977,3 +977,4 @@ def submit_feedback():
     except Exception as e:
         user_logger.error(f"Error in submit_feedback: {e}")
         return jsonify({'error': str(e)}), 500
+

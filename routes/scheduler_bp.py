@@ -12,7 +12,6 @@ IST = ZoneInfo("Asia/Kolkata")
 
 from flask import Blueprint, render_template, jsonify, request
 from flask_login import login_required, current_user
-
 from core.logger_setup import logger
 from core.extensions import db, limiter
 from models.scheduler_models import (
@@ -947,6 +946,25 @@ def download_executive_summary_report(log_id):
          return jsonify({"status": "error", "message": f"Error: {str(e)}"}), 500
 
 
+@scheduler_bp.route('/api/reports/<int:log_id>/executive_summary/status', methods=['GET'])
+@login_required
+def get_executive_summary_status(log_id):
+    """Check if an executive summary PDF already exists (cached) for this scan log.
+    Used by the frontend to restore 'ready' state on page reload."""
+    from models.models import ScanLog
+    import os
+
+    log = db.session.get(ScanLog, log_id)
+    if not log or log.user_id != current_user.id:
+        return jsonify({"status": "error", "message": "Report not found."}), 404
+
+    if not log.report_path:
+        return jsonify({"exists": False})
+
+    exec_path = log.report_path.replace(".pdf", "_executive.pdf")
+    return jsonify({"exists": os.path.exists(exec_path)})
+
+
 @scheduler_bp.route('/confirm-scan/<token>')
 def confirm_scan(token):
     """
@@ -977,3 +995,4 @@ def confirm_scan(token):
     logger.info(f"[+] [scheduler_bp] Consent approved for job {consent.job_id} — scan will run at its scheduled time.")
 
     return render_template('scheduler/consent_result.html', status='success', message='Scan authorized! The security audit will begin at its next scheduled time.')
+

@@ -656,6 +656,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 p.replaceWith(card);
             });
 
+            // --- PASS 2.5: Lettered Context Items (a., b., c.) ---
+            tempDiv.querySelectorAll('p').forEach(p => {
+                const text = p.innerText.trim();
+                // Match "a. text", "b) text", or "**a.** text"
+                if (/^[a-z][\.\)]\s+/i.test(text) || /^<strong>[a-z][\.\)]\s*<\/strong>/i.test(p.innerHTML)) {
+                    p.classList.add('llm-context-item');
+                }
+            });
+
+            // --- PASS 2.6: Remediation Action Cards (Issue, Action, Benefit, Owner) ---
+            tempDiv.querySelectorAll('p').forEach(p => {
+                const text = p.innerText.trim();
+                // Start a card when "Issue:" is found at the beginning of a paragraph
+                if (text.startsWith('Issue:')) {
+                    const card = document.createElement('div');
+                    card.className = 'llm-remediation-card';
+                    
+                    const siblings = [p];
+                    let next = p.nextElementSibling;
+                    const stopKeywords = ['Issue:', 'Finding #', '1. ', '2. '];
+                    const fields = ['Action:', 'Benefit:', 'Owner:'];
+                    
+                    while (next && next.tagName === 'P') {
+                        const nextText = next.innerText.trim();
+                        // If it starts with one of our fields, collect it
+                        if (fields.some(f => nextText.startsWith(f))) {
+                            siblings.push(next);
+                            next = next.nextElementSibling;
+                        } else if (stopKeywords.some(k => nextText.startsWith(k))) {
+                            // Don't include sibling if it's a new card or different section
+                            break; 
+                        } else {
+                            // Only include if it's very short or looks like list content? 
+                            // Strategy: strict collection of marked fields for card integrity.
+                            break;
+                        }
+                    }
+                    
+                    // Only wrap if we found at least one related field (prevent false positives)
+                    if (siblings.length > 1) {
+                        p.parentNode.insertBefore(card, p);
+                        siblings.forEach(s => {
+                            // Transform "Label:" into a styled component
+                            s.innerHTML = s.innerHTML.replace(/^(Issue|Action|Benefit|Owner):/i, '<span class="remediation-label">$1:</span>');
+                            card.appendChild(s);
+                        });
+                    }
+                }
+            });
+
             // --- PASS 3: Table Panel Wrapping ---
             // Each table gets a glassmorphic container with a context label.
             // Variant classes cycle to ensure adjacent tables look different.
@@ -759,13 +809,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // --- Font Sanitization (preserved, with carve-outs for new elements) ---
-            const FONT_UI   = "'IBM Plex Sans', sans-serif";
+            const FONT_UI   = "'Inter', sans-serif";
             const FONT_MONO = "'JetBrains Mono', monospace";
-            const _uiEls = 'p, li, td, th, blockquote, strong, em, a';
+            const _uiEls = 'p, li, td, th, blockquote, strong, em, a, .llm-context-item, .llm-finding-body';
             tempDiv.querySelectorAll(_uiEls).forEach(el => {
                 el.style.setProperty('font-family', FONT_UI, 'important');
             });
-            tempDiv.querySelectorAll('h1, h3, h4, h5, h6, code, pre, pre *').forEach(el => {
+            tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6, code, pre, pre *, .remediation-label, .llm-finding-number, .llm-finding-name, .llm-table-panel-header').forEach(el => {
                 el.style.setProperty('font-family', FONT_MONO, 'important');
             });
 
@@ -1974,9 +2024,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (err) {
             ui.typingIndicator.style.display = 'none';
-            if(!aiRow) addMessage('ai', `_Error: ${err.message}_`);
             isProcessing = false;
             ui.userInput.focus();
+
+            const errorStr = String(err).toLowerCase();
+            if (errorStr.includes("429") || errorStr.includes("quota") || errorStr.includes("limit")) {
+                addMessage('assistant', `⚠️ **API Rate Limit Reached.** Gemini is cooling down. Please wait 30-60 seconds before retrying your request. (Error: 429 Quota Exceeded)`, false);
+            } else {
+                if(!aiRow) addMessage('ai', `_Error: ${err.message}_`);
+            }
         }
     }
 

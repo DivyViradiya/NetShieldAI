@@ -212,10 +212,20 @@ def get_report_files():
     if not json_exists and not pdf_exists:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
+    # [AI BRIEF] Retrieve the latest completed scan log ID for executive summary generation
+    from models.models import ScanLog
+    latest_log = ScanLog.query.filter_by(
+        user_id=current_user.id,
+        tool_name="Kill Chain",
+        status="Completed"
+    ).order_by(ScanLog.start_time.desc()).first()
+    scan_log_id = latest_log.id if latest_log else None
+
     return jsonify({
         "status": "success",
         "json_report": f"/killchain/get_json_report?target={target}" if json_exists else None,
-        "pdf_report": f"/killchain/download_pdf?target={target}" if pdf_exists else None
+        "pdf_report": f"/killchain/download_pdf?target={target}" if pdf_exists else None,
+        "scan_log_id": scan_log_id
     })
 
 

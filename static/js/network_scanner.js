@@ -62,6 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
         historyModal: document.getElementById('historyModal'),
         closeHistoryModal: document.getElementById('closeHistoryModal'),
         historyTableBody: document.getElementById('historyTableBody'),
+        // AI Executive Summary
+        execSummaryBtn: document.getElementById('execSummaryBtn'),
+        execSummaryLabel: document.getElementById('execSummaryLabel'),
+        execSummaryIcon: document.getElementById('execSummaryIcon'),
+        execSummarySpinner: document.getElementById('execSummarySpinner'),
     };
 
     // --- State Variables ---
@@ -74,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentProtocol = 'TCP';
     let lastScanType = 'default';
     let currentResolvedTarget = null; // [NEW] Track the target used by the most recent scan
+    let lastScanLogId = null; // [NEW] Track the latest scan log for AI Brief generation
 
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -484,6 +490,9 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.analyzeReportDropdown.disabled = true;
             elements.analyzeReportDropdown.style.opacity = '0.5';
         }
+        
+        // Disable AI Brief button by default during check
+        updateExecSummaryButton('disabled');
 
         try {
             const url = target 
@@ -494,22 +503,118 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) return;
             const data = await response.json();
     
-            if (data.status === "success" && data.pdf_report) {
-                if (elements.downloadReportBtn) {
+            if (data.status === "success") {
+                // Technical Report
+                if (data.pdf_report && elements.downloadReportBtn) {
                     elements.downloadReportBtn.disabled = false;
                     elements.downloadReportBtn.style.opacity = '1';
                     elements.downloadReportBtn.onclick = () => {
                         window.location.href = data.pdf_report;
                     };
+                    
+                    if (elements.analyzeReportDropdown) {
+                        elements.analyzeReportDropdown.disabled = false;
+                        elements.analyzeReportDropdown.style.opacity = '1';
+                    }
                 }
                 
-                if (elements.analyzeReportDropdown) {
-                    elements.analyzeReportDropdown.disabled = false;
-                    elements.analyzeReportDropdown.style.opacity = '1';
+                // [AI BRIEF] Handle Executive Summary state
+                lastScanLogId = data.scan_log_id;
+                
+                if (data.exec_summary_report) {
+                    updateExecSummaryButton('download', data.exec_summary_report);
+                } else if (data.pdf_report) {
+                    // Logic to enable "Generate" if technical report exists but executive doesn't
+                    updateExecSummaryButton('ready');
                 }
             }
         } catch (error) {
             console.error("Error checking report status:", error);
+        }
+    }
+
+    // --- AI Executive Summary Logic ---
+    function updateExecSummaryButton(state, downloadUrl = null) {
+        if (!elements.execSummaryBtn) return;
+        
+        const btn = elements.execSummaryBtn;
+        const label = elements.execSummaryLabel;
+        const icon = elements.execSummaryIcon;
+        const spinner = elements.execSummarySpinner;
+
+        // Reset Styles
+        btn.classList.remove('btn-primary', 'btn-success');
+        btn.style.borderColor = 'rgba(251,191,36,0.3)';
+        btn.style.color = 'var(--neo-amber)';
+        icon.textContent = 'auto_awesome';
+
+        if (state === 'disabled') {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            label.textContent = 'AI BRIEF';
+            icon.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            btn.onclick = null;
+        } else if (state === 'ready') {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            label.textContent = 'GENERATE BRIEF';
+            icon.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            btn.onclick = () => generateExecutiveSummary();
+        } else if (state === 'generating') {
+            btn.disabled = true;
+            label.textContent = 'GENERATING BRIEF...';
+            icon.classList.add('hidden');
+            spinner.classList.remove('hidden');
+        } else if (state === 'download') {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            label.textContent = 'DOWNLOAD BRIEF';
+            icon.textContent = 'download';
+            icon.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            btn.onclick = () => { window.location.href = downloadUrl; };
+            btn.style.borderColor = 'var(--neo-green)';
+            btn.style.color = 'var(--neo-green)';
+            btn.style.background = 'rgba(16, 185, 129, 0.05)';
+        }
+    }
+
+    async function generateExecutiveSummary() {
+        if (!lastScanLogId) {
+            appendLog('[!] Error: No 최근 scan log identifier found.');
+            return;
+        }
+        
+        const target = currentResolvedTarget || elements.targetIpInput.value.trim();
+        updateExecSummaryButton('generating');
+        appendLog('[*] Initiating AI Executive Summary generation flow...');
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/trigger_executive_summary`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    log_id: lastScanLogId,
+                    target: target 
+                })
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                appendLog('[✓] AI Executive Summary synthesized successfully.');
+                updateExecSummaryButton('download', data.download_url);
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error('Executive summary failed:', error);
+            appendLog(`[x] Brief Generation Failed: ${error.message}`);
+            updateExecSummaryButton('ready');
         }
     }
 
@@ -727,8 +832,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         lastScanType = scanType;
+        lastScanLogId = null; // [NEW] Reset log ID for new scan session
         isActionInProgress = true;
+        
         if (button) toggleSpinner(button, true);
+        
+        // Disable AI Brief during active scanning
+        updateExecSummaryButton('disabled');
 
         setStatus(`Scanning (${scanType})...`, 'busy');
         

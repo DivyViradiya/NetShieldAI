@@ -1054,7 +1054,7 @@
                 </a>
                 <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
-                  Gemini 2.5 Flash (Cloud)
+                  Gemini 2.0 Flash (Cloud)
                 </a>
               </div>
             </div>
@@ -1062,6 +1062,17 @@
             <button id="snifferDownloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between" style="opacity: 0.7;">
               <span>Export PDF</span>
               <span class="material-symbols-outlined">picture_as_pdf</span>
+            </button>
+
+            <button id="execSummaryBtn" disabled
+              class="btn-dash w-full justify-between exec-summary-btn"
+              style="opacity: 0.5; border: 1px solid rgba(251,191,36,0.3); color: var(--neo-amber); background: rgba(251,191,36,0.05);">
+              <span id="execSummaryLabel">AI Brief</span>
+              <span style="display:flex; align-items:center; gap:4px;">
+                <span class="exec-badge">AI</span>
+                <span id="execSummaryIcon" class="material-symbols-outlined">auto_awesome</span>
+                <span id="execSummarySpinner" class="spinner hidden"></span>
+              </span>
             </button>
 
             <button id="snifferHistoryBtn" class="btn-dash btn-secondary w-full justify-between">

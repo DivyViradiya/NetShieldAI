@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css" />
@@ -27,7 +27,7 @@
       --neo-cyan: #00f7ff;
       --neo-cyan-glow: rgba(0, 247, 255, 0.1);
       
-      --font-primary: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
       --font-code: 'JetBrains Mono', monospace;
       
       --radius-card: 12px;
@@ -987,6 +987,7 @@
       height: 100%;
       position: relative;
       background-image: radial-gradient(circle at 50% 0%, #111 0%, transparent 50%);
+      min-width: 0; /* [FIX] Allow flex child to shrink */
     }
 
     body.light-mode .chat-interface {
@@ -1000,6 +1001,7 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
+      min-width: 0; /* [FIX] Prevent content from pushing width */
       gap: 2.5rem;
       scrollbar-width: thin;
     }
@@ -1095,11 +1097,11 @@
     .msg-row.user { justify-content: flex-end; flex-direction: column; align-items: flex-end; }
     
     .msg-bubble {
-      font-family: 'IBM Plex Sans', system-ui, sans-serif !important;
-      font-size: 0.935rem;      
+      font-family: var(--font-primary) !important;
+      font-size: 1.25rem;      
       font-weight: 400;        
-      letter-spacing: 0; 
-      line-height: 1.65;
+      letter-spacing: -0.012em; 
+      line-height: 1.75;
       padding: 1.25rem 1.75rem;
       position: relative;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -1503,10 +1505,13 @@
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 10px;
-      overflow: hidden;
+      overflow-x: auto; /* [FIX] Enable horizontal scroll for wide tables */
+      overflow-y: hidden;
       margin: 1.5rem 0;
-      width: fit-content;
+      width: fit-content; /* [FIX] Use fit-content to prevent empty space */
+      min-width: 260px;   /* [FIX] Ensure minimum presence for header */
       max-width: 100%;
+      box-sizing: border-box;
     }
     body.light-mode .llm-table-panel {
       background: rgba(255, 255, 255, 0.9);
@@ -1516,12 +1521,12 @@
     .llm-table-panel-header {
       padding: 9px 16px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      font-family: var(--font-code);
-      font-size: 0.6rem;
+      font-family: var(--font-code) !important;
+      font-size: 0.65rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      color: #3f3f46;
+      color: #71717a;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -1549,6 +1554,16 @@
       margin: 0 !important;
       border-radius: 0 !important;
       background: transparent !important;
+      width: 100%; /* Fill the fit-content container */
+      table-layout: auto;
+    }
+    .llm-table-panel td, .llm-table-panel th {
+      white-space: normal !important; /* [FIX] Force wrapping */
+      word-break: break-word;
+      overflow-wrap: break-word;
+      min-width: 100px;
+      max-width: 480px; /* [FIX] Force large prose to wrap before scrolling */
+      line-height: 1.6;
     }
 
     /* --- ARCHETYPE 3: Finding Cards --- */
@@ -1635,7 +1650,7 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      font-size: 0.865rem;
+      font-size: 1.15rem;
       color: #94a3b8;
       line-height: 1.65;
     }
@@ -1706,6 +1721,61 @@
     .llm-priority-badge.p1 { color: #fb7185; border-color: rgba(251,113,133,0.3); background: rgba(251,113,133,0.06); }
     .llm-priority-badge.p2 { color: #fbbf24; border-color: rgba(251,191,36,0.3);  background: rgba(251,191,36,0.06); }
     .llm-priority-badge.p3 { color: #60a5fa; border-color: rgba(96,165,250,0.3);  background: rgba(96,165,250,0.06); }
+    
+    /* --- ARCHETYPE 6.5: Lettered Context Items --- */
+    .llm-context-item {
+      padding-left: 1.6rem;
+      border-left: 2px solid rgba(255, 255, 255, 0.05);
+      margin: 0.8rem 0 0.8rem 0.5rem;
+      position: relative;
+    }
+    body.light-mode .llm-context-item {
+      border-left-color: rgba(0, 0, 0, 0.08);
+    }
+    .llm-context-item strong:first-child {
+      color: var(--neo-blue);
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+    }
+
+    /* --- ARCHETYPE 6.8: Remediation Action Cards --- */
+    .llm-remediation-card {
+      border-left: 3px solid var(--neo-cyan);
+      background: rgba(0, 247, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin: 2rem 0;
+      position: relative;
+      border: 1px solid rgba(0, 247, 255, 0.05);
+      border-left-width: 3px;
+    }
+    body.light-mode .llm-remediation-card {
+      background: rgba(8, 145, 178, 0.05);
+      border-color: rgba(0, 0, 0, 0.05);
+      border-left-color: var(--neo-cyan);
+    }
+    .remediation-label {
+      font-family: var(--font-code);
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--neo-cyan);
+      display: block;
+      margin-top: 0.85rem;
+      margin-bottom: 0.35rem;
+    }
+    .remediation-label:first-child { margin-top: 0; }
+    .llm-remediation-card p {
+      margin: 0;
+      line-height: 1.7;
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: #94a3b8;
+    }
+    body.light-mode .llm-remediation-card p { color: #334155; }
 
     /* --- ARCHETYPE 6: Risk Score Animated Fill Bars --- */
     .llm-score-cell {
@@ -3138,10 +3208,10 @@
     /* --- COMMAND CENTER (RIGHT PANEL) --- */
     .command-center {
       position: absolute;
-      top: 0;
+      top: var(--navbar-height);
       right: -320px;
       width: 320px;
-      height: 100%;
+      height: calc(100% - var(--navbar-height));
       background: rgba(15, 15, 17, 0.98);
       backdrop-filter: blur(20px);
       border-left: 1px solid var(--neo-border);
@@ -3224,9 +3294,10 @@
     input:checked + .slider:before { transform: translateX(16px); background-color: white; }
 
     /* CC Toggle Button - INTEGRATED FIX */
+    /* CC Toggle Button - INTEGRATED FIX */
     .cc-toggle-btn {
       position: absolute;
-      top: 1.25rem;
+      top: calc(var(--navbar-height) + 1.25rem);
       right: 1.5rem;
       z-index: 90;
       background: rgba(15, 15, 17, 0.8);
@@ -3373,11 +3444,11 @@
                 </div>
                 <div class="custom-options">
                   <div class="custom-option selected" data-value="gemini-2.5-flash">
-                    <span class="option-title">Gemini 2.5 Flash</span>
+                    <span class="option-title">Gemini 2.0 Flash</span>
                     <span class="option-desc">Cloud / Balanced Speed</span>
                   </div>
                   <div class="custom-option" data-value="gemini-2.5-flash-lite">
-                    <span class="option-title">Gemini 2.5 Flash Lite</span>
+                    <span class="option-title">Gemini 2.0 Flash Lite</span>
                     <span class="option-desc">Cloud / Maximum Speed</span>
                   </div>
                   <div class="custom-option" data-value="gemini-2.5-pro">
@@ -3559,12 +3630,12 @@
             <input type="text" id="user-input" class="chat-input" placeholder="Describe threat or query database..." autocomplete="off" />
             <div class="model-select-compact">
               <button class="model-trigger-compact" id="model-trigger-compact">
-                <span class="current-model-text">Gemini 2.5 Flash</span>
+                <span class="current-model-text">Gemini 2.0 Flash</span>
                 <span class="material-symbols-outlined" style="font-size: 1rem;">expand_less</span>
               </button>
               <div class="model-dropdown-compact" id="model-dropdown-compact">
-                 <div class="model-opt selected" data-value="gemini-2.5-flash">Gemini 2.5 Flash</div>
-                 <div class="model-opt" data-value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</div>
+                 <div class="model-opt selected" data-value="gemini-2.5-flash">Gemini 2.0 Flash</div>
+                 <div class="model-opt" data-value="gemini-2.5-flash-lite">Gemini 2.0 Flash Lite</div>
                  <div class="model-opt" data-value="gemini-2.5-pro">Gemini 2.5 Pro</div>
                  <div class="model-opt" data-value="gemini-3-flash-preview">Gemini 3 Flash</div>
                  <div class="model-opt" data-value="gemini-3-pro-preview">Gemini 3 Pro</div>

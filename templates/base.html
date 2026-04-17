@@ -183,16 +183,29 @@
         color: var(--text-secondary);
         position: relative;
         overflow-x: hidden;
-        cursor: default;
         caret-color: transparent; /* Hide caret globally */
       }
 
       /* Global Cursor & Interaction Reset */
-      * {
+      html, body {
         cursor: default;
       }
 
-      a, button, select, option, label, .btn-dash, .tab-pill, .dropdown-link, .interactive, .material-symbols-outlined, [role="button"] {
+      a, 
+      button, 
+      input[type="button"], 
+      input[type="submit"], 
+      input[type="reset"], 
+      select, 
+      option, 
+      label, 
+      .btn-dash, 
+      .btn-neo-primary,
+      .tab-pill, 
+      .dropdown-link, 
+      .interactive, 
+      .material-symbols-outlined, 
+      [role="button"] {
         cursor: pointer !important;
       }
 

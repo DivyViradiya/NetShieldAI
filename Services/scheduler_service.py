@@ -1128,66 +1128,20 @@ def _consent_watchdog():
 
 def _trigger_executive_summary_generation(log_id, report_path, tool_name, target, user_identifier):
     """
-    Calls the AI chatbot backend to generate an Executive Summary for a scan report.
-    Creates and saves the PDF.
+    Calls the centralized ai_report_service to generate an Executive Summary for a scan report.
     """
-    import requests
-    import os
-    from Services.pdf_generator import create_executive_summary_report_pdf
-
-    # [FIX] Load from environment to match dashboard_bp.py
-    SERVER_PROXY_URL = os.environ.get("CHATBOT_API_URL", "http://127.0.0.1:5000")
-
-    if not report_path or not os.path.exists(report_path):
-        logger.warning(f"[!] [SCHEDULER] Cannot generate Executive Summary: Report path invalid ({report_path})")
-        return
-
-    exec_path = report_path.replace(".pdf", "_executive.pdf")
-    
-    try:
-        # Optimize Parameters: Use file_path (skips upload) and background=False (sync summary)
-        params = {
-            'llm_mode': 'gemini-2.5-flash',
-            'user_id': user_identifier,
-            'file_path': os.path.abspath(report_path),
-            'background': False
-        }
-        
-        proxy_url = f"{SERVER_PROXY_URL}/upload_report"
-        
-        logger.info(f"[*] [SCHEDULER] Auto-generating Executive Summary for Log {log_id} (Path: {report_path})")
-        resp = requests.post(proxy_url, params=params, proxies={"http": None, "https": None})
-        resp.raise_for_status()
-        
-        data = resp.json()
-        summary_text = data.get('summary')
-        if not summary_text or "Analysis and summary are being generated" in summary_text:
-             logger.warning(f"[!] [SCHEDULER] Chatbot backend returned placeholder or no summary for Log {log_id}")
-             return
-
-        # Create PDF
-        metadata = {
-            "target": target,
-            "tool_name": tool_name,
-            "date": get_now_ist_str()
-        }
-        
-        success = create_executive_summary_report_pdf(summary_text, metadata, exec_path, user_id=user_identifier)
-        if success:
-             logger.info(f"[+] [SCHEDULER] Automated Executive Summary PDF created: {exec_path}")
-             # Save to DB
-             from models.models import ScanLog
-             from core.extensions import db as primary_db
-             log_row = primary_db.session.get(ScanLog, log_id)
-             if log_row:
-                 log_row.executive_summary_path = exec_path
-                 primary_db.session.commit()
-                 logger.info(f"[+] [SCHEDULER] Executive summary path saved to ScanLog.")
-        else:
-             logger.warning(f"[!] [SCHEDULER] Failed to create Executive Summary PDF for Log {log_id}")
-
-    except Exception as e:
-         logger.error(f"[!] [SCHEDULER] Error auto-generating executive summary for Log {log_id}: {e}", exc_info=True)
+    from Services import ai_report_service
+    success, result = ai_report_service.generate_executive_summary(
+        log_id=log_id,
+        user_identifier=user_identifier,
+        report_path=report_path,
+        target=target,
+        tool_name=tool_name
+    )
+    if success:
+        logger.info(f"[+] [SCHEDULER] Executive Summary generated: {result}")
+    else:
+        logger.error(f"[!] [SCHEDULER] AI Executive Summary failed: {result}")
 
 
 def _deliver_reports(job, log_ids):

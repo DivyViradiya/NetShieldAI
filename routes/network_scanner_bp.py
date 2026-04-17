@@ -422,10 +422,36 @@ def get_report_files():
     if not latest_json and not latest_pdf:
         return jsonify({"status": "pending", "message": "No reports found."}), 404
 
+    # [AI BRIEF] Retrieve the latest completed scan log ID and check for existing executive summary
+    from models.models import ScanLog
+    latest_log = ScanLog.query.filter_by(
+        user_id=current_user.id,
+        tool_name="Nmap",
+        status="Completed"
+    ).order_by(ScanLog.start_time.desc()).first()
+    
+    scan_log_id = latest_log.id if latest_log else None
+    
+    # Check if executive summary already exists (either in DB or on disk)
+    exec_summary_report = None
+    if latest_log and latest_log.executive_summary_path:
+        if os.path.exists(latest_log.executive_summary_path):
+             exec_summary_report = f"/network_scanner/download_pdf?target={target}&type=executive" if target else "/network_scanner/download_pdf?type=executive"
+    
+    # Fallback to disk check if DB is out of sync
+    if not exec_summary_report:
+        exec_path = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="pdf")
+        if exec_path:
+            potential_exec = exec_path.replace(".pdf", "_executive.pdf")
+            if os.path.exists(potential_exec):
+                exec_summary_report = f"/network_scanner/download_pdf?target={target}&type=executive" if target else "/network_scanner/download_pdf?type=executive"
+
     return jsonify({
         "status": "success",
         "json_report": "/network_scanner/get_json_report" + (f"?target={target}" if target else ""),
-        "pdf_report": f"/network_scanner/download_pdf?target={target}" if target else "/network_scanner/download_pdf"
+        "pdf_report": f"/network_scanner/download_pdf?target={target}" if target else "/network_scanner/download_pdf",
+        "exec_summary_report": exec_summary_report,
+        "scan_log_id": scan_log_id
     })
 
 
@@ -436,6 +462,7 @@ def download_pdf_report():
     user_dir = get_user_results_dir()
     requested_filename = request.args.get('filename')
     target = request.args.get('target')
+    report_type = request.args.get('type') # 'executive' or None
     
     if requested_filename:
         filename = secure_filename(requested_filename)
@@ -451,6 +478,12 @@ def download_pdf_report():
         pdf_path = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="pdf")
         if not pdf_path:
              return jsonify({"status": "error", "message": "No suitable PDF report found."}), 404
+             
+        if report_type == 'executive':
+            pdf_path = pdf_path.replace(".pdf", "_executive.pdf")
+            if not os.path.exists(pdf_path):
+                 return jsonify({"status": "error", "message": "Executive summary not found."}), 404
+        
         filename = os.path.basename(pdf_path)
 
     return send_from_directory(
@@ -458,6 +491,44 @@ def download_pdf_report():
         path=filename,
         as_attachment=True
     )
+
+@network_scanner_bp.route('/trigger_executive_summary', methods=['POST'])
+@login_required
+def trigger_executive_summary():
+    """Triggers the AI Executive Summary generation process."""
+    data = request.get_json() or {}
+    log_id = data.get('log_id')
+    target = data.get('target')
+    
+    if not log_id:
+        return jsonify({"status": "error", "message": "Missing Scan Log ID"}), 400
+        
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_dir = get_user_results_dir()
+    
+    # 1. Resolve Technical Report Path
+    report_path = report_manager.find_latest_report(user_dir, "network_scanner", target=target, extension="pdf")
+    if not report_path:
+        return jsonify({"status": "error", "message": "Technical report not found. Scan may still be processing."}), 404
+
+    # 2. Call the centralized AI Service (Synchronous)
+    from Services import ai_report_service
+    success, result = ai_report_service.generate_executive_summary(
+        log_id=log_id,
+        user_identifier=user_identifier,
+        report_path=report_path,
+        target=target,
+        tool_name="Nmap Network Scan"
+    )
+    
+    if success:
+        return jsonify({
+            "status": "success",
+            "message": "Executive Summary generated successfully.",
+            "download_url": f"/network_scanner/download_pdf?target={target}&type=executive" if target else "/network_scanner/download_pdf?type=executive"
+        })
+    else:
+        return jsonify({"status": "error", "message": f"Generation failed: {result}"}), 500
 
 @network_scanner_bp.route('/get_json_report', methods=['GET'])
 @login_required
