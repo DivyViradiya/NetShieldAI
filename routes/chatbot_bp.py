@@ -155,9 +155,11 @@ MAX_FILE_SIZE_BYTES = 100 * 1024 * 1024  # 100 MB
 @login_required
 def proxy_uploads(filename):
     """Proxies static file requests to the FastAPI backend."""
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     target_url = f"{SERVER_PROXY_URL}/chatbot_uploads/{filename}"
+    params = {'user_id': user_identifier}
     try:
-        resp = requests.get(target_url, stream=True, proxies={"http": None, "https": None})
+        resp = http_session.get(target_url, stream=True, params=params)
         resp.raise_for_status()
         return Response(resp.content, content_type=resp.headers.get('content-type'))
     except Exception as e:
@@ -170,6 +172,28 @@ def map_llm_mode(mode):
         'local': 'local'
     }
     return mapping.get(mode, mode)
+
+def proxy_json_response(resp, user_logger=None):
+    """
+    Standardizes how we return JSON from the backend.
+    Preserves RFC 7807 problem details and status codes.
+    Also handles session sync (clearing local session on 404).
+    """
+    # 1. Session Sync: If session is missing in backend, purge local cookie
+    if resp.status_code == 404:
+        if 'chatbot_session_id' in session:
+            if user_logger:
+                user_logger.info(f"Purging local session ID {session['chatbot_session_id']} due to 404 from backend.")
+            session.pop('chatbot_session_id', None)
+
+    # 2. Extract JSON payload
+    try:
+        data = resp.json()
+    except Exception:
+        # Fallback if response is not JSON
+        return jsonify({"error": resp.text or "Backend returned an empty or invalid response"}), resp.status_code
+
+    return jsonify(data), resp.status_code
 
 # --- Helper to resolve User Paths ---
 def get_user_pdf_path(scanner_type, target=None):
@@ -365,6 +389,8 @@ def chat_with_ai():
         }
 
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat"
+        # Security: Inject user_id in params to ensure Rate Limiter functions correctly
+        params = {'user_id': user_identifier}
         
         # Handle attachments if present
         if request.files:
@@ -373,23 +399,12 @@ def chat_with_ai():
                 files_to_send.append(('files', (f.filename, f.read(), f.content_type)))
             
             # For multi-part, we send the fields as 'data'
-            response = http_session.post(proxy_chat_url, data=payload_to_server, files=files_to_send)
+            response = http_session.post(proxy_chat_url, data=payload_to_server, files=files_to_send, params=params)
         else:
             # Standard JSON request
-            response = http_session.post(proxy_chat_url, json=payload_to_server)
+            response = http_session.post(proxy_chat_url, json=payload_to_server, params=params)
             
-        response.raise_for_status()
-
-        result_from_server = response.json()
-
-        # Update local session ID if the backend created a new one
-        if 'session_id' in result_from_server and result_from_server['session_id']:
-            new_session_id = result_from_server['session_id']
-            if new_session_id != current_session_id:
-                session['chatbot_session_id'] = new_session_id
-                user_logger.info(f"Local session ID updated by server to: {session['chatbot_session_id']}")
-
-        return jsonify(result_from_server)
+        return proxy_json_response(response, user_logger)
 
     except requests.exceptions.RequestException as e:
         user_logger.error(f"Error communicating with server proxy chat service: {e}", exc_info=True)
@@ -437,6 +452,9 @@ def chat_with_ai_stream():
         # Point to the NEW FastAPI endpoint
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat_stream"
         
+        # Security: Inject user_id in params to ensure Rate Limiter functions correctly
+        params = {'user_id': user_identifier}
+        
         user_logger.info(f"Initiating stream to {proxy_chat_url} for session {current_session_id}")
         
         # Handle attachments if present
@@ -446,10 +464,10 @@ def chat_with_ai_stream():
                 files_to_send.append(('files', (f.filename, f.read(), f.content_type)))
             
             # Send as multipart/form-data
-            req = http_session.post(proxy_chat_url, data=payload_to_server, files=files_to_send, stream=True)
+            req = http_session.post(proxy_chat_url, data=payload_to_server, files=files_to_send, stream=True, params=params)
         else:
             # Send as application/json
-            req = http_session.post(proxy_chat_url, json=payload_to_server, stream=True)
+            req = http_session.post(proxy_chat_url, json=payload_to_server, stream=True, params=params)
         
         new_sess_id = req.headers.get("X-Session-ID")
         if new_sess_id and new_sess_id != current_session_id:
@@ -563,8 +581,9 @@ def clear_history_proxy():
              return jsonify({'error': 'No active session'}), 400
 
         proxy_url = f"{SERVER_PROXY_URL}/clear_history"
-        response = http_session.post(proxy_url, json={'session_id': session_id})
-        return jsonify(response.json())
+        params = {'user_id': user_identifier}
+        response = http_session.post(proxy_url, json={'session_id': session_id}, params=params)
+        return proxy_json_response(response, user_logger)
     except Exception as e:
         user_logger.error(f"Error in clear_history: {e}")
         return jsonify({'error': str(e)}), 500
@@ -576,17 +595,17 @@ def delete_all_sessions_proxy():
     """
     Master Reset: Deletes EVERYTHING for the current user.
     """
-    user_result_dir = get_user_result_dir_name(current_user)
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
         proxy_url = f"{SERVER_PROXY_URL}/delete_all_sessions"
-        response = http_session.post(proxy_url, json={'user_id': user_identifier})
+        params = {'user_id': user_identifier}
+        response = http_session.post(proxy_url, json={'user_id': user_identifier}, params=params)
         
         # Clear local session
         session.pop('chatbot_session_id', None)
         
-        return jsonify(response.json())
+        return proxy_json_response(response, user_logger)
     except Exception as e:
         user_logger.error(f"Error in delete_all_sessions: {e}")
         return jsonify({'error': str(e)}), 500
@@ -598,7 +617,6 @@ def clear_chat():
     """
     Legacy endpoint: clears the ACTIVE session.
     """
-    user_result_dir = get_user_result_dir_name(current_user)
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     user_logger = get_user_logger(user_identifier)
     try:
@@ -607,22 +625,20 @@ def clear_chat():
             return jsonify({'status': 'success', 'message': 'No active session to clear.'})
 
         proxy_clear_url = f"{SERVER_PROXY_URL}/delete_session"
+        params = {'user_id': user_identifier}
         
         payload = {
             'session_id': session_id
         }
         
         try:
-            response = requests.post(proxy_clear_url, json=payload, timeout=10, proxies={"http": None, "https": None})
-            
-            # Clear local flask session data
-            session.pop('chatbot_session_id', None)
-            return jsonify({'status': 'success', 'message': 'Chat session has been cleared successfully.'})
+            response = http_session.post(proxy_clear_url, json=payload, params=params, timeout=10)
+            return proxy_json_response(response, user_logger)
             
         except requests.exceptions.RequestException as e:
             user_logger.error(f"Error clearing chat via server proxy for session {session_id}: {e}")
             session.pop('chatbot_session_id', None) 
-            return jsonify({'status': 'error', 'message': f'Failed to communicate with the backend service, but local session cleared.'}), 500
+            return jsonify({'status': 'error', 'message': f'Failed to communicate with the backend service.'}), 500
 
     except Exception as e:
         user_logger.error(f"An unexpected error occurred in clear_chat: {str(e)}", exc_info=True)
@@ -803,8 +819,12 @@ def get_chat_history_proxy():
         }
         
         try:
-            response = requests.get(proxy_url, params=params, timeout=5, proxies={"http": None, "https": None})
-            response.raise_for_status()
+            response = http_session.get(proxy_url, params=params, timeout=5)
+            # We handle 404/sync inside the proxy helper
+            # But get_history needs extra logic for active scans
+            if response.status_code != 200:
+                return proxy_json_response(response, user_logger)
+                
             history_data = response.json()
             
             # Inject active scan status
@@ -829,8 +849,8 @@ def get_sessions_proxy():
         proxy_url = f"{SERVER_PROXY_URL}/get_user_sessions"
         params = {'user_id': user_identifier}
         
-        response = requests.get(proxy_url, params=params, timeout=5, proxies={"http": None, "https": None})
-        return jsonify(response.json())
+        response = http_session.get(proxy_url, params=params, timeout=5)
+        return proxy_json_response(response)
     except Exception as e:
         return jsonify({'sessions': []})
 
@@ -868,13 +888,9 @@ def get_session_graph_proxy(session_id):
     user_logger = get_user_logger(user_identifier)
     try:
         proxy_url = f"{SERVER_PROXY_URL}/chatbot/session/{session_id}/graph"
-        response = http_session.get(proxy_url, timeout=5)
-        
-        # It's important to return exactly what the backend returned, including status code
-        try:
-            return jsonify(response.json()), response.status_code
-        except Exception:
-            return jsonify({'success': False, 'message': 'Invalid response from backend'}), 500
+        params = {'user_id': user_identifier}
+        response = http_session.get(proxy_url, params=params, timeout=5)
+        return proxy_json_response(response, user_logger)
             
     except requests.exceptions.RequestException as e:
         user_logger.error(f"Error fetching graph proxy: {e}")
@@ -904,13 +920,14 @@ def delete_session_proxy():
              return jsonify({'error': 'Missing session_id'}), 400
 
         proxy_url = f"{SERVER_PROXY_URL}/delete_session"
-        response = requests.post(proxy_url, json={'session_id': target_session_id}, proxies={"http": None, "https": None})
+        params = {'user_id': user_identifier}
+        response = http_session.post(proxy_url, json={'session_id': target_session_id}, params=params)
         
         # If the deleted session was the currently active one, clear the cookie
         if session.get('chatbot_session_id') == target_session_id:
             session.pop('chatbot_session_id', None)
             
-        return jsonify(response.json()), response.status_code
+        return proxy_json_response(response, user_logger)
     except Exception as e:
         user_logger.error(f"Error deleting session: {e}")
         return jsonify({'error': str(e)}), 500
@@ -922,12 +939,15 @@ def rename_session_proxy():
     """
     Proxies the request to rename a session.
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
     try:
         data = request.json
         # Expects: { session_id: "...", new_title: "..." }
         proxy_url = f"{SERVER_PROXY_URL}/rename_session"
-        response = requests.post(proxy_url, json=data, proxies={"http": None, "https": None})
-        return jsonify(response.json()), response.status_code
+        params = {'user_id': user_identifier}
+        response = http_session.post(proxy_url, json=data, params=params)
+        return proxy_json_response(response, user_logger)
     except Exception as e:
          return jsonify({'error': str(e)}), 500
 
@@ -938,12 +958,15 @@ def toggle_pin_proxy():
     """
     Proxies the request to pin/unpin a session.
     """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
     try:
         data = request.json
         # Expects: { session_id: "...", is_pinned: boolean }
         proxy_url = f"{SERVER_PROXY_URL}/toggle_pin"
-        response = requests.post(proxy_url, json=data, proxies={"http": None, "https": None})
-        return jsonify(response.json()), response.status_code
+        params = {'user_id': user_identifier}
+        response = http_session.post(proxy_url, json=data, params=params)
+        return proxy_json_response(response, user_logger)
     except Exception as e:
          return jsonify({'error': str(e)}), 500
 
@@ -965,15 +988,14 @@ def submit_feedback():
         
         # Proxy to FastAPI backend
         proxy_url = f"{SERVER_PROXY_URL}/submit_feedback"
+        params = {'user_id': user_identifier}
         try:
-            resp = requests.post(proxy_url, json=data, timeout=3, proxies={"http": None, "https": None})
-            if resp.status_code == 200:
-                return jsonify(resp.json())
+            resp = http_session.post(proxy_url, json=data, timeout=3, params=params)
+            return proxy_json_response(resp, user_logger)
         except Exception:
             # If backend doesn't have this yet, just return success since we logged it
-            pass
+            return jsonify({'success': True, 'message': 'Feedback received.'})
             
-        return jsonify({'success': True, 'message': 'Feedback received.'})
     except Exception as e:
         user_logger.error(f"Error in submit_feedback: {e}")
         return jsonify({'error': str(e)}), 500

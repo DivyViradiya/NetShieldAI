@@ -206,8 +206,8 @@
       .dashboard-wrapper .items-center { align-items: center; }
       .dashboard-wrapper .gap-2 { gap: 0.5rem; }
       .dashboard-wrapper .gap-3 { gap: 0.5rem; }
-      .dashboard-wrapper .gap-4 { gap: 0.5rem; }
-      .dashboard-wrapper .gap-6 { gap: 0.5rem; }
+      .dashboard-wrapper .gap-4 { gap: 0.75rem; }
+      .dashboard-wrapper .gap-6 { gap: 1rem; }
       .dashboard-wrapper .mb-6 { margin-bottom: 1.5rem; }
       .dashboard-wrapper .mb-4 { margin-bottom: 1rem; }
       .dashboard-wrapper .bg-black { background-color: #000; }
@@ -450,8 +450,8 @@
         color: var(--neo-text-primary); 
         padding: 0 16px 0 44px; 
         border-radius: var(--radius-sm);
-        height: 38px;
-        font-size: 0.8rem; 
+        height: 48px;
+        font-size: 0.85rem; 
         transition: all 0.2s ease; 
         font-family: var(--font-mono);
         text-transform: uppercase;
@@ -472,8 +472,8 @@
   
       /* Buttons */
       .btn-dash {
-        height: 38px; 
-        padding: 0 1.25rem; 
+        height: 44px; 
+        padding: 0 1.5rem; 
         border-radius: 4px;
         font-family: var(--font-ui); 
         font-weight: 600; 
@@ -496,7 +496,7 @@
         background: rgba(255, 255, 255, 0.07);
         transform: translateY(-1px);
       }
-      .btn-icon-only { padding: 0; width: 38px; justify-content: center; flex-shrink: 0; }
+      .btn-icon-only { padding: 0; width: 48px; justify-content: center; flex-shrink: 0; }
       
       .btn-primary {
         background: var(--neo-text-primary); 
@@ -571,7 +571,7 @@
         flex-direction: column;
         overflow: hidden; 
         position: relative;
-        border-radius: var(--radius-card);
+        border-radius: 6px;
       }
       .panel-header {
         padding: 1rem;
@@ -645,15 +645,15 @@
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-top: 1px solid rgba(255, 255, 255, 0.15); /* Sharpened top lid */
         border-radius: 8px;
-        padding: 10px;
-        min-width: 440px; /* Dual-column layout */
+        padding: 8px;
+        min-width: 220px; 
         z-index: 1005;
         animation: dropdownSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         transform-origin: top;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4px;
+        grid-template-columns: 1fr;
+        gap: 2px;
       }
 
       @keyframes dropdownSlide {
@@ -719,7 +719,7 @@
         background: linear-gradient(165deg, rgba(12, 12, 16, 0.95) 0%, rgba(4, 4, 6, 1) 100%);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-top: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 8px;
+        border-radius: 6px;
         padding: 1.25rem;
         position: relative;
         overflow: hidden;
@@ -842,7 +842,7 @@
 
       .analysis-footer {
         font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.4; color: var(--neo-text-muted);
-        background: transparent; padding: 0.75rem; border-radius: 4px; border: 1px solid var(--neo-border);
+        background: transparent; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--neo-border);
         text-transform: uppercase;
       }
 
@@ -1030,7 +1030,7 @@
         padding: 0.75rem;
         margin-bottom: 0.5rem;
         font-size: 0.75rem;
-        border-radius: 8px;
+        border-radius: 6px;
       }
       .cert-label { color: var(--neo-text-muted); font-weight: 800; margin-right: 0.5rem; text-transform: uppercase; font-size: 0.6rem; }
       .cert-val { color: var(--neo-text-primary); font-family: var(--font-mono); }
@@ -1055,7 +1055,7 @@
 {% block content %}
   <div class="dashboard-wrapper">
     <!-- Top Bento Banner Block -->
-    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
+    <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 6px;">
       <div class="scanner-title-area" style="margin: 0;">
         <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Encryption <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Audit</span></h1>
         <p class="banner-subtitle" style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
@@ -1247,7 +1247,7 @@
 
           <!-- JSON Content -->
           <div id="rawContent" class="hidden h-full flex flex-col p-4">
-            <div id="resultsContent" style="flex: 1; overflow: auto; padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); background: var(--neo-input); border: 1px solid var(--neo-border); white-space: pre-wrap; border-radius: var(--radius-card);">// JSON Results Buffer</div>
+            <div id="resultsContent" style="flex: 1; overflow: auto; padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); background: var(--neo-input); border: 1px solid var(--neo-border); white-space: pre-wrap; border-radius: 6px;">// JSON Results Buffer</div>
           </div>
         </div>
       </div>
@@ -1281,13 +1281,17 @@
               </button>
 
               <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
+                <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link active">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
+                  GEMINI 2.5 FLASH (SPEED)
+                </a>
+                <a href="#" data-llm-mode="gemini-3-flash-preview" class="dropdown-link">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">Electric_Bolt</span>
+                  GEMINI 3.0 FLASH (PREVIEW)
+                </a>
                 <a href="#" data-llm-mode="local" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
                   LOCAL LLM (PRIVATE)
-                </a>
-                <a href="#" data-llm-mode="gemini-1.5-pro" class="dropdown-link">
-                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
-                  GEMINI 1.5 PRO (CLOUD)
                 </a>
               </div>
             </div>

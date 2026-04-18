@@ -519,39 +519,41 @@ def _dispatch_module_scan(module, target, config, user, user_identifier, base_di
     Dispatches a scan to the appropriate scanner module.
     Returns the log_id of the created ScanLog entry, or None.
     """
-    import os
-    from core.extensions import db as primary_db
-    from Services import scan_logger
-    from sqlalchemy import update as sa_update
-    from models.models import User as UserModel
+    global _app
+    with _app.app_context():
+        import os
+        from core.extensions import db as primary_db
+        from Services import scan_logger
+        from sqlalchemy import update as sa_update
+        from models.models import User as UserModel
 
-    if module == 'nmap':
-        return _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        if module == 'nmap':
+            return _dispatch_nmap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
-    elif module == 'zap':
-        return _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        elif module == 'zap':
+            return _dispatch_zap(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
-    elif module == 'ssl':
-        return _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        elif module == 'ssl':
+            return _dispatch_ssl(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
-    elif module == 'sniffer':
-        return _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        elif module == 'sniffer':
+            return _dispatch_sniffer(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
-    elif module == 'sql':
-        return _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        elif module == 'sql':
+            return _dispatch_sql(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
-    elif module == 'semgrep':
-        return _dispatch_semgrep(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        elif module == 'semgrep':
+            return _dispatch_semgrep(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
-    elif module == 'api':
-        return _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        elif module == 'api':
+            return _dispatch_api(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
-    elif module == 'killchain':
-        return _dispatch_killchain(target, config, user, user_identifier, base_dir, timestamp=timestamp)
+        elif module == 'killchain':
+            return _dispatch_killchain(target, config, user, user_identifier, base_dir, timestamp=timestamp)
 
-    else:
-        logger.warning(f"[!] [SCHEDULER] Unknown module: {module}")
-        return None
+        else:
+            logger.warning(f"[!] [SCHEDULER] Unknown module: {module}")
+            return None
 
 
 # ============================================================

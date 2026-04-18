@@ -78,8 +78,8 @@
       .dashboard-wrapper .items-center { align-items: center; }
       .dashboard-wrapper .gap-2 { gap: 0.5rem; }
       .dashboard-wrapper .gap-3 { gap: 0.5rem; }
-      .dashboard-wrapper .gap-4 { gap: 0.5rem; }
-      .dashboard-wrapper .gap-6 { gap: 0.5rem; }
+      .dashboard-wrapper .gap-4 { gap: 0.75rem; }
+      .dashboard-wrapper .gap-6 { gap: 1rem; }
       .dashboard-wrapper .mb-6 { margin-bottom: 1.5rem; }
       .dashboard-wrapper .mb-4 { margin-bottom: 1rem; }
       .dashboard-wrapper .bg-black { background-color: #000; }
@@ -300,8 +300,8 @@
         color: var(--neo-text-primary); 
         padding: 0 16px 0 44px; 
         border-radius: 4px;
-        height: 38px;
-        font-size: 0.8rem; 
+        height: 48px;
+        font-size: 0.85rem; 
         transition: all 0.3s ease; 
         font-family: var(--font-mono);
       }
@@ -361,8 +361,8 @@
       
       /* Buttons */
       .btn-dash {
-        height: 38px; 
-        padding: 0 1.25rem; 
+        height: 44px; 
+        padding: 0 1.5rem; 
         border-radius: 4px;
         font-family: var(--font-ui); 
         font-weight: 600; 
@@ -396,7 +396,7 @@
         border-color: var(--accent-blue);
         color: var(--accent-blue);
       }
-      .btn-icon-only { padding: 0; width: 38px; justify-content: center; flex-shrink: 0; }
+      .btn-icon-only { padding: 0; width: 48px; justify-content: center; flex-shrink: 0; }
       
       .btn-primary {
         background: var(--neo-text-main); 
@@ -481,7 +481,7 @@
         flex-direction: column;
         overflow: hidden; 
         position: relative;
-        border-radius: 4px;
+        border-radius: 6px;
       }
       .panel-header {
         padding: 1rem;
@@ -504,7 +504,7 @@
       .tab-pills {
         display: flex; gap: 0; background: transparent;
         border: 1px solid var(--neo-border);
-        border-radius: 4px; overflow: hidden;
+        border-radius: 6px; overflow: hidden;
       }
       .tab-pill {
         padding: 8px 16px; font-size: 0.75rem; color: var(--neo-text-muted); font-family: var(--font-ui);
@@ -555,15 +555,15 @@
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-top: 1px solid rgba(255, 255, 255, 0.15); /* Sharpened top lid */
         border-radius: 8px;
-        padding: 10px;
-        min-width: 440px; /* Dual-column layout */
+        padding: 8px;
+        min-width: 220px; 
         z-index: 1005;
         animation: dropdownSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         transform-origin: top;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4px;
+        grid-template-columns: 1fr;
+        gap: 2px;
       }
 
       body.light-mode .custom-dropdown {
@@ -571,7 +571,6 @@
         border: 1px solid #d1d5db !important;
         border-top: 1px solid #ffffff !important;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
-        grid-template-columns: 1fr 1fr !important; /* Force grid even in light mode */
       }
 
       @keyframes dropdownSlide {
@@ -758,19 +757,19 @@
       .risk-score-bar {
         height: 4px;
         background: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
+        border-radius: 6px;
         overflow: hidden;
       }
-
+  
       body.light-mode .risk-score-bar {
         background: rgba(0, 0, 0, 0.05);
       }
-
+  
       .risk-score-fill {
         height: 100%;
         background: linear-gradient(90deg, var(--card-accent), transparent);
         transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1);
-        border-radius: 4px;
+        border-radius: 6px;
       }
 
       /* --- ACCESSIBILITY & ERROR STATES (PHASE 1) --- */
@@ -1188,7 +1187,7 @@
         flex-direction: column; 
         overflow: hidden;
         border: 1px solid var(--neo-border);
-        border-radius: 4px;
+        border-radius: 6px;
         background: rgba(5, 5, 5, 0.4);
         backdrop-filter: blur(12px);
       }
@@ -1514,7 +1513,7 @@
                 <option value="2">RISK 2</option>
                 <option value="3" selected>RISK 3</option>
             </select>
-            <button id="toggleAdvancedOptionsBtn" class="btn-dash btn-secondary" title="Advanced Options" style="height: 38px; padding: 0 10px; border-radius: 4px;">
+            <button id="toggleAdvancedOptionsBtn" class="btn-dash btn-secondary" title="Advanced Options" style="height: 38px; padding: 0 10px; border-radius: 6px;">
                 <span class="material-symbols-outlined" style="font-size: 1.2rem;">tune</span>
             </button>
         </div>
@@ -1556,7 +1555,7 @@
             </div>
 
             <div class="flex items-center gap-2 shrink-0">
-                <button id="startScanBtn" class="btn-dash btn-primary" title="Start Scan" style="min-width: 130px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 4px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                <button id="startScanBtn" class="btn-dash btn-primary" title="Start Scan" style="min-width: 130px; height: 38px; background: #fff; color: #000; border: none; font-weight: 800; border-radius: 6px; font-family: var(--font-mono); letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.25rem;">
                     <span class="material-symbols-outlined" style="font-size:1.1rem">bolt</span>
                     <span class="button-text">START SCAN</span>
                     <span class="spinner hidden"></span>
@@ -1613,7 +1612,7 @@
             <div class="findings-controls" style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--neo-border); display: flex; gap: 1rem; align-items: center;">
                 <div class="search-container" style="width: 180px;">
                     <span class="material-symbols-outlined search-icon" style="font-size: 0.9rem; left: 10px;">search</span>
-                    <input type="text" id="findingsSearch" class="dash-input" placeholder="SEARCH..." style="height: 28px; font-size: 0.7rem; padding-left: 30px; border-radius: 4px;">
+                    <input type="text" id="findingsSearch" class="dash-input" placeholder="SEARCH..." style="height: 28px; font-size: 0.7rem; padding-left: 30px; border-radius: 6px;">
                 </div>
                 <div class="filter-chips" style="display: flex; gap: 0.5rem;">
                     <button class="filter-chip active" data-filter="all">ALL</button>
@@ -1672,13 +1671,17 @@
               </button>
 
               <div id="llmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
+                <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link active">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
+                  GEMINI 2.5 FLASH (SPEED)
+                </a>
+                <a href="#" data-llm-mode="gemini-3-flash-preview" class="dropdown-link">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">Electric_Bolt</span>
+                  GEMINI 3.0 FLASH (PREVIEW)
+                </a>
                 <a href="#" data-llm-mode="local" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
-                  Local LLM (Private)
-                </a>
-                <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link">
-                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
-                  Gemini 2.0 Flash (Cloud)
+                  LOCAL LLM (PRIVATE)
                 </a>
               </div>
             </div>

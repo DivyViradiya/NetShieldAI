@@ -546,15 +546,15 @@
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-top: 1px solid rgba(255, 255, 255, 0.15); /* Sharpened top lid */
         border-radius: 8px;
-        padding: 10px;
-        min-width: 440px; /* Dual-column layout */
+        padding: 8px;
+        min-width: 220px; 
         z-index: 1005;
         animation: dropdownSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         transform-origin: top;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4px;
+        grid-template-columns: 1fr;
+        gap: 2px;
       }
 
       @keyframes dropdownSlide {
@@ -587,7 +587,6 @@
         border: 1px solid #d1d5db !important;
         border-top: 1px solid #ffffff !important;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
-        grid-template-columns: 1fr 1fr !important;
       }
   
       body.light-mode .dropdown-link {
@@ -1198,13 +1197,17 @@
               </button>
 
               <div id="snifferLlmAnalysisOptions" class="hidden absolute top-full left-0 right-0 mt-2 custom-dropdown">
+                <a href="#" data-llm-mode="gemini-2.5-flash" class="dropdown-link active">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
+                  GEMINI 2.5 FLASH (SPEED)
+                </a>
+                <a href="#" data-llm-mode="gemini-3-flash-preview" class="dropdown-link">
+                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">Electric_Bolt</span>
+                  GEMINI 3.0 FLASH (PREVIEW)
+                </a>
                 <a href="#" data-llm-mode="local" class="dropdown-link">
                   <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">dns</span>
                   LOCAL LLM (PRIVATE)
-                </a>
-                <a href="#" data-llm-mode="gemini-1.5-pro" class="dropdown-link">
-                  <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">bolt</span>
-                  GEMINI 1.5 PRO (CLOUD)
                 </a>
               </div>
             </div>

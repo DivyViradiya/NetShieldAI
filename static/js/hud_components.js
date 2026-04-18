@@ -15,26 +15,29 @@ function initCustomSelect(select) {
     
     const trigger = document.createElement('div');
     trigger.className = 'custom-select-trigger';
-    trigger.innerHTML = `<span>${select.options[select.selectedIndex]?.text || 'Select...'}</span>`;
+    const triggerSpan = document.createElement('span');
+    triggerSpan.textContent = select.options[select.selectedIndex]?.text || 'Select...';
+    trigger.appendChild(triggerSpan);
     
     const optionsCont = document.createElement('div');
     optionsCont.className = 'custom-options';
     
     function buildOptions() {
         optionsCont.innerHTML = '';
+        triggerSpan.textContent = select.options[select.selectedIndex]?.text || 'Select...';
+        
         Array.from(select.options).forEach((opt, idx) => {
             const oDiv = document.createElement('div');
             oDiv.className = `custom-option ${select.selectedIndex === idx ? 'selected' : ''}`;
             oDiv.textContent = opt.text;
             oDiv.addEventListener('click', (e) => {
                 e.stopPropagation();
-                select.selectedIndex = idx;
-                trigger.querySelector('span').textContent = opt.text;
+                if (select.selectedIndex !== idx) {
+                    select.selectedIndex = idx;
+                    select.dispatchEvent(new Event('change', { bubbles: true }));
+                }
                 optionsCont.classList.remove('show');
                 trigger.classList.remove('open');
-                
-                // Trigger change event for original select
-                select.dispatchEvent(new Event('change'));
                 buildOptions();
             });
             optionsCont.appendChild(oDiv);
@@ -48,13 +51,18 @@ function initCustomSelect(select) {
         const isOpen = optionsCont.classList.contains('show');
         
         // Close all other instances first
-        document.querySelectorAll('.custom-options').forEach(c => c.classList.remove('show'));
-        document.querySelectorAll('.custom-select-trigger').forEach(c => c.classList.remove('open'));
+        document.querySelectorAll('.custom-options').forEach(c => {
+            if (c !== optionsCont) c.classList.remove('show');
+        });
+        document.querySelectorAll('.custom-select-trigger').forEach(c => {
+            if (c !== trigger) c.classList.remove('open');
+        });
         
-        if (!isOpen) {
-            optionsCont.classList.add('show');
-            trigger.classList.add('open');
-            buildOptions(); // Re-sync in case options changed
+        optionsCont.classList.toggle('show');
+        trigger.classList.toggle('open');
+        
+        if (optionsCont.classList.contains('show')) {
+            buildOptions(); // Sync state on open
         }
     });
 
@@ -64,11 +72,11 @@ function initCustomSelect(select) {
 
     // Watch for dynamic changes to original select options
     const observer = new MutationObserver(() => buildOptions());
-    observer.observe(select, { childList: true });
+    observer.observe(select, { childList: true, subtree: true, characterData: true });
 }
 
 // Global closer for custom selects
 window.addEventListener('click', () => {
-    document.querySelectorAll('.custom-options').forEach(c => c.classList.remove('show'));
-    document.querySelectorAll('.custom-select-trigger').forEach(c => c.classList.remove('open'));
+    document.querySelectorAll('.custom-options.show').forEach(c => c.classList.remove('show'));
+    document.querySelectorAll('.custom-select-trigger.open').forEach(c => c.classList.remove('open'));
 });

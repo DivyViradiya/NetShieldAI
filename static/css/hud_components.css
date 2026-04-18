@@ -1,6 +1,5 @@
 /* --- HI-FI HUD COMPONENT STYLES --- */
 
-
 /* Base HUD Input Style */
 .neo-input {
     background: var(--bg-secondary);
@@ -11,16 +10,38 @@
     font-family: var(--font-mono);
     font-size: 0.8rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
+    backdrop-filter: var(--glass-blur);
     width: 100%;
-    outline: z 0.75rem 1.25rem;
+}
+
+.neo-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Custom Select Wrapper */
+.custom-select-wrapper {
+    position: relative;
+    user-select: none;
+    width: 100%;
+}
+
+.custom-select-trigger {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
     color: var(--text-primary);
     font-family: var(--font-mono);
     font-size: 0.8rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    backdrop-filter: var(--glass-blur);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .custom-select-trigger:hover {
@@ -31,6 +52,8 @@
 .custom-select-trigger.open {
     border-color: var(--accent-primary);
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .custom-select-trigger:after {
@@ -49,18 +72,20 @@
 
 .custom-options {
     position: absolute;
-    top: calc(100% + 5px);
+    top: 100%;
     left: 0;
     right: 0;
     background: var(--bg-secondary);
-    border: 1px solid var(--border-default);
-    border-radius: 8px;
+    border: 1px solid var(--accent-primary);
+    border-top: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     z-index: 1000;
     display: none;
     max-height: 250px;
     overflow-y: auto;
-    backdrop-filter: blur(20px);
+    backdrop-filter: var(--glass-blur);
 }
 
 .custom-options.show {
@@ -78,6 +103,10 @@
     border-bottom: 1px solid var(--border-subtle);
 }
 
+.custom-option:last-child {
+    border-bottom: none;
+}
+
 .custom-option:hover {
     background: rgba(59, 130, 246, 0.1);
     color: var(--accent-primary);
@@ -90,12 +119,27 @@
     font-weight: 800;
 }
 
+/* Base HUD Select Style (for fallbacks) */
+.neo-select {
+    appearance: none;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    color: var(--text-primary);
+    padding: 0.75rem 2.5rem 0.75rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    cursor: pointer;
+    width: 100%;
+    outline: none;
+}
+
+/* Animations */
 @keyframes hudFadeIn {
     from {
         opacity: 0;
         transform: translateY(-5px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -108,8 +152,11 @@
     flex-wrap: wrap;
     gap: 1rem;
     align-items: flex-end;
-    /* Keeps labels and inputs aligned */
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    background: rgba(255,255,255,0.02);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
 }
 
 .filter-group {
@@ -126,40 +173,15 @@
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
+    font-weight: 700;
 }
 
-/* Flatpickr Theme */
+/* Flatpickr Theme Refinement */
 .flatpickr-calendar {
     background: var(--bg-secondary) !important;
     border: 1px solid var(--border-default) !important;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
     color: var(--text-primary) !important;
-    backdrop-filter: blur(20px);
+    backdrop-filter: var(--glass-blur);
     font-family: var(--font-mono) !important;
-}
-
-.flatpickr-day {
-    color: var(--text-muted) !important;
-}
-
-.flatpickr-day.today {
-    border-color: var(--accent-primary) !important;
-    color: var(--accent-primary) !important;
-}
-
-.flatpickr-day.selected,
-.flatpickr-day:hover {
-    background: var(--accent-primary) !important;
-    border-color: var(--accent-primary) !important;
-    color: #fff !important;
-}
-
-.flatpickr-months .flatpickr-month,
-.flatpickr-weekday {
-    color: var(--text-primary) !important;
-    fill: var(--text-primary) !important;
-}
-
-.flatpickr-current-month .flatpickr-monthDropdown-months {
-    color: var(--text-primary) !important;
 }

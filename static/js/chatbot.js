@@ -3,20 +3,59 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 0. SECURITY: CSRF Token Setup ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
+    const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16MB
+
+    // Helper for file size validation
+    function validateFileSize(file) {
+        if (file.size > MAX_FILE_SIZE) {
+            alert(`File "${file.name}" is too large (${(file.size / (1024 * 1024)).toFixed(2)}MB). Maximum allowed is 16MB.`);
+            return false;
+        }
+        return true;
+    }
+
     // Helper to send authorized requests
     async function fetchWithAuth(url, options = {}) {
         const headers = {
             'X-CSRFToken': csrfToken,
-            'X-Session-ID': currentSessionId, // Send session ID if available
             ...options.headers
         };
         
-        // If body is NOT FormData, default to JSON
+        // Add session ID if present
+        if (currentSessionId) {
+            headers['X-Session-ID'] = currentSessionId;
+        }
+        
         if (options.body && !(options.body instanceof FormData)) {
             headers['Content-Type'] = 'application/json';
         }
         
-        return fetch(url, { ...options, headers });
+        try {
+            const response = await fetch(url, { ...options, headers });
+            
+            // Handle Session Desync (401 Unauthorized or 404 Not Found for session)
+            if ((response.status === 401 || response.status === 404) && currentSessionId) {
+                console.warn(`[!] Session desync detected (${response.status}). Resetting UI context.`);
+                alert("Your session has expired or was cleared in the background. Resetting view.");
+                clearView();
+                return response; // Return anyway so caller can handle if needed
+            }
+            
+            return response;
+        } catch (err) {
+            console.error("[FETCH_ERROR]", err);
+            throw err;
+        }
+    }
+
+    // Helper to get error message from RFC 7807 detail or generic error fields
+    async function getErrorDetail(response) {
+        try {
+            const result = await response.json();
+            return result.detail || result.error || result.message || `System Error (${response.status})`;
+        } catch (e) {
+            return `System Communication Error (${response.status})`;
+        }
     }
 
     // --- 1. Initialize Markdown ---
@@ -205,16 +244,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const response = await fetchWithAuth(`/chatbot/session/${currentSessionId}/graph`);
+                
+                if (!response.ok) {
+                    const detail = await getErrorDetail(response);
+                    throw new Error(detail);
+                }
+
                 const data = await response.json();
 
                 if (data.success && data.graph_data && data.graph_data.nodes && data.graph_data.nodes.length > 0) {
                     renderTopology(data.graph_data);
                 } else {
-                    ui.topologyContainer.innerHTML = '<div style="color: #ef4444; padding: 20px; text-align: center;">No physical or logical topology data available for this session yet.</div>';
+                    ui.topologyContainer.innerHTML = `<div style="color: #ef4444; padding: 20px; text-align: center;">No physical or logical topology data available for this session yet.</div>`;
                 }
             } catch (error) {
                 console.error("Graph Fetch Error:", error);
-                ui.topologyContainer.innerHTML = '<div style="color: #ef4444; padding: 20px; text-align: center;">Failed to retrieve topology data.</div>';
+                ui.topologyContainer.innerHTML = `<div style="color: #ef4444; padding: 20px; text-align: center;">Failed to retrieve topology data.<br><br><span style="font-size:0.7rem; opacity:0.8;">${error.message}</span></div>`;
             }
         };
     }
@@ -368,6 +413,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleFileSelect(file) {
+        if (!validateFileSize(file)) {
+            if (ui.fileInput) ui.fileInput.value = '';
+            return;
+        }
         selectedFile = file;
         ui.selectedFilename.textContent = file.name;
         switchView('config');
@@ -408,8 +457,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: formData
             });
 
-            const result = await response.json();
+            if (!response.ok) {
+                const detail = await getErrorDetail(response);
+                throw new Error(detail);
+            }
 
+            const result = await response.json();
             if (result.message || result.summary) {
                 // Sync session ID if returned
                 if (result.session_id) currentSessionId = result.session_id;
@@ -427,7 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateContextStatus(true, "Report Loaded");
                 loadSessionList();
             } else {
-                throw new Error(result.error || "Upload failed");
+                throw new Error("Upload failed but no error message returned.");
             }
         } catch (e) {
             console.error(e);
@@ -1607,25 +1660,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 body: JSON.stringify(action)
             });
+            
+            if (!response.ok) {
+                const detail = await getErrorDetail(response);
+                throw new Error(detail);
+            }
+
             const result = await response.json();
 
             if (result.status === 'success') {
                 setupStreaming(result.stream_url, row, displayTool, action.tool, btnDownload);
             } else {
-                const card = row.querySelector('.action-card');
-                const stateIcon = row.querySelector('.ac-state-icon');
-                const stateBadge = row.querySelector('.ac-state-badge');
-                if (card) { card.classList.remove('state-deploy'); card.classList.add('state-error'); }
-                if (stateIcon) { stateIcon.textContent = 'error'; stateIcon.classList.remove('spin'); }
-                if (stateBadge) stateBadge.querySelector('span:last-child').textContent = 'OFFLINE';
-                const errorDiv = document.createElement('p');
-                errorDiv.className = 'ac-prompt-text';
-                errorDiv.style.color = '#fb7185';
-                errorDiv.textContent = result.message || "Unknown scanner initialization error.";
-                row.querySelector('.ac-params')?.appendChild(errorDiv) || row.querySelector('.action-card')?.appendChild(errorDiv);
+                throw new Error(result.message || "Unknown scanner initialization error.");
             }
         } catch (e) {
             console.error("Action execution failed:", e);
+            const card = row.querySelector('.action-card');
+            const stateIcon = row.querySelector('.ac-state-icon');
+            const stateBadge = row.querySelector('.ac-state-badge');
+            if (card) { card.classList.remove('state-deploy'); card.classList.add('state-error'); }
+            if (stateIcon) { stateIcon.textContent = 'error'; stateIcon.classList.remove('spin'); }
+            if (stateBadge) stateBadge.querySelector('span:last-child').textContent = 'OFFLINE';
+            
+            const errorDiv = document.createElement('p');
+            errorDiv.className = 'ac-prompt-text';
+            errorDiv.style.cssText = 'color: #fb7185; margin-top: 10px; font-weight: 500; font-family: var(--font-code); font-size: 0.75rem;';
+            errorDiv.textContent = `CRITICAL_ERROR: ${e.message}`;
+            row.querySelector('.ac-params')?.appendChild(errorDiv) || row.querySelector('.action-card')?.appendChild(errorDiv);
         }
     }
 
@@ -1720,12 +1781,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (e.data.includes('SYSTEM_EVENT: READY_FOR_ANALYSIS')) {
                 eventSource.close();
-                headerText.textContent = `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.`;
-                row.querySelector('.status-badge').innerHTML = `
-                    <span class="material-symbols-outlined" style="font-size: 1rem;">analytics</span>
-                    DATASET READY.
-                `;
-                row.querySelector('.action-footer').style.display = 'flex';
+                
+                // Fix: Define headerText by finding it in the card
+                const titleNode = row.querySelector('.ac-tool-name');
+                if (titleNode) titleNode.textContent = `[COMPLETE]: ${displayTool.toUpperCase()}`;
+                
+                const footerBadge = row.querySelector('.status-badge');
+                if (footerBadge) {
+                    footerBadge.innerHTML = `
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">analytics</span>
+                        DATASET READY.
+                    `;
+                }
+                
+                const footer = row.querySelector('.action-footer');
+                if (footer) footer.style.display = 'flex';
+                
                 btnDownload.style.display = 'block';
                 promptForAnalysis(toolName);
             }
@@ -1819,6 +1890,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     force_new_session: false // Stay in same chat if auto-triggered
                 })
             });
+
+            if (!response.ok) {
+                const detail = await getErrorDetail(response);
+                throw new Error(detail);
+            }
+
             const result = await response.json();
 
             if (result.status === 'success') {
@@ -1833,6 +1910,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.error("Auto-analysis failed:", e);
             ui.typingIndicator.style.display = 'none';
+            addMessage('ai', `⚠️ **AI Intelligence Failure:** ${e.message}`, false);
         }
     }
 
@@ -1903,6 +1981,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Clear attachments after sending
             clearAttachments();
+
+            if (!response.ok) {
+                const detail = await getErrorDetail(response);
+                throw new Error(detail);
+            }
 
             if (!response.body) throw new Error('ReadableStream not supported.');
 
@@ -2140,6 +2223,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         Array.from(files).forEach(file => {
+            if (!validateFileSize(file)) return;
+            
             const id = Math.random().toString(36).substr(2, 9);
             const type = file.type.startsWith('image/') ? 'image' : 
                          (file.name.endsWith('.pcap') || file.name.endsWith('.pcapng') ? 'pcap' : 'doc');

@@ -661,43 +661,52 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (targetFilter) targetFilter.addEventListener("change", applyFilters);
     if (scannerFilter) scannerFilter.addEventListener("change", applyFilters);
-    if (dateFilter) dateFilter.addEventListener("change", applyFilters);
+    if (dateFilter) {
+        flatpickr(dateFilter, {
+            dateFormat: "Y-m-d",
+            static: true,
+            disableMobile: "true",
+            onChange: function(selectedDates, dateStr) {
+               dateFilter.value = dateStr;
+               dateFilter.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        dateFilter.addEventListener("change", applyFilters);
+    }
     if (searchFilter) searchFilter.addEventListener("input", applyFilters);
   }
 
   // --- 11. TAB SWITCHING ---
   const tabBtns = document.querySelectorAll(".tab-btn[data-tab]");
   const tabPanes = document.querySelectorAll(".tab-pane");
-  let cachedComplianceData = null; 
 
   tabBtns.forEach(btn => {
     btn.addEventListener("click", () => {
-      tabBtns.forEach(b => b.classList.remove("active"));
-      tabPanes.forEach(p => p.classList.add("hidden"));
-
-      btn.classList.add("active");
-      const targetId = `tab-${btn.getAttribute("data-tab")}`;
-      const targetPane = document.getElementById(targetId);
-      if (targetPane) targetPane.classList.remove("hidden");
+      const activeTab = btn.getAttribute("data-tab");
       
-      if (btn.getAttribute("data-tab") === "compliance-frameworks") {
+      // Update UI
+      tabBtns.forEach(b => b.classList.toggle("active", b === btn));
+      tabPanes.forEach(p => {
+          const isTarget = p.id === `tab-${activeTab}`;
+          p.classList.toggle("hidden", !isTarget);
+          if (isTarget) {
+              p.style.display = 'block'; // Ensure visibility
+              p.classList.add('fade-in-up'); // Add entrance animation if defined
+          } else {
+              p.style.display = 'none';
+          }
+      });
+      
+      if (activeTab === "compliance-frameworks") {
           loadComplianceData();
+      } else if (activeTab === "report-archives") {
+          // Re-sync reports filter on tab switch if needed
+          if (typeof applyFilters === 'function') applyFilters();
       }
     });
   });
 
-  // Initialize Flatpickr for Reports
-  const dateInput = document.getElementById("reportFilterDate");
-  if (dateInput) {
-      flatpickr(dateInput, {
-          dateFormat: "Y-m-d",
-          static: true,
-          onChange: function(selectedDates, dateStr) {
-             dateInput.value = dateStr;
-             dateInput.dispatchEvent(new Event('change'));
-          }
-      });
-  }
+  // showRemedyModal
 
   function showRemedyModal(stdName, req) {
       const modal = document.getElementById("remedyModal");
@@ -705,6 +714,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const titleEl = document.getElementById("remedy-title");
       const adviceEl = document.getElementById("remedy-advice-text");
       const evidenceList = document.getElementById("remedy-evidence-list");
+
+      if (!modal) return;
 
       stdEl.textContent = `${stdName} ${req.id}`;
       titleEl.textContent = req.requirement;
@@ -714,18 +725,23 @@ document.addEventListener("DOMContentLoaded", function () {
       if (req.evidence && req.evidence.length > 0) {
           req.evidence.forEach(ev => {
               const evItem = document.createElement("div");
-              evItem.style.marginBottom = "10px";
+              evItem.style.marginBottom = "15px";
+              evItem.style.padding = "10px";
+              evItem.style.background = "rgba(0,0,0,0.2)";
+              evItem.style.borderRadius = "8px";
+              evItem.style.border = "1px solid var(--neo-border)";
               evItem.innerHTML = `
-                  <div style="color:var(--neo-blue); font-weight:700;">[${ev.source}] ${ev.issue}</div>
-                  <div style="font-size: 0.65rem;">${ev.description}</div>
+                  <div style="color:var(--neo-blue); font-weight:700; font-family:var(--font-mono); font-size:0.75rem; margin-bottom:4px;">[${ev.source}] ${ev.issue}</div>
+                  <div style="font-size: 0.8rem; color: var(--neo-text-secondary); line-height:1.5;">${ev.description}</div>
               `;
               evidenceList.appendChild(evItem);
           });
       } else {
-          evidenceList.innerHTML = '<div style="opacity:0.5;">No negative technical evidence found for this requirement.</div>';
+          evidenceList.innerHTML = '<div style="opacity:0.5; text-align:center; padding: 1rem;">No specific technical evidence recorded for this audit entry.</div>';
       }
 
       modal.style.display = "flex";
+      modal.classList.add('fade-in');
   }
 
   function renderComplianceCards(targetName) {
@@ -789,6 +805,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             container.appendChild(card);
         });
+    } else {
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem; opacity: 0.4;">NO STANDARDS DATA FOUND FOR THIS TARGET</div>';
     }
   }
 
@@ -824,15 +842,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         selector.addEventListener("change", () => renderComplianceCards(selector.value));
                         selector.dataset.listener = "true";
                     }
-                    initCustomSelect(selector);
+                    if (typeof initCustomSelect === 'function') initCustomSelect(selector);
                 }
-                renderComplianceCards(selector.value || activeScannerTarget || "Global");
+                renderComplianceCards(selector ? selector.value : "Global");
             })
             .catch(err => console.error("Compliance Load Error:", err));
     }
   }
 
-  // Hook into Nmap results to update the active target
+  // Hook into fetch to monitor network scan updates for the active target
   const originalFetch = window.fetch;
   window.fetch = function() {
     return originalFetch.apply(this, arguments).then(response => {
@@ -840,11 +858,19 @@ document.addEventListener("DOMContentLoaded", function () {
             const clone = response.clone();
             clone.json().then(data => {
                 if (data.target || data.target_hostname) {
-                    activeScannerTarget = data.target_hostname || data.target;
+                    const newTarget = data.target_hostname || data.target;
+                    if (newTarget !== activeScannerTarget) {
+                        activeScannerTarget = newTarget;
+                        // Refresh compliance if it's the active tab
+                        const activeTab = document.querySelector(".tab-btn.active");
+                        if (activeTab && activeTab.getAttribute("data-tab") === "compliance-frameworks") {
+                            loadComplianceData();
+                        }
+                    }
                 }
-            });
+            }).catch(() => {});
         }
         return response;
     });
   };
-});
+});

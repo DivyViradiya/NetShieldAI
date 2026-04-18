@@ -80,9 +80,11 @@
         --neo-card-hover: var(--surface-elevated);
         --accent-vibrant-spinner: #00FFFF;
 
-        --glass-bg: #000000;
-        --glass-border: rgba(255, 255, 255, 0.03);
-        --glass-blur: blur(24px);
+        --glass-bg: rgba(10, 10, 15, 0.8);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-blur: blur(16px);
+        --glass-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.5);
+        --glass-card-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
 
         /* Standardized Heights */
         --navbar-height: 64px;
@@ -287,32 +289,23 @@
       }
 
       ::-webkit-scrollbar {
-        width: 10px;  /* Width of the touch area */
-        height: 10px;
-        background-color: transparent; /* Transparent track */
+        width: 6px;
+        height: 6px;
+        background-color: transparent;
       }
 
       ::-webkit-scrollbar-track {
         background-color: transparent;
-        border-radius: 10px;
       }
 
       ::-webkit-scrollbar-thumb {
-        /* The thumb itself */
         background-color: var(--scrollbar-thumb); 
-        border-radius: 20px;
-        
-        /* This border trick makes the visual bar thinner (6px) 
-           than the hit area (10px) so it looks "floating" */
-        border: 3px solid transparent; 
-        background-clip: content-box;
+        border-radius: 10px;
         transition: background-color 0.3s ease;
       }
 
       ::-webkit-scrollbar-thumb:hover {
-        /* On hover, make it the accent color or a brighter white */
         background-color: var(--scrollbar-hover); 
-        border: 2px solid transparent; /* Make it slightly thicker on hover */
       }
 
       /* Hide the buttons/arrows (Heads) */

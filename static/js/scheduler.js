@@ -136,6 +136,46 @@ function toast(msg, type = 'success') {
     setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; setTimeout(() => el.remove(), 300); }, 3000);
 }
 
+// ===== Custom Confirm Modal =====
+window.showConfirm = function({ title, message, confirmText, icon = 'warning', type = 'danger' }) {
+    return new Promise((resolve) => {
+        const overlay = document.getElementById('confirmOverlay');
+        const titleEl = document.getElementById('confirmTitle');
+        const msgEl = document.getElementById('confirmMessage');
+        const iconEl = document.getElementById('modalIcon');
+        const primaryBtn = document.getElementById('confirmPrimaryBtn');
+        const cancelBtn = document.getElementById('confirmCancelBtn');
+
+        if (!overlay || !primaryBtn) {
+            // Fallback if elements missing
+            resolve(confirm(message));
+            return;
+        }
+
+        titleEl.textContent = title || 'Confirm Action';
+        msgEl.textContent = message || 'Are you sure you want to proceed?';
+        iconEl.textContent = icon;
+        primaryBtn.textContent = confirmText || (type === 'danger' ? 'Confirm Deletion' : 'Confirm');
+        
+        primaryBtn.className = type === 'danger' ? 'btn-dash btn-danger' : 'btn-dash btn-primary';
+
+        const close = (res) => {
+            overlay.classList.remove('open');
+            // Clean up event listeners to prevent memory leaks and double-triggers
+            primaryBtn.onclick = null;
+            cancelBtn.onclick = null;
+            overlay.onclick = null;
+            resolve(res);
+        };
+
+        primaryBtn.onclick = () => close(true);
+        cancelBtn.onclick = () => close(false);
+        overlay.onclick = (e) => { if (e.target === overlay) close(false); };
+
+        overlay.classList.add('open');
+    });
+};
+
 // ===== Load modules schema =====
 async function loadModules() {
     const data = await apiFetch(`${API}/modules`);
@@ -1225,7 +1265,15 @@ window.toggleMonthDay = function(index, day, btn) {
     window.updateDraftState(index, 'cronDayOfMonthArr', d.cronDayOfMonthArr);
 };
 
-function discardDraft(index) {
+window.discardDraft = async function(index) {
+    const confirmed = await window.showConfirm({
+        title: 'Discard Draft',
+        message: 'Are you sure you want to discard this mission draft? All configuration will be lost.',
+        confirmText: 'Discard Draft',
+        type: 'danger'
+    });
+    if (!confirmed) return;
+
     draftMissions.splice(index, 1);
     closeDrawer();
     renderAll();
@@ -1390,7 +1438,14 @@ async function toggleJob(jobId, btn) {
 
 // ===== Delete Profile =====
 async function deleteProfile(id) {
-    if (!confirm('Abort this mission profile permanently?')) return;
+    const confirmed = await window.showConfirm({
+        title: 'Abort Mission Profile',
+        message: 'Are you sure you want to permanently terminate this mission profile and all associated data?',
+        confirmText: 'Terminate Mission',
+        type: 'danger'
+    });
+    if (!confirmed) return;
+
     try {
         await apiFetch(`${API}/profiles/${id}`, { method: 'DELETE' });
         toast('Mission terminated');
@@ -1400,7 +1455,14 @@ async function deleteProfile(id) {
 
 // ===== Delete Job =====
 async function deleteJob(id) {
-    if (!confirm('Halt this specific schedule?')) return;
+    const confirmed = await window.showConfirm({
+        title: 'Halt Schedule',
+        message: 'Are you sure you want to stop this specific execution schedule?',
+        confirmText: 'Remove Schedule',
+        type: 'danger'
+    });
+    if (!confirmed) return;
+
     try {
         await apiFetch(`${API}/jobs/${id}`, { method: 'DELETE' });
         toast('Schedule removed');
