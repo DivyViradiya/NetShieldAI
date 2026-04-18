@@ -17,6 +17,8 @@ from werkzeug.utils import secure_filename
 from core.extensions import db
 from Services import network_scanner, zap_scanner, ssl_scanner, sql_scanner, packet_sniffer, api_scanner, killchain_service, semgrep_scanner, scan_logger, report_manager
 from models.models import ScanLog, get_user_result_dir_name
+from models.scheduler_models import ScanProfile, ProfileScanConfig, ProfileTarget, ScheduledScanJob
+from Services import scheduler_service
 
 # Initialize the Flask Blueprint for chatbot-related routes
 chatbot_bp = Blueprint('chatbot_bp', __name__)
@@ -799,6 +801,116 @@ def execute_action():
 
     except Exception as e:
         user_logger.error(f"Error in execute_action: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@chatbot_bp.route('/execute_schedule', methods=['POST'])
+@login_required
+def execute_schedule():
+    """
+    Schedules a security mission based on AI-triggered parameters.
+    Creates or updates a 'Global AI Orchestration' profile.
+    """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
+    
+    try:
+        data = request.json
+        tool_name = data.get('tool_name')
+        target_val = data.get('target')
+        tool_params = data.get('tool_parameters', {})
+        schedule_type = data.get('schedule_type')
+        
+        if not tool_name or not target_val or not schedule_type:
+            return jsonify({'status': 'error', 'message': 'Missing required scheduling parameters.'}), 400
+
+        user_logger.info(f"AI Scheduling requested: {tool_name} on {target_val} ({schedule_type})")
+
+        # 1. Map Tool Name
+        mapping = {
+            'nmap_scan': 'nmap', 'zap_scan': 'zap', 'ssl_scan': 'ssl',
+            'sql_injection_scan': 'sql', 'packet_sniffer': 'sniffer',
+            'semgrep_sast_scan': 'semgrep', 'api_security_scan': 'api',
+            'killchain_audit': 'killchain'
+        }
+        module_id = mapping.get(tool_name)
+        if not module_id:
+            return jsonify({'status': 'error', 'message': f'Unsupported tool for scheduling: {tool_name}'}), 400
+
+        # 2. Find or Create AI Profile
+        profile_name = "Global AI Orchestration"
+        profile = ScanProfile.query.filter_by(user_id=current_user.id, name=profile_name).first()
+        if not profile:
+            profile = ScanProfile(
+                user_id=current_user.id,
+                name=profile_name,
+                description="Missions orchestrated via AI Analyst."
+            )
+            db.session.add(profile)
+            db.session.commit()
+            user_logger.info(f"Created new AI profile: {profile_name}")
+
+        # 3. Add/Update Config for this module in the profile
+        # For simplicity, we create a new config for each scheduled request to allow different params
+        config = ProfileScanConfig(
+            profile_id=profile.id,
+            module=module_id,
+            config_json=json.dumps(tool_params),
+            display_label=f"AI: {tool_name.replace('_', ' ').title()}"
+        )
+        db.session.add(config)
+        
+        # 4. Add/Update Target
+        target = ProfileTarget.query.filter_by(profile_id=profile.id, target_url=target_val).first()
+        if not target:
+            target = ProfileTarget(
+                profile_id=profile.id,
+                target_url=target_val
+            )
+            db.session.add(target)
+        
+        db.session.commit()
+
+        # 5. Create the Job
+        # Handle datetime conversion for once/one-shot
+        one_shot_at = None
+        if schedule_type == 'once' and data.get('one_shot_at'):
+            try:
+                one_shot_at = datetime.fromisoformat(data['one_shot_at'])
+            except (ValueError, TypeError):
+                user_logger.warning(f"Invalid datetime format: {data['one_shot_at']}")
+
+        job = ScheduledScanJob(
+            profile_id=profile.id,
+            schedule_type=schedule_type,
+            cron_hour=data.get('hour', 0),
+            cron_minute=data.get('minute', 0),
+            cron_day_of_week=data.get('day_of_week'),
+            cron_day_of_month=str(data.get('day_of_month', '')),
+            interval_minutes=data.get('interval_minutes'),
+            one_shot_at=one_shot_at,
+            is_enabled=True,
+            send_report_email=True
+        )
+        db.session.add(job)
+        db.session.commit()
+
+        # 6. Register with APScheduler
+        aps_id = scheduler_service.register_job(job)
+        if aps_id:
+            job.apscheduler_job_id = aps_id
+            db.session.commit()
+            user_logger.info(f"Registered job {aps_id} with APScheduler.")
+
+        return jsonify({
+            'status': 'success',
+            'message': f"Mission scheduled successfully for {target_val}.",
+            'job_id': job.id,
+            'schedule': schedule_type,
+            'next_run': job.next_run_at.isoformat() if job.next_run_at else None
+        })
+
+    except Exception as e:
+        user_logger.error(f"Error in execute_schedule: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
 
 @chatbot_bp.route('/get_action_status', methods=['GET'])

@@ -864,6 +864,147 @@ document.addEventListener('DOMContentLoaded', () => {
                 container.appendChild(copyBtn);
             });
 
+            // --- PASS 8: Scheduling Options Grid ---
+            // Detects [MISSION_PRESETS] marker and transforms the associated list into a grid.
+            tempDiv.querySelectorAll('p, div, h4').forEach(el => {
+              const text = el.innerText.trim();
+              if (text.includes('[MISSION_PRESETS]')) {
+                // Find the nearest UL after this element
+                let ul = el.nextElementSibling;
+                while (ul && ul.tagName !== 'UL' && ul.tagName !== 'OL') {
+                    // Stop if we hit another header or divider
+                    if (['H2', 'H3', 'DIV'].includes(ul.tagName) && ul.className.includes('divider')) break;
+                    ul = ul.nextElementSibling;
+                }
+
+                if (ul && (ul.tagName === 'UL' || ul.tagName === 'OL')) {
+                  const grid = document.createElement('div');
+                  grid.className = 'scheduling-grid';
+                  
+                  ul.querySelectorAll('li').forEach(li => {
+                    const liText = li.innerText.trim();
+                    const [label, ...descParts] = liText.split(':');
+                    const desc = descParts.join(':').trim();
+                    
+                    const tile = document.createElement('div');
+                    tile.className = 'freq-option';
+                    
+                    let icon = 'schedule';
+                    const l = label.toLowerCase();
+                    if (l.includes('daily')) icon = 'event_repeat';
+                    if (l.includes('weekly')) icon = 'calendar_view_week';
+                    if (l.includes('monthly')) icon = 'calendar_month';
+                    if (l.includes('once') || l.includes('shot')) icon = 'timer_10_alt_1';
+                    if (l.includes('periodic')) icon = 'update';
+
+                    tile.innerHTML = `
+                      <span class="material-symbols-outlined">${icon}</span>
+                      <span class="freq-label">${label.trim()}</span>
+                      <span class="freq-desc">${desc}</span>
+                    `;
+                    grid.appendChild(tile);
+                  });
+                  
+                  // Hide the marker element and replace the list with the grid
+                  el.style.display = 'none';
+                  ul.replaceWith(grid);
+                }
+              }
+            });
+
+            // --- PASS 8.5: Security Tools Grid (Multi-Category) ---
+            // Detects [SCAN_PRESETS] marker and transforms segregated lists into tool grids.
+            tempDiv.querySelectorAll('p, div, h4').forEach(el => {
+              const text = el.innerText.trim();
+              if (text.includes('[SCAN_PRESETS]')) {
+                let next = el.nextElementSibling;
+                const groups = [];
+                let currentCategory = null;
+
+                while (next) {
+                    // Stop if we hit a major section divider or another hidden/system element
+                    if (['H2', 'DIV'].includes(next.tagName) && (next.className.includes('divider') || next.className.includes('msg-actions'))) break;
+                    
+                    const inner = next.innerText.trim();
+                    if (!inner) {
+                        next = next.nextElementSibling;
+                        continue;
+                    }
+
+                    // Detection logic for Category Headers vs Lists
+                    if ((next.tagName === 'P' && next.querySelector('strong') && inner.length < 60) || (next.tagName === 'H4' || next.tagName === 'H5')) {
+                        currentCategory = inner.replace(/^\*+|\*+$/g, ''); // Clean markdown bold
+                        next.style.display = 'none';
+                    } else if (next.tagName === 'UL' || next.tagName === 'OL') {
+                        groups.push({ category: currentCategory, ul: next });
+                        currentCategory = null; 
+                        next.style.display = 'none';
+                    } else if (inner.includes('[SCAN_PRESETS]')) {
+                        next.style.display = 'none';
+                    } else if (next.tagName === 'P' && inner.length < 50 && !inner.includes(':')) {
+                        // Likely a plain text category header
+                        currentCategory = inner;
+                        next.style.display = 'none';
+                    } else {
+                        // If we hit random text that isn't a header or list, we might have exited the preset area
+                        break; 
+                    }
+                    
+                    next = next.nextElementSibling;
+                }
+
+                if (groups.length > 0) {
+                    const container = document.createElement('div');
+                    container.className = 'security-tools-container';
+                    container.style.marginBottom = '2rem';
+                    
+                    groups.forEach(group => {
+                        if (group.category) {
+                            const header = document.createElement('div');
+                            header.className = 'tool-category-header';
+                            header.innerHTML = `<span class="material-symbols-outlined" style="font-size:12px">verified_user</span> ${group.category}`;
+                            container.appendChild(header);
+                        }
+                        
+                        const grid = document.createElement('div');
+                        grid.className = 'scheduling-grid security-tools-grid';
+                        
+                        group.ul.querySelectorAll('li').forEach(li => {
+                            const liText = li.innerText.trim();
+                            const [label, ...descParts] = liText.split(':');
+                            const desc = descParts.join(':').trim();
+                            
+                            const tile = document.createElement('div');
+                            tile.className = 'freq-option'; 
+                            
+                            let icon = 'security';
+                            const l = label.toLowerCase();
+                            if (l.includes('nmap')) icon = 'radar';
+                            if (l.includes('zap')) icon = 'bug_report';
+                            if (l.includes('ssl') || l.includes('tls')) icon = 'lock_reset';
+                            if (l.includes('sql')) icon = 'database';
+                            if (l.includes('sniffer') || l.includes('packet')) icon = 'settings_input_antenna';
+                            if (l.includes('api')) icon = 'api';
+                            if (l.includes('killchain') || l.includes('kill chain')) icon = 'account_tree';
+                            if (l.includes('semgrep') || l.includes('sast')) icon = 'terminal';
+
+                            tile.innerHTML = `
+                              <span class="material-symbols-outlined">${icon}</span>
+                              <span class="freq-label">${label.trim()}</span>
+                              <span class="freq-desc">${desc}</span>
+                            `;
+                            grid.appendChild(tile);
+                        });
+                        
+                        container.appendChild(grid);
+                    });
+                    
+                    el.style.display = 'none';
+                    el.after(container);
+                }
+              }
+            });
+
             // --- Font Sanitization (preserved, with carve-outs for new elements) ---
             const FONT_UI   = "'Inter', sans-serif";
             const FONT_MONO = "'JetBrains Mono', monospace";
@@ -1568,7 +1709,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'nmap_scan': 'radar', 'zap_scan': 'bolt', 'ssl_scan': 'lock',
         'sql_injection_scan': 'database', 'packet_sniffer': 'wifi_tethering',
         'api_security_scan': 'api', 'killchain_audit': 'account_tree',
-        'semgrep_sast_scan': 'code'
+        'semgrep_sast_scan': 'code', 'schedule_scan': 'calendar_month'
     };
 
     async function handleAction(action, isRestore = false, reattachStreamUrl = null, isCompleted = false, isLastMessage = false) {
@@ -1597,7 +1738,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const toolIcon    = _toolIconMap[action.tool] || 'security';
 
         let stateClass, stateLabel, stateIcon, stateIconSpin;
-        if (isCompleted || (isRestore && !reattachStreamUrl)) {
+        if (action.tool === 'schedule_scan') {
+            stateClass = 'state-scheduled'; stateLabel = 'MISSION SCHEDULED'; stateIcon = 'event_available'; stateIconSpin = false;
+        } else if (isCompleted || (isRestore && !reattachStreamUrl)) {
             stateClass = 'state-complete'; stateLabel = 'DATA ACQUIRED'; stateIcon = 'check_circle'; stateIconSpin = false;
         } else if (reattachStreamUrl) {
             stateClass = 'state-active';   stateLabel = 'SYNCHRONIZING'; stateIcon = 'sync';          stateIconSpin = true;
@@ -1732,6 +1875,38 @@ document.addEventListener('DOMContentLoaded', () => {
         // If we are re-attaching to a running scan, we go straight to streaming
         if (reattachStreamUrl) {
             setupStreaming(reattachStreamUrl, row, displayTool, action.tool, btnDownload);
+            return;
+        }
+
+        // Special handling for Scheduling
+        if (action.tool === 'schedule_scan') {
+            try {
+                const response = await fetchWithAuth('/chatbot/execute_schedule', {
+                    method: 'POST',
+                    body: JSON.stringify(action.parameters)
+                });
+                if (!response.ok) throw new Error(await getErrorDetail(response));
+                const result = await response.json();
+                
+                const card = row.querySelector('.action-card');
+                const stateBadge = row.querySelector('.ac-state-badge span:last-child');
+                const stateIconEl = row.querySelector('.ac-state-icon');
+                
+                if (card) { card.classList.remove('state-deploy'); card.classList.add('state-scheduled'); }
+                if (stateBadge) stateBadge.textContent = 'PERSISTED';
+                if (stateIconEl) stateIconEl.textContent = 'event_available';
+                
+                const successMsg = document.createElement('p');
+                successMsg.className = 'ac-prompt-text';
+                successMsg.style.cssText = 'color: #818cf8; margin-top: 10px; font-weight: 500; font-family: var(--font-code); font-size: 0.75rem;';
+                successMsg.textContent = `SUCCESS: Mission orchestrated for ${result.next_run || 'future'}.`;
+                row.querySelector('.ac-params')?.appendChild(successMsg) || row.querySelector('.action-card')?.appendChild(successMsg);
+                
+            } catch (e) {
+                console.error("Scheduling failed:", e);
+                const card = row.querySelector('.action-card');
+                if (card) { card.classList.remove('state-deploy'); card.classList.add('state-error'); }
+            }
             return;
         }
 

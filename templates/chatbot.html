@@ -2924,6 +2924,7 @@
     .action-card.state-complete{ border-left-color: #34d399;         box-shadow: 0 4px 30px rgba(52,211,153,0.1); }
     .action-card.state-error   { border-left-color: #fb7185;         box-shadow: 0 4px 30px rgba(251,113,133,0.1); }
     .action-card.state-prompt  { border-left-color: var(--neo-blue); box-shadow: 0 4px 30px rgba(59,130,246,0.08); }
+    .action-card.state-scheduled { border-left-color: #818cf8;       box-shadow: 0 4px 30px rgba(129,139,248,0.1); }
 
     /* Header row: icon + title + state badge */
     .ac-header {
@@ -2951,6 +2952,7 @@
     .state-active .ac-tool-icon  { background: rgba(34,211,238,0.1);  color: #22d3ee; }
     .state-complete .ac-tool-icon{ background: rgba(52,211,153,0.1);  color: #34d399; }
     .state-error .ac-tool-icon   { background: rgba(251,113,133,0.1); color: #fb7185; }
+    .state-scheduled .ac-tool-icon { background: rgba(129,139,248,0.1); color: #818cf8; }
 
     .ac-tool-info { display: flex; flex-direction: column; min-width: 0; }
     .ac-tool-name {
@@ -2990,6 +2992,7 @@
     .state-active .ac-state-badge  { background: rgba(34,211,238,0.08);  color: #22d3ee;         border-color: rgba(34,211,238,0.2); }
     .state-complete .ac-state-badge{ background: rgba(52,211,153,0.08);  color: #34d399;         border-color: rgba(52,211,153,0.2); }
     .state-error .ac-state-badge   { background: rgba(251,113,133,0.08); color: #fb7185;         border-color: rgba(251,113,133,0.2); }
+    .state-scheduled .ac-state-badge { background: rgba(129,139,248,0.08); color: #818cf8;         border-color: rgba(129,139,248,0.2); }
     .ac-state-icon { font-size: 0.9rem !important; }
 
     /* Parameter grid */
@@ -3159,7 +3162,104 @@
         color: #475569 !important;
     }
 
-    /* --- LIVE TERMINAL STYLES (MATCHING ZAP SCANNER THEME) --- */
+    /* =========================================================
+       SCHEDULING CONSULTATION — Mission Configuration UI
+       ========================================================= */
+    .scheduling-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 1.5rem 0;
+    }
+    .security-tools-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    }
+    @media (max-width: 900px) {
+      .security-tools-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+      }
+    }
+    .tool-category-header {
+      font-family: var(--font-code);
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.3);
+      margin: 2rem 0 0.75rem 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tool-category-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+    }
+    body.light-mode .tool-category-header { color: rgba(0,0,0,0.4); }
+    body.light-mode .tool-category-header::after { background: linear-gradient(90deg, rgba(0,0,0,0.08) 0%, transparent 100%); }
+    .freq-option {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 1.25rem 1rem;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .freq-option .material-symbols-outlined {
+      font-size: 1.5rem;
+      color: var(--neo-blue);
+      opacity: 0.8;
+    }
+    .freq-label {
+      font-family: var(--font-code);
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #f1f5f9;
+    }
+    .freq-desc {
+      font-size: 0.75rem;
+      color: #71717a;
+      line-height: 1.4;
+    }
+    .freq-option:hover {
+      background: rgba(59, 130, 246, 0.06);
+      border-color: rgba(59, 130, 246, 0.2);
+      transform: translateY(-2px);
+    }
+    body.light-mode .freq-option {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+    body.light-mode .freq-label { color: #0f172a; }
+
+    /* Enhance standard lists in AI bubbles for "Overwatch" look */
+    .msg-bubble > ul, .msg-bubble > ol {
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      padding: 1.25rem 1.25rem 1.25rem 2.25rem;
+      margin: 1.5rem 0;
+    }
+    body.light-mode .msg-bubble > ul, body.light-mode .msg-bubble > ol {
+      background: rgba(0, 0, 0, 0.02);
+      border-color: rgba(0, 0, 0, 0.05);
+    }
+    .msg-bubble > ul > li > strong:first-child {
+      color: var(--neo-blue);
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+    }
+    
     .terminal-container {
       background: rgba(15, 15, 17, 0.95) !important;
       backdrop-filter: blur(12px);
