@@ -26,3 +26,7 @@ def to_ist(dt_obj):
         dt_obj = dt_obj.replace(tzinfo=timezone.utc)
     
     return dt_obj.astimezone(IST)
+
+def get_now_ist_naive():
+    """Returns the current IST time as a naive datetime object (tz-agnostic). Useful for DB storage."""
+    return get_now_ist().replace(tzinfo=None)

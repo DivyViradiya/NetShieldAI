@@ -85,6 +85,7 @@ CSS_SQL       = os.path.join(CSS_DIR, 'report_sql.css')
 CSS_SEMGREP   = os.path.join(CSS_DIR, 'report_semgrep.css')
 CSS_API       = os.path.join(CSS_DIR, 'report_api.css')
 CSS_EXECUTIVE = os.path.join(CSS_DIR, 'report_executive.css')
+CSS_ASSET_DISCOVERY = os.path.join(CSS_DIR, 'report_asset_discovery.css')
 
 # --- [SECURITY] Shared Jinja2 Environment with autoescape enabled ---
 jinja_env = Environment(
@@ -102,6 +103,7 @@ SQL_TEMPLATE_FILE               = "sql_report_template.html"
 SEMGREP_TEMPLATE_FILE           = "semgrep_report_template.html"
 EXECUTIVE_SUMMARY_TEMPLATE_FILE = "executive_summary_template.html"
 API_TEMPLATE_FILE               = "api_report_template.html"
+ASSET_DISCOVERY_TEMPLATE_FILE     = "asset_discovery_report_template.html"
 
 
 # =============================================================================
@@ -782,6 +784,147 @@ def create_api_report_pdf(source_data, pdf_path, user_id=None):
     if success:
         log(f"[+] API PDF generated: {pdf_path}",
             to_console=True, scanner_name="api_scanner", user_id=user_id)
+    return success
+
+
+def create_asset_discovery_report_pdf(source_data, pdf_path, user_id=None):
+    """
+    Renders Asset Discovery & Inventory data into an HTML template and saves it as a PDF.
+    Processes: asset inventory, SSL cert digest, mail posture, cloud exposure, WHOIS, ASN.
+    """
+    log(f"[*] Starting Asset Discovery PDF generation: {pdf_path}",
+        to_console=True, scanner_name="asset_discovery", user_id=user_id)
+
+    # 1. Load data
+    if isinstance(source_data, str):
+        try:
+            with open(source_data, 'r', encoding='utf-8') as f:
+                discovery_data = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            log(f"[!] Error loading Asset Discovery JSON: {e}", scanner_name="asset_discovery")
+            return False
+    else:
+        discovery_data = source_data
+
+    assets        = discovery_data.get("assets", [])
+    target_domain = discovery_data.get("target_domain", "Unknown")
+    summary       = discovery_data.get("summary", {})
+    mail_posture  = discovery_data.get("mail_posture", {})
+    cloud_exp     = discovery_data.get("cloud_exposure", [])
+    whois_data    = discovery_data.get("whois", {})
+
+    # 2. Asset Statistics
+    total      = len(assets)
+    domains    = sum(1 for a in assets if a.get("type") == "domain")
+    subdomains = sum(1 for a in assets if a.get("type") == "subdomain")
+    resolved   = sum(1 for a in assets if a.get("details", {}).get("ip"))
+    tech_found = sum(1 for a in assets if a.get("details", {}).get("tech"))
+
+    # 3. Criticality Distribution
+    crit_dist = {"High": 0, "Medium": 0, "Low": 0}
+    for a in assets:
+        bv = a.get("business_value", "Medium")
+        crit_dist[bv] = crit_dist.get(bv, 0) + 1
+
+    # 4. SSL Certificate Digest
+    ssl_groups = {"Valid": [], "Expiring Soon": [], "Expired": [], "No SSL": []}
+    for a in assets:
+        ssl_info = (a.get("details") or {}).get("ssl") or {}
+        status   = ssl_info.get("status", "No SSL")
+        bucket   = ssl_groups.get(status, ssl_groups["No SSL"])
+        bucket.append({
+            "value":         a["value"],
+            "type":          a.get("type", "unknown"),
+            "expiry_date":   ssl_info.get("expiry_date"),
+            "issuer":        ssl_info.get("issuer"),
+            "days_remaining": ssl_info.get("days_remaining"),
+        })
+
+    ssl_alert_count = len(ssl_groups["Expired"]) + len(ssl_groups["Expiring Soon"])
+
+    # 5. Technology Fingerprint Summary (aggregate across all assets)
+    tech_tallies = {}
+    for a in assets:
+        tech = (a.get("details") or {}).get("tech") or {}
+        for category, value in tech.items():
+            if category not in tech_tallies:
+                tech_tallies[category] = {}
+            key = str(value)
+            tech_tallies[category][key] = tech_tallies[category].get(key, 0) + 1
+
+    # 6. Build top-N asset tables split by type
+    domain_assets    = [a for a in assets if a.get("type") == "domain"]
+    subdomain_assets = [a for a in assets if a.get("type") == "subdomain"]
+
+    # 7. Build template context
+    logo_url, logo_url_small = _logo_paths()
+    template_data = {
+        "logo_url":        logo_url,
+        "logo_url_small":  logo_url_small,
+        "css_path":        pathlib.Path(CSS_BASE).as_uri(),
+        "target_domain":   target_domain,
+        "scan_date":       discovery_data.get("scan_date", get_now_ist_str()),
+        "generation_date": get_now_ist_str(),
+        "generated_by":    discovery_data.get("generated_by", "NetShieldAI"),
+
+        # WHOIS
+        "whois": {
+            "registrar":     whois_data.get("registrar"),
+            "creation_date": whois_data.get("creation_date"),
+            "expiry_date":   whois_data.get("expiry_date"),
+        },
+
+        # Core stats
+        "stats": {
+            "total_assets":   total,
+            "domains":        domains,
+            "subdomains":     subdomains,
+            "resolved_count": resolved,
+            "tech_count":     tech_found,
+            "new_assets":     summary.get("new_assets", 0),
+            "ssl_alerts":     ssl_alert_count,
+            "cloud_found":    len(cloud_exp),
+            "has_cloud":      bool(cloud_exp),
+        },
+
+        # Criticality breakdown
+        "criticality_distribution": crit_dist,
+
+        # SSL certificate inventory
+        "ssl_groups":      ssl_groups,
+        "ssl_alert_count": ssl_alert_count,
+
+        # Mail & Identity posture
+        "mail_posture": {
+            "spf":          bool(mail_posture.get("spf")),
+            "dmarc":        bool(mail_posture.get("dmarc")),
+            "dkim":         bool(mail_posture.get("dkim")),
+            "mx_count":     mail_posture.get("mx_count", 0),
+            "spf_record":   mail_posture.get("spf_record"),
+            "dmarc_record": mail_posture.get("dmarc_record"),
+        },
+
+        # Cloud exposure
+        "cloud_exposure": cloud_exp,
+
+        # Technology landscape
+        "tech_tallies": tech_tallies,
+
+        # Asset lists
+        "domain_assets":    domain_assets,
+        "subdomain_assets": subdomain_assets[:100],  # cap for PDF size
+        "assets":           assets,
+        "total_truncated":  max(0, len(subdomain_assets) - 100),
+    }
+
+    # 8. Render
+    success = _render_to_pdf(
+        ASSET_DISCOVERY_TEMPLATE_FILE, template_data, pdf_path,
+        [CSS_BASE, CSS_ASSET_DISCOVERY], "asset_discovery", user_id
+    )
+    if success:
+        log(f"[+] Asset Discovery PDF generated: {pdf_path}",
+            to_console=True, scanner_name="asset_discovery", user_id=user_id)
     return success
 
 

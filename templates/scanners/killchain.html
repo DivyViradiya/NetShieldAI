@@ -994,7 +994,11 @@
           </button>
           
           <div id="scannerSwitchDropdown" class="hidden absolute top-full right-0 mt-2 custom-dropdown" style="min-width: 280px; z-index: 1002; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-            <div class="dropdown-category">Network Infrastructure</div>
+            <div class="dropdown-category">Infrastructure & Discovery</div>
+            <a href="{{ url_for('asset_discovery_bp.dashboard') }}" class="dropdown-link">
+              <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">inventory_2</span>
+              Asset Inventory
+            </a>
             <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="dropdown-link">
               <span class="material-symbols-outlined" style="font-size: 1.1em; margin-right: 8px;">radar</span>
               Service Discovery

@@ -235,6 +235,22 @@
         </div>
         
         <div class="bento-grid">
+            <a href="{{ url_for('asset_discovery_bp.dashboard') }}" class="bento-card span-4">
+                <div class="card-top">
+                    <div class="card-icon-box"><span class="material-symbols-outlined">radar</span></div>
+                    <span class="status-badge">Passive/Active</span>
+                </div>
+                <div class="card-content">
+                    <h3>Asset Inventory</h3>
+                    <p>Map the organizational attack surface. Identify subdomains, hosts, and tech stacks.</p>
+                    <div class="card-meta">
+                        <div class="meta-row"><span class="meta-label">Intel Level</span><span class="meta-value">Attack Surface</span></div>
+                        <div class="meta-row"><span class="meta-label">Precision</span><span class="meta-value">Tech Fingerprint</span></div>
+                    </div>
+                    <div class="card-action"><span>Map Surface</span><span class="material-symbols-outlined">arrow_forward</span></div>
+                </div>
+            </a>
+
             <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="bento-card span-4">
                 <div class="card-top">
                     <div class="card-icon-box"><span class="material-symbols-outlined">hub</span></div>

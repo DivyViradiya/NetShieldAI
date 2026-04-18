@@ -1044,6 +1044,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // [NEW] Global listener for Interactive Security Grid Cards
+    document.addEventListener('click', (e) => {
+        const tile = e.target.closest('.freq-option');
+        if (!tile || !ui.userInput) return;
+
+        const labelEl = tile.querySelector('.freq-label');
+        if (!labelEl) return;
+
+        const label = labelEl.innerText.trim();
+        const l = label.toLowerCase();
+        let template = "";
+
+        // --- SCANNER TEMPLATES (Structured) ---
+        if (l.includes('nmap')) {
+            template = "Initiate Nmap Security Scan:\n- Target IP: [IP_OR_HOST]\n- Protocol: [TCP/UDP]\n- Scan Type: [default/os/aggressive/vuln/etc]\n- Timing: [4]";
+        } else if (l.includes('zap')) {
+            template = "Perform ZAP Application Audit:\n- Target URL: [URL_HERE]\n- Scan Mode: [Quick Scan/Full Scan/Deep Scan]\n- AJAX Spider: [false]";
+        } else if (l.includes('ssl') || l.includes('tls')) {
+            template = "Execute SSL/TLS Protocol Check:\n- Target Host: [DOMAIN_HERE]";
+        } else if (l.includes('sql')) {
+            template = "Launch SQL Injection Audit:\n- Target URL: [VULN_ENDPOINT]\n- Scan Mode: [quick/full/deep]\n- Risk Level: [3]\n- Scan Level: [3]\n- Check WAF: [true]";
+        } else if (l.includes('sniffer') || l.includes('packet')) {
+            template = "Deploy Packet Sniffer Module:\n- Target IP: [IP_HERE]\n- Duration: [60 seconds]\n- Max Packets: [1000]";
+        } else if (l.includes('api')) {
+            template = "Initiate API Security Audit:\n- Target URL: [BASE_URL]\n- Definition URL: [SWAGGER_JSON_URL]\n- Auth Token: [OPTIONAL_TOKEN]";
+        } else if (l.includes('killchain') || l.includes('kill chain')) {
+            template = "Launch Full Kill Chain Audit:\n- Target: [TARGET_IDENTIFIER]\n- Profile: [Recon Only/Network Audit/Web Audit/Full Scan]\n- Aggression: [Normal/Stealth/Attack]";
+        } else if (l.includes('semgrep') || l.includes('sast')) {
+            template = "Execute Semgrep SAST Scan:\n- Repository URL: [GIT_URL]";
+        } 
+        // --- SCHEDULING TEMPLATES ---
+        else if (l.includes('one-shot') || l.includes('once')) {
+            template = "Schedule a one-shot scan for [TOOL] on target [TARGET] at [TIME].";
+        } else if (l.includes('daily')) {
+            template = "Set up a daily recurring scan for [TOOL] on target [TARGET] at [TIME].";
+        } else if (l.includes('weekly')) {
+            template = "Orchestrate a weekly security audit for [TOOL] on target [TARGET] every [DAY_OF_WEEK] at [TIME].";
+        } else if (l.includes('monthly')) {
+            template = "Establish a monthly periodic scan for [TOOL] on target [TARGET] (Day: [1-31], Time: [TIME]).";
+        } else if (l.includes('periodic') || l.includes('recurring')) {
+            template = "Configure a periodic scan mission for [TOOL] on target [TARGET] every [N] [hours/days].";
+        }
+
+        if (template) {
+            ui.userInput.value = template;
+            ui.userInput.focus();
+            
+            // Trigger auto-resize if the function exists
+            if (typeof autoResizeInput === 'function') {
+                autoResizeInput();
+            } else {
+                // Manual trigger for the input event to activate any existing listeners
+                ui.userInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            
+            // Subtle visual feedback on the tile
+            tile.style.borderColor = 'var(--neo-blue)';
+            setTimeout(() => { tile.style.borderColor = ''; }, 400);
+        }
+    });
+
     function addMessage(role, text, animate = true, attachments = []) {
         ui.welcomeState.style.display = 'none';
 

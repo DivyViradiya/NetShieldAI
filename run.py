@@ -61,6 +61,7 @@ from routes.sql_scanner_bp import sql_scanner_bp
 from routes.semgrep_scanner_bp import semgrep_scanner_bp
 from routes.api_scanner_bp import api_scanner_bp
 from routes.scheduler_bp import scheduler_bp
+from routes.asset_discovery_bp import asset_discovery_bp
 
 
 
@@ -177,7 +178,8 @@ app.register_blueprint(sql_scanner_bp, url_prefix='/sql_scanner')
 app.register_blueprint(semgrep_scanner_bp, url_prefix='/semgrep_scanner')
 app.register_blueprint(api_scanner_bp, url_prefix='/api_scanner')
 app.register_blueprint(scheduler_bp, url_prefix='/scheduler')
-logger.info("[+] 12 Modules Loaded Successfully.")
+app.register_blueprint(asset_discovery_bp, url_prefix='/asset_discovery')
+logger.info("[+] 13 Modules Loaded Successfully.")
 
 def print_banner():
     banner = fr"""

@@ -1,0 +1,58 @@
+/* =============================================================
+   NETSHIELDAI — report_asset_discovery.css
+   Overrides for: asset_discovery_report_template.html
+   Requires: report_base.css
+   ============================================================= */
+
+.asset-type-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+.type-domain { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+.type-subdomain { background: #fef9c3; color: #854d0e; border-color: #fef08a; }
+.type-ip { background: #fce7f3; color: #9d174d; border-color: #fbcfe8; }
+
+.tech-tag {
+    display: inline-block;
+    padding: 2px 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
+    font-size: 0.7rem;
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+.dns-record-summary {
+    font-size: 0.8rem;
+    background: #fafafb;
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 4px solid #3b82f6;
+    margin-top: 5px;
+}
+
+.criticality-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.crit-high { background-color: #ef4444; }
+.crit-medium { background-color: #f59e0b; }
+.crit-low { background-color: #10b981; }
+
+.asset-value {
+    font-family: "Courier New", Courier, monospace;
+    font-weight: 700;
+    color: #0f172a;
+}
