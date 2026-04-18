@@ -81,7 +81,7 @@ def tail_log_file(user_result_dir, tool_name):
 
 from Services.report_manager import sanitize_filename
 
-def log_scan_start(user_id, tool_name, target, scan_type="Standard", origin="manual"):
+def log_scan_start(user_id, tool_name, target, scan_type="Standard", origin="manual", correlation_id=None):
     """
     Creates a new ScanLog entry with status 'Running'.
     Returns the ID of the log entry to update later.
@@ -95,7 +95,8 @@ def log_scan_start(user_id, tool_name, target, scan_type="Standard", origin="man
             scan_type=scan_type,
             status="Running",
             start_time=get_now_ist(),
-            origin=origin
+            origin=origin,
+            correlation_id=correlation_id
         )
         db.session.add(new_log)
         db.session.commit()
@@ -212,6 +213,18 @@ def mark_scan_failed(log_id, error_message="Scan interrupted or server restarted
     except Exception as e:
         logger.error(f"[!] Error marking scan {log_id} as failed: {e}")
     return False
+
+def get_scan_log_by_correlation_id(correlation_id):
+    """
+    Fetches a scan log using its unique Chatbot correlation_id.
+    Caller must be inside an application context.
+    """
+    if not correlation_id: return None
+    try:
+        return ScanLog.query.filter_by(correlation_id=correlation_id).first()
+    except Exception as e:
+        logger.error(f"[!] Error fetching scan log by correlation ID: {e}")
+        return None
 
 def get_debug_log_file(user_result_dir, tool_name):
     """

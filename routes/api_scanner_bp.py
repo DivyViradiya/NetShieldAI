@@ -50,6 +50,7 @@ def initiate_api_scan():
     data = request.get_json()
     target_url = data.get('target_url')
     definition_url = data.get('definition_url') 
+    action_id = data.get('action_id')
     auth_token = data.get('auth_token')
 
     token_status = "Token Provided" if auth_token else "Anonymous"
@@ -121,7 +122,8 @@ def initiate_api_scan():
         user_id=user_id_for_log,
         tool_name="API",
         target=target_url,
-        scan_type="OpenAPI"
+        scan_type="OpenAPI",
+        correlation_id=action_id
     )
 
     def scan_and_process_task():

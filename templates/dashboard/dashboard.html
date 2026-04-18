@@ -60,25 +60,16 @@
     }
 
     .dash-panel, .bento-tile {
-      background: var(--glass-bg);
-      backdrop-filter: var(--glass-blur);
-      -webkit-backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(10, 10, 14, 0.8) 0%, rgba(5, 5, 7, 0.9) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 8px;
       padding: 1.5rem;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
-      box-shadow: var(--glass-shadow);
-    }
-
-    .dash-panel::before, .bento-tile::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--glass-card-gradient);
-      pointer-events: none;
-      z-index: 0;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
     }
 
     .dash-panel > *, .bento-tile > * {
@@ -88,9 +79,10 @@
 
     body.light-mode .dash-panel, 
     body.light-mode .bento-tile {
-      background: var(--surface-primary);
-      border-color: var(--border-default);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid #d1d5db;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      backdrop-filter: blur(12px);
     }
 
 
@@ -212,11 +204,18 @@
       gap: 1rem;
     }
 
-    .bento-tile:hover {
+    .bento-tile:hover, .dash-panel:hover {
+      background: rgba(10, 10, 12, 0.7);
       border-color: var(--neo-blue);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.8), 
-                  0 0 20px rgba(59, 130, 246, 0.1);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    body.light-mode .bento-tile:hover,
+    body.light-mode .dash-panel:hover {
+      background: #ffffff;
+      border-color: var(--accent-blue);
+      box-shadow: 0 15px 45px rgba(99, 102, 241, 0.12);
     }
 
     .audit-finding {

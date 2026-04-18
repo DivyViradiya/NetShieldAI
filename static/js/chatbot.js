@@ -162,6 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let isPinning = false;
     let allSessions = []; 
     let lastUserMessage = ""; 
+    let inputHistory    = JSON.parse(sessionStorage.getItem('chatInputHistory') || '[]');
+    let historyIndex    = -1;
+    let tempDraft       = ""; 
 
     // --- 4. Command Center & Settings Logic ---
 
@@ -927,8 +930,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // If the AI message is empty and it's an action, we might skip the AI bubble 
         // and just show the action bubble, but only if it's not a restore or if we want to keep it clean.
         if (cleanText === "" && metadataAction && !animate) {
-             handleAction(metadataAction, true);
-             return;
+             return metadataAction;
         }
 
         const row = document.createElement('div');
@@ -937,13 +939,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const bubble = document.createElement('div');
         bubble.className = 'msg-bubble';
         
-        // Define labels based on role
         if (role === 'ai' || role === 'system') {
             row.classList.add('unbounded');
-            bubble.setAttribute('data-label', ''); // Remove 'System Core' and 'NetShield AI' labels
         } else {
-            let label = role === 'user' ? 'Human Analyst' : 'Security Log'; // Security Log as fallback
-            bubble.setAttribute('data-label', label);
+            const identity = document.createElement('div');
+            identity.className = 'msg-identity';
+            const icon = role === 'user' ? 'person' : 'terminal';
+            const label = role === 'user' ? 'ANALYST' : 'SECURITY LOG';
+            identity.innerHTML = `<span class="material-symbols-outlined">${icon}</span> ${label}`;
+            bubble.appendChild(identity);
         }
         
         // Create content container
@@ -1035,13 +1039,10 @@ document.addEventListener('DOMContentLoaded', () => {
         row.appendChild(bubble); // Still append bubble to row
         ui.chatHistory.appendChild(row);
         
-        // If it's a restore (not animated) and has metadata, trigger the action card
-        // But ONLY if cleanText is NOT empty (if it's empty, line 566 handled it)
-        if (metadataAction && !animate && cleanText !== "") {
-            handleAction(metadataAction, true);
-        }
-
+        // If it's a restore (not animated) we just return the metadata to the caller
         if (animate) scrollToBottom();
+        
+        return metadataAction;
     }
 
     // --- 5. Session List & Context Menu Logic ---
@@ -1225,11 +1226,88 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.newChatBtn.click();
         }
 
-        // Cmd/Ctrl + Enter to send
+        // Cmd/Ctrl + Enter to send (Universal shortcut)
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'enter' && document.activeElement === ui.userInput) {
+            e.preventDefault();
             sendMessage();
         }
     });
+
+    // --- Smart Input Logic (Multiline / Auto-resize / History) ---
+    function pushToHistory(text) {
+        if (!text || (inputHistory.length > 0 && inputHistory[0] === text)) {
+            historyIndex = -1;
+            return;
+        }
+        inputHistory.unshift(text);
+        if (inputHistory.length > 50) inputHistory.pop(); // Cap history at 50
+        sessionStorage.setItem('chatInputHistory', JSON.stringify(inputHistory));
+        historyIndex = -1;
+    }
+
+    function autoResizeInput() {
+        const input = ui.userInput;
+        input.style.height = 'auto'; // Reset height to shrink if needed
+        const newHeight = Math.min(input.scrollHeight, 200); // Max 200px
+        input.style.height = (newHeight) + 'px';
+        
+        // Toggle send button state
+        ui.sendBtn.disabled = !input.value.trim();
+        
+        // Auto-scroll messages area if the input expands near the bottom
+        if (newHeight > 60) scrollToBottom();
+    }
+
+    if (ui.userInput) {
+        // 1. Text Expansion
+        ui.userInput.addEventListener('input', autoResizeInput);
+
+        // 2. Multiline & Send Handling & Terminal History
+        ui.userInput.addEventListener('keydown', (e) => {
+            // Enter sends, Shift+Enter adds new line
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+
+            // History Up
+            if (e.key === 'ArrowUp' && ui.userInput.selectionStart === 0) {
+                if (inputHistory.length > 0) {
+                    if (historyIndex === -1) tempDraft = ui.userInput.value;
+                    
+                    if (historyIndex < inputHistory.length - 1) {
+                        e.preventDefault();
+                        historyIndex++;
+                        ui.userInput.value = inputHistory[historyIndex];
+                        autoResizeInput();
+                        // Place cursor at end for terminal feel
+                        setTimeout(() => {
+                           ui.userInput.selectionStart = ui.userInput.selectionEnd = ui.userInput.value.length;
+                        }, 0);
+                    }
+                }
+            }
+
+            // History Down
+            if (e.key === 'ArrowDown' && ui.userInput.selectionEnd === ui.userInput.value.length) {
+                if (historyIndex > -1) {
+                    e.preventDefault();
+                    historyIndex--;
+                    ui.userInput.value = (historyIndex === -1) ? tempDraft : inputHistory[historyIndex];
+                    autoResizeInput();
+                }
+            }
+
+            // Escape clears input
+            if (e.key === 'Escape') {
+                ui.userInput.value = '';
+                autoResizeInput();
+            }
+        });
+        
+        // Ensure starting state is correct
+        ui.sendBtn.disabled = true;
+    }
 
     async function submitFeedback(sessId, isHelpful) {
         try {
@@ -1339,10 +1417,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 ui.welcomeState.style.display = 'none';
                 ui.chatHistory.innerHTML = ''; 
                 
-                // Store active scans dictionary for lookup
-                const activeScans = data.active_scans || {};
-
-                data.chat_history.forEach(msg => {
+                // We do NOT use activeScans anymore; we rely on Action ID correlation
+                for (let i = 0; i < data.chat_history.length; i++) {
+                    const msg = data.chat_history[i];
                     try {
                         const role = msg.role === 'assistant' ? 'ai' : msg.role;
                         
@@ -1353,34 +1430,18 @@ document.addEventListener('DOMContentLoaded', () => {
                             } catch(e) { console.error("History attachment parse error:", e, msg.attachments); }
                         }
 
-                        let cleanText = msg.content;
-                        let metadataAction = null;
-                        if (msg.content && msg.content.includes("__METADATA_ACTION__:")) {
-                            const parts = msg.content.split("__METADATA_ACTION__:");
-                            cleanText = parts[0].trim();
-                            try {
-                                metadataAction = JSON.parse(parts[1]);
-                            } catch(e) {}
-                        }
+                        // Use addMessage for everything. addMessage will handle text/attachments and return metadata Action
+                        let metadataAction = addMessage(role, msg.content, false, attachments);
 
-                        // Use addMessage for everything. addMessage will handle:
-                        // 1. Text rendering
-                        // 2. Image/Attachment rendering
-                        // 3. Metadata card triggering (via the !animate flag)
-                        addMessage(role, msg.content, false, attachments);
-
-                        // Specialized Handling for ACTIVE scans (reattach stream)
-                        if (metadataAction && metadataAction.tool && activeScans[metadataAction.tool]) {
-                            const activeInfo = activeScans[metadataAction.tool];
-                            if (activeInfo.status !== 'completed' && activeInfo.stream_url) {
-                                // Re-attach stream for currently running modules
-                                handleAction(metadataAction, false, activeInfo.stream_url);
-                            }
+                        // If the message had an action, restore its state
+                        if (metadataAction && metadataAction.tool) {
+                            const isLastMessage = (i === data.chat_history.length - 1);
+                            await handleAction(metadataAction, true, null, false, isLastMessage);
                         }
                     } catch (loopErr) {
                         console.error("Error restoring history item:", loopErr, msg);
                     }
-                });
+                }
                 scrollToBottom();
                 if (data.session_metadata && data.session_metadata.report_type) {
                     switchView('config');
@@ -1510,14 +1571,33 @@ document.addEventListener('DOMContentLoaded', () => {
         'semgrep_sast_scan': 'code'
     };
 
-    async function handleAction(action, isRestore = false, reattachStreamUrl = null, isCompleted = false) {
+    async function handleAction(action, isRestore = false, reattachStreamUrl = null, isCompleted = false, isLastMessage = false) {
         if (!action || !action.tool) return;
+        
+        // [NEW] Resolve actual status via DB if restoring
+        if (isRestore && action.action_id) {
+            try {
+                const statusRes = await fetchWithAuth(`/chatbot/get_action_status?action_id=${action.action_id}`);
+                const statusData = await statusRes.json();
+                if (statusData.status === 'success') {
+                    if (statusData.scan_status === 'Running') {
+                        isRestore = false; // Act as if we just triggered it
+                        reattachStreamUrl = statusData.stream_url;
+                    } else if (statusData.scan_status === 'Completed') {
+                        isRestore = true;
+                        isCompleted = true;
+                    } else {
+                        isRestore = false; // Render deployable state
+                    }
+                }
+            } catch (e) { console.error("Status fetch failed", e); }
+        }
 
         const displayTool = action.tool.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         const toolIcon    = _toolIconMap[action.tool] || 'security';
 
         let stateClass, stateLabel, stateIcon, stateIconSpin;
-        if (isCompleted || isRestore) {
+        if (isCompleted || (isRestore && !reattachStreamUrl)) {
             stateClass = 'state-complete'; stateLabel = 'DATA ACQUIRED'; stateIcon = 'check_circle'; stateIconSpin = false;
         } else if (reattachStreamUrl) {
             stateClass = 'state-active';   stateLabel = 'SYNCHRONIZING'; stateIcon = 'sync';          stateIconSpin = true;
@@ -1537,10 +1617,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const terminalHidden = (isRestore || isCompleted) ? 'display:none' : (reattachStreamUrl ? '' : 'display:none');
-        const footerHidden   = (isRestore || isCompleted) ? '' : 'display:none';
-        const dlHidden       = (isRestore || isCompleted) ? '' : 'display:none';
-        const footerLabel    = (isRestore || isCompleted) ? 'DATASET LOADED FROM CACHE.' : 'SYNCHRONIZING ANALYTICS...';
+        const terminalHidden = (isCompleted || (isRestore && !reattachStreamUrl)) ? 'display:none' : (reattachStreamUrl ? '' : 'display:none');
+        const footerHidden   = (isCompleted || (isRestore && !reattachStreamUrl)) ? '' : 'display:none';
+        const dlHidden       = (isCompleted || (isRestore && !reattachStreamUrl)) ? '' : 'display:none';
+        const footerLabel    = (isCompleted || (isRestore && !reattachStreamUrl)) ? 'DATASET LOADED FROM CACHE.' : 'SYNCHRONIZING ANALYTICS...';
 
         const row = document.createElement('div');
         row.className = 'msg-row system-action';
@@ -1619,7 +1699,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'sql_injection_scan': '/sql_scanner/download_pdf',
             'packet_sniffer': '/packet_sniffer/download_pdf',
             'api_security_scan': '/api_scanner/download_pdf',
-            'killchain_audit': '/killchain/download_report',
+            'killchain_audit': '/killchain/download_pdf',
             'semgrep_sast_scan': '/semgrep_scanner/download_pdf'
         };
 
@@ -1640,12 +1720,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setupButtons();
 
-        if (isRestore) return;
+        if (isRestore && !isCompleted) return;
 
         // [NEW] If completed, we stop here (already rendered success card)
+        // If this is the last message in the session, prompt for analysis
         if (isCompleted) {
-            // Trigger auto-analysis if it's a fresh load of a completed scan context
-            // But usually restoreSession handles this.
+            if (isLastMessage) promptForAnalysis(action.tool);
             return;
         }
 
@@ -1925,6 +2005,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const llmMode = ui.hiddenModelInput.value || 'local';
 
         ui.userInput.value = '';
+        ui.userInput.style.height = 'auto'; // Reset height
+        ui.sendBtn.disabled = true; // Disable until new input
+        pushToHistory(text); // [NEW] Add to terminal history
 
         // Capture a snapshot of current attachments before clearing
         const messageAttachments = [...attachedFiles];
@@ -2024,6 +2107,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         aiBubble.setAttribute('data-label', 'NetShield AI');
                         contentDiv = document.createElement('div');
                         contentDiv.className = 'markdown-content';
+                        
+                        // [FIX] Apply identical styling to streaming content as in addMessage
+                        const BUBBLE_FONT = "'IBM Plex Sans', sans-serif";
+                        contentDiv.style.setProperty('font-family', BUBBLE_FONT, 'important');
+                        contentDiv.style.setProperty('font-size', '0.935rem', 'important');
+                        contentDiv.style.setProperty('line-height', '1.65', 'important');
+                        contentDiv.style.setProperty('letter-spacing', '0', 'important');
+
                         aiBubble.appendChild(contentDiv);
                         
                         const actions = document.createElement('div');
@@ -2133,7 +2224,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     ui.sendBtn.addEventListener('click', sendMessage);
-    ui.userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+    // ui.userInput.addEventListener('keydown', ...) was moved to the Smart Input Logic section to support Shift+Enter
     
     const suggestionPool = [
         { title: "Vulnerability Analysis", desc: "Analyze the severity and impact of a Time-Based Blind SQL Injection." },
@@ -2165,7 +2256,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'suggestion-card';
             card.innerHTML = `<h5>${s.title}</h5><p>${s.desc}</p>`;
-            card.onclick = () => { ui.userInput.value = s.desc; ui.userInput.focus(); };
+            card.onclick = () => { 
+                ui.userInput.value = s.desc; 
+                ui.userInput.focus(); 
+                if (typeof autoResizeInput === 'function') autoResizeInput();
+            };
             ui.suggestionGrid.appendChild(card);
         });
     }

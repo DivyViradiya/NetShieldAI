@@ -71,6 +71,7 @@ def dispatch_scan():
     """
     data = request.get_json()
     target = data.get('target', '').strip()
+    action_id = data.get('action_id')
     logger.info(f"\033[35m[*] Kill Chain Audit requested for {target} by {current_user.username}\033[0m")
     profile = data.get('profile', 'full_audit')
     aggression = data.get('aggression', 'normal')
@@ -141,7 +142,8 @@ def dispatch_scan():
         user_id=current_user.id,
         tool_name="Kill Chain",
         target=target,
-        scan_type=f"{profile} ({aggression})"
+        scan_type=f"{profile} ({aggression})",
+        correlation_id=action_id
     )
 
     # Capture App Object

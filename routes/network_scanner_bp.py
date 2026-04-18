@@ -130,6 +130,7 @@ def scan_ports():
     user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     protocol_type = data.get('protocol_type', 'TCP').upper()
     scan_type = data.get('scan_type', 'default')
+    action_id = data.get('action_id') # [NEW] Correlation with Chatbot
     
     # [FIX] Pre-resolve target IP so that all subsequent file generation logic 
     # (Nmap scans and PDF reports) share the exact same filesystem identifier.
@@ -226,7 +227,7 @@ def scan_ports():
     scan_logger.reset_log_file(user_identifier, "network_scanner")
 
     # --- Threaded Scan Task ---
-    def scan_task(queue_id): # queue_id is now a parameter
+    def scan_task(queue_id, action_id): # queue_id is now a parameter
         # Use DB Logging
         with app.app_context():
             # [NEW] Log Start in DB
@@ -234,7 +235,8 @@ def scan_ports():
                 user_id=user_id_for_log,
                 tool_name="Nmap",
                 target=target_ip,
-                scan_type=scan_type
+                scan_type=scan_type,
+                correlation_id=action_id
             )
 
         # Use the captured identifier variable
@@ -323,7 +325,7 @@ def scan_ports():
         else:
             network_scanner.log("[!] Scan failed to produce a result file.", user_identifier, queue_id)
 
-    threading.Thread(target=scan_task, args=(queue_id,), daemon=True).start()  # RC-5 FIX: daemon=True prevents process hang on shutdown
+    threading.Thread(target=scan_task, args=(queue_id, action_id), daemon=True).start()  # RC-5 FIX: daemon=True prevents process hang on shutdown
     return jsonify({
         "status": "success", 
         "message": f"{scan_type.upper()} scan for {target_ip} initiated.", 

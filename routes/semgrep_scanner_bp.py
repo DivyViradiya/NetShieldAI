@@ -58,6 +58,9 @@ def scan_code():
     
     target_input = None
     input_type = None
+    
+    json_data = request.get_json(silent=True) or {}
+    action_id = request.form.get('action_id') or json_data.get('action_id')
 
     # 1. Handle Input (File vs Git)
     if 'file' in request.files:
@@ -82,15 +85,16 @@ def scan_code():
         input_type = "zip"
         target_display = file.filename
 
-    elif 'git_url' in request.form:
-        target_input = request.form['git_url']
+    elif 'git_url' in request.form or 'git_url' in json_data:
+        target_input = request.form.get('git_url') or json_data.get('git_url')
         if not target_input.strip():
              return jsonify({"status": "error", "message": "Git URL cannot be empty."}), 400
         input_type = "git"
         target_display = target_input
 
         # --- Target Validation Guardrails ---
-        user_confirmed_auth = request.form.get('user_confirmed_auth', 'false').lower() == 'true'
+        is_auth = request.form.get('user_confirmed_auth') or json_data.get('user_confirmed_auth', False)
+        user_confirmed_auth = str(is_auth).lower() == 'true' if isinstance(is_auth, str) else bool(is_auth)
         try:
             validate_target(target_input, user_confirmed_auth=user_confirmed_auth)
         except TargetBlockedError as e:
@@ -154,7 +158,8 @@ def scan_code():
                 user_id=user_id,
                 tool_name="Semgrep SAST",
                 target=target_display,
-                scan_type="Code Audit"
+                scan_type="Code Audit",
+                correlation_id=action_id
             )
 
         semgrep_scanner.log(f"[*] Starting Semgrep SAST scan on {target_display} (User: {current_user_identifier})...", user_id=current_user_identifier, to_console=True)

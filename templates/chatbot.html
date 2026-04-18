@@ -1098,10 +1098,10 @@
     
     .msg-bubble {
       font-family: var(--font-primary) !important;
-      font-size: 1.25rem;      
+      font-size: 0.935rem;      
       font-weight: 400;        
-      letter-spacing: -0.012em; 
-      line-height: 1.75;
+      letter-spacing: 0; 
+      line-height: 1.65;
       padding: 1.25rem 1.75rem;
       position: relative;
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -1165,25 +1165,32 @@
       box-shadow: 0 0 12px rgba(59, 130, 246, 0.12);
     }
 
-    /* Subtle Labels */
-    .msg-bubble::before {
-      content: attr(data-label);
-      position: absolute;
-      top: -1.5rem;
-      font-size: 0.65rem;
+    /* Integrated Identity Tags */
+    .msg-identity {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      font-size: 0.62rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: #52525b;
-      font-family: var(--font-mono, 'JetBrains Mono', monospace);
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      padding-bottom: 0.6rem;
+      transition: color 0.3s;
     }
-    .msg-row.user .msg-bubble::before { right: 0.5rem; }
+    .msg-bubble:hover .msg-identity { color: var(--neo-blue); }
+    .msg-identity span { font-size: 0.9rem !important; }
 
     /* Fix potential overlap with attachments */
     .msg-attachments + .msg-bubble {
-      margin-top: 1.5rem; /* Space for the label to breathe below attachments */
+      margin-top: 0.5rem; 
     }
-    .msg-row.ai .msg-bubble::before { left: 0.5rem; }
+    .msg-row.ai .msg-bubble {
+        margin-left: 0.5rem;
+    }
 
     /* Dynamic Widths based on Sidebar State */
     .msg-row.ai .msg-bubble {
@@ -1195,12 +1202,12 @@
 
     .msg-row.user .msg-bubble {
       max-width: 75%;
-      margin-right: 1.5rem; /* SHIFT LEFT: Add space on the right */
-      background: linear-gradient(135deg, #1a1a1e 0%, #0c0c0e 100%);
+      margin-right: 0.5rem;
+      background: #09090b;
       color: #f1f5f9;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      border-radius: 24px 24px 4px 24px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      border: 1px solid #27272a;
+      border-radius: 16px 16px 4px 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 
     body.light-mode .msg-row.user .msg-bubble {
@@ -1983,12 +1990,19 @@
       flex: 1;
       background: transparent;
       border: none;
-      padding: 0.8rem 1.5rem;
+      padding: 0.8rem 1.25rem;
       color: white;
-      font-size: 1rem;
+      font-size: 0.95rem;
       outline: none;
       font-family: inherit;
+      resize: none;
+      max-height: 200px;
+      min-height: 48px;
+      line-height: 1.5;
+      overflow-y: auto;
+      scrollbar-width: none;
     }
+    .chat-input::-webkit-scrollbar { display: none; }
     body.light-mode .chat-input { color: #0f172a; }
 
     .send-btn {
@@ -2003,6 +2017,12 @@
     }
     .send-btn:hover { background: white; color: black; transform: scale(1.05); }
     body.light-mode .send-btn:hover { background: var(--bg-secondary); color: var(--neo-blue); }
+    .send-btn:disabled { 
+        opacity: 0.25; 
+        cursor: not-allowed; 
+        pointer-events: none; 
+        filter: grayscale(1);
+    }
 
     /* Modal & Context Menu */
     .context-menu {
@@ -2718,7 +2738,8 @@
     }
 
     /* Lists - Fix Indentation in Bubbles */
-    .markdown-content ul, .msg-bubble ul {
+    .markdown-content ul, .msg-bubble ul,
+    .markdown-content ul ul, .msg-bubble ul ul {
         margin: 1rem 0;
         padding-left: 1.75rem;
         list-style-type: none;
@@ -2740,6 +2761,14 @@
         font-weight: 700;
         font-size: 1rem;
         line-height: inherit;
+        opacity: 0.8;
+    }
+
+    /* Nested Lists (Sub-bullets) - Remove arrow and use dot */
+    .markdown-content ul ul > li::before, .msg-bubble ul ul > li::before {
+        content: "•";
+        font-size: 0.8rem;
+        left: -1rem;
         opacity: 0.6;
     }
     .markdown-content ol > li, .msg-bubble ol > li {
@@ -2749,7 +2778,7 @@
     /* Nested Lists (Sub-bullets) */
     .markdown-content ul ul, .msg-bubble ul ul,
     .markdown-content ol ul, .msg-bubble ol ul {
-        list-style-type: circle;
+        list-style-type: none;
         margin-bottom: 0.25rem;
         color: #cbd5e1;
     }
@@ -3627,7 +3656,7 @@
                </div>
             </div>
 
-            <input type="text" id="user-input" class="chat-input" placeholder="Describe threat or query database..." autocomplete="off" />
+            <textarea id="user-input" class="chat-input" placeholder="Describe threat or query database..." autocomplete="off" rows="1"></textarea>
             <div class="model-select-compact">
               <button class="model-trigger-compact" id="model-trigger-compact">
                 <span class="current-model-text">Gemini 2.0 Flash</span>
@@ -3646,6 +3675,7 @@
           </div>
           <div class="input-hint">
             <span><kbd class="kbd-hint">Enter</kbd> to send</span>
+            <span><kbd class="kbd-hint">Shift+Enter</kbd> for newline</span>
             <span><kbd class="kbd-hint">Ctrl+K</kbd> to search</span>
             <span><kbd class="kbd-hint">Ctrl+B</kbd> to toggle sidebar</span>
           </div>

@@ -61,6 +61,7 @@ def scan_ssl():
     """
     data = request.get_json()
     target_host = data.get('target_host')
+    action_id = data.get('action_id')
     logger.info(f"[*] SSL Scan requested for {target_host} by {current_user.username}")
 
     # Determine User Directory for this scan
@@ -131,7 +132,8 @@ def scan_ssl():
                 user_id=user_id,
                 tool_name="SSLScan",
                 target=target_host,
-                scan_type="Standard"
+                scan_type="Standard",
+                correlation_id=action_id
             )
 
         start_time = time.time()

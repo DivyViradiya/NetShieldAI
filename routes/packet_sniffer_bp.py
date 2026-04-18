@@ -94,6 +94,7 @@ def start_capture_route():
 
     data = request.get_json(force=True, silent=True) or {}
     target_ip = data.get('target_ip')
+    action_id = data.get('action_id')
     logger.info(f"[*] Packet Capture requested for {target_ip} by {current_user.username}")
     duration = int(data.get('duration', 30))
     max_packets = int(data.get('max_packets', 50))
@@ -165,7 +166,8 @@ def start_capture_route():
                 user_id=user_id_for_log,
                 tool_name="Sniffer",
                 target=target_ip,
-                scan_type="Capture"
+                scan_type="Capture",
+                correlation_id=action_id
             )
 
         # Use the captured 'user_identifier' here

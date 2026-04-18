@@ -660,6 +660,7 @@ def execute_action():
         data = request.json
         tool = data.get('tool')
         params = data.get('parameters', {})
+        action_id = data.get('action_id')
         
         if not tool:
             return jsonify({'error': 'No tool specified'}), 400
@@ -763,6 +764,9 @@ def execute_action():
         # Trigger the scan as a separate POST request
         # We don't wait for the scan to finish (they are already threaded in their bps)
         try:
+            if action_id:
+                config['payload']['action_id'] = action_id
+                
             # Note: We use verify=False if using self-signed certs in dev, but usually not needed for localhost
             resp = requests.post(
                 internal_url, 
@@ -796,6 +800,44 @@ def execute_action():
     except Exception as e:
         user_logger.error(f"Error in execute_action: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
+
+@chatbot_bp.route('/get_action_status', methods=['GET'])
+@login_required
+def get_action_status():
+    """
+    Returns the real-time status of a scan based on its Chatbot action_id.
+    """
+    action_id = request.args.get('action_id')
+    if not action_id:
+        return jsonify({"status": "error", "message": "Missing action_id"}), 400
+        
+    try:
+        from Services import scan_logger
+        scan = scan_logger.get_scan_log_by_correlation_id(action_id)
+        
+        if not scan:
+            return jsonify({"status": "not_found", "message": "Scan not found for this action_id"}), 404
+            
+        tool_stream_map = {
+            'Nmap': '/network_scanner/log_stream',
+            'ZAP': '/zap_scanner/log_stream',
+            'SSLScan': '/ssl_scanner/log_stream',
+            'SQLMap': '/sql_scanner/log_stream',
+            'Sniffer': '/packet_sniffer/log_stream',
+            'Semgrep SAST': '/semgrep_scanner/log_stream',
+            'API': '/api_scanner/log_stream',
+            'Kill Chain': '/killchain/log_stream'
+        }
+            
+        return jsonify({
+            "status": "success",
+            "scan_status": scan.status, # Running, Completed, Failed
+            "tool": scan.tool_name,
+            "stream_url": tool_stream_map.get(scan.tool_name)
+        })
+    except Exception as e:
+        logger.error(f"Error getting action status: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @chatbot_bp.route('/get_history', methods=['GET'])
 @login_required

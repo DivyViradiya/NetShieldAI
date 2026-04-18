@@ -63,6 +63,7 @@ def initiate_zap_scan():
     data = request.get_json()
     target_url = data.get('target_url')
     scan_mode = data.get('scan_mode', 'default')
+    action_id = data.get('action_id')
     user_confirmed_auth = data.get('user_confirmed_auth', False)
     
     logger.info(f"\033[34m[*] ZAP Scan requested for {target_url} (Mode: {scan_mode}) by {current_user.username}\033[0m")
@@ -126,7 +127,8 @@ def initiate_zap_scan():
                 user_id=user_id_for_log,
                 tool_name="ZAP",
                 target=target_url,
-                scan_type=f"ZAP {scan_mode.capitalize()}"
+                scan_type=f"ZAP {scan_mode.capitalize()}",
+                correlation_id=action_id
             )
 
         # Pass composite ID to log function

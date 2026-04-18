@@ -63,6 +63,7 @@ def scan_sql():
     """
     data = request.get_json()
     target_url = data.get('target_url', '').strip()
+    action_id = data.get('action_id')
     user_confirmed_auth = data.get('user_confirmed_auth', False)
     
     logger.info(f"SQL Injection Scan requested for {target_url} by {current_user.username}")
@@ -146,7 +147,8 @@ def scan_sql():
                     user_id=user_id,
                     tool_name="SQLMap",
                     target=target_url,
-                    scan_type=f"{scan_mode.title()} Mode"
+                    scan_type=f"{scan_mode.title()} Mode",
+                    correlation_id=action_id
                 )
 
             sql_scanner.log(f"[*] Starting {scan_mode.upper()} SQL scan for {target_url} (User: {current_user_identifier})...", current_user_identifier, to_console=True)
