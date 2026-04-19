@@ -1,14 +1,47 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- 0. SECURITY: CSRF Token Setup ---
+    // --- 0. SECURITY & ALERTS ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    window.neoAlert = function(msg, title = 'System Notification', icon = 'notification_important') {
+        return new Promise(resolve => {
+            const modal = document.getElementById('system-modal');
+            if(!modal) { alert(msg); resolve(true); return; }
+            document.getElementById('system-modal-msg').innerHTML = msg;
+            document.getElementById('system-modal-title-text').innerText = title;
+            document.getElementById('system-modal-icon').innerText = icon;
+            const cancelBtn = document.getElementById('system-modal-cancel');
+            const confirmBtn = document.getElementById('system-modal-confirm');
+            cancelBtn.style.display = 'none';
+            confirmBtn.innerText = 'OK';
+            modal.classList.add('show');
+            confirmBtn.onclick = () => { modal.classList.remove('show'); resolve(true); };
+        });
+    };
+
+    window.neoConfirm = function(msg, title = 'Confirm Action', icon = 'warning') {
+        return new Promise(resolve => {
+            const modal = document.getElementById('system-modal');
+            if(!modal) { resolve(confirm(msg)); return; }
+            document.getElementById('system-modal-msg').innerHTML = msg;
+            document.getElementById('system-modal-title-text').innerText = title;
+            document.getElementById('system-modal-icon').innerText = icon;
+            const cancelBtn = document.getElementById('system-modal-cancel');
+            const confirmBtn = document.getElementById('system-modal-confirm');
+            cancelBtn.style.display = 'block';
+            confirmBtn.innerText = 'Confirm';
+            modal.classList.add('show');
+            confirmBtn.onclick = () => { modal.classList.remove('show'); resolve(true); };
+            cancelBtn.onclick = () => { modal.classList.remove('show'); resolve(false); };
+        });
+    };
 
     const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16MB
 
     // Helper for file size validation
     function validateFileSize(file) {
         if (file.size > MAX_FILE_SIZE) {
-            alert(`File "${file.name}" is too large (${(file.size / (1024 * 1024)).toFixed(2)}MB). Maximum allowed is 16MB.`);
+            neoAlert(`File "${file.name}" is too large (${(file.size / (1024 * 1024)).toFixed(2)}MB). Maximum allowed is 16MB.`, 'Upload Error', 'error');
             return false;
         }
         return true;
@@ -36,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Handle Session Desync (401 Unauthorized or 404 Not Found for session)
             if ((response.status === 401 || response.status === 404) && currentSessionId) {
                 console.warn(`[!] Session desync detected (${response.status}). Resetting UI context.`);
-                alert("Your session has expired or was cleared in the background. Resetting view.");
+                neoAlert("Your session has expired or was cleared in the background. Resetting view.", "Session Desync", "sync_problem");
                 clearView();
                 return response; // Return anyway so caller can handle if needed
             }
@@ -93,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnClearContext: document.getElementById('cc-clear-context'),
         btnDeleteSession: document.getElementById('cc-delete-session'),
         btnWipeAll: document.getElementById('cc-wipe-all'),
+        btnClearMemory: document.getElementById('cc-clear-memory'),
         btnDownloadTranscript: document.getElementById('cc-download-transcript'),
 
         // Status & Workflow
@@ -173,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Clear Context (Keep session, wipe UI and backend history)
     ui.btnClearContext.onclick = async () => {
-        if (confirm("Clear current analysis history? The AI context will be reset.")) {
+        if (await neoConfirm("Clear current analysis history? The AI context will be reset.", "Clear Context")) {
             try {
                 await fetchWithAuth('/chatbot/clear_history', { method: 'POST' });
                 ui.chatHistory.innerHTML = '';
@@ -185,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Delete Active Session
     ui.btnDeleteSession.onclick = async () => {
-        if (currentSessionId && confirm("Permanently delete this session?")) {
+        if (currentSessionId && await neoConfirm("Permanently delete this session?", "Delete Session", "delete_forever")) {
             await deleteSession(currentSessionId);
             ui.commandCenter.classList.remove('open');
         }
@@ -193,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Nuclear Wipe
     ui.btnWipeAll.onclick = async () => {
-        if (confirm("DANGER: This will delete ALL past analysis sessions. This cannot be undone. Proceed?")) {
+        if (await neoConfirm("DANGER: This will delete ALL past analysis sessions. This cannot be undone. Proceed?", "Wipe Database", "warning")) {
             try {
                 await fetchWithAuth('/chatbot/delete_all_sessions', { method: 'POST' });
                 clearView();
@@ -202,6 +236,27 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) { console.error(e); }
         }
     };
+
+    // Clear AI Memory
+    if (ui.btnClearMemory) {
+        ui.btnClearMemory.onclick = async () => {
+            if (await neoConfirm("Are you sure you want to wipe AI semantic memory? The Agent will forget your specific preferences and rules.", "Clear Memory", "memory")) {
+                try {
+                    const response = await fetchWithAuth('/chatbot/clear_memory', { method: 'POST' });
+                    const res = await response.json();
+                    if (res.success || res.status === 'success') {
+                        addMessage('system', "SYSTEM_NOTIFICATION: Memory Banks Purged. All persistent rules and semantic facts have been wiped.", false);
+                        ui.commandCenter.classList.remove('open');
+                    } else {
+                        throw new Error(res.error || res.message || "Memory wipe failed.");
+                    }
+                } catch (e) { 
+                    console.error(e); 
+                    neoAlert("Failed to clear memory: " + e.message, "Error", "error"); 
+                }
+            }
+        };
+    }
 
     // Export Transcript
     ui.btnDownloadTranscript.onclick = () => {
@@ -543,7 +598,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function parseContent(text) {
         if (!text) return "";
         try {
-            let processedText = text;
+            // [NEW] Instant String-level suggestion chip parsing (Speed up UX)
+            let processedText = text.replace(/(?:__|\*\*)*SUGGESTION(?:__|\*\*)*:\s*(.*?)(?=\n|$)/gi, (match, suggestionText) => {
+                const cleanStr = suggestionText.replace(/<\/?[^>]+(>|$)/g, "").trim();
+                if (!cleanStr) return '';
+                return `\n\n<div class="ai-suggestion-chip" data-suggestion="${encodeURIComponent(cleanStr)}"><span class="material-symbols-outlined">lightbulb</span> ${cleanStr}</div>\n\n`;
+            });
 
             // ================================================================
             // PRE-PROCESSOR: Decision Guide (PATH N — STATUS [...] blocks)
@@ -956,16 +1016,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (groups.length > 0) {
                     const container = document.createElement('div');
                     container.className = 'security-tools-container';
-                    container.style.marginBottom = '2rem';
+                    container.style.marginBottom = '1.25rem';
                     
                     groups.forEach(group => {
-                        if (group.category) {
-                            const header = document.createElement('div');
-                            header.className = 'tool-category-header';
-                            header.innerHTML = `<span class="material-symbols-outlined" style="font-size:12px">verified_user</span> ${group.category}`;
-                            container.appendChild(header);
-                        }
-                        
                         const grid = document.createElement('div');
                         grid.className = 'scheduling-grid security-tools-grid';
                         
@@ -1005,8 +1058,44 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             });
 
-            // --- Font Sanitization (preserved, with carve-outs for new elements) ---
-            const FONT_UI   = "'Inter', sans-serif";
+            // --- PASS 9: Smart Suggestions ---
+            tempDiv.querySelectorAll('p, div, blockquote').forEach(el => {
+                let inner = el.innerHTML;
+                if(/SUGGESTION/i.test(inner)) {
+                    // Match SUGGESTION regardless of surrounding bold tags/HTML that marked might have added
+                    const regex = /(?:<[^>]+>|__|\*\*)*SUGGESTION(?:<[^>]+>|__|\*\*)*:\s*(.*?)(?=<br>|<\/p>|<\/div>|$)/ig;
+                    if (regex.test(inner)) {
+             // Pass 9 handled by string pre-processor in parseContent start (Instant rendering)
+                    }
+                }
+            });
+
+            // --- PASS 10: Special System Markers ---
+            tempDiv.innerHTML = tempDiv.innerHTML
+                .replace(/<p>\s*\[GRID_INTRO\]\s*<\/p>|\[GRID_INTRO\]/g, 
+                    `<div class="grid-intro-banner">
+                        <span class="material-symbols-outlined grid-icon">hub</span>
+                        <div class="grid-text">
+                            <div class="grid-title">Security Grid Orchestration</div>
+                            <div class="grid-sub">Select a module below to initiate a strategic security assessment.</div>
+                        </div>
+                    </div>`)
+                .replace(/<p>\s*\[MEMORY_UPDATED\]\s*<\/p>|\[MEMORY_UPDATED\]/g,
+                    `<div class="memory-updated-chip" title="A persistent fact or rule has been saved to your personal context.">
+                        <span class="material-symbols-outlined">memory</span>
+                        <span>Memory Banks Updated</span>
+                    </div>`)
+                .replace(/\[SCAN_PRESETS\]/g, ''); // Ensure the marker is never visible
+
+            // --- Cleanup: Remove empty paragraphs that cause ghost vertical spacing ---
+            tempDiv.querySelectorAll('p').forEach(p => {
+                if (!p.innerText.trim() && !p.querySelector('img, video, iframe, .ai-suggestion-chip, .memory-updated-chip')) {
+                    p.remove();
+                }
+            });
+
+            // --- Font Sanitization ---
+            const FONT_UI   = "'Geist', sans-serif";
             const FONT_MONO = "'JetBrains Mono', monospace";
             const _uiEls = 'p, li, td, th, blockquote, strong, em, a, .llm-context-item, .llm-finding-body';
             tempDiv.querySelectorAll(_uiEls).forEach(el => {
@@ -1044,8 +1133,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // [NEW] Global listener for Interactive Security Grid Cards
+    // [NEW] Global listener for Interactive Security Grid Cards and Suggestions
     document.addEventListener('click', (e) => {
+        // [PHASE 5: Suggestion Chips]
+        const suggestionChip = e.target.closest('.ai-suggestion-chip');
+        if (suggestionChip && ui.userInput) {
+            const suggestionText = decodeURIComponent(suggestionChip.getAttribute('data-suggestion'));
+            ui.userInput.value = suggestionText;
+            ui.userInput.focus();
+            if (typeof autoResizeInput === 'function') autoResizeInput();
+            else ui.userInput.dispatchEvent(new Event('input', { bubbles: true }));
+            
+            // Subtle flash
+            suggestionChip.style.transform = 'scale(0.96)';
+            setTimeout(() => { suggestionChip.style.transform = ''; }, 150);
+            
+            // Auto-send suggestion text
+            setTimeout(() => {
+                if (ui.sendBtn && !ui.sendBtn.disabled) {
+                    ui.sendBtn.click();
+                } else {
+                    sendMessage();
+                }
+            }, 50);
+            return;
+        }
+
         const tile = e.target.closest('.freq-option');
         if (!tile || !ui.userInput) return;
 
@@ -1141,14 +1254,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const bubble = document.createElement('div');
         bubble.className = 'msg-bubble';
         
-        if (role === 'ai' || role === 'system') {
+        if (role === 'system') {
             row.classList.add('unbounded');
         } else {
+            if (role === 'ai') row.classList.add('unbounded');
+
             const identity = document.createElement('div');
             identity.className = 'msg-identity';
-            const icon = role === 'user' ? 'person' : 'terminal';
-            const label = role === 'user' ? 'ANALYST' : 'SECURITY LOG';
-            identity.innerHTML = `<span class="material-symbols-outlined">${icon}</span> ${label}`;
+            
+            if (role === 'ai' || role === 'assistant') {
+                identity.classList.add('ai-identity');
+                identity.innerHTML = `<span>NETSHIELD AI</span>`;
+            } else {
+                const icon = role === 'user' ? 'person' : 'terminal';
+                const label = role === 'user' ? 'ANALYST' : 'SECURITY LOG';
+                identity.innerHTML = `<span class="material-symbols-outlined">${icon}</span> ${label}`;
+            }
+            
             bubble.appendChild(identity);
         }
         
@@ -2340,12 +2462,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         aiRow.className = 'msg-row ai';
                         const aiBubble = document.createElement('div');
                         aiBubble.className = 'msg-bubble';
-                        aiBubble.setAttribute('data-label', 'NetShield AI');
+                        
+                        // [NEW] Persist NETSHIELD AI identity with bottom border during stream
+                        const identity = document.createElement('div');
+                        identity.className = 'msg-identity ai-identity';
+                        identity.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px">bolt</span> <span>NETSHIELD AI</span>`;
+                        aiBubble.appendChild(identity);
+
                         contentDiv = document.createElement('div');
                         contentDiv.className = 'markdown-content';
                         
                         // [FIX] Apply identical styling to streaming content as in addMessage
-                        const BUBBLE_FONT = "'IBM Plex Sans', sans-serif";
+                        const BUBBLE_FONT = "'Geist', sans-serif";
                         contentDiv.style.setProperty('font-family', BUBBLE_FONT, 'important');
                         contentDiv.style.setProperty('font-size', '0.935rem', 'important');
                         contentDiv.style.setProperty('line-height', '1.65', 'important');

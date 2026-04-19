@@ -591,6 +591,25 @@ def clear_history_proxy():
         return jsonify({'error': str(e)}), 500
 
 
+@chatbot_bp.route('/clear_memory', methods=['POST'])
+@login_required
+def clear_memory_proxy():
+    """
+    Wipes the agentic long-term memory (Rules & Facts) for the current user.
+    """
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_logger = get_user_logger(user_identifier)
+    try:
+        proxy_url = f"{SERVER_PROXY_URL}/clear_memory"
+        # The FastAPI endpoint expects a JSON payload with user_id
+        payload = {'user_id': user_identifier}
+        response = http_session.post(proxy_url, json=payload, timeout=10)
+        return proxy_json_response(response, user_logger)
+    except Exception as e:
+        user_logger.error(f"Error in clear_memory: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
 @chatbot_bp.route('/delete_all_sessions', methods=['POST'])
 @login_required
 def delete_all_sessions_proxy():

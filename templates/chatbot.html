@@ -9,7 +9,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css" />
@@ -27,7 +27,7 @@
       --neo-cyan: #00f7ff;
       --neo-cyan-glow: rgba(0, 247, 255, 0.1);
       
-      --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-primary: 'Geist', sans-serif;
       --font-code: 'JetBrains Mono', monospace;
       
       --radius-card: 12px;
@@ -1176,9 +1176,10 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: #52525b;
-      margin-bottom: 0.75rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      padding-bottom: 0.6rem;
+      margin-bottom: 0.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Full-width divider line */
+      padding-bottom: 0.25rem;
+      width: 100%;
       transition: color 0.3s;
     }
     .msg-bubble:hover .msg-identity { color: var(--neo-blue); }
@@ -1226,6 +1227,7 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
       max-width: 100% !important;
+      width: 100% !important;
       padding: 0 !important;
       border-radius: 0 !important;
     }
@@ -1237,6 +1239,7 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
       max-width: 100% !important;
+      width: 100% !important;
       padding: 0 !important;
       border-radius: 0 !important;
     }
@@ -2737,17 +2740,22 @@
       border-bottom: none; 
     }
 
-    /* Lists - Fix Indentation in Bubbles */
+    /* Lists - Fix Indentation in Bubbles and remove native bullets */
     .markdown-content ul, .msg-bubble ul,
-    .markdown-content ul ul, .msg-bubble ul ul {
+    .markdown-content ul ul, .msg-bubble ul ul,
+    .markdown-content ol, .msg-bubble ol,
+    .markdown-content ol ol, .msg-bubble ol ol {
         margin: 1rem 0;
         padding-left: 1.75rem;
-        list-style-type: none;
+        list-style: none !important; /* Force native bullets off */
+        list-style-type: none !important;
     }
     .markdown-content ol, .msg-bubble ol {
-        margin: 1rem 0;
-        padding-left: 1.75rem;
-        list-style-type: decimal;
+        list-style-type: decimal !important; /* Keep numbers for OL */
+        padding-left: 2rem;
+    }
+    .markdown-content ol ul, .msg-bubble ol ul {
+        list-style-type: none !important;
     }
     .markdown-content ul > li, .msg-bubble ul > li {
         margin-bottom: 0.6rem;
@@ -2790,9 +2798,10 @@
         color: var(--text-secondary);
     }
     
+    /* Reset nested list types to none to prevent stacking */
     .markdown-content ul ul ul, .msg-bubble ul ul ul,
     .markdown-content ol ul ul, .msg-bubble ol ul ul {
-        list-style-type: square;
+        list-style-type: none !important;
     }
 
     /* Bold/Strong/Italic Text Enhancement */
@@ -3485,6 +3494,122 @@
       .sidebar { display: none; }
       .command-center { width: 100%; right: -100%; }
     }
+    /* --- Phase 5: Agentic UI Elements --- */
+    /* AI Suggestion Chips */
+    .ai-suggestion-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        color: #10b981;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-family: var(--font-primary);
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-right: 8px;
+        margin-bottom: 8px;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05);
+    }
+    .ai-suggestion-chip:hover {
+        background: rgba(16, 185, 129, 0.2);
+        color: #fff;
+        border-color: rgba(16, 185, 129, 0.5);
+        transform: translateY(-1px);
+    }
+    body.light-mode .ai-suggestion-chip {
+        background: rgba(16, 185, 129, 0.05);
+        color: #059669;
+    }
+    body.light-mode .ai-suggestion-chip:hover {
+        background: rgba(16, 185, 129, 0.15);
+    }
+
+    /* Grid Intro Banner */
+    /* Minimal Grid Intro Banner - Professional & Non-glowy */
+    .grid-intro-banner {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        margin: 0.5rem 0 0.25rem 0; /* Minimal bottom margin */
+    }
+
+    /* Tighten gap when tool grid follows banner */
+    .grid-intro-banner + .security-tools-container {
+        margin-top: -0.25rem !important;
+    }
+    .grid-intro-banner .grid-icon {
+        color: var(--neo-blue);
+        font-size: 1.75rem;
+    }
+    .grid-text .grid-title {
+        color: var(--neo-blue);
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-family: var(--font-code);
+        margin-bottom: 2px;
+    }
+    .grid-text .grid-sub {
+        color: #94a3b8;
+        font-size: 0.75rem;
+    }
+    body.light-mode .grid-intro-banner {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.08) 0%, rgba(79, 70, 229, 0.01) 100%);
+    }
+
+    /* Memory Updated Chip */
+    .memory-updated-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #8b9bb4;
+        font-family: var(--font-code);
+        font-size: 0.6rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 1.5rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed rgba(255, 255, 255, 0.05);
+        opacity: 0.8;
+        width: 100%;
+    }
+    .memory-updated-chip .material-symbols-outlined {
+        color: var(--neo-cyan);
+        font-size: 0.9rem;
+    }
+    body.light-mode .memory-updated-chip {
+        color: #64748b;
+        border-top-color: rgba(0,0,0,0.05);
+    }
+
+    /* AI Identity Label */
+    .ai-identity {
+        font-family: var(--font-code);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        color: #52525b;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.35rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: inline-block;
+        opacity: 0.7;
+    }
+    body.light-mode .ai-identity {
+        color: #94a3b8;
+        border-bottom-color: rgba(0,0,0,0.05);
+    }
   </style>
 {% endblock %}
 
@@ -3687,6 +3812,9 @@
               <button class="btn-cc-action btn-cc-danger" id="cc-wipe-all">
                 <span class="material-symbols-outlined" style="font-size: 1rem;">delete_sweep</span> Wipe All History
               </button>
+              <button class="btn-cc-action btn-cc-danger" id="cc-clear-memory">
+                <span class="material-symbols-outlined" style="font-size: 1rem;">memory</span> Clear AI Memory
+              </button>
             </div>
           </section>
 
@@ -3763,8 +3891,8 @@
                 <span class="material-symbols-outlined" style="font-size: 1rem;">expand_less</span>
               </button>
               <div class="model-dropdown-compact" id="model-dropdown-compact">
-                 <div class="model-opt selected" data-value="gemini-2.5-flash">Gemini 2.0 Flash</div>
-                 <div class="model-opt" data-value="gemini-2.5-flash-lite">Gemini 2.0 Flash Lite</div>
+                 <div class="model-opt selected" data-value="gemini-2.0-flash">Gemini 2.0 Flash</div>
+                 <div class="model-opt" data-value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</div>
                  <div class="model-opt" data-value="gemini-2.5-pro">Gemini 2.5 Pro</div>
                  <div class="model-opt" data-value="gemini-3-flash-preview">Gemini 3 Flash</div>
                  <div class="model-opt" data-value="gemini-3-pro-preview">Gemini 3 Pro</div>
@@ -3791,6 +3919,20 @@
       <div class="modal-actions">
         <button class="btn-modal btn-cancel" id="cancel-rename">Cancel</button>
         <button class="btn-modal btn-save" id="confirm-rename">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom System Alerts / Confirms -->
+  <div class="modal-overlay" id="system-modal" style="z-index: 10000; align-items:flex-start; padding-top:15vh;">
+    <div class="neo-modal" style="width: 420px; max-width: 90vw; background: rgba(15, 15, 17, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1);">
+      <div class="modal-header" id="system-modal-title" style="color: var(--neo-cyan); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:12px; font-family: var(--font-code); font-size: 0.75rem; letter-spacing: 0.1em; display:flex; align-items:center; gap:8px;">
+        <span class="material-symbols-outlined" id="system-modal-icon" style="font-size: 1.1rem;">notification_important</span> <span id="system-modal-title-text" style="text-transform: uppercase;">Notification</span>
+      </div>
+      <div id="system-modal-msg" style="color: #cbd5e1; font-size: 0.85rem; line-height: 1.6; margin: 1.5rem 0; font-family: 'IBM Plex Sans', sans-serif;"></div>
+      <div class="modal-actions" style="margin-top: 1rem;">
+        <button class="btn-modal btn-cancel" id="system-modal-cancel" style="display:none;">Cancel</button>
+        <button class="btn-modal btn-save" id="system-modal-confirm">OK</button>
       </div>
     </div>
   </div>
