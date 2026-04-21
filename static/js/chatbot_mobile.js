@@ -645,7 +645,8 @@ document.addEventListener('DOMContentLoaded', () => {
             'packet_sniffer': '/packet_sniffer/',
             'api_security_scan': '/api_scanner/',
             'killchain_audit': '/killchain/',
-            'semgrep_sast_scan': '/semgrep_scanner/'
+            'semgrep_sast_scan': '/semgrep_scanner/',
+            'schedule_scan': '/scheduler/'
         };
 
         const toolDownloadMap = {

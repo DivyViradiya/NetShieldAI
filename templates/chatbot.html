@@ -3495,38 +3495,101 @@
       .command-center { width: 100%; right: -100%; }
     }
     /* --- Phase 5: Agentic UI Elements --- */
-    /* AI Suggestion Chips */
-    .ai-suggestion-chip {
-        display: inline-flex;
+    
+    /* Follow-up Tray */
+    .ai-followup-tray {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px dashed rgba(255, 255, 255, 0.05);
+    }
+    body.light-mode .ai-followup-tray {
+        border-top-color: rgba(0, 0, 0, 0.05);
+    }
+
+    /* AI Card Base (Ref: grid-intro-banner) */
+    .ai-followup-card {
+        display: flex;
         align-items: center;
-        gap: 6px;
-        background: rgba(16, 185, 129, 0.1);
-        border: 1px solid rgba(16, 185, 129, 0.25);
-        color: #10b981;
-        padding: 6px 12px;
-        border-radius: 16px;
-        font-family: var(--font-primary);
-        font-size: 0.75rem;
-        font-weight: 500;
+        gap: 12px;
+        padding: 10px 14px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
         cursor: pointer;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        margin-right: 8px;
-        margin-bottom: 8px;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05);
+        position: relative;
+        overflow: hidden;
     }
-    .ai-suggestion-chip:hover {
-        background: rgba(16, 185, 129, 0.2);
-        color: #fff;
-        border-color: rgba(16, 185, 129, 0.5);
-        transform: translateY(-1px);
+
+    .ai-followup-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.12);
+        transform: translateX(4px);
     }
-    body.light-mode .ai-suggestion-chip {
-        background: rgba(16, 185, 129, 0.05);
-        color: #059669;
+    
+    .ai-followup-card .card-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
     }
-    body.light-mode .ai-suggestion-chip:hover {
-        background: rgba(16, 185, 129, 0.15);
+
+    .ai-followup-card .card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
     }
+
+    .ai-followup-card .card-label {
+        font-family: var(--font-code);
+        font-size: 0.6rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.5;
+    }
+
+    .ai-followup-card .card-text {
+        font-size: 0.8rem;
+        color: #e2e8f0;
+        font-weight: 500;
+    }
+
+    /* Action Variant */
+    .ai-followup-card.action {
+        border-left: 3px solid var(--neo-blue);
+    }
+    .ai-followup-card.action .card-icon { color: var(--neo-blue); }
+    .ai-followup-card.action .card-label { color: var(--neo-blue); }
+    
+    .ai-followup-card.action::after {
+        content: 'INITIATE';
+        position: absolute;
+        right: 14px;
+        font-family: var(--font-code);
+        font-size: 0.55rem;
+        font-weight: 800;
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--neo-blue);
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .ai-followup-card.action:hover::after {
+        opacity: 1;
+    }
+
+    body.light-mode .ai-followup-card {
+        background: #f8fafc;
+        border-color: #e2e8f0;
+    }
+    body.light-mode .ai-followup-card .card-text { color: #1e293b; }
+    body.light-mode .ai-followup-card:hover { background: #f1f5f9; }
+
 
     /* Grid Intro Banner */
     /* Minimal Grid Intro Banner - Professional & Non-glowy */
@@ -3697,25 +3760,37 @@
                   <span class="material-symbols-outlined" style="font-size: 1rem;">expand_more</span>
                 </div>
                 <div class="custom-options">
-                  <div class="custom-option selected" data-value="gemini-2.5-flash">
+                  <div class="custom-option selected" data-value="gemini-2.0-flash">
                     <span class="option-title">Gemini 2.0 Flash</span>
                     <span class="option-desc">Cloud / Balanced Speed</span>
                   </div>
-                  <div class="custom-option" data-value="gemini-2.5-flash-lite">
+                  <div class="custom-option" data-value="gemini-2.0-flash-lite">
                     <span class="option-title">Gemini 2.0 Flash Lite</span>
                     <span class="option-desc">Cloud / Maximum Speed</span>
+                  </div>
+                  <div class="custom-option" data-value="gemini-2.5-flash">
+                    <span class="option-title">Gemini 2.5 Flash</span>
+                    <span class="option-desc">Cloud / Balanced Speed</span>
                   </div>
                   <div class="custom-option" data-value="gemini-2.5-pro">
                     <span class="option-title">Gemini 2.5 Pro</span>
                     <span class="option-desc">Cloud / Advanced Reasoning</span>
                   </div>
                   <div class="custom-option" data-value="gemini-3-flash-preview">
-                    <span class="option-title">Gemini 3 Flash</span>
+                    <span class="option-title">Gemini 3.0 Flash</span>
                     <span class="option-desc">Next Gen / Flash Preview</span>
                   </div>
                   <div class="custom-option" data-value="gemini-3-pro-preview">
-                    <span class="option-title">Gemini 3 Pro</span>
+                    <span class="option-title">Gemini 3.0 Pro</span>
                     <span class="option-desc">Next Gen / Pro Preview</span>
+                  </div>
+                  <div class="custom-option" data-value="gemini-3.1-flash-lite-preview">
+                    <span class="option-title">Gemini 3.1 Flash Lite</span>
+                    <span class="option-desc">Next Gen / Fast Preview</span>
+                  </div>
+                  <div class="custom-option" data-value="gemini-3.1-pro-preview">
+                    <span class="option-title">Gemini 3.1 Pro</span>
+                    <span class="option-desc">Next Gen / Advanced Preview</span>
                   </div>
                   <div class="custom-option" data-value="local">
                     <span class="option-title">NetShield Local</span>

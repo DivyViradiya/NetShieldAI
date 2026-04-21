@@ -25,12 +25,13 @@
     }
 
     body.light-mode {
-      --neo-card: rgba(255, 255, 255, 0.9);
-      --neo-border: rgba(0, 0, 0, 0.08);
+      --neo-card: rgba(255, 255, 255, 0.8);
+      --neo-border: rgba(15, 23, 42, 0.08);
       --neo-accent: #0f172a;
       --neo-text-primary: #0f172a;
-      --neo-text-secondary: #334155;
+      --neo-text-secondary: #1e293b;
       --neo-text-tertiary: #64748b;
+      --neo-blue: #2563eb;
     }
 
     .main-content { font-family: var(--font-ui); flex: 1; display: flex; flex-direction: column; width: 100%; padding: 0; position: relative; z-index: 5; margin-top: 0; }
@@ -78,7 +79,7 @@
       font-size: clamp(0.9rem, 2vw, 1.1rem); color: var(--neo-text-secondary); 
       max-width: 750px; margin: 0 0 2rem 0; line-height: 1.5; 
       border-left: 3px solid var(--neo-blue); padding-left: 1.5rem;
-      background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.05) 0%, transparent 100%);
       padding-top: 0.5rem; padding-bottom: 0.5rem;
     }
     
@@ -110,14 +111,23 @@
       position: relative;
       text-decoration: none;
       transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       overflow: hidden;
     }
 
     .bento-card:hover {
       border-color: var(--neo-blue);
-      background: rgba(59, 130, 246, 0.03);
+      background: rgba(37, 99, 235, 0.03);
       transform: translateY(-5px);
+    }
+
+    body.light-mode .bento-card {
+      box-shadow: 0 4px 24px rgba(37, 99, 235, 0.04);
+    }
+    body.light-mode .bento-card:hover {
+      background: #ffffff;
+      box-shadow: 0 8px 32px rgba(37, 99, 235, 0.1);
     }
 
     /* Target Brackets (Neo-Tech Special) */

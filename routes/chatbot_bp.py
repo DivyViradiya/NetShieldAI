@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, session, Respons
 from flask_login import login_required, current_user
 import requests
 import os
+import json
 import sys
 import uuid
 import logging
@@ -361,139 +362,106 @@ def upload_report():
         return jsonify({"error": "An error occurred while uploading the report"}), 500
 
 
+def _prepare_chat_request():
+    """Shared helper to extract and format chat request data for proxying."""
+    if request.is_json:
+        data = request.json
+    else:
+        # formData can contain both fields and files
+        data = request.form
+    
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
+    user_message = data.get('message')
+    verbosity = data.get('verbosity', 'standard')
+    is_incognito = data.get('is_incognito', False)
+    # Convert 'true' strings from JS FormData if needed
+    if isinstance(is_incognito, str):
+        is_incognito = is_incognito.lower() == 'true'
+        
+    llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-2.5-flash'))
+    current_session_id = session.get('chatbot_session_id')
+
+    payload = {
+        'message': user_message,
+        'session_id': current_session_id,
+        'user_id': user_identifier,
+        'verbosity': verbosity,
+        'is_incognito': is_incognito,
+        'llm_mode': llm_mode
+    }
+
+    files_to_send = []
+    if request.files:
+        # Support both 'files' and 'files[]' naming conventions
+        file_list = request.files.getlist('files') or request.files.getlist('files[]')
+        for f in file_list:
+            files_to_send.append(('files', (f.filename, f.read(), f.content_type)))
+
+    return payload, files_to_send, user_identifier, current_session_id
+
 @chatbot_bp.route('/chat', methods=['POST'])
 @login_required
 def chat_with_ai():
-    """
-    Standard (Blocking) Chat Endpoint.
-    Updated to handle options like verbosity and incognito mode.
-    """
-    user_result_dir = get_user_result_dir_name(current_user)
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    user_logger = get_user_logger(user_identifier)
+    """Standard (Blocking) Chat Endpoint Proxy."""
     try:
-        data = request.json
-        user_message = data.get('message')
-        logger.info(f"[*] AI Chat Request from {current_user.username}: {user_message[:50]}...")
-        verbosity = data.get('verbosity', 'standard')
-        is_incognito = data.get('is_incognito', False)
-        llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-2.5-flash'))
+        payload, files, user_id, _ = _prepare_chat_request()
+        user_logger = get_user_logger(user_id)
         
-        current_session_id = session.get('chatbot_session_id')
-
-        payload_to_server = {
-            'message': user_message,
-            'session_id': current_session_id,
-            'user_id': user_identifier,
-            'verbosity': verbosity,
-            'is_incognito': is_incognito,
-            'llm_mode': llm_mode
-        }
-
+        logger.info(f"[*] AI Chat Request from {current_user.username} (Blocking)")
+        
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat"
-        # Security: Inject user_id in params to ensure Rate Limiter functions correctly
-        params = {'user_id': user_identifier}
-        
-        # Handle attachments if present
-        if request.files:
-            files_to_send = []
-            for f in request.files.getlist('files'):
-                files_to_send.append(('files', (f.filename, f.read(), f.content_type)))
-            
-            # For multi-part, we send the fields as 'data'
-            response = http_session.post(proxy_chat_url, data=payload_to_server, files=files_to_send, params=params)
+        params = {'user_id': user_id}
+
+        if files:
+            # Multipart POST
+            response = http_session.post(proxy_chat_url, data=payload, files=files, params=params)
         else:
-            # Standard JSON request
-            response = http_session.post(proxy_chat_url, json=payload_to_server, params=params)
+            # JSON POST
+            response = http_session.post(proxy_chat_url, json=payload, params=params)
             
         return proxy_json_response(response, user_logger)
 
-    except requests.exceptions.RequestException as e:
-        user_logger.error(f"Error communicating with server proxy chat service: {e}", exc_info=True)
-        return jsonify({'status': 'error', 'message': f'Failed to get response from server. ({e})'}), 500
     except Exception as e:
-        user_logger.error(f"An unexpected error occurred in chat route: {e}", exc_info=True)
-        return jsonify({'status': 'error', 'message': f'An unexpected error occurred: {e}'}), 500
+        logger.error(f"Error in chat_with_ai proxy: {e}", exc_info=True)
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
-
-# =======================================================================
-# NEW STREAMING PROXY ENDPOINT
-# =======================================================================
 @chatbot_bp.route('/chat_stream', methods=['POST'])
 @login_required
 def chat_with_ai_stream():
-    """
-    Proxies the streaming chat request to the backend with options.
-    """
-    user_result_dir = get_user_result_dir_name(current_user)
-    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
-    user_logger = get_user_logger(user_identifier)
+    """Proxies the streaming chat request to the backend with options."""
     try:
-        # Handle both JSON and Multipart/Form-Data
-        if request.is_json:
-            data = request.json
-        else:
-            data = request.form
-
-        user_message = data.get('message')
-        verbosity = data.get('verbosity', 'standard')
-        is_incognito = data.get('is_incognito', False)
-        llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-2.5-flash'))
+        payload, files, user_id, current_session_id = _prepare_chat_request()
+        user_logger = get_user_logger(user_id)
         
-        current_session_id = session.get('chatbot_session_id')
-
-        payload_to_server = {
-            'message': user_message,
-            'session_id': current_session_id,
-            'user_id': user_identifier,
-            'verbosity': verbosity,
-            'is_incognito': is_incognito,
-            'llm_mode': llm_mode
-        }
-
-        # Point to the NEW FastAPI endpoint
         proxy_chat_url = f"{SERVER_PROXY_URL}/chat_stream"
+        params = {'user_id': user_id}
         
-        # Security: Inject user_id in params to ensure Rate Limiter functions correctly
-        params = {'user_id': user_identifier}
+        user_logger.info(f"Initiating stream for session {current_session_id}")
         
-        user_logger.info(f"Initiating stream to {proxy_chat_url} for session {current_session_id}")
-        
-        # Handle attachments if present
-        if 'files' in request.files:
-            files_to_send = []
-            for f in request.files.getlist('files'):
-                files_to_send.append(('files', (f.filename, f.read(), f.content_type)))
-            
-            # Send as multipart/form-data
-            req = http_session.post(proxy_chat_url, data=payload_to_server, files=files_to_send, stream=True, params=params)
+        if files:
+            req = http_session.post(proxy_chat_url, data=payload, files=files, stream=True, params=params)
         else:
-            # Send as application/json
-            req = http_session.post(proxy_chat_url, json=payload_to_server, stream=True, params=params)
+            req = http_session.post(proxy_chat_url, json=payload, stream=True, params=params)
         
+        # Sync session ID from header if backend changed it (new session)
         new_sess_id = req.headers.get("X-Session-ID")
         if new_sess_id and new_sess_id != current_session_id:
              session['chatbot_session_id'] = new_sess_id
-             user_logger.info(f"Stream updated local session ID to: {new_sess_id}")
 
-        # 3. Generator to forward chunks
         def generate():
             try:
-                for chunk in req.iter_content(chunk_size=None): # None = yield as received
+                for chunk in req.iter_content(chunk_size=None):
                     if chunk:
                         yield chunk
             except Exception as e:
-                user_logger.error(f"Stream Proxy Iteration Error: {e}")
+                user_logger.error(f"Stream Proxy Error: {e}")
                 yield b" [Connection Error during stream]"
 
         headers = {"X-Session-ID": new_sess_id} if new_sess_id else {}
         return Response(stream_with_context(generate()), mimetype='text/plain', headers=headers)
 
-    except requests.exceptions.RequestException as e:
-        user_logger.error(f"Error communicating with server proxy stream: {e}", exc_info=True)
-        return jsonify({'status': 'error', 'message': f'Failed to connect to AI server.'}), 500
     except Exception as e:
-        user_logger.error(f"Unexpected error in stream proxy: {e}", exc_info=True)
+        logger.error(f"Error in chat_with_ai_stream proxy: {e}", exc_info=True)
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 

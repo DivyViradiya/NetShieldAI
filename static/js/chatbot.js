@@ -598,12 +598,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function parseContent(text) {
         if (!text) return "";
         try {
-            // [NEW] Instant String-level suggestion chip parsing (Speed up UX)
-            let processedText = text.replace(/(?:__|\*\*)*SUGGESTION(?:__|\*\*)*:\s*(.*?)(?=\n|$)/gi, (match, suggestionText) => {
-                const cleanStr = suggestionText.replace(/<\/?[^>]+(>|$)/g, "").trim();
-                if (!cleanStr) return '';
-                return `\n\n<div class="ai-suggestion-chip" data-suggestion="${encodeURIComponent(cleanStr)}"><span class="material-symbols-outlined">lightbulb</span> ${cleanStr}</div>\n\n`;
+            // [PHASE 5] COLLECTION: Extract follow-up suggestions and actions before markdown parsing
+            const suggestions = [];
+            const actions = [];
+            
+            let processedText = text.replace(/(?:__|\*\*)*SUGGESTION(?:__|\*\*)*:\s*(.*?)(?=\n|$)/gi, (match, sText) => {
+                const cleanStr = sText.replace(/<\/?[^>]+(>|$)/g, "").trim();
+                if (cleanStr) suggestions.push(cleanStr);
+                return '';
             });
+
+            processedText = processedText.replace(/(?:__|\*\*)*ACTION(?:__|\*\*)*:\s*(.*?)\s*\|\s*(.*?)(?=\n|$)/gi, (match, label, prompt) => {
+                const cleanLabel = label.replace(/<\/?[^>]+(>|$)/g, "").trim();
+                const cleanPrompt = prompt.replace(/<\/?[^>]+(>|$)/g, "").trim();
+                if (cleanLabel && cleanPrompt) actions.push({ label: cleanLabel, prompt: cleanPrompt });
+                return '';
+            });
+
 
             // ================================================================
             // PRE-PROCESSOR: Decision Guide (PATH N — STATUS [...] blocks)
@@ -1105,6 +1116,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 el.style.setProperty('font-family', FONT_MONO, 'important');
             });
 
+            // --- PASS 11: Render Follow-up Tray (Suggestions & Actions) ---
+            if (suggestions.length > 0 || actions.length > 0) {
+                let trayHtml = '<div class="ai-followup-tray" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">';
+
+                // Add Suggestions (Grouped into a single minimal banner)
+                if (suggestions.length > 0) {
+                    trayHtml += `
+                        <div class="ai-followup-suggestion" style="display: flex; gap: 12px; padding: 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; margin-bottom: 0.5rem; color: #f8fafc; font-size: 0.85rem; line-height: 1.6;">
+                            <span class="material-symbols-outlined" style="color: rgba(255, 255, 255, 0.6); font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;">lightbulb</span>
+                            <div style="flex: 1;">
+                                <div style="font-family: var(--font-code); font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5; margin-bottom: 8px;">Recommendations</div>
+                                <ul style="margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 6px;">`;
+                    suggestions.forEach(s => {
+                        trayHtml += `<li style="opacity: 0.9;">${s}</li>`;
+                    });
+                    trayHtml += `
+                                </ul>
+                            </div>
+                        </div>`;
+                }
+
+                // Add Actions (Flex wrap layout side-by-side)
+                if (actions.length > 0) {
+                    trayHtml += '<div class="ai-actions-group" style="display: flex; flex-wrap: wrap; gap: 12px;">';
+                    actions.forEach(a => {
+                        trayHtml += `
+                            <div class="ai-followup-card action" style="flex: 1 1 calc(50% - 12px); min-width: 280px; margin: 0;" data-prompt="${encodeURIComponent(a.prompt)}">
+                                <span class="material-symbols-outlined card-icon">bolt</span>
+                                <div class="card-content">
+                                    <span class="card-label">${a.label}</span>
+                                    <span class="card-text">${a.prompt}</span>
+                                </div>
+                            </div>`;
+                    });
+                    trayHtml += '</div>';
+                }
+
+                trayHtml += '</div>';
+                tempDiv.innerHTML += trayHtml;
+            }
+
             return highlightThreats(tempDiv.innerHTML);
         } catch (e) {
             console.error("Markdown parsing error:", e);
@@ -1135,27 +1187,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // [NEW] Global listener for Interactive Security Grid Cards and Suggestions
     document.addEventListener('click', (e) => {
-        // [PHASE 5: Suggestion Chips]
-        const suggestionChip = e.target.closest('.ai-suggestion-chip');
-        if (suggestionChip && ui.userInput) {
-            const suggestionText = decodeURIComponent(suggestionChip.getAttribute('data-suggestion'));
-            ui.userInput.value = suggestionText;
+        // [PHASE 5: Enhanced Follow-up Cards]
+        const followupCard = e.target.closest('.ai-followup-card');
+        if (followupCard && ui.userInput) {
+            const isAction = followupCard.classList.contains('action');
+            const dataAttr = isAction ? 'data-prompt' : 'data-suggestion';
+            const messageText = decodeURIComponent(followupCard.getAttribute(dataAttr));
+            
+            ui.userInput.value = messageText;
             ui.userInput.focus();
             if (typeof autoResizeInput === 'function') autoResizeInput();
             else ui.userInput.dispatchEvent(new Event('input', { bubbles: true }));
             
-            // Subtle flash
-            suggestionChip.style.transform = 'scale(0.96)';
-            setTimeout(() => { suggestionChip.style.transform = ''; }, 150);
+            // Visual feedback
+            followupCard.style.transform = 'scale(0.98) translateX(2px)';
+            followupCard.style.borderColor = isAction ? 'var(--neo-blue)' : '#10b981';
             
-            // Auto-send suggestion text
             setTimeout(() => {
                 if (ui.sendBtn && !ui.sendBtn.disabled) {
                     ui.sendBtn.click();
                 } else {
                     sendMessage();
                 }
-            }, 50);
+            }, 100);
             return;
         }
 
@@ -2015,7 +2069,8 @@ document.addEventListener('DOMContentLoaded', () => {
             'packet_sniffer': '/packet_sniffer/',
             'api_security_scan': '/api_scanner/',
             'killchain_audit': '/killchain/',
-            'semgrep_sast_scan': '/semgrep_scanner/'
+            'semgrep_sast_scan': '/semgrep_scanner/',
+            'schedule_scan': '/scheduler/'
         };
 
         const toolDownloadMap = {

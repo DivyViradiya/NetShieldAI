@@ -74,6 +74,7 @@
         --neo-card: var(--surface-primary);
         --neo-border: var(--border-default);
         --neo-blue: var(--accent-primary);
+        --neo-accent: #ffffff;
         --neo-text-primary: var(--text-primary);
         --neo-text-main: var(--text-primary);
         --neo-text-secondary: var(--text-muted);
@@ -99,49 +100,49 @@
         --scrollbar-hover: var(--accent-primary);
       }
 
-      /* LIGHT MODE — ENTERPRISE NAVY (Authoritative & Secure) */
+      /* LIGHT MODE — VIBRANT SECURITY (Authoritative & Modern) */
       body.light-mode {
-        --bg-primary: #f8fafc;       /* Slate-50 — solid, professional neutral base */
-        --bg-secondary: #f1f5f9;     /* Slate-100 — industrial depth for sidebars/inputs */
+        --bg-primary: #f1f5f9;       /* Slate-100 — cleaner blue-grey base wash */
+        --bg-secondary: #e2e8f0;     /* Slate-200 — better depth for sidebars/inputs */
         --surface-primary: #ffffff;
-        --surface-elevated: #ffffff;
-        --surface-subtle: #f1f5f9;   /* Slate-100 for hover states */
+        --surface-elevated: rgba(255, 255, 255, 0.85);
+        --surface-subtle: #f1f5f9;
 
-        --border-default: #cbd5e1;   /* Slate-300 — clearly visible enterprise borders */
-        --border-subtle: #e2e8f0;    /* Slate-200 — soft inner dividers */
+        --border-default: rgba(15, 23, 42, 0.1);   /* Low-noise enterprise borders */
+        --border-subtle: rgba(15, 23, 42, 0.05);    /* Soft dividers */
 
-        --text-primary: #0f172a;     /* Slate-900 — authoritative navy for headings */
-        --text-secondary: #334155;   /* Slate-700 — body text industrial gray-blue */
+        --text-primary: #0f172a;     /* Slate-900 — authoritative navy headings */
+        --text-secondary: #1e293b;   /* Slate-800 — precise body text */
         --text-muted: #64748b;       /* Slate-500 — readable muted text */
         --text-label: #475569;       /* Slate-600 — clear labeling */
 
-        --accent-primary: #1e40af;   /* Blue-800 — authoritative enterprise navy */
-        --accent-hover: #1e3a8a;     /* Blue-900 — deep navy hover state */
-        --accent-blue: #3b82f6;      /* Blue-500 — interactive blue highlights */
+        --accent-primary: #2563eb;   /* Blue-600 — Electric "Action" Blue */
+        --accent-hover: #1d4ed8;     /* Blue-700 — deep interaction state */
+        --accent-blue: #60a5fa;      /* Blue-400 — high-visibility blue links */
 
-        /* Enterprise Identifiers */
-        --identity-zap: #0891b2;     /* Teal-600 */
-        --identity-network: #059669; /* Emerald-600 */
-        --identity-ssl: #d97706;     /* Amber-600 */
-        --identity-sniffer: #1e40af; /* Navy-800 */
-        --identity-killchain: #be185d;/* Pink-700 */
-        --identity-sql: #dc2626;     /* Red-600 */
-        --identity-api: #6d28d9;     /* Violet-700 */
+        /* Enterprise Identifiers — More Vibrant for Light Context */
+        --identity-zap: #0ea5e9;     /* Sky-500 */
+        --identity-network: #10b981; /* Emerald-500 */
+        --identity-ssl: #f59e0b;     /* Amber-500 */
+        --identity-sniffer: #2563eb; /* Blue-600 */
+        --identity-killchain: #db2777;/* Pink-600 */
+        --identity-sql: #ef4444;     /* Red-500 */
+        --identity-api: #7c3aed;     /* Violet-600 */
         --identity-semgrep: #4f46e5; /* Indigo-600 */
 
-        /* Severity tokens — industrial strength for light context */
-        --severity-critical: #dc2626;   /* Red-600 */
-        --severity-critical-bg: #fee2e2; /* Red-100 */
-        --severity-high: #ea580c;       /* Orange-600 */
-        --severity-high-bg: #ffedd5;    /* Orange-100 */
-        --severity-medium: #d97706;     /* Amber-600 */
-        --severity-medium-bg: #fef3c7;  /* Amber-100 */
-        --severity-low: #1e40af;        /* Blue-800 */
-        --severity-low-bg: #dbeafe;     /* Blue-100 */
-        --severity-success: #059669;    /* Emerald-600 */
-        --severity-success-bg: #d1fae5; /* Emerald-100 */
-        --severity-info: #0891b2;       /* Teal-600 */
-        --severity-info-bg: #e0f2f1;    /* Teal-50 */
+        /* Severity tokens — Industrial strength for light context */
+        --severity-critical: #ef4444;
+        --severity-critical-bg: #fee2e2;
+        --severity-high: #f97316;
+        --severity-high-bg: #ffedd5;
+        --severity-medium: #f59e0b;
+        --severity-medium-bg: #fef3c7;
+        --severity-low: #2563eb;
+        --severity-low-bg: #dbeafe;
+        --severity-success: #10b981;
+        --severity-success-bg: #d1fae5;
+        --severity-info: #0ea5e9;
+        --severity-info-bg: #e0f2f1;
 
         /* Compatibility mappings */
         --bg-color: var(--bg-primary);
@@ -154,6 +155,7 @@
         --neo-card: var(--surface-primary);
         --neo-border: var(--border-default);
         --neo-blue: var(--accent-primary);
+        --neo-accent: #0f172a;
         --neo-text-primary: var(--text-primary);
         --neo-text-main: var(--text-primary);
         --neo-text-secondary: var(--text-secondary);
@@ -161,22 +163,27 @@
         --neo-card-hover: var(--surface-subtle);
         --accent-vibrant-spinner: var(--accent-primary);
 
-        --glass-bg: rgba(255, 255, 255, 0.85);
+        --glass-bg: rgba(255, 255, 255, 0.8);
         --glass-border: var(--border-default);
         --glass-blur: blur(20px);
 
-        --scrollbar-thumb: rgba(15, 23, 42, 0.15);
+        --scrollbar-thumb: rgba(15, 23, 42, 0.1);
         --scrollbar-hover: var(--accent-primary);
       }
 
-      /* Subtle dot-grid background — Slate tint at 4% */
+      /* Subtle wash background — Sky tint at 10% opacity */
       body.light-mode::before {
         content: '';
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background-image: radial-gradient(circle, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
-        background-size: 32px 32px;
+        background: 
+          radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+          radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.05) 0px, transparent 50%),
+          radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+          radial-gradient(at 0% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%),
+          radial-gradient(circle, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+        background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 32px 32px;
         pointer-events: none;
         z-index: 0;
       }
@@ -531,154 +538,193 @@
       }
 
 
-      /* Updated: Dropdown Container */
+      /* --- BENTO-STYLE PROFILE DROPDOWN --- */
       .profile-dropdown-content {
         display: none;
         position: absolute;
         right: 0;
-        top: calc(100% + 10px); /* Cleanly positioned below button */
-        background-color: #121212; /* Darker, solid background matching screenshot */
-        min-width: 260px; /* Slightly narrower, more elegant */
-        box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.8);
+        top: calc(100% + 8px);
+        min-width: 300px;
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--glass-border);
+        border-radius: 8px; /* Sharp bento geometry */
+        box-shadow: 
+          0 20px 40px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.05) inset;
         z-index: 1001;
-        border: 1px solid rgba(255, 255, 255, 0.08); /* Faint border */
-        border-radius: 12px;
-        animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        padding: 0.5rem;
+        padding: 1rem;
+        animation: bentoPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+      }
+
+      @keyframes bentoPop {
+        from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
       }
 
       body.light-mode .profile-dropdown-content {
-        background-color: rgba(255, 255, 255, 0.95);
-        border-color: var(--border-default);
-        box-shadow: 0px 10px 40px rgba(99, 102, 241, 0.1); /* Frosted indigo */
+        background: var(--surface-elevated);
+        border-color: var(--border-subtle);
+        box-shadow: 
+          0 15px 35px rgba(37, 99, 235, 0.08),
+          0 0 0 1px rgba(255, 255, 255, 0.8) inset;
         backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
-      
-      /* New: User Header (Name & Email) */
-      .profile-dropdown-content .user-header {
-        padding: 0.75rem 0.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.1rem; /* Tighter gap */
-        /* Removed bottom border directly on header and handled by meta-data top border */
       }
 
-      body.light-mode .profile-dropdown-content .user-header {
-        border-bottom-color: var(--border-subtle);
+      .user-header {
+        padding: 0;
+        margin-bottom: 0.75rem;
       }
 
-      .profile-dropdown-content .user-header .full-name {
-        font-weight: 700;
-        color: #f3f4f6; /* Brighter white */
-        font-size: 1.1rem;
-      }
-
-      body.light-mode .profile-dropdown-content .user-header .full-name {
-        color: var(--text-primary);
-      }
-
-      .profile-dropdown-content .user-header .user-email {
-        font-size: 0.85rem;
-        color: #9ca3af; /* A softer gray */
-      }
-
-      body.light-mode .profile-dropdown-content .user-header .user-email {
-        color: var(--text-muted);
-      }
-      
-      /* New: Meta Data Section (Job/Org/Audit) */
-      .profile-dropdown-content .meta-data {
-        padding: 0.75rem 0.5rem;
-        background-color: transparent; /* Remove background diff */
-        margin-bottom: 0.5rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.05); /* Faint separator */
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Faint separator */
-      }
-
-      body.light-mode .profile-dropdown-content .meta-data {
-        background-color: var(--bg-secondary);
-        border-bottom-color: var(--border-subtle);
-      }
-
-      .meta-row {
+      .user-avatar-pill {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        font-size: 0.85rem;
-        color: #9ca3af;
-        margin-bottom: 0.6rem;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 6px;
+        border: 1px solid var(--border-subtle);
+        position: relative;
+        overflow: hidden;
+      }
+      .user-avatar-pill::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 3px; height: 100%;
+        background: var(--accent-primary);
+        opacity: 0.8;
+      }
+      body.light-mode .user-avatar-pill {
+        background: #ffffff;
+        border-color: var(--border-subtle);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.04);
       }
 
-      body.light-mode .meta-row {
-        color: var(--text-secondary);
+      .nav-profile-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 4px; /* Sharp bento corners */
+        background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.25rem;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
       }
 
-      .meta-row:last-child {
-        margin-bottom: 0;
+      .nav-profile-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
       }
 
-      .meta-row .material-symbols-outlined {
-        font-size: 1.1rem;
-        opacity: 0.7;
+      .full-name {
+        font-size: 0.9rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        line-height: 1.2;
       }
 
-      .meta-row.audit-text {
-        margin-top: 0.5rem;
-        font-family: monospace; /* Security tool aesthetic */
-        color: #71717a; /* Slightly darker gray */
+      .user-email {
+        font-size: 0.65rem;
+        font-family: var(--font-mono);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 2px;
       }
 
-      body.light-mode .meta-row.audit-text {
-        color: #52525b;
+      .dropdown-divider {
+        height: 1px;
+        background: linear-gradient(90deg, var(--border-default), transparent);
+        margin: 0.75rem 0;
       }
-      
-      /* Link Styling */
+
+      .dropdown-links {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
       .profile-dropdown-content a {
         display: flex;
         align-items: center;
-        gap: 1rem; /* More breathing room for icons */
-        padding: 0.6rem 0.5rem;
-        font-size: 0.95rem; /* Larger text like screenshot */
-        color: #d1d5db; /* Softer white for unselected links */
+        gap: 0.85rem;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-secondary);
         text-decoration: none;
-        transition: all 0.2s;
-        border-radius: 8px; /* Tighter rounding */
-        margin-bottom: 2px;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border-radius: 4px;
+        border: 1px solid transparent;
       }
 
-      body.light-mode .profile-dropdown-content a:not(.logout-link) {
-        color: var(--text-secondary);
+      .profile-dropdown-content a:hover {
+        background: rgba(37, 99, 235, 0.05);
+        border-color: var(--accent-primary);
+        color: var(--text-primary);
+        transform: translateY(-1px);
+      }
+      body.light-mode .profile-dropdown-content a:hover {
+        background: #ffffff;
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
       }
 
       .profile-dropdown-content a .material-symbols-outlined {
-        font-size: 1.2rem;
-        opacity: 0.8;
-      }
-      
-      .profile-dropdown-content a.details:hover {
-        background-color: rgba(255, 255, 255, 0.03);
-        color: #f3f4f6;
+        font-size: 1.25rem;
+        color: var(--accent-primary);
+        transition: transform 0.2s ease;
       }
 
-      body.light-mode .profile-dropdown-content a.details:hover {
-        background-color: var(--bg-secondary);
-        color: var(--text-primary);
-      }
-      
-      .profile-dropdown-content a.logout-link {
-        color: #ef4444; /* Clean red */
-        margin-top: 0.2rem; /* Reduce gap before logout */
-        /* Remove top border here since meta-data handles it, or let it sit normally */
+      .profile-dropdown-content a:hover .material-symbols-outlined {
+        transform: scale(1.1);
       }
 
-      body.light-mode .profile-dropdown-content a.logout-link {
-        border-top-color: var(--border-subtle);
-        color: #dc2626;
+      .logout-form {
+        margin-top: 0.25rem;
       }
-      
-      .profile-dropdown-content a.logout-link:hover {
-        background-color: rgba(239, 68, 68, 0.1);
+
+      .logout-link {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.75rem 0.85rem;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        color: var(--severity-critical);
+        font-size: 0.85rem;
+        font-weight: 800;
+        font-family: inherit;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+
+      .logout-link:hover {
+        background: rgba(239, 68, 68, 0.05);
+        border-color: var(--severity-critical);
+        transform: translateY(-1px);
+      }
+      body.light-mode .logout-link:hover {
+        background: #fee2e2;
+        border-color: var(--severity-critical);
+      }
+
+      .logout-link .material-symbols-outlined {
+        font-size: 1.25rem;
       }
       
       @keyframes fadeIn {
@@ -1320,71 +1366,47 @@
             </button>
 
             <div id="profile-dropdown-content" class="profile-dropdown-content">
-              
               <div class="user-header">
-                <div class="full-name">
-                  {{ current_user.full_name if current_user.full_name else current_user.username }}
+                <div class="user-avatar-pill">
+                  <div class="nav-profile-avatar">{{ current_user.username[:1].upper() }}</div>
+                  <div class="nav-profile-info">
+                    <div class="full-name">{{ current_user.full_name if current_user.full_name else current_user.username }}</div>
+                    <div class="user-email">{{ current_user.email }}</div>
+                  </div>
                 </div>
-                <div class="user-email">{{ current_user.email }}</div>
               </div>
 
-              <div class="meta-data">
-                {% if current_user.organization or current_user.job_title %}
-                  <div class="meta-row">
-                    <span class="material-symbols-outlined">business_center</span>
-                    <span>
-                      {% if current_user.job_title and current_user.organization %}
-                        {{ current_user.job_title }} at {{ current_user.organization }}
-                      {% elif current_user.job_title %}
-                        {{ current_user.job_title }}
-                      {% else %}
-                        {{ current_user.organization }}
-                      {% endif %}
-                    </span>
-                  </div>
+              <div class="dropdown-divider"></div>
+
+              <div class="dropdown-links">
+                {% if current_user.is_admin %}
+                  <a href="{{ url_for('auth.admin_dashboard') }}" class="details">
+                    <span class="material-symbols-outlined">admin_panel_settings</span>
+                    <span>Admin Panel</span>
+                  </a>
                 {% endif %}
 
-                {% if current_user.phone_number %}
-                  <div class="meta-row">
-                    <span class="material-symbols-outlined">smartphone</span>
-                    <span>{{ current_user.phone_number }}</span>
-                  </div>
-                {% endif %}
-
-                {% if current_user.last_login_at %}
-                  <div class="meta-row audit-text">
-                    <span class="material-symbols-outlined" style="font-size: 0.9rem;">history</span>
-                    Last login: {{ current_user.last_login_at.strftime('%Y-%m-%d %H:%M') }}
-                  </div>
-                {% endif %}
-              </div>
-
-              {% if current_user.is_admin %}
-                <a href="{{ url_for('auth.admin_dashboard') }}" class="details">
-                  <span class="material-symbols-outlined">admin_panel_settings</span>
-                  Admin Panel
+                <a href="javascript:void(0)" class="details" onclick="toggleTheme()">
+                  <span class="material-symbols-outlined" id="theme-icon">light_mode</span>
+                  <span id="theme-text">Light Mode</span>
                 </a>
-              {% endif %}
 
-              <a href="javascript:void(0)" class="details" onclick="toggleTheme()">
-                <span class="material-symbols-outlined" id="theme-icon">light_mode</span>
-                <span id="theme-text">Light Mode</span>
-              </a>
+                <a href="{{ url_for('auth.account_settings') }}" class="details">
+                  <span class="material-symbols-outlined">manage_accounts</span>
+                  <span>Account Settings</span>
+                </a>
+              </div>
 
-              <a href="{{ url_for('auth.account_settings') }}" class="details">
-                <span class="material-symbols-outlined">manage_accounts</span>
-                Account Settings
-              </a>
+              <div class="dropdown-divider"></div>
 
-              <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form" style="margin:0;padding:0;">
+              <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="logout-link" style="width:100%;text-align:left;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:0.75rem;padding:0.6rem 1rem;font-size:0.85rem;color:#ef4444;border-radius:6px;margin-top:0.5rem;border-top:1px solid rgba(255,255,255,0.05);font-family:inherit;">
+                <button type="submit" class="logout-link">
                   <span class="material-symbols-outlined">logout</span>
-                  Logout
+                  <span>Logout Session</span>
                 </button>
               </form>
-            </div>
-          </div>
+            </div>          </div>
         {% else %}
           <ul class="navbar-links" style="gap: 1.5rem;">
             <li>

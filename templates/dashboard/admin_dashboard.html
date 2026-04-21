@@ -15,48 +15,42 @@
     /*  ADMIN OVERWATCH — STANDARD DASHBOARD        */
     /* ============================================ */
 
-    /* --- 1. THEME VARIABLES (STRICT NEO-TECH) --- */
+    /* --- 1. THEME MAPPING (GLOBAL SYNC) --- */
     :root {
-      --neo-bg: #030303;
-      --neo-card: rgba(10, 10, 12, 0.6);
-      --neo-card-hover: rgba(15, 15, 20, 0.8);
-      --neo-border: rgba(255, 255, 255, 0.08); 
-      --neo-border-glow: rgba(59, 130, 246, 0.4);
-      --neo-text-primary: #ffffff;
-      --neo-text-secondary: #94a3b8;
-      --neo-text-tertiary: #64748b;
-      --neo-blue: #3b82f6;
-      --neo-purple: #8b5cf6;
-      --neo-red: #ef4444;
-      --neo-green: #10b981;
-      --neo-amber: #f59e0b;
-      --font-ui: 'IBM Plex Sans', system-ui, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --radius-lg: 4px;
-      --radius-md: 4px;
-      --radius-sm: 4px;
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--glass-bg);
+      --neo-card-hover: var(--neo-card-hover);
+      --neo-border: var(--border-default); 
+      --neo-text-primary: var(--text-primary);
+      --neo-text-secondary: var(--text-secondary);
+      --neo-text-tertiary: var(--text-muted);
+      --neo-blue: var(--accent-primary);
+      --neo-purple: var(--identity-api);
+      --neo-red: var(--severity-critical);
+      --neo-green: var(--severity-success);
+      --neo-amber: var(--severity-high);
+      --radius-lg: 8px;
+      --radius-md: 8px;
+      --radius-sm: 8px;
     }
 
     body.light-mode {
-      --neo-bg: #f1f5f9;
-      --neo-card: #ffffff;
-      --neo-card-hover: #f8faff;
-      --neo-border: #cbd5e1;
-      --neo-text-primary: #0f172a;
-      --neo-text-secondary: #334155;
-      --neo-text-tertiary: #64748b;
-      --neo-blue: #4f46e5;
-      --neo-purple: #7c3aed;
+      --neo-bg: var(--bg-primary);
+      --neo-card: var(--surface-primary);
+      --neo-border: var(--border-subtle);
+      --neo-text-primary: var(--text-primary);
+      --neo-text-secondary: var(--text-secondary);
     }
 
     /* --- LIGHT MODE OVERRIDES --- */
     body.light-mode .bento-tile, 
     body.light-mode .hud-card,
-    body.light-mode .global-banner {
-      background: #ffffff;
-      border-color: var(--neo-border);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      backdrop-filter: none;
+    body.light-mode .global-banner,
+    body.light-mode .dash-panel {
+      background: var(--surface-elevated);
+      border-color: var(--border-subtle);
+      box-shadow: 0 4px 24px rgba(37, 99, 235, 0.04);
+      backdrop-filter: blur(12px);
     }
     body.light-mode .neo-table th {
       background: #f8fafc;
@@ -261,20 +255,23 @@
     }
 
     .bento-tile {
-      background: var(--neo-card);
-      border: 1px solid var(--neo-border);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
       border-radius: var(--radius-md);
       padding: 1.5rem;
-      transition: border-color 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
       display: flex;
       flex-direction: column;
       overflow: hidden;
       position: relative;
-      backdrop-filter: blur(24px);
+      backdrop-filter: var(--glass-blur);
     }
 
     .bento-tile:hover {
-      border-color: rgba(255, 255, 255, 0.15);
+      border-color: var(--accent-primary);
+      background: var(--neo-card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
 
 
@@ -433,19 +430,21 @@
     /*  HUD METRIC CARDS                            */
     /* ============================================ */
     .hud-card {
-      background: var(--neo-card);
-      border: 1px solid var(--neo-border);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
       border-radius: var(--radius-md);
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: border-color 0.3s ease;
-      backdrop-filter: blur(24px);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      backdrop-filter: var(--glass-blur);
       position: relative;
     }
     .hud-card:hover { 
-      border-color: rgba(255, 255, 255, 0.15); 
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      background: var(--neo-card-hover);
     }
     .metric-label {
       font-size: 0.7rem;
@@ -691,15 +690,15 @@
   <!-- ======== ZONE 1: COCKPIT (Status Overview) ======== -->
   <div id="zone-cockpit" class="bento-grid zone-active">
       <!-- ADMIN SUMMARY HERO -->
-      <div class="bento-tile span-12" style="background: linear-gradient(180deg, var(--neo-card) 0%, rgba(10,10,12,0.4) 100%);">
+      <div class="bento-tile span-12" style="background: var(--glass-bg); backdrop-filter: var(--glass-blur);">
         <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
             <div class="hero-scope">
               <div class="hero-label" style="color: var(--neo-purple); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 6px;">
                 <span class="material-symbols-outlined" style="font-size:0.8rem; vertical-align: middle;">admin_panel_settings</span> Platform Overview
               </div>
               <div class="hero-value" style="font-family: var(--font-mono); font-size: clamp(1rem, 2.5vw, 1.35rem); font-weight: 700; color: var(--neo-text-primary); line-height: 1.2;">{{ total_users }} Operators — {{ total_system_scans }} Scans Executed</div>
-              <div class="hero-rate-bar" style="width: 100%; height: 3px; background: var(--neo-border); border-radius: 2px; overflow: hidden; margin-top: 0.5rem;">
-                <div class="hero-rate-fill" style="width:{{ success_rate }}%; background: var(--neo-green); height: 100%; transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);"></div>
+              <div class="hero-rate-bar" style="width: 100%; height: 4px; background: var(--neo-border); border-radius: 2px; overflow: hidden; margin-top: 0.5rem;">
+                <div class="hero-rate-fill" style="width:{{ success_rate }}%; background: var(--neo-green); height: 100%; transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); box-shadow: 0 0 10px var(--neo-green);"></div>
               </div>
             </div>
 
