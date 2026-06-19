@@ -584,6 +584,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let typingIndicatorInterval = null;
+    const statusMessages = [
+        "Consulting threat context indices...",
+        "Querying local database partitions...",
+        "Correlating scan reports...",
+        "Tracing potential exploit vectors...",
+        "Formulating response playbooks...",
+        "Analyzing compliance alignment...",
+        "Ranking vulnerabilities via TCTR engine...",
+        "Parsing network graph topology...",
+        "Evaluating risk severity models...",
+        "Drafting remediation steps...",
+        "Correlating vulnerability signatures...",
+        "Querying vector embeddings cache...",
+        "Cross-referencing CVE database records...",
+        "Constructing compromise logic chain...",
+        "Verifying network isolation boundaries...",
+        "Evaluating threat mitigation vectors...",
+        "Assessing lateral movement vectors...",
+        "Simulating attack path propagation...",
+        "Determining CVSS-v4 correction metrics...",
+        "Aggregating tool intelligence feeds...",
+        "Generating defensive hardening schemas...",
+        "Validating patch compliance levels...",
+        "Verifying system integrity telemetry..."
+    ];
+
+    function showTypingIndicator() {
+        ui.typingIndicator.style.display = 'block';
+        const statusTextEl = ui.typingIndicator.querySelector('.typing-status-text');
+        if (statusTextEl) {
+            let idx = 0;
+            statusTextEl.textContent = statusMessages[idx];
+            if (typingIndicatorInterval) clearInterval(typingIndicatorInterval);
+            typingIndicatorInterval = setInterval(() => {
+                idx = (idx + 1) % statusMessages.length;
+                statusTextEl.textContent = statusMessages[idx];
+            }, 2000);
+        }
+        scrollToBottom();
+    }
+
+    function hideTypingIndicator() {
+        ui.typingIndicator.style.display = 'none';
+        if (typingIndicatorInterval) {
+            clearInterval(typingIndicatorInterval);
+            typingIndicatorInterval = null;
+        }
+    }
+
     function highlightThreats(text) {
         // Split-regex approach: the alternation matches either an HTML tag (returned unchanged)
         // or a risk word in TEXT context (highlighted). This prevents corruption of CSS class names.
@@ -1717,10 +1767,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.workflowPanel.classList.add('mode-config');
         } else {
             ui.workflowPanel.classList.remove('mode-config');
-            ui.hiddenModelInput.value = 'gemini';
-            ui.customTrigger.querySelector('span').textContent = 'Google Gemini';
+            ui.hiddenModelInput.value = 'gemini-2.5-flash';
+            ui.customTrigger.querySelector('span').textContent = 'Gemini 2.5 Flash';
             ui.customOptions.forEach(opt => opt.classList.remove('selected'));
-            document.querySelector('.custom-option[data-value="gemini"]')?.classList.add('selected');
+            document.querySelector('.custom-option[data-value="gemini-2.5-flash"]')?.classList.add('selected');
             ui.startBtn.disabled = true;
             ui.uploadStatus.textContent = '';
         }
@@ -2008,9 +2058,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="action-card ${stateClass}">
                 <div class="ac-header">
                     <div class="ac-title-group">
-                        <div class="ac-tool-icon">
-                            <span class="material-symbols-outlined">${toolIcon}</span>
-                        </div>
                         <div class="ac-tool-info">
                             <span class="ac-tool-name">${displayTool}</span>
                             <span class="ac-tool-sub">Security Module</span>
@@ -2309,9 +2356,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="action-card state-prompt">
                 <div class="ac-header">
                     <div class="ac-title-group">
-                        <div class="ac-tool-icon" style="--ac-icon-bg: rgba(59,130,246,0.1); --ac-icon-color: var(--neo-blue);">
-                            <span class="material-symbols-outlined">smart_toy</span>
-                        </div>
                         <div class="ac-tool-info">
                             <span class="ac-tool-name">AI Analysis Ready</span>
                             <span class="ac-tool-sub">Scan complete — dataset acquired</span>
@@ -2356,8 +2400,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function triggerAutoAnalysis(tool) {
         // Show typing indicator immediately to signal AI reasoning is starting
-        ui.typingIndicator.style.display = 'block';
-        scrollToBottom();
+        showTypingIndicator();
 
         // Map AI tool names to scanner types for the analysis proxy
         const toolToScannerMap = {
@@ -2395,14 +2438,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sync session ID if returned
                 if (result.session_id) currentSessionId = result.session_id;
 
-                ui.typingIndicator.style.display = 'none';
+                hideTypingIndicator();
                 
                 // Directly render the System Core's generated summary
                 addMessage('system', "SYSTEM_NOTIFICATION: Scan Complete. Report successfully synchronized. Summary: " + result.summary, false);
             }
         } catch (e) {
             console.error("Auto-analysis failed:", e);
-            ui.typingIndicator.style.display = 'none';
+            hideTypingIndicator();
             addMessage('ai', `⚠️ **AI Intelligence Failure:** ${e.message}`, false);
         }
     }
@@ -2436,8 +2479,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.sidebarToggle.querySelector('span').textContent = 'chevron_right';
         }
         
-        ui.typingIndicator.style.display = 'block';
-        scrollToBottom();
+        showTypingIndicator();
 
         let aiRow = null;
         let contentDiv = null;
@@ -2512,7 +2554,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     
                     if (!aiRow && fullMarkdownText.trim().length > 0) {
-                        ui.typingIndicator.style.display = 'none';
+                        hideTypingIndicator();
                         aiRow = document.createElement('div');
                         aiRow.className = 'msg-row ai';
                         const aiBubble = document.createElement('div');
@@ -2598,7 +2640,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(renderLoop, typeSpeed);
                 } else {
                     // Stream finished
-                    ui.typingIndicator.style.display = 'none';
+                    hideTypingIndicator();
                     isProcessing = false;
                     ui.userInput.focus();
 
@@ -2616,7 +2658,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderLoop();
 
         } catch (err) {
-            ui.typingIndicator.style.display = 'none';
+            hideTypingIndicator();
             isProcessing = false;
             ui.userInput.focus();
 
@@ -2667,6 +2709,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ui.suggestionGrid) return;
         ui.suggestionGrid.innerHTML = '';
         
+        const iconMap = {
+            "Vulnerability Analysis": "troubleshoot",
+            "Remediation": "healing",
+            "Network Audit": "settings_ethernet",
+            "Compliance": "gavel",
+            "Incident Response": "notifications_active",
+            "Architecture Review": "layers",
+            "Threat Hunting": "radar",
+            "Cloud Security": "cloud",
+            "Malware Analysis": "coronavirus",
+            "Cryptography": "key",
+            "Web Application": "language",
+            "API Security": "api",
+            "Zero Trust": "admin_panel_settings",
+            "DevSecOps": "terminal",
+            "Active Directory": "groups"
+        };
+        
         // Shuffle the pool and pick the first 4
         const shuffled = [...suggestionPool].sort(() => 0.5 - Math.random());
         const selected = shuffled.slice(0, 4);
@@ -2674,7 +2734,17 @@ document.addEventListener('DOMContentLoaded', () => {
         selected.forEach(s => {
             const card = document.createElement('div');
             card.className = 'suggestion-card';
-            card.innerHTML = `<h5>${s.title}</h5><p>${s.desc}</p>`;
+            
+            const iconName = iconMap[s.title] || "security";
+            
+            card.innerHTML = `
+                <div class="suggestion-header-row">
+                    <span class="material-symbols-outlined suggestion-icon">${iconName}</span>
+                    <h5>${s.title}</h5>
+                </div>
+                <p>${s.desc}</p>
+            `;
+            
             card.onclick = () => { 
                 ui.userInput.value = s.desc; 
                 ui.userInput.focus(); 

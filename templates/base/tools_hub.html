@@ -218,10 +218,128 @@
       .banner-card { flex-direction: column; align-items: flex-start; gap: 2.5rem; padding: 3rem; }
     }
     @media (max-width: 768px) {
-      .span-12, .span-8, .span-6, .span-4, .span-3 { grid-column: span 12; }
-      .hero-wrapper { padding: 8rem 2rem 4rem 2rem; }
-      .section-name { font-size: 2.2rem; }
-      .card-body h3 { font-size: 1.6rem; }
+      .hero-wrapper {
+        padding-top: calc(var(--navbar-height) + 1.5rem) !important;
+        padding-bottom: 1.5rem !important;
+      }
+      .hero-content {
+        padding: 0 1.25rem !important;
+      }
+      .hero-tagline {
+        font-size: 0.7rem !important;
+        letter-spacing: 0.25em !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .hero-title {
+        font-size: 2.8rem !important;
+        line-height: 1.1 !important;
+        margin-bottom: 1.25rem !important;
+      }
+      .hero-sub {
+        font-size: 0.95rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 1.5rem !important;
+        border-left: none !important;
+        padding-left: 0 !important;
+        background: none !important;
+      }
+
+      .hub-container {
+        padding: 1rem 1.25rem 3rem 1.25rem !important;
+      }
+      .section-header {
+        margin-top: 2.5rem !important;
+        margin-bottom: 1rem !important;
+      }
+      .section-label {
+        font-size: 0.65rem !important;
+        letter-spacing: 0.15em !important;
+        margin-bottom: 0.35rem !important;
+      }
+      .section-title {
+        font-size: 1.6rem !important;
+        line-height: 1.2 !important;
+      }
+      
+      /* Horizontal Swiper Carousel for Bento Grid */
+      .bento-grid {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 1rem !important;
+        margin-top: 1.25rem !important;
+        padding-bottom: 0.75rem !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: rgba(59, 130, 246, 0.25) transparent !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+      .bento-grid::-webkit-scrollbar {
+        display: block !important;
+        height: 2px !important;
+      }
+      .bento-grid::-webkit-scrollbar-track {
+        background: transparent !important;
+      }
+      .bento-grid::-webkit-scrollbar-thumb {
+        background: rgba(59, 130, 246, 0.25) !important;
+        border-radius: 1px !important;
+      }
+
+      .bento-card {
+        flex-shrink: 0 !important;
+        width: 290px !important;
+        scroll-snap-align: center !important;
+        min-height: auto !important;
+        padding: 1.25rem !important;
+        box-sizing: border-box !important;
+        transform: none !important;
+      }
+      .bento-card:hover {
+        transform: none !important;
+      }
+      .bento-card::before, .bento-card::after {
+        display: none !important;
+      }
+
+      .card-top {
+        margin-bottom: 1rem !important;
+        align-items: center !important;
+      }
+      .card-icon-box {
+        width: 40px !important;
+        height: 40px !important;
+      }
+      .card-icon-box span {
+        font-size: 1.4rem !important;
+      }
+      .status-badge {
+        font-size: 0.55rem !important;
+        padding: 3px 8px !important;
+      }
+      .card-content h3 {
+        font-size: 0.95rem !important;
+        margin-bottom: 0.4rem !important;
+      }
+      .card-content p {
+        font-size: 0.75rem !important;
+        line-height: 1.45 !important;
+        margin-bottom: 1.25rem !important;
+      }
+      .card-meta {
+        gap: 0.35rem !important;
+      }
+      .meta-row {
+        padding-top: 0.5rem !important;
+        font-size: 0.6rem !important;
+      }
+      .card-action {
+        margin-top: 0.75rem !important;
+        gap: 0.4rem !important;
+      }
+      .card-action span:first-child {
+        font-size: 0.6rem !important;
+      }
     }
   </style>
 {% endblock %}

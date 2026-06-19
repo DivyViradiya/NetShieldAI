@@ -1,41 +1,5 @@
 Traceback (most recent call last):
-  File "<frozen importlib._bootstrap_external>", line 1516, in _path_importer_cache
-KeyError: 'D:\\chatbot-env\\Lib\\site-packages\\werkzeug\\wrappers'
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "D:\NetShield\NetShieldAI\run.py", line 30, in <module>
-    from Services.network_scanner import ensure_admin_privileges
-  File "D:\NetShield\NetShieldAI\Services\network_scanner.py", line 156, in <module>
-    from Services import scan_logger
-  File "D:\NetShield\NetShieldAI\Services\scan_logger.py", line 6, in <module>
-    from core.extensions import db
-  File "D:\NetShield\NetShieldAI\core\extensions.py", line 1, in <module>
-    from flask_sqlalchemy import SQLAlchemy
-  File "D:\chatbot-env\Lib\site-packages\flask_sqlalchemy\__init__.py", line 5, in <module>
-    from .extension import SQLAlchemy
-  File "D:\chatbot-env\Lib\site-packages\flask_sqlalchemy\extension.py", line 13, in <module>
-    from flask import abort
-  File "D:\chatbot-env\Lib\site-packages\flask\__init__.py", line 5, in <module>
-    from . import json as json
-  File "D:\chatbot-env\Lib\site-packages\flask\json\__init__.py", line 6, in <module>
-    from ..globals import current_app
-  File "D:\chatbot-env\Lib\site-packages\flask\globals.py", line 6, in <module>
-    from werkzeug.local import LocalProxy
-  File "D:\chatbot-env\Lib\site-packages\werkzeug\__init__.py", line 2, in <module>
-    from .test import Client as Client
-  File "D:\chatbot-env\Lib\site-packages\werkzeug\test.py", line 43, in <module>
-    from .wrappers.request import Request
-  File "D:\chatbot-env\Lib\site-packages\werkzeug\wrappers\__init__.py", line 1, in <module>
-    from .request import Request as Request
-  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1322, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 1262, in _find_spec
-  File "<frozen importlib._bootstrap_external>", line 1559, in find_spec
-  File "<frozen importlib._bootstrap_external>", line 1531, in _get_spec
-  File "<frozen importlib._bootstrap_external>", line 1518, in _path_importer_cache
-  File "<frozen importlib._bootstrap_external>", line 1494, in _path_hooks
-  File "<frozen zipimport>", line 79, in __init__
-  File "<frozen importlib._bootstrap_external>", line 152, in _path_stat
-KeyboardInterrupt
+  File "D:\NetShield\NetShieldAI\run_ngrok.py", line 37, in <module>
+    from logger_setup import logger
+ModuleNotFoundError: No module named 'logger_setup'
+    

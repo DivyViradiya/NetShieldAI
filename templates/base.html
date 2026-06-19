@@ -488,7 +488,7 @@
       }
       
       /*******************************************/
-      /* --- UPDATED PROFILE DROPDOWN STYLES --- */
+      /* --- MINIMALIST PROFILE DROPDOWN STYLES --- */
       /*******************************************/
       .profile-dropdown {
         position: relative;
@@ -496,246 +496,308 @@
       }
       
       .profile-button-text {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--border-color);
-        border-radius: 8px; /* rounded rectangle */
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-default);
+        border-radius: 8px; /* Squircle trigger */
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.35rem 0.75rem;
-        color: var(--text-light);
-        font-family: 'IBM Plex Sans', 'Inter', sans-serif;
-        font-weight: 500;
-        font-size: 0.9rem; /* Match the 0.9rem of navbar links */
-        transition: all 0.2s ease;
+        gap: 0.45rem;
+        padding: 0.25rem 0.65rem 0.25rem 0.25rem;
+        color: var(--text-secondary);
+        font-family: var(--font-ui);
+        font-weight: 600;
+        font-size: 0.82rem;
+        letter-spacing: 0.02em;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+      
+      .profile-button-text .avatar-ring {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px; /* Squircle avatar */
+        background: var(--accent-primary);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 800;
+        box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+
+      .profile-button-text .profile-username {
+        text-transform: uppercase;
+        font-size: 0.78rem;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
+        transition: color 0.2s;
+      }
+      
+      .profile-button-text .arrow-down {
+        font-size: 0.95rem;
+        transition: transform 0.2s ease-in-out, color 0.2s;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
       }
       
       .profile-button-text:hover, .profile-button-text.open { 
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+      }
+
+      .profile-button-text:hover .avatar-ring, .profile-button-text.open .avatar-ring {
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+      }
+
+      .profile-button-text:hover .profile-username, .profile-button-text.open .profile-username {
+        color: var(--text-primary);
       }
 
       body.light-mode .profile-button-text {
         background: var(--surface-primary);
-        border: 1px solid var(--border-default);
+        border-color: var(--border-default);
         color: var(--text-primary);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      }
+
+      body.light-mode .profile-button-text .avatar-ring {
+        background: var(--accent-primary);
+        color: #ffffff;
+        box-shadow: none;
+      }
+
+      body.light-mode .profile-button-text .profile-username {
+        color: var(--text-secondary);
       }
 
       body.light-mode .profile-button-text:hover, body.light-mode .profile-button-text.open {
         background: var(--bg-secondary);
         border-color: var(--accent-primary);
-      }
-      
-      .profile-button-text .arrow-down {
-        font-size: 1rem;
-        transition: transform 0.2s ease-in-out;
-        color: var(--text-muted);
-      }
-      
-      .profile-button-text.open .arrow-down {
-        transform: rotate(180deg);
+        box-shadow: 0 2px 10px rgba(37, 99, 235, 0.08);
       }
 
+      body.light-mode .profile-button-text:hover .profile-username, body.light-mode .profile-button-text.open .profile-username {
+        color: var(--text-primary);
+      }
 
-      /* --- BENTO-STYLE PROFILE DROPDOWN --- */
+      /* --- Minimal Panel Container --- */
       .profile-dropdown-content {
         display: none;
         position: absolute;
         right: 0;
-        top: calc(100% + 8px);
-        min-width: 300px;
-        background: var(--glass-bg);
-        backdrop-filter: var(--glass-blur);
-        -webkit-backdrop-filter: var(--glass-blur);
-        border: 1px solid var(--glass-border);
-        border-radius: 8px; /* Sharp bento geometry */
+        top: calc(100% + 10px);
+        width: 230px;
+        max-width: 90vw;
+        background: #0d0d10; /* Solid matte dark background */
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
         box-shadow: 
-          0 20px 40px rgba(0, 0, 0, 0.4),
-          0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+          0 15px 35px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(255, 255, 255, 0.02) inset;
         z-index: 1001;
-        padding: 1rem;
-        animation: bentoPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: 0.4rem;
+        animation: minimalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         overflow: hidden;
       }
 
-      @keyframes bentoPop {
-        from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+      @keyframes minimalPop {
+        from { opacity: 0; transform: translateY(-6px) scale(0.97); }
         to { opacity: 1; transform: translateY(0) scale(1); }
       }
 
       body.light-mode .profile-dropdown-content {
-        background: var(--surface-elevated);
-        border-color: var(--border-subtle);
-        box-shadow: 
-          0 15px 35px rgba(37, 99, 235, 0.08),
-          0 0 0 1px rgba(255, 255, 255, 0.8) inset;
-        backdrop-filter: blur(12px);
+        background: #ffffff; /* Solid matte white */
+        border-color: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
       }
 
-      .user-header {
-        padding: 0;
-        margin-bottom: 0.75rem;
-      }
-
-      .user-avatar-pill {
+      /* --- Compact Profile Header --- */
+      .dropdown-profile-header {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 6px;
-        border: 1px solid var(--border-subtle);
-        position: relative;
-        overflow: hidden;
-      }
-      .user-avatar-pill::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; width: 3px; height: 100%;
-        background: var(--accent-primary);
-        opacity: 0.8;
-      }
-      body.light-mode .user-avatar-pill {
-        background: #ffffff;
-        border-color: var(--border-subtle);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.04);
+        gap: 0.65rem;
+        padding: 0.5rem 0.65rem 0.45rem 0.65rem;
       }
 
-      .nav-profile-avatar {
-        width: 44px;
-        height: 44px;
-        border-radius: 4px; /* Sharp bento corners */
-        background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
+      .dropdown-profile-header .header-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px; /* Squircle avatar */
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 800;
-        font-size: 1.25rem;
-        color: white;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
         flex-shrink: 0;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
       }
 
-      .nav-profile-info {
+      body.light-mode .dropdown-profile-header .header-avatar {
+        background: var(--bg-secondary);
+        border-color: var(--border-default);
+        color: var(--text-primary);
+      }
+
+      .dropdown-profile-header .header-details {
         display: flex;
         flex-direction: column;
         min-width: 0;
       }
 
-      .full-name {
-        font-size: 0.9rem;
-        font-weight: 800;
+      .dropdown-profile-header .header-name {
+        font-size: 0.82rem;
+        font-weight: 600;
         color: var(--text-primary);
-        text-transform: uppercase;
-        letter-spacing: 0.02em;
-        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.25;
       }
 
-      .user-email {
-        font-size: 0.65rem;
+      .dropdown-profile-header .header-role {
         font-family: var(--font-mono);
-        color: var(--text-muted);
+        font-size: 0.55rem;
+        font-weight: 700;
+        color: var(--accent-primary);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-top: 2px;
+        letter-spacing: 0.03em;
+        margin-top: 1px;
       }
 
-      .dropdown-divider {
+      /* --- Menu Divider --- */
+      .dropdown-menu-divider {
         height: 1px;
-        background: linear-gradient(90deg, var(--border-default), transparent);
-        margin: 0.75rem 0;
+        background: rgba(255, 255, 255, 0.06);
+        margin: 0.4rem 0.5rem;
       }
 
-      .dropdown-links {
+      body.light-mode .dropdown-menu-divider {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      /* --- Menu Item styling --- */
+      .dropdown-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.55rem 0.65rem;
+        border-radius: 8px;
+        text-decoration: none !important;
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        font-weight: 500;
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+
+      .dropdown-menu-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-primary);
+      }
+
+      body.light-mode .dropdown-menu-item:hover {
+        background: rgba(0, 0, 0, 0.03);
+        color: var(--text-primary);
+      }
+
+      .dropdown-menu-item .item-icon {
+        font-size: 1.15rem !important;
+        color: var(--text-muted);
+        transition: color 0.15s ease;
+        display: flex;
+        align-items: center;
+      }
+
+      .dropdown-menu-item:hover .item-icon {
+        color: var(--text-primary);
+      }
+
+      body.light-mode .dropdown-menu-item:hover .item-icon {
+        color: var(--accent-primary);
+      }
+
+      .dropdown-menu-item .item-label {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .dropdown-menu-item .item-arrow {
+        font-size: 0.95rem !important;
+        color: var(--text-muted);
+        opacity: 0.6;
+      }
+
+      /* Logout item specific */
+      .dropdown-menu-item.logout-item {
+        color: #ef4444;
+      }
+
+      .dropdown-menu-item.logout-item .item-icon {
+        color: #ef4444;
+      }
+
+      .dropdown-menu-item.logout-item:hover {
+        background: rgba(239, 68, 68, 0.06);
+        color: #ef4444;
+      }
+
+      .dropdown-menu-item.logout-item:hover .item-icon {
+        color: #ef4444;
+      }
+
+      body.light-mode .dropdown-menu-item.logout-item:hover {
+        background: rgba(239, 68, 68, 0.08);
+      }
+
+      /* --- Telemetry Info display --- */
+      .dropdown-telemetry-item {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 0.25rem;
+        padding: 0.45rem 0.65rem;
       }
 
-      .profile-dropdown-content a {
+      .dropdown-telemetry-item .telemetry-row {
         display: flex;
-        align-items: center;
-        gap: 0.85rem;
-        padding: 0.65rem 0.85rem;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--text-secondary);
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-        border-radius: 4px;
-        border: 1px solid transparent;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 0.55rem;
+        color: var(--text-muted);
+        opacity: 0.75;
       }
 
-      .profile-dropdown-content a:hover {
-        background: rgba(37, 99, 235, 0.05);
-        border-color: var(--accent-primary);
-        color: var(--text-primary);
-        transform: translateY(-1px);
+      .dropdown-telemetry-item .telemetry-val {
+        font-weight: 700;
       }
-      body.light-mode .profile-dropdown-content a:hover {
-        background: #ffffff;
-        border-color: var(--accent-primary);
+
+      .dropdown-telemetry-item .telemetry-val.secure {
+        color: #10b981;
+      }
+
+      .dropdown-telemetry-item .telemetry-val.ready {
+        color: #3b82f6;
+      }
+
+      body.light-mode .dropdown-telemetry-item .telemetry-val.ready {
         color: var(--accent-primary);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
       }
 
-      .profile-dropdown-content a .material-symbols-outlined {
-        font-size: 1.25rem;
-        color: var(--accent-primary);
-        transition: transform 0.2s ease;
-      }
-
-      .profile-dropdown-content a:hover .material-symbols-outlined {
-        transform: scale(1.1);
-      }
-
-      .logout-form {
-        margin-top: 0.25rem;
-      }
-
-      .logout-link {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 0.85rem;
-        padding: 0.75rem 0.85rem;
-        background: transparent;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        color: var(--severity-critical);
-        font-size: 0.85rem;
-        font-weight: 800;
-        font-family: inherit;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-      }
-
-      .logout-link:hover {
-        background: rgba(239, 68, 68, 0.05);
-        border-color: var(--severity-critical);
-        transform: translateY(-1px);
-      }
-      body.light-mode .logout-link:hover {
-        background: #fee2e2;
-        border-color: var(--severity-critical);
-      }
-
-      .logout-link .material-symbols-outlined {
-        font-size: 1.25rem;
-      }
-      
+      /* Fade in utility */
       @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(-8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-8px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       /* Global Spinner Style - VIBRANT */
@@ -994,40 +1056,74 @@
           flex-direction: column;
           justify-content: center;
           align-items: center;
-          width: 40px;
-          height: 40px;
-          gap: 0;
-          background: transparent;
+          width: 42px;
+          height: 42px;
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
           border: 1px solid var(--border-default);
-          border-radius: 8px;
+          border-radius: 10px;
           cursor: pointer;
           padding: 0;
           margin-left: 0.75rem;
-          transition: border-color 0.2s;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           flex-shrink: 0;
         }
-        .mobile-menu-btn:hover { border-color: var(--accent-primary); }
+        
+        body.light-mode .mobile-menu-btn {
+          background: rgba(15, 23, 42, 0.04);
+          border-color: rgba(15, 23, 42, 0.08);
+        }
+        
+        .mobile-menu-btn:hover, .mobile-menu-btn.is-open {
+          border-color: var(--accent-primary);
+          background: rgba(59, 130, 246, 0.1);
+          box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+        }
+        
+        body.light-mode .mobile-menu-btn:hover, body.light-mode .mobile-menu-btn.is-open {
+          background: rgba(37, 99, 235, 0.08);
+          box-shadow: 0 0 12px rgba(37, 99, 235, 0.15);
+        }
 
-        /* Animated 3-bar → X via CSS spans */
+        /* Animated 3-bar → X via CSS spans (asymmetric styling) */
         .mobile-menu-btn .hb-bar {
           display: block;
-          width: 18px;
           height: 2px;
           background: var(--text-muted);
           border-radius: 2px;
-          transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position: absolute;
         }
-        .mobile-menu-btn .hb-bar:nth-child(1) { transform: translateY(-5px); }
-        .mobile-menu-btn .hb-bar:nth-child(2) { transform: translateY(0); }
-        .mobile-menu-btn .hb-bar:nth-child(3) { transform: translateY(5px); }
+        .mobile-menu-btn .hb-bar:nth-child(1) {
+          width: 14px;
+          transform: translateY(-6px) translateX(-3px);
+        }
+        .mobile-menu-btn .hb-bar:nth-child(2) {
+          width: 20px;
+          transform: translateY(0);
+        }
+        .mobile-menu-btn .hb-bar:nth-child(3) {
+          width: 10px;
+          transform: translateY(6px) translateX(5px);
+        }
 
-        /* Open state → X */
-        .mobile-menu-btn.is-open .hb-bar:nth-child(1) { transform: translateY(0) rotate(45deg); }
-        .mobile-menu-btn.is-open .hb-bar:nth-child(2) { opacity: 0; width: 0; }
-        .mobile-menu-btn.is-open .hb-bar:nth-child(3) { transform: translateY(0) rotate(-45deg); }
-        .mobile-menu-btn.is-open { border-color: var(--accent-primary); }
+        /* Open state → X (bars become symmetric and center) */
+        .mobile-menu-btn.is-open .hb-bar:nth-child(1) {
+          width: 18px;
+          transform: translateY(0) rotate(45deg) translateX(0);
+          background: var(--accent-primary);
+        }
+        .mobile-menu-btn.is-open .hb-bar:nth-child(2) {
+          opacity: 0;
+          width: 0;
+        }
+        .mobile-menu-btn.is-open .hb-bar:nth-child(3) {
+          width: 18px;
+          transform: translateY(0) rotate(-45deg) translateX(0);
+          background: var(--accent-primary);
+        }
 
         body.light-mode .mobile-menu-btn .hb-bar { background: var(--text-primary); }
 
@@ -1036,9 +1132,9 @@
           display: none;
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.6);
-          backdrop-filter: blur(4px);
-          -webkit-backdrop-filter: blur(4px);
+          background: rgba(0,0,0,0.5);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
           z-index: 998;
           animation: backdropIn 0.25s ease;
         }
@@ -1049,73 +1145,66 @@
         .navbar-links { display: none !important; }
         .profile-dropdown { display: none !important; }
 
-        /* --- Slide-in Drawer (Glassmorphism Floating Card) --- */
+        /* --- Slide-down Drawer Menu Sheet below Navbar --- */
         .mobile-drawer-links {
           list-style: none;
           margin: 0;
-          padding: 0;
+          padding: 1rem 1.25rem 1.5rem 1.25rem;
           position: fixed;
-          top: 10px;
-          right: 10px;
-          width: min(85vw, 330px);
+          top: var(--navbar-height);
+          left: 0;
+          width: 100vw;
           height: auto;
-          max-height: calc(100dvh - 20px);
-          border-radius: 20px;
-          background: rgba(8, 8, 14, 0.88);
-          backdrop-filter: blur(45px) saturate(1.6);
-          -webkit-backdrop-filter: blur(45px) saturate(1.6);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          box-shadow:
-            0 0 0 1px rgba(255,255,255,0.06) inset,
-            0 24px 60px rgba(0, 0, 0, 0.8),
-            0 8px 24px rgba(0, 0, 0, 0.6);
-          z-index: 1100;
+          max-height: calc(100dvh - var(--navbar-height));
+          border-bottom-left-radius: 20px;
+          border-bottom-right-radius: 20px;
+          background: rgba(8, 8, 14, 0.95);
+          backdrop-filter: blur(25px) saturate(1.6);
+          -webkit-backdrop-filter: blur(25px) saturate(1.6);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+          z-index: 999;
           display: flex !important;
           flex-direction: column;
           overflow-y: auto;
           overscroll-behavior: contain;
-          gap: 0;
-          transform: translateX(calc(100% + 20px));
+          gap: 0.4rem;
+          transform: translateY(-120%);
           transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-          padding-top: 2.8rem; /* space for floating close button */
-          padding-bottom: 1rem;
         }
         body.light-mode .mobile-drawer-links {
-          background: rgba(248, 250, 252, 0.92);
-          backdrop-filter: blur(45px) saturate(1.6);
-          -webkit-backdrop-filter: blur(45px) saturate(1.6);
-          border: 1px solid rgba(99, 102, 241, 0.18);
-          box-shadow:
-            0 0 0 1px rgba(255,255,255,0.85) inset,
-            0 24px 60px rgba(99, 102, 241, 0.18),
-            0 8px 24px rgba(0, 0, 0, 0.12);
+          background: rgba(248, 250, 252, 0.96);
+          border-bottom: 1px solid rgba(99, 102, 241, 0.18);
+          box-shadow: 0 15px 40px rgba(99, 102, 241, 0.08);
         }
-        .mobile-drawer-links.show-mobile { transform: translateX(0); }
+        .mobile-drawer-links.show-mobile { transform: translateY(0); }
 
-        /* --- Close button: floats top-right of drawer --- */
-        .nav-drawer-close {
-          position: absolute;
-          top: 0.7rem;
-          right: 0.7rem;
-          width: 28px;
-          height: 28px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 8px;
-          color: var(--text-muted);
-          cursor: pointer;
-          transition: all 0.2s;
-          z-index: 2;
-          flex-shrink: 0;
+        /* Staggered list items animation */
+        .mobile-drawer-links li {
+          opacity: 0;
+          transform: translateY(12px);
+          transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        body.light-mode .nav-drawer-close {
-          background: rgba(0,0,0,0.04);
-          border-color: var(--border-default);
+        .mobile-drawer-links.show-mobile li {
+          opacity: 1;
+          transform: translateY(0);
         }
-        .nav-drawer-close:hover { border-color: var(--accent-primary); color: var(--text-primary); }
+        /* transition delays for staggering effect */
+        .mobile-drawer-links.show-mobile li:nth-child(1) { transition-delay: 0.04s; }
+        .mobile-drawer-links.show-mobile li:nth-child(2) { transition-delay: 0.08s; }
+        .mobile-drawer-links.show-mobile li:nth-child(3) { transition-delay: 0.12s; }
+        .mobile-drawer-links.show-mobile li:nth-child(4) { transition-delay: 0.16s; }
+        .mobile-drawer-links.show-mobile li:nth-child(5) { transition-delay: 0.20s; }
+        .mobile-drawer-links.show-mobile li:nth-child(6) { transition-delay: 0.24s; }
+        .mobile-drawer-links.show-mobile li:nth-child(7) { transition-delay: 0.28s; }
+        .mobile-drawer-links.show-mobile li:nth-child(8) { transition-delay: 0.32s; }
+        .mobile-drawer-links.show-mobile li:nth-child(9) { transition-delay: 0.36s; }
+        .mobile-drawer-links.show-mobile li:nth-child(10) { transition-delay: 0.40s; }
+        .mobile-drawer-links.show-mobile li:nth-child(11) { transition-delay: 0.44s; }
+        .mobile-drawer-links.show-mobile li:nth-child(12) { transition-delay: 0.48s; }
+        .mobile-drawer-links.show-mobile li:nth-child(13) { transition-delay: 0.52s; }
+        .mobile-drawer-links.show-mobile li:nth-child(14) { transition-delay: 0.56s; }
+        .mobile-drawer-links.show-mobile li:nth-child(15) { transition-delay: 0.60s; }
 
         /* --- Inline Profile Card (top of drawer) --- */
         .nav-profile-card {
@@ -1125,26 +1214,28 @@
           padding: 0.6rem 1rem;
           background: rgba(255,255,255,0.02);
           border-bottom: 1px solid rgba(255,255,255,0.06);
+          border-radius: 8px;
+          margin-bottom: 0.5rem;
           flex-shrink: 0;
         }
         body.light-mode .nav-profile-card { background: var(--bg-secondary); border-bottom-color: var(--border-default); }
         .nav-profile-avatar {
-          width: 38px;
-          height: 38px;
-          border-radius: 10px;
+          width: 34px;
+          height: 34px;
+          border-radius: 8px;
           background: linear-gradient(135deg, var(--accent-primary), #7c3aed);
           display: flex;
           align-items: center;
           justify-content: center;
           font-weight: 800;
-          font-size: 1rem;
+          font-size: 0.9rem;
           color: white;
           flex-shrink: 0;
           text-transform: uppercase;
         }
         .nav-profile-info { display: flex; flex-direction: column; min-width: 0; }
         .nav-profile-name {
-          font-size: 0.9rem;
+          font-size: 0.85rem;
           font-weight: 700;
           color: var(--text-primary);
           white-space: nowrap;
@@ -1152,7 +1243,7 @@
           text-overflow: ellipsis;
         }
         .nav-profile-email {
-          font-size: 0.68rem;
+          font-size: 0.65rem;
           color: var(--text-muted);
           white-space: nowrap;
           overflow: hidden;
@@ -1161,40 +1252,40 @@
 
         /* --- Nav section label --- */
         .nav-section-label {
-          font-size: 0.58rem;
+          font-size: 0.6rem;
           text-transform: uppercase;
           letter-spacing: 0.12em;
           color: var(--text-muted);
           font-weight: 700;
-          padding: 0.45rem 1rem 0.2rem;
-          opacity: 0.45;
+          padding: 0.4rem 0.5rem 0.2rem 0.5rem;
+          opacity: 0.5;
         }
 
         /* --- Nav link items --- */
         .mobile-drawer-links li {
           width: 100%;
-          padding: 0 0.5rem;
+          padding: 0;
           margin: 0;
           line-height: 1;
         }
-        /* Kill browser default list spacing for special li wrappers */
+        /* Kill browser default list spacing */
         .mobile-drawer-links li[style*="padding:0"],
         .mobile-drawer-links li[style*="list-style:none"] { padding: 0 !important; margin: 0 !important; }
+        
         .mobile-drawer-links li a:not(.highlight-link) {
           display: flex;
           align-items: center;
-          gap: 0.65rem;
-          font-size: 0.9rem;
-          font-weight: 600;
-          color: var(--text-muted);
+          gap: 0.75rem;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: var(--text-secondary);
           text-decoration: none;
-          padding: 0.55rem 0.65rem;
-          border-radius: 7px;
-          transition: all 0.18s;
-          letter-spacing: 0.01em;
+          padding: 0.7rem 0.85rem;
+          border-radius: 8px;
+          transition: all 0.2s ease;
           width: 100%;
         }
-        .mobile-drawer-links li a:not(.highlight-link)::after { display: none; } /* remove underline */
+        .mobile-drawer-links li a:not(.highlight-link)::after { display: none; }
         .mobile-drawer-links li a:not(.highlight-link):hover {
           background: rgba(255,255,255,0.04);
           color: var(--text-primary);
@@ -1212,26 +1303,43 @@
           color: var(--accent-primary);
         }
 
-        /* Register highlight link in drawer */
+        /* Register highlight button in drawer */
         .mobile-drawer-links li a.highlight-link {
           display: flex;
           align-items: center;
           justify-content: center;
           width: 100%;
-          margin: 0;
-          padding: 0.7rem;
+          margin-top: 0.5rem;
+          padding: 0.75rem;
           border-radius: 8px;
-          font-size: 0.9rem;
+          font-size: 0.85rem;
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.07em;
+          background: var(--text-primary);
+          color: var(--bg-primary);
+          border: 1px solid var(--text-primary);
+          transition: all 0.2s ease;
+        }
+        body.light-mode .mobile-drawer-links li a.highlight-link {
+          background: var(--accent-primary);
+          color: #ffffff;
+          border-color: var(--accent-primary);
+        }
+        .mobile-drawer-links li a.highlight-link:hover {
+          background: transparent;
+          color: var(--text-primary);
+        }
+        body.light-mode .mobile-drawer-links li a.highlight-link:hover {
+          background: transparent;
+          color: var(--accent-primary);
         }
 
         /* --- Drawer divider --- */
         .nav-drawer-divider {
           height: 1px;
           background: var(--border-default);
-          margin: 0.5rem 1.25rem;
+          margin: 0.5rem;
           flex-shrink: 0;
         }
 
@@ -1239,35 +1347,34 @@
         .nav-profile-actions {
           display: flex;
           flex-direction: column;
-          padding: 0 0.75rem;
+          padding: 0;
           gap: 0;
         }
         .nav-profile-actions a {
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          font-size: 0.9rem;
-          font-weight: 600;
-          color: var(--text-muted);
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: var(--text-secondary);
           text-decoration: none;
-          padding: 0.55rem 0.65rem;
-          border-radius: 7px;
-          transition: all 0.18s;
+          padding: 0.7rem 0.85rem;
+          border-radius: 8px;
+          transition: all 0.2s ease;
           cursor: pointer;
         }
-        .nav-profile-actions a .material-symbols-outlined { font-size: 1.1rem; }
+        .nav-profile-actions a .material-symbols-outlined { font-size: 1.15rem; }
         .nav-profile-actions a:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
         body.light-mode .nav-profile-actions a:hover { background: var(--bg-secondary); color: var(--accent-primary); }
         .nav-profile-actions a.logout { color: #ef4444; }
         .nav-profile-actions a.logout:hover { background: rgba(239,68,68,0.08); color: #ef4444; }
         body.light-mode .nav-profile-actions a.logout { color: #dc2626; }
 
-        /* Hide the old desktop dropdown trigger entirely on mobile */
+        /* Hide old profile dropdown on mobile */
         .profile-dropdown { display: none !important; }
 
         /* Prevent body scroll when drawer open */
         body.nav-open { overflow: hidden; }
-
       }
 
       /* --- Footer mobile --- */
@@ -1361,52 +1468,72 @@
         {% if current_user.is_authenticated %}
           <div class="profile-dropdown">
             <button id="profile-button" class="profile-button-text" aria-label="Profile menu">
-              {{ current_user.full_name.split(' ')[0] if current_user.full_name else current_user.username }}
-              <span class="material-symbols-outlined arrow-down">expand_more</span>
+              <div class="avatar-ring">
+                <span>{{ current_user.username[:1].upper() }}</span>
+              </div>
+              <span class="profile-username">{{ current_user.full_name.split(' ')[0] if current_user.full_name else current_user.username }}</span>
+              <span class="material-symbols-outlined arrow-down">keyboard_arrow_down</span>
             </button>
 
             <div id="profile-dropdown-content" class="profile-dropdown-content">
-              <div class="user-header">
-                <div class="user-avatar-pill">
-                  <div class="nav-profile-avatar">{{ current_user.username[:1].upper() }}</div>
-                  <div class="nav-profile-info">
-                    <div class="full-name">{{ current_user.full_name if current_user.full_name else current_user.username }}</div>
-                    <div class="user-email">{{ current_user.email }}</div>
-                  </div>
+              <!-- COMPACT USER HEADER -->
+              <div class="dropdown-profile-header">
+                <div class="header-avatar">
+                  <span>{{ current_user.username[:1].upper() }}</span>
+                </div>
+                <div class="header-details">
+                  <span class="header-name">{{ current_user.full_name if current_user.full_name else current_user.username }}</span>
+                  <span class="header-role">{% if current_user.is_admin %}ADMIN CLEARANCE{% else %}ANALYST CLEARANCE{% endif %}</span>
                 </div>
               </div>
 
-              <div class="dropdown-divider"></div>
+              <div class="dropdown-menu-divider"></div>
 
-              <div class="dropdown-links">
-                {% if current_user.is_admin %}
-                  <a href="{{ url_for('auth.admin_dashboard') }}" class="details">
-                    <span class="material-symbols-outlined">admin_panel_settings</span>
-                    <span>Admin Panel</span>
-                  </a>
-                {% endif %}
-
-                <a href="javascript:void(0)" class="details" onclick="toggleTheme()">
-                  <span class="material-symbols-outlined" id="theme-icon">light_mode</span>
-                  <span id="theme-text">Light Mode</span>
+              <!-- VERTICAL ACTION LIST -->
+              {% if current_user.is_admin %}
+                <a href="{{ url_for('auth.admin_dashboard') }}" class="dropdown-menu-item">
+                  <span class="material-symbols-outlined item-icon">admin_panel_settings</span>
+                  <span class="item-label">Admin Console</span>
                 </a>
+              {% endif %}
 
-                <a href="{{ url_for('auth.account_settings') }}" class="details">
-                  <span class="material-symbols-outlined">manage_accounts</span>
-                  <span>Account Settings</span>
-                </a>
+              <a href="javascript:void(0)" class="dropdown-menu-item" onclick="toggleTheme()">
+                <span class="material-symbols-outlined item-icon" id="theme-icon">light_mode</span>
+                <span class="item-label" id="theme-text">Light Mode</span>
+                <span class="material-symbols-outlined item-arrow">chevron_right</span>
+              </a>
+
+              <a href="{{ url_for('auth.account_settings') }}" class="dropdown-menu-item">
+                <span class="material-symbols-outlined item-icon">manage_accounts</span>
+                <span class="item-label">Account Config</span>
+              </a>
+
+              <div class="dropdown-menu-divider"></div>
+
+              <!-- TELEMETRY VITALS -->
+              <div class="dropdown-telemetry-item">
+                <div class="telemetry-row">
+                  <span>CHANNEL</span>
+                  <span class="telemetry-val secure">AES-256</span>
+                </div>
+                <div class="telemetry-row">
+                  <span>STATUS</span>
+                  <span class="telemetry-val ready">NOMINAL</span>
+                </div>
               </div>
 
-              <div class="dropdown-divider"></div>
+              <div class="dropdown-menu-divider"></div>
 
-              <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form">
+              <!-- LOGOUT ACTION -->
+              <form method="POST" action="{{ url_for('auth.logout') }}" class="logout-form" style="margin:0; padding:0; width: 100%;">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="logout-link">
-                  <span class="material-symbols-outlined">logout</span>
-                  <span>Logout Session</span>
+                <button type="submit" class="dropdown-menu-item logout-item" style="width: 100%; border: none; background: none; text-align: left; font-family: inherit; cursor: pointer;">
+                  <span class="material-symbols-outlined item-icon">logout</span>
+                  <span class="item-label">Log out</span>
                 </button>
               </form>
-            </div>          </div>
+            </div>
+          </div>
         {% else %}
           <ul class="navbar-links" style="gap: 1.5rem;">
             <li>
@@ -1430,12 +1557,7 @@
     <!-- Mobile sliding drawer menu moved outside navbar container for reliability -->
     <ul class="mobile-drawer-links" id="mobile-nav-drawer">
 
-      <!-- Floating close button (absolute on drawer card) -->
-      <li style="list-style:none; padding:0; margin:0; height:0; overflow:visible; position:static;">
-        <button class="nav-drawer-close" id="nav-drawer-close" aria-label="Close menu">
-          <span class="material-symbols-outlined" style="font-size:1rem;">close</span>
-        </button>
-      </li>
+
 
       {% if current_user.is_authenticated %}
       <!-- Inline profile card (mobile only) -->
@@ -1456,41 +1578,29 @@
       <li style="list-style:none; padding:0;"><div class="nav-section-label">Navigation</div></li>
 
       <li>
-        <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">
-          <span class="material-symbols-outlined" style="font-size:1.1rem;">home</span>Home
-        </a>
+        <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
       </li>
       <li>
-        <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">
-          <span class="material-symbols-outlined" style="font-size:1.1rem;">security</span>Security Hub
-        </a>
+        <a href="{{ url_for('tools_hub') }}" class="{% if request.endpoint == 'tools_hub' or request.blueprint in hub_blueprints %}active{% endif %}">Security Hub</a>
       </li>
 
 
         {% if current_user.is_authenticated %}
           <li>
-            <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">
-              <span class="material-symbols-outlined" style="font-size:1.1rem;">bar_chart</span>Security Posture
-            </a>
+            <a href="{{ url_for('dashboard_bp.dashboard') }}" class="{% if request.blueprint == 'dashboard_bp' %}active{% endif %}">Security Posture</a>
           </li>
         <li>
-          <a href="{{ url_for('scheduler_bp.scheduler_page') }}" class="{% if request.blueprint == 'scheduler_bp' %}active{% endif %}">
-            <span class="material-symbols-outlined" style="font-size:1.1rem;">schedule</span>Scheduler
-          </a>
+          <a href="{{ url_for('scheduler_bp.scheduler_page') }}" class="{% if request.blueprint == 'scheduler_bp' %}active{% endif %}">Scheduler</a>
         </li>
       {% endif %}
 
       <li>
-        <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="{% if request.blueprint == 'chatbot_bp' %}active{% endif %}">
-          <span class="material-symbols-outlined" style="font-size:1.1rem;">smart_toy</span>AI Analyzer
-        </a>
+        <a href="{{ url_for('chatbot_bp.chatbot_page') }}" class="{% if request.blueprint == 'chatbot_bp' %}active{% endif %}">AI Analyzer</a>
       </li>
 
       {% if not current_user.is_authenticated %}
         <li>
-          <a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active{% endif %}">
-            <span class="material-symbols-outlined" style="font-size:1.1rem;">login</span>Login
-          </a>
+          <a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active{% endif %}">Login</a>
         </li>
         <li style="padding: 0 0.75rem; margin-top: 0.5rem;">
           <a href="{{ url_for('auth.register') }}" class="highlight-link {% if request.endpoint == 'auth.register' %}active{% endif %}">
@@ -1508,22 +1618,15 @@
       <li style="list-style:none; padding:0;">
         <div class="nav-profile-actions">
           {% if current_user.is_admin %}
-          <a href="{{ url_for('auth.admin_dashboard') }}">
-            <span class="material-symbols-outlined">admin_panel_settings</span>Admin Panel
-          </a>
+          <a href="{{ url_for('auth.admin_dashboard') }}">Admin Panel</a>
           {% endif %}
           <a href="javascript:void(0)" onclick="toggleTheme()">
-            <span class="material-symbols-outlined" id="mob-theme-icon">light_mode</span>
             <span id="mob-theme-text">Light Mode</span>
           </a>
-          <a href="{{ url_for('auth.account_settings') }}">
-            <span class="material-symbols-outlined">manage_accounts</span>Account Settings
-          </a>
+          <a href="{{ url_for('auth.account_settings') }}">Account Settings</a>
           <form method="POST" action="{{ url_for('auth.logout') }}" style="margin:0;padding:0 0.65rem;">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="logout" style="width:100%;text-align:left;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:0.75rem;padding:0.55rem 0;font-size:0.9rem;color:#ef4444;font-weight:600;font-family:inherit;">
-              <span class="material-symbols-outlined">logout</span>Logout
-            </button>
+            <button type="submit" class="logout" style="width:100%;text-align:left;cursor:pointer;background:none;border:none;display:flex;align-items:center;padding:0.55rem 0;font-size:0.9rem;color:#ef4444;font-weight:600;font-family:inherit;">Logout</button>
           </form>
         </div>
       </li>
@@ -1581,8 +1684,10 @@
         // Mobile drawer icons
         const mobIcon = document.getElementById('mob-theme-icon');
         const mobText = document.getElementById('mob-theme-text');
-        if (mobIcon && mobText) {
+        if (mobIcon) {
           mobIcon.textContent = isLight ? 'dark_mode' : 'light_mode';
+        }
+        if (mobText) {
           mobText.textContent = isLight ? 'Dark Mode' : 'Light Mode';
         }
       }

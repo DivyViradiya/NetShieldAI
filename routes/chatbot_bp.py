@@ -172,6 +172,8 @@ def map_llm_mode(mode):
     """Maps frontend mode aliases to backend supported modes."""
     mapping = {
         'gemini': 'gemini-2.5-flash',
+        'gemini-2.0-flash': 'gemini-2.5-flash',
+        'gemini-2.0-flash-lite': 'gemini-2.5-flash',
         'local': 'local'
     }
     return mapping.get(mode, mode)

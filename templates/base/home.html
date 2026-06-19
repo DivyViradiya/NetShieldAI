@@ -138,6 +138,7 @@
     }
 
     .hero-actions { display: flex; gap: 1.25rem; position: relative; z-index: 10; }
+    .btn-text-mobile { display: none; }
     .btn-neo-primary { 
         background: var(--neo-accent); color: #000; padding: 0.75rem 1.75rem; 
         font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; 
@@ -247,6 +248,10 @@
     .lifecycle-step h3 { font-size: 1.25rem; color: white; margin-bottom: 0.75rem; font-weight: 600; }
     .lifecycle-step p { font-size: 0.9rem; color: var(--neo-text-secondary); line-height: 1.6; margin-bottom: 0; }
 
+    .lifecycle-carousel-nav {
+      display: none;
+    }
+
     /* --- ENTERPRISE REPORTING --- */
     /* --- COMMAND CENTER BENTO GRID --- */
     .overwatch-bento {
@@ -258,6 +263,13 @@
       overflow: hidden; backdrop-filter: blur(20px); transition: all 0.3s ease;
     }
     .bento-tile:hover { border-color: rgba(255,255,255,0.2); background: rgba(59, 130, 246, 0.03); }
+    
+    .overwatch-hud-direct {
+      grid-column: span 12;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
     
     .span-12 { grid-column: span 12; }
     .span-8 { grid-column: span 8; }
@@ -312,7 +324,7 @@
     }
 
     /* --- MISSION SCHEDULE STYLES (Sync with Scheduler) --- */
-    .mission-schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+    .mission-schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
     
     .mission-card {
         background: linear-gradient(165deg, rgba(12, 12, 16, 0.95) 0%, rgba(4, 4, 6, 1) 100%);
@@ -452,6 +464,10 @@
       margin: 0 2rem 5rem 2rem;
     }
 
+    .pg-tabs-track {
+      display: contents;
+    }
+
     .pg-tool {
       background: var(--neo-card); border: 1px solid var(--neo-border);
       border-radius: 6px; padding: 1.25rem; display: flex; flex-direction: column;
@@ -466,8 +482,12 @@
       background: rgba(59, 130, 246, 0.05);
     }
 
-    .pg-tool.active {
-      background: rgba(59, 130, 246, 0.1); border-color: var(--neo-blue);
+    .pg-tool.active,
+    .pg-tool.active:hover {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: var(--neo-blue);
+      transform: none !important;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
     }
     .pg-tool::before {
       content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent); opacity: 0; transition: opacity 0.4s;
@@ -560,12 +580,6 @@
       transform: translateY(-8px); border-color: var(--neo-blue);
       box-shadow: 0 15px 35px rgba(0,0,0,0.2); background: rgba(59, 130, 246, 0.04);
     }
-    
-    .comp-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: var(--card-color, var(--neo-blue)); opacity: 0.5; transition: opacity 0.4s;
-    }
-    .comp-card:hover::before { opacity: 1; box-shadow: 0 0 15px var(--card-color, var(--neo-blue)); }
 
     .comp-watermark {
       position: absolute; bottom: -1.5rem; right: -0.5rem; font-family: var(--font-mono);
@@ -616,18 +630,449 @@
     }
     
     @media (max-width: 768px) {
-      .power-grid-bento { grid-template-columns: 1fr; margin: 0 1rem 3rem 1rem;}
-      .pg-nmap { grid-column: 1; grid-row: 1; }
-      .pg-zap { grid-column: 1; grid-row: 2; }
-      .pg-sqlmap { grid-column: 1; grid-row: 3; }
-      .pg-tshark { grid-column: 1; grid-row: 4; }
-      .pg-semgrep { grid-column: 1; grid-row: 5; }
-      .pg-ssl { grid-column: 1; grid-row: 6; }
-      .pg-api { grid-column: 1; grid-row: 7; }
-      .pg-display { grid-column: 1; grid-row: 8; margin-top: 1rem; padding: 1.5rem; }
-      .spec-title { font-size: 2rem; }
-      .pg-spec-grid { grid-template-columns: 1fr; gap: 1rem; }
-      .compliance-matrix { grid-template-columns: 1fr; margin: 0 1rem 3rem 1rem; }
+      .power-grid-bento {
+        display: flex;
+        flex-direction: column;
+        margin: 0 1.25rem 3rem 1.25rem;
+        gap: 0.75rem;
+      }
+      .pg-tabs-track {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 0.5rem;
+        padding-bottom: 0.5rem;
+        width: 100%;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .pg-tabs-track::-webkit-scrollbar {
+        display: none;
+      }
+      .pg-tool {
+        flex-shrink: 0;
+        width: 135px;
+        height: 52px;
+        padding: 0.5rem 0.75rem;
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      .pg-tool.pg-api {
+        width: 180px;
+      }
+      .pg-tool-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        flex-shrink: 0;
+      }
+      .pg-tool-icon .material-symbols-outlined {
+        font-size: 1.1rem !important;
+      }
+      .pg-tool-name {
+        font-size: 0.8rem !important;
+        margin: 0 !important;
+      }
+      .pg-tool-sub {
+        font-size: 0.55rem !important;
+        margin: 0 !important;
+      }
+      .pg-display {
+        margin-top: 0 !important;
+        padding: 1rem 1.25rem !important;
+      }
+      .spec-title {
+        font-size: 1.3rem !important;
+        margin-top: 0.4rem !important;
+        margin-bottom: 0.2rem !important;
+      }
+      .spec-meta {
+        font-size: 0.65rem !important;
+      }
+      .pg-display-icon {
+        font-size: 2.5rem !important;
+      }
+      .pg-display-desc {
+        font-size: 0.8rem !important;
+        line-height: 1.45 !important;
+      }
+      .pg-divider {
+        margin: 0.75rem 0 !important;
+        width: 100% !important;
+      }
+      .pg-spec-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem !important;
+      }
+      .pg-spec-item {
+        gap: 0.2rem !important;
+      }
+      .pg-spec-label {
+        font-size: 0.55rem !important;
+      }
+      .pg-spec-value {
+        font-size: 0.8rem !important;
+      }
+      .compliance-matrix {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem !important;
+        margin: 0 1.25rem 3rem 1.25rem !important;
+        padding: 0 !important;
+      }
+      .comp-card {
+        padding: 1.25rem 1rem !important;
+        min-height: 200px !important;
+        border-radius: 8px !important;
+      }
+      .comp-card:hover { transform: none !important; }
+      .comp-watermark {
+        font-size: 5rem !important;
+        bottom: -0.75rem !important;
+        right: -0.25rem !important;
+      }
+      .comp-header {
+        margin-bottom: 0.75rem !important;
+      }
+      .comp-icon {
+        width: 36px !important;
+        height: 36px !important;
+      }
+      .comp-icon .material-symbols-outlined {
+        font-size: 1.2rem !important;
+      }
+      .comp-status {
+        font-size: 0.55rem !important;
+        padding: 0.2rem 0.5rem !important;
+      }
+      .comp-title {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .comp-desc {
+        font-size: 0.78rem !important;
+        line-height: 1.45 !important;
+      }
+
+      /* --- Hero Responsive adjustments --- */
+      .hero-wrapper {
+        min-height: calc(100vh - var(--navbar-height) - 150px);
+        padding-top: calc(var(--navbar-height) + 2rem);
+        padding-bottom: 3rem;
+      }
+      .hero-content {
+        padding: 0 1.25rem;
+      }
+      .hero-tagline {
+        font-size: clamp(0.8rem, 3.2vw, 0.95rem);
+        letter-spacing: 0.25em;
+        margin-bottom: 1.5rem;
+      }
+      .hero-title {
+        font-size: clamp(2.8rem, 10vw, 4.5rem);
+        line-height: 1.15;
+        margin-bottom: 1.75rem;
+      }
+      .hero-sub {
+        font-size: clamp(1.05rem, 3vw, 1.2rem);
+        line-height: 1.6;
+        margin-bottom: 3rem;
+        border-left: none;
+        padding-left: 0;
+        background: none;
+      }
+      .hero-actions {
+        display: flex;
+        flex-direction: row;
+        gap: 0.75rem;
+        width: 100%;
+      }
+      .btn-neo-primary, .btn-neo-secondary {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 52px;
+        font-size: 0.85rem;
+        padding: 0 0.85rem;
+        white-space: nowrap;
+        letter-spacing: 0.03em;
+        gap: 0.4rem;
+        box-sizing: border-box;
+      }
+      .btn-neo-primary .material-symbols-outlined {
+        font-size: 1.1rem !important;
+        line-height: 1;
+      }
+      .btn-text-desktop {
+        display: none;
+      }
+      .btn-text-mobile {
+        display: inline;
+      }
+
+      /* --- Status Bar Responsive Layout --- */
+      .status-bar {
+        height: auto;
+        padding: 1.5rem 1.25rem;
+      }
+      .status-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem 1.25rem;
+      }
+      .status-item span {
+        font-size: 0.7rem;
+        margin-bottom: 0.15rem;
+      }
+      .status-item strong {
+        font-size: 1.05rem;
+      }
+      .status-item strong i {
+        font-size: 0.9rem;
+      }
+
+      /* --- Core Modules Grid Responsive Layout --- */
+      .neo-grid {
+        display: flex;
+        flex-direction: column;
+        padding: 0 1.25rem;
+        gap: 0.65rem;
+        margin-bottom: 2.25rem;
+      }
+      .neo-card:hover {
+        transform: none !important;
+      }
+      
+      /* Concept C Primary Card: Showcase */
+      .neo-card:first-child {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 200px;
+        padding: 1.25rem;
+        gap: 1.25rem;
+      }
+      .neo-card:first-child > div:first-child {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+      }
+      .neo-card:first-child .card-icon-box {
+        width: 44px;
+        height: 44px;
+        margin: 0 !important;
+        border-radius: 4px;
+      }
+      .neo-card:first-child .card-icon-box .material-symbols-outlined {
+        font-size: 1.5rem !important;
+      }
+      .neo-card:first-child .status-badge {
+        font-size: 0.6rem !important;
+        padding: 0.3rem 0.8rem !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        border-radius: 4px !important;
+      }
+      .neo-card:first-child .card-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: left;
+      }
+      .neo-card:first-child .card-content h3 {
+        font-size: 1.1rem !important;
+        margin: 0 !important;
+        font-weight: 700;
+      }
+      .neo-card:first-child .card-content p {
+        font-size: 0.82rem !important;
+        margin: 0 !important;
+        line-height: 1.5 !important;
+      }
+      .neo-card:first-child .card-action {
+        margin: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        font-size: 0.65rem !important;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--neo-text-tertiary);
+      }
+      .neo-card:first-child .card-action span:not(.material-symbols-outlined) {
+        display: inline !important;
+      }
+      .neo-card:first-child .card-action .material-symbols-outlined {
+        font-size: 1rem !important;
+      }
+
+      /* Concept C Sibling Cards: Flat Compact Rows */
+      .neo-card:not(:first-child) {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        min-height: auto;
+        padding: 0.7rem 0.85rem;
+        gap: 0.75rem;
+      }
+      .neo-card:not(:first-child) > div:first-child {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: auto !important;
+        flex-shrink: 0 !important;
+      }
+      .neo-card:not(:first-child) .card-icon-box {
+        width: 34px;
+        height: 34px;
+        margin: 0 !important;
+        border-radius: 4px;
+      }
+      .neo-card:not(:first-child) .card-icon-box .material-symbols-outlined {
+        font-size: 1.1rem !important;
+      }
+      .neo-card:not(:first-child) .status-badge {
+        display: none !important;
+      }
+      .neo-card:not(:first-child) .card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        text-align: left;
+      }
+      .neo-card:not(:first-child) .card-content h3 {
+        font-size: 0.9rem !important;
+        margin: 0 !important;
+        font-weight: 700;
+      }
+      .neo-card:not(:first-child) .card-content p {
+        font-size: 0.7rem !important;
+        margin: 0 !important;
+        line-height: 1.3 !important;
+      }
+      .neo-card:not(:first-child) .card-action {
+        margin: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--neo-text-tertiary);
+      }
+      .neo-card:not(:first-child) .card-action span:not(.material-symbols-outlined) {
+        display: none !important;
+      }
+      .neo-card:not(:first-child) .card-action .material-symbols-outlined {
+        font-size: 1.25rem !important;
+      }
+
+      /* --- Lifecycle Grid Responsive Layout --- */
+      .lifecycle-grid {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        gap: 1.25rem !important;
+        padding: 0 1.25rem 0.5rem 1.25rem !important;
+        margin-bottom: 1.5rem !important;
+        scrollbar-width: none !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+      .lifecycle-grid::-webkit-scrollbar {
+        display: none !important;
+      }
+      .lifecycle-step {
+        flex-shrink: 0 !important;
+        width: 100% !important;
+        scroll-snap-align: center !important;
+        box-sizing: border-box !important;
+        min-height: 220px !important;
+        padding: 1.5rem !important;
+      }
+      .lifecycle-step:hover {
+        transform: none !important;
+      }
+      .step-number {
+        font-size: 6rem;
+        top: -0.5rem;
+        right: 0rem;
+      }
+      .lifecycle-carousel-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 3rem;
+      }
+      .carousel-dot {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 700;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid var(--neo-border);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--neo-text-tertiary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .carousel-dot.active {
+        border-color: var(--neo-blue);
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--neo-blue);
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+      }
+      .carousel-line {
+        height: 1px;
+        width: 40px;
+        background: var(--neo-border);
+        transition: background-color 0.3s ease;
+      }
+
+      /* --- Global Layout Adjustments --- */
+      .section-header {
+        padding: 0 1.25rem;
+        margin-top: 1.25rem;
+        margin-bottom: 0.75rem;
+      }
+      .section-divider {
+        margin: 1.75rem 1.25rem;
+      }
+      .agentic-card-wrap {
+        margin: 0 1.25rem 3rem 1.25rem;
+        padding: 2rem 1.5rem;
+      }
+      .overwatch-mockup {
+        padding: 0 1.25rem;
+        margin-bottom: 4rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 2.8rem;
+        line-height: 1.15;
+      }
+      .status-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem 1rem;
+      }
+      .status-item {
+        padding: 0.25rem 0;
+        border-bottom: none;
+      }
     }
 
     /* --- CHATBOT INTERFACE PREVIEW (AI SECTION) --- */
@@ -686,6 +1131,35 @@
       display: grid; grid-template-columns: 1fr 1.2fr; gap: 3rem; align-items: center;
       margin: 0; padding: 0;
     }
+    .nexus-features {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .nexus-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--neo-text-primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .nexus-feature-item .material-symbols-outlined {
+      color: var(--neo-blue);
+      font-size: 1.2rem;
+    }
+
+    .agentic-tabs {
+      display: none;
+    }
+
+    .overwatch-tabs-wrapper {
+      display: contents;
+    }
+    .overwatch-tabs {
+      display: none;
+    }
 
     @keyframes bubblePop {
       from { opacity: 0; transform: translateY(10px) scale(0.95); }
@@ -693,8 +1167,381 @@
     }
 
     @media (max-width: 1024px) {
-      .chatbot-preview-section { grid-template-columns: 1fr; gap: 4rem; text-align: center; }
-      .chat-mockup-window { height: 500px; }
+      .agentic-card-wrap {
+        margin: 0 1rem 2rem 1rem !important;
+        padding: 1rem 1.25rem !important;
+        border-radius: 8px !important;
+      }
+      .chatbot-preview-section {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+        text-align: left !important;
+      }
+      .agentic-tabs {
+        display: flex !important;
+        width: 100%;
+        border-bottom: 1px solid var(--neo-border);
+        margin-bottom: 1rem;
+        justify-content: flex-start;
+        gap: 1.25rem;
+      }
+      .agentic-tab {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--neo-text-tertiary);
+        padding: 0.4rem 0;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s;
+      }
+      .agentic-tab.active {
+        color: var(--neo-blue);
+        border-bottom-color: var(--neo-blue);
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+      }
+      .chatbot-preview-section:not(.show-console) .chat-mockup-window {
+        display: none !important;
+      }
+      .chatbot-preview-section.show-console .nexus-intel {
+        display: none !important;
+      }
+      .chatbot-preview-section.show-console .chat-mockup-window {
+        display: flex !important;
+      }
+      .nexus-intel {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nexus-intel h3 {
+        font-size: 1.2rem !important;
+        line-height: 1.3 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .nexus-intel p {
+        font-size: 0.8rem !important;
+        line-height: 1.45 !important;
+        margin-bottom: 1rem !important;
+        color: var(--neo-text-secondary);
+      }
+      .nexus-features {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+        margin-bottom: 1.25rem !important;
+        width: 100% !important;
+      }
+      .nexus-feature-item {
+        background: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        font-size: 0.78rem !important;
+        font-weight: 600;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        color: var(--neo-text-primary);
+      }
+      .nexus-feature-item .material-symbols-outlined {
+        color: var(--neo-blue) !important;
+        font-size: 1.1rem !important;
+      }
+      .nexus-intel .btn-neo-primary {
+        width: 100% !important;
+        justify-content: center !important;
+        height: 44px !important;
+        padding: 0 1rem !important;
+        font-size: 0.78rem !important;
+        border-radius: 4px !important;
+        box-sizing: border-box !important;
+      }
+      .chat-mockup-window {
+        height: 330px !important;
+        border-radius: 8px !important;
+      }
+      .chat-window-head {
+        padding: 0.5rem 0.75rem !important;
+      }
+      .chat-status {
+        font-size: 0.62rem !important;
+      }
+      .status-dot {
+        width: 6px !important;
+        height: 6px !important;
+      }
+      .chat-message-list {
+        padding: 0.75rem !important;
+        gap: 0.5rem !important;
+      }
+      .message-bubble {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        line-height: 1.35 !important;
+        max-width: 95% !important;
+      }
+      .reasoning-popout {
+        margin-top: 0.4rem !important;
+        padding: 0.4rem 0.6rem !important;
+        font-size: 0.62rem !important;
+        line-height: 1.3 !important;
+      }
+      .chat-input-mock {
+        padding: 0.5rem 0.75rem !important;
+      }
+      .mock-field {
+        height: 30px !important;
+      }
+      .mock-send {
+        width: 30px !important;
+        height: 30px !important;
+      }
+      .mock-send .material-symbols-outlined {
+        font-size: 1rem !important;
+      }
+
+      /* Command Center Overwatch Redesign */
+      .overwatch-tabs-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 0px !important;
+      }
+      .overwatch-tabs {
+        display: flex !important;
+        width: 100%;
+        border-bottom: 1px solid var(--neo-border);
+        margin-top: 2rem !important;
+        margin-bottom: 1.25rem;
+        justify-content: flex-start;
+        gap: 1.25rem;
+      }
+      .overwatch-tab {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--neo-text-tertiary);
+        padding: 0.4rem 0;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s;
+      }
+      .overwatch-tab.active {
+        color: var(--neo-blue);
+        border-bottom-color: var(--neo-blue);
+        text-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+      }
+      .overwatch-tabs-wrapper:not(.show-missions) .overwatch-tile-missions {
+        display: none !important;
+      }
+      .overwatch-tabs-wrapper.show-missions .overwatch-tile-reports {
+        display: none !important;
+      }
+      .overwatch-tabs-wrapper.show-missions .overwatch-tile-missions {
+        display: flex !important;
+      }
+
+      .overwatch-bento {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 0.75rem !important;
+      }
+      .overwatch-bento .bento-tile {
+        padding: 1.25rem 1rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+
+      .intel-hud-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        gap: 1.25rem !important;
+        width: 100% !important;
+      }
+
+      .terminal-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.5rem !important;
+      }
+      .terminal-title {
+        font-size: 0.8rem !important;
+        line-height: 1.3 !important;
+      }
+      .over-label {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+      }
+      .intel-hud-grid .hud-col:nth-child(1) {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+      }
+      .intel-hud-grid .hud-col:nth-child(3) {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+      }
+      .intel-hud-grid .hud-col:nth-child(2) {
+        grid-column: 1 / span 2 !important;
+        grid-row: 2 !important;
+        margin-top: 0.5rem !important;
+      }
+      .gauge-wrapper {
+        width: 110px !important;
+        height: 110px !important;
+      }
+      .gauge-num {
+        font-size: 1.6rem !important;
+      }
+      .gauge-unit {
+        font-size: 0.6rem !important;
+      }
+      .hud-label {
+        margin-bottom: 0.75rem !important;
+        font-size: 0.6rem !important;
+      }
+      .brief-title {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .brief-text {
+        font-size: 0.8rem !important;
+        line-height: 1.45 !important;
+        padding-left: 0.75rem !important;
+      }
+      .comp-bars {
+        gap: 0.75rem !important;
+      }
+      .comp-bar-row {
+        gap: 0.35rem !important;
+      }
+
+      /* Spacing & Layout tweaks for Overwatch on Mobile */
+      .overwatch-divider {
+        margin-top: 3.5rem !important;
+      }
+      
+      /* Report Archive Card List Compactness */
+      .report-hud-card {
+        flex-direction: row !important;
+        align-items: center !important;
+        padding: 0.75rem 0.85rem !important;
+        gap: 0.75rem !important;
+        border-radius: 8px !important;
+        min-height: auto !important;
+      }
+      .report-hud-card::after {
+        display: none !important; /* Hide hover corner decoration on mobile */
+      }
+      .report-hud-icon-box {
+        width: 34px !important;
+        height: 34px !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+        border-radius: 4px !important;
+      }
+      .report-hud-icon-box span {
+        font-size: 1.1rem !important;
+      }
+      .report-hud-content {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.15rem !important;
+        min-width: 0 !important;
+      }
+      .report-hud-title {
+        font-size: 0.82rem !important;
+        margin: 0 !important;
+        font-weight: 700 !important;
+      }
+      .report-hud-target {
+        font-size: 0.65rem !important;
+        margin: 0 0 0.25rem 0 !important;
+      }
+      .report-hud-meta {
+        border-top: none !important;
+        padding-top: 0 !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+      }
+      .report-hud-stats {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.75rem !important;
+      }
+      .report-hud-stat-item {
+        font-size: 0.6rem !important;
+      }
+      .report-hud-stats .card-nav-link {
+        display: none !important;
+      }
+      .report-download-btn {
+        padding: 4px 8px !important;
+        border-radius: 4px !important;
+        font-size: 0.55rem !important;
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+      }
+
+      /* Tactical Mission Schedule Card Compactness */
+      .mission-card {
+        padding: 0.75rem 0.85rem !important;
+        gap: 0.4rem !important;
+        border-radius: 8px !important;
+        min-height: auto !important;
+      }
+      .mission-header {
+        align-items: center !important;
+        margin: 0 !important;
+      }
+      .mission-title {
+        font-size: 0.82rem !important;
+      }
+      .mission-target {
+        font-size: 0.65rem !important;
+        margin: 0 !important;
+      }
+      .template-icon {
+        width: 30px !important;
+        height: 30px !important;
+        border-radius: 4px !important;
+        flex-shrink: 0 !important;
+      }
+      .template-icon span {
+        font-size: 1rem !important;
+      }
+      .job-row {
+        margin-top: 0.15rem !important;
+        padding: 0.3rem 0.5rem !important;
+        border-radius: 4px !important;
+      }
+      .job-row span {
+        font-size: 0.6rem !important;
+      }
+      .mission-timer-chip {
+        padding-top: 0.4rem !important;
+        margin-top: 0.15rem !important;
+        border-top: 1px solid rgba(255,255,255,0.05) !important;
+      }
+      .countdown-label {
+        font-size: 0.55rem !important;
+      }
+      .countdown-val {
+        font-size: 0.78rem !important;
+      }
+      .mission-card .card-nav-link {
+        margin-top: 0.25rem !important;
+        font-size: 0.55rem !important;
+      }
     }
 
     .section-divider {
@@ -721,8 +1568,15 @@
         <p class="hero-sub">NetShieldAI provides a unified platform to assess the security posture of your infrastructure, networks, and applications. Leverage automated penetration testing and advanced AI-driven intelligence.</p>
 
         <div class="hero-actions">
-          <a href="{{ url_for('tools_hub') }}" class="btn-neo-primary">Access Security Suite <span class="material-symbols-outlined">arrow_forward</span></a>
-          <a href="{{ url_for('dashboard_bp.dashboard') }}" class="btn-neo-secondary">Security Posture</a>
+          <a href="{{ url_for('tools_hub') }}" class="btn-neo-primary">
+            <span class="btn-text-desktop">Access Security Suite</span>
+            <span class="btn-text-mobile">Security Suite</span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </a>
+          <a href="{{ url_for('dashboard_bp.dashboard') }}" class="btn-neo-secondary">
+            <span class="btn-text-desktop">Security Posture</span>
+            <span class="btn-text-mobile">Posture</span>
+          </a>
         </div>
       </div>
     </div>
@@ -814,59 +1668,61 @@
     <div class="power-grid-bento fade-in-element">
       
       <!-- Trigger Tiles -->
-      <div class="pg-tool pg-nmap active" data-tool="nmap">
-        <div class="pg-tool-icon"><span class="material-symbols-outlined">radar</span></div>
-        <div class="pg-tool-text">
-          <div class="pg-tool-name">Nmap Engine</div>
-          <div class="pg-tool-sub">Core Recon</div>
+      <div class="pg-tabs-track">
+        <div class="pg-tool pg-nmap active" data-tool="nmap">
+          <div class="pg-tool-icon"><span class="material-symbols-outlined">radar</span></div>
+          <div class="pg-tool-text">
+            <div class="pg-tool-name">Nmap Engine</div>
+            <div class="pg-tool-sub">Core Recon</div>
+          </div>
         </div>
-      </div>
 
-      <div class="pg-tool pg-zap" data-tool="zap">
-        <div class="pg-tool-icon"><span class="material-symbols-outlined">language</span></div>
-        <div class="pg-tool-text">
-          <div class="pg-tool-name">OWASP ZAP</div>
-          <div class="pg-tool-sub">DAST Audit</div>
+        <div class="pg-tool pg-zap" data-tool="zap">
+          <div class="pg-tool-icon"><span class="material-symbols-outlined">language</span></div>
+          <div class="pg-tool-text">
+            <div class="pg-tool-name">OWASP ZAP</div>
+            <div class="pg-tool-sub">DAST Audit</div>
+          </div>
         </div>
-      </div>
 
-      <div class="pg-tool pg-sqlmap" data-tool="sqlmap">
-        <div class="pg-tool-icon"><span class="material-symbols-outlined">database</span></div>
-        <div class="pg-tool-text">
-          <div class="pg-tool-name">SQLMap</div>
-          <div class="pg-tool-sub">Data Engine</div>
+        <div class="pg-tool pg-sqlmap" data-tool="sqlmap">
+          <div class="pg-tool-icon"><span class="material-symbols-outlined">database</span></div>
+          <div class="pg-tool-text">
+            <div class="pg-tool-name">SQLMap</div>
+            <div class="pg-tool-sub">Data Engine</div>
+          </div>
         </div>
-      </div>
 
-      <div class="pg-tool pg-tshark" data-tool="tshark">
-        <div class="pg-tool-icon"><span class="material-symbols-outlined">query_stats</span></div>
-        <div class="pg-tool-text">
-          <div class="pg-tool-name">TShark</div>
-          <div class="pg-tool-sub">Forensics</div>
+        <div class="pg-tool pg-tshark" data-tool="tshark">
+          <div class="pg-tool-icon"><span class="material-symbols-outlined">query_stats</span></div>
+          <div class="pg-tool-text">
+            <div class="pg-tool-name">TShark</div>
+            <div class="pg-tool-sub">Forensics</div>
+          </div>
         </div>
-      </div>
 
-      <div class="pg-tool pg-semgrep" data-tool="semgrep">
-        <div class="pg-tool-icon"><span class="material-symbols-outlined">code</span></div>
-        <div class="pg-tool-text">
-          <div class="pg-tool-name">Semgrep</div>
-          <div class="pg-tool-sub">SAST Audit</div>
+        <div class="pg-tool pg-semgrep" data-tool="semgrep">
+          <div class="pg-tool-icon"><span class="material-symbols-outlined">code</span></div>
+          <div class="pg-tool-text">
+            <div class="pg-tool-name">Semgrep</div>
+            <div class="pg-tool-sub">SAST Audit</div>
+          </div>
         </div>
-      </div>
 
-      <div class="pg-tool pg-ssl" data-tool="ssl">
-        <div class="pg-tool-icon"><span class="material-symbols-outlined">lock</span></div>
-        <div class="pg-tool-text">
-          <div class="pg-tool-name">SSL Shield</div>
-          <div class="pg-tool-sub">Crypto</div>
+        <div class="pg-tool pg-ssl" data-tool="ssl">
+          <div class="pg-tool-icon"><span class="material-symbols-outlined">lock</span></div>
+          <div class="pg-tool-text">
+            <div class="pg-tool-name">SSL Shield</div>
+            <div class="pg-tool-sub">Crypto</div>
+          </div>
         </div>
-      </div>
 
-      <div class="pg-tool pg-api" data-tool="api">
-        <div class="pg-tool-icon"><span class="material-symbols-outlined">api</span></div>
-        <div class="pg-tool-text">
-          <div class="pg-tool-name">API Logic Shield</div>
-          <div class="pg-tool-sub">REST & GraphQL Integrity Check</div>
+        <div class="pg-tool pg-api" data-tool="api">
+          <div class="pg-tool-icon"><span class="material-symbols-outlined">api</span></div>
+          <div class="pg-tool-text">
+            <div class="pg-tool-name">API Logic Shield</div>
+            <div class="pg-tool-sub">REST & GraphQL Integrity Check</div>
+          </div>
         </div>
       </div>
 
@@ -941,6 +1797,15 @@
       </div>
     </div>
 
+    <!-- MOBILE PROGRESS CAROUSEL INDICATOR -->
+    <div class="lifecycle-carousel-nav fade-in-element">
+      <div class="carousel-dot active" data-step="0">01</div>
+      <div class="carousel-line"></div>
+      <div class="carousel-dot" data-step="1">02</div>
+      <div class="carousel-line"></div>
+      <div class="carousel-dot" data-step="2">03</div>
+    </div>
+
     <!-- PREMIUM COMPLIANCE AUDIT FLOW -->
     <div class="section-divider fade-in-element"></div>
     <div class="section-header fade-in-element">
@@ -1006,6 +1871,12 @@
 
     <div class="agentic-card-wrap fade-in-element">
       <div class="chatbot-preview-section">
+        <!-- Mobile Section Tabs -->
+        <div class="agentic-tabs">
+          <div class="agentic-tab active" data-tab="details">Overview</div>
+          <div class="agentic-tab" data-tab="console">Live Console</div>
+        </div>
+
         <!-- COLUMN 1: INTEL -->
       <div class="nexus-intel">
         <h3 style="color: var(--neo-text-primary); font-size: 2.2rem; font-weight: 800; margin-bottom: 1.25rem; line-height: 1.1;">The Human-AI <br/><span style="color: var(--neo-blue);">Security Partnership</span></h3>
@@ -1013,15 +1884,15 @@
           NetShield’s AI Analyst isn't just a chatbot—it’s a conversational orchestrator. Speak in natural language to trigger complex security workflows, perform RAG-driven analysis on scan data, and receive prioritized remediation logic.
         </p>
         
-        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
-          <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--neo-text-primary); font-weight: 600; font-size: 0.9rem;">
-            <span class="material-symbols-outlined" style="color: var(--neo-blue); font-size: 1.2rem;">forum</span> Natural Language Control
+        <div class="nexus-features">
+          <div class="nexus-feature-item">
+            <span class="material-symbols-outlined">forum</span> Natural Language Control
           </div>
-          <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--neo-text-primary); font-weight: 600; font-size: 0.9rem;">
-            <span class="material-symbols-outlined" style="color: var(--neo-blue); font-size: 1.2rem;">model_training</span> Contextual RAG Synthesis
+          <div class="nexus-feature-item">
+            <span class="material-symbols-outlined">model_training</span> Contextual RAG Synthesis
           </div>
-          <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--neo-text-primary); font-weight: 600; font-size: 0.9rem;">
-            <span class="material-symbols-outlined" style="color: var(--neo-blue); font-size: 1.2rem;">terminal</span> Orchestration via Chat
+          <div class="nexus-feature-item">
+            <span class="material-symbols-outlined">terminal</span> Orchestration via Chat
           </div>
         </div>
         
@@ -1068,7 +1939,7 @@
 
 
 
-    <div class="section-divider fade-in-element"></div>
+    <div class="section-divider overwatch-divider fade-in-element"></div>
     <div class="section-header fade-in-element">
       <span class="section-label">Autonomous Orchestration</span>
       <h2 class="section-title">Command <b>Center</b> Overwatch</h2>
@@ -1078,8 +1949,8 @@
       {% if current_user.is_authenticated %}
         <div class="overwatch-bento">
           
-          <!-- Tile 1: Strategic Intelligence HUD (Span 12) -->
-          <div class="bento-tile span-12">
+          <!-- Tile 1: Strategic Intelligence HUD (Direct Placement) -->
+          <div class="overwatch-hud-direct span-12">
             <div class="terminal-header">
               <div class="terminal-title">Strategic Intelligence HUD // Posture Alpha</div>
               <div class="status-badge" id="hud-status-badge">Establishing Link...</div>
@@ -1131,26 +2002,34 @@
             </div>
           </div>
 
-          <!-- Tile 4: Report Archive (Span 12) -->
-          <div class="bento-tile span-12">
-            <div class="over-label" style="margin-bottom: 1.5rem;">
-              <span class="material-symbols-outlined" style="font-size:0.9rem; vertical-align:middle; margin-right:4px;">history</span>
-              Secure Report Archive
-              <a href="{{ url_for('dashboard_bp.dashboard') }}" style="color: var(--neo-blue); text-decoration: none; font-size: 0.6rem; letter-spacing: 0.1em; margin-left: auto;">VIEW FULL VAULT</a>
+          <!-- Combined tile wrapper for mobile tab viewports -->
+          <div class="overwatch-tabs-wrapper">
+            <div class="overwatch-tabs">
+              <div class="overwatch-tab active" data-overwatch-tab="reports">Vault Archive</div>
+              <div class="overwatch-tab" data-overwatch-tab="missions">Mission Schedule</div>
             </div>
-            <div id="report-archive-container" class="mission-schedule-grid" style="margin-top: 0;">
-              <p style="font-size: 0.8rem; color: var(--neo-text-muted); padding: 1rem;">Scanning file segments...</p>
-            </div>
-          </div>
 
-          <!-- Tile 5: Tactical Mission Schedule (Span 12) -->
-          <div class="bento-tile span-12">
-            <div class="terminal-header">
-                <div class="terminal-title">Tactical Mission Schedule // Automation Pulse</div>
-                <div class="status-badge">DIRECTIVES ACTIVE</div>
+            <!-- Tile 4: Report Archive (Span 12) -->
+            <div class="bento-tile span-12 overwatch-tile-reports">
+              <div class="over-label" style="margin-bottom: 1.5rem; display: flex; align-items: center;">
+                <span class="material-symbols-outlined" style="font-size:0.9rem; vertical-align:middle; margin-right:4px;">history</span>
+                Secure Report Archive
+                <a href="{{ url_for('dashboard_bp.dashboard') }}" style="color: var(--neo-blue); text-decoration: none; font-size: 0.6rem; letter-spacing: 0.1em; margin-left: auto;">VIEW FULL VAULT</a>
+              </div>
+              <div id="report-archive-container" class="mission-schedule-grid" style="margin-top: 0;">
+                <p style="font-size: 0.8rem; color: var(--neo-text-muted); padding: 1rem;">Scanning file segments...</p>
+              </div>
             </div>
-            <div id="mission-schedule-container" class="mission-schedule-grid">
-                <p style="font-size: 0.8rem; color: var(--neo-text-muted); padding: 2rem; width: 100%; text-align: center;">Synchronizing with Mission Control...</p>
+
+            <!-- Tile 5: Tactical Mission Schedule (Span 12) -->
+            <div class="bento-tile span-12 overwatch-tile-missions">
+              <div class="terminal-header">
+                  <div class="terminal-title">Tactical Mission Schedule // Automation Pulse</div>
+                  <div class="status-badge">DIRECTIVES ACTIVE</div>
+              </div>
+              <div id="mission-schedule-container" class="mission-schedule-grid">
+                  <p style="font-size: 0.8rem; color: var(--neo-text-muted); padding: 2rem; width: 100%; text-align: center;">Synchronizing with Mission Control...</p>
+              </div>
             </div>
           </div>
 
@@ -1192,6 +2071,9 @@
         {% endif %}
 
         this.initToolchainTabs();
+        this.initLifecycleCarousel();
+        this.initAgenticTabs();
+        this.initOverwatchTabs();
       }
 
       async refreshAll() {
@@ -1351,7 +2233,7 @@
 
 
       updateTimerUI() {
-        const timerEls = document.querySelectorAll('.mission-timer-val');
+        const timerEls = document.querySelectorAll('.countdown-val');
         timerEls.forEach(el => {
             const nextRun = new Date(el.dataset.nextRun);
             const now = new Date();
@@ -1528,6 +2410,76 @@
             const panel = document.getElementById('tool-detail-panel');
             panel.style.opacity = '0.7';
             setTimeout(() => panel.style.opacity = '1', 100);
+          });
+        });
+      }
+
+      initLifecycleCarousel() {
+        const grid = document.querySelector('.lifecycle-grid');
+        const dots = document.querySelectorAll('.lifecycle-carousel-nav .carousel-dot');
+        if (!grid || dots.length === 0) return;
+
+        grid.addEventListener('scroll', () => {
+          const card = grid.querySelector('.lifecycle-step');
+          if (!card) return;
+          const cardWidth = card.getBoundingClientRect().width + parseFloat(window.getComputedStyle(grid).gap || 0);
+          const activeIndex = Math.round(grid.scrollLeft / cardWidth);
+          dots.forEach((dot, idx) => {
+            if (idx === activeIndex) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          });
+        });
+
+        dots.forEach((dot, idx) => {
+          dot.addEventListener('click', () => {
+            const card = grid.querySelector('.lifecycle-step');
+            if (!card) return;
+            const cardWidth = card.getBoundingClientRect().width + parseFloat(window.getComputedStyle(grid).gap || 0);
+            grid.scrollTo({
+              left: idx * cardWidth,
+              behavior: 'smooth'
+            });
+          });
+        });
+      }
+
+      initAgenticTabs() {
+        const tabs = document.querySelectorAll('.agentic-tab');
+        const container = document.querySelector('.chatbot-preview-section');
+        if (!tabs.length || !container) return;
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            if (tab.dataset.tab === 'console') {
+              container.classList.add('show-console');
+            } else {
+              container.classList.remove('show-console');
+            }
+          });
+        });
+      }
+
+      initOverwatchTabs() {
+        const tabs = document.querySelectorAll('.overwatch-tab');
+        const container = document.querySelector('.overwatch-tabs-wrapper');
+        if (!tabs.length || !container) return;
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            if (tab.dataset.overwatchTab === 'missions') {
+              container.classList.add('show-missions');
+            } else {
+              container.classList.remove('show-missions');
+            }
           });
         });
       }

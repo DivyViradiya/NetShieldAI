@@ -313,8 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderAttachmentPreviews();
 
         addMessage('user', text, true, currentAttachments);
-        ui.typingIndicator.style.display = 'block';
-        scrollToBottom();
+        showTypingIndicator();
 
         let aiRow = null;
         let contentDiv = null;
@@ -363,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     
                     if (!aiRow && fullMarkdownText.trim().length > 0) {
-                        ui.typingIndicator.style.display = 'none';
+                        hideTypingIndicator();
                         aiRow = document.createElement('div');
                         aiRow.className = 'msg-row ai';
                         const aiBubble = document.createElement('div');
@@ -417,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isStreamActive || displayedText.length < fullMarkdownText.length) {
                     setTimeout(renderLoop, typeSpeed);
                 } else {
-                    ui.typingIndicator.style.display = 'none';
+                    hideTypingIndicator();
                     isProcessing = false;
                     ui.sendBtn.disabled = false;
                     if (contentDiv) contentDiv.innerHTML = parseContent(fullMarkdownText);
@@ -433,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch(e) {
             console.error(e);
-            ui.typingIndicator.style.display = 'none';
+            hideTypingIndicator();
             addMessage('ai', 'Error connecting to AI Grid.');
             isProcessing = false;
             ui.sendBtn.disabled = false;
@@ -900,6 +899,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let typingIndicatorInterval = null;
+    const statusMessages = [
+        "Consulting threat context indices...",
+        "Querying local database partitions...",
+        "Correlating scan reports...",
+        "Tracing potential exploit vectors...",
+        "Formulating response playbooks...",
+        "Analyzing compliance alignment...",
+        "Ranking vulnerabilities via TCTR engine...",
+        "Parsing network graph topology...",
+        "Evaluating risk severity models...",
+        "Drafting remediation steps...",
+        "Correlating vulnerability signatures...",
+        "Querying vector embeddings cache...",
+        "Cross-referencing CVE database records...",
+        "Constructing compromise logic chain...",
+        "Verifying network isolation boundaries...",
+        "Evaluating threat mitigation vectors...",
+        "Assessing lateral movement vectors...",
+        "Simulating attack path propagation...",
+        "Determining CVSS-v4 correction metrics...",
+        "Aggregating tool intelligence feeds...",
+        "Generating defensive hardening schemas...",
+        "Validating patch compliance levels...",
+        "Verifying system integrity telemetry..."
+    ];
+
+    function showTypingIndicator() {
+        ui.typingIndicator.style.display = 'block';
+        const statusTextEl = ui.typingIndicator.querySelector('.typing-status-text');
+        if (statusTextEl) {
+            let idx = 0;
+            statusTextEl.textContent = statusMessages[idx];
+            if (typingIndicatorInterval) clearInterval(typingIndicatorInterval);
+            typingIndicatorInterval = setInterval(() => {
+                idx = (idx + 1) % statusMessages.length;
+                statusTextEl.textContent = statusMessages[idx];
+            }, 2000);
+        }
+        scrollToBottom();
+    }
+
+    function hideTypingIndicator() {
+        ui.typingIndicator.style.display = 'none';
+        if (typingIndicatorInterval) {
+            clearInterval(typingIndicatorInterval);
+            typingIndicatorInterval = null;
+        }
+    }
+
     // --- Session History API ---
     async function loadSessionList() {
         try {
@@ -926,7 +975,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Prepare UI
         ui.chatHistory.innerHTML = '';
         ui.welcomeState.style.display = 'none';
-        ui.typingIndicator.style.display = 'block';
+        showTypingIndicator();
         closePanels();
         
         try {
@@ -962,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Failed to switch session:", e);
             addMessage('ai', 'Error switching simulation context.');
         } finally {
-            ui.typingIndicator.style.display = 'none';
+            hideTypingIndicator();
             isSwitching = false;
         }
     }
@@ -1389,8 +1438,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function triggerAutoAnalysis(tool) {
         // Show typing indicator immediately to signal AI reasoning is starting
-        ui.typingIndicator.style.display = 'block';
-        scrollToBottom();
+        showTypingIndicator();
 
         // Map AI tool names to scanner types for the analysis proxy
         const toolToScannerMap = {
@@ -1422,14 +1470,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sync session ID if returned
                 if (result.session_id) currentSessionId = result.session_id;
 
-                ui.typingIndicator.style.display = 'none';
+                hideTypingIndicator();
                 
                 // Directly render the System Core's generated summary
                 addMessage('system', "SYSTEM_NOTIFICATION: Scan Complete. Report successfully synchronized. Summary: " + result.summary, false);
             }
         } catch (e) {
             console.error("Auto-analysis failed:", e);
-            ui.typingIndicator.style.display = 'none';
+            hideTypingIndicator();
         }
     }
 });
