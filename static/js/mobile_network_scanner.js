@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
         scanTcpBtn: document.getElementById('scanTcpBtn'),
         scanVulnBtn: document.getElementById('scanVulnBtn'),
         mobileScanType: document.getElementById('mobileScanType'),
+        whitelistPortsInput: document.getElementById('whitelistPorts'),
+        updateWhitelistBtn: document.getElementById('updateWhitelistBtn'),
+        clearWhitelistBtn: document.getElementById('clearWhitelistBtn'),
         
         // Status & Metrics
         scanStatus: document.getElementById('scanStatus'),
@@ -17,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Target Intelligence
         osGuessDisplay: document.getElementById('osGuessDisplay'),
         hostStatusBadge: document.getElementById('hostStatusBadge'),
+        threatLevelDisplay: document.getElementById('threatLevelDisplay'),
         latencyDisplay: document.getElementById('latencyDisplay'),
         discoveryInsights: document.getElementById('discoveryInsights'),
         
@@ -24,6 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
         analyzeReportDropdown: document.getElementById('analyzeReportDropdown'),
         llmAnalysisOptions: document.getElementById('llmAnalysisOptions'),
         downloadReportBtn: document.getElementById('downloadReportBtn'),
+        
+        // AI Executive Summary
+        execSummaryBtn: document.getElementById('execSummaryBtn'),
+        execSummaryLabel: document.getElementById('execSummaryLabel'),
+        execSummaryIcon: document.getElementById('execSummaryIcon'),
+        execSummarySpinner: document.getElementById('execSummarySpinner'),
         
         // AI Animation Elements
         aiProcessingOverlay: document.getElementById('aiProcessingOverlay'),
@@ -38,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Content Areas
         openPortsTableBody: document.getElementById('openPortsTableBody'),
         resultsContent: document.getElementById('resultsContent'), 
+        tabPortCount: document.getElementById('tabPortCount'),
         
         // Live Terminal
         logOutput: document.getElementById('logOutput'),
@@ -47,13 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- State Variables ---
     const API_BASE_URL = '/network_scanner';
     const CHATBOT_REDIRECT_URL = '/chatbot'; 
-    let lastScanType = 'tcp'; 
+    let lastScanType = 'default'; 
     let isActionInProgress = false;
     let reportDownloadUrl = null;
     let eventSource = null;
 
     let currentScanMode = 'default';
     let currentProtocol = 'TCP';
+    let currentResolvedTarget = null;
+    let lastScanLogId = null;
 
     // --- 🔒 CSRF TOKEN RETRIEVAL ---
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -131,6 +144,37 @@ document.addEventListener('DOMContentLoaded', () => {
     window.toggleTerminal = function() {
         const sheet = document.getElementById('terminalSheet');
         if (sheet) sheet.classList.toggle('open');
+    };
+
+    window.toggleCommandCenter = function() {
+        const content = document.getElementById('commandCenterContent');
+        const icon = document.getElementById('commandCenterToggleIcon');
+        if (content && icon) {
+            content.classList.toggle('hidden');
+            if (content.classList.contains('hidden')) {
+                icon.textContent = 'expand_more';
+            } else {
+                icon.textContent = 'expand_less';
+            }
+        }
+    };
+
+    window.switchMobileTab = function(tabName) {
+        document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const activeBtn = document.getElementById(`tabBtn-${tabName}`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        document.querySelectorAll('.mobile-tab-panel').forEach(panel => {
+            panel.classList.add('hidden');
+        });
+        const activePanel = document.getElementById(`tabPanel-${tabName}`);
+        if (activePanel) activePanel.classList.remove('hidden');
+
+        if (tabName === 'raw') {
+            loadScanResults(lastScanType);
+        }
     };
 
     window.copyRawLogs = function() {
@@ -275,7 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateOpenPortsTable(ports) {
         if (!elements.openPortsTableBody) return;
         
-        elements.portCountDisplay.textContent = ports ? ports.length : 0; 
+        const count = ports ? ports.length : 0;
+        elements.portCountDisplay.textContent = count;
+        if (elements.tabPortCount) elements.tabPortCount.textContent = count;
         
         let highRiskCount = 0;
         if (ports) {
@@ -370,6 +416,10 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.hostStatusBadge.textContent = metadata.host_status || 'IDLE';
             elements.hostStatusBadge.style.color = metadata.host_status === 'Online' ? 'var(--neo-green)' : 'var(--neo-text-muted)';
         }
+        if (elements.threatLevelDisplay) {
+            elements.threatLevelDisplay.textContent = metadata.host_status === 'Scanning' ? 'ANALYZING' : (metadata.host_status === 'Online' ? 'AWAITING' : 'UNKNOWN');
+            elements.threatLevelDisplay.style.color = metadata.host_status === 'Online' ? 'var(--neo-green)' : 'var(--neo-text-muted)';
+        }
         if (elements.latencyDisplay) {
             elements.latencyDisplay.textContent = metadata.latency || '0ms';
         }
@@ -405,37 +455,176 @@ document.addEventListener('DOMContentLoaded', () => {
         loadScanResults(lastScanType);
     };
 
-    async function checkReportAvailability() {
-        const target = elements.targetIpInput.value.trim().toLowerCase();
-        try {
-            const url = target ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}` : `${API_BASE_URL}/report_files`;
-            const response = await fetch(url);
-            if (response.ok) {
-                const data = await response.json();
-                if (data.status === 'success' && data.pdf_report) {
-                    reportDownloadUrl = data.pdf_report;
-                    if (elements.downloadReportBtn) {
-                        elements.downloadReportBtn.disabled = false;
-                        elements.downloadReportBtn.style.opacity = '1';
-                    }
-                    if (elements.analyzeReportDropdown) {
-                        elements.analyzeReportDropdown.disabled = false;
-                        elements.analyzeReportDropdown.style.opacity = '1';
-                    }
-                    return;
-                }
-            }
-        } catch (error) { console.error(error); }
-
-        reportDownloadUrl = null;
+    async function checkReportStatus() {
+        const target = currentResolvedTarget || elements.targetIpInput.value.trim().toLowerCase();
+        
         if (elements.downloadReportBtn) {
             elements.downloadReportBtn.disabled = true;
             elements.downloadReportBtn.style.opacity = '0.5';
         }
         if (elements.analyzeReportDropdown) {
-            elements.analyzeReportDropdown.disabled = false;
-            elements.analyzeReportDropdown.style.opacity = '1';
+            elements.analyzeReportDropdown.disabled = true;
+            elements.analyzeReportDropdown.style.opacity = '0.5';
         }
+        
+        updateExecSummaryButton('disabled');
+
+        try {
+            const url = target 
+                ? `${API_BASE_URL}/report_files?target=${encodeURIComponent(target)}`
+                : `${API_BASE_URL}/report_files`;
+            
+            const response = await fetch(url);
+            if (!response.ok) return;
+            const data = await response.json();
+    
+            if (data.status === "success") {
+                if (data.pdf_report && elements.downloadReportBtn) {
+                    reportDownloadUrl = data.pdf_report;
+                    elements.downloadReportBtn.disabled = false;
+                    elements.downloadReportBtn.style.opacity = '1';
+                    
+                    if (elements.analyzeReportDropdown) {
+                        elements.analyzeReportDropdown.disabled = false;
+                        elements.analyzeReportDropdown.style.opacity = '1';
+                    }
+                }
+                
+                lastScanLogId = data.scan_log_id;
+                
+                if (data.exec_summary_report) {
+                    updateExecSummaryButton('download', data.exec_summary_report);
+                } else if (data.pdf_report) {
+                    updateExecSummaryButton('ready');
+                }
+            }
+        } catch (error) {
+            console.error("Error checking report status:", error);
+        }
+    }
+
+    // --- AI Executive Summary Logic ---
+    function updateExecSummaryButton(state, downloadUrl = null) {
+        if (!elements.execSummaryBtn) return;
+        
+        const btn = elements.execSummaryBtn;
+        const label = elements.execSummaryLabel;
+        const icon = elements.execSummaryIcon;
+        const spinner = elements.execSummarySpinner;
+
+        btn.classList.remove('btn-intel-success-glass', 'btn-intel-processing');
+        btn.style.opacity = '1';
+        if (icon) icon.textContent = 'auto_awesome';
+
+        if (state === 'disabled') {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            if (label) label.textContent = 'NETWORK BRIEF';
+            if (icon) icon.classList.remove('hidden');
+            if (spinner) spinner.classList.add('hidden');
+            btn.onclick = null;
+        } else if (state === 'ready') {
+            btn.disabled = false;
+            if (label) label.textContent = 'GENERATE BRIEF';
+            if (icon) icon.classList.remove('hidden');
+            if (spinner) spinner.classList.add('hidden');
+            btn.onclick = () => generateExecutiveSummary();
+        } else if (state === 'generating') {
+            btn.disabled = true;
+            btn.classList.add('btn-intel-processing');
+            if (label) label.textContent = 'SYNTHESIZING...';
+            if (icon) icon.classList.add('hidden');
+            if (spinner) spinner.classList.remove('hidden');
+        } else if (state === 'download') {
+            btn.disabled = false;
+            btn.classList.add('btn-intel-success-glass');
+            if (label) label.textContent = 'DOWNLOAD BRIEF';
+            if (icon) {
+                icon.textContent = 'file_download';
+                icon.classList.remove('hidden');
+            }
+            if (spinner) spinner.classList.add('hidden');
+            btn.onclick = () => { window.location.href = downloadUrl; };
+        }
+    }
+
+    async function generateExecutiveSummary() {
+        if (!lastScanLogId) {
+            appendLog('[!] Error: No recent scan log identifier found.');
+            return;
+        }
+        
+        const target = currentResolvedTarget || elements.targetIpInput.value.trim();
+        updateExecSummaryButton('generating');
+        appendLog('[*] Initiating AI Executive Brief generation flow...');
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/trigger_executive_summary`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    log_id: lastScanLogId,
+                    target: target 
+                })
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                appendLog('[✓] AI Executive Brief synthesized successfully.');
+                updateExecSummaryButton('download', data.download_url);
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error('Executive brief failed:', error);
+            appendLog(`[x] Brief Generation Failed: ${error.message}`);
+            updateExecSummaryButton('ready');
+        }
+    }
+
+    // --- Authorization & Blocked Modals Dialogs ---
+    function showAuthModal(message, onConfirm) {
+        const modal = document.getElementById('authModal');
+        const msgEl = document.getElementById('authModalMessage');
+        const confirmBtn = document.getElementById('confirmAuthBtn');
+        const cancelBtn = document.getElementById('cancelAuthBtn');
+
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        newConfirmBtn.addEventListener('click', () => {
+            if (modal) modal.classList.add('hidden');
+            if (onConfirm) onConfirm();
+        });
+
+        cancelBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleSpinner(elements.scanTcpBtn, false);
+            setStatus('Ready');
+            isActionInProgress = false;
+        };
+    }
+
+    function showBlockedModal(message) {
+        const modal = document.getElementById('blockedModal');
+        const msgEl = document.getElementById('blockedModalMessage');
+        const closeBtn = document.getElementById('closeBlockedModalBtn');
+
+        if (msgEl) msgEl.textContent = message;
+        if (modal) modal.classList.remove('hidden');
+
+        closeBtn.onclick = () => {
+            if (modal) modal.classList.add('hidden');
+            toggleSpinner(elements.scanTcpBtn, false);
+            setStatus('Ready');
+            isActionInProgress = false;
+        };
     }
 
     async function analyzeReport(llmMode) {
@@ -550,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function initiateScan(protocolType, scanType, button) {
+    async function initiateScan(protocolType, scanType, button, userConfirmedAuth = false) {
         const targetIp = elements.targetIpInput.value.trim().toLowerCase();
         const timingVal = elements.scanTiming ? elements.scanTiming.value : 4;
 
@@ -559,33 +748,76 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Auto-collapse Command Center on scan start
+        const content = document.getElementById('commandCenterContent');
+        const icon = document.getElementById('commandCenterToggleIcon');
+        if (content && !content.classList.contains('hidden')) {
+            content.classList.add('hidden');
+            if (icon) icon.textContent = 'expand_more';
+        }
+
         lastScanType = scanType;
+        lastScanLogId = null;
         isActionInProgress = true;
         if (button) toggleSpinner(button, true);
 
+        updateExecSummaryButton('disabled');
         setStatus(`Scanning (${scanType})...`, 'busy');
 
-        // Reset Intelligence UI
-        if (elements.osGuessDisplay) elements.osGuessDisplay.textContent = '---';
-        if (elements.latencyDisplay) elements.latencyDisplay.textContent = '---';
-        if (elements.discoveryInsights) elements.discoveryInsights.textContent = 'Analyzing infrastructure...';
-        if (elements.hostStatusBadge) elements.hostStatusBadge.textContent = '---';
-        if (elements.portCountDisplay) elements.portCountDisplay.textContent = '0';
-        if (elements.vulnCountDisplay) elements.vulnCountDisplay.textContent = '0';
+        if (!userConfirmedAuth) {
+            if (elements.osGuessDisplay) elements.osGuessDisplay.textContent = '---';
+            if (elements.latencyDisplay) elements.latencyDisplay.textContent = '---';
+            if (elements.discoveryInsights) elements.discoveryInsights.textContent = 'Analyzing infrastructure...';
+            if (elements.hostStatusBadge) elements.hostStatusBadge.textContent = '---';
+            if (elements.threatLevelDisplay) {
+                elements.threatLevelDisplay.textContent = 'ANALYZING';
+                elements.threatLevelDisplay.style.color = 'var(--neo-text-muted)';
+            }
+            if (elements.portCountDisplay) elements.portCountDisplay.textContent = '0';
+            if (elements.vulnCountDisplay) elements.vulnCountDisplay.textContent = '0';
+        }
+
+        const whitelist = elements.whitelistPortsInput ? elements.whitelistPortsInput.value.split(',').map(s => s.trim()).filter(s => s) : [];
 
         try {
-            const data = await apiPost('/scan', { 
-                target_ip: targetIp,
-                protocol_type: protocolType,
-                scan_type: scanType,
-                timing: parseInt(timingVal),
-                whitelist: []
+            const response = await fetch(`${API_BASE_URL}/scan`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    target_ip: targetIp,
+                    protocol_type: protocolType,
+                    scan_type: scanType,
+                    timing: parseInt(timingVal),
+                    whitelist: whitelist,
+                    user_confirmed_auth: userConfirmedAuth
+                })
             });
 
-            if (data && data.queue_id) {
-                initializeLogStream(data.queue_id);
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data && data.queue_id) {
+                    if (data.target_ip) {
+                        currentResolvedTarget = data.target_ip;
+                        appendLog(`[*] Resolution Complete: Target established at ${currentResolvedTarget}`);
+                    }
+                    initializeLogStream(data.queue_id);
+                } else {
+                    throw new Error("Scan initiation failed.");
+                }
             } else {
-                throw new Error("Scan initiation failed.");
+                if (data.status === 'auth_required') {
+                    showAuthModal(data.message, () => initiateScan(protocolType, scanType, button, true));
+                    return;
+                }
+                if (data.status === 'blocked') {
+                    showBlockedModal(data.message);
+                    return;
+                }
+                throw new Error(data.message || 'Scan initiation failed.');
             }
         } catch (error) {
             appendLog(`[x] Scan initiation failed: ${error.message}`);
@@ -644,7 +876,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchAndDisplayOpenPorts();
                 loadScanResults(lastScanType);
                 
-                checkReportAvailability(); 
+                checkReportStatus(); 
                 
                 isActionInProgress = false;
                 toggleSpinner(elements.scanTcpBtn, false);
@@ -673,6 +905,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
     }
+
+    // --- Whitelist toggles ---
+    window.toggleWhitelistCollapse = function() {
+        const content = document.getElementById('whitelistCollapseContent');
+        const icon = document.getElementById('whitelistToggleIcon');
+        if (content && icon) {
+            content.classList.toggle('hidden');
+            if (content.classList.contains('hidden')) {
+                icon.textContent = 'expand_more';
+            } else {
+                icon.textContent = 'expand_less';
+            }
+        }
+    };
+
     // --- Event Listeners ---
     function setupEventListeners() {
         if (elements.scanTcpBtn) {
@@ -696,7 +943,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (elements.downloadReportBtn) {
             elements.downloadReportBtn.addEventListener('click', () => {
-                if (reportDownloadUrl) window.location.href = reportDownloadUrl;
+                if (reportDownloadUrl) {
+                    window.location.href = reportDownloadUrl;
+                    appendLog('[✓] Download started.');
+                }
             });
         }
         
@@ -740,6 +990,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+
+        // Whitelist Actions
+        if (elements.updateWhitelistBtn) {
+            elements.updateWhitelistBtn.addEventListener('click', async () => {
+                const ports = elements.whitelistPortsInput.value.trim();
+                if (ports && await apiPost('/add_whitelist', { ports }, elements.updateWhitelistBtn)) {
+                    appendLog('[*] Whitelist updated locally.');
+                }
+            });
+        }
+        
+        if (elements.clearWhitelistBtn) {
+            elements.clearWhitelistBtn.addEventListener('click', async () => {
+                 if (await apiPost('/clear_whitelist', {}, elements.clearWhitelistBtn)) {
+                      elements.whitelistPortsInput.value = '';
+                      appendLog('[*] Whitelist cleared.');
+                 }
+            });
+        }
     }
 
     // --- Init ---
@@ -761,7 +1030,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateIntelligenceUI(data.summary.metadata);
             }
             
-            checkReportAvailability();
+            checkReportStatus();
         } catch (error) {
             console.error('Mobile Init failure:', error);
             fetchAndDisplayLocalIp();

@@ -1305,37 +1305,167 @@
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
       }
 
+    /* ================================================
+       MOBILE TABS NAVIGATION
+    ================================================ */
+    .mobile-tabs-container {
+      display: none;
+      background: rgba(10, 10, 14, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 0.25rem;
+      gap: 0.25rem;
+      margin-bottom: 0.25rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    body.light-mode .mobile-tabs-container {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .mobile-tab-btn {
+      flex: 1;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      color: var(--sch-text-secondary);
+      font-family: var(--sch-font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .mobile-tab-btn span {
+      display: inline-block;
+    }
+
+    .mobile-tab-btn.active {
+      color: var(--sch-blue);
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    body.light-mode .mobile-tab-btn.active {
+      color: var(--accent-primary);
+      background: var(--sch-card-subtle);
+      border-color: rgba(37, 99, 235, 0.25);
+    }
+
+    .mobile-tab-btn:hover:not(.active) {
+      color: var(--sch-text-primary);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    body.light-mode .mobile-tab-btn:hover:not(.active) {
+      background: var(--sch-card-subtle);
+    }
+
+    /* Helper styles for onboarding empty state */
+    .mobile-only-text {
+      display: none !important;
+    }
+
       /* Responsive */
       @media (max-width: 1024px) {
         .dashboard-wrapper {
-          height: auto;
-          overflow-y: auto;
-          padding: 1rem 1rem 2rem 1rem;
+          height: 100vh !important;
+          overflow: hidden !important;
+          padding: 1rem 1rem 1.5rem 1rem !important;
+          padding-top: calc(var(--sch-navbar-h) + 0.75rem) !important;
+          gap: 0.75rem !important;
+        }
+        .mobile-tabs-container {
+          display: flex;
         }
         .orchestrator-layout { 
-          grid-template-columns: 1fr; 
+          grid-template-columns: 1fr !important;
+          flex: 1;
+          min-height: 0;
           height: auto;
-          overflow: visible;
+          overflow: hidden;
+          margin-top: 0;
+        }
+        
+        /* Mobile Tab Toggling View states with smooth fade-in */
+        .dashboard-wrapper:not(.view-missions) .canvas-panel {
+          display: none !important;
+        }
+        .dashboard-wrapper.view-missions .arsenal-panel {
+          display: none !important;
+        }
+
+        .dashboard-wrapper:not(.view-missions) .arsenal-panel,
+        .dashboard-wrapper.view-missions .canvas-panel {
+          animation: mobileFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes mobileFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .arsenal-panel, .canvas-panel {
+          height: 100% !important;
+          display: flex !important;
+          flex-direction: column !important;
+          min-height: 0 !important;
+          padding: 0.75rem !important;
         }
         .arsenal-sidebar {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-          max-height: 400px;
+          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+          flex: 1;
+          overflow-y: auto;
+          max-height: none !important;
+          padding-right: 0.25rem;
         }
         .canvas-wrapper {
-          max-height: 800px;
+          flex: 1;
+          overflow-y: auto;
+          max-height: none !important;
+          padding-right: 0.25rem;
         }
         .arsenal-search, h3.arsenal-title { grid-column: 1 / -1; }
         .config-drawer { width: 100vw; max-width: 100vw; }
+
+        /* Onboarding helpers */
+        .desktop-only-text {
+          display: none !important;
+        }
+        .mobile-only-text {
+          display: block !important;
+        }
       }
 
       @media (max-width: 768px) {
-        .dashboard-wrapper { padding: 0.5rem !important; }
-        .dash-panel { padding: 1rem !important; }
-        .scanner-title-area h1 { font-size: 1.2rem !important; margin-bottom: 0.2rem !important; }
-        .scanner-title-area p { font-size: 0.6rem !important; gap: 8px !important; }
-        .flex.gap-3 { gap: 0.4rem !important; }
+        .dashboard-wrapper { padding: 0.5rem !important; padding-top: calc(var(--sch-navbar-h) + 0.5rem) !important; }
+        .dash-panel { padding: 0.75rem !important; }
+        .scanner-title-area h1 { font-size: 1.1rem !important; margin-bottom: 0.2rem !important; }
+        .scanner-title-area p { font-size: 0.58rem !important; gap: 6px !important; }
+        .flex.gap-3 { gap: 0.35rem !important; }
         .btn-dash span:not(.material-symbols-outlined) { display: none; }
+
+        /* Focus zoom prevention on touch screens */
+        .form-input, select.form-input, textarea.form-input {
+          font-size: 16px !important;
+        }
       }
       /* ================================================
          CUSTOM CONFIRM MODAL
@@ -1496,6 +1626,18 @@
       </div>
     </div>
 
+    <!-- Mobile Navigation Switcher (Tablet/Mobile only) -->
+    <div class="mobile-tabs-container" id="mobileTabsContainer">
+      <button class="mobile-tab-btn active" onclick="switchMobileTab('arsenal')" id="tabBtnArsenal">
+        <span class="material-symbols-outlined">target</span>
+        <span>Arsenal</span>
+      </button>
+      <button class="mobile-tab-btn" onclick="switchMobileTab('missions')" id="tabBtnMissions">
+        <span class="material-symbols-outlined">rocket_launch</span>
+        <span>Missions</span>
+      </button>
+    </div>
+
     <div class="orchestrator-layout">
       <!-- ============ ARSENAL SIDEBAR ============ -->
       <aside class="dash-panel arsenal-panel">
@@ -1634,7 +1776,8 @@
             </div>
             
             <h3 style="font-family: var(--font-mono); color: var(--neo-text-primary); font-size: 1.1rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.1em;">No Active Missions</h3>
-            <p style="font-size: 0.75rem; opacity: 0.5; max-width: 300px; line-height: 1.6;">Drag a security module from the Arsenal sidebar to begin your orchestration.</p>
+            <p class="desktop-only-text" style="font-size: 0.75rem; opacity: 0.5; max-width: 300px; line-height: 1.6;">Drag a security module from the Arsenal sidebar to begin your orchestration.</p>
+            <p class="mobile-only-text" style="display: none; font-size: 0.75rem; opacity: 0.5; max-width: 300px; line-height: 1.6;">Tap a security module in the Arsenal tab to configure and deploy.</p>
           </div>
 
           <!-- Mission grid (shown when missions exist) -->

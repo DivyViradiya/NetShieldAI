@@ -89,7 +89,7 @@ NetShieldAI - Network Scanner
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        padding: 1rem;
+        padding: calc(var(--navbar-height) + 1rem) 1rem 1rem 1rem;
     }
 
     .hidden {
@@ -339,6 +339,89 @@ NetShieldAI - Network Scanner
         background: var(--neo-text-main);
     }
 
+    .btn-dash {
+        height: 48px;
+        padding: 0 1rem;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-ui);
+        font-weight: 600;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--neo-border);
+        color: var(--neo-text-muted);
+        text-decoration: none;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.03);
+        width: 100%;
+    }
+    .btn-dash:hover:not(:disabled) {
+        color: var(--neo-text-main);
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.07);
+    }
+    body.light-mode .btn-dash {
+        background: #ffffff;
+        border-color: var(--neo-border);
+        color: var(--neo-text-muted);
+    }
+    body.light-mode .btn-dash:hover:not(:disabled) {
+        background: #f8faff;
+        border-color: var(--neo-blue);
+        color: var(--neo-blue);
+    }
+
+    .btn-secondary {
+        background: var(--neo-card);
+        color: var(--neo-text-muted);
+    }
+    .btn-secondary:hover:not(:disabled) {
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.05);
+    }
+    body.light-mode .btn-secondary {
+        background: #ffffff;
+    }
+    body.light-mode .btn-secondary:hover:not(:disabled) {
+        background: #f8faff;
+    }
+
+    .btn-intel-premium {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--neo-border) !important;
+        color: var(--neo-text-muted) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn-intel-premium:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border-color: var(--neo-text-main) !important;
+        color: var(--neo-text-main) !important;
+    }
+    .btn-intel-processing {
+        animation: intelPulse 2s infinite;
+        border-color: var(--neo-blue) !important;
+        pointer-events: none;
+    }
+    @keyframes intelPulse {
+        0% { background: rgba(59, 130, 246, 0.08); box-shadow: 0 0 0px var(--neo-blue); }
+        50% { background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 10px rgba(59, 130, 246, 0.15); }
+        100% { background: rgba(59, 130, 246, 0.08); box-shadow: 0 0 0px var(--neo-blue); }
+    }
+    .btn-intel-success-glass {
+        border-color: var(--neo-border) !important;
+        color: var(--neo-text-main) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+    .btn-intel-success-glass:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: var(--neo-text-main) !important;
+    }
+
+
     .status-line {
         display: flex;
         justify-content: space-between;
@@ -410,29 +493,37 @@ NetShieldAI - Network Scanner
     /* --- METRICS --- */
     .metrics-strip {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.75rem;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.4rem;
     }
 
     .metric-card {
         display: flex;
         flex-direction: column;
-        padding: 1rem;
+        justify-content: center;
         align-items: center;
+        padding: 0.5rem 0.2rem;
+        min-height: 64px;
+        border-radius: 8px;
+        background: var(--neo-card);
+        border: 1px solid var(--neo-border);
         text-align: center;
     }
 
     .metric-label {
-        font-size: 0.6rem;
+        font-size: 0.5rem !important;
         text-transform: uppercase;
         color: var(--neo-text-muted);
-        font-weight: 700;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        margin-bottom: 2px;
     }
 
     .metric-value {
         font-family: var(--font-mono);
-        font-size: 1.25rem;
-        font-weight: 700;
+        font-size: 0.85rem !important;
+        font-weight: 800;
+        word-break: break-all;
     }
 
     /* --- VIBRANT TECH CARD GRID (Service Discovery) --- */
@@ -675,15 +766,24 @@ NetShieldAI - Network Scanner
         right: 24px;
         width: 56px;
         height: 56px;
-        border-radius: 28px;
+        border-radius: 50%;
         background: var(--neo-blue);
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.6), 0 0 5px rgba(59, 130, 246, 0.4);
         z-index: 1000;
         border: none;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .fab-terminal:hover {
+        transform: scale(1.08) translateY(-2px);
+        box-shadow: 0 0 25px var(--neo-blue), 0 0 10px rgba(59, 130, 246, 0.6);
+    }
+    .fab-terminal:active {
+        transform: scale(0.95) translateY(0);
     }
 
     .bottom-sheet {
@@ -748,78 +848,197 @@ NetShieldAI - Network Scanner
         max-height: 300px;
         overflow-y: auto;
     }
+
+    .dropdown-category {
+        padding: 10px 1rem 6px 1rem;
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: var(--neo-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-family: var(--font-mono);
+        opacity: 0.8;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    
+    body.light-mode .dropdown-category {
+        color: var(--neo-blue);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-dash .material-symbols-outlined {
+        transition: transform 0.2s ease;
+    }
+
+    /* Modal Backdrop Transitions */
+    .backdrop-blur-sm {
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    /* executive brief spinner */
+    .spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .mobile-tab-btn.active {
+        background: var(--neo-blue) !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    }
+    body.light-mode .mobile-tab-btn.active {
+        background: var(--neo-blue) !important;
+        color: #ffffff !important;
+        box-shadow: none;
+    }
+
+    footer {
+        display: none !important;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="control-card"
-    style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: clamp(1.2rem, 4vw, 2rem) clamp(1.2rem, 5vw, 2.5rem); border-radius: 20px; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; margin-top: 0.5rem; background: rgba(10, 10, 12, 0.65); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
-    <div class="scanner-title-area" style="margin: 0;">
-        <h1 class="text-gradient"
-            style="margin-bottom: 0.35rem; font-size: clamp(1.6rem, 6vw, 2.25rem); letter-spacing: -0.02em; margin-top: 0; font-family: 'IBM Plex Sans', system-ui, sans-serif;">
-            Network <span
-                style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Scanner</span>
-        </h1>
-        <p
-            style="color: var(--neo-text-muted); font-size: 0.7rem; font-weight: 500; font-family: 'JetBrains Mono', monospace; margin: 0; display: flex; align-items: center; gap: 8px; opacity: 0.8; text-transform: uppercase;">
-            <span
-                style="height: 1px; width: 16px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
-            Infrastructure & Port Discovery
-        </p>
-    </div>
-
-    <div class="flex gap-3">
-        <a href="{{ url_for('tools_hub') }}" class="btn-dash"
-            style="background: rgba(255,255,255,0.05); height: 38px; border-radius: 8px; padding: 0 1rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; color: var(--neo-text-muted); text-decoration: none; font-size: 0.75rem; border: 1px solid var(--neo-border);">
-            <span class="material-symbols-outlined" style="font-size: 1.1rem;">home</span>
-            <span
-                style="font-family: 'JetBrains Mono', monospace; font-weight: 600; text-transform: uppercase;">Hub</span>
-        </a>
-    </div>
-</div>
-
 <div class="mobile-wrapper">
-    <section class="control-card">
-        <div class="input-group">
-            <label class="input-label">Discovery Target</label>
-            <div class="search-container">
-                <span class="material-symbols-outlined search-icon">radar</span>
-                <input type="text" id="targetIp" class="dash-input" placeholder="ENTER IP OR DOMAIN..." />
+    <div class="sub-header-bar" style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; border-radius: 12px; background: rgba(10,10,12,0.65); border: 1px solid var(--neo-border); margin-bottom: 0.25rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); min-height: 54px;">
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; color: var(--neo-text-muted); font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+            <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--neo-blue);">radar</span>
+            <span class="text-gradient">Infrastructure Scan</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; margin-left: auto;">
+            <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.05); height: 38px; width: 38px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--neo-text-muted); border: 1px solid var(--neo-border);" title="Hub">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">home</span>
+            </a>
+            <div class="mobile-dropdown" id="switcherDropdown" style="position: relative; z-index: 1010; width: auto;">
+                <button class="btn-dash" style="background: rgba(255,255,255,0.05); height: 38px; border-radius: 8px; padding: 0 0.75rem; display: flex; align-items: center; justify-content: center; gap: 0.35rem; color: var(--neo-text-muted); font-size: 0.75rem; border: 1px solid var(--neo-border);" onclick="toggleMobileDropdown('switcherDropdown')">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">swap_horiz</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;">SWITCH</span>
+                </button>
+                <div class="dropdown-menu hidden" style="position: absolute; right: 0; left: auto !important; width: auto !important; min-width: 240px !important; top: calc(100% + 8px); background: #0a0a0c; border: 1px solid var(--neo-border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); z-index: 1011; padding: 6px; display: none; flex-direction: column; gap: 2px;">
+                    <div class="dropdown-category">Infrastructure & Discovery</div>
+                    <a href="{{ url_for('asset_discovery_bp.dashboard') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Asset Inventory</a>
+                    <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="dropdown-item active" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-blue); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase; background: rgba(59, 130, 246, 0.1);">Service Discovery</a>
+                    <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Traffic Sniffer</a>
+
+                    <div class="dropdown-category">Web Applications</div>
+                    <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Audit (DAST)</a>
+                    <a href="{{ url_for('api_scanner_bp.api_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">API Security</a>
+                    <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">SQL Integrity</a>
+
+                    <div class="dropdown-category">Audit & Verification</div>
+                    <a href="{{ url_for('semgrep_scanner_bp.semgrep_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Source Audit (SAST)</a>
+                    <a href="{{ url_for('ssl_scanner_bp.ssl_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Encryption Audit</a>
+                    <a href="{{ url_for('killchain_bp.killchain_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Penetration Simulation</a>
+                </div>
             </div>
         </div>
+    </div>
+    <section class="control-card" id="commandCenterCard" style="padding: 0; overflow: hidden; border-radius: 12px; margin-bottom: 0.5rem;">
+        <div class="panel-header" onclick="toggleCommandCenter()" style="cursor: pointer; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.01); border-bottom: 1px solid var(--neo-border);">
+            <span class="panel-title" style="font-size: 0.75rem; font-weight: 800; font-family: var(--font-mono); color: var(--neo-text-muted);">[1] SCAN CONFIGURATION</span>
+            <span class="material-symbols-outlined" id="commandCenterToggleIcon" style="font-size: 1.1rem; color: var(--neo-text-muted);">expand_less</span>
+        </div>
 
-        <div class="input-group">
-            <label class="input-label">Scan Profile</label>
-            <div class="mobile-dropdown" id="profileDropdown">
-                <div class="dropdown-trigger" onclick="toggleMobileDropdown('profileDropdown')">
-                    <span class="trigger-text" id="profileTriggerText">Quick Discovery</span>
-                    <span class="material-symbols-outlined">expand_more</span>
+        <div id="commandCenterContent" style="display: flex; flex-direction: column; gap: 0.85rem; padding: 1rem; transition: max-height 0.3s ease;">
+            <div class="input-group">
+                <label class="input-label">Discovery Target</label>
+                <div class="search-container">
+                    <span class="material-symbols-outlined search-icon">radar</span>
+                    <input type="text" id="targetIp" class="dash-input" placeholder="ENTER IP OR DOMAIN..." />
                 </div>
-                <div class="dropdown-menu hidden">
-                    <div class="dropdown-item active" data-value="default"
-                        onclick="selectDropdownItem('profileDropdown', 'default', 'Quick Discovery')">Quick Discovery
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem;">
+                <div class="input-group">
+                    <label class="input-label">Scan Profile</label>
+                    <div class="mobile-dropdown" id="profileDropdown">
+                        <div class="dropdown-trigger" onclick="toggleMobileDropdown('profileDropdown')" style="height: 42px;">
+                            <span class="trigger-text" id="profileTriggerText" style="font-size: 0.8rem;">Quick Discovery</span>
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">expand_more</span>
+                        </div>
+                        <div class="dropdown-menu hidden" style="z-index: 1020;">
+                            <div class="dropdown-item active" data-value="default"
+                                onclick="selectDropdownItem('profileDropdown', 'default', 'Quick Discovery')">Quick Discovery
+                            </div>
+                            <div class="dropdown-item" data-value="aggressive"
+                                onclick="selectDropdownItem('profileDropdown', 'aggressive', 'Aggressive Scan')">Aggressive Scan
+                            </div>
+                            <div class="dropdown-item" data-value="tcp_syn"
+                                onclick="selectDropdownItem('profileDropdown', 'tcp_syn', 'SYN Stealth')">SYN Stealth</div>
+                            <div class="dropdown-item" data-value="vuln"
+                                onclick="selectDropdownItem('profileDropdown', 'vuln', 'Full Vulnerability')">Full Vulnerability
+                            </div>
+                            <div class="dropdown-item" data-value="os"
+                                onclick="selectDropdownItem('profileDropdown', 'os', 'OS Detection')">OS Detection
+                            </div>
+                            <div class="dropdown-item" data-value="udp"
+                                onclick="selectDropdownItem('profileDropdown', 'udp', 'UDP Service Scan')">UDP Service Scan
+                            </div>
+                            <div class="dropdown-item" data-value="ping_sweep"
+                                onclick="selectDropdownItem('profileDropdown', 'ping_sweep', 'Ping Sweep')">Ping Sweep
+                            </div>
+                        </div>
                     </div>
-                    <div class="dropdown-item" data-value="aggressive"
-                        onclick="selectDropdownItem('profileDropdown', 'aggressive', 'Aggressive Scan')">Aggressive Scan
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Scan Speed</label>
+                    <div class="mobile-dropdown" id="timingDropdown">
+                        <div class="dropdown-trigger" onclick="toggleMobileDropdown('timingDropdown')" style="height: 42px;">
+                            <span class="trigger-text" id="timingTriggerText" style="font-size: 0.8rem;">T4 (Aggressive)</span>
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">expand_more</span>
+                        </div>
+                        <div class="dropdown-menu hidden" style="z-index: 1020;">
+                            <div class="dropdown-item" data-value="0" onclick="selectDropdownItem('timingDropdown', '0', 'T0 (Paranoid)')">T0 (Paranoid)</div>
+                            <div class="dropdown-item" data-value="1" onclick="selectDropdownItem('timingDropdown', '1', 'T1 (Sneaky)')">T1 (Sneaky)</div>
+                            <div class="dropdown-item" data-value="2" onclick="selectDropdownItem('timingDropdown', '2', 'T2 (Polite)')">T2 (Polite)</div>
+                            <div class="dropdown-item" data-value="3" onclick="selectDropdownItem('timingDropdown', '3', 'T3 (Normal)')">T3 (Normal)</div>
+                            <div class="dropdown-item active" data-value="4" onclick="selectDropdownItem('timingDropdown', '4', 'T4 (Aggressive)')">T4 (Aggressive)</div>
+                            <div class="dropdown-item" data-value="5" onclick="selectDropdownItem('timingDropdown', '5', 'T5 (Insane)')">T5 (Insane)</div>
+                        </div>
                     </div>
-                    <div class="dropdown-item" data-value="tcp_syn"
-                        onclick="selectDropdownItem('profileDropdown', 'tcp_syn', 'SYN Stealth')">SYN Stealth</div>
-                    <div class="dropdown-item" data-value="vuln"
-                        onclick="selectDropdownItem('profileDropdown', 'vuln', 'Full Vulnerability')">Full Vulnerability
+                    <input type="hidden" id="scanTiming" value="4" />
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 0.15rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span onclick="toggleWhitelistCollapse()" style="font-size: 0.7rem; font-family: var(--font-mono); text-transform: uppercase; color: var(--neo-blue); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <span class="material-symbols-outlined" id="whitelistToggleIcon" style="font-size: 1.1rem;">expand_more</span>
+                        <span>Whitelist Ports (Optional)</span>
+                    </span>
+                </div>
+                <div id="whitelistCollapseContent" class="hidden" style="margin-top: 0.5rem; transition: all 0.3s ease;">
+                    <div class="search-container" style="margin-bottom: 0.5rem;">
+                        <span class="material-symbols-outlined search-icon">vpn_key</span>
+                        <input type="text" id="whitelistPorts" class="dash-input" placeholder="e.g. 80, 443, 8080..." style="padding-left: 40px; height: 42px;" />
+                    </div>
+                    <div class="flex gap-2" style="display: flex; gap: 0.5rem;">
+                        <button id="updateWhitelistBtn" class="btn-primary" style="height: 36px; font-size: 0.75rem; flex: 1;">Update</button>
+                        <button id="clearWhitelistBtn" class="btn-primary" style="height: 36px; font-size: 0.75rem; flex: 1; background: transparent; color: var(--neo-text-main); border: 1px solid var(--neo-border);">Clear</button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <button id="scanTcpBtn" class="btn-primary">
-            <span class="material-symbols-outlined">play_arrow</span>
-            <span class="button-text">INITIATE SCAN</span>
-        </button>
+            <button id="scanTcpBtn" class="btn-primary" style="height: 48px; border-radius: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">play_arrow</span>
+                <span class="button-text" style="font-weight: 700;">INITIATE SCAN</span>
+                <span class="spinner hidden" style="margin-left: 0.5rem;"></span>
+            </button>
 
-        <div class="status-line">
-            <div style="color: var(--neo-text-muted)">TARGET: <span id="localIpDisplay"
-                    style="color: var(--neo-text-main)">---</span></div>
-            <div class="badge-pill"><span id="scanStatus">READY</span></div>
+            <div class="status-line" style="margin-top: 0.25rem; padding-top: 0.5rem; border-top: 1px solid var(--neo-border); display: flex; justify-content: space-between; align-items: center;">
+                <div style="color: var(--neo-text-muted); font-size: 0.65rem; font-family: var(--font-mono);">TARGET: <span id="localIpDisplay" style="color: var(--neo-text-main)">---</span></div>
+                <div class="badge-pill" style="padding: 2px 8px; border-radius: 4px; font-size: 0.6rem;"><span id="scanStatus">READY</span></div>
+            </div>
         </div>
     </section>
 
@@ -827,6 +1046,10 @@ NetShieldAI - Network Scanner
         <div class="metric-card">
             <span class="metric-label">Status</span>
             <span id="hostStatusBadge" class="metric-value" style="color: var(--neo-green)">---</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Threat Level</span>
+            <span id="threatLevelDisplay" class="metric-value" style="color: var(--neo-text-muted)">AWAITING</span>
         </div>
         <div class="metric-card">
             <span class="metric-label">Ports</span>
@@ -838,101 +1061,112 @@ NetShieldAI - Network Scanner
         </div>
     </section>
 
-    <section id="acc-ports">
-        <div class="section-title">
-            <span class="material-symbols-outlined">lan</span> Service Discovery
-        </div>
-        <div id="openPortsTableBody" class="discovery-grid">
-            <div
-                style="text-align:center; padding: 3rem 0; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem; width: 100%;">
-                READY FOR INFRASTRUCTURE SCAN...
-            </div>
-        </div>
-    </section>
+    <!-- Segmented Tab Navigation for Mobile UX -->
+    <div class="segmented-tab-control" style="display: flex; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--neo-border); border-radius: 10px; padding: 2px; margin-top: 0.5rem; margin-bottom: 0.75rem;">
+        <button onclick="switchMobileTab('ports')" id="tabBtn-ports" class="mobile-tab-btn active" style="flex: 1; padding: 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.2s;">
+            Services (<span id="tabPortCount">0</span>)
+        </button>
+        <button onclick="switchMobileTab('intel')" id="tabBtn-intel" class="mobile-tab-btn" style="flex: 1; padding: 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.2s;">
+            Intelligence
+        </button>
+        <button onclick="switchMobileTab('raw')" id="tabBtn-raw" class="mobile-tab-btn" style="flex: 1; padding: 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.2s;">
+            Console
+        </button>
+    </div>
 
-    <section id="acc-intel">
-        <div class="section-title">
-            <span class="material-symbols-outlined">insights</span> Intelligence
+    <!-- Tab Panels Container -->
+    <div class="tab-panels-wrapper">
+        <!-- Panel 1: Services (Discovered Ports Cards) -->
+        <div id="tabPanel-ports" class="mobile-tab-panel">
+            <div id="openPortsTableBody" class="discovery-grid">
+                <div style="text-align:center; padding: 3rem 0; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem; width: 100%;">
+                    READY FOR INFRASTRUCTURE SCAN...
+                </div>
+            </div>
         </div>
-        <div class="control-card" style="background: var(--neo-card);">
-            <div class="intel-row">
-                <span class="intel-label">Estimated OS</span>
-                <span id="osGuessDisplay" class="intel-val">---</span>
-            </div>
-            <div class="intel-row">
-                <span class="intel-label">Network Latency</span>
-                <span id="latencyDisplay" class="intel-val">---</span>
-            </div>
 
-            <div style="margin: 1rem 0;">
-                <label class="intel-label" style="display: block; margin-bottom: 0.5rem;">Insights</label>
-                <p id="discoveryInsights"
-                    style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono); background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
-                    Waiting for scan data...
-                </p>
-            </div>
+        <!-- Panel 2: Intelligence & AI Reports -->
+        <div id="tabPanel-intel" class="mobile-tab-panel hidden">
+            <div class="control-card" style="background: var(--neo-card); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border-radius: 12px;">
+                <div class="intel-row" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--neo-border);">
+                    <span class="intel-label" style="font-size: 0.75rem; font-weight: 700; color: var(--neo-text-muted);">Estimated OS</span>
+                    <span id="osGuessDisplay" class="intel-val" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-blue); font-weight: 800;">---</span>
+                </div>
+                <div class="intel-row" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--neo-border);">
+                    <span class="intel-label" style="font-size: 0.75rem; font-weight: 700; color: var(--neo-text-muted);">Network Latency</span>
+                    <span id="latencyDisplay" class="intel-val" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-main);">---</span>
+                </div>
 
-            <div class="flex flex-col gap-3">
-                <div class="mobile-dropdown" id="aiDropdown">
-                    <button id="analyzeReportDropdown" class="dropdown-trigger"
-                        onclick="toggleMobileDropdown('aiDropdown')">
-                        <span class="trigger-text">AI Analysis</span>
-                        <span class="material-symbols-outlined">expand_more</span>
+                <div style="margin: 0.25rem 0;">
+                    <label class="intel-label" style="display: block; margin-bottom: 0.35rem; font-size: 0.65rem; font-weight: 700; color: var(--neo-text-muted); text-transform: uppercase;">Insights</label>
+                    <p id="discoveryInsights" style="font-size: 0.75rem; color: var(--neo-text-main); font-family: var(--font-mono); background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; line-height: 1.4; margin: 0;">
+                        Waiting for scan data...
+                    </p>
+                </div>
+
+                <div class="flex flex-col gap-3" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.25rem;">
+                    <div class="mobile-dropdown" id="aiDropdown">
+                        <button id="analyzeReportDropdown" class="btn-dash btn-secondary w-full justify-between" onclick="toggleMobileDropdown('aiDropdown')">
+                            <span class="trigger-text">AI Analysis</span>
+                            <span class="material-symbols-outlined">expand_more</span>
+                        </button>
+                        <div id="llmAnalysisOptions" class="dropdown-menu hidden" style="z-index: 1020;">
+                            <div class="dropdown-item" data-llm-mode="gemini-2.5-flash">Gemini 2.5 Flash (Speed)</div>
+                            <div class="dropdown-item" data-llm-mode="gemini-3-flash-preview">Gemini 3.0 Flash (Preview)</div>
+                            <div class="dropdown-item" data-llm-mode="local">Local LLM (Private)</div>
+                        </div>
+                    </div>
+
+                    <button id="execSummaryBtn" disabled class="btn-dash justify-between btn-intel-premium">
+                        <span id="execSummaryLabel" class="trigger-text">Network Brief</span>
+                        <span style="display:flex; align-items:center; gap:4px;">
+                            <span id="execSummaryIcon" class="material-symbols-outlined" style="font-size: 1.2rem;">auto_awesome</span>
+                            <span id="execSummarySpinner" class="spinner hidden" style="width: 1rem; height: 1rem; border-width: 2px;"></span>
+                        </span>
                     </button>
-                    <div id="llmAnalysisOptions" class="dropdown-menu hidden">
-                        <div class="dropdown-item" data-llm-mode="local">Local LLM (Private)</div>
-                        <div class="dropdown-item" data-llm-mode="gemini-2.5-flash">Gemini Flash (Cloud)</div>
+
+                    <button id="downloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between">
+                        <span class="trigger-text">Export PDF</span>
+                        <span class="material-symbols-outlined">picture_as_pdf</span>
+                    </button>
+
+                    <button id="nmapHistoryBtn" class="btn-dash btn-secondary w-full justify-between">
+                        <span class="trigger-text">Prior Scans</span>
+                        <span class="material-symbols-outlined">history</span>
+                    </button>
+                </div>
+
+                <div id="aiProcessingOverlay" class="processing-overlay hidden" style="border-radius: 12px;">
+                    <div class="ai-pulse-container">
+                        <div class="ai-pulse-ring"></div>
+                        <div class="ai-pulse-ring" style="border-color: var(--neo-red);"></div>
+                    </div>
+                    <span id="aiProcessingText" style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; color: var(--neo-blue); font-weight: 800;">ANALYZING...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 3: Raw Engine Data -->
+        <div id="tabPanel-raw" class="mobile-tab-panel hidden">
+            <div class="dash-panel open" id="acc-raw-panel" style="border-radius: 12px; overflow: hidden;">
+                <div class="panel-header" onclick="toggleDashPanel('acc-raw-panel');" style="padding: 0.85rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--neo-border); background: rgba(255, 255, 255, 0.01);">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--neo-blue);">data_object</span>
+                        <span style="font-size: 0.75rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase; font-family: var(--font-mono);">Scan Engine Buffer</span>
+                    </div>
+                    <div class="flex items-center gap-2" style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button onclick="copyRawLogs(); event.stopPropagation();" id="copyResultsBtn" class="btn-dash btn-secondary" style="height: 32px; padding: 0 8px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                            <span class="material-symbols-outlined" style="font-size: 1rem;">content_copy</span>
+                        </button>
                     </div>
                 </div>
-
-                <button id="downloadReportBtn" disabled class="dropdown-trigger">
-                    <span class="trigger-text">Export PDF</span>
-                    <span class="material-symbols-outlined">picture_as_pdf</span>
-                </button>
-
-                <button id="nmapHistoryBtn" class="dropdown-trigger">
-                    <span class="trigger-text">Prior Scans</span>
-                    <span class="material-symbols-outlined">history</span>
-                </button>
-            </div>
-
-            <div id="aiProcessingOverlay" class="processing-overlay hidden">
-                <div class="ai-pulse-container">
-                    <div class="ai-pulse-ring"></div>
-                    <div class="ai-pulse-ring" style="border-color: var(--neo-red);"></div>
+                <div class="panel-content" style="padding: 0.75rem; border-top: none;">
+                    <div id="resultsContent" class="detail-text-mono" style="height: 250px; font-size: 0.75rem; background: rgba(0, 0, 0, 0.45); border: 1px solid var(--neo-border); border-radius: 8px; padding: 12px; font-family: var(--font-mono); color: var(--neo-text-main); overflow-y: auto; white-space: pre-wrap; word-break: break-all;">// Buffer Empty</div>
                 </div>
-                <span id="aiProcessingText"
-                    style="font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; color: var(--neo-blue); font-weight: 800;">ANALYZING...</span>
             </div>
         </div>
-    </section>
-
-    <section class="dash-panel" id="acc-raw-panel">
-        <div class="panel-header" onclick="toggleDashPanel('acc-raw-panel'); loadRawScanResults();">
-            <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined"
-                    style="font-size: 1.2rem; color: var(--neo-blue);">data_object</span>
-                <span
-                    style="font-size: 0.85rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase;">Scan
-                    Details</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="event.stopPropagation(); copyRawLogs();" id="copyResultsBtn"
-                    class="btn-dash btn-secondary" style="height: 28px; padding: 0 8px; font-size: 0.6rem;">
-                    <span class="material-symbols-outlined" style="font-size: 1rem;">content_copy</span>
-                </button>
-                <span class="material-symbols-outlined expand-icon">expand_more</span>
-            </div>
-        </div>
-        <div class="panel-content">
-            <div id="resultsContent" class="detail-text-mono" style="height: 300px;">// Buffer Empty</div>
-        </div>
-    </section>
+    </div>
 </div>
-
-<button class="fab-terminal" onclick="toggleTerminal()">
-    <span class="material-symbols-outlined">code_blocks</span>
-</button>
 
 <div id="terminalSheet" class="bottom-sheet">
     <div class="sheet-header">
@@ -991,6 +1225,44 @@ NetShieldAI - Network Scanner
         </div>
     </div>
 </div>
+
+<!-- --- AUTH CONFIRMATION MODAL --- -->
+<div id="authModal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm" style="position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);">
+    <div class="dash-panel w-full max-w-md flex flex-col overflow-hidden" style="background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 20px; width: 100%; max-width: 28rem; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="panel-header" style="padding: 1.25rem; border-bottom: 1px solid var(--neo-border); display: flex; justify-content: space-between; align-items: center;">
+            <span class="panel-title" style="font-size: 1rem; font-weight: 800; color: var(--neo-amber); text-transform: uppercase;">Authorization Required</span>
+        </div>
+        <div class="panel-content p-6 flex flex-col gap-4" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+            <p id="authModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main); margin: 0;"></p>
+            <p style="font-size: 0.8rem; color: var(--neo-text-muted); margin: 0;"><strong>By confirming, you declare that you hold written authorization from this organization.</strong></p>
+            <div class="flex gap-2 justify-end mt-4" style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                <button id="cancelAuthBtn" class="btn-dash btn-secondary" style="height: 38px; padding: 0 1rem; border-radius: 8px; border: 1px solid var(--neo-border); background: rgba(255,255,255,0.03); color: var(--neo-text-muted); font-size: 0.8rem;">Cancel</button>
+                <button id="confirmAuthBtn" class="btn-dash btn-primary" style="height: 38px; padding: 0 1rem; border-radius: 8px; background: var(--neo-amber); border: 1px solid var(--neo-amber); color: #000; font-size: 0.8rem; font-weight: 700;">Confirm & Scan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- --- HARD BLOCKED MODAL --- -->
+<div id="blockedModal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm" style="position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);">
+    <div class="dash-panel w-full max-w-md flex flex-col overflow-hidden" style="background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 20px; width: 100%; max-width: 28rem; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="panel-header" style="padding: 1.25rem; border-bottom: 1px solid var(--neo-border); display: flex; justify-content: space-between; align-items: center;">
+            <span class="panel-title" style="font-size: 1rem; font-weight: 800; color: var(--neo-red); text-transform: uppercase;">Scan Blocked</span>
+        </div>
+        <div class="panel-content p-6 flex flex-col gap-4" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+            <p id="blockedModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main); margin: 0;"></p>
+            <p style="font-size: 0.8rem; color: var(--neo-text-muted); margin: 0;">If you are an authorized security professional, contact support to enable authorized testing mode.</p>
+            <div class="flex justify-end mt-4" style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                <button id="closeBlockedModalBtn" class="btn-dash btn-secondary" style="height: 38px; padding: 0 1rem; border-radius: 8px; border: 1px solid var(--neo-border); background: rgba(255,255,255,0.03); color: var(--neo-text-muted); font-size: 0.8rem;">Understood</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button for Terminal/Live Stream -->
+<button onclick="toggleTerminal()" class="fab-terminal" title="Live Activity Stream">
+    <span class="material-symbols-outlined" style="font-size: 1.5rem;">code_blocks</span>
+</button>
 {% endblock %}
 
 {% block extra_scripts %}

@@ -628,13 +628,581 @@
 
 
     @media (max-width: 1100px) {
-        .span-8, .span-4, .span-3 { grid-column: span 12; }
+        .span-8, .span-6, .span-4, .span-3 { grid-column: span 12; }
         .row-2 { grid-row: span 1; }
     }
+
+    .desktop-only {
+        display: flex;
+    }
+    .mobile-tab-carousel {
+        display: none;
+    }
+
+    /* Modal Backdrop Styles */
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        z-index: 99998;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .modal-backdrop.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    @media (max-width: 768px) {
+        .desktop-only {
+            display: none !important;
+        }
+        .mobile-tab-carousel {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .carousel-nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--neo-blue);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .carousel-nav-btn:active {
+            transform: scale(0.9);
+            opacity: 0.7;
+        }
+        .carousel-active-title {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--neo-text-primary);
+            user-select: none;
+        }
+
+        .dashboard-wrapper {
+            padding: 1rem;
+            padding-top: calc(var(--navbar-height) + 1rem);
+        }
+
+        .banner-panel {
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            height: auto !important;
+            padding: 1rem !important;
+            gap: 0.5rem !important;
+        }
+
+        .scanner-title-area p {
+            display: none !important;
+        }
+
+        .banner-panel > div:last-child {
+            flex-direction: row !important;
+            align-items: center !important;
+            width: auto !important;
+            gap: 1rem !important;
+        }
+
+        #tech-stack-header {
+            display: none !important;
+        }
+
+        .health-score-container {
+            padding-left: 0 !important;
+            border-left: none !important;
+            border-top: none !important;
+            padding-top: 0 !important;
+            width: auto !important;
+            justify-content: flex-end !important;
+            gap: 0.75rem !important;
+        }
+
+        .health-score-container > div:first-child {
+            text-align: right !important;
+        }
+
+        .health-score-container > div:first-child > div:first-child {
+            font-size: 0.55rem !important;
+        }
+
+        .health-score-container > div:first-child > div:last-child {
+            font-size: 0.75rem !important;
+        }
+
+        .health-dial {
+            width: 44px !important;
+            height: 44px !important;
+        }
+
+        .health-dial::after {
+            width: 34px !important;
+            height: 34px !important;
+        }
+
+        .health-value {
+            font-size: 0.8rem !important;
+        }
+
+        .tab-nav {
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1 1 100%;
+            padding: 0.75rem 1rem;
+        }
+
+        .tile-content[style*="flex-direction: row"] {
+            flex-direction: column !important;
+            gap: 1.5rem !important;
+        }
+        
+        .tile-content[style*="flex-direction: row"] > div {
+            border-left: none !important;
+            padding-left: 0 !important;
+            flex: none !important;
+        }
+        
+        .tile-content[style*="flex-direction: row"] > div:nth-child(2) {
+            border-top: 1px solid var(--neo-border);
+            padding-top: 1.5rem;
+        }
+
+        .scanner-title-area h1 {
+            font-size: 1.15rem;
+            letter-spacing: -0.01em;
+        }
+
+        .remedy-box {
+            padding: 1.25rem;
+            width: 95%;
+        }
+
+        #tab-compliance-frameworks > div:first-child {
+            flex-direction: column;
+            gap: 1rem !important;
+        }
+        
+        #tab-compliance-frameworks > div:first-child > div:last-child {
+            width: 100%;
+            min-width: unset;
+        }
+
+        .filter-bar {
+            flex-direction: column !important;
+        }
+        .filter-group {
+            min-width: 100% !important;
+            width: 100%;
+        }
+        
+        .hud-metrics-grid {
+            grid-template-columns: 1fr;
+        }
+        .bento-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            grid-auto-rows: auto !important;
+            gap: 0.75rem !important;
+        }
+
+        /* Bento accordion styles on mobile */
+        .bento-tile {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--neo-border);
+        }
+
+        /* Collapsed Tile: Left-aligned Metric-First HUD Card */
+        .bento-tile:not(.expanded) {
+            grid-column: span 1 !important;
+            min-height: 90px !important;
+            height: auto !important;
+            padding: 0.85rem !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: space-between !important;
+            text-align: left !important;
+            border: 1px solid var(--glass-border) !important;
+            background: var(--glass-bg) !important;
+            backdrop-filter: var(--glass-blur) !important;
+            -webkit-backdrop-filter: var(--glass-blur) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+            border-radius: 8px !important;
+        }
+        body.light-mode .bento-tile:not(.expanded) {
+            background: var(--surface-elevated) !important;
+            border-color: var(--border-subtle) !important;
+        }
+        .bento-tile:not(.expanded) .tile-content {
+            display: none !important;
+        }
+        
+        .bento-tile:not(.expanded) .tile-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            text-align: left !important;
+            gap: 0.25rem !important;
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+            margin-bottom: 0 !important;
+            width: 100% !important;
+        }
+
+        .bento-tile:not(.expanded) .tile-title {
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 0.35rem !important;
+            font-size: 0.6rem !important;
+            font-family: var(--font-ui) !important;
+            font-weight: 500 !important;
+            text-transform: uppercase !important;
+            color: var(--neo-text-tertiary) !important;
+            letter-spacing: 0.05em !important;
+            line-height: 1.2 !important;
+        }
+
+        .bento-tile:not(.expanded) .tile-title i {
+            font-size: 1rem !important;
+            color: var(--neo-blue) !important;
+            width: auto !important;
+            height: auto !important;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            margin-bottom: 0 !important;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Large Central Metric/Status presentation */
+        .bento-tile:not(.expanded) .tile-header > div:last-child,
+        .bento-tile:not(.expanded) .badge {
+            font-family: var(--font-mono) !important;
+            font-size: 1.1rem !important; /* Huge bold metric font */
+            font-weight: 800 !important;
+            color: var(--neo-text-primary) !important;
+            text-transform: uppercase !important;
+            margin-top: 0.4rem !important;
+            display: inline-block !important;
+            padding: 0 !important;
+            background: none !important;
+            border: none !important;
+            letter-spacing: -0.02em !important;
+            align-self: flex-start !important;
+        }
+
+        /* Color custom values based on alerts */
+        .bento-tile:not(.expanded) .badge-secure {
+            color: var(--neo-green) !important;
+        }
+        .bento-tile:not(.expanded) .badge-critical,
+        .bento-tile:not(.expanded) .status-alert,
+        .bento-tile:not(.expanded) .badge-danger {
+            color: var(--neo-red) !important;
+        }
+        
+        .bento-tile:not(.expanded) .mobile-header-metric {
+            display: block !important;
+            font-family: var(--font-mono) !important;
+            font-size: 1.1rem !important;
+            font-weight: 800 !important;
+            color: var(--neo-blue) !important;
+            margin-top: 0.4rem !important;
+            letter-spacing: -0.02em !important;
+        }
+
+        /* Hide specific elements on mobile widget view */
+        .bento-tile:not(.expanded) #tile-zap-target,
+        .bento-tile:not(.expanded) #tile-net-os,
+        .bento-tile:not(.expanded) #tile-semgrep-duration,
+        .bento-tile:not(.expanded) .tile-header::after {
+            display: none !important;
+        }
+
+        /* Recent AI Consultations spans 2 columns at the bottom to close the grid symmetrically */
+        .tile-ai:not(.expanded) {
+            grid-column: span 2 !important;
+            min-height: 80px !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 1rem 1.25rem !important;
+        }
+        .tile-ai:not(.expanded) .tile-header {
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+        }
+        .tile-ai:not(.expanded) .tile-title {
+            font-size: 0.75rem !important;
+        }
+        .tile-ai:not(.expanded) .tile-title i {
+            font-size: 1.2rem !important;
+        }
+        .tile-ai:not(.expanded) .tile-header a {
+            display: inline-block !important;
+            font-family: var(--font-mono) !important;
+            font-size: 0.65rem !important;
+            color: var(--neo-blue) !important;
+            text-transform: uppercase !important;
+            font-weight: 700 !important;
+            border: 1px solid rgba(59, 130, 246, 0.2) !important;
+            padding: 4px 10px !important;
+            border-radius: 4px !important;
+            background: rgba(59, 130, 246, 0.05) !important;
+        }
+
+        /* Expanded Tile: centered card modal popup */
+        .bento-tile.expanded {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 92vw !important;
+            max-width: 520px !important;
+            max-height: 82vh !important;
+            z-index: 99999 !important;
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 16px !important;
+            padding: 1.25rem !important;
+            overflow-y: auto !important;
+            margin: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+            
+            /* Entry animation */
+            animation: modalShow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+        }
+
+        @keyframes modalShow {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -46%) scale(0.92);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .bento-tile.expanded .tile-header {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            width: 100%;
+            border-bottom: 1px solid var(--neo-border) !important;
+            padding-bottom: 0.75rem !important;
+            margin-bottom: 1.25rem !important;
+            gap: 0.5rem !important;
+        }
+
+        .bento-tile.expanded .tile-title {
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            font-size: 0.85rem !important;
+        }
+
+        .bento-tile.expanded .tile-title i {
+            font-size: 1.3rem !important;
+        }
+
+        /* Back Button Chevron placement on left */
+        .bento-tile.expanded .tile-header::after {
+            content: 'arrow_back' !important;
+            font-family: 'Material Symbols Outlined';
+            font-size: 1.4rem !important;
+            color: var(--neo-blue) !important;
+            cursor: pointer;
+            order: -1;
+            margin-right: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            flex-shrink: 0 !important;
+        }
+
+        .bento-tile.expanded .tile-header > div:last-child {
+            margin-left: auto !important;
+            font-size: 0.65rem !important;
+        }
+        
+        /* Webkit details marker removal for command details */
+        .command-details summary::-webkit-details-marker {
+            display: none;
+        }
+        .command-details summary {
+            outline: none;
+        }
+
+        /* --- MOBILE REPORT ARCHIVES REDESIGN --- */
+        #mobile-filter-toggle {
+            display: flex !important;
+        }
+        #archive-filter-wrapper {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+            margin-bottom: 0;
+        }
+        #archive-filter-wrapper.active {
+            max-height: 800px;
+            transition: max-height 0.35s ease-in-out;
+            margin-bottom: 1rem;
+        }
+        #archive-filter-wrapper .filter-bar {
+            margin-bottom: 0 !important;
+            padding: 1rem !important;
+        }
+        #mobile-filter-toggle.active .toggle-chevron {
+            transform: rotate(180deg);
+        }
+
+        #tab-report-archives .reports-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0.5rem !important;
+        }
+
+        #tab-report-archives .report-hud-card {
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 0.95rem 1.15rem !important;
+            padding-right: 4rem !important; /* Allocation for absolute positioned download btn */
+            gap: 0.95rem !important;
+            border-radius: 10px !important;
+            position: relative !important;
+        }
+
+        #tab-report-archives .report-hud-icon-box {
+            width: 42px !important;
+            height: 42px !important;
+            margin-bottom: 0 !important;
+            flex-shrink: 0 !important;
+            border-radius: 6px !important;
+        }
+        #tab-report-archives .report-hud-icon-box span {
+            font-size: 1.4rem !important;
+        }
+
+        #tab-report-archives .report-hud-content {
+            flex: 1 !important;
+            min-width: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            position: static !important; /* Bubbles absolute positioning up to the card element */
+        }
+
+        #tab-report-archives .report-hud-title {
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 0 !important;
+        }
+
+        #tab-report-archives .report-hud-target {
+            font-size: 0.72rem !important;
+            margin-bottom: 0 !important;
+            gap: 0.3rem !important;
+            font-weight: 600 !important;
+        }
+
+        #tab-report-archives .report-hud-meta {
+            border-top: none !important;
+            padding-top: 0 !important;
+            margin-top: 0.25rem !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+
+        #tab-report-archives .report-hud-stats {
+            flex-direction: row !important;
+            gap: 12px !important;
+            flex-wrap: wrap !important;
+        }
+
+        #tab-report-archives .report-hud-stat-item {
+            font-size: 0.65rem !important;
+            gap: 5px !important;
+            font-weight: 500 !important;
+        }
+        #tab-report-archives .report-hud-stat-item i {
+            font-size: 0.85rem !important;
+        }
+
+        #tab-report-archives .report-download-btn {
+            position: absolute !important;
+            right: 1rem !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            padding: 0 !important;
+            border-radius: 10px !important; /* Squircle design */
+            width: 38px !important;
+            height: 38px !important;
+            justify-content: center !important;
+            align-items: center !important;
+            background: rgba(59, 130, 246, 0.05) !important;
+            border: 1px solid rgba(59, 130, 246, 0.18) !important;
+            color: var(--neo-blue) !important;
+            flex-shrink: 0 !important;
+            font-size: 0 !important; /* Hide "GET PDF" text node */
+            margin: 0 !important;
+            display: flex !important;
+        }
+
+        #tab-report-archives .report-download-btn i {
+            font-size: 1.25rem !important;
+            margin: 0 !important;
+            position: absolute !important;
+            left: 50% !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            line-height: 1 !important;
+        }
+        }
   </style>
 {% endblock %}
 
 {% block content %}
+<div id="dashboard-modal-backdrop" class="modal-backdrop"></div>
 <div class="dashboard-wrapper">
     
     <!-- Global Header (Dynamic Application Style) -->
@@ -662,10 +1230,21 @@
     </div>
 
     <!-- Tab Navigation -->
-    <div class="tab-nav">
+    <div class="tab-nav desktop-only">
         <button class="tab-btn active" data-tab="live-telemetry">Live Telemetry</button>
         <button class="tab-btn" data-tab="compliance-frameworks">Compliance</button>
         <button class="tab-btn" data-tab="report-archives">Report Archives</button>
+    </div>
+
+    <!-- Mobile Tab Carousel -->
+    <div class="mobile-tab-carousel">
+        <button class="carousel-nav-btn" id="carousel-prev" aria-label="Previous Option">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <span class="carousel-active-title" id="carousel-active-tab-title">Live Telemetry</span>
+        <button class="carousel-nav-btn" id="carousel-next" aria-label="Next Option">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </button>
     </div>
 
     <!-- Tab Context Panels -->
@@ -676,10 +1255,11 @@
             <div class="bento-grid">
                 
                 <!-- Tile 1: Attack Surface (Network Analysis) - Span 8 -->
-                <div class="bento-tile span-8">
+                <div class="bento-tile span-8 tile-network">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">hub</i> Network Attack Surface</div>
                         <div id="tile-net-os" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-text-secondary); text-transform: uppercase;">OS Context: --</div>
+                        <div id="tile-net-header-status" class="mobile-header-metric" style="display: none;">ACTIVE</div>
                     </div>
                     <div class="tile-content" style="flex-direction: row; gap: 2rem;">
                           <div style="flex: 0.6; display: flex; flex-direction: column; gap: 1rem;">
@@ -707,8 +1287,13 @@
                                </div>
 
                                <div style="margin-top: auto; padding: 0.75rem; border-top: 1px solid var(--neo-border);">
-                                   <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-tertiary); text-transform: uppercase;">Command Origin</div>
-                                   <div id="tile-net-scan-args" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-blue); word-break: break-all; opacity: 0.7; margin-top: 5px;">--</div>
+                                   <details class="command-details">
+                                       <summary style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-tertiary); text-transform: uppercase; cursor: pointer; list-style: none; display: flex; align-items: center; gap: 4px; user-select: none;">
+                                           <span class="material-symbols-outlined" style="font-size: 1rem; color: var(--neo-blue);">terminal</span>
+                                           Command Origin
+                                       </summary>
+                                       <div id="tile-net-scan-args" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-blue); word-break: break-all; opacity: 0.7; margin-top: 8px;">--</div>
+                                   </details>
                                </div>
                           </div>
 
@@ -740,9 +1325,10 @@
 
 
                 <!-- Tile 3: Traffic Analysis (Sniffer) - Span 4 -->
-                <div class="bento-tile span-4">
+                <div class="bento-tile span-4 tile-sniffer">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">insights</i> Traffic Analysis (Sniffer)</div>
+                        <div id="tile-sniffer-header-rate" class="mobile-header-metric" style="display: none;">0.00 KB/s</div>
                     </div>
                     <div class="tile-content" style="display: flex; flex-direction: column; height: 100%;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 0.25rem 0.5rem;">
@@ -785,10 +1371,11 @@
                 </div>
 
                 <!-- Tile 4: Web Application Scanner (ZAP) - Span 8 [EXPANDED] -->
-                <div class="bento-tile span-8">
+                <div class="bento-tile span-8 tile-zap">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">language</i> Web Application Posture (ZAP)</div>
                         <div id="tile-zap-target" style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-blue);">TARGET: --</div>
+                        <div id="tile-zap-header-status" class="mobile-header-metric" style="display: none;">0 URLs</div>
                     </div>
                     <div class="tile-content" style="flex-direction: row; gap: 2rem;">
                         <div style="flex: 1;">
@@ -827,9 +1414,10 @@
                 </div>
 
                 <!-- Tile 5: Cryptographic Health (SSL) - Span 4 -->
-                <div class="bento-tile span-4">
+                <div class="bento-tile span-4 tile-ssl">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">lock</i> Cryptographic Health (SSL)</div>
+                        <div id="tile-ssl-header-status" class="mobile-header-metric" style="display: none;">SECURE</div>
                     </div>
                     <div class="tile-content">
                         <div id="tile-ssl-encryption" style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 800; color: var(--neo-green); margin-bottom: 1rem;">SECURE</div>
@@ -855,10 +1443,10 @@
                 </div>
 
                 <!-- Tile 6: Killchain Audit - Aligned 2x2 (Span 6) -->
-                <div class="bento-tile span-6" style="min-height: 340px;">
+                <div class="bento-tile span-6 tile-killchain" style="min-height: 340px;">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">account_tree</i> Killchain Audit</div>
-                        <div class="badge badge-secure" style="border-color: var(--neo-blue); color: var(--neo-blue);">AUDITED</div>
+                        <div id="tile-kc-status" class="badge badge-secure" style="border-color: var(--neo-blue); color: var(--neo-blue);">AUDITED</div>
                     </div>
                     <div class="tile-content">
                         <div id="tile-kc-phases" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
@@ -879,10 +1467,10 @@
                 </div>
 
                 <!-- Tile 7: API Security - Aligned 2x2 (Span 6) -->
-                <div class="bento-tile span-6" style="min-height: 340px;">
+                <div class="bento-tile span-6 tile-api" style="min-height: 340px;">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">api</i> API Security Analysis</div>
-                        <div class="badge" style="border-color: var(--neo-red); color: var(--neo-red);">CRITICAL</div>
+                        <div id="api-scan-status" class="badge" style="border-color: var(--neo-red); color: var(--neo-red);">CRITICAL</div>
                     </div>
                     <div class="tile-content">
                         <div id="tile-api-summary" style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 4px;">
@@ -914,10 +1502,11 @@
                 </div>
 
                 <!-- Tile 8: Code SAST (Semgrep) - Aligned 2x2 (Span 6) -->
-                <div class="bento-tile span-6" style="min-height: 340px;">
+                <div class="bento-tile span-6 tile-sast" style="min-height: 340px;">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">code</i> Code Security (SAST)</div>
                         <div id="tile-semgrep-duration" style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--neo-text-secondary);">SCAN TIME: 24.18s</div>
+                        <div id="tile-sast-header-status" class="mobile-header-metric" style="display: none;">0 VULNS</div>
                     </div>
                     <div class="tile-content" style="display: flex; flex-direction: column;">
                         <div id="tile-semgrep-findings-list" class="hud-scroll" style="display: flex; flex-direction: column; gap: 0.25rem; overflow-y: auto; max-height: 220px; padding-right: 0.5rem;">
@@ -948,10 +1537,10 @@
                 </div>
 
                 <!-- Tile 9: SQL Injection Security - Aligned 2x2 (Span 6) -->
-                <div class="bento-tile span-6" style="min-height: 340px;">
+                <div class="bento-tile span-6 tile-sql" style="min-height: 340px;">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">database</i> SQL & DB Posture</div>
-                        <div class="badge" style="border-color: var(--neo-red); color: var(--neo-red);">CRITICAL</div>
+                        <div id="tile-sql-status" class="badge" style="border-color: var(--neo-red); color: var(--neo-red);">CRITICAL</div>
                     </div>
                     <div class="tile-content">
                         <div id="tile-sql-meta" style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--neo-text-secondary); margin-bottom: 0.75rem; padding: 0.5rem; border: 1px dashed var(--neo-border);">
@@ -970,7 +1559,7 @@
                 </div>
 
                 <!-- Tile 10: Recent AI Consultations [NEW] - Span 12 -->
-                <div class="bento-tile span-12">
+                <div class="bento-tile span-12 tile-ai">
                     <div class="tile-header">
                         <div class="tile-title"><i class="material-symbols-outlined">history_edu</i> Recent AI Security Consultations</div>
                         <a href="{{ url_for('chatbot_bp.chatbot_page') }}" style="font-size: 0.65rem; color: var(--neo-blue); text-transform: uppercase; font-family: var(--font-mono);">New Session</a>
@@ -1012,36 +1601,44 @@
 
         <!-- Tab 3: Report Archives -->
         <div id="tab-report-archives" class="tab-pane hidden">
-            <div class="filter-bar">
-                <div class="filter-group" style="flex: 2; min-width: 300px;">
-                    <div class="filter-label">Quick Search</div>
-                    <div style="position: relative;">
-                        <span class="material-symbols-outlined" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--neo-text-secondary); font-size: 1.2rem;">search</span>
-                        <input type="text" id="reportFilterSearch" class="neo-input" placeholder="Search by target or filename..." style="padding-left: 40px;">
+            <!-- Mobile-only filters toggle -->
+            <button id="mobile-filter-toggle" class="btn-dash btn-secondary w-full" style="display: none; margin-bottom: 1rem; justify-content: space-between; align-items: center; padding: 0.75rem 1rem;">
+                <span style="display: flex; align-items: center; gap: 8px;"><i class="material-symbols-outlined" style="font-size: 1.15rem;">filter_list</i> FILTERS</span>
+                <i class="material-symbols-outlined toggle-chevron" style="transition: transform 0.3s ease;">expand_more</i>
+            </button>
+
+            <div id="archive-filter-wrapper">
+                <div class="filter-bar">
+                    <div class="filter-group" style="flex: 2; min-width: 300px;">
+                        <div class="filter-label">Quick Search</div>
+                        <div style="position: relative;">
+                            <span class="material-symbols-outlined" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--neo-text-secondary); font-size: 1.2rem;">search</span>
+                            <input type="text" id="reportFilterSearch" class="neo-input" placeholder="Search by target or filename..." style="padding-left: 40px;">
+                        </div>
                     </div>
-                </div>
-                <div class="filter-group">
-                    <div class="filter-label">Target Asset</div>
-                    <select id="reportFilterTarget" class="neo-select">
-                        <option value="all">All Targets</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <div class="filter-label">Scanner Module</div>
-                    <select id="reportFilterScanner" class="neo-select">
-                        <option value="all">All Modules</option>
-                        <option value="zap_scanner">ZAP Web Scan</option>
-                        <option value="network_scanner">Nmap Discovery</option>
-                        <option value="ssl_scanner">SSL/TLS Audit</option>
-                        <option value="semgrep_scanner">Code Security (SAST)</option>
-                        <option value="api_scanner">API Security</option>
-                        <option value="sql_scanner">SQL Injection</option>
-                        <option value="packet_sniffer">Traffic Analysis</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <div class="filter-label">Audit Date</div>
-                    <input type="text" id="reportFilterDate" class="neo-input" placeholder="Select date range...">
+                    <div class="filter-group">
+                        <div class="filter-label">Target Asset</div>
+                        <select id="reportFilterTarget" class="neo-select">
+                            <option value="all">All Targets</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-label">Scanner Module</div>
+                        <select id="reportFilterScanner" class="neo-select">
+                            <option value="all">All Modules</option>
+                            <option value="zap_scanner">ZAP Web Scan</option>
+                            <option value="network_scanner">Nmap Discovery</option>
+                            <option value="ssl_scanner">SSL/TLS Audit</option>
+                            <option value="semgrep_scanner">Code Security (SAST)</option>
+                            <option value="api_scanner">API Security</option>
+                            <option value="sql_scanner">SQL Injection</option>
+                            <option value="packet_sniffer">Traffic Analysis</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-label">Audit Date</div>
+                        <input type="text" id="reportFilterDate" class="neo-input" placeholder="Select date range...">
+                    </div>
                 </div>
             </div>
 

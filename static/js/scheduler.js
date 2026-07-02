@@ -176,6 +176,25 @@ window.showConfirm = function({ title, message, confirmText, icon = 'warning', t
     });
 };
 
+// ===== Mobile View Tab Switcher =====
+window.switchMobileTab = function(tab) {
+    const wrapper = document.querySelector('.dashboard-wrapper');
+    const btnMissions = document.getElementById('tabBtnMissions');
+    const btnArsenal = document.getElementById('tabBtnArsenal');
+    
+    if (!wrapper) return;
+    
+    if (tab === 'missions') {
+        wrapper.classList.add('view-missions');
+        if (btnMissions) btnMissions.classList.add('active');
+        if (btnArsenal) btnArsenal.classList.remove('active');
+    } else {
+        wrapper.classList.remove('view-missions');
+        if (btnArsenal) btnArsenal.classList.add('active');
+        if (btnMissions) btnMissions.classList.remove('active');
+    }
+};
+
 // ===== Load modules schema =====
 async function loadModules() {
     const data = await apiFetch(`${API}/modules`);
@@ -212,7 +231,7 @@ async function renderAll() {
 
 function renderDropBar() {
     return `
-        <div class="drop-zone-bar" id="persistentDropBar">
+        <div class="drop-zone-bar" id="persistentDropBar" onclick="if(window.innerWidth <= 1024) { switchMobileTab('arsenal'); toast('Select a module from the Arsenal to configure', 'info'); }">
             <span class="material-symbols-outlined" style="font-size: 1rem; opacity:0.5;">add_circle</span>
             Drop module here to add mission
         </div>
@@ -306,6 +325,9 @@ function closeDrawer() {
     document.getElementById('configDrawer').classList.remove('open');
     document.getElementById('drawerOverlay').classList.remove('open');
     activeDraftIndex = -1;
+    if (window.innerWidth <= 1024) {
+        window.switchMobileTab('missions');
+    }
 }
 
 window.openHistoryDrawer = async function(jobId) {
@@ -1046,6 +1068,19 @@ function tryAdvanceStep(i, nextStep) {
 document.addEventListener('DOMContentLoaded', () => {
     const arsenal = document.querySelector('.arsenal-sidebar');
     const canvasWrapper = document.getElementById('canvasWrapper');
+
+    // Allow tap/click to deploy (especially on mobile touch screens)
+    if (arsenal) {
+        arsenal.addEventListener('click', (e) => {
+            const card = e.target.closest('.template-card');
+            if (card) {
+                const module = card.dataset.module;
+                if (module) {
+                    deployDraft(module);
+                }
+            }
+        });
+    }
 
     arsenal.addEventListener('dragstart', (e) => {
         const card = e.target.closest('.template-card');

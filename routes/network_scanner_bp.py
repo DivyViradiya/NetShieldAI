@@ -667,7 +667,8 @@ def get_scan_results():
         'xmas': "scan_result_xmas.txt",
         'ack': "scan_result_ack.txt",
         'window': "scan_result_window.txt",
-        'decoy': "scan_result_decoy.txt"
+        'decoy': "scan_result_decoy.txt",
+        'vuln': "scan_result_vuln.txt"
     }
     
     filename = filename_map.get(scan_type)

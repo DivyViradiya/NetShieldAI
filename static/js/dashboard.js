@@ -63,6 +63,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         const osEl = document.getElementById("tile-net-os");
                         if (osEl) osEl.textContent = data.status === "Scanning" ? "ANALYZING OS..." : `OS Context: ${data.os_detected || "Unknown"}`;
 
+                        const headerNetEl = document.getElementById("tile-net-header-status");
+                        if (headerNetEl) {
+                            let osText = data.os_detected || "ACTIVE";
+                            if (osText.includes("Unknown") || osText.includes("Not Detected")) {
+                                osText = "ACTIVE";
+                            }
+                            headerNetEl.textContent = data.status === "Scanning" ? "SCANNING" : osText;
+                        }
+
                         const argsEl = document.getElementById("tile-net-scan-args");
                         if (argsEl) argsEl.textContent = data.scan_args || "nmap -sV -O -T4";
 
@@ -95,6 +104,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (extIpEl) extIpEl.textContent = "IDLE";
                         const portListEl = document.getElementById("tile-net-port-list");
                         if (portListEl) portListEl.innerHTML = '<tr><td colspan="3" style="padding: 2rem; text-align: center; opacity: 0.3; font-size: 0.65rem;">NO NETWORK SCAN DATA</td></tr>';
+
+                        const headerNetEl = document.getElementById("tile-net-header-status");
+                        if (headerNetEl) headerNetEl.textContent = "IDLE";
                     }
                 })
                 .catch(console.error);
@@ -111,6 +123,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (isActive) {
                         const urlCountEl = document.getElementById("tile-zap-url-count");
                         if (urlCountEl) urlCountEl.textContent = data.crawled_urls_count || 0;
+
+                        const headerZapEl = document.getElementById("tile-zap-header-status");
+                        if (headerZapEl) headerZapEl.textContent = data.status === "Scanning" ? "CRAWLING" : `${data.crawled_urls_count || 0} URLs`;
 
                         const confEl = document.getElementById("tile-zap-confidence");
                         if (confEl) confEl.textContent = data.status === "Scanning" ? "CRAWLING" : (data.confidence_score || "HIGH");
@@ -153,6 +168,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     } else {
                         const listEl = document.getElementById("tile-zap-findings-list");
                         if (listEl) listEl.innerHTML = '<div style="opacity: 0.3; font-size: 0.65rem; padding: 2rem; text-align: center;">NO WEB SCAN DATA</div>';
+
+                        const headerZapEl = document.getElementById("tile-zap-header-status");
+                        if (headerZapEl) headerZapEl.textContent = "IDLE";
                     }
                 })
                 .catch(console.error);
@@ -170,6 +188,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         const rateEl = document.getElementById("tile-sniffer-rate");
                         const rawRate = parseFloat(data.avg_rate_bps) || 0;
                         if (rateEl) rateEl.innerHTML = `${rawRate.toFixed(2)} <span style="font-size: 0.7rem; font-weight: 400; color: var(--neo-text-muted); letter-spacing: 0;">KB/s</span>`;
+
+                        const headerRateEl = document.getElementById("tile-sniffer-header-rate");
+                        if (headerRateEl) headerRateEl.textContent = `${rawRate.toFixed(2)} KB/s`;
 
                         const totalEl = document.getElementById("tile-sniffer-total");
                         const totalMB = data.total_bytes ? (data.total_bytes / 1024 / 1024).toFixed(2) : "0.00";
@@ -216,6 +237,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     } else {
                         const rateEl = document.getElementById("tile-sniffer-rate");
                         if (rateEl) rateEl.innerHTML = `0.00 <span style="font-size: 0.8rem; color: var(--neo-text-muted);">KB/s</span>`;
+
+                        const headerRateEl = document.getElementById("tile-sniffer-header-rate");
+                        if (headerRateEl) headerRateEl.textContent = `0.00 KB/s`;
                     }
                 })
                 .catch(console.error);
@@ -363,6 +387,16 @@ document.addEventListener("DOMContentLoaded", function () {
                         const durEl = document.getElementById("tile-semgrep-duration");
                         if (durEl) durEl.textContent = `SCAN TIME: ${data.scan_duration || "--"}`;
 
+                        const headerSastEl = document.getElementById("tile-sast-header-status");
+                        if (headerSastEl) {
+                            headerSastEl.textContent = data.status === "Scanning" ? "SCANNING" : `${data.total_findings || 0} VULNS`;
+                            if (data.total_findings > 0 && data.status !== "Scanning") {
+                                headerSastEl.style.color = "var(--neo-red)";
+                            } else {
+                                headerSastEl.style.color = "";
+                            }
+                        }
+
                         const countEl = document.getElementById("semgrep-vuln-count");
                         if (countEl) countEl.textContent = `TOTAL FINDINGS: ${data.total_findings || 0}`;
 
@@ -392,6 +426,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     } else {
                         const listEl = document.getElementById("tile-semgrep-findings-list");
                         if (listEl) listEl.innerHTML = '<div style="color: var(--neo-text-muted); opacity: 0.3; font-size: 0.65rem; padding: 1.5rem; text-align: center;">NO CODE SCAN DATA AVAILABLE</div>';
+
+                        const headerSastEl = document.getElementById("tile-sast-header-status");
+                        if (headerSastEl) {
+                            headerSastEl.textContent = "IDLE";
+                            headerSastEl.style.color = "";
+                        }
                     }
                 })
                 .catch(console.error);
@@ -451,6 +491,20 @@ document.addEventListener("DOMContentLoaded", function () {
                             encEl.textContent = data.status === "Scanning" ? "VALIDATING" : (data.is_secure ? "ENCRYPTED" : "WEAK");
                             encEl.style.color = data.status === "Scanning" ? "var(--neo-blue)" : (data.is_secure ? "var(--neo-green)" : "var(--neo-red)");
                         }
+
+                        const headerSslEl = document.getElementById("tile-ssl-header-status");
+                        if (headerSslEl) {
+                            const statusText = data.status === "Scanning" ? "VALIDATING" : (data.is_secure ? "SECURE" : "WEAK");
+                            headerSslEl.textContent = statusText;
+                            if (statusText === "SECURE") {
+                                headerSslEl.className = "mobile-header-metric badge-secure";
+                            } else if (statusText === "WEAK") {
+                                headerSslEl.className = "mobile-header-metric badge-critical";
+                            } else {
+                                headerSslEl.className = "mobile-header-metric";
+                            }
+                        }
+
                         const compEl = document.getElementById("tile-ssl-compression");
                         if (compEl) compEl.textContent = data.compression_supported ? "ENABLED (RISKY)" : "DISABLED";
                         const issuerEl = document.getElementById("tile-ssl-issuer");
@@ -460,6 +514,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     } else {
                         const encEl = document.getElementById("tile-ssl-encryption");
                         if (encEl) encEl.textContent = "IDLE";
+
+                        const headerSslEl = document.getElementById("tile-ssl-header-status");
+                        if (headerSslEl) {
+                            headerSslEl.textContent = "IDLE";
+                            headerSslEl.className = "mobile-header-metric";
+                        }
                     }
                 })
                 .catch(console.error);
@@ -674,37 +734,127 @@ document.addEventListener("DOMContentLoaded", function () {
             dateFilter.addEventListener("change", applyFilters);
         }
         if (searchFilter) searchFilter.addEventListener("input", applyFilters);
+
+        const filterToggle = document.getElementById("mobile-filter-toggle");
+        const filterWrapper = document.getElementById("archive-filter-wrapper");
+        if (filterToggle && filterWrapper) {
+            filterToggle.addEventListener("click", () => {
+                const isActive = filterWrapper.classList.toggle("active");
+                filterToggle.classList.toggle("active", isActive);
+            });
+        }
     }
 
-    // --- 11. TAB SWITCHING ---
+    // --- 11. TAB SWITCHING & CAROUSEL ---
+    const tabsList = ["live-telemetry", "compliance-frameworks", "report-archives"];
+    const tabFriendlyNames = {
+        "live-telemetry": "Live Telemetry",
+        "compliance-frameworks": "Compliance",
+        "report-archives": "Report Archives"
+    };
+    let currentTabIndex = 0;
+
     const tabBtns = document.querySelectorAll(".tab-btn[data-tab]");
     const tabPanes = document.querySelectorAll(".tab-pane");
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-            const activeTab = btn.getAttribute("data-tab");
+    function setActiveTab(activeTab) {
+        currentTabIndex = tabsList.indexOf(activeTab);
+        if (currentTabIndex === -1) currentTabIndex = 0;
+        const targetTab = tabsList[currentTabIndex];
 
-            // Update UI
-            tabBtns.forEach(b => b.classList.toggle("active", b === btn));
-            tabPanes.forEach(p => {
-                const isTarget = p.id === `tab-${activeTab}`;
-                p.classList.toggle("hidden", !isTarget);
-                if (isTarget) {
-                    p.style.display = 'block'; // Ensure visibility
-                    p.classList.add('fade-in-up'); // Add entrance animation if defined
-                } else {
-                    p.style.display = 'none';
-                }
-            });
+        // Update desktop tab buttons
+        tabBtns.forEach(btn => {
+            btn.classList.toggle("active", btn.getAttribute("data-tab") === targetTab);
+        });
 
-            if (activeTab === "compliance-frameworks") {
-                loadComplianceData();
-            } else if (activeTab === "report-archives") {
-                // Re-sync reports filter on tab switch if needed
-                if (typeof applyFilters === 'function') applyFilters();
+        // Update mobile carousel title
+        const carouselTitle = document.getElementById("carousel-active-tab-title");
+        if (carouselTitle) {
+            carouselTitle.textContent = tabFriendlyNames[targetTab];
+        }
+
+        // Show/hide content panels
+        tabPanes.forEach(p => {
+            const isTarget = p.id === `tab-${targetTab}`;
+            p.classList.toggle("hidden", !isTarget);
+            if (isTarget) {
+                p.style.display = 'block';
+                p.classList.add('fade-in-up');
+            } else {
+                p.style.display = 'none';
             }
         });
+
+        // Trigger tab-specific callbacks
+        if (targetTab === "compliance-frameworks") {
+            loadComplianceData();
+        } else if (targetTab === "report-archives") {
+            if (typeof applyFilters === 'function') applyFilters();
+        }
+    }
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            setActiveTab(btn.getAttribute("data-tab"));
+        });
     });
+
+    // Mobile chevron carousel controls
+    const prevBtn = document.getElementById("carousel-prev");
+    const nextBtn = document.getElementById("carousel-next");
+
+    if (prevBtn) {
+        prevBtn.addEventListener("click", () => {
+            currentTabIndex = (currentTabIndex - 1 + tabsList.length) % tabsList.length;
+            setActiveTab(tabsList[currentTabIndex]);
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener("click", () => {
+            currentTabIndex = (currentTabIndex + 1) % tabsList.length;
+            setActiveTab(tabsList[currentTabIndex]);
+        });
+    }
+
+    // Touch gesture swipe detection on mobile
+    let touchstartX = 0;
+    let touchendX = 0;
+    let touchstartY = 0;
+    let touchendY = 0;
+
+    const gestureContainer = document.getElementById("tab-content-container");
+
+    function handleGesture() {
+        const diffX = touchendX - touchstartX;
+        const diffY = touchendY - touchstartY;
+
+        // Ensure swipe is horizontal and significant enough (e.g. > 60px)
+        if (Math.abs(diffX) > 60 && Math.abs(diffY) < 40) {
+            if (diffX > 0) {
+                // Swipe right -> Go to previous tab
+                currentTabIndex = (currentTabIndex - 1 + tabsList.length) % tabsList.length;
+                setActiveTab(tabsList[currentTabIndex]);
+            } else {
+                // Swipe left -> Go to next tab
+                currentTabIndex = (currentTabIndex + 1) % tabsList.length;
+                setActiveTab(tabsList[currentTabIndex]);
+            }
+        }
+    }
+
+    if (gestureContainer) {
+        gestureContainer.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+            touchstartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        gestureContainer.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            touchendY = e.changedTouches[0].screenY;
+            handleGesture();
+        }, { passive: true });
+    }
 
     // showRemedyModal
 
@@ -873,4 +1023,48 @@ document.addEventListener("DOMContentLoaded", function () {
             return response;
         });
     };
+
+    // --- 12. MOBILE BENTO MODAL POPUPS ---
+    const tiles = document.querySelectorAll(".bento-tile");
+    const backdrop = document.getElementById("dashboard-modal-backdrop");
+
+    function closeModal() {
+        tiles.forEach(t => t.classList.remove("expanded"));
+        if (backdrop) backdrop.classList.remove("active");
+        document.body.style.overflow = ''; // Re-enable page scrolling
+    }
+
+    tiles.forEach(tile => {
+        tile.addEventListener("click", (e) => {
+            // Only apply on screens <= 768px
+            if (window.innerWidth > 768) return;
+
+            const isExpanded = tile.classList.contains("expanded");
+
+            if (isExpanded) {
+                // Close only if clicking header or Back button
+                const header = tile.querySelector(".tile-header");
+                if (header && (e.target === header || header.contains(e.target))) {
+                    closeModal();
+                }
+                return;
+            }
+
+            // Clicked a collapsed tile -> open modal popup
+            // Close any other open modals first
+            tiles.forEach(t => t.classList.remove("expanded"));
+            
+            tile.classList.add("expanded");
+            if (backdrop) backdrop.classList.add("active");
+            document.body.style.overflow = 'hidden'; // Lock main page scrolling
+        });
+    });
+
+    // Close modal when clicking backdrop (outside the card)
+    if (backdrop) {
+        backdrop.addEventListener("click", () => {
+            closeModal();
+        });
+    }
 });
+
