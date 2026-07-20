@@ -415,10 +415,12 @@
         <div class="form-group">
           <label class="form-label" for="full_name">Full Name</label>
           {{ form.full_name(class='form-input', placeholder='Enter your full name', id='full_name') }}
+          {% for error in form.full_name.errors %}<span class="text-[0.65rem] text-red-500 block mt-1"><i class="material-symbols-outlined" style="font-size: 0.8rem; vertical-align: middle;">error</i> {{ error }}</span>{% endfor %}
         </div>
         <div class="form-group">
           <label class="form-label" for="phone_number">Phone Number</label>
           {{ form.phone_number(class='form-input', placeholder='+1 (555) 000-0000', id='phone_number') }}
+          {% for error in form.phone_number.errors %}<span class="text-[0.65rem] text-red-500 block mt-1"><i class="material-symbols-outlined" style="font-size: 0.8rem; vertical-align: middle;">error</i> {{ error }}</span>{% endfor %}
         </div>
       </div>
 
@@ -427,10 +429,12 @@
         <div class="form-group">
           <label class="form-label" for="organization">Organization</label>
           {{ form.organization(class='form-input', placeholder='Company or project name', id='organization') }}
+          {% for error in form.organization.errors %}<span class="text-[0.65rem] text-red-500 block mt-1"><i class="material-symbols-outlined" style="font-size: 0.8rem; vertical-align: middle;">error</i> {{ error }}</span>{% endfor %}
         </div>
         <div class="form-group">
           <label class="form-label" for="job_title">Job Title</label>
           {{ form.job_title(class='form-input', placeholder='Your role', id='job_title') }}
+          {% for error in form.job_title.errors %}<span class="text-[0.65rem] text-red-500 block mt-1"><i class="material-symbols-outlined" style="font-size: 0.8rem; vertical-align: middle;">error</i> {{ error }}</span>{% endfor %}
         </div>
       </div>
 
@@ -444,6 +448,7 @@
         <div class="form-group">
           <label class="form-label" for="confirm_password">Confirm Password</label>
           {{ form.confirm_password(class='form-input', placeholder='••••••••', id='confirm_password', type='password') }}
+          {% for error in form.confirm_password.errors %}<span class="text-[0.65rem] text-red-500 block mt-1"><i class="material-symbols-outlined" style="font-size: 0.8rem; vertical-align: middle;">error</i> {{ error }}</span>{% endfor %}
         </div>
         <div class="flex items-start gap-3 mt-4">
           {{ form.tos_agreement(class='w-4 h-4 rounded border-var(--neo-border) bg-transparent text-var(--neo-blue) focus:ring-0 mt-0.5') }}
@@ -461,7 +466,10 @@
           <span>Next Step</span>
           <span class="material-symbols-outlined" style="font-size: 1rem;">arrow_forward</span>
         </button>
-        {{ form.submit(id='submitBtn', class='btn-auth-primary btn-auth-submit w-full hidden', value='Create Account') }}
+        <button type="submit" id="submitBtn" class="btn-auth-primary btn-auth-submit w-full hidden">
+          <span>Create Account</span>
+          <span class="material-symbols-outlined" style="font-size: 1rem;">person_add</span>
+        </button>
       </div>
     </form>
 
@@ -600,6 +608,14 @@
       btn.innerHTML = spinner + 'Initializing...';
       btn.classList.add('opacity-75', 'cursor-not-allowed');
     });
+
+    // Check if there are any validation errors on page load, and jump to the step with errors
+    for (let i = 0; i < steps.length; i++) {
+      if (steps[i] && steps[i].querySelector('.text-red-500')) {
+        currentStep = i + 1;
+        break;
+      }
+    }
 
     updateUI();
   });

@@ -72,14 +72,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const menu = el.querySelector('.dropdown-menu');
         if (!menu) return;
         
-        const isShow = menu.classList.contains('show');
+        const isShow = menu.classList.contains('show') && !menu.classList.contains('hidden') && menu.style.display !== 'none';
         
         document.querySelectorAll('.dropdown-menu').forEach(m => {
             m.classList.remove('show');
+            m.classList.add('hidden');
             m.style.display = 'none';
         });
         
         if (!isShow) {
+            menu.classList.remove('hidden');
             menu.classList.add('show');
             menu.style.display = 'flex';
         }
@@ -87,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const closeDropdown = (e) => {
             if (!el.contains(e.target)) {
                 menu.classList.remove('show');
+                menu.classList.add('hidden');
                 menu.style.display = 'none';
                 document.removeEventListener('click', closeDropdown);
             }
@@ -117,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.switchTab = function(tabName) {
-        const tabs = ["findings", "severity", "config", "raw"];
+        const tabs = ["findings", "severity", "config", "intel", "raw"];
         tabs.forEach((t) => {
             const contentEl = document.getElementById(`content${t.charAt(0).toUpperCase() + t.slice(1)}`);
             if (contentEl) {
@@ -133,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (targetContent) {
             targetContent.classList.remove("hidden");
             targetContent.classList.add("active");
-            targetContent.style.display = tabName === 'findings' ? 'flex' : 'block';
+            targetContent.style.display = (tabName === 'findings' || tabName === 'intel' || tabName === 'config') ? 'flex' : 'block';
         }
         const targetPill = document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Btn`);
         if (targetPill) targetPill.classList.add("active");

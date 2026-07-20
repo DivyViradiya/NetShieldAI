@@ -133,8 +133,27 @@ def google_callback():
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            flash('No account found with this email. Please create an account first.', 'warning')
-            return redirect(url_for('auth.register'))
+            # Create a new user since it's an OAuth login and we don't have this user yet
+            full_name = user_info.get('name')
+            base_username = email.split('@')[0]
+            import re
+            base_username = re.sub(r'[^a-zA-Z0-9_]', '_', base_username)
+            username = base_username
+            while User.query.filter(func.lower(User.username) == username.lower()).first():
+                username = f"{base_username}_{secrets.token_hex(3)}"
+            
+            temp_password = secrets.token_urlsafe(32)
+            user = User(
+                username=username,
+                email=email,
+                full_name=full_name,
+                is_email_verified=True,  # OAuth emails are already verified by Google
+                is_onboarded=False       # Take them to username setup
+            )
+            user.set_password(temp_password)
+            db.session.add(user)
+            db.session.commit()
+            logger.info(f"[+] Created new user via Google OAuth: {user.username}")
 
         logger.info(f"[+] User logged in via Google OAuth: {user.username}")
 
@@ -201,8 +220,27 @@ def github_callback():
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            flash('No account found with this email. Please create an account first.', 'warning')
-            return redirect(url_for('auth.register'))
+            # Create a new user since it's an OAuth login and we don't have this user yet
+            full_name = user_info.get('name') or user_info.get('login')
+            base_username = user_info.get('login') or email.split('@')[0]
+            import re
+            base_username = re.sub(r'[^a-zA-Z0-9_]', '_', base_username)
+            username = base_username
+            while User.query.filter(func.lower(User.username) == username.lower()).first():
+                username = f"{base_username}_{secrets.token_hex(3)}"
+            
+            temp_password = secrets.token_urlsafe(32)
+            user = User(
+                username=username,
+                email=email,
+                full_name=full_name,
+                is_email_verified=True,  # OAuth emails are already verified by GitHub
+                is_onboarded=False
+            )
+            user.set_password(temp_password)
+            db.session.add(user)
+            db.session.commit()
+            logger.info(f"[+] Created new user via GitHub OAuth: {user.username}")
 
         logger.info(f"[+] User logged in via GitHub OAuth: {user.username}")
 
@@ -248,7 +286,7 @@ def register():
             
         if User.query.filter_by(email=form.email.data).first():
             flash('Email address is already registered.', 'warning')
-            return render_template('register.html', form=form)
+            return render_template('base/register.html', form=form)
 
         new_user = User(
             username=form.username.data,
@@ -269,6 +307,7 @@ def register():
             db.session.commit()
             # [OTP VERIFICATION] Generate and send OTP
             import random
+            otp_code = str(random.randint(100000, 999999))
             expires_at = get_now_ist().replace(tzinfo=None) + timedelta(minutes=15)
             
             otp_entry = RegistrationOTP(user_id=new_user.id, code=otp_code, expires_at=expires_at)
@@ -827,6 +866,7 @@ def resend_verification():
 
     # Generate and send new OTP
     import random
+    otp_code = str(random.randint(100000, 999999))
     expires_at = get_now_ist().replace(tzinfo=None) + timedelta(minutes=15)
 
     otp_entry = RegistrationOTP(user_id=user.id, code=otp_code, expires_at=expires_at)

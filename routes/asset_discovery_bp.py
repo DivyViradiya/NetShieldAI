@@ -39,6 +39,11 @@ def get_asset_results_dir():
 def dashboard():
     """Renders the Asset Discovery & Inventory dashboard."""
     logger.info(f"[*] Accessing Asset Discovery Dashboard (User: {current_user.username})")
+    
+    user_agent = request.headers.get('User-Agent')
+    if user_agent and any(word in user_agent for word in ['Mobile', 'Android', 'iPhone', 'iPad']):
+        return render_template('mobile_scanners/asset_discovery.html')
+        
     return render_template('scanners/asset_discovery.html')
 
 

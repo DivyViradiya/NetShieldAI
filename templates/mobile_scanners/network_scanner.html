@@ -909,7 +909,7 @@ NetShieldAI - Network Scanner
 
 {% block content %}
 <div class="mobile-wrapper">
-    <div class="sub-header-bar" style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; border-radius: 12px; background: rgba(10,10,12,0.65); border: 1px solid var(--neo-border); margin-bottom: 0.25rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); min-height: 54px;">
+    <div class="sub-header-bar" style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; border-radius: 12px; background: rgba(10,10,12,0.65); border: 1px solid var(--neo-border); margin-bottom: 0.25rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); min-height: 54px; position: relative; z-index: 1050;">
         <div style="font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; color: var(--neo-text-muted); font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
             <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--neo-blue);">radar</span>
             <span class="text-gradient">Infrastructure Scan</span>
@@ -923,7 +923,7 @@ NetShieldAI - Network Scanner
                     <span class="material-symbols-outlined" style="font-size: 1.1rem;">swap_horiz</span>
                     <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;">SWITCH</span>
                 </button>
-                <div class="dropdown-menu hidden" style="position: absolute; right: 0; left: auto !important; width: auto !important; min-width: 240px !important; top: calc(100% + 8px); background: #0a0a0c; border: 1px solid var(--neo-border); border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); z-index: 1011; padding: 6px; display: none; flex-direction: column; gap: 2px;">
+                <div class="dropdown-menu hidden" style="position: absolute; right: 0; left: auto !important; width: auto !important; min-width: 240px !important; top: calc(100% + 8px); background: #0a0a0c; border: 1px solid var(--neo-border); border-radius: 8px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9); z-index: 2000; padding: 6px; display: none; flex-direction: column; gap: 2px;">
                     <div class="dropdown-category">Infrastructure & Discovery</div>
                     <a href="{{ url_for('asset_discovery_bp.dashboard') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Asset Inventory</a>
                     <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="dropdown-item active" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-blue); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase; background: rgba(59, 130, 246, 0.1);">Service Discovery</a>
@@ -1062,14 +1062,14 @@ NetShieldAI - Network Scanner
     </section>
 
     <!-- Segmented Tab Navigation for Mobile UX -->
-    <div class="segmented-tab-control" style="display: flex; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--neo-border); border-radius: 10px; padding: 2px; margin-top: 0.5rem; margin-bottom: 0.75rem;">
-        <button onclick="switchMobileTab('ports')" id="tabBtn-ports" class="mobile-tab-btn active" style="flex: 1; padding: 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.2s;">
+    <div class="segmented-tab-control" style="display: flex; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--neo-border); border-radius: 14px; padding: 3px; margin-top: 0.5rem; margin-bottom: 0.75rem;">
+        <button onclick="switchMobileTab('ports')" id="tabBtn-ports" class="mobile-tab-btn active" style="flex: 1; padding: 9px 8px; border-radius: 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);">
             Services (<span id="tabPortCount">0</span>)
         </button>
-        <button onclick="switchMobileTab('intel')" id="tabBtn-intel" class="mobile-tab-btn" style="flex: 1; padding: 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.2s;">
+        <button onclick="switchMobileTab('intel')" id="tabBtn-intel" class="mobile-tab-btn" style="flex: 1; padding: 9px 8px; border-radius: 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);">
             Intelligence
         </button>
-        <button onclick="switchMobileTab('raw')" id="tabBtn-raw" class="mobile-tab-btn" style="flex: 1; padding: 8px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.2s;">
+        <button onclick="switchMobileTab('raw')" id="tabBtn-raw" class="mobile-tab-btn" style="flex: 1; padding: 9px 8px; border-radius: 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);">
             Console
         </button>
     </div>
@@ -1267,4 +1267,32 @@ NetShieldAI - Network Scanner
 
 {% block extra_scripts %}
 <script src="{{ url_for('static', filename='js/mobile_network_scanner.js') }}"></script>
+<script>
+function toggleMobileDropdown(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const menu = el.querySelector('.dropdown-menu');
+    if (!menu) return;
+    const isHidden = menu.classList.contains('hidden') || menu.style.display === 'none' || !menu.classList.contains('show');
+    document.querySelectorAll('.dropdown-menu').forEach(m => {
+        m.classList.remove('show');
+        m.classList.add('hidden');
+        m.style.display = 'none';
+    });
+    if (isHidden) {
+        menu.classList.remove('hidden');
+        menu.classList.add('show');
+        menu.style.display = 'flex';
+    }
+    const closeDropdown = (e) => {
+        if (!el.contains(e.target)) {
+            menu.classList.remove('show');
+            menu.classList.add('hidden');
+            menu.style.display = 'none';
+            document.removeEventListener('click', closeDropdown);
+        }
+    };
+    setTimeout(() => document.addEventListener('click', closeDropdown), 10);
+}
+</script>
 {% endblock %}

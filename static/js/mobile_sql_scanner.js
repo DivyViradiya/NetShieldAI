@@ -59,8 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Tabs
         findingsTabBtn: document.getElementById('findingsTabBtn'),
+        intelTabBtn: document.getElementById('intelTabBtn'),
         rawTabBtn: document.getElementById('rawTabBtn'),
         findingsContent: document.getElementById('findingsContent'),
+        intelContent: document.getElementById('intelContent'),
         rawContent: document.getElementById('rawContent')
     };
 
@@ -77,15 +79,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const menu = el.querySelector('.dropdown-menu');
         if (!menu) return;
         
-        const isShow = menu.classList.contains('show');
+        const isShow = menu.classList.contains('show') && !menu.classList.contains('hidden') && menu.style.display !== 'none';
         
-        // Close others
         document.querySelectorAll('.dropdown-menu').forEach(m => {
             m.classList.remove('show');
+            m.classList.add('hidden');
             m.style.display = 'none';
         });
         
         if (!isShow) {
+            menu.classList.remove('hidden');
             menu.classList.add('show');
             menu.style.display = 'flex';
         }
@@ -93,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeDropdown = (e) => {
             if (!el.contains(e.target)) {
                 menu.classList.remove('show');
+                menu.classList.add('hidden');
                 menu.style.display = 'none';
                 document.removeEventListener('click', closeDropdown);
             }
@@ -123,17 +127,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.switchTab = function(tabName) {
-        if (tabName === 'findings') {
-            elements.findingsTabBtn?.classList.add('active');
-            elements.rawTabBtn?.classList.remove('active');
-            if(elements.findingsContent) elements.findingsContent.style.display = 'flex';
-            if(elements.rawContent) elements.rawContent.style.display = 'none';
-        } else {
-            elements.rawTabBtn?.classList.add('active');
-            elements.findingsTabBtn?.classList.remove('active');
-            if(elements.rawContent) elements.rawContent.style.display = 'flex';
-            if(elements.findingsContent) elements.findingsContent.style.display = 'none';
-        }
+        const tabs = ['findings', 'intel', 'raw'];
+        tabs.forEach(t => {
+            const btn = elements[t + 'TabBtn'] || document.getElementById(t + 'TabBtn');
+            const panel = elements[t + 'Content'] || document.getElementById(t + 'Content');
+            if (btn) btn.classList.toggle('active', t === tabName);
+            if (panel) {
+                if (t === tabName) {
+                    panel.classList.add('active');
+                    panel.style.display = (t === 'findings' || t === 'intel') ? 'flex' : 'block';
+                } else {
+                    panel.classList.remove('active');
+                    panel.style.display = 'none';
+                }
+            }
+        });
     };
 
     // --- UI Control Functions ---

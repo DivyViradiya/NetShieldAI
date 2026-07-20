@@ -24,6 +24,7 @@ class RegistrationForm(FlaskForm):
     ])
     
     phone_number = StringField('Phone Number', validators=[
+        Optional(),
         # Optional field, but if entered, must be valid length
         Length(min=10, max=15, message="Please enter a valid phone number.")
     ])

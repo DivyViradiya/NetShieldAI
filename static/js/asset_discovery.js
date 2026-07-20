@@ -271,21 +271,42 @@ document.addEventListener('DOMContentLoaded', () => {
     // Asset Card Rendering
     // ─────────────────────────────────────────────
 
-    function getCriticalityColor(score) {
-        if (score >= 8) return '#ef4444';
-        if (score >= 6) return '#f97316';
-        if (score >= 4) return '#eab308';
-        return '#3b82f6';
+    function formatTechStack(techObj) {
+        if (!techObj) return 'GENERAL HTTP/S';
+        let techItems = [];
+        if (typeof techObj === 'object') {
+            for (const [key, val] of Object.entries(techObj)) {
+                if (['endpoints', 'forms', 'cloud_assets', 'ssl_detail'].includes(key)) continue;
+                if (typeof val === 'string' && val.trim()) {
+                    techItems.push(val.trim());
+                } else if (Array.isArray(val) && val.length > 0) {
+                    const strVals = val.filter(v => typeof v === 'string' && v.trim());
+                    if (strVals.length > 0) techItems.push(...strVals);
+                } else if (typeof val === 'object' && val !== null) {
+                    const subVals = Object.values(val).filter(v => typeof v === 'string' && v.trim());
+                    if (subVals.length > 0) techItems.push(...subVals);
+                }
+            }
+        } else if (typeof techObj === 'string' && techObj.trim()) {
+            techItems.push(techObj.trim());
+        }
+        return techItems.length > 0 ? techItems.join(', ') : 'GENERAL HTTP/S';
     }
 
-    function renderAssetCard(asset) {
-        const critColor = getCriticalityColor(asset.criticality || 0);
-        const critPct = Math.min(100, ((asset.criticality || 0) / 10) * 100);
-        const typeClass = asset.type === 'domain' ? 'domain' : 'subdomain';
+    function renderAssetCard(asset, index = 0) {
+        const critScore = asset.criticality || 0;
+        const critPct = Math.min(100, (critScore / 10) * 100);
+
+        let riskClass = 'risk-safe';
+        if (critScore >= 8) { riskClass = 'risk-critical'; }
+        else if (critScore >= 6) { riskClass = 'risk-high'; }
+        else if (critScore >= 4) { riskClass = 'risk-medium'; }
+        else if (critScore >= 2) { riskClass = 'risk-low'; }
+
         const d = asset.details || {};
         const ip = d.ip || '—';
-        const tech = d.tech ? Object.values(d.tech).join(', ') : '—';
-        
+        const formattedTech = formatTechStack(d.tech);
+
         // Posture Indicators
         const ssl = d.ssl || {};
         const mail = d.mail_posture || {};
@@ -295,47 +316,62 @@ document.addEventListener('DOMContentLoaded', () => {
         const mailClass = mail.spf && mail.dmarc ? 'active-success' : (mail.spf || mail.dmarc ? 'active-warning' : '');
         const cloudClass = cloud && cloud.length > 0 ? 'active-danger' : '';
 
-        // Intel Count Badges
+        // Badges
         const endpointCount = d.tech?.endpoints?.length || 0;
         const formCount = d.tech?.forms?.length || 0;
         const versionInfo = d.tech?.versions ? Object.entries(d.tech.versions).map(([k,v]) => `${k} v${v}`).join(', ') : '';
 
+        const iconName = asset.type === 'domain' ? 'domain' : 'lan';
+        const typeLabel = asset.type ? asset.type.toUpperCase() : 'ASSET';
+
+        let badgesHtml = '';
+        if (endpointCount > 0) {
+            badgesHtml += `<span class="badge-pill" style="font-size: 0.55rem; padding: 2px 6px;">${endpointCount} ENDPOINTS</span>`;
+        }
+        if (formCount > 0) {
+            badgesHtml += `<span class="badge-pill" style="font-size: 0.55rem; padding: 2px 6px;">${formCount} FORMS</span>`;
+        }
+        if (versionInfo) {
+            badgesHtml += `<span class="badge-pill" style="font-size: 0.55rem; padding: 2px 6px;">${escapeHtml(versionInfo)}</span>`;
+        }
+
         const card = document.createElement('div');
-        card.className = 'asset-item-card';
+        card.className = `discovery-card ${riskClass} animate-card`;
+        card.style.animationDelay = `${index * 0.05}s`;
         card.innerHTML = `
-            <div class="asset-card-header">
-                <div class="asset-value" title="${escapeHtml(asset.value)}">${escapeHtml(asset.value)}</div>
-                <span class="asset-type-badge ${typeClass}">${asset.type || 'sub'}</span>
-            </div>
-            <div class="asset-meta">
-                <div class="asset-meta-row">
-                    <span class="asset-meta-label">IP</span>
-                    <span class="asset-meta-value">${escapeHtml(ip)}</span>
+            <div class="card-header">
+                <div class="asset-badge">
+                    <span class="material-symbols-outlined" style="font-size: 1.3rem; color: var(--card-accent); margin-bottom: 2px;">${iconName}</span>
+                    <span class="protocol-label" style="color: var(--card-accent); opacity: 0.9;">${typeLabel}</span>
                 </div>
-                <div class="asset-meta-row">
-                    <span class="asset-meta-label">Tech</span>
-                    <span class="asset-meta-value" style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(tech + (versionInfo ? ' | ' + versionInfo : ''))}">${escapeHtml(tech.length > 20 ? tech.substring(0, 18) + '…' : tech)}</span>
+                <div class="service-main" style="text-align: right; overflow: hidden; flex: 1; margin-left: 0.75rem;">
+                    <span class="service-title" style="word-break: break-all; line-height: 1.2;" title="${escapeHtml(asset.value)}">${escapeHtml(asset.value)}</span>
+                    <span class="service-ver">IP ${escapeHtml(ip)}</span>
                 </div>
-                <div class="asset-meta-row">
-                    <span class="asset-meta-label">Criticality</span>
-                    <span class="asset-meta-value" style="color: ${critColor}; font-weight: 800;">${(asset.criticality || 0).toFixed(1)}/10</span>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-2 mt-1" style="flex-wrap: wrap;">
-                ${endpointCount > 0 ? `<div class="badge-pill" style="font-size: 0.55rem; border-color: var(--neo-blue); color: var(--neo-blue); padding: 1px 4px;">${endpointCount} ENDPOINTS</div>` : ''}
-                ${formCount > 0 ? `<div class="badge-pill" style="font-size: 0.55rem; border-color: var(--neo-green); color: var(--neo-green); padding: 1px 4px;">${formCount} FORMS</div>` : ''}
-                ${versionInfo ? `<div class="badge-pill" style="font-size: 0.55rem; border-color: var(--neo-amber); color: var(--neo-amber); padding: 1px 4px;">${versionInfo}</div>` : ''}
             </div>
 
-            <div class="asset-card-posture">
-                <span class="material-symbols-outlined posture-mini-icon ${sslClass}" title="SSL Status: ${ssl.status || 'Unknown'}">verified_user</span>
-                <span class="material-symbols-outlined posture-mini-icon ${mailClass}" title="Mail Posture: ${mail.spf ? 'SPF-READY' : 'EXPOSED'}">alternate_email</span>
-                <span class="material-symbols-outlined posture-mini-icon ${cloudClass}" title="Cloud Exposure: ${cloud.length || 0}">cloud_done</span>
+            <div class="risk-section">
+                <div class="risk-header">
+                    <span style="color: var(--neo-text-muted);">CRITICALITY SCORE</span>
+                    <span class="risk-val" style="font-family: var(--font-mono); color: var(--card-accent); font-weight: 800;">${critScore.toFixed(1)} / 10.0</span>
+                </div>
+                <div class="risk-score-bar">
+                    <div class="risk-score-fill" style="width: ${critPct}%;"></div>
+                </div>
             </div>
 
-            <div class="criticality-bar">
-                <div class="criticality-fill" style="width: ${critPct}%; background: linear-gradient(90deg, ${critColor}, transparent);"></div>
+            ${badgesHtml ? `<div style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: -0.25rem;">${badgesHtml}</div>` : ''}
+
+            <div class="analysis-footer">
+                <div style="margin-bottom: 0.35rem;"><span style="color: var(--card-accent); font-weight: 800; font-size: 0.6rem;">[TECH STACK] </span>${escapeHtml(formattedTech)}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.35rem; border-top: 1px dashed var(--neo-border);">
+                    <span style="font-size: 0.6rem; color: var(--neo-text-muted); font-weight: 700;">POSTURE</span>
+                    <div style="display: flex; gap: 8px;">
+                        <span class="material-symbols-outlined posture-mini-icon ${sslClass}" style="font-size: 1rem;" title="SSL: ${ssl.status || 'Unknown'}">verified_user</span>
+                        <span class="material-symbols-outlined posture-mini-icon ${mailClass}" style="font-size: 1rem;" title="Mail: ${mail.spf ? 'SPF-READY' : 'EXPOSED'}">alternate_email</span>
+                        <span class="material-symbols-outlined posture-mini-icon ${cloudClass}" style="font-size: 1rem;" title="Cloud Exposure: ${cloud.length || 0}">cloud</span>
+                    </div>
+                </div>
             </div>
         `;
 
@@ -393,8 +429,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return (b.criticality || 0) - (a.criticality || 0);
         });
 
-        filtered.forEach(asset => {
-            elements.assetCardGrid.appendChild(renderAssetCard(asset));
+        filtered.forEach((asset, index) => {
+            elements.assetCardGrid.appendChild(renderAssetCard(asset, index));
         });
     }
 
@@ -460,7 +496,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    elements.inventoryTabBtn?.addEventListener('click', () => switchTab('all'));
+    function switchTab(category) {
+        if (typeof window.switchMobileTab === 'function') {
+            window.switchMobileTab(category === 'all' ? 'inventory' : category);
+        }
+        if (category === 'json') {
+            loadJsonViewer();
+        }
+    }
+
+    elements.inventoryTabBtn?.addEventListener('click', () => switchTab('inventory'));
     elements.domainsTabBtn?.addEventListener('click', () => switchTab('domains'));
     elements.subdomainsTabBtn?.addEventListener('click', () => switchTab('subdomains'));
     elements.endpointsTabBtn?.addEventListener('click', () => switchTab('endpoints'));

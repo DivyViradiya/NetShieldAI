@@ -63,34 +63,34 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.toggleMobileDropdown = function(id) {
-        var el = document.getElementById(id);
+        const el = document.getElementById(id);
         if (!el) return;
-        var menu = el.querySelector('.dropdown-menu');
+        const menu = el.querySelector('.dropdown-menu');
         if (!menu) return;
         
-        var isShow = menu.classList.contains('show');
+        const isShow = menu.classList.contains('show') && !menu.classList.contains('hidden') && menu.style.display !== 'none';
         
-        document.querySelectorAll('.dropdown-menu').forEach(function(m) {
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
             m.classList.remove('show');
             m.classList.add('hidden');
+            m.style.display = 'none';
         });
-
+        
         if (!isShow) {
-            menu.classList.add('show');
             menu.classList.remove('hidden');
-        } else {
-            menu.classList.remove('show');
-            menu.classList.add('hidden');
+            menu.classList.add('show');
+            menu.style.display = 'flex';
         }
-
-        var closeDropdown = function(e) {
+        
+        const closeDropdown = (e) => {
             if (!el.contains(e.target)) {
                 menu.classList.remove('show');
                 menu.classList.add('hidden');
+                menu.style.display = 'none';
                 document.removeEventListener('click', closeDropdown);
             }
         };
-        setTimeout(function() { document.addEventListener('click', closeDropdown); }, 10);
+        setTimeout(() => document.addEventListener('click', closeDropdown), 10);
     };
 
     window.toggleDashPanel = function(id) {

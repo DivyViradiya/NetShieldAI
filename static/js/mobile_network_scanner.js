@@ -79,26 +79,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const menu = el.querySelector('.dropdown-menu');
         if (!menu) return;
         
-        const isShow = menu.classList.contains('show');
+        const isShow = menu.classList.contains('show') && !menu.classList.contains('hidden') && menu.style.display !== 'none';
         
-        // Close others
         document.querySelectorAll('.dropdown-menu').forEach(m => {
             m.classList.remove('show');
             m.classList.add('hidden');
+            m.style.display = 'none';
         });
         
         if (!isShow) {
-            menu.classList.add('show');
             menu.classList.remove('hidden');
-        } else {
-            menu.classList.remove('show');
-            menu.classList.add('hidden');
+            menu.classList.add('show');
+            menu.style.display = 'flex';
         }
         
         const closeDropdown = (e) => {
             if (!el.contains(e.target)) {
                 menu.classList.remove('show');
                 menu.classList.add('hidden');
+                menu.style.display = 'none';
                 document.removeEventListener('click', closeDropdown);
             }
         };

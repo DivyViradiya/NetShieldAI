@@ -1,0 +1,1289 @@
+{% extends 'base.html' %}
+
+{% block title %}
+NetShieldAI - Asset Discovery
+{% endblock %}
+
+{% block extra_css %}
+<meta name="csrf-token" content="{{ csrf_token() }}" />
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;600;800&display=swap" rel="stylesheet" />
+
+<style>
+    /* --- 1. CRITICAL LAYOUT RESET --- */
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        overflow-y: scroll;
+    }
+
+    /* --- NEO-TECH THEME VARIABLES --- */
+    :root {
+        /* Palette - Stark Minimalist Dark */
+        --neo-bg: #000000;
+        --neo-card: rgba(10, 10, 12, 0.5);
+        --neo-card-hover: rgba(15, 15, 18, 0.6);
+        --neo-input: rgba(15, 15, 18, 0.6);
+        --neo-border: rgba(255, 255, 255, 0.1);
+
+        /* Typography */
+        --neo-text-main: #ffffff;
+        --neo-text-muted: #888888;
+        --font-ui: 'IBM Plex Sans', 'Inter', system-ui, sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+
+        /* Accents */
+        --neo-blue: #3b82f6;
+        --neo-red: #ef4444;
+        --neo-green: #10b981;
+        --neo-amber: #f59e0b;
+        --neo-cyan: #06b6d4;
+
+        /* Risk Mapping */
+        --risk-high: var(--neo-red);
+        --risk-med: var(--neo-amber);
+        --risk-low: #eab308;
+        --risk-info: var(--neo-blue);
+        --status-online: var(--neo-green);
+
+        /* Shadows & Glows */
+        --shadow-blue: 0 0 15px rgba(59, 130, 246, 0.2);
+        --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+        /* Radii */
+        --radius-card: 12px;
+        --radius-sm: 8px;
+    }
+
+    body.light-mode {
+        --neo-bg: #f1f5f9;
+        --neo-card: #ffffff;
+        --neo-card-hover: #f8faff;
+        --neo-input: #ffffff;
+        --neo-border: #cbd5e1;
+        --neo-text-main: #0f172a;
+        --neo-text-muted: #64748b;
+        --neo-blue: #4f46e5;
+        --neo-red: #dc2626;
+        --neo-green: #059669;
+        --neo-amber: #d97706;
+    }
+
+    /* --- GLOBAL BASE --- */
+    body {
+        background-color: var(--neo-bg);
+        color: var(--neo-text-main);
+        margin: 0;
+        line-height: 1.5;
+        padding-bottom: 80px;
+        /* Space for FAB */
+    }
+
+    .mobile-wrapper {
+        width: 100%;
+        margin: 0 auto;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: calc(var(--navbar-height) + 1rem) 1rem 1rem 1rem;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    /* --- COMPONENT: HUD CARDS (Shared Style) --- */
+    .control-card,
+    .metric-card,
+    .dash-panel,
+    .bottom-sheet,
+    .tab-panel {
+        background: var(--neo-card);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--neo-border);
+        border-radius: var(--radius-card);
+        position: relative;
+        box-shadow: var(--shadow-glass);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.light-mode .control-card,
+    body.light-mode .metric-card,
+    body.light-mode .dash-panel,
+    body.light-mode .bottom-sheet,
+    body.light-mode .tab-panel {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 244, 255, 0.7) 100%);
+        border: 1px solid var(--neo-border);
+        box-shadow: none;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+
+    /* Card Hover States */
+    .control-card:hover,
+    .metric-card:hover,
+    .dash-panel:hover {
+        background: linear-gradient(165deg, #050505 0%, #000000 100%);
+        border-color: var(--neo-border) !important;
+        box-shadow: none !important;
+    }
+
+    body.light-mode .control-card:hover,
+    body.light-mode .metric-card:hover,
+    body.light-mode .dash-panel:hover {
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1) !important;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 244, 255, 0.7) 100%) !important;
+    }
+
+    /* --- SCAN SESSION CARD --- */
+    .control-card {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        z-index: 50;
+    }
+
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .input-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--neo-text-muted);
+        font-weight: 700;
+    }
+
+    .search-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--neo-text-muted);
+        font-size: 1.1rem;
+        z-index: 5;
+    }
+
+    .dash-input {
+        width: 100%;
+        background: var(--neo-input);
+        border: 1px solid var(--neo-border);
+        color: var(--neo-text-main);
+        padding: 0 12px 0 40px;
+        border-radius: var(--radius-sm);
+        height: 48px;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        font-family: var(--font-mono);
+    }
+
+    .dash-input:focus {
+        outline: none;
+        border-color: var(--neo-blue);
+        background: rgba(59, 130, 246, 0.05);
+    }
+
+    /* --- MOBILE DROPDOWN --- */
+    .mobile-dropdown {
+        position: relative;
+        width: 100%;
+    }
+
+    .dropdown-trigger {
+        width: 100%;
+        height: 48px;
+        background: var(--neo-input);
+        border: 1px solid var(--neo-border);
+        border-radius: var(--radius-sm);
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .dropdown-trigger:active {
+        border-color: var(--neo-blue);
+        background: rgba(59, 130, 246, 0.05);
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 100%;
+        background: #0a0a0c;
+        border: 1px solid var(--neo-border);
+        border-radius: var(--radius-sm);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        padding: 6px;
+        display: none;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    body.light-mode .dropdown-menu {
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-menu.show {
+        display: flex;
+    }
+
+    .dropdown-item {
+        padding: 12px 1rem;
+        font-size: 0.8rem;
+        font-family: var(--font-mono);
+        color: var(--neo-text-muted);
+        border-radius: 4px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .dropdown-item.active {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--neo-blue);
+    }
+
+    .dropdown-category {
+        padding: 10px 1rem 6px 1rem;
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: var(--neo-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-family: var(--font-mono);
+        opacity: 0.8;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    /* --- BUTTONS --- */
+    .btn-primary {
+        height: 54px;
+        width: 100%;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-weight: 400;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid var(--neo-text-main);
+        color: var(--neo-bg);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: var(--neo-text-main);
+    }
+
+    .btn-dash {
+        height: 48px;
+        padding: 0 1rem;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-ui);
+        font-weight: 600;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--neo-border);
+        color: var(--neo-text-muted);
+        text-decoration: none;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.03);
+        width: 100%;
+    }
+
+    .btn-dash:hover:not(:disabled) {
+        color: var(--neo-text-main);
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    .btn-secondary {
+        background: var(--neo-card);
+        color: var(--neo-text-muted);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-intel-premium {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--neo-border) !important;
+        color: var(--neo-text-muted) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-intel-premium:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.07) !important;
+        border-color: var(--neo-text-main) !important;
+        color: var(--neo-text-main) !important;
+    }
+
+    .status-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--neo-border);
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+    }
+
+    .badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid rgba(16, 185, 129, 0.1);
+        color: var(--neo-green);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* Accordion Styles */
+    .dash-panel {
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+
+    .panel-header {
+        padding: 1rem 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .panel-header:active {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .panel-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+    }
+
+    .dash-panel.open .panel-content {
+        max-height: 1000px;
+        padding: 1.25rem;
+        border-top: 1px solid var(--neo-border);
+        opacity: 1;
+    }
+
+    .expand-icon {
+        transition: transform 0.3s ease;
+        color: var(--neo-text-muted);
+    }
+
+    .dash-panel.open .expand-icon {
+        transform: rotate(180deg);
+        color: var(--neo-blue);
+    }
+
+    /* --- METRICS --- */
+    .metrics-strip {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.4rem;
+    }
+
+    .metric-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0.5rem 0.2rem;
+        min-height: 64px;
+        border-radius: 8px;
+        background: var(--neo-card);
+        border: 1px solid var(--neo-border);
+        text-align: center;
+    }
+
+    .metric-label {
+        font-size: 0.5rem !important;
+        text-transform: uppercase;
+        color: var(--neo-text-muted);
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        margin-bottom: 2px;
+    }
+
+    .metric-value {
+        font-family: var(--font-mono);
+        font-size: 0.85rem !important;
+        font-weight: 800;
+        word-break: break-all;
+    }
+
+    /* --- VIBRANT DISCOVERY GRID --- */
+    .discovery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    /* Risk Level Variants */
+    .risk-critical { --card-accent: var(--neo-red); }
+    .risk-high { --card-accent: #f97316; }
+    .risk-medium { --card-accent: var(--neo-amber); }
+    .risk-low { --card-accent: var(--neo-blue); }
+    .risk-safe { --card-accent: var(--neo-green); }
+
+    .discovery-card,
+    .asset-item-card {
+        background: linear-gradient(165deg, #050505 0%, #000000 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--neo-border);
+        border-radius: var(--radius-card);
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        cursor: pointer;
+    }
+
+    .discovery-card:hover,
+    .asset-item-card:hover {
+        border-color: var(--card-accent, var(--neo-blue)) !important;
+        transform: translateY(-2px);
+    }
+
+    body.light-mode .discovery-card,
+    body.light-mode .asset-item-card {
+        background: var(--surface-primary, #ffffff);
+        border: 1px solid var(--neo-border);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        color: var(--text-primary, #0f172a);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .asset-badge, .port-badge {
+        background: var(--neo-bg);
+        padding: 0.4rem 0.65rem;
+        border-radius: 6px;
+        border: 1px solid var(--neo-border);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 54px;
+    }
+
+    body.light-mode .asset-badge, body.light-mode .port-badge {
+        background: #f4f4f4;
+        border-color: #e0e0e0;
+    }
+
+    .protocol-label {
+        font-size: 0.55rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.7;
+        font-family: var(--font-mono);
+    }
+
+    .service-main {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .service-title {
+        font-size: 1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        color: var(--neo-text-main);
+    }
+
+    .service-ver {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--neo-text-muted);
+        opacity: 0.85;
+    }
+
+    .risk-section {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .risk-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-family: var(--font-mono);
+    }
+
+    .risk-score-bar {
+        height: 3px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    body.light-mode .risk-score-bar {
+        background: #f4f4f4;
+    }
+
+    .risk-score-fill {
+        height: 100%;
+        background: var(--card-accent);
+        transition: width 1s ease-out;
+    }
+
+    .analysis-footer {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        line-height: 1.4;
+        color: var(--neo-text-muted);
+        background: rgba(255, 255, 255, 0.02);
+        padding: 0.65rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid var(--neo-border);
+        text-transform: uppercase;
+    }
+
+    body.light-mode .analysis-footer {
+        background: rgba(0, 0, 0, 0.02);
+        border-color: #e0e0e0;
+    }
+
+    .posture-mini-icon {
+        font-size: 0.95rem !important;
+        opacity: 0.35;
+        transition: all 0.2s ease;
+    }
+    .posture-mini-icon.active-success { color: var(--neo-green); opacity: 1; text-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+    .posture-mini-icon.active-warning { color: var(--neo-amber); opacity: 1; text-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+    .posture-mini-icon.active-danger  { color: var(--neo-red); opacity: 1; text-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+
+    .posture-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 7px;
+        border-radius: 3px;
+        border: 1px solid;
+        font-family: var(--font-mono);
+        font-size: 0.58rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+    .posture-chip.chip-neutral  { border-color: var(--neo-border); color: var(--neo-text-muted); }
+    .posture-chip.chip-success  { border-color: rgba(16,185,129,0.4); color: var(--neo-green); background: rgba(16,185,129,0.06); }
+    .posture-chip.chip-warning  { border-color: rgba(245,158,11,0.4); color: var(--neo-amber); background: rgba(245,158,11,0.06); }
+    .posture-chip.chip-danger   { border-color: rgba(239,68,68,0.4);  color: var(--neo-red);   background: rgba(239,68,68,0.06); }
+
+    /* --- TERMINAL --- */
+    .fab-terminal {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--neo-blue);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.6), 0 0 5px rgba(59, 130, 246, 0.4);
+        z-index: 1000;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .fab-terminal:hover {
+        transform: scale(1.08) translateY(-2px);
+        box-shadow: 0 0 25px var(--neo-blue), 0 0 10px rgba(59, 130, 246, 0.6);
+    }
+
+    .bottom-sheet {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 60vh;
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(100%);
+        border-radius: 20px 20px 0 0;
+        background: #050505 !important;
+    }
+
+    .bottom-sheet.open {
+        transform: translateY(0);
+    }
+
+    .sheet-header {
+        padding: 12px 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--neo-border);
+        background: rgba(255, 255, 255, 0.02);
+        flex-shrink: 0;
+    }
+
+    /* --- LOG LINE FORMATTING --- */
+    .log-line {
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        margin-bottom: 4px;
+    }
+
+    .log-time {
+        color: #444;
+        font-weight: 700;
+    }
+
+    .log-content {
+        color: #999;
+        word-break: break-all;
+    }
+
+    .detail-text-mono {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 0.75rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--neo-border);
+        color: #a1a1aa;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    /* Spinners */
+    .spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .mobile-tab-btn.active {
+        background: var(--neo-blue) !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    }
+
+    /* --- DEEP INTEL SIDE DRAWER --- */
+    .intel-drawer-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 1010;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .intel-drawer-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .intel-drawer {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        max-width: 480px;
+        height: 100vh;
+        background: linear-gradient(165deg, rgba(8, 8, 12, 0.98) 0%, rgba(4, 4, 6, 1) 100%);
+        border-left: 1px solid var(--neo-border);
+        box-shadow: -20px 0 60px rgba(0, 0, 0, 0.8);
+        z-index: 1011;
+        transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .intel-drawer.active {
+        right: 0;
+    }
+
+    .drawer-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--neo-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .drawer-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    footer {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mobile-wrapper">
+    <!-- Sub-header bar -->
+    <div class="sub-header-bar" style="display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 1rem; border-radius: 12px; background: rgba(10,10,12,0.65); border: 1px solid var(--neo-border); margin-bottom: 0.25rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); min-height: 54px; position: relative; z-index: 1050;">
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; color: var(--neo-text-muted); font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+            <span class="material-symbols-outlined" style="font-size: 1.15rem; color: var(--neo-blue);">inventory_2</span>
+            <span class="text-gradient">Asset Discovery</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; margin-left: auto;">
+            <a href="{{ url_for('tools_hub') }}" class="btn-dash" style="background: rgba(255,255,255,0.05); height: 38px; width: 38px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: var(--neo-text-muted); border: 1px solid var(--neo-border);" title="Hub">
+                <span class="material-symbols-outlined" style="font-size: 1.25rem;">home</span>
+            </a>
+            <div class="mobile-dropdown" id="switcherDropdown" style="position: relative; z-index: 1010; width: auto;">
+                <button class="btn-dash" style="background: rgba(255,255,255,0.05); height: 38px; border-radius: 8px; padding: 0 0.75rem; display: flex; align-items: center; justify-content: center; gap: 0.35rem; color: var(--neo-text-muted); font-size: 0.75rem; border: 1px solid var(--neo-border);" onclick="toggleMobileDropdown('switcherDropdown')">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">swap_horiz</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700;">SWITCH</span>
+                </button>
+                <div class="dropdown-menu hidden" style="position: absolute; right: 0; left: auto !important; width: auto !important; min-width: 240px !important; top: calc(100% + 8px); background: #0a0a0c; border: 1px solid var(--neo-border); border-radius: 8px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9); z-index: 2000; padding: 6px; display: none; flex-direction: column; gap: 2px;">
+                    <div class="dropdown-category">Infrastructure & Discovery</div>
+                    <a href="{{ url_for('asset_discovery_bp.dashboard') }}" class="dropdown-item active" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-blue); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase; background: rgba(59, 130, 246, 0.1);">Asset Inventory</a>
+                    <a href="{{ url_for('network_scanner_bp.network_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Service Discovery</a>
+                    <a href="{{ url_for('packet_sniffer_bp.packet_sniffer_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Traffic Sniffer</a>
+
+                    <div class="dropdown-category">Web Applications</div>
+                    <a href="{{ url_for('zap_scanner_bp.zap_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Audit (DAST)</a>
+                    <a href="{{ url_for('api_scanner_bp.api_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">API Security</a>
+                    <a href="{{ url_for('sql_scanner_bp.sql_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">SQL Integrity</a>
+
+                    <div class="dropdown-category">Audit & Verification</div>
+                    <a href="{{ url_for('semgrep_scanner_bp.semgrep_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Source Audit (SAST)</a>
+                    <a href="{{ url_for('ssl_scanner_bp.ssl_scanner_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Encryption Audit</a>
+                    <a href="{{ url_for('killchain_bp.killchain_page') }}" class="dropdown-item" style="padding: 8px 12px; font-size: 0.75rem; color: var(--neo-text-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;">Penetration Simulation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Center Card -->
+    <section class="control-card" id="commandCenterCard" style="padding: 0; overflow: hidden; border-radius: 12px; margin-bottom: 0.5rem;">
+        <div class="panel-header" onclick="toggleCommandCenter()" style="cursor: pointer; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.01); border-bottom: 1px solid var(--neo-border);">
+            <span class="panel-title" style="font-size: 0.75rem; font-weight: 800; font-family: var(--font-mono); color: var(--neo-text-muted);">[1] DISCOVERY CONFIGURATION</span>
+            <span class="material-symbols-outlined" id="commandCenterToggleIcon" style="font-size: 1.1rem; color: var(--neo-text-muted);">expand_less</span>
+        </div>
+
+        <div id="commandCenterContent" style="display: flex; flex-direction: column; gap: 0.85rem; padding: 1rem; transition: max-height 0.3s ease;">
+            <div class="input-group">
+                <label class="input-label">Target Domain</label>
+                <div class="search-container">
+                    <span class="material-symbols-outlined search-icon">lan</span>
+                    <input type="text" id="targetDomain" class="dash-input" placeholder="ENTER ROOT DOMAIN (e.g. example.com)..." />
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem;">
+                <div class="input-group">
+                    <label class="input-label">Scan Profile</label>
+                    <div class="mobile-dropdown" id="modeDropdown">
+                        <div class="dropdown-trigger" onclick="toggleMobileDropdown('modeDropdown')" style="height: 42px;">
+                            <span class="trigger-text" id="modeTriggerText" style="font-size: 0.8rem;">Standard</span>
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">expand_more</span>
+                        </div>
+                        <div class="dropdown-menu hidden" style="z-index: 1020;">
+                            <div class="dropdown-item active" data-value="standard" onclick="selectDropdownItem('modeDropdown', 'standard', 'Standard', 'scanMode')">Standard</div>
+                            <div class="dropdown-item" data-value="deep" onclick="selectDropdownItem('modeDropdown', 'deep', 'Deep Recon', 'scanMode')">Deep Recon</div>
+                            <div class="dropdown-item" data-value="passive" onclick="selectDropdownItem('modeDropdown', 'passive', 'Passive Only', 'scanMode')">Passive Only</div>
+                            <div class="dropdown-item" data-value="aggressive" onclick="selectDropdownItem('modeDropdown', 'aggressive', 'Aggressive', 'scanMode')">Aggressive</div>
+                        </div>
+                    </div>
+                    <select id="scanMode" class="hidden">
+                        <option value="standard" selected>STANDARD</option>
+                        <option value="deep">DEEP RECON</option>
+                        <option value="passive">PASSIVE ONLY</option>
+                        <option value="aggressive">AGGRESSIVE</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Scan Depth</label>
+                    <div class="mobile-dropdown" id="depthDropdown">
+                        <div class="dropdown-trigger" onclick="toggleMobileDropdown('depthDropdown')" style="height: 42px;">
+                            <span class="trigger-text" id="depthTriggerText" style="font-size: 0.8rem;">D2</span>
+                            <span class="material-symbols-outlined" style="font-size: 1.1rem;">expand_more</span>
+                        </div>
+                        <div class="dropdown-menu hidden" style="z-index: 1020;">
+                            <div class="dropdown-item" data-value="1" onclick="selectDropdownItem('depthDropdown', '1', 'D1', 'scanDepth')">D1</div>
+                            <div class="dropdown-item active" data-value="2" onclick="selectDropdownItem('depthDropdown', '2', 'D2', 'scanDepth')">D2</div>
+                            <div class="dropdown-item" data-value="3" onclick="selectDropdownItem('depthDropdown', '3', 'D3', 'scanDepth')">D3</div>
+                            <div class="dropdown-item" data-value="4" onclick="selectDropdownItem('depthDropdown', '4', 'D4', 'scanDepth')">D4</div>
+                            <div class="dropdown-item" data-value="5" onclick="selectDropdownItem('depthDropdown', '5', 'D5', 'scanDepth')">D5</div>
+                        </div>
+                    </div>
+                    <select id="scanDepth" class="hidden">
+                        <option value="1">D1</option>
+                        <option value="2" selected>D2</option>
+                        <option value="3">D3</option>
+                        <option value="4">D4</option>
+                        <option value="5">D5</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem;">
+                <button id="startDiscoveryBtn" class="btn-primary" style="height: 48px; border-radius: 8px; flex: 1;">
+                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">explore</span>
+                    <span class="button-text" style="font-weight: 700;">START DISCOVERY</span>
+                    <span id="btnSpinner" class="spinner hidden" style="margin-left: 0.5rem;"></span>
+                </button>
+                <button id="stopDiscoveryBtn" class="btn-dash hidden" style="height: 48px; border-radius: 8px; width: auto; padding: 0 1rem; color: #ef4444; border-color: rgba(239,68,68,0.4);">
+                    <span class="material-symbols-outlined" style="font-size: 1.25rem;">stop_circle</span>
+                </button>
+            </div>
+
+            <div class="status-line" style="margin-top: 0.25rem; padding-top: 0.5rem; border-top: 1px solid var(--neo-border); display: flex; justify-content: space-between; align-items: center;">
+                <div style="color: var(--neo-text-muted); font-size: 0.65rem; font-family: var(--font-mono);">TARGET: <span id="targetDisplay" style="color: var(--neo-text-main)">---</span></div>
+                <div class="badge-pill" style="padding: 2px 8px; border-radius: 4px; font-size: 0.6rem;"><span id="scanStatus">READY</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metrics Strip -->
+    <section class="metrics-strip">
+        <div class="metric-card">
+            <span class="metric-label">Total Assets</span>
+            <span id="totalAssetsCount" class="metric-value" style="color: var(--neo-text-main)">0</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Subdomains</span>
+            <span id="subdomainCount" class="metric-value" style="color: var(--neo-blue)">0</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Root Domains</span>
+            <span id="rootDomainCount" class="metric-value" style="color: var(--neo-green)">0</span>
+        </div>
+    </section>
+
+    <!-- Segmented Tab Navigation for Mobile UX -->
+    <div class="segmented-tab-control" style="display: flex; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--neo-border); border-radius: 14px; padding: 3px; margin-top: 0.5rem; margin-bottom: 0.75rem;">
+        <button onclick="switchMobileTab('inventory')" id="inventoryTabBtn" class="mobile-tab-btn active" style="flex: 1; padding: 9px 8px; border-radius: 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);">
+            Assets
+        </button>
+        <button onclick="switchMobileTab('intel')" id="tabBtn-intel" class="mobile-tab-btn" style="flex: 1; padding: 9px 8px; border-radius: 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);">
+            Posture
+        </button>
+        <button onclick="switchMobileTab('json')" id="jsonTabBtn" class="mobile-tab-btn" style="flex: 1; padding: 9px 8px; border-radius: 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);">
+            JSON
+        </button>
+        <button onclick="switchMobileTab('raw')" id="tabBtn-raw" class="mobile-tab-btn" style="flex: 1; padding: 9px 8px; border-radius: 10px; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; text-align: center; border: none; background: transparent; color: var(--neo-text-muted); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);">
+            Console
+        </button>
+    </div>
+
+    <!-- Hidden tab elements kept for JS compatibility -->
+    <div id="domainsTabBtn" class="hidden"></div>
+    <div id="subdomainsTabBtn" class="hidden"></div>
+    <div id="endpointsTabBtn" class="hidden"></div>
+    <div id="techStackTabBtn" class="hidden"></div>
+
+    <!-- Tab Panels Container -->
+    <div class="tab-panels-wrapper">
+        <!-- Panel 1: Inventory Card Grid -->
+        <div id="tabPanel-inventory" class="mobile-tab-panel">
+            <div id="inventoryContent" style="width:100%;">
+                <div id="assetCardGrid" class="discovery-grid">
+                    <div style="text-align:center; padding: 3rem 0; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem; width: 100%;">
+                        INITIATE A DISCOVERY SWEEP TO VIEW ASSETS...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 2: Intelligence & Security Posture -->
+        <div id="tabPanel-intel" class="mobile-tab-panel hidden">
+            <div class="control-card" style="background: var(--neo-card); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border-radius: 12px;">
+                <div class="intel-row" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--neo-border);">
+                    <span class="intel-label" style="font-size: 0.75rem; font-weight: 700; color: var(--neo-text-muted);">Scope</span>
+                    <span id="intelTargetDisplay" class="intel-val" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-blue); font-weight: 800;">---</span>
+                </div>
+                <div class="intel-row" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--neo-border);">
+                    <span class="intel-label" style="font-size: 0.75rem; font-weight: 700; color: var(--neo-text-muted);">Status</span>
+                    <span id="intelStatusDisplay" class="intel-val" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-main);">STANDBY</span>
+                </div>
+                <div class="intel-row" style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--neo-border);">
+                    <span class="intel-label" style="font-size: 0.75rem; font-weight: 700; color: var(--neo-text-muted);">Roots / Subs</span>
+                    <span class="intel-val" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-green); font-weight: 800;">
+                        <span id="intelDomainCount">0</span> Roots / <span id="intelSubdomainCount">0</span> Subs
+                    </span>
+                </div>
+
+                <div style="margin: 0.25rem 0;">
+                    <label class="intel-label" style="display: block; margin-bottom: 0.35rem; font-size: 0.65rem; font-weight: 700; color: var(--neo-text-muted); text-transform: uppercase;">Posture Status</label>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <span id="mailPostureBadge" class="posture-chip chip-neutral">
+                            <span class="material-symbols-outlined" style="font-size: 0.8rem;">alternate_email</span>MAIL
+                        </span>
+                        <span id="sslPostureBadge" class="posture-chip chip-neutral">
+                            <span class="material-symbols-outlined" style="font-size: 0.8rem;">verified_user</span>SSL
+                        </span>
+                        <span id="cloudPostureBadge" class="posture-chip chip-neutral">
+                            <span class="material-symbols-outlined" style="font-size: 0.8rem;">cloud</span>CLOUD
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.25rem;">
+                    <div class="mobile-dropdown" id="aiDropdown">
+                        <button id="analyzeReportDropdown" class="btn-dash btn-secondary w-full justify-between" onclick="toggleMobileDropdown('aiDropdown')">
+                            <span class="trigger-text">AI Analysis</span>
+                            <span class="material-symbols-outlined">expand_more</span>
+                        </button>
+                        <div id="llmAnalysisOptions" class="dropdown-menu hidden" style="z-index: 1020;">
+                            <div class="dropdown-item" data-llm-mode="gemini-2.5-flash">Gemini 2.5 Flash (Speed)</div>
+                            <div class="dropdown-item" data-llm-mode="gemini-3-flash-preview">Gemini 3.0 Flash (Preview)</div>
+                            <div class="dropdown-item" data-llm-mode="local">Local LLM (Private)</div>
+                        </div>
+                    </div>
+
+                    <button id="downloadReportBtn" disabled class="btn-dash btn-secondary w-full justify-between">
+                        <span class="trigger-text">Export PDF Report</span>
+                        <span class="material-symbols-outlined">description</span>
+                    </button>
+
+                    <button id="refreshResultsBtn" class="btn-dash btn-secondary w-full justify-between">
+                        <span class="trigger-text">Refresh Inventory</span>
+                        <span class="material-symbols-outlined">refresh</span>
+                    </button>
+
+                    <button id="discoveryHistoryBtn" class="btn-dash btn-secondary w-full justify-between">
+                        <span class="trigger-text">Prior Scans</span>
+                        <span class="material-symbols-outlined">history</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 3: JSON Viewer -->
+        <div id="tabPanel-json" class="mobile-tab-panel hidden">
+            <div id="jsonContent" style="display: flex; flex-direction: column; height: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--neo-blue); font-weight: 800;">RAW_INTELLIGENCE_OUTPUT.JSON</span>
+                    <button id="copyJsonBtn" class="btn-dash btn-secondary" style="height: 28px; padding: 0 8px; font-size: 0.6rem; width: auto;">
+                        <span class="material-symbols-outlined" style="font-size: 0.85rem;">content_copy</span> COPY
+                    </button>
+                </div>
+                <div id="jsonViewer" class="detail-text-mono" style="height: 250px;">// WAITING FOR SCAN DATA...</div>
+            </div>
+        </div>
+
+        <!-- Panel 4: Raw Console Data -->
+        <div id="tabPanel-raw" class="mobile-tab-panel hidden">
+            <div class="dash-panel open" id="acc-raw-panel" style="border-radius: 12px; overflow: hidden;">
+                <div class="panel-header" onclick="toggleDashPanel('acc-raw-panel');" style="padding: 0.85rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--neo-border); background: rgba(255, 255, 255, 0.01);">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--neo-blue);">data_object</span>
+                        <span style="font-size: 0.75rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase; font-family: var(--font-mono);">Engine Buffer</span>
+                    </div>
+                    <button onclick="copyRawLogs(); event.stopPropagation();" id="copyResultsBtn" class="btn-dash btn-secondary" style="height: 32px; width: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 6px;">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">content_copy</span>
+                    </button>
+                </div>
+                <div class="panel-content" style="padding: 0.75rem; border-top: none;">
+                    <div id="rawLogContent" class="detail-text-mono" style="height: 250px;">// Buffer Empty</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Live Activity Stream Sheet -->
+<div id="terminalSheet" class="bottom-sheet">
+    <div class="sheet-header">
+        <div style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 800; color: var(--neo-text-muted); display: flex; align-items: center; gap: 8px;">
+            <div style="width: 6px; height: 6px; background: var(--neo-blue); border-radius: 50%; box-shadow: 0 0 8px var(--neo-blue);"></div>
+            LIVE DISCOVERY STREAM
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <button id="clearLogBtn" style="background:none; border:none; color:var(--neo-text-muted); font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer;">Clear</button>
+            <button onclick="toggleTerminal()" style="background:none; border:none; color:var(--neo-text-main); padding: 4px; cursor: pointer;">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+    </div>
+    <div id="logOutput" style="flex:1; padding: 1rem; overflow-y: auto;"></div>
+</div>
+
+<!-- History Modal -->
+<div id="historyModal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" style="position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);">
+    <div class="dash-panel w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden" style="background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 20px; width: 100%; max-width: 32rem; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="panel-header" style="padding: 1.25rem; border-bottom: 1px solid var(--neo-border); display: flex; justify-content: space-between; align-items: center;">
+            <span class="panel-title" style="font-size: 1rem; font-weight: 800; color: var(--neo-text-main); text-transform: uppercase;">Discovery History</span>
+            <button id="closeHistoryModal" style="background: none; border: none; color: var(--neo-text-muted); padding: 4px; cursor: pointer;">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="panel-content overflow-auto" style="padding:0; max-height: none; flex: 1; overflow: auto;">
+            <table class="dash-table">
+                <thead>
+                    <tr style="background: rgba(255,255,255,0.02);">
+                        <th style="padding: 1rem; font-size: 0.7rem; color: var(--neo-text-muted);">DATE</th>
+                        <th style="padding: 1rem; font-size: 0.7rem; color: var(--neo-text-muted);">TARGET</th>
+                        <th style="padding: 1rem; font-size: 0.7rem; color: var(--neo-text-muted); text-align: right;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 3rem; color: var(--neo-text-muted); font-family: var(--font-mono); font-size: 0.8rem;">LOADING HISTORY...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Auth Modal -->
+<div id="authModal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm" style="position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);">
+    <div class="dash-panel w-full max-w-md flex flex-col overflow-hidden" style="background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 20px; width: 100%; max-width: 28rem; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="panel-header" style="padding: 1.25rem; border-bottom: 1px solid var(--neo-border); display: flex; justify-content: space-between; align-items: center;">
+            <span class="panel-title" style="font-size: 1rem; font-weight: 800; color: var(--neo-amber); text-transform: uppercase;">Authorization Required</span>
+        </div>
+        <div class="panel-content p-6 flex flex-col gap-4" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+            <p id="authModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main); margin: 0;"></p>
+            <p style="font-size: 0.8rem; color: var(--neo-text-muted); margin: 0;"><strong>By confirming, you declare that you hold written authorization to perform discovery on this domain.</strong></p>
+            <div class="flex gap-2 justify-end mt-4" style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                <button id="cancelAuthBtn" class="btn-dash btn-secondary" style="height: 38px; padding: 0 1rem; border-radius: 8px; border: 1px solid var(--neo-border); background: rgba(255,255,255,0.03); color: var(--neo-text-muted); font-size: 0.8rem;">Cancel</button>
+                <button id="confirmAuthBtn" class="btn-dash btn-primary" style="height: 38px; padding: 0 1rem; border-radius: 8px; background: var(--neo-amber); border: 1px solid var(--neo-amber); color: #000; font-size: 0.8rem; font-weight: 700;">Confirm & Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Blocked Modal -->
+<div id="blockedModal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm" style="position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);">
+    <div class="dash-panel w-full max-w-md flex flex-col overflow-hidden" style="background: var(--neo-card); border: 1px solid var(--neo-border); border-radius: 20px; width: 100%; max-width: 28rem; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="panel-header" style="padding: 1.25rem; border-bottom: 1px solid var(--neo-border); display: flex; justify-content: space-between; align-items: center;">
+            <span class="panel-title" style="font-size: 1rem; font-weight: 800; color: var(--neo-red); text-transform: uppercase;">Discovery Blocked</span>
+        </div>
+        <div class="panel-content p-6 flex flex-col gap-4" style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem;">
+            <p id="blockedModalMessage" style="font-size: 0.85rem; color: var(--neo-text-main); margin: 0;"></p>
+            <p style="font-size: 0.8rem; color: var(--neo-text-muted); margin: 0;">If you are an authorized security professional, contact support to enable authorized testing mode for this domain.</p>
+            <div class="flex justify-end mt-4" style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                <button id="closeBlockedModalBtn" class="btn-dash btn-secondary" style="height: 38px; padding: 0 1rem; border-radius: 8px; border: 1px solid var(--neo-border); background: rgba(255,255,255,0.03); color: var(--neo-text-muted); font-size: 0.8rem;">Understood</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Asset Detail Side Drawer -->
+<div id="intelDrawerOverlay" class="intel-drawer-overlay"></div>
+<div id="intelDrawer" class="intel-drawer">
+    <div class="drawer-header">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span id="drawerAssetIcon" class="material-symbols-outlined" style="color: var(--neo-blue); font-size: 1.4rem;">language</span>
+            <div>
+                <h3 id="drawerAssetTitle" style="font-family: var(--font-ui); font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0;">ASSET DETAIL</h3>
+                <div id="drawerAssetType" style="font-family: var(--font-mono); font-size: 0.6rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.1em;">SUBDOMAIN_NODE</div>
+            </div>
+        </div>
+        <button id="closeIntelDrawer" class="btn-dash btn-secondary" style="height: 36px; width: 36px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+
+    <div id="drawerContent" class="drawer-content">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6rem 2rem; gap: 1.5rem; text-align: center;">
+            <span class="material-symbols-outlined" style="font-size: 3rem; color: var(--neo-text-muted); opacity: 0.3;">info</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--neo-text-muted); text-transform: uppercase; letter-spacing: 0.15em;">SELECT AN ASSET TO VIEW INTELLIGENCE</span>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button for Terminal/Live Stream -->
+<button onclick="toggleTerminal()" class="fab-terminal" title="Live Activity Stream">
+    <span class="material-symbols-outlined" style="font-size: 1.5rem;">code_blocks</span>
+</button>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function toggleMobileDropdown(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const menu = el.querySelector('.dropdown-menu');
+        if (!menu) return;
+        const isHidden = menu.classList.contains('hidden') || menu.style.display === 'none' || !menu.classList.contains('show');
+        document.querySelectorAll('.dropdown-menu').forEach(m => {
+            m.classList.remove('show');
+            m.classList.add('hidden');
+            m.style.display = 'none';
+        });
+        if (isHidden) {
+            menu.classList.remove('hidden');
+            menu.classList.add('show');
+            menu.style.display = 'flex';
+        }
+        const closeDropdown = (e) => {
+            if (!el.contains(e.target)) {
+                menu.classList.remove('show');
+                menu.classList.add('hidden');
+                menu.style.display = 'none';
+                document.removeEventListener('click', closeDropdown);
+            }
+        };
+        setTimeout(() => document.addEventListener('click', closeDropdown), 10);
+    }
+
+    function selectDropdownItem(dropdownId, val, labelText, hiddenInputId) {
+        if (hiddenInputId) {
+            const input = document.getElementById(hiddenInputId);
+            if (input) input.value = val;
+        }
+        const triggerText = document.querySelector(`#${dropdownId} .trigger-text`);
+        if (triggerText) triggerText.textContent = labelText;
+
+        const items = document.querySelectorAll(`#${dropdownId} .dropdown-item`);
+        items.forEach(item => item.classList.remove('active'));
+        const activeItem = document.querySelector(`#${dropdownId} .dropdown-item[data-value="${val}"]`);
+        if (activeItem) activeItem.classList.add('active');
+
+        toggleMobileDropdown(dropdownId);
+    }
+
+    window.switchMobileTab = function(tabName) {
+        const tabs = ['inventory', 'intel', 'json', 'raw'];
+        tabs.forEach(t => {
+            const btnId = (t === 'inventory') ? 'inventoryTabBtn' : (t === 'json' ? 'jsonTabBtn' : `tabBtn-${t}`);
+            const btn = document.getElementById(btnId);
+            const panel = document.getElementById(`tabPanel-${t}`);
+            if (btn) {
+                if (t === tabName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            }
+            if (panel) {
+                if (t === tabName) {
+                    panel.classList.remove('hidden');
+                    panel.style.display = 'block';
+                } else {
+                    panel.classList.add('hidden');
+                    panel.style.display = 'none';
+                }
+            }
+        });
+
+        const invContent = document.getElementById('inventoryContent');
+        const jsonContent = document.getElementById('jsonContent');
+        if (invContent) invContent.style.display = 'block';
+        if (jsonContent) jsonContent.style.display = 'flex';
+    };
+
+    function toggleTerminal() {
+        const sheet = document.getElementById('terminalSheet');
+        if (sheet) sheet.classList.toggle('open');
+    }
+
+    function toggleCommandCenter() {
+        const content = document.getElementById('commandCenterContent');
+        const icon = document.getElementById('commandCenterToggleIcon');
+        if (content) {
+            content.classList.toggle('hidden');
+            if (icon) {
+                icon.textContent = content.classList.contains('hidden') ? 'expand_more' : 'expand_less';
+            }
+        }
+    }
+
+    function toggleDashPanel(panelId) {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.classList.toggle('open');
+    }
+
+    function copyRawLogs() {
+        const rawContent = document.getElementById('rawLogContent');
+        if (rawContent && rawContent.textContent) {
+            navigator.clipboard.writeText(rawContent.textContent)
+                .then(() => alert('Logs copied to clipboard.'))
+                .catch(err => console.error('Failed to copy: ', err));
+        }
+    }
+</script>
+<script src="{{ url_for('static', filename='js/asset_discovery.js') }}"></script>
+{% endblock %}

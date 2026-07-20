@@ -66,14 +66,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const menu = el.querySelector('.dropdown-menu');
         if (!menu) return;
         
-        const isShow = menu.classList.contains('show');
+        const isShow = menu.classList.contains('show') && !menu.classList.contains('hidden') && menu.style.display !== 'none';
         
         document.querySelectorAll('.dropdown-menu').forEach(m => {
             m.classList.remove('show');
+            m.classList.add('hidden');
             m.style.display = 'none';
         });
         
         if (!isShow) {
+            menu.classList.remove('hidden');
             menu.classList.add('show');
             menu.style.display = 'flex';
         }
@@ -81,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const closeDropdown = (e) => {
             if (!el.contains(e.target)) {
                 menu.classList.remove('show');
+                menu.classList.add('hidden');
                 menu.style.display = 'none';
                 document.removeEventListener('click', closeDropdown);
             }
@@ -111,12 +114,13 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     window.switchTab = function(tabName) {
-        const tabs = ["vulns", "recon", "network", "tech", "raw"];
+        const tabs = ["vulns", "recon", "network", "tech", "intel", "raw"];
         tabs.forEach((t) => {
             const contentEl = document.getElementById(`content${t.charAt(0).toUpperCase() + t.slice(1)}`);
             if (contentEl) {
                 contentEl.classList.add("hidden");
                 contentEl.classList.remove("active");
+                contentEl.style.display = 'none';
             }
             const pillEl = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
             if (pillEl) pillEl.classList.remove("active");
@@ -126,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (targetContent) {
             targetContent.classList.remove("hidden");
             targetContent.classList.add("active");
+            targetContent.style.display = (tabName === 'vulns' || tabName === 'intel') ? 'flex' : 'block';
         }
         const targetPill = document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
         if (targetPill) targetPill.classList.add("active");
