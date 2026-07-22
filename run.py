@@ -1,5 +1,6 @@
 import sys
 import os
+os.environ.setdefault("DYLD_FALLBACK_LIBRARY_PATH", "/opt/homebrew/lib:/usr/local/lib")
 import time
 import threading
 import traceback
@@ -206,6 +207,35 @@ def log_request_info():
         # Clean log format without colors
         logger.info(f"[>] {request.method} {request.path} from {request.remote_addr}")
 
+@app.after_request
+def apply_security_headers(response):
+    """Applies strict security headers including Content Security Policy (CSP) and Clickjacking defense."""
+    # Content Security Policy (CSP)
+    csp_policy = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+        "font-src 'self' data: https://fonts.gstatic.com https://fonts.googleapis.com; "
+        "img-src 'self' data: blob: https:; "
+        "connect-src 'self' ws: wss: http: https:; "
+        "frame-ancestors 'none'; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self';"
+    )
+    response.headers['Content-Security-Policy'] = csp_policy
+
+    # Clickjacking Defense
+    response.headers['X-Frame-Options'] = 'DENY'
+
+    # Additional Security Headers
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
+
+    return response
+
 @app.route('/')
 def index():
     logger.info("[*] Accessing Home Page")
@@ -228,29 +258,38 @@ if __name__ == '__main__':
             # --- Auto-Start Tor Daemon ---
             if os.getenv("ANONYMITY_MODE", "off").lower() == "tor":
                 import subprocess
+                import shutil
+                import socket
                 try:
                     import psutil
-                    tor_running = any("tor.exe" in p.name().lower() for p in psutil.process_iter(['name']))
-                except ImportError:
-                    output = subprocess.run('tasklist', capture_output=True, text=True).stdout
-                    tor_running = 'tor.exe' in output.lower()
+                    exact_tor_proc = any(p.name().lower() in ("tor", "tor.exe") for p in psutil.process_iter(['name']))
+                except Exception:
+                    exact_tor_proc = False
+
+                try:
+                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as _s:
+                        _s.settimeout(1)
+                        port_open = (_s.connect_ex(('127.0.0.1', 9050)) == 0)
+                except Exception:
+                    port_open = False
+
+                tor_running = exact_tor_proc or port_open
                     
                 if not tor_running:
                     logger.info("[*] Starting local Tor proxy daemon (Background)...")
                     tor_paths = [
+                        shutil.which("tor"),
+                        "/opt/homebrew/bin/tor",
+                        "/usr/local/bin/tor",
                         r"D:\tor\tor.exe",
                         r"D:\Tor\tor.exe",
-                        r"D:\Tor\tor\tor.exe",
-                        r"D:\Tor\Tor\tor.exe",
-                        r"D:\Tor\tor-0.4.9.5\tor.exe",
-                        r"D:\Tor\tor-0.4.9.5\Tor\tor.exe",
                         r"C:\tor\tor.exe",
-                        r"C:\Tor\tor.exe",
-                        r"C:\Tor\tor\tor.exe"
+                        r"C:\Tor\tor.exe"
                     ]
-                    tor_exe = next((p for p in tor_paths if os.path.exists(p)), None)
+                    tor_exe = next((p for p in tor_paths if p and os.path.exists(p)), None)
                     if tor_exe:
-                        subprocess.Popen([tor_exe], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=subprocess.CREATE_NO_WINDOW)
+                        creation_flags = getattr(subprocess, 'CREATE_NO_WINDOW', 0) if os.name == 'nt' else 0
+                        subprocess.Popen([tor_exe], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=creation_flags)
                         logger.info(f"[+] Tor proxy spawned from {tor_exe} on 127.0.0.1:9050.")
                     else:
                         logger.warning("[!] Tor executable not found. Automatic startup skipped.")

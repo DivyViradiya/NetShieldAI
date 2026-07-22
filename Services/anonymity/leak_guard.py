@@ -23,6 +23,16 @@ def disable_ipv6() -> bool:
             return True
         except (subprocess.CalledProcessError, FileNotFoundError):
             return False
+    elif system == "Darwin":
+        try:
+            res = subprocess.run(["networksetup", "-listallnetworkservices"], capture_output=True, text=True)
+            if res.returncode == 0:
+                services = [line.strip() for line in res.stdout.splitlines() if not line.startswith("*") and line.strip()]
+                for srv in services:
+                    subprocess.run(["networksetup", "-setv6off", srv], capture_output=True)
+                return True
+        except Exception:
+            return False
     elif system == "Windows":
         try:
             import winreg
@@ -43,6 +53,15 @@ def restore_ipv6() -> None:
     if system == "Linux":
         subprocess.run(["sysctl", "-w", "net.ipv6.conf.all.disable_ipv6=0"], capture_output=True)
         subprocess.run(["sysctl", "-w", "net.ipv6.conf.default.disable_ipv6=0"], capture_output=True)
+    elif system == "Darwin":
+        try:
+            res = subprocess.run(["networksetup", "-listallnetworkservices"], capture_output=True, text=True)
+            if res.returncode == 0:
+                services = [line.strip() for line in res.stdout.splitlines() if not line.startswith("*") and line.strip()]
+                for srv in services:
+                    subprocess.run(["networksetup", "-setv6automatic", srv], capture_output=True)
+        except Exception:
+            pass
 
 # ── Subprocess env injector ────────────────────────────
 

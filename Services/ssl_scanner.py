@@ -11,6 +11,7 @@ import queue
 import threading
 import json
 import xml.etree.ElementTree as ET
+import shutil
 from pathlib import Path
 from Services import report_manager
 from Services.anonymity.manager import AnonymityManager
@@ -19,9 +20,21 @@ from Services.anonymity.capabilities import SCANNER_CAPABILITIES
 _anon = AnonymityManager()
 from .tctr_engine import tctr_engine
 
-# MODIFIED: Define path to the local sslscan.exe
 BASE_DIR = Path(__file__).parent.parent
-SSLSCAN_EXECUTABLE = Path(r"C:\Program Files\sslscan\sslscan.exe")
+
+def _find_sslscan_executable():
+    env_path = os.environ.get("SSLSCAN_PATH")
+    if env_path and os.path.exists(env_path):
+        return Path(env_path)
+    which_sslscan = shutil.which("sslscan")
+    if which_sslscan:
+        return Path(which_sslscan)
+    win_path = Path(r"C:\Program Files\sslscan\sslscan.exe")
+    if win_path.exists():
+        return win_path
+    return Path("sslscan")
+
+SSLSCAN_EXECUTABLE = _find_sslscan_executable()
 
 # Define default paths for storing results (Fallback)
 DEFAULT_RESULTS_DIR = BASE_DIR / ".results" / "ssl_scanner"

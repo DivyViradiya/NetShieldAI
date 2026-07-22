@@ -2,8 +2,10 @@ import os
 import re
 import glob
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 def process_desktop():
-    scanner_dir = r"d:\NetShield\NetShieldAI\templates\scanners"
+    scanner_dir = os.path.join(PROJECT_ROOT, "templates", "scanners")
     desktop_files = glob.glob(os.path.join(scanner_dir, "*.html"))
     
     for fpath in desktop_files:
@@ -53,7 +55,7 @@ def process_desktop():
                 print(f"Regex failed for Desktop: {os.path.basename(fpath)}")
 
 def process_mobile():
-    mobile_dir = r"d:\NetShield\NetShieldAI\templates\mobile_scanners"
+    mobile_dir = os.path.join(PROJECT_ROOT, "templates", "mobile_scanners")
     mobile_files = glob.glob(os.path.join(mobile_dir, "*.html"))
     for fpath in mobile_files:
         with open(fpath, "r", encoding="utf-8") as f:

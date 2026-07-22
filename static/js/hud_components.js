@@ -1,7 +1,24 @@
 /**
- * NetShieldAI HUD Components JS
- * Centralized logic for custom HUD selects and other interactive elements.
+ * NetShieldAI HUD Components JS & Global Security Utilities
+ * Centralized logic for custom HUD selects, DOMPurify HTML sanitization, and XSS prevention.
  */
+
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function sanitizeHtml(htmlStr) {
+    if (typeof DOMPurify !== 'undefined') {
+        return DOMPurify.sanitize(htmlStr);
+    }
+    return escapeHtml(htmlStr);
+}
 
 function initCustomSelect(select) {
     if (!select || select.dataset.customized) return;

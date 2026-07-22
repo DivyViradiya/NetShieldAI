@@ -16,6 +16,7 @@ from Services.anonymity.manager import AnonymityManager
 from Services.target_validator import validate_target, TargetBlockedError
 from Services.process_manager import process_manager
 from core.logger_setup import logger
+import shutil
 import contextlib
 
 _anon = AnonymityManager()
@@ -23,8 +24,20 @@ _anon = AnonymityManager()
 # --- CONFIGURATION ---
 # BASE_DIR should be at the root of the project (one level up from Services folder)
 BASE_DIR = Path(__file__).parent.parent
-# Path to your SQLMap script
-SQLMAP_PATH = os.environ.get("SQLMAP_PATH", r"D:\SQLmap_setup\sqlmap.py")
+
+def _find_sqlmap_path():
+    env_path = os.environ.get("SQLMAP_PATH")
+    if env_path and os.path.exists(env_path):
+        return env_path
+    which_sqlmap = shutil.which("sqlmap") or shutil.which("sqlmap.py")
+    if which_sqlmap:
+        return which_sqlmap
+    win_path = r"D:\SQLmap_setup\sqlmap.py"
+    if os.path.exists(win_path):
+        return win_path
+    return env_path or "sqlmap"
+
+SQLMAP_PATH = _find_sqlmap_path()
 
 # Default Fallback Directory
 DEFAULT_RESULTS_DIR = BASE_DIR / ".results" / "sql_scanner"

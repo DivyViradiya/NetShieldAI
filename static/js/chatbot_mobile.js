@@ -452,7 +452,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function parseContent(text) {
         if (!text) return "";
         try {
-            let html = marked.parse(text);
+            let rawHtml = marked.parse(text);
+            let html = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target', 'style', 'class'] }) : rawHtml;
             html = highlightThreats(html);
             
             // Add copy buttons to code blocks

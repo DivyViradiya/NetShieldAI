@@ -54,8 +54,11 @@ class AnonymityManager:
         # to compare against the proxied IP.
         if self.verify_first:
             verifier = IdentityVerifier(self.proxy_url, strict=self.strict, is_tor=(self.mode == "tor"))
-            verifier.run_full_check()   # raises AnonymityVerificationError if strict + fail
-            _logger.info("[🛡️] All anonymity checks PASSED. Proceeding with scan.")
+            v_res = verifier.run_full_check()   # raises AnonymityVerificationError if strict + fail
+            if v_res.all_passed:
+                _logger.info("[🛡️] All anonymity checks PASSED. Proceeding with scan.")
+            else:
+                _logger.warning(f"[🛡️] Anonymity check failed/incomplete: {v_res.summary()}")
 
         # ── Step 2: Patch DNS and disable IPv6 ────────────────────────────
         if self.ipv6_disable:

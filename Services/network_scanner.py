@@ -314,7 +314,7 @@ def clear_whitelist(output_dir=None, user_id=None, queue_id=None):
 def _get_subprocess_creation_flags():
     """Returns appropriate creation flags for subprocess based on OS."""
     if platform.system() == "Windows":
-        return subprocess.CREATE_NO_WINDOW
+        return getattr(subprocess, 'CREATE_NO_WINDOW', 0)
     return 0 # Default for Linux/macOS
 
 # Elevation
@@ -533,10 +533,11 @@ def get_process_info_for_port(port_num, protocol="TCP", user_id=None, queue_id=N
                             pass # Stick with the process name from lsof if /proc fails
                         break
     except subprocess.CalledProcessError as e:
-        if "no process found" in e.stderr.lower() or "no such file or directory" in e.stderr.lower():
-            process_name = "No process found"
+        stderr_msg = e.stderr.strip() if e.stderr else ""
+        if not stderr_msg or "no process found" in stderr_msg.lower() or "no such file or directory" in stderr_msg.lower():
+            process_name = "N/A"
         else:
-            log(f"[!] Error getting process info for {protocol} port {port_num}: {e.stderr.strip()}", user_id, queue_id)
+            log(f"[!] Error getting process info for {protocol} port {port_num}: {stderr_msg}", user_id, queue_id)
             process_name = "Error (Cmd Failed)"
     except FileNotFoundError:
         log(f"[!] Command not found for process info ({'netstat/tasklist' if platform.system() == 'Windows' else 'lsof'}). Cannot determine process info.", user_id, queue_id)

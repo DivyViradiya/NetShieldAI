@@ -1,4 +1,6 @@
 import os
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 import json
 import logging
 import threading
@@ -10,6 +12,10 @@ from datetime import datetime
 # Set up logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Suppress noisy HTTP and HuggingFace hub loggers
+for _noisy_logger in ("httpx", "huggingface_hub", "sentence_transformers", "transformers", "urllib3"):
+    logging.getLogger(_noisy_logger).setLevel(logging.WARNING)
 
 BASE_DIR = Path(__file__).resolve().parent
 MODELS_DIR = BASE_DIR.parent / "models" / "TCTR"

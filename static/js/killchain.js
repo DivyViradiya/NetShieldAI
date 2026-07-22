@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="log-time">${timeStr}</div>
         <div class="log-content" ${isProgress ? 'data-is-progress="true"' : ''}>
             ${!isProgress ? `<span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle; margin-right: 8px; ${contentStyle}">${icon}</span>` : ''}
-            <span style="${contentStyle}">${isProgress ? cleanedMessage : cleanedMessage.toUpperCase()}</span>
+            <span style="${contentStyle}">${isProgress ? escapeHtml(cleanedMessage) : escapeHtml(cleanedMessage).toUpperCase()}</span>
         </div>
     `;
     

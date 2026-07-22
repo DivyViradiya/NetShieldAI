@@ -39,7 +39,8 @@ def ensure_admin_privileges():
             print(f"[ERROR] Failed to re-launch with admin rights: {e}")
             return False
     
-    # Simple fallback for non-Windows systems if elevation logic isn't fully implemented
+    # Simple fallback for non-Windows systems (macOS/Linux)
+    print(f"[ERROR] Please re-run this script using 'sudo': sudo {sys.executable} {' '.join(sys.argv)}")
     return False
 
 def run_scapy_test(target_ip):

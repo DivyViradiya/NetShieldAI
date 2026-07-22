@@ -753,7 +753,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            let html = marked.parse(processedText);
+            let rawHtml = marked.parse(processedText);
+            let html = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target', 'style', 'class'] }) : rawHtml;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = html;
 

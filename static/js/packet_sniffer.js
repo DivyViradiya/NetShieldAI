@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="log-time">${timeStr}</div>
             <div class="log-content" style="color: ${activeColor}; display: flex; align-items: center; gap: 8px;">
                 <span class="material-symbols-outlined" style="font-size: 0.9rem; opacity: 0.6;">${activeIcon}</span>
-                <span>${cleanedMessage.toUpperCase()}</span>
+                <span>${escapeHtml(cleanedMessage).toUpperCase()}</span>
             </div>
         `;
         

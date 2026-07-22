@@ -20,8 +20,26 @@ from Services.process_manager import process_manager
 
 _anon = AnonymityManager()
 
-# --- Configuration ---
-ZAP_EXECUTABLE_PATH = os.environ.get("ZAP_PATH", r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat")
+def _find_zap_executable():
+    env_path = os.environ.get("ZAP_PATH")
+    if env_path and os.path.exists(env_path):
+        return env_path
+    which_zap = shutil.which("zap.sh") or shutil.which("zap")
+    if which_zap:
+        return which_zap
+    mac_paths = [
+        "/Applications/OWASP ZAP.app/Contents/Java/zap.sh",
+        "/Applications/ZAP.app/Contents/Java/zap.sh",
+    ]
+    for p in mac_paths:
+        if os.path.exists(p):
+            return p
+    win_path = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
+    if os.path.exists(win_path):
+        return win_path
+    return env_path or "zap.sh"
+
+ZAP_EXECUTABLE_PATH = _find_zap_executable()
 
 # --- Path and Logging Setup ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -232,7 +250,7 @@ def run_zap_scan(target_url, report_path, user_result_dir, scan_mode='default'):
         # 3. Construct Command with Isolation Flags (-port and -dir)
         if scan_mode == 'spider':
             command = [
-                ZAP_EXECUTABLE_PATH, '-cmd',
+                ZAP_EXECUTABLE_PATH, '-cmd', '-daemon', '-silent',
                 '-port', str(assigned_port),
                 '-dir', unique_zap_dir,
                 '-spider', target_url,
@@ -241,7 +259,7 @@ def run_zap_scan(target_url, report_path, user_result_dir, scan_mode='default'):
             ]
         else:
             command = [
-                ZAP_EXECUTABLE_PATH, '-cmd',
+                ZAP_EXECUTABLE_PATH, '-cmd', '-daemon', '-silent',
                 '-port', str(assigned_port),
                 '-dir', unique_zap_dir,
                 '-quickurl', target_url,
@@ -260,6 +278,9 @@ def run_zap_scan(target_url, report_path, user_result_dir, scan_mode='default'):
         else:
             logger.info("[🛡️] Anonymity Mode OFFLINE. ZAP executing from direct connection.")
         
+        zap_env = _anon.get_subprocess_env()
+        zap_env["JAVA_TOOL_OPTIONS"] = (zap_env.get("JAVA_TOOL_OPTIONS", "") + " -Djava.awt.headless=true").strip()
+
         with _anon.apply():
             with scan_lock:
                 process = subprocess.Popen(
@@ -271,7 +292,7 @@ def run_zap_scan(target_url, report_path, user_result_dir, scan_mode='default'):
                     errors='replace', 
                     cwd=zap_directory,
                     bufsize=1,
-                    env=_anon.get_subprocess_env() 
+                    env=zap_env
                 )
                 # Track this user's process globally for cleanup
                 process_manager.register(user_result_dir, "zap", process)

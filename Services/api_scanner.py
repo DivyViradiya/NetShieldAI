@@ -23,8 +23,26 @@ _anon = AnonymityManager()
 from Services import scan_logger
 from core.logger_setup import logger
 
-# --- Configuration ---
-ZAP_EXECUTABLE_PATH = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
+def _find_zap_executable():
+    env_path = os.environ.get("ZAP_PATH")
+    if env_path and os.path.exists(env_path):
+        return env_path
+    which_zap = shutil.which("zap.sh") or shutil.which("zap")
+    if which_zap:
+        return which_zap
+    mac_paths = [
+        "/Applications/OWASP ZAP.app/Contents/Java/zap.sh",
+        "/Applications/ZAP.app/Contents/Java/zap.sh",
+    ]
+    for p in mac_paths:
+        if os.path.exists(p):
+            return p
+    win_path = r"C:\Program Files\ZAP\Zed Attack Proxy\zap.bat"
+    if os.path.exists(win_path):
+        return win_path
+    return env_path or "zap.sh"
+
+ZAP_EXECUTABLE_PATH = _find_zap_executable()
 
 # --- Path and Logging Setup ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

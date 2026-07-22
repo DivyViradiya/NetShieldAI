@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "D:\NetShield\NetShieldAI\run_ngrok.py", line 37, in <module>
-    from logger_setup import logger
-ModuleNotFoundError: No module named 'logger_setup'
-    

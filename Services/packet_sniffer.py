@@ -112,7 +112,7 @@ def clear_log_file(user_id):
 def _get_subprocess_creation_flags():
     """Returns appropriate creation flags for subprocess based on OS."""
     if platform.system() == "Windows":
-        return subprocess.CREATE_NO_WINDOW
+        return getattr(subprocess, 'CREATE_NO_WINDOW', 0)
     return 0
 
 def is_admin():
