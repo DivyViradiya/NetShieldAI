@@ -1,6 +1,7 @@
 import sys
 import os
 os.environ.setdefault("DYLD_FALLBACK_LIBRARY_PATH", "/opt/homebrew/lib:/usr/local/lib")
+os.environ["HF_HUB_VERBOSITY"] = "error"
 import time
 import threading
 import traceback

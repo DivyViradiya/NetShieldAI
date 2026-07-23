@@ -21,7 +21,7 @@ dashboard_bp = Blueprint('dashboard_bp', __name__)
 
 # --- Constants ---
 # [FIX] Load from .env to avoid breakage on port changes
-CHATBOT_API_URL = os.environ.get("CHATBOT_API_URL", "http://127.0.0.1:5000")
+CHATBOT_API_URL = os.environ.get("CHATBOT_API_URL", "http://127.0.0.1:5005")
 
 # --- Helper Functions ---
 
@@ -740,7 +740,7 @@ def get_usage_stats():
     ai_session_count = 0
     try:
         user_identifier = f"{secure_filename(user.username)}_{user.id}"
-        proxy_url = "http://127.0.0.1:5000/get_user_sessions"
+        proxy_url = f"{CHATBOT_API_URL}/get_user_sessions"
         resp = requests.get(proxy_url, params={'user_id': user_identifier}, timeout=2)
         if resp.status_code == 200:
             ai_data = resp.json()

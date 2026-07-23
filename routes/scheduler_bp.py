@@ -881,7 +881,7 @@ def download_executive_summary_report(log_id):
     from werkzeug.utils import secure_filename
 
     # Fix: Hardcode or load locally
-    SERVER_PROXY_URL = "http://127.0.0.1:5000"
+    SERVER_PROXY_URL = os.environ.get("CHATBOT_API_URL", "http://127.0.0.1:5005")
 
     log = db.session.get(ScanLog, log_id)
     if not log or log.user_id != current_user.id:

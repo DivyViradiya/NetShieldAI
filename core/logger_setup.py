@@ -84,6 +84,7 @@ def setup_logger():
         # Suppress overly verbose libraries
         logging.getLogger('werkzeug').setLevel(logging.ERROR)
         logging.getLogger('pyngrok').setLevel(logging.WARNING)
+        logging.getLogger('huggingface_hub').setLevel(logging.ERROR)
         
     return logger
 

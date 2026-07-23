@@ -146,7 +146,7 @@ logger.info("Chatbot Blueprint initialized")
 # Proxy Configuration
 # =======================================================================
 # Use 127.0.0.1 to bypass DNS lookup for "localhost"
-SERVER_PROXY_URL = "http://127.0.0.1:5000"
+SERVER_PROXY_URL = os.environ.get("CHATBOT_API_URL", "http://127.0.0.1:5005")
 
 # Persistent Session for HTTP Keep-Alive
 http_session = requests.Session()
