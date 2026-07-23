@@ -147,15 +147,29 @@ def get_local_ip():
 
 def get_packet_capture_cmd():
     """Checks for the availability of the TShark tool."""
-    candidates = ['tshark', r'C:\Program Files\Wireshark\tshark.exe', r'C:\Program Files (x86)\Wireshark\tshark.exe']
+    import shutil
+    # First check system PATH
+    path = shutil.which("tshark")
+    if path:
+        return path
+
+    candidates = [
+        "/opt/homebrew/bin/tshark",
+        "/usr/local/bin/tshark",
+        "/Applications/Wireshark.app/Contents/MacOS/tshark",
+        r'C:\Program Files\Wireshark\tshark.exe',
+        r'C:\Program Files (x86)\Wireshark\tshark.exe'
+    ]
     for cmd in candidates:
-        try:
-            subprocess.run([cmd, '-h'], capture_output=True, text=True, check=True,
-                           creationflags=_get_subprocess_creation_flags())
-            return cmd
-        except:
-            continue
+        if os.path.exists(cmd):
+            try:
+                subprocess.run([cmd, '-h'], capture_output=True, text=True, check=True,
+                               creationflags=_get_subprocess_creation_flags())
+                return cmd
+            except:
+                continue
     return None
+
 
 def list_available_interfaces(user_id=None):
     tshark_cmd = get_packet_capture_cmd()
