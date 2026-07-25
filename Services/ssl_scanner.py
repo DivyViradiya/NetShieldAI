@@ -29,6 +29,15 @@ def _find_sslscan_executable():
     which_sslscan = shutil.which("sslscan")
     if which_sslscan:
         return Path(which_sslscan)
+    # Check common macOS paths
+    mac_paths = [
+        Path("/opt/homebrew/bin/sslscan"),
+        Path("/usr/local/bin/sslscan"),
+        Path("/usr/bin/sslscan"),
+    ]
+    for p in mac_paths:
+        if p.exists():
+            return p
     win_path = Path(r"C:\Program Files\sslscan\sslscan.exe")
     if win_path.exists():
         return win_path
@@ -95,11 +104,16 @@ def _get_subprocess_creation_flags():
     return 0
 
 def is_sslscan_available(user_id=None):
-    """Checks if the local sslscan.exe is found at the expected path."""
-    if not SSLSCAN_EXECUTABLE.exists():
-        log(f"[!] ERROR: sslscan.exe not found at {SSLSCAN_EXECUTABLE}", user_id)
-        return False
-    return True
+    """Checks if the local sslscan executable is found at the expected path or in system PATH."""
+    if SSLSCAN_EXECUTABLE.is_absolute():
+        if not SSLSCAN_EXECUTABLE.exists():
+            log(f"[!] ERROR: sslscan executable not found at {SSLSCAN_EXECUTABLE}", user_id)
+            return False
+        return True
+    if shutil.which(str(SSLSCAN_EXECUTABLE)):
+        return True
+    log(f"[!] ERROR: sslscan executable not found at {SSLSCAN_EXECUTABLE}", user_id)
+    return False
 
 # --- PATH HELPERS ---
 def get_output_paths(output_dir=None, user_id=None, target=None, timestamp=None):
@@ -158,7 +172,7 @@ def save_ssl_json(data, output_dir=None, user_id=None, target=None, timestamp=No
         return None
 
 def run_ssl_scan(target_host, output_dir=None, user_id=None, timestamp=None):
-    """Runs an SSL/TLS scan using the local sslscan.exe."""
+    """Runs an SSL/TLS scan using the local sslscan executable."""
     if output_dir and isinstance(output_dir, str):
         output_dir = Path(output_dir)
         
@@ -201,7 +215,7 @@ def run_ssl_scan(target_host, output_dir=None, user_id=None, timestamp=None):
             cap = SCANNER_CAPABILITIES["sslscan"]
             ssl_strict = os.getenv("STRICT_MODE", "true").lower() == "true"
             if ssl_strict:
-                log("[!] ERROR: Strict anonymity mode active, but sslscan.exe does not support SOCKS natively. Scan aborted to prevent IP leak.", user_id)
+                log("[!] ERROR: Strict anonymity mode active, but sslscan does not support SOCKS natively. Scan aborted to prevent IP leak.", user_id)
                 send_sse_event("scan_failed", {"message": "SSLScan aborted via Strict Mode Anonymity constraint."}, user_id=user_id)
                 return None
             else:

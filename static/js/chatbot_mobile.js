@@ -449,35 +449,524 @@ document.addEventListener('DOMContentLoaded', () => {
         return highlighted;
     }
 
+    // Custom Markdown parsing with threat highlighting and report sectioning
     function parseContent(text) {
         if (!text) return "";
         try {
-            let rawHtml = marked.parse(text);
-            let html = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target', 'style', 'class'] }) : rawHtml;
-            html = highlightThreats(html);
+            // COLLECTION: Extract follow-up suggestions and actions before markdown parsing
+            const suggestions = [];
+            const actions = [];
             
-            // Add copy buttons to code blocks
-            const temp = document.createElement('div');
-            temp.innerHTML = html;
-            temp.querySelectorAll('pre').forEach(pre => {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'code-wrapper';
-                pre.parentNode.insertBefore(wrapper, pre);
-                wrapper.appendChild(pre);
-                
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'code-copy-btn';
-                copyBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">content_copy</span>';
-                copyBtn.onclick = () => {
-                    navigator.clipboard.writeText(pre.textContent);
-                    copyBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">check</span>';
-                    setTimeout(() => copyBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px">content_copy</span>', 2000);
-                };
-                wrapper.appendChild(copyBtn);
+            let processedText = text.replace(/(?:__|\*\*)*SUGGESTION(?:__|\*\*)*:\s*(.*?)(?=\n|$)/gi, (match, sText) => {
+                const cleanStr = sText.replace(/<\/?[^>]+(>|$)/g, "").trim();
+                if (cleanStr) suggestions.push(cleanStr);
+                return '';
             });
-            
-            return temp.innerHTML;
-        } catch (e) { return text; }
+
+            processedText = processedText.replace(/(?:__|\*\*)*ACTION(?:__|\*\*)*:\s*(.*?)\s*\|\s*(.*?)(?=\n|$)/gi, (match, label, prompt) => {
+                const cleanLabel = label.replace(/<\/?[^>]+(>|$)/g, "").trim();
+                const cleanPrompt = prompt.replace(/<\/?[^>]+(>|$)/g, "").trim();
+                if (cleanLabel && cleanPrompt) actions.push({ label: cleanLabel, prompt: cleanPrompt });
+                return '';
+            });
+
+            // ================================================================
+            // PRE-PROCESSOR: Decision Guide (PATH N — STATUS [...] blocks)
+            // ================================================================
+            if (/PATH\s*\d+\s*[—–\-]/m.test(processedText)) {
+                const _pathSevClass = (s) => {
+                    const l = (s || '').toLowerCase();
+                    if (l.includes('critical'))                  return 'path-critical';
+                    if (l.includes('at risk') || l.includes('risk')) return 'path-risk';
+                    if (l.includes('moderate'))                  return 'path-moderate';
+                    if (l.includes('secure') || l.includes('safe')) return 'path-secure';
+                    return '';
+                };
+
+                const firstIdx = processedText.search(/PATH\s*\d+\s*[—–\-]/m);
+                if (firstIdx !== -1) {
+                    const before = processedText.substring(0, firstIdx).replace(/[━─]+[\s\n]*$/, '').trimEnd();
+                    const pathsBlock = processedText.substring(firstIdx);
+
+                    const sections = pathsBlock.split(/(?=\bPATH\s*\d+\s*[—–\-])/m).filter(s => s.trim());
+                    let hubHtml = '<div class="decision-grid">';
+
+                    sections.forEach(section => {
+                        const nlIdx = section.indexOf('\n');
+                        if (nlIdx === -1) return;
+                        const headerLine = section.substring(0, nlIdx).replace(/[━─]/g, '').trim();
+                        const bodyText   = section.substring(nlIdx + 1);
+
+                        const hm = headerLine.match(/PATH\s*(\d+)\s*[—–\-]\s*(.+?)(?:\s*\[([^\]]*)\])?\s*$/i);
+                        if (!hm) return;
+
+                        const [, num, rawStatus, metadata] = hm;
+                        const cleanStatus = rawStatus.trim();
+                        const isActive    = (metadata || '').toUpperCase().includes('YOU ARE HERE');
+                        const sevClass    = _pathSevClass(cleanStatus);
+
+                        const descParts = [], steps = [];
+                        let timeline = '';
+
+                        bodyText.split('\n').forEach(line => {
+                            const l = line.trim();
+                            if (!l || /^[━─]+/.test(l)) return;
+                            if (/^Recommended Timeline/i.test(l)) {
+                                timeline = l.replace(/^Recommended Timeline\s*:\s*/i, '').trim();
+                            } else if (l.includes('→') || l.includes('\u2192')) {
+                                l.split(/→|\u2192/).forEach(p => { const t = p.trim(); if (t) steps.push(t); });
+                            } else {
+                                descParts.push(l);
+                            }
+                        });
+
+                        const stepsHtml = steps.map((s, i) =>
+                            `<div class="path-step"><span class="path-step-num">${i + 1}</span><span class="path-step-text">${s}</span></div>`
+                        ).join('');
+
+                        const footerHtml = timeline
+                            ? `<div class="path-card-footer"><div class="path-timeline"><span class="material-symbols-outlined path-timeline-icon">schedule</span>${timeline}</div></div>`
+                            : '';
+
+                        const rightBadges = isActive
+                            ? `<span class="path-status-badge">${cleanStatus}</span><span class="path-here-badge">YOU ARE HERE</span>`
+                            : `<span class="path-status-badge">${cleanStatus}</span>`;
+
+                        hubHtml +=
+                            `<div class="path-card ${sevClass}${isActive ? ' active' : ''}">` +
+                                `<div class="path-card-header">` +
+                                    `<span class="path-num-pill">PATH ${num}</span>` +
+                                    `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">${rightBadges}</div>` +
+                                `</div>` +
+                                `<div class="path-card-body">` +
+                                    (descParts.length ? `<div class="path-description">${descParts.join(' ')}</div>` : '') +
+                                    `<div class="path-steps">${stepsHtml}</div>` +
+                                `</div>` +
+                                footerHtml +
+                            `</div>`;
+                    });
+
+                    hubHtml += '</div>';
+                    processedText = before + '\n\n' + hubHtml + '\n\n';
+                }
+            }
+
+            let rawHtml = marked.parse(processedText);
+            let html = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target', 'style', 'class'] }) : rawHtml;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            // ===================================================================
+            // IMMERSIVE REPORT RENDERER Enrichment Passes
+            // ===================================================================
+
+            // --- PASS 1: Section Dividers (numbered H2 headers) ---
+            tempDiv.querySelectorAll('h2').forEach(h2 => {
+                const text = h2.innerText.trim();
+                const match = text.match(/^(\d+)\.\s+(.+)$/);
+                if (!match) return;
+                const div = document.createElement('div');
+                div.className = 'llm-section-divider';
+                div.innerHTML = `
+                    <div class="llm-divider-line"></div>
+                    <span class="llm-section-pill">§${match[1]}</span>
+                    <span class="llm-section-title">${match[2]}</span>
+                    <div class="llm-divider-line llm-divider-line-rev"></div>
+                `;
+                h2.replaceWith(div);
+            });
+
+            // --- PASS 2: Finding Cards (H3/H4 or bold-para matching Finding pattern) ---
+            const _buildFindingCard = (num, name, sev, siblings) => {
+                const sevLower = sev.toLowerCase();
+                const card = document.createElement('div');
+                card.className = `llm-finding-card sev-${sevLower}`;
+                card.innerHTML = `
+                    <div class="llm-finding-header">
+                        <div class="llm-finding-meta">
+                            <span class="llm-finding-number">FINDING #${num}</span>
+                            <span class="llm-finding-name">${name.trim()}</span>
+                        </div>
+                        <span class="llm-severity-badge">${sev}</span>
+                    </div>
+                    <div class="llm-finding-body"></div>
+                `;
+                const body = card.querySelector('.llm-finding-body');
+                siblings.forEach(s => body.appendChild(s));
+                return card;
+            };
+
+            const _collectSiblings = (startEl) => {
+                const siblings = [];
+                let next = startEl.nextElementSibling;
+                while (next &&
+                    !['H2','H3','H4'].includes(next.tagName) &&
+                    !next.classList.contains('llm-section-divider') &&
+                    !next.classList.contains('llm-finding-card')) {
+                    const toAdd = next;
+                    next = next.nextElementSibling;
+                    siblings.push(toAdd);
+                }
+                return siblings;
+            };
+
+            tempDiv.querySelectorAll('h3, h4').forEach(hx => {
+                const rawText = hx.innerText.trim();
+                const m = rawText.match(/Finding\s+#?(\d+)\s*[\u2014\u2013-]\s*(.+?)\s*\|\s*(CRITICAL|HIGH|MEDIUM|LOW|INFO)/i);
+                if (!m) return;
+                const card = _buildFindingCard(m[1], m[2], m[3], _collectSiblings(hx));
+                hx.replaceWith(card);
+            });
+
+            tempDiv.querySelectorAll('p').forEach(p => {
+                const strong = p.querySelector('strong');
+                if (!strong) return;
+                const rawText = strong.innerText.trim();
+                const m = rawText.match(/Finding\s+#?(\d+)\s*[\u2014\u2013-]\s*(.+?)\s*\|\s*(CRITICAL|HIGH|MEDIUM|LOW|INFO)/i);
+                if (!m) return;
+                const card = _buildFindingCard(m[1], m[2], m[3], _collectSiblings(p));
+                p.replaceWith(card);
+            });
+
+            // --- PASS 2.5: Lettered Context Items (a., b., c.) ---
+            tempDiv.querySelectorAll('p').forEach(p => {
+                const text = p.innerText.trim();
+                if (/^[a-z][\.\)]\s+/i.test(text) || /^<strong>[a-z][\.\)]\s*<\/strong>/i.test(p.innerHTML)) {
+                    p.classList.add('llm-context-item');
+                }
+            });
+
+            // --- PASS 2.6: Remediation Action Cards (Issue, Action, Benefit, Owner) ---
+            tempDiv.querySelectorAll('p').forEach(p => {
+                const text = p.innerText.trim();
+                if (text.startsWith('Issue:')) {
+                    const card = document.createElement('div');
+                    card.className = 'llm-remediation-card';
+                    
+                    const siblings = [p];
+                    let next = p.nextElementSibling;
+                    const stopKeywords = ['Issue:', 'Finding #', '1. ', '2. '];
+                    const fields = ['Action:', 'Benefit:', 'Owner:'];
+                    
+                    while (next && next.tagName === 'P') {
+                        const nextText = next.innerText.trim();
+                        if (fields.some(f => nextText.startsWith(f))) {
+                            siblings.push(next);
+                            next = next.nextElementSibling;
+                        } else if (stopKeywords.some(k => nextText.startsWith(k))) {
+                            break; 
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    if (siblings.length > 1) {
+                        p.parentNode.insertBefore(card, p);
+                        siblings.forEach(s => {
+                            s.innerHTML = s.innerHTML.replace(/^(Issue|Action|Benefit|Owner):/i, '<span class="remediation-label">$1:</span>');
+                            card.appendChild(s);
+                        });
+                    }
+                }
+            });
+
+            // --- PASS 3: Table Panel Wrapping ---
+            const _panelVariants = ['variant-meta', 'variant-stat', 'variant-compare', 'variant-action'];
+            let _tableIdx = 0;
+            tempDiv.querySelectorAll('table').forEach(table => {
+                if (table.closest('.llm-table-panel')) return;
+                const variant = _panelVariants[_tableIdx % _panelVariants.length];
+                _tableIdx++;
+
+                let prev = table.previousElementSibling;
+                let label = 'REPORT DATA';
+                while (prev) {
+                    const txt = (prev.innerText || prev.textContent || '').trim();
+                    if (txt && txt.length > 0 && txt.length < 120) {
+                        label = txt.replace(/^[#§\s]+/, '').replace(/^\d+\.\s*/, '')
+                                   .toUpperCase().substring(0, 55);
+                        break;
+                    }
+                    prev = prev.previousElementSibling;
+                }
+
+                const wrapper = document.createElement('div');
+                wrapper.className = `llm-table-panel ${variant}`;
+                wrapper.innerHTML = `<div class="llm-table-panel-header">${label}</div>`;
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
+            });
+
+            // --- PASS 4: Risk Label Badges (whole-cell keyword match only) ---
+            const _riskClassMap = {
+                'critical': 'critical', 'high': 'high', 'at risk': 'high',
+                'moderate': 'moderate', 'medium': 'moderate',
+                'low': 'low', 'safe': 'safe', 'info': 'safe'
+            };
+            tempDiv.querySelectorAll('td').forEach(td => {
+                if (td.querySelector('.llm-risk-label')) return;
+                const txt = td.innerText.trim().toLowerCase();
+                for (const [key, cls] of Object.entries(_riskClassMap)) {
+                    if (txt === key) {
+                        const badge = document.createElement('span');
+                        badge.className = `llm-risk-label ${cls}`;
+                        badge.textContent = td.innerText.trim().toUpperCase();
+                        td.innerHTML = '';
+                        td.appendChild(badge);
+                        break;
+                    }
+                }
+            });
+
+            // --- PASS 5: Remediation Priority Row Accents ---
+            tempDiv.querySelectorAll('tr').forEach(tr => {
+                const firstTd = tr.querySelector('td:first-child');
+                if (!firstTd || firstTd.querySelector('.llm-priority-badge')) return;
+                const txt = firstTd.innerText.trim();
+                if (['1','2','3'].includes(txt)) {
+                    tr.classList.add(`llm-priority-${txt}`);
+                    firstTd.innerHTML = `<span class="llm-priority-badge p${txt}">${txt}</span>`;
+                }
+            });
+
+            // --- PASS 6: Risk Score Animated Fill Bars ---
+            tempDiv.querySelectorAll('td').forEach(td => {
+                if (td.querySelector('.llm-risk-label,.llm-score-bar')) return;
+                const txt = td.innerText.trim();
+                const score = parseFloat(txt);
+                if (isNaN(score) || score < 0 || score > 10) return;
+                if (txt !== String(score) && txt !== score.toFixed(1)) return;
+
+                td.classList.add('llm-score-cell');
+                const barColor = score >= 7.5 ? 'rgba(251,113,133,0.18)' :
+                                  score >= 4.5 ? 'rgba(251,191,36,0.14)' :
+                                                 'rgba(96,165,250,0.14)';
+                const bar = document.createElement('div');
+                bar.className = 'llm-score-bar';
+                bar.style.cssText = `--bar-color: ${barColor}; width: 0%;`;
+                td.prepend(bar);
+                requestAnimationFrame(() => {
+                    setTimeout(() => { bar.style.width = (score * 10) + '%'; }, 80);
+                });
+            });
+
+            // --- PASS 7: Code Container Standardization ---
+            tempDiv.querySelectorAll('pre').forEach(pre => {
+                if (pre.closest('.code-container')) return;
+                const container = document.createElement('div');
+                container.className = 'code-container';
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-code-btn';
+                copyBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">content_copy</span> Copy';
+                pre.parentNode.insertBefore(container, pre);
+                container.appendChild(pre);
+                container.appendChild(copyBtn);
+            });
+
+            // --- PASS 8: Scheduling Options Grid ---
+            tempDiv.querySelectorAll('p, div, h4').forEach(el => {
+              const text = el.innerText.trim();
+              if (text.includes('[MISSION_PRESETS]')) {
+                let ul = el.nextElementSibling;
+                while (ul && ul.tagName !== 'UL' && ul.tagName !== 'OL') {
+                    if (['H2', 'H3', 'DIV'].includes(ul.tagName) && ul.className.includes('divider')) break;
+                    ul = ul.nextElementSibling;
+                }
+
+                if (ul && (ul.tagName === 'UL' || ul.tagName === 'OL')) {
+                  const grid = document.createElement('div');
+                  grid.className = 'scheduling-grid';
+                  
+                  ul.querySelectorAll('li').forEach(li => {
+                    const liText = li.innerText.trim();
+                    const [label, ...descParts] = liText.split(':');
+                    const desc = descParts.join(':').trim();
+                    
+                    const tile = document.createElement('div');
+                    tile.className = 'freq-option';
+                    
+                    let icon = 'schedule';
+                    const l = label.toLowerCase();
+                    if (l.includes('daily')) icon = 'event_repeat';
+                    if (l.includes('weekly')) icon = 'calendar_view_week';
+                    if (l.includes('monthly')) icon = 'calendar_month';
+                    if (l.includes('once') || l.includes('shot')) icon = 'timer_10_alt_1';
+                    if (l.includes('periodic')) icon = 'update';
+
+                    tile.innerHTML = `
+                      <span class="material-symbols-outlined">${icon}</span>
+                      <span class="freq-label">${label.trim()}</span>
+                      <span class="freq-desc">${desc}</span>
+                    `;
+                    grid.appendChild(tile);
+                  });
+                  
+                  el.style.display = 'none';
+                  ul.replaceWith(grid);
+                }
+              }
+            });
+
+            // --- PASS 8.5: Security Tools Grid (Multi-Category) ---
+            tempDiv.querySelectorAll('p, div, h4').forEach(el => {
+              const text = el.innerText.trim();
+              if (text.includes('[SCAN_PRESETS]')) {
+                let next = el.nextElementSibling;
+                const groups = [];
+                let currentCategory = null;
+
+                while (next) {
+                    if (['H2', 'DIV'].includes(next.tagName) && (next.className.includes('divider') || next.className.includes('msg-actions'))) break;
+                    
+                    const inner = next.innerText.trim();
+                    if (!inner) {
+                        next = next.nextElementSibling;
+                        continue;
+                    }
+
+                    if ((next.tagName === 'P' && next.querySelector('strong') && inner.length < 60) || (next.tagName === 'H4' || next.tagName === 'H5')) {
+                        currentCategory = inner.replace(/^\*+|\*+$/g, '');
+                        next.style.display = 'none';
+                    } else if (next.tagName === 'UL' || next.tagName === 'OL') {
+                        groups.push({ category: currentCategory, ul: next });
+                        currentCategory = null; 
+                        next.style.display = 'none';
+                    } else if (inner.includes('[SCAN_PRESETS]')) {
+                        next.style.display = 'none';
+                    } else if (next.tagName === 'P' && inner.length < 50 && !inner.includes(':')) {
+                        currentCategory = inner;
+                        next.style.display = 'none';
+                    } else {
+                        break; 
+                    }
+                    
+                    next = next.nextElementSibling;
+                }
+
+                if (groups.length > 0) {
+                    const container = document.createElement('div');
+                    container.className = 'security-tools-container';
+                    container.style.marginBottom = '1.25rem';
+                    
+                    groups.forEach(group => {
+                        const grid = document.createElement('div');
+                        grid.className = 'scheduling-grid security-tools-grid';
+                        
+                        group.ul.querySelectorAll('li').forEach(li => {
+                            const liText = li.innerText.trim();
+                            const [label, ...descParts] = liText.split(':');
+                            const desc = descParts.join(':').trim();
+                            
+                            const tile = document.createElement('div');
+                            tile.className = 'freq-option'; 
+                            
+                            let icon = 'security';
+                            const l = label.toLowerCase();
+                            if (l.includes('nmap')) icon = 'radar';
+                            if (l.includes('zap')) icon = 'bug_report';
+                            if (l.includes('ssl') || l.includes('tls')) icon = 'lock_reset';
+                            if (l.includes('sql')) icon = 'database';
+                            if (l.includes('sniffer') || l.includes('packet')) icon = 'settings_input_antenna';
+                            if (l.includes('api')) icon = 'api';
+                            if (l.includes('killchain') || l.includes('kill chain')) icon = 'account_tree';
+                            if (l.includes('semgrep') || l.includes('sast')) icon = 'terminal';
+
+                            tile.innerHTML = `
+                              <span class="material-symbols-outlined">${icon}</span>
+                              <span class="freq-label">${label.trim()}</span>
+                              <span class="freq-desc">${desc}</span>
+                            `;
+                            grid.appendChild(tile);
+                        });
+                        
+                        container.appendChild(grid);
+                    });
+                    
+                    el.style.display = 'none';
+                    el.after(container);
+                }
+              }
+            });
+
+            // --- PASS 10: Special System Markers ---
+            tempDiv.innerHTML = tempDiv.innerHTML
+                .replace(/<p>\s*\[GRID_INTRO\]\s*<\/p>|\[GRID_INTRO\]/g, 
+                    `<div class="grid-intro-banner">
+                        <span class="material-symbols-outlined grid-icon">hub</span>
+                        <div class="grid-text">
+                            <div class="grid-title">Security Grid Orchestration</div>
+                            <div class="grid-sub">Select a module below to initiate a strategic security assessment.</div>
+                        </div>
+                    </div>`)
+                .replace(/<p>\s*\[MEMORY_UPDATED\]\s*<\/p>|\[MEMORY_UPDATED\]/g,
+                    `<div class="memory-updated-chip" title="A persistent fact or rule has been saved to your personal context.">
+                        <span class="material-symbols-outlined">memory</span>
+                        <span>Memory Banks Updated</span>
+                    </div>`)
+                .replace(/\[SCAN_PRESETS\]/g, '');
+
+            // --- Cleanup: Remove empty paragraphs ---
+            tempDiv.querySelectorAll('p').forEach(p => {
+                if (!p.innerText.trim() && !p.querySelector('img, video, iframe, .ai-suggestion-chip, .memory-updated-chip')) {
+                    p.remove();
+                }
+            });
+
+            // --- Font Sanitization ---
+            const FONT_UI   = "var(--font-primary)";
+            const FONT_MONO = "var(--font-code)";
+            const _uiEls = 'p, li, td, th, blockquote, strong, em, a, .llm-context-item, .llm-finding-body';
+            tempDiv.querySelectorAll(_uiEls).forEach(el => {
+                el.style.setProperty('font-family', FONT_UI, 'important');
+            });
+            tempDiv.querySelectorAll('h1, h2, h3, h4, h5, h6, code, pre, pre *, .remediation-label, .llm-finding-number, .llm-finding-name, .llm-table-panel-header').forEach(el => {
+                el.style.setProperty('font-family', FONT_MONO, 'important');
+            });
+
+            // --- PASS 11: Render Follow-up Tray (Suggestions & Actions) ---
+            if (suggestions.length > 0 || actions.length > 0) {
+                let trayHtml = '<div class="ai-followup-tray" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">';
+
+                if (suggestions.length > 0) {
+                    trayHtml += `
+                        <div class="ai-followup-suggestion" style="display: flex; gap: 12px; padding: 16px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; margin-bottom: 0.5rem; color: #f8fafc; font-size: 0.85rem; line-height: 1.6;">
+                            <span class="material-symbols-outlined" style="color: rgba(255, 255, 255, 0.6); font-size: 1.2rem; flex-shrink: 0; margin-top: 2px;">lightbulb</span>
+                            <div style="flex: 1;">
+                                <div style="font-family: var(--font-code); font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5; margin-bottom: 8px;">Recommendations</div>
+                                <ul style="margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 6px;">`;
+                    suggestions.forEach(s => {
+                        trayHtml += `<li style="opacity: 0.9;">${s}</li>`;
+                    });
+                    trayHtml += `
+                                </ul>
+                            </div>
+                        </div>`;
+                }
+
+                if (actions.length > 0) {
+                    trayHtml += '<div class="ai-actions-group" style="display: flex; flex-wrap: wrap; gap: 12px;">';
+                    actions.forEach(a => {
+                        trayHtml += `
+                            <div class="ai-followup-card action" style="flex: 1 1 calc(50% - 12px); min-width: 280px; margin: 0;" data-prompt="${encodeURIComponent(a.prompt)}">
+                                <span class="material-symbols-outlined card-icon">bolt</span>
+                                <div class="card-content">
+                                    <span class="card-label">${a.label}</span>
+                                    <span class="card-text">${a.prompt}</span>
+                                </div>
+                            </div>`;
+                    });
+                    trayHtml += '</div>';
+                }
+
+                trayHtml += '</div>';
+                tempDiv.innerHTML += trayHtml;
+            }
+
+            return highlightThreats(tempDiv.innerHTML);
+        } catch (e) {
+            console.error("Markdown parsing error:", e);
+            return text;
+        }
     }
 
     function addMessage(role, text, animate = true, attachments = []) {
@@ -571,72 +1060,124 @@ document.addEventListener('DOMContentLoaded', () => {
         if (animate) scrollToBottom();
     }
 
+    // Tool icon map for the action card header
+    const _toolIconMap = {
+        'nmap_scan': 'radar', 'zap_scan': 'bolt', 'ssl_scan': 'lock',
+        'sql_injection_scan': 'database', 'packet_sniffer': 'wifi_tethering',
+        'api_security_scan': 'api', 'killchain_audit': 'account_tree',
+        'semgrep_sast_scan': 'code', 'schedule_scan': 'calendar_month'
+    };
+
     async function handleAction(action, isRestore = false, reattachStreamUrl = null, isCompleted = false) {
         if (!action || !action.tool) return;
-
-        const displayTool = action.tool.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         
-        let statusMsg = "";
-        if (isCompleted) {
-             statusMsg = `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.`;
-        } else if (isRestore) {
-             statusMsg = `[HISTORY]: ${displayTool} Module was deployed.`;
-        } else if (reattachStreamUrl) {
-             statusMsg = `[ACTIVE]: Synchronizing ${displayTool} Telemetry...`;
-        } else {
-             statusMsg = `[ANALYSIS]: Deploying ${displayTool} Module...`;
+        // Resolve actual status via DB if restoring
+        if (isRestore && action.action_id) {
+            try {
+                const statusRes = await fetchWithAuth(`/chatbot/get_action_status?action_id=${action.action_id}`);
+                const statusData = await statusRes.json();
+                if (statusData.status === 'success') {
+                    if (statusData.scan_status === 'Running') {
+                        isRestore = false; // Act as if we just triggered it
+                        reattachStreamUrl = statusData.stream_url;
+                    } else if (statusData.scan_status === 'Completed') {
+                        isRestore = true;
+                        isCompleted = true;
+                    } else {
+                        isRestore = false; // Render deployable state
+                    }
+                }
+            } catch (e) { console.error("Status fetch failed", e); }
         }
-        
-        // Format Parameters nicely
-        let paramsHtml = '<div style="display: grid; grid-template-columns: auto 1fr; gap: 4px 8px; margin-top: 8px;">';
+
+        const displayTool = action.tool.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        const toolIcon    = _toolIconMap[action.tool] || 'security';
+
+        let stateClass, stateLabel, stateIcon, stateIconSpin;
+        if (action.tool === 'schedule_scan') {
+            stateClass = 'state-scheduled'; stateLabel = 'MISSION SCHEDULED'; stateIcon = 'event_available'; stateIconSpin = false;
+        } else if (isCompleted || (isRestore && !reattachStreamUrl)) {
+            stateClass = 'state-complete'; stateLabel = 'DATA ACQUIRED'; stateIcon = 'check_circle'; stateIconSpin = false;
+        } else if (reattachStreamUrl) {
+            stateClass = 'state-active';   stateLabel = 'SYNCHRONIZING'; stateIcon = 'sync';          stateIconSpin = true;
+        } else {
+            stateClass = 'state-deploy';   stateLabel = 'DEPLOYING';     stateIcon = 'sync';          stateIconSpin = true;
+        }
+
+        // Build parameter rows
+        let paramRowsHtml = '';
         if (action.parameters) {
             for (const [key, value] of Object.entries(action.parameters)) {
-                paramsHtml += `
-                    <span style="color:var(--neo-blue); font-weight:700; text-transform:uppercase; font-size:0.55rem; letter-spacing:0.02em; align-self: center;">${key.replace(/_/g, ' ')}:</span>
-                    <span style="color:#adbac7; word-break:break-all; font-family:var(--font-code); font-size:0.7rem; background: rgba(255,255,255,0.03); padding: 2px 4px; border-radius: 4px;">${value}</span>
-                `;
+                paramRowsHtml += `
+                    <div class="ac-param-row">
+                        <span class="ac-param-key">${key.replace(/_/g, ' ')}</span>
+                        <span class="ac-param-val">${value}</span>
+                    </div>`;
             }
         }
-        paramsHtml += '</div>';
+
+        const terminalHidden = (isCompleted || (isRestore && !reattachStreamUrl)) ? 'display:none' : (reattachStreamUrl ? '' : 'display:none');
+        const footerHidden   = (isCompleted || (isRestore && !reattachStreamUrl)) ? '' : 'display:none';
+        const dlHidden       = (isCompleted || (isRestore && !reattachStreamUrl)) ? '' : 'display:none';
+        const footerLabel    = (isCompleted || (isRestore && !reattachStreamUrl)) ? 'DATASET LOADED FROM CACHE.' : 'SYNCHRONIZING ANALYTICS...';
 
         const row = document.createElement('div');
         row.className = 'msg-row system-action';
-        row.setAttribute('data-tool', action.tool); // Track the tool for async updates
+        row.setAttribute('data-tool', action.tool);
         row.innerHTML = `
-            <div class="msg-bubble action-bubble ${isRestore || isCompleted ? 'success' : ''}" style="border-radius: 12px; border-color: rgba(59, 130, 246, 0.5) !important;">
-                <div class="action-header" style="display: flex; align-items: center; gap: 10px; color: var(--neo-blue); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em;">
-                    <span class="material-symbols-outlined ${isRestore || isCompleted ? '' : 'spin'}" style="font-size: 1.2rem;">${isRestore || isCompleted ? 'check_circle' : 'sync'}</span>
-                    <span class="header-text">${statusMsg}</span>
-                </div>
-                <div class="action-details">
-                    ${paramsHtml}
-                    <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;">
-                        <button class="action-btn btn-redirect" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px;">VIEW MODULE PAGE</button>
-                        <button class="action-btn btn-download" style="flex:1; border-radius: 6px; font-size: 0.65rem; height: 32px; ${isRestore || isCompleted ? 'display: block;' : 'display: none;'}">DOWNLOAD PDF</button>
-                    </div>
-                    <div class="terminal-container" style="${isRestore || isCompleted ? 'display:none;' : (reattachStreamUrl ? 'display:flex;' : 'display:none;')} margin-top: 15px;">
-                        <div class="terminal-header">
-                            <div style="display:flex; align-items:center; gap:5px;"><span class="material-symbols-outlined" style="font-size:10px">terminal</span> TELEMETRY</div>
-                            <div class="progress-container" style="display:none; flex: 1; align-items: center; gap: 8px; justify-content: flex-end;">
-                                <div style="width: 40px; height: 3px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
-                                    <div class="progress-fill" style="width: 0%; height: 100%; background: var(--neo-blue);"></div>
-                                </div>
-                                <span class="progress-percent" style="font-size: 0.6rem; color: var(--neo-blue); font-weight: 700;">0%</span>
-                            </div>
+            <div class="action-card ${stateClass}">
+                <div class="ac-header">
+                    <div class="ac-title-group">
+                        <div class="ac-tool-info">
+                            <span class="ac-tool-name">${displayTool}</span>
+                            <span class="ac-tool-sub">Security Module</span>
                         </div>
-                        <div class="terminal-body"></div>
+                    </div>
+                    <div class="ac-state-badge">
+                        <span class="material-symbols-outlined ac-state-icon${stateIconSpin ? ' spin' : ''}">${stateIcon}</span>
+                        <span>${stateLabel}</span>
                     </div>
                 </div>
-                <div class="action-footer" style="${isRestore || isCompleted ? 'display:flex;' : 'display:none;'} margin-top:10px; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px; justify-content:space-between; align-items:center;">
-                    <span style="font-size:0.65rem; color:#10b981; display:flex; align-items:center; gap:5px;">
-                        <span class="material-symbols-outlined" style="font-size:1rem;">analytics</span> DATASET READY.
-                    </span>
+
+                ${paramRowsHtml ? `<div class="ac-params">${paramRowsHtml}</div>` : ''}
+
+                <div class="ac-actions">
+                    <button class="ac-btn btn-redirect">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">open_in_new</span>
+                        VIEW MODULE
+                    </button>
+                    <button class="ac-btn btn-download" style="${dlHidden}">
+                        <span class="material-symbols-outlined" style="font-size:0.9rem">download</span>
+                        PDF REPORT
+                    </button>
+                </div>
+
+                <div class="ac-terminal" style="${terminalHidden}">
+                    <div class="ac-terminal-header">
+                        <div class="ac-terminal-title">
+                            <span class="material-symbols-outlined" style="font-size:0.85rem">terminal</span>
+                            LIVE TELEMETRY
+                        </div>
+                        <div class="progress-container" style="display:none; flex:1; align-items:center; gap:0.75rem; max-width:240px;">
+                            <div class="ac-progress-track">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <span class="progress-percent">0%</span>
+                        </div>
+                    </div>
+                    <div class="terminal-body"></div>
+                </div>
+
+                <div class="ac-footer" style="${footerHidden}">
+                    <span class="material-symbols-outlined" style="font-size:0.9rem">insights</span>
+                    <span class="status-badge">${footerLabel}</span>
                 </div>
             </div>
         `;
         ui.chatHistory.appendChild(row);
         if (!isRestore) scrollToBottom();
 
+        // Common Tool URL Maps
         const toolUrlMap = {
             'nmap_scan': '/network_scanner/',
             'zap_scan': '/zap_scanner/',
@@ -663,24 +1204,60 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnRedirect = row.querySelector('.btn-redirect');
         const btnDownload = row.querySelector('.btn-download');
 
-        if (btnRedirect) {
+        const setupButtons = () => {
             btnRedirect.onclick = (e) => {
                 const url = toolUrlMap[action.tool];
                 if (url) window.location.href = url;
             };
-        }
-
-        if (btnDownload) {
             btnDownload.onclick = () => {
                 const url = toolDownloadMap[action.tool];
                 if (url) window.open(url, '_blank');
             };
-        }
+        };
 
-        if (isRestore || isCompleted) return;
+        setupButtons();
+
+        if (isRestore && !isCompleted) return;
+
+        if (isCompleted) {
+            promptForAnalysis(action.tool);
+            return;
+        }
 
         if (reattachStreamUrl) {
             setupStreaming(reattachStreamUrl, row, displayTool, action.tool);
+            return;
+        }
+
+        // Special handling for Scheduling
+        if (action.tool === 'schedule_scan') {
+            try {
+                const response = await fetchWithAuth('/chatbot/execute_schedule', {
+                    method: 'POST',
+                    body: JSON.stringify(action.parameters)
+                });
+                if (!response.ok) throw new Error("Scheduling request failed");
+                const result = await response.json();
+                
+                const card = row.querySelector('.action-card');
+                const stateBadge = row.querySelector('.ac-state-badge span:last-child');
+                const stateIconEl = row.querySelector('.ac-state-icon');
+                
+                if (card) { card.classList.remove('state-deploy'); card.classList.add('state-scheduled'); }
+                if (stateBadge) stateBadge.textContent = 'PERSISTED';
+                if (stateIconEl) stateIconEl.textContent = 'event_available';
+                
+                const successMsg = document.createElement('p');
+                successMsg.className = 'ac-prompt-text';
+                successMsg.style.cssText = 'color: #818cf8; margin-top: 10px; font-weight: 500; font-family: var(--font-code); font-size: 0.75rem;';
+                successMsg.textContent = `SUCCESS: Mission orchestrated for ${result.next_run || 'future'}.`;
+                row.querySelector('.ac-params')?.appendChild(successMsg) || row.querySelector('.action-card')?.appendChild(successMsg);
+                
+            } catch (e) {
+                console.error("Scheduling failed:", e);
+                const card = row.querySelector('.action-card');
+                if (card) { card.classList.remove('state-deploy'); card.classList.add('state-error'); }
+            }
             return;
         }
 
@@ -694,40 +1271,47 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.status === 'success') {
                 setupStreaming(result.stream_url, row, displayTool, action.tool);
             } else {
-                row.querySelector('.header-text').textContent = `[FAILED]: ${displayTool} Execution Error`;
-                const icon = row.querySelector('.action-header .material-symbols-outlined');
-                icon.textContent = 'error';
-                icon.classList.remove('spin');
+                const card = row.querySelector('.action-card');
+                const stateIcon = row.querySelector('.ac-state-icon');
+                const stateBadge = row.querySelector('.ac-state-badge');
+                if (card) { card.classList.remove('state-deploy'); card.classList.add('state-error'); }
+                if (stateIcon) { stateIcon.textContent = 'error'; stateIcon.classList.remove('spin'); }
+                if (stateBadge) stateBadge.querySelector('span:last-child').textContent = 'OFFLINE';
             }
         } catch (e) { 
             console.error("Action execution failed:", e);
-            row.querySelector('.header-text').textContent = `[FAILED]: ${displayTool} Connection Error`;
-            const icon = row.querySelector('.action-header .material-symbols-outlined');
-            if (icon) {
-                icon.textContent = 'error';
-                icon.classList.remove('spin');
-            }
+            const card = row.querySelector('.action-card');
+            const stateIcon = row.querySelector('.ac-state-icon');
+            const stateBadge = row.querySelector('.ac-state-badge');
+            if (card) { card.classList.remove('state-deploy'); card.classList.add('state-error'); }
+            if (stateIcon) { stateIcon.textContent = 'error'; stateIcon.classList.remove('spin'); }
+            if (stateBadge) stateBadge.querySelector('span:last-child').textContent = 'OFFLINE';
         }
     }
 
-    function setupStreaming(streamUrl, row, displayTool, toolName) {
-        const headerText = row.querySelector('.header-text');
-        const icon = row.querySelector('.material-symbols-outlined');
-        const terminalContainer = row.querySelector('.terminal-container');
+    function setupStreaming(streamUrl, row, displayTool, toolName, btnDownloadParam = null) {
+        const card        = row.querySelector('.action-card');
+        const stateIcon   = row.querySelector('.ac-state-icon');
+        const stateBadge  = row.querySelector('.ac-state-badge span:last-child');
+        const terminalEl  = row.querySelector('.ac-terminal');
         const terminalBody = row.querySelector('.terminal-body');
-        const actionFooter = row.querySelector('.action-footer');
         const progressContainer = row.querySelector('.progress-container');
         const progressFill = row.querySelector('.progress-fill');
         const progressText = row.querySelector('.progress-percent');
+        const btnDownload = btnDownloadParam || row.querySelector('.btn-download');
 
-        terminalContainer.style.display = 'flex';
+        if (card)      { card.classList.remove('state-deploy'); card.classList.add('state-active'); }
+        if (stateIcon) { stateIcon.textContent = 'check_circle'; stateIcon.classList.remove('spin'); }
+        if (stateBadge) stateBadge.textContent = 'CORE ACTIVE';
+
+        if (terminalEl) terminalEl.style.display = '';
         const eventSource = new EventSource(streamUrl);
         
         eventSource.onmessage = (e) => {
             if (e.data === ': keep-alive') return;
 
             let isProgress = false;
-            // [NEW] Handle Progress Updates (Matches Desktop)
+            // Handle Progress Updates
             if (e.data.includes('[PROGRESS]')) {
                 const match = e.data.match(/(\d+)%/);
                 if (match) {
@@ -741,7 +1325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // [NEW] Check for text-based progress bars
+            // Check for text-based progress bars
             const cleanedMessage = e.data.replace(/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\]\s*/g, "").trim();
             const isTextProgressBar = cleanedMessage.startsWith('[') && cleanedMessage.includes('%');
 
@@ -784,13 +1368,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (e.data.includes('SYSTEM_EVENT: READY_FOR_ANALYSIS')) {
                 eventSource.close();
-                if (icon) {
-                    icon.textContent = 'check_circle';
-                    icon.classList.remove('spin');
+                
+                const titleNode = row.querySelector('.ac-tool-name');
+                if (titleNode) titleNode.textContent = `[COMPLETE]: ${displayTool.toUpperCase()}`;
+                
+                const footerBadge = row.querySelector('.status-badge');
+                if (footerBadge) {
+                    footerBadge.innerHTML = `
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">analytics</span>
+                        DATASET READY.
+                    `;
                 }
-                headerText.textContent = `[COMPLETE]: ${displayTool.toUpperCase()} DATA ACQUIRED.`;
-                actionFooter.style.display = 'flex';
-                triggerAutoAnalysis(toolName);
+                
+                const footer = row.querySelector('.ac-footer');
+                if (footer) footer.style.display = 'flex';
+                
+                if (btnDownload) btnDownload.style.display = 'block';
+                promptForAnalysis(toolName);
             }
         };
 
@@ -1206,9 +1800,92 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Hide menus on outside click
-    document.addEventListener('click', () => {
+    // [NEW] Global listener for Interactive Security Grid Cards and Suggestions
+    document.addEventListener('click', (e) => {
+        // Hide menus on outside click
         document.querySelectorAll('.context-menu').forEach(m => m.classList.remove('show'));
+
+        // [PHASE 5: Enhanced Follow-up Cards]
+        const followupCard = e.target.closest('.ai-followup-card');
+        if (followupCard && ui.userInput) {
+            const isAction = followupCard.classList.contains('action');
+            const dataAttr = isAction ? 'data-prompt' : 'data-suggestion';
+            const messageText = decodeURIComponent(followupCard.getAttribute(dataAttr));
+            
+            ui.userInput.value = messageText;
+            ui.userInput.focus();
+            ui.userInput.style.height = 'auto';
+            ui.userInput.style.height = (ui.userInput.scrollHeight) + 'px';
+            
+            // Visual feedback
+            followupCard.style.transform = 'scale(0.98) translateX(2px)';
+            followupCard.style.borderColor = isAction ? 'var(--neo-blue)' : '#10b981';
+            
+            setTimeout(() => {
+                if (ui.sendBtn && !ui.sendBtn.disabled) {
+                    ui.sendBtn.click();
+                } else {
+                    sendMessage();
+                }
+            }, 100);
+            return;
+        }
+
+        const tile = e.target.closest('.freq-option');
+        if (!tile || !ui.userInput) return;
+
+        const labelEl = tile.querySelector('.freq-label');
+        if (!labelEl) return;
+
+        const label = labelEl.innerText.trim();
+        const l = label.toLowerCase();
+        let template = "";
+
+        // --- SCANNER TEMPLATES (Structured) ---
+        if (l.includes('nmap')) {
+            template = "Initiate Nmap Security Scan:\n- Target IP: [IP_OR_HOST]\n- Protocol: [TCP/UDP]\n- Scan Type: [default/os/aggressive/vuln/etc]\n- Timing: [4]";
+        } else if (l.includes('zap')) {
+            template = "Perform ZAP Application Audit:\n- Target URL: [URL_HERE]\n- Scan Mode: [Quick Scan/Full Scan/Deep Scan]\n- AJAX Spider: [false]";
+        } else if (l.includes('ssl') || l.includes('tls')) {
+            template = "Execute SSL/TLS Protocol Check:\n- Target Host: [DOMAIN_HERE]";
+        } else if (l.includes('sql')) {
+            template = "Launch SQL Injection Audit:\n- Target URL: [VULN_ENDPOINT]\n- Scan Mode: [quick/full/deep]\n- Risk Level: [3]\n- Scan Level: [3]\n- Check WAF: [true]";
+        } else if (l.includes('sniffer') || l.includes('packet')) {
+            template = "Deploy Packet Sniffer Module:\n- Target IP: [IP_HERE]\n- Duration: [60 seconds]\n- Max Packets: [1000]";
+        } else if (l.includes('api')) {
+            template = "Initiate API Security Audit:\n- Target URL: [BASE_URL]\n- Definition URL: [SWAGGER_JSON_URL]\n- Auth Token: [OPTIONAL_TOKEN]";
+        } else if (l.includes('killchain') || l.includes('kill chain')) {
+            template = "Launch Full Kill Chain Audit:\n- Target: [TARGET_IDENTIFIER]\n- Profile: [Recon Only/Network Audit/Web Audit/Full Scan]\n- Aggression: [Normal/Stealth/Attack]";
+        } else if (l.includes('semgrep') || l.includes('sast')) {
+            template = "Execute Semgrep SAST Scan:\n- Repository URL: [GIT_URL]";
+        }
+
+        if (template) {
+            ui.userInput.value = template;
+            ui.userInput.focus();
+            ui.userInput.style.height = 'auto';
+            ui.userInput.style.height = (ui.userInput.scrollHeight) + 'px';
+        }
+    });
+
+    // [NEW] Global listener for copy code buttons
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.copy-code-btn');
+        if (btn) {
+            const pre = btn.parentElement.querySelector('pre');
+            if (pre) {
+                const code = pre.innerText;
+                navigator.clipboard.writeText(code).then(() => {
+                    const originalHTML = btn.innerHTML;
+                    btn.classList.add('copied');
+                    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">check</span> Copied!';
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.innerHTML = originalHTML;
+                    }, 2000);
+                });
+            }
+        }
     });
 
     // (loadSessionList defined above with PRELOADED_SESSIONS fast-path)
@@ -1296,17 +1973,36 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSuggestions() {
         const grid = document.getElementById('suggestion-grid');
         if (!grid) return;
+        grid.innerHTML = '';
         
-        // Pick 4 random suggestions (matching desktop count)
+        // Match icon names
+        const iconMap = {
+            'Nmap': 'radar', 'ZAP': 'bolt', 'SSL': 'lock', 'SQL': 'database',
+            'Capture': 'wifi_tethering', 'API': 'api', 'Kill': 'account_tree', 'Semgrep': 'code'
+        };
+
         const shuffled = [...suggestionPool].sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 4);
-        
-        grid.innerHTML = selected.map(s => `
-            <div class="suggestion-card" onclick="setInput('${s.desc.replace(/'/g, "\\'")}')">
-                <h5>${s.title}</h5>
+        shuffled.slice(0, 4).forEach(s => {
+            const card = document.createElement('div');
+            card.className = 'suggestion-card';
+            
+            let iconName = 'security';
+            for (const [key, icon] of Object.entries(iconMap)) {
+                if (s.title.includes(key)) { iconName = icon; break; }
+            }
+            
+            card.innerHTML = `
+                <div class="suggestion-header-row">
+                    <span class="material-symbols-outlined suggestion-icon">${iconName}</span>
+                    <h5>${s.title}</h5>
+                </div>
                 <p>${s.desc}</p>
-            </div>
-        `).join('');
+            `;
+            card.onclick = () => {
+                setInput(s.desc);
+            };
+            grid.appendChild(card);
+        });
     }
 
     window.setInput = (text) => {

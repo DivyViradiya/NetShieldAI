@@ -160,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         typingIndicator: document.getElementById('typing-indicator'),
         userInput: document.getElementById('user-input'),
         sendBtn: document.getElementById('send-btn'),
+        inputWrapper: document.querySelector('.input-wrapper'),
         suggestionGrid: document.getElementById('suggestion-grid'),
         sessionList: document.getElementById('session-list'),
         sessionSearch: document.getElementById('session-search'),
@@ -613,6 +614,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showTypingIndicator() {
         ui.typingIndicator.style.display = 'block';
+        if (ui.inputWrapper) {
+            ui.inputWrapper.classList.add('thinking');
+        }
         const statusTextEl = ui.typingIndicator.querySelector('.typing-status-text');
         if (statusTextEl) {
             let idx = 0;
@@ -628,6 +632,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function hideTypingIndicator() {
         ui.typingIndicator.style.display = 'none';
+        if (ui.inputWrapper) {
+            ui.inputWrapper.classList.remove('thinking');
+        }
         if (typingIndicatorInterval) {
             clearInterval(typingIndicatorInterval);
             typingIndicatorInterval = null;
@@ -2933,7 +2940,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ui.welcomeState.style.display = 'none';
         ui.chatHistory.innerHTML = `
             <div id="summary-loading-row" class="msg-row ai" style="justify-content:center; padding:2rem;">
-                <div class="msg-bubble" style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:1rem 1.5rem; border-radius:12px;">
+                <div class="msg-bubble" style="display:flex; align-items:center; gap:12px; background:rgba(59,130,246,0.05); border:1px solid var(--neo-blue); box-shadow:0 0 18px rgba(59,130,246,0.15); padding:1rem 1.5rem; border-radius:12px;">
                     <span class="material-symbols-outlined spin" style="font-size:1.3rem; color:var(--neo-blue);">autorenew</span>
                     <span style="font-size:0.8rem; color:var(--neo-text-muted); font-weight:600; letter-spacing:0.05em;">GENERATING AI SECURITY SUMMARY…</span>
                 </div>

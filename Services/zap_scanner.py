@@ -250,7 +250,7 @@ def run_zap_scan(target_url, report_path, user_result_dir, scan_mode='default'):
         # 3. Construct Command with Isolation Flags (-port and -dir)
         if scan_mode == 'spider':
             command = [
-                ZAP_EXECUTABLE_PATH, '-cmd', '-daemon', '-silent',
+                ZAP_EXECUTABLE_PATH, '-cmd', '-silent',
                 '-port', str(assigned_port),
                 '-dir', unique_zap_dir,
                 '-spider', target_url,
@@ -259,7 +259,7 @@ def run_zap_scan(target_url, report_path, user_result_dir, scan_mode='default'):
             ]
         else:
             command = [
-                ZAP_EXECUTABLE_PATH, '-cmd', '-daemon', '-silent',
+                ZAP_EXECUTABLE_PATH, '-cmd', '-silent',
                 '-port', str(assigned_port),
                 '-dir', unique_zap_dir,
                 '-quickurl', target_url,
@@ -267,7 +267,7 @@ def run_zap_scan(target_url, report_path, user_result_dir, scan_mode='default'):
                 '-quickprogress'
             ]
 
-        log(f"[STAGE] Launching ZAP daemon...", user_result_dir, level='STAGE')
+        log(f"[STAGE] Launching ZAP command line...", user_result_dir, level='STAGE')
         log(f"Executing command: {' '.join(command)}", user_result_dir, level='DEBUG', to_console=True)
         zap_directory = os.path.dirname(ZAP_EXECUTABLE_PATH)
         

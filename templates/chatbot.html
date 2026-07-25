@@ -67,6 +67,7 @@
     body.light-mode .brand-title {
       background: linear-gradient(90deg, var(--text-primary), var(--text-muted));
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -393,12 +394,14 @@
       font-family: var(--font-mono, 'JetBrains Mono', monospace);
       background: linear-gradient(90deg, #fff, #888);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     body.light-mode .brand-title {
       background: linear-gradient(90deg, #0f172a, #64748b);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -1136,12 +1139,14 @@
       line-height: 1.1;
       background: linear-gradient(135deg, #ffffff 30%, var(--neo-blue) 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 1rem;
     }
     body.light-mode .welcome-title {
       background: linear-gradient(135deg, #0f172a 30%, var(--neo-blue) 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -2386,6 +2391,11 @@
       color: #71717a;
       display: flex;
       align-items: center;
+      justify-content: center;
+      cursor: pointer; /* Pointer, not text */
+      font-size: 14px;
+      z-index: 10;
+      transition: all 0.2s;
     }
      /* Message Attachments (Outside Bubbles - Stacked Above) */
     .msg-attachments {
@@ -2426,12 +2436,6 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 100%;
-    }
-      justify-content: center;
-      cursor: pointer; /* Pointer, not text */
-      font-size: 14px;
-      z-index: 10;
-      transition: all 0.2s;
     }
     .attachment-item .remove-btn:hover {
       background: #27272a;
@@ -2651,12 +2655,37 @@
     .risk-high { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
     .risk-medium { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
     .risk-low { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2); }
-      color: #d4d4d8;
-    }
+    .risk-info { background: rgba(255, 255, 255, 0.05); color: #d4d4d8; border: 1px solid rgba(255, 255, 255, 0.1); }
 
     /* Force font inheritance on ALL children — overrides Tailwind preflight */
     .markdown-content *, .msg-bubble * {
         font-family: inherit !important;
+    }
+
+    /* ── ICON FONT RESTORE ──────────────────────────────────────────────────
+       The wildcard rule above breaks Material Symbols icons inside .msg-bubble
+       and .markdown-content by overriding their font-family with the page font.
+       This restores the correct icon font for ALL .material-symbols-* spans,
+       everywhere in the page (static HTML + JS-injected content).
+    ─────────────────────────────────────────────────────────────────────── */
+    .material-symbols-outlined,
+    .material-symbols-rounded,
+    .material-symbols-sharp,
+    span[class*="material-symbols"] {
+        font-family: 'Material Symbols Outlined' !important;
+        font-weight: normal;
+        font-style: normal;
+        font-size: inherit;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
     }
 
     /* Use Mono font only for Technical Headers/Labels/Code */
@@ -3017,75 +3046,143 @@
         display: block;
     }
 
-    /* Typing Bubble & Dots */
-    .msg-bubble.typing-bubble {
-      background: linear-gradient(135deg, rgba(8, 8, 10, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%) !important;
-      border: 1px solid rgba(0, 247, 255, 0.15) !important;
-      box-shadow: 0 8px 32px 0 rgba(0, 247, 255, 0.03), inset 0 0 12px rgba(59, 130, 246, 0.08) !important;
-      border-radius: 4px 20px 20px 20px !important;
-      padding: 1rem 1.25rem !important;
-      max-width: 380px !important;
+    /* AI Thinking Status Bar & Glow Effects */
+    #typing-indicator {
+      width: 100%;
+      margin-bottom: 6px; /* Elegant gap between status bar and input */
+      pointer-events: none;
+      z-index: 5;
+    }
+    .thinking-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.6rem 0.85rem;
+      background: rgba(10, 10, 12, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 12px;
       position: relative;
       overflow: hidden;
+      animation: slideUpStatusBar 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    body.light-mode .msg-bubble.typing-bubble {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.98) 100%) !important;
-      border: 1px solid rgba(59, 130, 246, 0.2) !important;
-      box-shadow: 0 8px 32px 0 rgba(59, 130, 246, 0.05) !important;
+    body.light-mode .thinking-status-bar {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(59, 130, 246, 0.35);
     }
 
-    .msg-bubble.typing-bubble::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(0, 247, 255, 0.04), transparent);
-      transform: translateX(-100%);
-      animation: typingScan 2s infinite linear;
-      pointer-events: none;
+    @keyframes slideUpStatusBar {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .thinking-glow-dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--neo-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--neo-blue), 0 0 4px var(--neo-blue);
+      animation: dotPulseGlow 1.2s infinite ease-in-out;
     }
     
-    @keyframes typingScan {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
+    body.light-mode .thinking-glow-dot {
+      background-color: var(--neo-blue);
+      box-shadow: 0 0 10px var(--neo-blue), 0 0 4px var(--neo-blue);
     }
 
-    .typing-container {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      position: relative;
-      z-index: 2;
+    @keyframes dotPulseGlow {
+      0%, 100% { opacity: 0.4; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.25); }
     }
 
-    .typing-status-text {
+    #typing-indicator .typing-status-text {
       font-size: 0.75rem;
       color: #94a3b8;
-      font-family: var(--font-mono, 'JetBrains Mono', monospace);
-      min-height: 1.1rem;
-      transition: opacity 0.3s ease;
+      font-family: var(--font-primary);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      flex-grow: 1;
+      text-shadow: 0 0 8px rgba(59, 130, 246, 0.15);
     }
     
-    body.light-mode .typing-status-text {
+    body.light-mode #typing-indicator .typing-status-text {
       color: #475569;
+      text-shadow: none;
     }
 
-    .typing-dots { display: inline-flex; gap: 6px; padding: 0.2rem 0; align-items: center; }
-    .typing-dots span {
-      width: 7px; height: 7px; background-color: var(--neo-cyan);
-      border-radius: 50%; opacity: 0.3;
-      animation: dotPulse 1.4s infinite ease-in-out both;
+    .thinking-scan-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.05);
     }
-    body.light-mode .typing-dots span {
-      background-color: var(--neo-blue);
+    .thinking-scan-progress {
+      width: 35%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--neo-blue), transparent);
+      position: absolute;
+      animation: thinkingScanSweep 1.6s infinite ease-in-out;
     }
-    .typing-dots span:nth-child(1) { animation-delay: 0s; }
-    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
     
-    @keyframes dotPulse {
-      0%, 100% { opacity: 0.3; transform: scale(0.85); }
-      50% { opacity: 1; transform: scale(1.15); }
+    body.light-mode .thinking-scan-progress {
+      background: linear-gradient(90deg, transparent, var(--neo-blue), transparent);
+    }
+
+    @keyframes thinkingScanSweep {
+      0% { left: -35%; }
+      100% { left: 100%; }
+    }
+
+    /* Input Wrapper Thinking Glow Pulse */
+    .input-wrapper.thinking {
+      border-color: rgba(59, 130, 246, 0.4) !important;
+      border-radius: 14px !important; /* Retain fully rounded corners when thinking */
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.15), 
+                  0 -10px 30px rgba(0, 0, 0, 0.6),
+                  inset 0 0 10px rgba(59, 130, 246, 0.05) !important;
+      animation: thinkingBorderPulse 2.4s infinite ease-in-out;
+    }
+    
+    body.light-mode .input-wrapper.thinking {
+      border-color: rgba(59, 130, 246, 0.5) !important;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.15), 
+                  0 10px 30px rgba(0, 0, 0, 0.02) !important;
+    }
+    
+    @keyframes thinkingBorderPulse {
+      0%, 100% {
+        border-color: rgba(59, 130, 246, 0.35);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.1), 0 -10px 30px rgba(0, 0, 0, 0.6);
+      }
+      50% {
+        border-color: rgba(59, 130, 246, 0.7);
+        box-shadow: 0 0 25px rgba(59, 130, 246, 0.25), 0 -10px 30px rgba(0, 0, 0, 0.6);
+      }
+    }
+
+    body.light-mode .input-wrapper.thinking {
+      animation: thinkingBorderPulseLight 2.4s infinite ease-in-out;
+    }
+
+    @keyframes thinkingBorderPulseLight {
+      0%, 100% {
+        border-color: rgba(59, 130, 246, 0.35);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.1), 0 10px 30px rgba(0, 0, 0, 0.02);
+      }
+      50% {
+        border-color: rgba(79, 70, 229, 0.7);
+        box-shadow: 0 0 25px rgba(79, 70, 229, 0.25), 0 10px 30px rgba(0, 0, 0, 0.02);
+      }
     }
 
     /* --- SYSTEM NOTIFICATIONS --- */
@@ -3901,9 +3998,11 @@
 
 {% block content %}
   {# PRE-FETCHED DATA INJECTION #}
+  <script type="application/json" id="preloaded-sessions-data">{{ initial_sessions | tojson | safe }}</script>
+  <script type="application/json" id="active-session-id-data">"{{ active_session_id }}"</script>
   <script>
-    window.PRELOADED_SESSIONS = {{ initial_sessions | tojson | safe }};
-    window.ACTIVE_SESSION_ID = "{{ active_session_id }}";
+    window.PRELOADED_SESSIONS = JSON.parse(document.getElementById('preloaded-sessions-data').textContent);
+    window.ACTIVE_SESSION_ID = JSON.parse(document.getElementById('active-session-id-data').textContent);
   </script>
 
   <div class="app-layout">
@@ -4131,23 +4230,21 @@
         </div>
 
         <div id="chat-history"></div>
-
-        <div id="typing-indicator" style="display: none; padding: 1rem;">
-          <div class="msg-row ai">
-            <div class="msg-bubble typing-bubble">
-              <div class="typing-container">
-                <div class="typing-dots">
-                  <span></span><span></span><span></span>
-                </div>
-                <div class="typing-status-text">Analyst is computing response...</div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="input-zone">
         <div class="input-container-inner">
+          <!-- Sleek aligned loading/status indicator -->
+          <div id="typing-indicator" style="display: none;">
+            <div class="thinking-status-bar">
+              <div class="thinking-glow-dot"></div>
+              <div class="typing-status-text">Analyst is computing response...</div>
+              <div class="thinking-scan-bar">
+                <div class="thinking-scan-progress"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="attachment-preview-area" id="attachment-preview-area"></div>
           
           <div class="input-wrapper">

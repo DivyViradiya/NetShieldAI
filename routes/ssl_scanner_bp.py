@@ -94,10 +94,10 @@ def scan_ssl():
         }), 403
 
     if not ssl_scanner.is_sslscan_available(user_id=current_user_identifier):
-        ssl_scanner.log("[!] sslscan.exe is not available. Cannot perform scan.", current_user_identifier)
+        ssl_scanner.log("[!] sslscan is not available. Cannot perform scan.", current_user_identifier)
         return jsonify({
             "status": "error",
-            "message": "sslscan.exe not found. Please check server configuration and logs."
+            "message": "sslscan executable not found. Please install sslscan on the host machine (e.g., 'brew install sslscan' on macOS or 'apt-get install sslscan' on Linux)."
         }), 500
 
     # [NEW] Prevent Multiple Concurrent Scans for the same user
