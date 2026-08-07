@@ -30,12 +30,12 @@
     }
 
     body.light-mode {
-      --neo-bg: #f1f5f9;
+      --neo-bg: #F5F5F7;
       --neo-sidebar: #ffffff;
       --neo-card: #ffffff;
-      --neo-border: #cbd5e1;
-      --neo-blue: #4f46e5;
-      --neo-cyan: #0891b2;
+      --neo-border: rgba(29, 29, 31, 0.1);
+      --neo-blue: #007AFF;
+      --neo-cyan: #007AFF;
     }
 
     html, body {
@@ -54,7 +54,7 @@
     }
 
     body.light-mode {
-      color: #0f172a;
+      color: #1D1D1F;
     }
 
     /* Hide standard desktop elements */
@@ -130,9 +130,9 @@
       cursor: pointer;
     }
     body.light-mode .float-btn {
-      background: rgba(255, 255, 255, 0.85);
-      color: #0f172a;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      background: rgba(255, 255, 255, 0.92);
+      color: #1D1D1F;
+      box-shadow: 0 2px 8px rgba(29, 29, 31, 0.1);
     }
 
     .brand-title {
@@ -146,7 +146,7 @@
       -webkit-text-fill-color: transparent;
     }
     body.light-mode .brand-title {
-      background: linear-gradient(90deg, #0f172a, #64748b);
+      background: linear-gradient(90deg, #1D1D1F, #AAAAAA);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -171,7 +171,9 @@
       border-right: 1px solid var(--neo-border);
     }
     body.light-mode .mobile-panel {
-      background: rgba(255, 255, 255, 0.95);
+      background: #ffffff;
+      box-shadow: 4px 0 24px rgba(29, 29, 31, 0.08);
+      border-color: rgba(29, 29, 31, 0.08);
     }
 
     .panel-left {
@@ -259,8 +261,8 @@
     }
     .session-item.active { background: rgba(59, 130, 246, 0.15); color: white; border: 1px solid rgba(59, 130, 246, 0.3); }
     .session-item.pinned { border-left: 2px solid var(--neo-cyan); }
-    body.light-mode .session-item { color: #334155; background: #f1f5f9; }
-    body.light-mode .session-item.active { background: #e0e7ff; color: #0f172a; }
+    body.light-mode .session-item { color: #3a3a3c; background: #F5F5F7; }
+    body.light-mode .session-item.active { background: rgba(0, 122, 255, 0.08); color: #1D1D1F; border-color: rgba(0, 122, 255, 0.25); }
     .session-info { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: flex; flex-direction: column; }
     .session-title { font-weight: 500; }
     .session-date { font-size: 0.6rem; color: #71717a; display: block; }
@@ -273,16 +275,16 @@
       z-index: 9999; display: none; flex-direction: column; width: 140px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8); overflow: hidden;
     }
-    body.light-mode .context-menu { background: #ffffff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    body.light-mode .context-menu { background: #ffffff; border-color: rgba(29, 29, 31, 0.1); box-shadow: 0 8px 32px rgba(29, 29, 31, 0.12); }
     .context-menu.show { display: flex; }
     .menu-item {
       padding: 10px 12px; font-size: 0.8rem; color: #bbb; cursor: pointer;
       display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    body.light-mode .menu-item { color: #64748b; border-bottom-color: #f1f5f9; }
+    body.light-mode .menu-item { color: #AAAAAA; border-bottom-color: #F5F5F7; }
     .menu-item:last-child { border-bottom: none; }
     .menu-item:hover { background: rgba(255, 255, 255, 0.1); color: white; }
-    body.light-mode .menu-item:hover { background: var(--bg-secondary); color: var(--neo-blue); }
+    body.light-mode .menu-item:hover { background: #F5F5F7; color: #007AFF; }
     .menu-item.delete { color: #ef4444; }
 
     /* Main Chat Area */
@@ -338,8 +340,8 @@
       color: #3f3f46;
       display: block;
     }
-    body.light-mode .welcome-screen h1 { color: #0f172a; }
-    body.light-mode .welcome-screen h1 .analyst-text { color: #94a3b8; }
+    body.light-mode .welcome-screen h1 { color: #1D1D1F; }
+    body.light-mode .welcome-screen h1 .analyst-text { color: #AAAAAA; }
 
     .welcome-screen p { 
        color: #71717a; 
@@ -376,8 +378,9 @@
       box-sizing: border-box;
     }
     body.light-mode .suggestion-card {
-      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+      background: #ffffff;
+      border-color: rgba(29, 29, 31, 0.08);
+      box-shadow: 0 1px 3px rgba(29, 29, 31, 0.05), 0 4px 16px rgba(29, 29, 31, 0.06);
     }
     .suggestion-card:active, .suggestion-card:hover {
       border-color: var(--neo-blue);
@@ -386,7 +389,8 @@
     }
     body.light-mode .suggestion-card:active, body.light-mode .suggestion-card:hover {
       background: #ffffff;
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.06);
+      border-color: rgba(0, 122, 255, 0.3);
+      box-shadow: 0 4px 16px rgba(0, 122, 255, 0.1);
     }
     .suggestion-card::before, .suggestion-card::after {
       content: '';
@@ -430,7 +434,7 @@
       font-family: var(--font-code) !important;
       line-height: 1.2;
     }
-    body.light-mode .suggestion-card h5 { color: #0f172a; }
+    body.light-mode .suggestion-card h5 { color: #1D1D1F; }
     .suggestion-card p {
       color: #94a3b8;
       font-size: 0.65rem;
@@ -442,7 +446,7 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    body.light-mode .suggestion-card p { color: #64748b; }
+    body.light-mode .suggestion-card p { color: #AAAAAA; }
 
     /* Chat Bubbles */
     .msg-row { display: flex; width: 100%; margin-bottom: 1.5rem; flex-direction: column; }
@@ -481,10 +485,10 @@
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
     }
     body.light-mode .msg-row.user .msg-bubble {
-      background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
-      color: #0f172a;
-      border-color: rgba(59, 130, 246, 0.2);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      background: #ffffff;
+      color: #1D1D1F;
+      border-color: rgba(0, 122, 255, 0.15);
+      box-shadow: 0 1px 3px rgba(29, 29, 31, 0.05), 0 4px 16px rgba(29, 29, 31, 0.07);
     }
 
     .msg-row.ai .msg-bubble {
@@ -498,10 +502,10 @@
       max-width: 90%;
     }
     body.light-mode .msg-row.ai .msg-bubble {
-      background: rgba(255, 255, 255, 0.95);
-      border-color: rgba(59, 130, 246, 0.2);
-      color: #1e293b;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      background: #ffffff;
+      border-color: rgba(29, 29, 31, 0.08);
+      color: #1D1D1F;
+      box-shadow: 0 1px 3px rgba(29, 29, 31, 0.05), 0 4px 16px rgba(29, 29, 31, 0.07);
     }
 
     .msg-row.system { align-items: flex-start; width: 100%; margin: 1.5rem 0; }
@@ -517,9 +521,9 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
     body.light-mode .msg-row.system .msg-bubble { 
-      background: #f1f5f9; 
-      border-color: #e2e8f0; 
-      color: #64748b; 
+      background: #F5F5F7; 
+      border-color: rgba(29, 29, 31, 0.08); 
+      color: #AAAAAA; 
     }
     .msg-row.system .msg-bubble::before { left: 0.2rem; transform: none; }
 
@@ -538,7 +542,8 @@
       z-index: 80;
     }
     body.light-mode .mobile-input-bar {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(245, 245, 247, 0.95);
+      border-top-color: rgba(29, 29, 31, 0.08);
     }
 
     .input-top-level {
@@ -550,7 +555,7 @@
       border-radius: 18px;
       padding: 6px;
     }
-    body.light-mode .input-top-level { background: #f8fafc; }
+    body.light-mode .input-top-level { background: #ffffff; border-color: rgba(29, 29, 31, 0.1); }
 
     .input-top-level textarea {
       flex: 1;
@@ -564,7 +569,7 @@
       max-height: 120px;
       outline: none;
     }
-    body.light-mode .input-top-level textarea { color: #0f172a; }
+    body.light-mode .input-top-level textarea { color: #1D1D1F; }
 
     .send-btn {
       width: 40px;
@@ -598,7 +603,7 @@
       align-items: center;
       justify-content: center;
     }
-    body.light-mode .icon-btn { background: #f1f5f9; color: #475569; }
+    body.light-mode .icon-btn { background: #F5F5F7; color: #AAAAAA; border-color: rgba(29, 29, 31, 0.1); }
 
     .model-selector-container { position: relative; }
     .model-trigger {
@@ -613,7 +618,7 @@
       align-items: center;
       gap: 5px;
     }
-    body.light-mode .model-trigger { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+    body.light-mode .model-trigger { background: #F5F5F7; color: #1D1D1F; border-color: rgba(29, 29, 31, 0.1); }
 
     /* Bottom Sheet Modals */
     .bottom-sheet {

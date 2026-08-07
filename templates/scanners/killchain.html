@@ -18,6 +18,7 @@
     /* --- NEO-TECH THEME VARIABLES --- */
     /* --- SCANNER THEME OVERRIDES --- */
     .dashboard-wrapper {
+      --neo-border: rgba(255, 255, 255, 0.18);
       background-color: var(--neo-bg);
       color: var(--neo-text-primary);
       font-family: var(--font-ui);
@@ -25,8 +26,24 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 1rem;
     }
+    body.light-mode .dashboard-wrapper {
+        --neo-border: rgba(29, 29, 31, 0.1);
+        --neo-input: #F5F5F7;
+        background-color: #F5F5F7;
+        background-image: none;
+      }
+
+      /* Kill the base.html radial-gradient body::before overlay in light mode */
+      body.light-mode::before {
+        display: none !important;
+      }
+
+      body.light-mode {
+        background-color: #F5F5F7 !important;
+        background-image: none !important;
+      }
 
     /* Risk Level Mapping Standardized */
     .risk-critical { --card-accent: var(--severity-critical); }
@@ -38,44 +55,45 @@
 
     /* Light Mode Overrides */
     body.light-mode .text-gradient {
-      background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      background: linear-gradient(135deg, #1D1D1F 0%, #3a3a3c 50%, #007AFF 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    body.light-mode .dash-table th { background: var(--bg-secondary); color: var(--text-primary); border-bottom-color: var(--border-default); }
-    body.light-mode .dash-table td { color: var(--text-secondary); border-bottom-color: var(--border-subtle); }
-    body.light-mode .panel-header { background: var(--surface-primary); border-bottom-color: var(--border-default); }
-    body.light-mode .terminal-header { background: var(--bg-secondary); border-bottom-color: var(--border-default); }
-    body.light-mode .term-window { background: var(--surface-primary); }
-    body.light-mode .log-time { color: var(--text-muted); }
-    body.light-mode .log-content { color: var(--text-secondary); }
-    body.light-mode .metric-value { color: var(--text-primary); }
-    body.light-mode .metric-info { color: var(--text-muted); }
-    body.light-mode .badge-pill { background: var(--severity-success-bg); color: var(--severity-success); border-color: var(--severity-success); }
-    body.light-mode .btn-dash { background: var(--surface-primary); color: var(--text-secondary); border-color: var(--border-default); }
-    body.light-mode .btn-dash:hover:not(:disabled) { background: var(--bg-secondary); color: var(--text-primary); border-color: var(--text-muted); }
-    body.light-mode .dash-input { background: var(--surface-primary) !important; color: var(--text-primary) !important; border-color: var(--border-default) !important; }
-    body.light-mode .tab-pills { background: var(--bg-secondary); border-color: var(--border-default); }
+    body.light-mode .dash-table th { background: #F5F5F7; color: #1D1D1F; border-bottom-color: rgba(29, 29, 31, 0.1); }
+    body.light-mode .dash-table td { color: #3a3a3c; border-bottom-color: rgba(29, 29, 31, 0.07); }
+    body.light-mode .panel-header { background: #ffffff; border-bottom-color: rgba(29, 29, 31, 0.1); }
+    body.light-mode .terminal-header { background: #F5F5F7; border-bottom-color: rgba(29, 29, 31, 0.1); }
+    body.light-mode .term-window { background: #ffffff; }
+    body.light-mode .log-time { color: #AAAAAA; }
+    body.light-mode .log-content { color: #3a3a3c; }
+    body.light-mode .metric-value { color: #1D1D1F; }
+    body.light-mode .metric-info { color: #AAAAAA; }
+    body.light-mode .badge-pill { background: rgba(0, 122, 255, 0.08); color: #007AFF; border-color: #007AFF; }
+    body.light-mode .btn-dash { background: #ffffff; color: #3a3a3c; border-color: rgba(29, 29, 31, 0.12); }
+    body.light-mode .btn-dash:hover:not(:disabled) { background: #F5F5F7; color: #1D1D1F; border-color: #AAAAAA; }
+    body.light-mode .dash-input { background: #ffffff !important; color: var(--text-primary) !important; border-color: var(--border-default) !important; }
+    body.light-mode .tab-pills { background: #F5F5F7; border-color: rgba(29, 29, 31, 0.12); }
     body.light-mode .custom-dropdown {
-      background: rgba(255, 255, 255, 0.9) !important;
-      border: 1px solid #d1d5db !important;
+      background: #ffffff !important;
+      border: 1px solid rgba(29, 29, 31, 0.12) !important;
       border-top: 1px solid #ffffff !important;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 8px 32px rgba(29, 29, 31, 0.12), 0 2px 8px rgba(29, 29, 31, 0.06) !important;
     }
-    body.light-mode .dropdown-link { color: var(--text-secondary) !important; }
+    body.light-mode .dropdown-link { color: #3a3a3c !important; }
     body.light-mode .dropdown-link:hover {
-      background: rgba(59, 130, 246, 0.05) !important;
-      color: var(--neo-blue) !important;
+      background: rgba(0, 122, 255, 0.06) !important;
+      color: #007AFF !important;
     }
     body.light-mode .dropdown-category {
       border-top-color: rgba(0, 0, 0, 0.05) !important;
       opacity: 0.8 !important;
     }
-    body.light-mode .processing-text { color: var(--text-primary); }
-    body.light-mode .term-title { color: var(--text-muted); }
-    body.light-mode .timing-select { background: var(--surface-primary) !important; color: var(--text-secondary) !important; border-color: var(--border-default) !important; }
-    body.light-mode .timing-select option { background: var(--surface-primary) !important; color: var(--text-secondary) !important; }
-    body.light-mode #jsonOutput { background-color: var(--bg-secondary) !important; color: var(--text-secondary) !important; }
+    body.light-mode .processing-text { color: #1D1D1F; }
+    body.light-mode .term-title { color: #AAAAAA; }
+    body.light-mode .timing-select { background: #ffffff !important; color: #3a3a3c !important; border-color: var(--border-default) !important; }
+    body.light-mode .timing-select option { background: #ffffff !important; color: #3a3a3c !important; }
+    body.light-mode #jsonOutput { background-color: #F5F5F7 !important; color: #3a3a3c !important; }
 
     .dropdown-category {
       grid-column: 1 / -1;
@@ -128,14 +146,14 @@
     body.light-mode .dash-panel, 
     body.light-mode .terminal-footer,
     body.light-mode .discovery-card {
-      background: var(--surface-primary);
-      border-color: var(--border-default);
+      background: #ffffff;
+      border-color: var(--neo-border);
     }
 
       /* Override hover effects with micro-elevation */
       .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover, .discovery-card:hover, .finding-card:hover {
         background: rgba(10, 10, 12, 0.7);
-        border-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.22);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
       }
   
@@ -154,14 +172,14 @@
     .scan-overview-grid {
       display: grid;
       grid-template-columns: 50fr 50fr;
-      gap: 0.5rem;
+      gap: 1rem;
       width: 100%;
       align-items: stretch;
     }
     .main-grid {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 340px;
-      gap: 0.5rem;
+      gap: 1rem;
       min-height: 600px;
       height: calc(100vh - 250px);
       max-height: 1200px;
@@ -199,7 +217,7 @@
     .metrics-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 0.5rem;
+      gap: 1rem;
       height: auto;
       width: 100%;
     }
@@ -280,13 +298,13 @@
       font-family: var(--font-ui); font-weight: 600; font-size: 0.8rem;
       display: flex; align-items: center; justify-content: center;
       gap: 0.6rem; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid var(--neo-border); color: var(--text-secondary);
+      border: 1px solid var(--neo-border); color: #3a3a3c;
       text-decoration: none; white-space: nowrap;
       background: rgba(255, 255, 255, 0.03);
     }
     .btn-dash:hover:not(:disabled) { 
-      color: var(--text-primary); 
-      border-color: var(--text-muted);
+      color: #1D1D1F; 
+      border-color: #AAAAAA;
       background: rgba(255, 255, 255, 0.07);
       transform: translateY(-1px);
     }
@@ -322,7 +340,7 @@
     }
     .btn-intel-processing {
       animation: intelPulse 2s infinite;
-      border-color: var(--neo-blue) !important;
+      border-color: #007AFF !important;
       pointer-events: none;
     }
     @keyframes intelPulse {
@@ -509,12 +527,14 @@
       color: var(--neo-text-muted) !important; padding: 4px 10px; border-radius: 4px;
       font-size: 0.6rem !important; font-weight: 800 !important; transition: all 0.2s ease !important;
     }
-    #clearLogBtn:hover { background: #111 !important; color: var(--neo-text-primary) !important; border-color: var(--neo-blue) !important; }
+    #clearLogBtn:hover { background: #111 !important; color: var(--neo-text-primary) !important; border-color: #007AFF !important; }
 
     /* --- TYPOGRAPHY & BADGES --- */
     .text-gradient {
       background: linear-gradient(180deg, #fff 0%, #ccc 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     .badge-pill {
       display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 4px;
@@ -528,7 +548,7 @@
       display: inline-flex; align-items: center; font-size: 0.8rem;
       text-transform: uppercase; letter-spacing: 0.05em;
     }
-    .btn-text-glow:hover { color: var(--neo-blue) !important; transform: translateX(-4px); }
+    .btn-text-glow:hover { color: #007AFF !important; transform: translateX(-4px); }
 
     /* Progress bar */
     .progress-bar-track { width: 100%; height: 2px; background: var(--neo-border); overflow: hidden; }
@@ -733,14 +753,19 @@
       }
       
       body.light-mode .finding-card {
-        background: var(--surface-primary);
+        background: #ffffff;
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      }
+
+      .finding-card.expanded {
+        border-color: var(--card-accent) !important;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
       }
 
       .finding-card:hover {
         background: #080808;
-        border-color: rgba(255, 255, 255, 0.02);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.22);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
       }
       
       .finding-header {
@@ -759,7 +784,7 @@
       }
 
       body.light-mode .finding-card.expanded .finding-header {
-        background: var(--bg-secondary);
+        background: #F5F5F7;
       }
 
       .finding-header::before {
@@ -865,7 +890,7 @@
       }
 
       body.light-mode .detail-section {
-        border-bottom-color: var(--border-subtle);
+        border-bottom-color: rgba(29, 29, 31, 0.07);
       }
 
       .detail-section:last-child {
@@ -903,9 +928,9 @@
       }
 
       body.light-mode .detail-text-mono {
-        background: #f8fafc;
-        border-color: #e2e8f0;
-        color: #475569;
+        background: #ffffff;
+        border-color: rgba(29, 29, 31, 0.1);
+        color: #3a3a3c;
       }
 
     /* --- HISTORY MODAL --- */
@@ -972,7 +997,7 @@
     <!-- Top Bento Banner Block -->
     <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
       <div class="scanner-title-area" style="margin: 0;">
-        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Penetration <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Simulation</span></h1>
+        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Penetration <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Simulation</span></h1>
         <p style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
           <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
           Unify reconnaissance, vulnerability hunting, and exploitation.

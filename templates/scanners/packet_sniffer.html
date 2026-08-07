@@ -22,6 +22,7 @@
       /* --- NEO-TECH THEME VARIABLES --- */
       /* --- SCANNER THEME OVERRIDES --- */
       .dashboard-wrapper {
+        --neo-border: rgba(255, 255, 255, 0.18);
         background-color: var(--neo-bg);
         color: var(--neo-text-primary);
         font-family: var(--font-ui);
@@ -29,9 +30,25 @@
         min-height: 100vh;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 1rem;
         transition: background-color 0.4s ease;
         --neo-input: rgba(15, 15, 18, 0.4);
+      }
+      body.light-mode .dashboard-wrapper {
+        --neo-border: rgba(29, 29, 31, 0.1);
+        --neo-input: #F5F5F7;
+        background-color: #F5F5F7;
+        background-image: none;
+      }
+
+      /* Kill the base.html radial-gradient body::before overlay in light mode */
+      body.light-mode::before {
+        display: none !important;
+      }
+
+      body.light-mode {
+        background-color: #F5F5F7 !important;
+        background-image: none !important;
       }
 
       /* Risk Level Mapping Standardized (Professional Palette) */
@@ -74,7 +91,7 @@
       /* Component Styles using Global Tokens */
       .control-card, .metric-card, .dash-panel {
         background: linear-gradient(180deg, rgba(10, 10, 14, 0.8) 0%, rgba(5, 5, 7, 0.9) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.09);
+        border: 1px solid var(--neo-border);
         border-radius: 6px;
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
@@ -86,7 +103,7 @@
       body.light-mode .metric-card, 
       body.light-mode .dash-panel {
         background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-        border: 1px solid #d1d5db;
+        border: 1px solid var(--neo-border);
         backdrop-filter: blur(12px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
       }
@@ -95,7 +112,7 @@
       /* Override hover effects */
       .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover {
         background: rgba(10, 10, 12, 0.7);
-        border-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.22);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
       }
   
@@ -112,7 +129,7 @@
       .scan-overview-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
+        gap: 1rem;
         margin-bottom: 0px;
         width: 100%;
         align-items: stretch;
@@ -121,7 +138,7 @@
       .main-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr) 340px; 
-        gap: 0.5rem;
+        gap: 1rem;
         height: calc(100vh - 250px);
         min-height: 600px;
         max-height: 1200px;
@@ -179,7 +196,7 @@
       .metrics-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 0.5rem;
+        gap: 1rem;
         height: auto;
         width: 100%;
       }
@@ -243,18 +260,18 @@
       }
 
       body.light-mode .scanner-title-area h1 {
-        color: var(--text-primary);
+        color: #1D1D1F;
         font-weight: 600;
         letter-spacing: 0.05em;
       }
 
       body.light-mode .scanner-title-area p {
-        color: var(--text-secondary);
+        color: #3a3a3c;
         opacity: 1;
       }
 
       body.light-mode .banner-subtitle {
-        color: var(--text-secondary) !important;
+        color: #3a3a3c !important;
         opacity: 1 !important;
       }
 
@@ -333,8 +350,8 @@
 
       body.light-mode .dash-input {
         background: #ffffff;
-        border-color: var(--border-default);
-        color: var(--text-primary);
+        border-color: rgba(29, 29, 31, 0.12);
+        color: #1D1D1F;
       }
       body.light-mode .dash-input:focus {
         background: #ffffff;
@@ -356,25 +373,25 @@
         cursor: pointer; 
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid var(--neo-border); 
-        color: var(--text-secondary); 
+        color: #3a3a3c; 
         text-decoration: none;
         white-space: nowrap;
         background: rgba(255, 255, 255, 0.03);
       }
       .btn-dash:hover:not(:disabled) { 
-        color: var(--text-primary); 
-        border-color: var(--text-muted);
+        color: #1D1D1F; 
+        border-color: #AAAAAA;
         background: rgba(255, 255, 255, 0.07);
         transform: translateY(-1px);
       }
 
       body.light-mode .btn-dash {
         background: #ffffff;
-        border-color: var(--border-default);
-        color: var(--text-secondary);
+        border-color: rgba(29, 29, 31, 0.12);
+        color: #3a3a3c;
       }
       body.light-mode .btn-dash:hover:not(:disabled) {
-        background: var(--bg-secondary);
+        background: #F5F5F7;
         border-color: var(--accent-blue);
         color: var(--accent-blue);
       }
@@ -429,7 +446,7 @@
       }
       .btn-intel-processing {
         animation: intelPulse 2s infinite;
-        border-color: var(--neo-blue) !important;
+        border-color: #007AFF !important;
         pointer-events: none;
       }
       @keyframes intelPulse {
@@ -583,19 +600,19 @@
       }
 
       body.light-mode .custom-dropdown {
-        background: rgba(255, 255, 255, 0.9) !important;
-        border: 1px solid #d1d5db !important;
+        background: #ffffff !important;
+        border: 1px solid rgba(29, 29, 31, 0.12) !important;
         border-top: 1px solid #ffffff !important;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 8px 32px rgba(29, 29, 31, 0.12), 0 2px 8px rgba(29, 29, 31, 0.06) !important;
       }
   
       body.light-mode .dropdown-link {
-        color: var(--text-secondary) !important;
+        color: #3a3a3c !important;
       }
   
       body.light-mode .dropdown-link:hover {
-        background: rgba(59, 130, 246, 0.05) !important;
-        color: var(--neo-blue) !important;
+        background: rgba(0, 122, 255, 0.06) !important;
+        color: #007AFF !important;
       }
 
       .dropdown-category {
@@ -716,7 +733,7 @@
 
       body.light-mode .terminal-footer {
         background: #ffffff;
-        border-color: var(--border-default);
+        border-color: rgba(29, 29, 31, 0.12);
         box-shadow: 0 10px 40px rgba(0,0,0,0.05);
       }
   
@@ -794,18 +811,21 @@
       #clearSnifferLogBtn:hover {
           background: #111 !important;
           color: var(--neo-text-main) !important;
-          border-color: var(--neo-blue) !important;
+          border-color: #007AFF !important;
       }
   
       /* --- TYPOGRAPHY & TEXT --- */
       .text-gradient {
         background: linear-gradient(180deg, #fff 0%, #ccc 100%);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
 
       body.light-mode .text-gradient {
-        background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+        background: linear-gradient(135deg, #1D1D1F 0%, #3a3a3c 50%, #007AFF 100%);
         -webkit-background-clip: text; 
+        background-clip: text;
         -webkit-text-fill-color: transparent;
       }
   
@@ -824,7 +844,7 @@
         font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
       }
       .btn-text-glow:hover {
-        color: var(--neo-blue) !important; transform: translateX(-4px);
+        color: #007AFF !important; transform: translateX(-4px);
       }
   
       /* Graph Canvas */
@@ -855,7 +875,7 @@
     <!-- Top Bento Banner Block -->
     <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
       <div class="scanner-title-area" style="margin: 0;">
-        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Traffic <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Sniffer</span></h1>
+        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Traffic <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Sniffer</span></h1>
         <p class="banner-subtitle" style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
           <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
           Intercept and analyze real-time packet telemetry for lateral movement detection.

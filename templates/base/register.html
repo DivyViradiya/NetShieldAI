@@ -17,12 +17,12 @@
   }
   
   body.light-mode {
-    --neo-card: rgba(255, 255, 255, 0.8);
-    --neo-border: rgba(15, 23, 42, 0.1);
-    --neo-text-primary: #0f172a;
-    --neo-text-secondary: #1e293b;
-    --neo-text-tertiary: #64748b;
-    --neo-blue: #2563eb;
+    --neo-card: #ffffff;
+    --neo-border: rgba(29, 29, 31, 0.1);
+    --neo-text-primary: #1D1D1F;
+    --neo-text-secondary: #3a3a3c;
+    --neo-text-tertiary: #AAAAAA;
+    --neo-blue: #007AFF;
   }
 
   /* Force Full Screen & No Scroll */
@@ -188,8 +188,8 @@
 
   body.light-mode .form-input {
     background: #ffffff !important;
-    border-color: rgba(15, 23, 42, 0.1) !important;
-    color: #0f172a !important;
+    border-color: rgba(29, 29, 31, 0.12) !important;
+    color: #1D1D1F !important;
   }
 
   .form-input:focus {
@@ -390,8 +390,8 @@
       <!-- SSO -->
       <div id="sso-section">
         <div class="social-grid">
-          <button onclick="window.location.href='{{ url_for('auth.login_google') }}'" type="button" class="btn-social">Google</button>
-          <button onclick="window.location.href='{{ url_for('auth.login_github') }}'" type="button" class="btn-social">GitHub</button>
+          <a href="{{ url_for('auth.login_google') }}" class="btn-social" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Google</a>
+          <a href="{{ url_for('auth.login_github') }}" class="btn-social" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">GitHub</a>
         </div>
         <div class="divider"><span>Or Register Manually</span></div>
       </div>

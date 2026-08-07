@@ -18,6 +18,7 @@
       /* --- NEO-TECH THEME VARIABLES --- */
       /* --- SCANNER THEME OVERRIDES --- */
       .dashboard-wrapper {
+        --neo-border: rgba(255, 255, 255, 0.18);
         background-color: var(--neo-bg);
         color: var(--neo-text-primary);
         font-family: var(--font-ui);
@@ -25,7 +26,23 @@
         min-height: 100vh;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 1rem;
+      }
+      body.light-mode .dashboard-wrapper {
+        --neo-border: rgba(29, 29, 31, 0.1);
+        --neo-input: #F5F5F7;
+        background-color: #F5F5F7;
+        background-image: none;
+      }
+
+      /* Kill the base.html radial-gradient body::before overlay in light mode */
+      body.light-mode::before {
+        display: none !important;
+      }
+
+      body.light-mode {
+        background-color: #F5F5F7 !important;
+        background-image: none !important;
       }
 
       /* Risk Level Mapping Standardized */
@@ -38,106 +55,107 @@
   
       /* Light Mode Specific Overrides */
       body.light-mode .text-gradient {
-        background: linear-gradient(180deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+        background: linear-gradient(135deg, #1D1D1F 0%, #3a3a3c 50%, #007AFF 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
       }
 
       body.light-mode .scanner-title-area h1 {
-        color: var(--text-primary);
+        color: #1D1D1F;
         font-weight: 600;
         letter-spacing: 0.05em;
       }
 
       body.light-mode .scanner-title-area p {
-        color: var(--text-secondary);
+        color: #3a3a3c;
         opacity: 1;
       }
   
       body.light-mode .dash-table th {
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-        border-bottom-color: var(--border-default);
+        background: #F5F5F7;
+        color: #1D1D1F;
+        border-bottom-color: rgba(29, 29, 31, 0.1);
       }
   
       body.light-mode .dash-table td {
-        color: var(--text-secondary);
-        border-bottom-color: var(--border-subtle);
+        color: #3a3a3c;
+        border-bottom-color: rgba(29, 29, 31, 0.07);
       }
   
       body.light-mode .panel-header {
-        background: var(--surface-primary);
-        border-bottom-color: var(--border-default);
+        background: #ffffff;
+        border-bottom-color: rgba(29, 29, 31, 0.1);
       }
   
       body.light-mode .terminal-header {
-        background: var(--bg-secondary);
-        border-bottom-color: var(--border-default);
+        background: #F5F5F7;
+        border-bottom-color: rgba(29, 29, 31, 0.1);
       }
   
       body.light-mode .term-window {
-        background: var(--surface-primary);
+        background: #ffffff;
       }
   
       body.light-mode .log-time {
-        color: var(--text-muted);
+        color: #AAAAAA;
       }
   
       body.light-mode .log-content {
-        color: var(--text-secondary);
+        color: #3a3a3c;
       }
   
       body.light-mode .metric-value {
-        color: var(--text-primary);
+        color: #1D1D1F;
       }
   
       body.light-mode .metric-info {
-        color: var(--text-muted);
+        color: #AAAAAA;
       }
   
       body.light-mode .badge-pill {
-        background: var(--severity-success-bg);
-        color: var(--severity-success);
-        border-color: var(--severity-success);
+        background: rgba(0, 122, 255, 0.08);
+        color: #007AFF;
+        border-color: #007AFF;
       }
   
       body.light-mode .btn-dash {
-        background: var(--surface-primary);
-        color: var(--text-secondary);
-        border-color: var(--border-default);
+        background: #ffffff;
+        color: #3a3a3c;
+        border-color: rgba(29, 29, 31, 0.12);
       }
   
       body.light-mode .btn-dash:hover:not(:disabled) {
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-        border-color: var(--text-muted);
+        background: #F5F5F7;
+        color: #1D1D1F;
+        border-color: #AAAAAA;
       }
   
       body.light-mode .dash-input {
-        background: var(--surface-primary) !important;
+        background: #ffffff !important;
         color: var(--text-primary) !important;
         border-color: var(--border-default) !important;
       }
   
       body.light-mode .tab-pills {
-        background: var(--bg-secondary);
+        background: #F5F5F7;
         border: 1px solid var(--border-default);
       }
   
       body.light-mode .custom-dropdown {
-        background: rgba(255, 255, 255, 0.9) !important;
-        border: 1px solid #d1d5db !important;
+        background: #ffffff !important;
+        border: 1px solid rgba(29, 29, 31, 0.12) !important;
         border-top: 1px solid #ffffff !important;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 8px 32px rgba(29, 29, 31, 0.12), 0 2px 8px rgba(29, 29, 31, 0.06) !important;
       }
   
       body.light-mode .dropdown-link {
-        color: var(--text-secondary) !important;
+        color: #3a3a3c !important;
       }
   
       body.light-mode .dropdown-link:hover {
-        background: rgba(59, 130, 246, 0.05) !important;
-        color: var(--neo-blue) !important;
+        background: rgba(0, 122, 255, 0.06) !important;
+        color: #007AFF !important;
       }
 
       body.light-mode .dropdown-category {
@@ -146,7 +164,7 @@
       }
   
       body.light-mode .processing-text {
-        color: var(--text-primary);
+        color: #1D1D1F;
       }
 
       .dropdown-category {
@@ -163,12 +181,12 @@
       }
   
       body.light-mode .term-title {
-        color: var(--text-muted);
+        color: #AAAAAA;
       }
   
       body.light-mode #resultsContent {
-        background-color: var(--bg-secondary) !important;
-        color: var(--text-secondary) !important;
+        background-color: #F5F5F7 !important;
+        color: #3a3a3c !important;
       }
 
       /* ZAP Split-Pane Light Mode Branding */
@@ -187,14 +205,14 @@
       body.light-mode .dash-panel, 
       body.light-mode .control-card, 
       body.light-mode .metric-card {
-        background: var(--surface-primary);
-        border-color: var(--border-default);
+        background: #ffffff;
+        border-color: rgba(29, 29, 31, 0.12);
       }
 
       body.light-mode .filter-chip {
-        background: var(--bg-secondary);
-        border-color: var(--border-subtle);
-        color: var(--text-muted);
+        background: #F5F5F7;
+        border-color: rgba(29, 29, 31, 0.07);
+        color: #AAAAAA;
       }
 
       body.light-mode .filter-chip.active {
@@ -231,7 +249,7 @@
       /* Global Component Logic */
       .control-card, .metric-card, .dash-panel, .finding-card {
         background: linear-gradient(180deg, rgba(10, 10, 14, 0.8) 0%, rgba(5, 5, 7, 0.9) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.09);
+        border: 1px solid var(--neo-border);
         border-radius: 6px;
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
@@ -242,7 +260,7 @@
       /* Override hover effects with micro-elevation */
       .control-card:hover, .metric-card:hover, .dash-panel:hover, .terminal-footer:hover, .finding-card:hover {
         background: rgba(10, 10, 12, 0.7);
-        border-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.22);
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
       }
   
@@ -251,19 +269,28 @@
       body.light-mode .dash-panel:hover,
       body.light-mode .terminal-footer:hover,
       body.light-mode .finding-card:hover {
-        background: #ffffff;
-        border-color: var(--accent-blue);
-        box-shadow: 0 15px 45px rgba(99, 102, 241, 0.12);
+        background: #ffffff !important;
+        border-color: rgba(0, 122, 255, 0.25) !important;
+        box-shadow: 
+          0 1px 3px rgba(29, 29, 31, 0.05),
+          0 8px 24px rgba(29, 29, 31, 0.1),
+          0 20px 48px rgba(29, 29, 31, 0.06),
+          0 0 0 1px rgba(0, 122, 255, 0.08) !important;
+        transform: translateY(-1px);
       }
 
       body.light-mode .control-card, 
       body.light-mode .metric-card, 
       body.light-mode .dash-panel, 
       body.light-mode .finding-card {
-        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-        border: 1px solid #d1d5db;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        background: #ffffff;
+        border: 1px solid rgba(29, 29, 31, 0.08);
+        border-top: 1px solid rgba(255, 255, 255, 1);
+        backdrop-filter: none;
+        box-shadow: 
+          0 1px 3px rgba(29, 29, 31, 0.05),
+          0 4px 16px rgba(29, 29, 31, 0.07),
+          0 12px 32px rgba(29, 29, 31, 0.04);
       }
 
   
@@ -271,7 +298,7 @@
       .scan-overview-grid {
         display: grid;
         grid-template-columns: 50fr 50fr;
-        gap: 0.5rem;
+        gap: 1rem;
         margin-bottom: 0px;
         width: 100%;
         align-items: stretch;
@@ -280,7 +307,7 @@
       .main-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr) 340px; 
-        gap: 0.5rem;
+        gap: 1rem;
         min-height: 600px;
         height: calc(100vh - 250px);
         max-height: 1200px;
@@ -336,7 +363,7 @@
       .metrics-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 0.5rem;
+        gap: 1rem;
         height: auto;
         width: 100%;
       }
@@ -505,14 +532,14 @@
         cursor: pointer; 
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid var(--neo-border); 
-        color: var(--text-secondary); 
+        color: #3a3a3c; 
         text-decoration: none;
         white-space: nowrap;
         background: rgba(255, 255, 255, 0.03);
       }
       .btn-dash:hover:not(:disabled) { 
-        color: var(--text-primary); 
-        border-color: var(--text-muted);
+        color: #1D1D1F; 
+        border-color: #AAAAAA;
         background: rgba(255, 255, 255, 0.07);
         transform: translateY(-1px);
       }
@@ -567,7 +594,7 @@
       }
       .btn-intel-processing {
         animation: intelPulse 2s infinite;
-        border-color: var(--neo-blue) !important;
+        border-color: #007AFF !important;
         pointer-events: none;
       }
       @keyframes intelPulse {
@@ -739,8 +766,8 @@
   
       .discovery-card {
         background: linear-gradient(165deg, rgba(12, 12, 16, 0.95) 0%, rgba(4, 4, 6, 1) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        border: 1px solid var(--neo-border);
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
         border-radius: 8px;
         padding: 1.25rem;
         position: relative;
@@ -757,9 +784,14 @@
   
       .discovery-card:hover {
         background: rgba(10, 10, 15, 0.6);
-        border-color: var(--card-accent);
-        transform: translateY(-4px) scale(1.01);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 15px var(--card-glow);
+        border-color: rgba(255, 255, 255, 0.22);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      }
+
+      .discovery-card:active {
+        border-color: var(--card-accent) !important;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
       }
 
       body.light-mode .discovery-card {
@@ -769,7 +801,7 @@
         box-shadow: 
           0 10px 25px rgba(0, 0, 0, 0.04),
           0 4px 6px rgba(0, 0, 0, 0.02);
-        color: #0f172a;
+        color: #1D1D1F;
       }
   
       body.light-mode .discovery-card:hover {
@@ -923,8 +955,19 @@
       }
       
       body.light-mode .finding-card {
-        background: var(--surface-primary);
+        background: #ffffff;
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      }
+
+      .finding-card.expanded {
+        border-color: var(--card-accent) !important;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+      }
+
+      .finding-card:hover {
+        border-color: rgba(255, 255, 255, 0.22);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
       }
       
       .finding-header {
@@ -953,7 +996,7 @@
       }
 
       body.light-mode .finding-card.expanded .finding-header {
-        background: var(--bg-secondary);
+        background: #F5F5F7;
       }
 
       .finding-header::before {
@@ -1116,7 +1159,7 @@
       }
 
       body.light-mode .detail-section {
-        border-bottom-color: var(--border-subtle);
+        border-bottom-color: rgba(29, 29, 31, 0.07);
       }
 
       .detail-section:last-child {
@@ -1157,9 +1200,9 @@
       }
 
       body.light-mode .detail-text-mono {
-        background: #f8fafc;
-        border-color: #e2e8f0;
-        color: #475569;
+        background: #ffffff;
+        border-color: rgba(29, 29, 31, 0.1);
+        color: #3a3a3c;
       }
   
       /* --- AI OVERLAY --- */
@@ -1320,7 +1363,7 @@
       #clearLogBtn:hover {
           background: #111 !important;
           color: var(--neo-text-primary) !important;
-          border-color: var(--neo-blue) !important;
+          border-color: #007AFF !important;
       }
   
       /* --- TYPOGRAPHY & TEXT --- */
@@ -1346,7 +1389,7 @@
         font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
       }
       .btn-text-glow:hover {
-        color: var(--neo-blue) !important; transform: translateX(-4px);
+        color: #007AFF !important; transform: translateX(-4px);
       }
   
       /* --- MISC --- */
@@ -1475,7 +1518,7 @@
     <!-- Top Bento Banner Block -->
     <div class="control-card" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 2rem 2.5rem; border-radius: 4px;">
       <div class="scanner-title-area" style="margin: 0;">
-        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Audit <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">(DAST)</span></h1>
+        <h1 class="text-gradient" style="margin-bottom: 0.5rem; font-size: 2.25rem; letter-spacing: -0.02em;">Audit <span style="background: linear-gradient(135deg, var(--neo-blue), var(--neo-cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">(DAST)</span></h1>
         <p class="banner-subtitle" style="color: var(--neo-text-muted); font-size: 0.85rem; font-weight: 500; font-family: var(--font-mono); margin: 0; display: flex; align-items: center; gap: 16px; opacity: 0.8;">
           <span style="height: 1px; width: 32px; background: linear-gradient(90deg, var(--neo-blue), transparent);"></span>
           Precision Dynamic Application Security Testing (DAST) for deep vulnerability analysis.
@@ -1872,6 +1915,15 @@
 
 {% block extra_scripts %}
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const target = urlParams.get('target');
+      if (target) {
+        const input = document.getElementById('targetUrl');
+        if (input) input.value = target.startsWith('http') ? target : `http://${target}`;
+      }
+    });
+
     function toggleDropdown(id) {
       const dropdown = document.getElementById(id);
       if (dropdown) dropdown.classList.toggle('hidden');

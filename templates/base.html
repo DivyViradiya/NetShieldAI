@@ -101,45 +101,45 @@
         --scrollbar-hover: var(--accent-primary);
       }
 
-      /* LIGHT MODE — VIBRANT SECURITY (Authoritative & Modern) */
+      /* LIGHT MODE — Apple Modern */
       body.light-mode {
-        --bg-primary: #f1f5f9;       /* Slate-100 — cleaner blue-grey base wash */
-        --bg-secondary: #e2e8f0;     /* Slate-200 — better depth for sidebars/inputs */
+        --bg-primary: #F5F5F7;
+        --bg-secondary: #e8e8ec;
         --surface-primary: #ffffff;
-        --surface-elevated: rgba(255, 255, 255, 0.85);
-        --surface-subtle: #f1f5f9;
+        --surface-elevated: rgba(255, 255, 255, 0.95);
+        --surface-subtle: #F5F5F7;
 
-        --border-default: rgba(15, 23, 42, 0.1);   /* Low-noise enterprise borders */
-        --border-subtle: rgba(15, 23, 42, 0.05);    /* Soft dividers */
+        --border-default: rgba(29, 29, 31, 0.1);
+        --border-subtle: rgba(29, 29, 31, 0.06);
 
-        --text-primary: #0f172a;     /* Slate-900 — authoritative navy headings */
-        --text-secondary: #1e293b;   /* Slate-800 — precise body text */
-        --text-muted: #64748b;       /* Slate-500 — readable muted text */
-        --text-label: #475569;       /* Slate-600 — clear labeling */
+        --text-primary: #1D1D1F;
+        --text-secondary: #3a3a3c;
+        --text-muted: #AAAAAA;
+        --text-label: #AAAAAA;
 
-        --accent-primary: #2563eb;   /* Blue-600 — Electric "Action" Blue */
-        --accent-hover: #1d4ed8;     /* Blue-700 — deep interaction state */
-        --accent-blue: #60a5fa;      /* Blue-400 — high-visibility blue links */
+        --accent-primary: #007AFF;
+        --accent-hover: #0063d1;
+        --accent-blue: #007AFF;
 
-        /* Enterprise Identifiers — More Vibrant for Light Context */
-        --identity-zap: #0ea5e9;     /* Sky-500 */
-        --identity-network: #10b981; /* Emerald-500 */
-        --identity-ssl: #f59e0b;     /* Amber-500 */
-        --identity-sniffer: #2563eb; /* Blue-600 */
-        --identity-killchain: #db2777;/* Pink-600 */
-        --identity-sql: #ef4444;     /* Red-500 */
-        --identity-api: #7c3aed;     /* Violet-600 */
-        --identity-semgrep: #4f46e5; /* Indigo-600 */
+        /* Enterprise Identifiers */
+        --identity-zap: #0ea5e9;
+        --identity-network: #10b981;
+        --identity-ssl: #f59e0b;
+        --identity-sniffer: #007AFF;
+        --identity-killchain: #db2777;
+        --identity-sql: #ef4444;
+        --identity-api: #7c3aed;
+        --identity-semgrep: #4f46e5;
 
-        /* Severity tokens — Industrial strength for light context */
+        /* Severity tokens */
         --severity-critical: #ef4444;
         --severity-critical-bg: #fee2e2;
         --severity-high: #f97316;
         --severity-high-bg: #ffedd5;
         --severity-medium: #f59e0b;
         --severity-medium-bg: #fef3c7;
-        --severity-low: #2563eb;
-        --severity-low-bg: #dbeafe;
+        --severity-low: #007AFF;
+        --severity-low-bg: rgba(0, 122, 255, 0.1);
         --severity-success: #10b981;
         --severity-success-bg: #d1fae5;
         --severity-info: #0ea5e9;
@@ -151,42 +151,34 @@
         --border-color: var(--border-default);
         --text-light: var(--text-primary);
 
-        /* neo-* namespace unified */
+        /* neo-* namespace */
         --neo-bg: var(--bg-primary);
         --neo-card: var(--surface-primary);
         --neo-border: var(--border-default);
-        --neo-blue: var(--accent-primary);
-        --neo-accent: #0f172a;
+        --neo-blue: #007AFF;
+        --neo-accent: #1D1D1F;
         --neo-text-primary: var(--text-primary);
         --neo-text-main: var(--text-primary);
         --neo-text-secondary: var(--text-secondary);
         --neo-text-label: var(--text-label);
+        --neo-text-muted: var(--text-muted);
         --neo-card-hover: var(--surface-subtle);
-        --accent-vibrant-spinner: var(--accent-primary);
+        --accent-vibrant-spinner: #007AFF;
 
-        --glass-bg: rgba(255, 255, 255, 0.8);
+        --glass-bg: rgba(255, 255, 255, 0.92);
         --glass-border: var(--border-default);
         --glass-blur: blur(20px);
 
-        --scrollbar-thumb: rgba(15, 23, 42, 0.1);
-        --scrollbar-hover: var(--accent-primary);
+        --scrollbar-thumb: #AAAAAA;
+        --scrollbar-hover: #007AFF;
+
+        background-color: #F5F5F7;
+        background-image: none;
       }
 
-      /* Subtle wash background — Sky tint at 10% opacity */
+      /* Flat background — no gradient overlay in light mode */
       body.light-mode::before {
-        content: '';
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: 
-          radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
-          radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.05) 0px, transparent 50%),
-          radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
-          radial-gradient(at 0% 100%, rgba(124, 58, 237, 0.05) 0px, transparent 50%),
-          radial-gradient(circle, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
-        background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 32px 32px;
-        pointer-events: none;
-        z-index: 0;
+        display: none;
       }
 
       body {
@@ -235,17 +227,17 @@
       }
 
       body.light-mode {
-        color: var(--text-secondary);
+        color: #1D1D1F;
       }
 
       /* Global Link Refinement */
 
       body.light-mode a:not(.btn-dash):not(.btn-neo-primary):not(.details):not(.logout-link) {
-        color: var(--accent-blue);
+        color: #007AFF;
         transition: color 0.2s ease;
       }
       body.light-mode a:not(.btn-dash):not(.btn-neo-primary):not(.details):not(.logout-link):hover {
-        color: var(--accent-hover);
+        color: #0063d1;
       }
 
       /* Global Button/Input Refinements for Institutional feel */
@@ -379,14 +371,14 @@
       }
 
       body.light-mode .navbar {
-        background-color: rgba(255, 255, 255, 0.9);
-        border-bottom: 1px solid var(--border-default);
-        box-shadow: 0 1px 8px 0 rgba(99, 102, 241, 0.06);
-        backdrop-filter: blur(20px) saturate(1.4);
-        -webkit-backdrop-filter: blur(20px) saturate(1.4);
+        background-color: rgba(245, 245, 247, 0.92);
+        border-bottom: 1px solid rgba(29, 29, 31, 0.1);
+        box-shadow: 0 1px 3px rgba(29, 29, 31, 0.06);
+        backdrop-filter: blur(20px) saturate(1.2);
+        -webkit-backdrop-filter: blur(20px) saturate(1.2);
       }
       body.light-mode .navbar.scrolled {
-        box-shadow: 0 4px 20px rgba(99,102,241,0.12);
+        box-shadow: 0 4px 20px rgba(29, 29, 31, 0.08);
       }
       
       .navbar-container {
@@ -436,7 +428,7 @@
       }
 
       body.light-mode .navbar-links li a:hover {
-        color: var(--accent-primary);
+        color: #007AFF;
       }
       
       .navbar-links li a:not(.highlight-link)::after {

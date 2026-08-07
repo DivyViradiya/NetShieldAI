@@ -496,16 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function switchTab(category) {
-        if (typeof window.switchMobileTab === 'function') {
-            window.switchMobileTab(category === 'all' ? 'inventory' : category);
-        }
-        if (category === 'json') {
-            loadJsonViewer();
-        }
-    }
-
-    elements.inventoryTabBtn?.addEventListener('click', () => switchTab('inventory'));
+    elements.inventoryTabBtn?.addEventListener('click', () => switchTab('all'));
     elements.domainsTabBtn?.addEventListener('click', () => switchTab('domains'));
     elements.subdomainsTabBtn?.addEventListener('click', () => switchTab('subdomains'));
     elements.endpointsTabBtn?.addEventListener('click', () => switchTab('endpoints'));

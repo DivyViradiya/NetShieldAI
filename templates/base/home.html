@@ -25,11 +25,11 @@
     body.light-mode .bento-tile,
     body.light-mode .audit-entry,
     body.light-mode .chat-mockup-window {
-      background: var(--surface-elevated);
-      box-shadow: 0 4px 24px rgba(37, 99, 235, 0.04);
-      border-color: var(--border-subtle);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(29, 29, 31, 0.05), 0 4px 16px rgba(29, 29, 31, 0.07);
+      border-color: rgba(29, 29, 31, 0.08);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
 
     .neo-card:hover,
@@ -44,8 +44,8 @@
     body.light-mode .lifecycle-step:hover,
     body.light-mode .bento-tile:hover {
       background: #ffffff;
-      border-color: var(--accent-primary);
-      box-shadow: 0 8px 32px rgba(37, 99, 235, 0.1);
+      border-color: rgba(0, 122, 255, 0.25);
+      box-shadow: 0 1px 3px rgba(29, 29, 31, 0.05), 0 8px 24px rgba(29, 29, 31, 0.1);
     }
 
     /* Primary Actions */
@@ -55,9 +55,9 @@
       border: 1px solid var(--text-primary);
     }
     body.light-mode .btn-neo-primary {
-      background: var(--accent-primary);
+      background: #007AFF;
       color: #ffffff;
-      border-color: var(--accent-primary);
+      border-color: #007AFF;
     }
     .btn-neo-primary:hover {
       background: transparent;
@@ -66,8 +66,8 @@
     }
     body.light-mode .btn-neo-primary:hover {
       background: transparent;
-      color: var(--accent-primary);
-      box-shadow: 0 4px 20px rgba(30, 64, 175, 0.15);
+      color: #007AFF;
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15);
     }
 
     .btn-neo-secondary {
@@ -76,14 +76,15 @@
       color: var(--text-primary);
     }
     body.light-mode .btn-neo-secondary {
-      background: rgba(255, 255, 255, 0.5);
-      color: var(--text-secondary);
+      background: #ffffff;
+      color: #1D1D1F;
+      border-color: rgba(29, 29, 31, 0.12);
     }
 
     /* Terminal & Chat Mockups */
-    body.light-mode .bubble-user { background: var(--accent-primary); color: #fff; }
-    body.light-mode .bubble-bot { background: var(--bg-secondary); color: var(--text-secondary); border-color: var(--border-subtle); }
-    body.light-mode .reasoning-popout { background: rgba(241, 245, 249, 0.8); color: var(--text-muted); }
+    body.light-mode .bubble-user { background: #007AFF; color: #fff; }
+    body.light-mode .bubble-bot { background: #ffffff; color: #1D1D1F; border-color: rgba(29, 29, 31, 0.08); }
+    body.light-mode .reasoning-popout { background: #F5F5F7; color: #AAAAAA; }
     
     .main-content { font-family: var(--font-ui); flex: 1; display: flex; flex-direction: column; width: 100%; padding: 0; position: relative; z-index: 5; margin-top: 0; }
 
@@ -111,6 +112,267 @@
       max-width: 100%; 
       width: 100%; 
       padding: 0 2rem;
+    }
+
+    .hero-grid-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2rem;
+      align-items: flex-end;
+      max-width: 1350px;
+      width: 100%;
+    }
+    .hero-left-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .hero-right-col {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+
+    .hero-terminal-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(10, 12, 18, 0.85);
+      border: 1px solid var(--neo-border);
+      border-radius: 8px;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35), 0 0 15px rgba(59, 130, 246, 0.08);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    body.light-mode .hero-terminal-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), 0 0 12px rgba(0, 122, 255, 0.08);
+    }
+    .hero-terminal-card:hover {
+      border-color: var(--neo-blue);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45), 0 0 20px rgba(59, 130, 246, 0.18);
+    }
+
+    .hero-terminal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--neo-border);
+    }
+    body.light-mode .hero-terminal-head {
+      background: #f1f3f5;
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+    .hero-terminal-dots {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .hero-terminal-dots .dot {
+      width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+    }
+    .dot-close { background: #ef4444; }
+    .dot-min { background: #f59e0b; }
+    .dot-max { background: #10b981; }
+
+    .hero-terminal-title {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--neo-blue);
+      text-transform: uppercase;
+    }
+    .status-pulse-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--neo-green);
+      box-shadow: 0 0 6px var(--neo-green);
+      animation: pulseDot 1.5s infinite;
+    }
+
+    .hero-preset-bar {
+      display: flex;
+      gap: 0.3rem;
+      padding: 0.45rem 0.6rem;
+      background: rgba(0, 0, 0, 0.15);
+      border-bottom: 1px solid var(--neo-border);
+      overflow-x: auto;
+    }
+    body.light-mode .hero-preset-bar {
+      background: #fafafa;
+      border-color: rgba(0,0,0,0.06);
+    }
+    .hero-preset-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--neo-border);
+      color: var(--neo-text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 0.22rem 0.48rem;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .hero-preset-btn .material-symbols-outlined { font-size: 0.78rem; }
+    .hero-preset-btn:hover {
+      border-color: var(--neo-blue);
+      color: var(--neo-text-primary);
+    }
+    .hero-preset-btn.active {
+      background: var(--neo-blue);
+      border-color: var(--neo-blue);
+      color: #fff !important;
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.35);
+    }
+
+    .hero-target-box {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.65rem;
+      border-bottom: 1px solid var(--neo-border);
+      background: rgba(0,0,0,0.2);
+    }
+    body.light-mode .hero-target-box {
+      background: #ffffff;
+      border-color: rgba(0,0,0,0.06);
+    }
+    .hero-target-prefix {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: var(--neo-blue);
+      letter-spacing: 0.06em;
+    }
+    #hero-target-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--neo-text-primary);
+      font-weight: 600;
+    }
+    body.light-mode #hero-target-input {
+      color: #111827;
+    }
+    .hero-icon-btn {
+      background: none;
+      border: none;
+      color: var(--neo-text-tertiary);
+      cursor: pointer;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+    .hero-icon-btn:hover { color: #ef4444; }
+
+    .hero-terminal-body {
+      height: 115px;
+      padding: 0.55rem 0.65rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      line-height: 1.45;
+      overflow-y: auto;
+      background: rgba(5, 6, 10, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    body.light-mode .hero-terminal-body {
+      background: #1e1e24;
+      color: #d4d4d4;
+    }
+    .hero-terminal-body::-webkit-scrollbar { width: 3px; }
+    .hero-terminal-body::-webkit-scrollbar-thumb { background: var(--neo-border); border-radius: 2px; }
+
+    .terminal-line { white-space: pre-wrap; word-break: break-word; }
+    .text-dim { color: #6b7280; }
+    .text-blue { color: #3b82f6; font-weight: 700; }
+    .text-green { color: #10b981; font-weight: 600; }
+    .text-yellow { color: #f59e0b; }
+    .text-red { color: #ef4444; font-weight: 700; }
+    .text-cyan { color: #06b6d4; }
+    .text-purple { color: #8b5cf6; }
+
+    .hero-terminal-footer {
+      display: flex;
+      gap: 0.4rem;
+      padding: 0.45rem 0.6rem;
+      background: rgba(0,0,0,0.15);
+      border-top: 1px solid var(--neo-border);
+    }
+    body.light-mode .hero-terminal-footer {
+      background: #f8fafc;
+      border-color: rgba(0,0,0,0.06);
+    }
+    .btn-terminal-action {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.55rem;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .btn-terminal-action .material-symbols-outlined { font-size: 0.88rem; }
+
+    .btn-sim {
+      background: transparent;
+      border: 1px solid var(--neo-blue);
+      color: var(--neo-blue);
+    }
+    .btn-sim:hover {
+      background: rgba(59, 130, 246, 0.15);
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-launch {
+      background: var(--neo-blue);
+      border: 1px solid var(--neo-blue);
+      color: #fff;
+    }
+    .btn-launch:hover {
+      background: #2563eb;
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid-layout {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .hero-right-col {
+        justify-content: flex-start;
+      }
+      .hero-terminal-card {
+        max-width: 100%;
+      }
     }
     
     .hero-tagline { 
@@ -341,17 +603,17 @@
         gap: 0.5rem;
     }
     body.light-mode .mission-card {
-        background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
-        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        border: 1px solid rgba(29, 29, 31, 0.08);
         border-top: 1px solid #ffffff;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        box-shadow: 0 1px 3px rgba(29, 29, 31, 0.05), 0 4px 16px rgba(29, 29, 31, 0.07);
     }
     .mission-card:hover {
         border-color: rgba(255, 255, 255, 0.14);
         transform: translateY(-3px);
         box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
     }
-    body.light-mode .mission-card:hover { border-color: #cbd5e1; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    body.light-mode .mission-card:hover { border-color: rgba(0, 122, 255, 0.25); box-shadow: 0 8px 24px rgba(29, 29, 31, 0.1); }
 
     .mission-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.2rem; }
     .mission-title { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--neo-text-primary); }
@@ -366,7 +628,7 @@
         padding: 0.4rem 0.6rem; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.06);
         margin-top: 0.5rem; color: var(--neo-text-primary); font-family: var(--font-mono); font-size: 0.7rem;
     }
-    body.light-mode .job-row { background: #f8fafc; border-color: #e2e8f0; }
+    body.light-mode .job-row { background: #F5F5F7; border-color: rgba(29, 29, 31, 0.08); }
 
     .status-pill {
         display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 0.58rem;
@@ -1563,20 +1825,83 @@
       </div>
 
       <div class="hero-content fade-in-element">
-        <div class="hero-tagline">Autonomous Defense Grid</div>
-        <h1 class="hero-title">Unified. <br /><span>Autonomous.</span><span>Secure.</span></h1>
-        <p class="hero-sub">NetShieldAI provides a unified platform to assess the security posture of your infrastructure, networks, and applications. Leverage automated penetration testing and advanced AI-driven intelligence.</p>
+        <div class="hero-grid-layout">
+          <!-- Left Column: Hero Tagline & Headline -->
+          <div class="hero-left-col">
+            <div class="hero-tagline">Autonomous Defense Grid</div>
+            <h1 class="hero-title">Unified. <br /><span>Autonomous.</span><span>Secure.</span></h1>
+            <p class="hero-sub">NetShieldAI provides a unified platform to assess the security posture of your infrastructure, networks, and applications. Leverage automated penetration testing and advanced AI-driven intelligence.</p>
 
-        <div class="hero-actions">
-          <a href="{{ url_for('tools_hub') }}" class="btn-neo-primary">
-            <span class="btn-text-desktop">Access Security Suite</span>
-            <span class="btn-text-mobile">Security Suite</span>
-            <span class="material-symbols-outlined">arrow_forward</span>
-          </a>
-          <a href="{{ url_for('dashboard_bp.dashboard') }}" class="btn-neo-secondary">
-            <span class="btn-text-desktop">Security Posture</span>
-            <span class="btn-text-mobile">Posture</span>
-          </a>
+            <div class="hero-actions">
+              <a href="{{ url_for('tools_hub') }}" class="btn-neo-primary">
+                <span class="btn-text-desktop">Access Security Suite</span>
+                <span class="btn-text-mobile">Security Suite</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </a>
+              <a href="{{ url_for('dashboard_bp.dashboard') }}" class="btn-neo-secondary">
+                <span class="btn-text-desktop">Security Posture</span>
+                <span class="btn-text-mobile">Posture</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Column (Bottom-Right of Hero): Interactive Command Simulator -->
+          <div class="hero-right-col">
+            <div class="hero-terminal-card" id="hero-terminal-card">
+              <div class="hero-terminal-head">
+                <div class="hero-terminal-dots">
+                  <span class="dot dot-close"></span>
+                  <span class="dot dot-min"></span>
+                  <span class="dot dot-max"></span>
+                </div>
+                <div class="hero-terminal-title">
+                  <span class="status-pulse-dot"></span>
+                  <span>COMMAND SIMULATOR</span>
+                </div>
+              </div>
+
+              <!-- Scanner Presets -->
+              <div class="hero-preset-bar">
+                <button class="hero-preset-btn active" data-preset="nmap">
+                  <span class="material-symbols-outlined">radar</span> NMAP
+                </button>
+                <button class="hero-preset-btn" data-preset="zap">
+                  <span class="material-symbols-outlined">language</span> ZAP
+                </button>
+                <button class="hero-preset-btn" data-preset="semgrep">
+                  <span class="material-symbols-outlined">code</span> SEMGREP
+                </button>
+                <button class="hero-preset-btn" data-preset="sqlmap">
+                  <span class="material-symbols-outlined">database</span> SQLMAP
+                </button>
+              </div>
+
+              <!-- Target Input -->
+              <div class="hero-target-box">
+                <span class="hero-target-prefix">TARGET:</span>
+                <input type="text" id="hero-target-input" value="192.168.1.1" placeholder="Enter target IP or domain..." autocomplete="off" spellcheck="false">
+                <button id="hero-btn-clear" class="hero-icon-btn" title="Clear target"><span class="material-symbols-outlined">close</span></button>
+              </div>
+
+              <!-- Terminal Display Body -->
+              <div class="hero-terminal-body" id="hero-terminal-body">
+                <div class="terminal-line text-dim">// Select a preset or enter target above</div>
+                <div class="terminal-line text-blue">$ nmap -sV -sC -T4 192.168.1.1</div>
+                <div class="terminal-line text-muted">[+] Initializing NetShieldAI orchestration engine...</div>
+                <div class="terminal-line text-green">[✓] Ready to simulate or launch security scan.</div>
+              </div>
+
+              <!-- Terminal Controls -->
+              <div class="hero-terminal-footer">
+                <button id="hero-btn-simulate" class="btn-terminal-action btn-sim">
+                  <span class="material-symbols-outlined">play_arrow</span> SIMULATE SCAN
+                </button>
+                <button id="hero-btn-launch" class="btn-terminal-action btn-launch">
+                  <span class="material-symbols-outlined">rocket_launch</span> LAUNCH SCAN
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2061,14 +2386,15 @@
       }
 
       async init() {
-        {% if current_user.is_authenticated %}
-        await this.refreshAll();
-        // Periodically refresh data every 60s
-        setInterval(() => this.refreshAll(), 60000);
-        
-        // Start live countdown timer (every 1s)
-        setInterval(() => this.updateTimerUI(), 1000);
-        {% endif %}
+        const isAuthenticated = "{{ 'true' if current_user.is_authenticated else 'false' }}" === "true";
+        if (isAuthenticated) {
+          await this.refreshAll();
+          // Periodically refresh data every 60s
+          setInterval(() => this.refreshAll(), 60000);
+          
+          // Start live countdown timer (every 1s)
+          setInterval(() => this.updateTimerUI(), 1000);
+        }
 
         this.initToolchainTabs();
         this.initLifecycleCarousel();
@@ -2603,9 +2929,184 @@
       }
     }
 
+    /**
+     * Interactive Hero Command Simulator
+     */
+    class HeroCommandSimulator {
+      constructor() {
+        this.presetBtns = document.querySelectorAll('.hero-preset-btn');
+        this.targetInput = document.getElementById('hero-target-input');
+        this.btnClear = document.getElementById('hero-btn-clear');
+        this.terminalBody = document.getElementById('hero-terminal-body');
+        this.btnSimulate = document.getElementById('hero-btn-simulate');
+        this.btnLaunch = document.getElementById('hero-btn-launch');
+
+        if (!this.terminalBody) return;
+
+        this.activePreset = 'nmap';
+        this.isSimulating = false;
+        this.simTimeout = null;
+
+        this.presets = {
+          nmap: {
+            route: "{{ url_for('network_scanner_bp.network_scanner_page') }}",
+            cmd: (target) => `nmap -sV -sC -T4 ${target}`,
+            logs: (target) => [
+              { text: `[+] Starting Nmap 7.94 ( https://nmap.org ) at ${new Date().toLocaleTimeString()}`, type: 'text-dim' },
+              { text: `[+] NSE: Loaded 1,400+ discovery scripts against ${target}`, type: 'text-cyan' },
+              { text: `[+] Initiating SYN Stealth Scan on target ports 1-1024...`, type: 'text-dim' },
+              { text: `[+] PORT 80/tcp   OPEN  http   nginx/1.18.0 (Ubuntu)`, type: 'text-green' },
+              { text: `[+] PORT 443/tcp  OPEN  ssl/http OpenSSL 1.1.1k`, type: 'text-green' },
+              { text: `[!] PORT 8080/tcp OPEN  http-proxy Apache Tomcat/9.0.41`, type: 'text-yellow' },
+              { text: `[!] TCTR Risk Engine: Potential log4j vulnerability on port 8080`, type: 'text-red' },
+              { text: `[✓] Nmap scan report finished for ${target}. Posture Risk Score: 7.8/10`, type: 'text-blue' }
+            ]
+          },
+          zap: {
+            route: "{{ url_for('zap_scanner_bp.zap_scanner_page') }}",
+            cmd: (target) => `zap-cli quick-scan --spider http://${target}`,
+            logs: (target) => [
+              { text: `[+] Initializing OWASP ZAP 2.14 DAST Core Engine...`, type: 'text-dim' },
+              { text: `[+] Spidering application structure: http://${target}/`, type: 'text-cyan' },
+              { text: `[+] Discovered 42 endpoints in 1.2s`, type: 'text-dim' },
+              { text: `[+] Active Scan triggered: Fuzzing SQLi, XSS, and Access Controls`, type: 'text-yellow' },
+              { text: `[!] PASSIVE ALERT: Missing Anti-CSRF token on /api/v1/user`, type: 'text-yellow' },
+              { text: `[!] ACTIVE ALERT: Reflected XSS vulnerability detected on /search?q=`, type: 'text-red' },
+              { text: `[✓] ZAP DAST Audit complete for http://${target}. 2 Security Alerts.`, type: 'text-blue' }
+            ]
+          },
+          semgrep: {
+            route: "{{ url_for('semgrep_scanner_bp.semgrep_scanner_page') }}",
+            cmd: (target) => `semgrep --config pci-dss ./src`,
+            logs: (target) => [
+              { text: `[+] Running Semgrep SAST engine on target code context...`, type: 'text-dim' },
+              { text: `[+] Matching ruleset: pci-dss-compliance (2,410 rules)`, type: 'text-purple' },
+              { text: `[+] Scanned 128 source files (.py, .js, .html)`, type: 'text-dim' },
+              { text: `[!] RULE: hardcoded-secret-key found in config/env.py:L14`, type: 'text-red' },
+              { text: `[!] RULE: sql-injection-concat found in models/user.py:L84`, type: 'text-yellow' },
+              { text: `[✓] Semgrep SAST complete: 1 Critical, 1 Warning found.`, type: 'text-blue' }
+            ]
+          },
+          sqlmap: {
+            route: "{{ url_for('sql_scanner_bp.sql_scanner_page') }}",
+            cmd: (target) => `sqlmap -u "http://${target}/api/item?id=1" --batch`,
+            logs: (target) => [
+              { text: `[+] Starting sqlmap 1.7.12 automated database auditor...`, type: 'text-dim' },
+              { text: `[+] Testing connection to target URL...`, type: 'text-dim' },
+              { text: `[+] Heuristic test shows parameter 'id' is VULNERABLE`, type: 'text-yellow' },
+              { text: `[!] GET parameter 'id' is injectable via Boolean-based blind`, type: 'text-red' },
+              { text: `[!] Back-end DBMS identified: PostgreSQL 14.2`, type: 'text-cyan' },
+              { text: `[✓] SQLMap injection payload validated. Database compromised.`, type: 'text-blue' }
+            ]
+          }
+        };
+
+        this.init();
+      }
+
+      init() {
+        this.presetBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            this.presetBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            this.activePreset = btn.dataset.preset;
+            this.updateTerminalHeader();
+          });
+        });
+
+        if (this.btnClear) {
+          this.btnClear.addEventListener('click', () => {
+            this.targetInput.value = '';
+            this.targetInput.focus();
+          });
+        }
+
+        if (this.btnSimulate) {
+          this.btnSimulate.addEventListener('click', () => this.runSimulation());
+        }
+
+        if (this.btnLaunch) {
+          this.btnLaunch.addEventListener('click', () => this.launchRealScan());
+        }
+
+        if (this.targetInput) {
+          this.targetInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              this.runSimulation();
+            }
+          });
+        }
+      }
+
+      updateTerminalHeader() {
+        const target = this.targetInput.value.trim() || '192.168.1.1';
+        const config = this.presets[this.activePreset];
+        if (!config) return;
+
+        if (this.simTimeout) clearTimeout(this.simTimeout);
+        this.isSimulating = false;
+        if (this.btnSimulate) {
+          this.btnSimulate.disabled = false;
+          this.btnSimulate.style.opacity = '1';
+        }
+
+        this.terminalBody.innerHTML = `
+          <div class="terminal-line text-dim">// Selected profile: [${this.activePreset.toUpperCase()}]</div>
+          <div class="terminal-line text-blue">$ ${config.cmd(target)}</div>
+          <div class="terminal-line text-muted">[+] Click "SIMULATE SCAN" to test output or "LAUNCH SCAN" to execute.</div>
+        `;
+      }
+
+      runSimulation() {
+        if (this.isSimulating) return;
+        const target = this.targetInput.value.trim() || '192.168.1.1';
+        const config = this.presets[this.activePreset];
+        if (!config) return;
+
+        this.isSimulating = true;
+        this.btnSimulate.disabled = true;
+        this.btnSimulate.style.opacity = '0.6';
+
+        const logs = config.logs(target);
+        this.terminalBody.innerHTML = `<div class="terminal-line text-blue">$ ${config.cmd(target)}</div>`;
+
+        let step = 0;
+        const printNextLine = () => {
+          if (step < logs.length) {
+            const item = logs[step];
+            const line = document.createElement('div');
+            line.className = `terminal-line ${item.type}`;
+            line.textContent = item.text;
+            this.terminalBody.appendChild(line);
+            this.terminalBody.scrollTop = this.terminalBody.scrollHeight;
+            step++;
+            this.simTimeout = setTimeout(printNextLine, 350);
+          } else {
+            this.isSimulating = false;
+            this.btnSimulate.disabled = false;
+            this.btnSimulate.style.opacity = '1';
+          }
+        };
+        printNextLine();
+      }
+
+      launchRealScan() {
+        const target = this.targetInput.value.trim();
+        const config = this.presets[this.activePreset];
+        if (!config) return;
+
+        let dest = config.route;
+        if (target) {
+          dest += `?target=${encodeURIComponent(target)}`;
+        }
+        window.location.href = dest;
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       window.terminal = new OverwatchTerminal();
       window.neuralMesh = new NeuralMesh('hero-canvas');
+      window.heroSimulator = new HeroCommandSimulator();
     });
   </script>
 {% endblock %}

@@ -25,13 +25,13 @@
     }
 
     body.light-mode {
-      --neo-card: rgba(255, 255, 255, 0.8);
-      --neo-border: rgba(15, 23, 42, 0.08);
-      --neo-accent: #0f172a;
-      --neo-text-primary: #0f172a;
-      --neo-text-secondary: #1e293b;
-      --neo-text-tertiary: #64748b;
-      --neo-blue: #2563eb;
+      --neo-card: #ffffff;
+      --neo-border: rgba(29, 29, 31, 0.08);
+      --neo-accent: #1D1D1F;
+      --neo-text-primary: #1D1D1F;
+      --neo-text-secondary: #3a3a3c;
+      --neo-text-tertiary: #AAAAAA;
+      --neo-blue: #007AFF;
     }
 
     .main-content { font-family: var(--font-ui); flex: 1; display: flex; flex-direction: column; width: 100%; padding: 0; position: relative; z-index: 5; margin-top: 0; }
@@ -123,11 +123,14 @@
     }
 
     body.light-mode .bento-card {
-      box-shadow: 0 4px 24px rgba(37, 99, 235, 0.04);
+      background: #ffffff;
+      border-color: rgba(29, 29, 31, 0.08);
+      box-shadow: 0 1px 3px rgba(29, 29, 31, 0.05), 0 4px 16px rgba(29, 29, 31, 0.07);
     }
     body.light-mode .bento-card:hover {
       background: #ffffff;
-      box-shadow: 0 8px 32px rgba(37, 99, 235, 0.1);
+      border-color: rgba(0, 122, 255, 0.25);
+      box-shadow: 0 1px 3px rgba(29, 29, 31, 0.05), 0 8px 24px rgba(29, 29, 31, 0.1);
     }
 
     /* Target Brackets (Neo-Tech Special) */

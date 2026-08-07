@@ -206,7 +206,7 @@ def list_available_interfaces(user_id=None):
         log(f"[DEBUG] Error listing interfaces: {str(e)}", user_id)
         return {}
 
-def get_selected_interface(interface_id=None, user_id=None):
+def get_selected_interface(interface_id=None, user_id=None, target_ip=None):
     interface_list = list_available_interfaces(user_id)
     if not interface_list:
         return None
@@ -216,9 +216,31 @@ def get_selected_interface(interface_id=None, user_id=None):
         log(f"[*] Interface selected: {selected_if['description']}", user_id, to_console=True)
         return selected_if['name']
 
+    # 1. Loopback check: if target is local loopback, find loopback interface
+    if target_ip in ("127.0.0.1", "localhost", "::1"):
+        for if_data in interface_list.values():
+            name_lower = if_data['name'].lower()
+            desc_lower = if_data['description'].lower()
+            if "loopback" in name_lower or "loopback" in desc_lower or name_lower in ("lo", "lo0"):
+                log(f"[*] Loopback target detected. Selecting loopback interface: {if_data['description']}", user_id, to_console=True)
+                return if_data['name']
+
+    # 2. Local interface check: if target_ip is one of the local interface IPs, capture there
+    interfaces_by_ip = psutil.net_if_addrs()
+    if target_ip:
+        for name, addrs in interfaces_by_ip.items():
+            for addr in addrs:
+                if getattr(socket, 'AF_INET', None) and addr.family == socket.AF_INET:
+                    if addr.address == target_ip:
+                        log(f"[DEBUG] Target IP {target_ip} matches local interface '{name}'", user_id)
+                        for if_data in interface_list.values():
+                            if name in if_data['name'] or name in if_data['description']:
+                                log(f"[*] Selecting interface matching target IP: {if_data['description']}", user_id, to_console=True)
+                                return if_data['name']
+
+    # 3. Default local_ip auto-detection (best-effort gateway IP)
     local_ip = get_local_ip()
     log(f"[DEBUG] Auto-detecting interface for IP: {local_ip}", user_id)
-    interfaces_by_ip = psutil.net_if_addrs()
     
     psutil_found_names = []
     for name, addrs in interfaces_by_ip.items():
@@ -302,7 +324,7 @@ def run_packet_capture(target_ip, duration_seconds=30, interface_id=None, custom
         log(f"[BLOCKED] Capture rejected by target validator for {target_ip}: {e}", user_id, level='ERROR')
         return None
 
-    interface_name = get_selected_interface(interface_id=interface_id, user_id=user_id)
+    interface_name = get_selected_interface(interface_id=interface_id, user_id=user_id, target_ip=target_ip)
     if not interface_name:
         log("[!] Failed to find network interface.", user_id)
         return None

@@ -418,6 +418,11 @@ def clear_ssl_log_route():
     scan_logger.reset_log_file(user_identifier, "ssl_scanner")
     return jsonify({"status": "success", "message": "SSL log cleared."})
 
+@ssl_scanner_bp.route('/log_stream', methods=['GET'])
+@login_required
+def log_stream():
+    """Server-Sent Events (SSE) endpoint for log streaming."""
+    user_identifier = f"{secure_filename(current_user.username)}_{current_user.id}"
     return Response(
         scan_logger.tail_log_file(user_identifier, "ssl_scanner"),
         mimetype='text/event-stream'
