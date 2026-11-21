@@ -465,7 +465,12 @@ def chat_with_ai_stream():
                 user_logger.error(f"Stream Proxy Error: {e}")
                 yield b" [Connection Error during stream]"
 
-        headers = {"X-Session-ID": new_sess_id} if new_sess_id else {}
+        headers = {
+            "X-Session-ID": new_sess_id or "",
+            "X-Accel-Buffering": "no",
+            "Cache-Control": "no-cache, no-transform",
+            "Connection": "keep-alive"
+        }
         return Response(stream_with_context(generate()), mimetype='text/plain', headers=headers)
 
     except Exception as e:
