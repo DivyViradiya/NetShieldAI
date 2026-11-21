@@ -70,6 +70,23 @@ from routes.asset_discovery_bp import asset_discovery_bp
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24)) 
 
+# --- Proxy & Reverse Proxy Support (Cloudflare / Tunnels) ---
+from werkzeug.middleware.proxy_fix import ProxyFix
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
+# Secure Session & CSRF Configuration for Custom Domain / Cloudflare
+cf_domain = os.environ.get('CLOUDFLARE_DOMAIN', 'netshieldai.dev')
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['WTF_CSRF_TRUSTED_ORIGINS'] = [
+    f"https://{cf_domain}",
+    f"https://*.{cf_domain}",
+    f"http://{cf_domain}",
+    f"http://*.{cf_domain}",
+    "http://localhost:5100",
+    "http://127.0.0.1:5100"
+] 
+
 # --- [FIX] Use Absolute Path for Database ---
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_dir = os.path.join(basedir, '.instance')

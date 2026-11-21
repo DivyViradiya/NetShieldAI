@@ -53,7 +53,7 @@ def generate_executive_summary(log_id, user_identifier, report_path=None, target
         proxy_url = f"{SERVER_PROXY_URL}/upload_report"
 
         params = {
-            'llm_mode': 'gemini-2.5-flash',
+            'llm_mode': 'gemini-3.8-flash',
             'user_id': user_identifier,
             'file_path': os.path.abspath(report_path),
             'background': False

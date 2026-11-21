@@ -16,4 +16,7 @@ token.json
 .logs/
 .instance/
 __pycache__/
-*.pyc
+*.pyc
+*.safetensors
+models/TCTR/embedding_model/
+

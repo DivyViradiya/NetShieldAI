@@ -1775,10 +1775,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.workflowPanel.classList.add('mode-config');
         } else {
             ui.workflowPanel.classList.remove('mode-config');
-            ui.hiddenModelInput.value = 'gemini-2.5-flash';
-            ui.customTrigger.querySelector('span').textContent = 'Gemini 2.5 Flash';
+            ui.hiddenModelInput.value = 'gemini-3.8-flash';
+            ui.customTrigger.querySelector('span').textContent = 'Gemini 3.8 Flash';
             ui.customOptions.forEach(opt => opt.classList.remove('selected'));
-            document.querySelector('.custom-option[data-value="gemini-2.5-flash"]')?.classList.add('selected');
+            document.querySelector('.custom-option[data-value="gemini-3.8-flash"]')?.classList.add('selected');
             ui.startBtn.disabled = true;
             ui.uploadStatus.textContent = '';
         }
@@ -1953,8 +1953,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if(ui.customSelect) {
         // Ensure default state is set correctly
-        ui.hiddenModelInput.value = 'gemini-2.5-flash';
-        ui.customTrigger.querySelector('span').textContent = 'Gemini 2.5 Flash';
+        ui.hiddenModelInput.value = 'gemini-3.8-flash';
+        ui.customTrigger.querySelector('span').textContent = 'Gemini 3.8 Flash';
 
         ui.customTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -2922,7 +2922,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 4. Set a default model if not set
         if (!ui.hiddenModelInput.value) {
-            ui.hiddenModelInput.value = 'gemini-2.5-flash';
+            ui.hiddenModelInput.value = 'gemini-3.8-flash';
         }
     }
 

@@ -21,6 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent
 MODELS_DIR = BASE_DIR.parent / "models" / "TCTR"
 LGB_MODEL_PATH = MODELS_DIR / "lgb_ranker.pkl"
 CWE_MAPPING_PATH = BASE_DIR.parent / "Data" / "cwe_profiles_mapping.json"
+EMBEDDING_MODEL_DIR = MODELS_DIR / "embedding_model"
+DEFAULT_EMBEDDING_MODEL_NAME = "BAAI/bge-m3"
 
 class TCTREngine:
     _instance = None
@@ -272,22 +274,22 @@ class TCTREngine:
 
     # Used for Zero-Shot NLP Classification of Unmapped Findings
     COMMON_CWES_TEXT = {
-        "89": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
-        "78": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
-        "79": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
-        "22": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
-        "200": "Exposure of Sensitive Information to an Unauthorized Actor",
-        "319": "Cleartext Transmission of Sensitive Information",
-        "16": "Configuration",
-        "284": "Improper Access Control",
-        "693": "Protection Mechanism Failure",
-        "310": "Cryptographic Issues",
-        "94": "Improper Control of Generation of Code ('Code Injection')",
-        "287": "Improper Authentication",
+        "89": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection', SQLi)",
+        "78": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection', Remote Code Execution, RCE)",
+        "79": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting', XSS)",
+        "22": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal', Directory Traversal, LFI)",
+        "200": "Exposure of Sensitive Information to an Unauthorized Actor, Information Disclosure, Sensitive Data Exposure",
+        "319": "Cleartext Transmission of Sensitive Information across Network, Unencrypted HTTP",
+        "16": "Configuration Weakness, Insecure Default Settings, Exposed Administrative Interfaces",
+        "284": "Improper Access Control and Authorization Bypass, Insecure Direct Object Reference, IDOR",
+        "693": "Protection Mechanism Failure, Missing Security Headers, Insufficient Sanitization",
+        "310": "Use of Broken or Risky Cryptographic Algorithm, Weak Cipher Suite, Insecure TLS, Cryptographic Issues",
+        "94": "Improper Control of Generation of Code ('Code Injection', Remote Code Execution)",
+        "287": "Improper Authentication, Missing Password Validation, Credential Validation Flaw",
         "352": "Cross-Site Request Forgery (CSRF)",
-        "434": "Unrestricted Upload of File with Dangerous Type",
-        "749": "Exposed Dangerous Method or Function",
-        "119": "Improper Restriction of Operations within the Bounds of a Memory Buffer"
+        "434": "Unrestricted Upload of File with Dangerous Type, Arbitrary File Upload, Web Shell",
+        "749": "Exposed Dangerous Method or Function, Unprotected RPC/API Endpoint",
+        "119": "Improper Restriction of Operations within the Bounds of a Memory Buffer, Buffer Overflow, Memory Corruption"
     }
     _cwe_text_embeddings = None
 
@@ -310,13 +312,31 @@ class TCTREngine:
                 
                 try:
                     from sentence_transformers import SentenceTransformer
-                    cls._sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
+                    import torch
                     
-                    # Precompute embeddings for zero-shot CWE matching
+                    # Prefer locally packaged offline weights
+                    if EMBEDDING_MODEL_DIR.exists():
+                        model_target = str(EMBEDDING_MODEL_DIR)
+                        logger.info(f"Loading TCTR SentenceTransformer model from offline directory: {model_target}")
+                    else:
+                        model_target = DEFAULT_EMBEDDING_MODEL_NAME
+                        logger.info(f"Loading TCTR SentenceTransformer model from HuggingFace Hub: {model_target}")
+
+                    device = "mps" if torch.backends.mps.is_available() else ("cuda" if torch.cuda.is_available() else "cpu")
+                    cls._sentence_model = SentenceTransformer(model_target, device=device)
+                    
+                    # Precompute embeddings for zero-shot CWE matching (normalized for dot-product cosine similarity)
                     texts = list(cls.COMMON_CWES_TEXT.values())
-                    cls._cwe_text_embeddings = cls._sentence_model.encode(texts, convert_to_numpy=True)
+                    cls._cwe_text_embeddings = cls._sentence_model.encode(
+                        texts, 
+                        convert_to_numpy=True,
+                        normalize_embeddings=True
+                    )
+                    logger.info(f"Loaded TCTR SentenceTransformer ({model_target}, dim={cls._cwe_text_embeddings.shape[1]}) on {device.upper()}.")
                 except ImportError:
                     logger.warning("sentence_transformers not installed. NLP features disabled.")
+                except Exception as e:
+                    logger.warning(f"Failed to load SentenceTransformer: {e}. Zero-shot NLP features disabled.")
             except Exception as e:
                 logger.error(f"Failed to load TCTR components: {e}")
                 
@@ -422,21 +442,24 @@ class TCTREngine:
         if self._sentence_model and self._cwe_text_embeddings is not None:
             try:
                 query_text = f"{name} {description}"
-                query_embedding = self._sentence_model.encode([query_text], convert_to_numpy=True)
+                query_embedding = self._sentence_model.encode(
+                    [query_text], 
+                    convert_to_numpy=True,
+                    normalize_embeddings=True
+                )
                 
-                # Cosine similarity using NumPy
-                norm_q = np.linalg.norm(query_embedding[0])
-                norms_cwe = np.linalg.norm(self._cwe_text_embeddings, axis=1)
+                # With unit-normalized vectors: cosine similarity = dot product
+                similarities = np.dot(self._cwe_text_embeddings, query_embedding[0])
+                best_match_idx = int(np.argmax(similarities))
+                best_score = float(similarities[best_match_idx])
                 
-                if norm_q > 0:
-                    similarities = np.dot(self._cwe_text_embeddings, query_embedding[0]) / (norms_cwe * norm_q)
-                    best_match_idx = np.argmax(similarities)
-                    best_score = similarities[best_match_idx]
-                    
-                    if best_score > 0.3: # Minimum similarity threshold
-                        matched_cwe = list(self.COMMON_CWES_TEXT.keys())[best_match_idx]
-                        logger.info(f"Zero-Shot NLP matched '{name}' to CWE-{matched_cwe} with score {best_score:.2f}")
-                        return matched_cwe
+                # Calibrated confidence threshold for BGE-M3 (0.465)
+                if best_score >= 0.465:
+                    matched_cwe = list(self.COMMON_CWES_TEXT.keys())[best_match_idx]
+                    logger.info(f"Zero-Shot NLP matched '{name}' to CWE-{matched_cwe} with confidence {best_score:.3f}")
+                    return matched_cwe
+                else:
+                    logger.debug(f"Zero-Shot NLP match '{name}' below threshold ({best_score:.3f} < 0.465)")
             except Exception as e:
                 logger.error(f"NLP CWE Inference failed: {e}")
                 
