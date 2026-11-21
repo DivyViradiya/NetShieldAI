@@ -171,15 +171,21 @@ def proxy_uploads(filename):
 def map_llm_mode(mode):
     """Maps frontend mode aliases to backend supported modes with legacy fallbacks."""
     mapping = {
-        'gemini': 'gemini-3.8-flash',
-        'gemini-2.5-flash': 'gemini-3.8-flash',
-        'gemini-2.5-pro': 'gemini-4-carbon',
-        'gemini-2.0-flash': 'gemini-3.8-flash',
-        'gemini-2.0-flash-lite': 'gemini-3.5-flash',
-        'gemini-3-flash-preview': 'gemini-3.8-flash',
-        'gemini-3-pro-preview': 'gemini-4-carbon',
-        'gemini-3.1-flash-lite-preview': 'gemini-3.5-flash',
-        'gemini-3.1-pro-preview': 'gemini-4-carbon',
+        'gemini': 'gemini-2.5-flash',
+        'gemini-2.5-flash': 'gemini-2.5-flash',
+        'gemini-2.5-pro': 'gemini-3.5-flash',
+        'gemini-2.0-flash': 'gemini-2.5-flash',
+        'gemini-2.0-flash-lite': 'gemini-3.1-flash-lite',
+        'gemini-3-flash-preview': 'gemini-2.5-flash',
+        'gemini-3-pro-preview': 'gemini-3.5-flash',
+        'gemini-3.1-flash-lite': 'gemini-3.1-flash-lite',
+        'gemini-3.1-flash-lite-preview': 'gemini-3.1-flash-lite',
+        'gemini-3.1-pro-preview': 'gemini-3.5-flash',
+        'gemini-3.5-flash': 'gemini-3.5-flash',
+        'gemini-3.8-flash': 'gemini-2.5-flash',
+        'gemini-4-hydrogen': 'gemini-2.5-flash',
+        'gemini-4-carbon': 'gemini-3.5-flash',
+        'gemini-4-argon': 'gemini-3.5-flash',
         'local': 'local'
     }
     return mapping.get(mode, mode)
@@ -317,7 +323,7 @@ def upload_report():
             return jsonify({'error': 'No selected file'}), 400
 
         logger.info(f"[*] Manual Report Upload: {file.filename} (User: {current_user.username})")
-        llm_mode_param = map_llm_mode(request.form.get('llm_mode', 'gemini-3.8-flash'))
+        llm_mode_param = map_llm_mode(request.form.get('llm_mode', 'gemini-2.5-flash'))
 
         ALLOWED_EXTENSIONS = {'.pdf', '.png', '.jpg', '.jpeg', '.log', '.txt', '.pcap', '.pcapng', '.yaml', '.json'}
         ext = os.path.splitext(file.filename)[1].lower()
@@ -386,7 +392,7 @@ def _prepare_chat_request():
     if isinstance(is_incognito, str):
         is_incognito = is_incognito.lower() == 'true'
         
-    llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-3.8-flash'))
+    llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-2.5-flash'))
     current_session_id = session.get('chatbot_session_id')
 
     payload = {
@@ -492,7 +498,7 @@ def scanner_analysis_proxy():
         data = request.get_json()
         scanner_type = data.get('scanner_type')
         target = data.get('target') # [NEW]
-        llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-3.8-flash'))
+        llm_mode = map_llm_mode(data.get('llm_mode', 'gemini-2.5-flash'))
         # [NEW] Allow caller to decide if a fresh session is needed
         force_new_session = data.get('force_new_session', False)
 

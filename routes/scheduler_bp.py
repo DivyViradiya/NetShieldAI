@@ -906,7 +906,7 @@ def download_executive_summary_report(log_id):
         
         # Optimize Parameters: Use file_path (skips upload) and background=False (sync summary)
         params = {
-            'llm_mode': 'gemini-3.8-flash',
+            'llm_mode': 'gemini-2.5-flash',
             'user_id': user_id_safe,
             'file_path': os.path.abspath(log.report_path), # Absolute path needed
             'background': False
